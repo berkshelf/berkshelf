@@ -5,3 +5,4 @@ source "https://rubygems.org"
 
 gem 'rspec'
 gem 'chef'
+gem 'minitar'

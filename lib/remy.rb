@@ -1,5 +1,6 @@
 require 'remy/shelf'
 require 'remy/cookbook'
+require 'remy/dependency_reader'
 
 module Remy
   class << self

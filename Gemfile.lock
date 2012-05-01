@@ -24,6 +24,7 @@ GEM
     ipaddress (0.8.0)
     json (1.5.4)
     mime-types (1.18)
+    minitar (0.5.3)
     mixlib-authentication (1.1.4)
       mixlib-log
     mixlib-cli (1.2.2)
@@ -66,4 +67,5 @@ PLATFORMS
 
 DEPENDENCIES
   chef
+  minitar
   rspec
