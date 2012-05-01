@@ -6,4 +6,8 @@ class Cookbook
     @version_constraint = version_constraint
   end
 
+  def download version
+    Chef::Knife::CookbookSiteDownload.new([name, '--file', File.join('/tmp', "#{name}-#{version}.tar.gz").run
+  end
+
 end
