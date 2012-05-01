@@ -5,12 +5,19 @@ module Remy
   describe DSL do
     include DSL
 
-    it 'should add the cookbooks to the shelf' do
-      cookbook "ntp"
-      cookbook "nginx"
+    describe "#cookbook" do
+      it 'should add the cookbooks to the shelf' do
+        cookbook "ntp"
+        cookbook "nginx"
 
-      ['ntp', 'nginx'].each do |cookbook|
-        Remy.shelf.cookbooks.should include cookbook
+        ['ntp', 'nginx'].each do |cookbook|
+          Remy.shelf.cookbooks.collect(&:name).should include cookbook
+        end
+      end
+
+      it 'should take version constraints' do
+        cookbook 'ntp', '= 1.2.3'
+        Remy.shelf.cookbooks.select {|c| c.name == 'ntp'}.first.version_constraint.should == '= 1.2.3'
       end
     end
   end

@@ -1,7 +1,9 @@
 class Cookbook
-  attr_reader :name
+  attr_reader :name, :version_constraint
 
-  def initialize name
+  def initialize name, version_constraint=nil
     @name = name
+    @version_constraint = version_constraint
   end
+
 end
