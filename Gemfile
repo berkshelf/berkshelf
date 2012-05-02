@@ -6,3 +6,4 @@ source "https://rubygems.org"
 gem 'rspec'
 gem 'chef'
 gem 'minitar'
+gem 'dep_selector'
