@@ -24,10 +24,9 @@ module Remy
       solution
     end
 
-    def download_cookbooks
+    def populate_cookbooks_directory
       resolve_dependencies.each_pair do |cookbook_name, version|
-        target_directory = File.join File.expand_path('cookbooks'), cookbook_name
-        FileUtils.mkdir target_directory unless File.exists? target_directory
+        target_directory = File.join File.expand_path('cookbooks')
         Cookbook.new(cookbook_name, version.to_s).unpack(target_directory)
       end
     end

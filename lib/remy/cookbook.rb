@@ -11,17 +11,18 @@ module Remy
 
     def download 
       return true if File.exists? download_filename
+      Remy.ui.info "Downloading #{@name} to #{DOWNLOAD_LOCATION}"
       download_command = "knife cookbook site download #{name}"
       download_command << " #{latest_constrained_version}"
       `#{download_command} --file #{download_filename}`
     end
 
-    def unpack(location = nil)
-      location ||= unpacked_cookbook_path
-      return true if File.exists? location
+    def unpack(location = unpacked_cookbook_path)
+      self.clean(File.join(location, @name))
       download
       fname = download_filename
       if File.exists? fname
+        Remy.ui.info "Unpacking #{@name} to #{location}"
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
       else
@@ -64,8 +65,8 @@ module Remy
       File.open(File.join(unpacked_cookbook_path, @name, 'metadata.rb')).read
     end
 
-    def clean
-      FileUtils.rm_rf unpacked_cookbook_path
+    def clean(location = unpacked_cookbook_path)
+      FileUtils.rm_rf location
     end
 
     def == other
