@@ -8,7 +8,7 @@ Add source support to Cookbookfile
  - Allow unofficial cookbook repositories to be used via 'source' in Cookbookfile
 Create local mock API service for specs
  - Instead of mocking out methods, spin up a local mock cookbook repo for tests to run against. This should be able to serve cookbooks as gzips. This might require some monkey patching of knife to get it to talk to the mock server instead of the opscode community site.
-Create executable `remy` to install cookbooks to cookbook directory
- - eg. bundle, librarian-chef, etc.
- - default action: install
-Make this a proper gem
+Optimize cookbook retrieval
+ - Copy to target when the cookbook has already been unpacked to tmp
+ - Possible: Pester Opscode till they release an API call to retrieve cookbook dependencies
+ - Possible: Keep an index of dependencies so we don't have to download cookbook versions we've seen before
