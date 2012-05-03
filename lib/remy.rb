@@ -10,7 +10,7 @@ require 'remy/metacookbook'
 require 'remy/dependency_reader'
 require 'remy/dsl'
 require 'remy/cookbookfile'
-
+require 'remy/git'
 
 module Remy
   class << self
