@@ -18,7 +18,7 @@ module Remy
 
     describe '#unpacked_cookbook_path' do
       it "should give the path to the directory where the archive should get unpacked" do
-        (subject.unpacked_cookbook_path =~ /\/var\/folders\/.*\/ntp-1.1.8/).should_not be_nil
+        subject.unpacked_cookbook_path.should == File.join(ENV['TMPDIR'], 'ntp-1.1.8')
       end
     end
 
