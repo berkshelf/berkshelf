@@ -17,8 +17,6 @@ module Remy
       
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
       csd.run
-
-      csd.config[:file]
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
@@ -41,6 +39,8 @@ module Remy
     end
 
     def dependencies
+      download
+      unpack
       @dependencies = DependencyReader.read self
     end
 
