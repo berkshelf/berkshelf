@@ -26,8 +26,9 @@ module Remy
 
     def download_cookbooks
       resolve_dependencies.each_pair do |cookbook_name, version|
-        FileUtils.mkdir 'cookbooks' unless File.exists? 'cookbooks'
-        Cookbook.new(cookbook_name, version.to_s).unpack(File.expand_path('cookbooks'))
+        target_directory = File.join File.expand_path('cookbooks'), cookbook_name
+        FileUtils.mkdir target_directory unless File.exists? target_directory
+        Cookbook.new(cookbook_name, version.to_s).unpack(target_directory)
       end
     end
 

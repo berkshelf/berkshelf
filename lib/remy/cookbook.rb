@@ -22,7 +22,7 @@ module Remy
       download
       fname = download_filename
       if File.exists? fname
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), pp(location))
+        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
       else
         # TODO: Raise friendly error message class
