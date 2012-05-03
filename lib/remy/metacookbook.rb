@@ -2,8 +2,6 @@ module Remy
   class MetaCookbook
     attr_reader :name, :dependencies
 
-    DOWNLOAD_LOCATION = '/tmp'
-
     def initialize name, dependencies
       @name = name
       @dependencies = dependencies
