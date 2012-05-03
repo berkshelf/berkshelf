@@ -19,10 +19,12 @@ Gem::Specification.new do |gem|
   gem.version       = Remy::VERSION
   
   # FIXME will want to adjust this later
-  gem.add_runtime_dependency 'dep_selector', '>= 0' 
-  gem.add_runtime_dependency 'chef',         '~> 0.10.0'
-  gem.add_runtime_dependency 'minitar',      '>= 0'
+  gem.add_runtime_dependency 'dep_selector',    '>= 0' 
+  gem.add_runtime_dependency 'chef',            '~> 0.10.0'
+  gem.add_runtime_dependency 'minitar',         '>= 0'
 
-  gem.add_development_dependency 'rake',     '~> 0.9.0'
-  gem.add_development_dependency 'rspec',    '>= 0'
+  gem.add_development_dependency 'rake',        '~> 0.9.0'
+  gem.add_development_dependency 'rspec',       '>= 0'
+  gem.add_development_dependency 'rdoc',        '~> 3.0'
+  gem.add_development_dependency 'simplecov',   '>= 0'
 end
