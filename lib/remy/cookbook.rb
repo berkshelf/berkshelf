@@ -11,12 +11,15 @@ module Remy
     def initialize *args
       @options = args.last.is_a?(Hash) ? args.pop : {}
       @name, constraint_string = args
-      @version_constraint = DepSelector::VersionConstraint.new(constraint_string)
+      @version_constraint = if @options[:path]
+                              "= #{version_from_metadata_file.to_s}"
+                            else
+                              DepSelector::VersionConstraint.new(constraint_string)
+                            end
     end
 
     def download(show_output = false)
       return if File.exists? download_filename or @options[:path]
-      
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
       output = Remy::KnifeUtils.capture_knife_output(csd)
 
@@ -25,8 +28,19 @@ module Remy
       end
     end
 
+    def copy_to_cookbooks_directory
+      target = File.join(Remy::COOKBOOKS_DIRECTORY, @name)
+      begin
+        FileUtils.rm_r target
+      rescue Errno::ENOENT
+        # don't care
+      end
+      FileUtils.cp_r full_path, target
+    end
+
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
     def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
+      return true if @options[:path]
       self.clean(File.join(location, @name)) if do_clean
       download if do_download
       fname = download_filename
@@ -55,7 +69,15 @@ module Remy
     end
 
     def versions
+      return [version_from_metadata_file] if @options[:path]
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
+    end
+
+    def version_from_metadata_file
+      # TODO: make a generic metadata file reader to replace
+      # dependencyreader and incorporate pulling the version as
+      # well... knife probably has something like this I can use/steal
+      DepSelector::Version.new(metadata_file.match(/version\s+\"([0-9\.]*)\"/)[1])
     end
 
     def cookbook_data
@@ -64,6 +86,7 @@ module Remy
     end
 
     def download_filename
+      return '' if @options[:path]
       File.join(DOWNLOAD_LOCATION, "#{@name}-#{latest_constrained_version}.tar.gz")
     end
 
@@ -81,12 +104,13 @@ module Remy
 
     def metadata_file
       unpack
+      pp Dir.pwd
       File.open(metadata_filename).read
     end
 
     def clean(location = unpacked_cookbook_path)
       FileUtils.rm_rf location
-      FileUtils.rm_f download_filename
+      FileUtils.rm_f download_filename 
     end
 
     def == other
