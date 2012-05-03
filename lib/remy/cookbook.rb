@@ -10,6 +10,7 @@ module Remy
 
     def initialize *args
       @options = args.last.is_a?(Hash) ? args.pop : {}
+      @options[:path] = File.expand_path(@options[:path]) if @options[:path]
       @name, constraint_string = args
       @version_constraint = if @options[:path]
                               "= #{version_from_metadata_file.to_s}"
@@ -104,7 +105,6 @@ module Remy
 
     def metadata_file
       unpack
-      pp Dir.pwd
       File.open(metadata_filename).read
     end
 

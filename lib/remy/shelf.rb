@@ -29,9 +29,10 @@ module Remy
 
     def populate_cookbooks_directory
       resolve_dependencies.each_pair do |cookbook_name, version|
-        target_directory = File.join File.expand_path('cookbooks')
+        target_directory = File.join File.expand_path(Remy::COOKBOOKS_DIRECTORY)
         @cookbooks << cookbook = Cookbook.new(cookbook_name, version.to_s)
-        cookbook.unpack(target_directory)
+        cookbook.unpack
+        cookbook.move(target_directory)
       end
       @cookbooks.uniq!
     end
