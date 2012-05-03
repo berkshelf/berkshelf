@@ -14,7 +14,7 @@ CHEFFILE
           Remy.shelf.cookbooks.collect(&:name).should include dep
         end
 
-        Remy.shelf.download_cookbooks
+        Remy.shelf.populate_cookbooks_directory
       end
     end
   end
