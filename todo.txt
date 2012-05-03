@@ -11,3 +11,4 @@ Create local mock API service for specs
 Create executable `remy` to install cookbooks to cookbook directory
  - eg. bundle, librarian-chef, etc.
  - default action: install
+Make this a proper gem
