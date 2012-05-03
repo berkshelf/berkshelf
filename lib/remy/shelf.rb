@@ -13,8 +13,8 @@ module Remy
     def resolve_dependencies
       graph = DepSelector::DependencyGraph.new
       shelf = MetaCookbook.new('remy_shelf', @cookbooks) # all cookbooks in the
-                                             # Cheffile are dependencies
-                                             # of the shelf
+                                                         # Cheffile are dependencies
+                                                         # of the shelf
 
       self.class.populate_graph graph, shelf
 

@@ -1,0 +1,18 @@
+#! /usr/bin/env ruby
+
+$:.push File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'mixlib/cli'
+require 'remy'
+
+class RemyCLI
+  include Mixlib::CLI
+
+  def run(argv=ARGV)
+    Remy.ui.info 'Reading Cheffile'
+    Remy::Cheffile.process
+  end
+
+end
+
+RemyCLI.new.run

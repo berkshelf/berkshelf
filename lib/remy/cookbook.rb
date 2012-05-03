@@ -9,19 +9,20 @@ module Remy
       @version_constraint = DepSelector::VersionConstraint.new(constraint_string)
     end
 
-    def download
+    def download 
       return true if File.exists? download_filename
       download_command = "knife cookbook site download #{name}"
       download_command << " #{latest_constrained_version}"
       `#{download_command} --file #{download_filename}`
     end
 
-    def unpack
-      return true if File.exists? unpacked_cookbook_path
+    def unpack(location = nil)
+      location ||= unpacked_cookbook_path
+      return true if File.exists? location
       download
       fname = download_filename
       if File.exists? fname
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), unpacked_cookbook_path)
+        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), pp(location))
         true
       else
         # TODO: Raise friendly error message class
