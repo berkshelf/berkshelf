@@ -25,15 +25,17 @@ module Remy
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
-    def unpack(location = unpacked_cookbook_path, do_download = true)
+    def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
       # TODO: jk: For the final move to the cookbooks dir, copy the
       # already unpacked directory from /tmp. We had to unpack it
       # there to read dependencies anyway. No sense burning time
       # reinflating the archive.
-      self.clean(File.join(location, @name))
+      self.clean(File.join(location, @name)) if do_clean
       download if do_download
       fname = download_filename
-      if File.exists? fname
+      if File.directory? location
+        true # noop
+      elsif File.exists? fname
         Remy.ui.info "Unpacking #{@name} to #{location}"
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
@@ -69,8 +71,7 @@ module Remy
     end
 
     def unpacked_cookbook_path
-      # Trimming File#extname doesn't handle the double file ext and will leave the .tar
-      download_filename.gsub(/\.tar\.gz/, '')
+      File.join(File.dirname(download_filename), File.basename(download_filename, '.tar.gz'))
     end
 
     def full_path

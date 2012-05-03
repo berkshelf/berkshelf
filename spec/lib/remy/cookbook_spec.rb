@@ -10,7 +10,7 @@ module Remy
     end
 
     it "should raise an error if the cookbook is unpacked without being downloaded first" do
-      -> { subject.unpack(false) }.should raise_error
+      -> { subject.unpack(subject.unpacked_cookbook_path, true, false) }.should raise_error
     end
 
     describe '#unpacked_cookbook_path' do
