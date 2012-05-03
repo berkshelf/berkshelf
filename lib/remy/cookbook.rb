@@ -1,3 +1,6 @@
+require 'chef/knife/cookbook_site_download'
+require 'chef/knife/cookbook_site_show'
+
 module Remy
   class Cookbook
     attr_reader :name, :version_constraint
@@ -11,14 +14,16 @@ module Remy
 
     def download
       return true if File.exists? download_filename
-      download_command = "knife cookbook site download #{name}"
-      download_command << " #{latest_constrained_version}"
-      `#{download_command} --file #{download_filename}`
+
+      csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
+      csd.run
+
+      csd.config[:file]
     end
 
-    def unpack
+    def unpack do_download = true
       return true if File.exists? unpacked_cookbook_path
-      download
+      download if do_download
       fname = download_filename
       if File.exists? fname
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), unpacked_cookbook_path)
@@ -45,8 +50,12 @@ module Remy
     end
 
     def cookbook_data
-      command = "knife cookbook site show #{@name} --format json"
-      @cookbook_data ||= JSON::parse(`#{command}`)
+      css = Chef::Knife::CookbookSiteShow.new([@name])
+      # FIXME This UI Pattern should be abstracted.
+      css.ui = Chef::Knife::UI.new(StringIO.new, StringIO.new, StringIO.new, { :format => :json })
+      css.run
+      css.ui.stdout.rewind
+      @cookbook_data ||= JSON::parse(css.ui.stdout.read)
     end
 
     def download_filename
@@ -65,6 +74,7 @@ module Remy
 
     def clean
       FileUtils.rm_rf unpacked_cookbook_path
+      FileUtils.rm_f download_filename
     end
 
     def == other
