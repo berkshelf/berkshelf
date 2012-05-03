@@ -41,7 +41,7 @@ module Remy
 
     def latest_constrained_version
       versions.reverse.each do |v|
-        return v if @version_constraint.include? v #TODO: Confirm this works
+        return v if @version_constraint.include? v
       end
     end
 

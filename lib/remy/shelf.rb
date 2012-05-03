@@ -1,5 +1,7 @@
 module Remy
   class Shelf
+    META_COOKBOOK_NAME = 'remy_shelf'
+
     attr_accessor :cookbooks
 
     def initialize
@@ -12,15 +14,15 @@ module Remy
 
     def resolve_dependencies
       graph = DepSelector::DependencyGraph.new
-      shelf = MetaCookbook.new('remy_shelf', @cookbooks) # all cookbooks in the
+      shelf = MetaCookbook.new(META_COOKBOOK_NAME, @cookbooks) # all cookbooks in the
                                                          # Cheffile are dependencies
                                                          # of the shelf
 
       self.class.populate_graph graph, shelf
 
       selector = DepSelector::Selector.new(graph)
-      solution = selector.find_solution([DepSelector::SolutionConstraint.new(graph.package('remy_shelf'))])
-      solution.delete 'remy_shelf'
+      solution = selector.find_solution([DepSelector::SolutionConstraint.new(graph.package(META_COOKBOOK_NAME))])
+      solution.delete META_COOKBOOK_NAME
       solution
     end
 
