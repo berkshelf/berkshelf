@@ -2,10 +2,30 @@ require 'tempfile'
 
 module Remy
   class Git
-
     class << self
       def git
         @git ||= find_git
+      end
+
+      #
+      # This is to defeat aliases/shell functions called 'git' and a number of
+      # other problems.
+      #
+      def find_git
+        git_path = nil
+        ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
+          potential_path = File.join(path, 'git')
+          if File.executable?(potential_path)
+            git_path = potential_path
+            break
+          end
+        end
+
+        unless git_path
+          raise "Could not find git. Please ensure it is in your path."
+        end
+
+        return git_path
       end
     end
 
@@ -30,27 +50,6 @@ module Remy
 
     def clean
       FileUtils.rm_rf @directory if @directory
-    end
-
-    #
-    # This is to defeat aliases/shell functions called 'git' and a number of
-    # other problems.
-    #
-    def self.find_git
-      git_path = nil
-      ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
-        potential_path = File.join(path, 'git')
-        if File.executable?(potential_path)
-          git_path = potential_path
-          break
-        end
-      end
-
-      unless git_path
-        raise "Could not find git. Please ensure it is in your path."
-      end
-
-      return git_path
     end
   end
 end
