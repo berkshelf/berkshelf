@@ -20,6 +20,7 @@ module Remy
         
         subject.resolve_dependencies.should == ({"mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0")})
         Cookbook.new('mysql').clean
+        Cookbook.new('openssl').clean
       end
     end
   end
