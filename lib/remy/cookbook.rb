@@ -18,6 +18,10 @@ module Remy
     end
 
     def unpack(location = unpacked_cookbook_path)
+      # TODO: jk: For the final move to the cookbooks dir, copy the
+      # already unpacked directory from /tmp. We had to unpack it
+      # there to read dependencies anyway. No sense burning time
+      # reinflating the archive.
       self.clean(File.join(location, @name))
       download
       fname = download_filename
@@ -32,7 +36,6 @@ module Remy
     end
 
     def dependencies
-      # unpack # TODO: unpack unless already unpacked
       @dependencies = DependencyReader.read self
     end
 
