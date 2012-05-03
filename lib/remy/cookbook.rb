@@ -21,6 +21,7 @@ module Remy
       csd.config[:file]
     end
 
+    # TODO: Clean up download repetition functionality here, in #download and the associated test.
     def unpack do_download = true
       return true if File.exists? unpacked_cookbook_path
       download if do_download
