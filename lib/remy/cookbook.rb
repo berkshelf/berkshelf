@@ -1,3 +1,5 @@
+require 'chef/knife/cookbook_site_download'
+
 module Remy
   class Cookbook
     attr_reader :name, :version_constraint
@@ -11,14 +13,16 @@ module Remy
 
     def download
       return true if File.exists? download_filename
-      download_command = "knife cookbook site download #{name}"
-      download_command << " #{latest_constrained_version}"
-      `#{download_command} --file #{download_filename}`
+
+      csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
+      csd.run
+
+      csd.config[:file]
     end
 
-    def unpack
+    def unpack do_download = true
       return true if File.exists? unpacked_cookbook_path
-      download
+      download if do_download
       fname = download_filename
       if File.exists? fname
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), unpacked_cookbook_path)
@@ -65,6 +69,7 @@ module Remy
 
     def clean
       FileUtils.rm_rf unpacked_cookbook_path
+      FileUtils.rm_f download_filename
     end
 
     def == other

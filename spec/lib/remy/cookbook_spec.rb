@@ -10,12 +10,12 @@ module Remy
     end
 
     it "should raise an error if the cookbook is unpacked without being downloaded first" do
-      -> { subject.unpack }.should raise_error
+      -> { subject.unpack(false) }.should raise_error
     end
 
     describe '#unpacked_cookbook_path' do
       it "should give the path to the directory where the archive should get unpacked" do
-        subject.unpacked_cookbook_path.should == '/tmp/ntp-1.1.8/ntp'
+        subject.unpacked_cookbook_path.should == '/tmp/ntp-1.1.8'
       end
     end
 
