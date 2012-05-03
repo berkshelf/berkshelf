@@ -1,3 +1,4 @@
+require 'remy/knife_utils'
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 
@@ -5,32 +6,36 @@ module Remy
   class Cookbook
     attr_reader :name, :version_constraint
 
-    DOWNLOAD_LOCATION = '/tmp'
+    DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
-    def initialize name, constraint_string=">= 0.0.0"
+    def initialize name, constraint_string = ">= 0.0.0"
       @name = name
       @version_constraint = DepSelector::VersionConstraint.new(constraint_string)
     end
 
-    def download 
-      return true if File.exists? download_filename
+    def download(show_output = false)
+      return if File.exists? download_filename
       
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
-      csd.run
+      output = Remy::KnifeUtils.capture_knife_output(csd)
 
-      csd.config[:file]
+      if show_output
+        puts output
+      end
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
-    def unpack(location = unpacked_cookbook_path, do_download = true)
+    def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
       # TODO: jk: For the final move to the cookbooks dir, copy the
       # already unpacked directory from /tmp. We had to unpack it
       # there to read dependencies anyway. No sense burning time
       # reinflating the archive.
-      self.clean(File.join(location, @name))
+      self.clean(File.join(location, @name)) if do_clean
       download if do_download
       fname = download_filename
-      if File.exists? fname
+      if File.directory? location
+        true # noop
+      elsif File.exists? fname
         Remy.ui.info "Unpacking #{@name} to #{location}"
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
@@ -41,6 +46,8 @@ module Remy
     end
 
     def dependencies
+      download
+      unpack
       @dependencies = DependencyReader.read self
     end
 
@@ -56,11 +63,7 @@ module Remy
 
     def cookbook_data
       css = Chef::Knife::CookbookSiteShow.new([@name])
-      # FIXME This UI Pattern should be abstracted.
-      css.ui = Chef::Knife::UI.new(StringIO.new, StringIO.new, StringIO.new, { :format => :json })
-      css.run
-      css.ui.stdout.rewind
-      @cookbook_data ||= JSON::parse(css.ui.stdout.read)
+      @cookbook_data ||= JSON.parse(Remy::KnifeUtils.capture_knife_output(css))
     end
 
     def download_filename
@@ -68,13 +71,20 @@ module Remy
     end
 
     def unpacked_cookbook_path
-      # Trimming File#extname doesn't handle the double file ext and will leave the .tar
-      download_filename.gsub(/\.tar\.gz/, '')
+      File.join(File.dirname(download_filename), File.basename(download_filename, '.tar.gz'))
+    end
+
+    def full_path
+      File.join(unpacked_cookbook_path, @name)
+    end
+
+    def metadata_filename
+      File.join(full_path, "metadata.rb")
     end
 
     def metadata_file
       unpack
-      File.open(File.join(unpacked_cookbook_path, @name, 'metadata.rb')).read
+      File.open(metadata_filename).read
     end
 
     def clean(location = unpacked_cookbook_path)

@@ -6,6 +6,10 @@ module Remy
     include DSL
 
     describe "#cookbook" do
+      after do
+        Remy.shelf.cookbooks.each(&:clean)
+      end
+
       it 'should add the cookbooks to the shelf' do
         cookbook "ntp"
         cookbook "nginx"

@@ -3,7 +3,11 @@ module Remy
     class << self
       def read cookbook
         @dependency_list = []
-        instance_eval cookbook.metadata_file
+        Dir.chdir(cookbook.full_path) do
+          # XXX this filename is required because it sets __FILE__, which is
+          # used for README.md parsing among other things in metadata.rb files
+          instance_eval(cookbook.metadata_file, cookbook.metadata_filename)
+        end
         @dependency_list
       end
       
