@@ -14,8 +14,8 @@ end
 
 desc "generate documentation"
 RDoc::Task.new :rdoc do |r|
-  r.main = "README.md"
-  r.rdoc_files.include("README.md", "lib/**/*.rb")
+  r.main = "README.rdoc"
+  r.rdoc_files.include("README.rdoc", "lib/**/*.rb")
   r.rdoc_dir = "rdoc"
 end
 
