@@ -1,4 +1,5 @@
 require 'stringio'
+require 'chef/config'
 
 module Remy
   module KnifeUtils
