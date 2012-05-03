@@ -5,8 +5,16 @@ $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 require 'mixlib/cli'
 require 'remy'
 
+require 'chef/config'
+
 class RemyCLI
   include Mixlib::CLI
+
+  option :config_file, 
+    :short => "-c CONFIG",
+    :long  => "--config CONFIG",
+    :default => 'config.rb',
+    :description => "The configuration file to use"
 
   def run(argv=ARGV)
     Remy.ui.info 'Reading Cheffile'
@@ -15,4 +23,7 @@ class RemyCLI
 
 end
 
-RemyCLI.new.run
+cli = RemyCLI.new
+# Chef::Config.from_file(File.expand_path(cli.config[:config_file]))
+cli.run
+
