@@ -1,0 +1,13 @@
+Add git support to Cheffile
+ - Allow a cookbook to be pulled from a git repository
+ - Also support 'ref' to give a commit hash to pull
+ - Possibly support 'branch' to pull the HEAD from a given branch
+Add path support to Cheffile
+ - Pull cookbook from a path on the local filesystem
+Add source support to Cheffile
+ - Allow unofficial cookbook repositories to be used via 'source' in Cheffile
+Create local mock API service for specs
+ - Instead of mocking out methods, spin up a local mock cookbook repo for tests to run against. This should be able to serve cookbooks as gzips. This might require some monkey patching of knife to get it to talk to the mock server instead of the opscode community site.
+Create executable `remy` to install cookbooks to cookbook directory
+ - eg. bundle, librarian-chef, etc.
+ - default action: install
