@@ -19,6 +19,7 @@ module Remy
         subject.shelve_cookbook 'mysql'
         
         subject.resolve_dependencies.should == ({"mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0")})
+        Cookbook.new('mysql').clean
       end
     end
   end

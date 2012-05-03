@@ -3,6 +3,10 @@ require 'spec_helper'
 module Remy
   describe Cheffile do
     describe '::read' do
+      after do
+        Remy.shelf.cookbooks.each(&:clean)
+      end
+
       it "should read the cheffile and build a dependency list" do
         described_class.read <<CHEFFILE
 cookbook 'ntp', '<= 1.0.0'
