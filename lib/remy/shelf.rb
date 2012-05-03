@@ -8,8 +8,8 @@ module Remy
       @cookbooks = []
     end
     
-    def shelve_cookbook(name, version_constraint=nil)
-      @cookbooks << Cookbook.new(name, version_constraint)
+    def shelve_cookbook(*args)
+      @cookbooks << Cookbook.new(*args)
     end
 
     def resolve_dependencies

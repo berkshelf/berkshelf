@@ -22,6 +22,16 @@ module Remy
       end
     end
 
+    it 'should treat cookbooks pulled from a path like a cookbook that has already been unpacked with the path as the unpacked location' do
+      c = Cookbook.new 'test', path: '/a/path'
+      c.unpacked_cookbook_path.should == '/a/path'
+    end
+
+    it "should not attempt to download a cookbook being pulled from a path" do
+      Chef::Knife::CookbookSiteDownload.any_instance.should_not_receive(:run)
+      example_cookbook_from_path.download
+    end
+
     # TODO figure out how to test this. Stubs on classes don't clear after a test.
     # describe '#unpack' do
     #   it "should not unpack if it is already unpacked" do

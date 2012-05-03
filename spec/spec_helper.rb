@@ -15,3 +15,7 @@ SimpleCov.start do
 end
 
 require 'remy'
+
+def example_cookbook_from_path
+  @example_cookbook_from_path ||= Remy::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks', 'example_cookbook'))
+end

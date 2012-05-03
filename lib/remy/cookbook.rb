@@ -8,13 +8,14 @@ module Remy
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
-    def initialize name, constraint_string = ">= 0.0.0"
-      @name = name
+    def initialize *args
+      @options = args.last.is_a?(Hash) ? args.pop : {}
+      @name, constraint_string = args
       @version_constraint = DepSelector::VersionConstraint.new(constraint_string)
     end
 
     def download(show_output = false)
-      return if File.exists? download_filename
+      return if File.exists? download_filename or @options[:path]
       
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
       output = Remy::KnifeUtils.capture_knife_output(csd)
@@ -26,10 +27,6 @@ module Remy
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
     def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
-      # TODO: jk: For the final move to the cookbooks dir, copy the
-      # already unpacked directory from /tmp. We had to unpack it
-      # there to read dependencies anyway. No sense burning time
-      # reinflating the archive.
       self.clean(File.join(location, @name)) if do_clean
       download if do_download
       fname = download_filename
@@ -71,7 +68,7 @@ module Remy
     end
 
     def unpacked_cookbook_path
-      File.join(File.dirname(download_filename), File.basename(download_filename, '.tar.gz'))
+      @options[:path] || File.join(File.dirname(download_filename), File.basename(download_filename, '.tar.gz'))
     end
 
     def full_path
