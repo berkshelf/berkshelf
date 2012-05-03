@@ -3,6 +3,7 @@ require 'zlib'
 require 'archive/tar/minitar'
 require 'chef/knife/cookbook_site_download'
 
+require 'remy/version'
 require 'remy/shelf'
 require 'remy/cookbook'
 require 'remy/metacookbook'
