@@ -1,4 +1,5 @@
 require 'chef/knife/cookbook_site_download'
+require 'chef/knife/cookbook_site_show'
 
 module Remy
   class Cookbook
@@ -49,8 +50,12 @@ module Remy
     end
 
     def cookbook_data
-      command = "knife cookbook site show #{@name} --format json"
-      @cookbook_data ||= JSON::parse(`#{command}`)
+      css = Chef::Knife::CookbookSiteShow.new([@name])
+      # FIXME This UI Pattern should be abstracted.
+      css.ui = Chef::Knife::UI.new(StringIO.new, StringIO.new, StringIO.new, { :format => :json })
+      css.run
+      css.ui.stdout.rewind
+      @cookbook_data ||= JSON::parse(css.ui.stdout.read)
     end
 
     def download_filename
