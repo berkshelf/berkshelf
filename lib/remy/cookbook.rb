@@ -72,9 +72,17 @@ module Remy
       download_filename.gsub(/\.tar\.gz/, '')
     end
 
+    def full_path
+      File.join(unpacked_cookbook_path, @name)
+    end
+
+    def metadata_filename
+      File.join(full_path, "metadata.rb")
+    end
+
     def metadata_file
       unpack
-      File.open(File.join(unpacked_cookbook_path, @name, 'metadata.rb')).read
+      File.open(metadata_filename).read
     end
 
     def clean(location = unpacked_cookbook_path)

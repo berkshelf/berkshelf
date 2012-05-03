@@ -34,6 +34,10 @@ module Remy
       end
     end
 
+    def download_cookbooks
+      @cookbooks.each(&:download)
+    end
+
     class << self
       def populate_graph(graph, cookbook)
         package = graph.package cookbook.name
