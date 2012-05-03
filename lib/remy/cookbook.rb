@@ -1,3 +1,4 @@
+require 'remy/knife_utils'
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 
@@ -5,18 +6,22 @@ module Remy
   class Cookbook
     attr_reader :name, :version_constraint
 
-    DOWNLOAD_LOCATION = '/tmp'
+    DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
-    def initialize name, constraint_string=">= 0.0.0"
+    def initialize name, constraint_string = ">= 0.0.0"
       @name = name
       @version_constraint = DepSelector::VersionConstraint.new(constraint_string)
     end
 
-    def download 
-      return true if File.exists? download_filename
+    def download(show_output = false)
+      return if File.exists? download_filename
       
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
-      csd.run
+      output = Remy::KnifeUtils.capture_knife_output(csd)
+
+      if show_output
+        puts output
+      end
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
@@ -56,11 +61,7 @@ module Remy
 
     def cookbook_data
       css = Chef::Knife::CookbookSiteShow.new([@name])
-      # FIXME This UI Pattern should be abstracted.
-      css.ui = Chef::Knife::UI.new(StringIO.new, StringIO.new, StringIO.new, { :format => :json })
-      css.run
-      css.ui.stdout.rewind
-      @cookbook_data ||= JSON::parse(css.ui.stdout.read)
+      @cookbook_data ||= JSON.parse(Remy::KnifeUtils.capture_knife_output(css))
     end
 
     def download_filename
