@@ -9,19 +9,25 @@ module Remy
       @version_constraint = DepSelector::VersionConstraint.new(constraint_string)
     end
 
-    def download
+    def download 
       return true if File.exists? download_filename
+      Remy.ui.info "Downloading #{@name} to #{DOWNLOAD_LOCATION}"
       download_command = "knife cookbook site download #{name}"
       download_command << " #{latest_constrained_version}"
       `#{download_command} --file #{download_filename}`
     end
 
-    def unpack
-      return true if File.exists? unpacked_cookbook_path
+    def unpack(location = unpacked_cookbook_path)
+      # TODO: jk: For the final move to the cookbooks dir, copy the
+      # already unpacked directory from /tmp. We had to unpack it
+      # there to read dependencies anyway. No sense burning time
+      # reinflating the archive.
+      self.clean(File.join(location, @name))
       download
       fname = download_filename
       if File.exists? fname
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), unpacked_cookbook_path)
+        Remy.ui.info "Unpacking #{@name} to #{location}"
+        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
       else
         # TODO: Raise friendly error message class
@@ -30,13 +36,12 @@ module Remy
     end
 
     def dependencies
-      # unpack # TODO: unpack unless already unpacked
       @dependencies = DependencyReader.read self
     end
 
     def latest_constrained_version
       versions.reverse.each do |v|
-        return v if @version_constraint.include? v #TODO: Confirm this works
+        return v if @version_constraint.include? v
       end
     end
 
@@ -63,8 +68,8 @@ module Remy
       File.open(File.join(unpacked_cookbook_path, @name, 'metadata.rb')).read
     end
 
-    def clean
-      FileUtils.rm_rf unpacked_cookbook_path
+    def clean(location = unpacked_cookbook_path)
+      FileUtils.rm_rf location
     end
 
     def == other
