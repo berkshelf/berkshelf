@@ -16,9 +16,11 @@ module Remy
       end
 
       it "should resolve the dependency graph of the cookbooks on the shelf" do
-        subject.shelve_cookbook 'mysql'
+        subject.shelve_cookbook 'mysql', "= 1.2.4"
         
         subject.resolve_dependencies.should == ({"mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0")})
+        Cookbook.new('mysql').clean
+        Cookbook.new('openssl').clean
       end
     end
   end

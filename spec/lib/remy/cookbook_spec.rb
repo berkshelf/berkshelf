@@ -6,11 +6,14 @@ module Remy
 
     before do
       Cookbook.any_instance.stub(:versions).and_return ['0.1.1', '0.9.0', '1.0.0', '1.1.8'].collect {|v| Gem::Version.new(v) }
+    end
+
+    after do
       subject.clean
     end
 
     it "should raise an error if the cookbook is unpacked without being downloaded first" do
-      -> { subject.unpack(false) }.should raise_error
+      -> { subject.unpack(subject.unpacked_cookbook_path, true, false) }.should raise_error
     end
 
     describe '#unpacked_cookbook_path' do
