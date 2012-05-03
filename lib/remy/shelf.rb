@@ -15,7 +15,7 @@ module Remy
     def resolve_dependencies
       graph = DepSelector::DependencyGraph.new
 
-      # all cookbooks in the Cheffile are dependencies of the shelf
+      # all cookbooks in the Cookbookfile are dependencies of the shelf
       shelf = MetaCookbook.new(META_COOKBOOK_NAME, @cookbooks) 
 
 

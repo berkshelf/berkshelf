@@ -9,7 +9,7 @@ require 'remy/cookbook'
 require 'remy/metacookbook'
 require 'remy/dependency_reader'
 require 'remy/dsl'
-require 'remy/cheffile'
+require 'remy/cookbookfile'
 
 
 module Remy

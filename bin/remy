@@ -17,8 +17,8 @@ class RemyCLI
     :description => "The configuration file to use"
 
   def run(argv=ARGV)
-    Remy.ui.info 'Reading Cheffile'
-    Remy::Cheffile.process
+    Remy.ui.info 'Reading Cookbookfile'
+    Remy::Cookbookfile.process
   end
 
 end
