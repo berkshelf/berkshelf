@@ -1,6 +1,6 @@
 module Remy
-  class Cheffile
-    DEFAULT_FILENAME = 'Cheffile'
+  class Cookbookfile
+    DEFAULT_FILENAME = 'Cookbookfile'
 
     class << self
       include DSL
