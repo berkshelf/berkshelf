@@ -8,14 +8,19 @@ module Remy
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
-    def initialize name, constraint_string = ">= 0.0.0"
-      @name = name
-      @version_constraint = DepSelector::VersionConstraint.new(constraint_string)
+    def initialize *args
+      @options = args.last.is_a?(Hash) ? args.pop : {}
+      @options[:path] = File.expand_path(@options[:path]) if from_path?
+      @name, constraint_string = args
+      @version_constraint = DepSelector::VersionConstraint.new(if from_path?
+                                                                 "= #{version_from_metadata_file.to_s}"
+                                                               else
+                                                                 constraint_string
+                                                               end)
     end
 
     def download(show_output = false)
-      return if File.exists? download_filename
-      
+      return if downloaded_archive_exists? or from_path?
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
       output = Remy::KnifeUtils.capture_knife_output(csd)
 
@@ -24,18 +29,23 @@ module Remy
       end
     end
 
+    def copy_to_cookbooks_directory
+      FileUtils.mkdir_p Remy::COOKBOOKS_DIRECTORY
+
+      target = File.join(Remy::COOKBOOKS_DIRECTORY, @name)
+      FileUtils.rm_rf target
+      FileUtils.cp_r full_path, target
+    end
+
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
     def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
-      # TODO: jk: For the final move to the cookbooks dir, copy the
-      # already unpacked directory from /tmp. We had to unpack it
-      # there to read dependencies anyway. No sense burning time
-      # reinflating the archive.
+      return true if from_path?
       self.clean(File.join(location, @name)) if do_clean
       download if do_download
       fname = download_filename
       if File.directory? location
         true # noop
-      elsif File.exists? fname
+      elsif downloaded_archive_exists?
         Remy.ui.info "Unpacking #{@name} to #{location}"
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
@@ -58,7 +68,15 @@ module Remy
     end
 
     def versions
+      return [version_from_metadata_file] if from_path?
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
+    end
+
+    def version_from_metadata_file
+      # TODO: make a generic metadata file reader to replace
+      # dependencyreader and incorporate pulling the version as
+      # well... knife probably has something like this I can use/steal
+      DepSelector::Version.new(metadata_file.match(/version\s+\"([0-9\.]*)\"/)[1])
     end
 
     def cookbook_data
@@ -67,11 +85,12 @@ module Remy
     end
 
     def download_filename
+      return nil if from_path?
       File.join(DOWNLOAD_LOCATION, "#{@name}-#{latest_constrained_version}.tar.gz")
     end
 
     def unpacked_cookbook_path
-      File.join(File.dirname(download_filename), File.basename(download_filename, '.tar.gz'))
+      @options[:path] || File.join(File.dirname(download_filename), File.basename(download_filename, '.tar.gz'))
     end
 
     def full_path
@@ -85,6 +104,14 @@ module Remy
     def metadata_file
       unpack
       File.open(metadata_filename).read
+    end
+
+    def from_path?
+      !@options[:path].nil?
+    end
+
+    def downloaded_archive_exists?
+      download_filename && File.exists?(download_filename)
     end
 
     def clean(location = unpacked_cookbook_path)
