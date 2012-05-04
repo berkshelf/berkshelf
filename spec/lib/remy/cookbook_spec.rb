@@ -25,8 +25,7 @@ module Remy
       end
 
       it 'should treat cookbooks pulled from a path like a cookbook that has already been unpacked with the path as the unpacked location' do
-        c = Cookbook.new 'test', path: '/a/path'
-        c.unpacked_cookbook_path.should == '/a/path'
+        example_cookbook_from_path.unpacked_cookbook_path.should == File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec", "fixtures", "cookbooks"))
       end
 
       it "should not attempt to download a cookbook being pulled from a path" do

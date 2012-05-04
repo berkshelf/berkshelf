@@ -14,7 +14,7 @@ module Remy
       def process
         # TODO: friendly error message when the file doesn't exist
         read File.open(DEFAULT_FILENAME).read
-        pp Remy.shelf.resolve_dependencies
+        Remy.shelf.resolve_dependencies
         Remy.shelf.populate_cookbooks_directory
       end
     end

@@ -10,17 +10,17 @@ module Remy
 
     def initialize *args
       @options = args.last.is_a?(Hash) ? args.pop : {}
-      @options[:path] = File.expand_path(@options[:path]) if @options[:path]
+      @options[:path] = File.expand_path(@options[:path]) if from_path?
       @name, constraint_string = args
-      @version_constraint = if @options[:path]
-                              "= #{version_from_metadata_file.to_s}"
-                            else
-                              DepSelector::VersionConstraint.new(constraint_string)
-                            end
+      @version_constraint = DepSelector::VersionConstraint.new(if from_path?
+                                                                 "= #{version_from_metadata_file.to_s}"
+                                                               else
+                                                                 constraint_string
+                                                               end)
     end
 
     def download(show_output = false)
-      return if File.exists? download_filename or @options[:path]
+      return if File.exists? download_filename or from_path?
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
       output = Remy::KnifeUtils.capture_knife_output(csd)
 
@@ -30,6 +30,8 @@ module Remy
     end
 
     def copy_to_cookbooks_directory
+      FileUtils.mkdir_p Remy::COOKBOOKS_DIRECTORY
+
       target = File.join(Remy::COOKBOOKS_DIRECTORY, @name)
       begin
         FileUtils.rm_r target
@@ -41,7 +43,7 @@ module Remy
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
     def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
-      return true if @options[:path]
+      return true if from_path?
       self.clean(File.join(location, @name)) if do_clean
       download if do_download
       fname = download_filename
@@ -70,7 +72,7 @@ module Remy
     end
 
     def versions
-      return [version_from_metadata_file] if @options[:path]
+      return [version_from_metadata_file] if from_path?
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
     end
 
@@ -87,7 +89,7 @@ module Remy
     end
 
     def download_filename
-      return '' if @options[:path]
+      return '' if from_path?
       File.join(DOWNLOAD_LOCATION, "#{@name}-#{latest_constrained_version}.tar.gz")
     end
 
@@ -106,6 +108,10 @@ module Remy
     def metadata_file
       unpack
       File.open(metadata_filename).read
+    end
+
+    def from_path?
+      !@options[:path].nil?
     end
 
     def clean(location = unpacked_cookbook_path)
