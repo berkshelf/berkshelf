@@ -20,7 +20,7 @@ module Remy
     end
 
     def download(show_output = false)
-      return if File.exists? download_filename or from_path?
+      return if downloaded_archive_exists? or from_path?
       csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
       output = Remy::KnifeUtils.capture_knife_output(csd)
 
@@ -49,7 +49,7 @@ module Remy
       fname = download_filename
       if File.directory? location
         true # noop
-      elsif File.exists? fname
+      elsif downloaded_archive_exists?
         Remy.ui.info "Unpacking #{@name} to #{location}"
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
@@ -89,7 +89,7 @@ module Remy
     end
 
     def download_filename
-      return '' if from_path?
+      return nil if from_path?
       File.join(DOWNLOAD_LOCATION, "#{@name}-#{latest_constrained_version}.tar.gz")
     end
 
@@ -112,6 +112,10 @@ module Remy
 
     def from_path?
       !@options[:path].nil?
+    end
+
+    def downloaded_archive_exists?
+      download_filename && File.exists?(download_filename)
     end
 
     def clean(location = unpacked_cookbook_path)
