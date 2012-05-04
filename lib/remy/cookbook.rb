@@ -116,7 +116,7 @@ module Remy
 
     def clean(location = unpacked_cookbook_path)
       FileUtils.rm_rf location
-      FileUtils.rm_f download_filename 
+      FileUtils.rm_f download_filename
     end
 
     def == other
