@@ -31,9 +31,7 @@ module Remy
 
     def clean
       clear_shelf!
-      FileUtils.rm_r COOKBOOKS_DIRECTORY
-    rescue Errno::ENOENT
-      # don't care
+      FileUtils.rm_rf COOKBOOKS_DIRECTORY
     end
   end
 end

@@ -33,11 +33,7 @@ module Remy
       FileUtils.mkdir_p Remy::COOKBOOKS_DIRECTORY
 
       target = File.join(Remy::COOKBOOKS_DIRECTORY, @name)
-      begin
-        FileUtils.rm_r target
-      rescue Errno::ENOENT
-        # don't care
-      end
+      FileUtils.rm_rf target
       FileUtils.cp_r full_path, target
     end
 
