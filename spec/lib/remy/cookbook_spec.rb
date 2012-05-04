@@ -14,6 +14,7 @@ module Remy
         Cookbook.any_instance.stub(:versions).and_return ['0.1.1', '0.9.0', '1.0.0', '1.1.8'].collect {|v| Gem::Version.new(v) }
       end
 
+      # FIXME: This test is flakey
       it "should raise an error if the cookbook is unpacked without being downloaded first" do
         -> { subject.unpack(subject.unpacked_cookbook_path, true, false) }.should raise_error
       end
