@@ -1,4 +1,5 @@
 require 'remy/knife_utils'
+require 'remy/git'
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 
@@ -10,6 +11,11 @@ module Remy
 
     def initialize *args
       @options = args.last.is_a?(Hash) ? args.pop : {}
+
+      if from_git? and from_path?
+        raise "Invalid: path and git options provided to #{args[0]}. They are mutually exclusive."
+      end
+
       @options[:path] = File.expand_path(@options[:path]) if from_path?
       @name, constraint_string = args
       @version_constraint = DepSelector::VersionConstraint.new(if from_path?
@@ -20,13 +26,25 @@ module Remy
     end
 
     def download(show_output = false)
-      return if downloaded_archive_exists? or from_path?
-      csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
-      output = Remy::KnifeUtils.capture_knife_output(csd)
+      return if @downloaded
+      return if !from_git? and downloaded_archive_exists?
 
-      if show_output
-        puts output
+      if from_git? 
+        @git ||= Remy::Git.new(@options[:git])
+        @git.clone
+        @options[:path] ||= @git.directory
+      elsif from_path?
+        return
+      else
+        csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
+        output = Remy::KnifeUtils.capture_knife_output(csd)
+
+        if show_output
+          puts output
+        end
       end
+
+      @downloaded = true
     end
 
     def copy_to_cookbooks_directory
@@ -62,13 +80,15 @@ module Remy
     end
 
     def latest_constrained_version
+      return [version_from_metadata_file] if from_path? or from_git?
+
       versions.reverse.each do |v|
         return v if @version_constraint.include? v
       end
     end
 
     def versions
-      return [version_from_metadata_file] if from_path?
+      return [version_from_metadata_file] if from_path? or from_git?
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
     end
 
@@ -94,7 +114,11 @@ module Remy
     end
 
     def full_path
-      File.join(unpacked_cookbook_path, @name)
+      if @git
+        unpacked_cookbook_path
+      else
+        File.join(unpacked_cookbook_path, @name)
+      end
     end
 
     def metadata_filename
@@ -102,12 +126,17 @@ module Remy
     end
 
     def metadata_file
+      download
       unpack
       File.open(metadata_filename).read
     end
 
     def from_path?
-      !@options[:path].nil?
+      !!@options[:path]
+    end
+
+    def from_git?
+      !!@options[:git]
     end
 
     def downloaded_archive_exists?
@@ -115,8 +144,12 @@ module Remy
     end
 
     def clean(location = unpacked_cookbook_path)
-      FileUtils.rm_rf location
-      FileUtils.rm_f download_filename
+      if @git
+        @git.clean
+      else
+        FileUtils.rm_rf location
+        FileUtils.rm_f download_filename
+      end
     end
 
     def == other
