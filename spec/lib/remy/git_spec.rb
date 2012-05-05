@@ -44,6 +44,15 @@ module Remy
 
         dir.should == dir2
       end
+
+      it "should checkout the v0.1.0 tag" do
+        lambda { subject.checkout "fart" }.should raise_error
+        lambda { subject.checkout "v0.1.0" }.should_not raise_error
+
+        Dir.chdir subject.directory do
+          %x[git rev-parse v0.1.0].should == %x[git rev-parse HEAD]
+        end
+      end
     end
   end
 end
