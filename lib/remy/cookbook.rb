@@ -132,11 +132,11 @@ module Remy
     end
 
     def from_path?
-      @options[:path]
+      !!@options[:path]
     end
 
     def from_git?
-      @options[:git]
+      !!@options[:git]
     end
 
     def downloaded_archive_exists?
