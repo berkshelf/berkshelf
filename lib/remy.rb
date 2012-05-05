@@ -25,6 +25,10 @@ module Remy
       @shelf = nil
     end
 
+    def ui=(ui)
+      @ui = ui
+    end
+
     def ui
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
     end
