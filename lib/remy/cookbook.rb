@@ -32,6 +32,7 @@ module Remy
       if from_git? 
         @git ||= Remy::Git.new(@options[:git])
         @git.clone
+        @git.checkout(@options[:ref]) if @options[:ref]
         @options[:path] ||= @git.directory
       elsif from_path?
         return
