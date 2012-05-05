@@ -20,7 +20,6 @@ module Remy
       # all cookbooks in the Cookbookfile are dependencies of the shelf
       shelf = MetaCookbook.new(META_COOKBOOK_NAME, @cookbooks) 
 
-
       self.class.populate_graph graph, shelf
 
       selector = DepSelector::Selector.new(graph)
@@ -44,7 +43,7 @@ module Remy
         cookbook.copy_to_cookbooks_directory
         cookbook.version = version
       end
-      @cookbooks.uniq!
+      @cookbooks = @cookbooks.uniq.reject { |x| x.version.nil? }
     end
 
     class << self

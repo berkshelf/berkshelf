@@ -166,7 +166,7 @@ module Remy
     end
 
     def == other
-      other.name == @name and other.version_constraint == @version_constraint
+      other.name == @name
     end
   end
 end
