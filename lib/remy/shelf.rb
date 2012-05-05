@@ -28,11 +28,12 @@ module Remy
     end
 
     def populate_cookbooks_directory
-      cookbooks_from_path = @cookbooks.select(&:from_path?)
+      cookbooks_from_path = @cookbooks.select(&:from_path?) | @cookbooks.select(&:from_git?)
       
       resolve_dependencies.each_pair do |cookbook_name, version|
         cookbook = cookbooks_from_path.select { |c| c.name == cookbook_name }.first || Cookbook.new(cookbook_name, version.to_s)
         @cookbooks << cookbook
+        cookbook.download
         cookbook.unpack
         cookbook.copy_to_cookbooks_directory
       end

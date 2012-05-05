@@ -46,6 +46,10 @@ module Remy
         @directory = Dir.mktmpdir
         system(self.class.git, "clone", @repository, @directory)
       end
+
+      if $?.exitstatus != 0
+        raise "Did not succeed executing git; check the output above."
+      end
     end
 
     def clean
