@@ -56,6 +56,7 @@ module Remy
       target = File.join(Remy::COOKBOOKS_DIRECTORY, @name)
       FileUtils.rm_rf target
       FileUtils.cp_r full_path, target
+      FileUtils.rm_rf File.join(target, '.git') if from_git?
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
@@ -83,8 +84,8 @@ module Remy
     end
 
     def latest_constrained_version
-      return [version] if version
-      return [version_from_metadata_file] if from_path? or from_git?
+      return DepSelector::Version.new(version) if version
+      return version_from_metadata_file if from_path? or from_git?
 
       versions.reverse.each do |v|
         return v if @version_constraint.include? v
@@ -92,7 +93,7 @@ module Remy
     end
 
     def versions
-      return [version] if version
+      return [latest_constrained_version] if version
       return [version_from_metadata_file] if from_path? or from_git?
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
     end

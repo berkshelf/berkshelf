@@ -11,12 +11,22 @@ module Remy
         instance_eval(content)
       end
 
-      def process
+      def process_install
         # TODO: friendly error message when the file doesn't exist
-        read File.open(DEFAULT_FILENAME).read
+        
+        filename = Remy::DEFAULT_FILENAME + ".lock"
+        lockfile = false
+
+        if File.exist?(filename)
+          lockfile = true
+        else
+          filename = Remy::DEFAULT_FILENAME unless File.exist?(filename)
+        end
+          
+        read File.open(filename).read
         Remy.shelf.resolve_dependencies
         Remy.shelf.populate_cookbooks_directory
-        Remy.shelf.write_lockfile
+        Remy.shelf.write_lockfile unless lockfile
       end
     end
   end
