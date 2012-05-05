@@ -47,13 +47,28 @@ module Remy
         system(self.class.git, "clone", @repository, @directory)
       end
 
-      if $?.exitstatus != 0
-        raise "Did not succeed executing git; check the output above."
+      error_check
+
+    end
+
+    def checkout(ref)
+      clone
+
+      Dir.chdir @directory do
+        system(self.class.git, "checkout", "-q", ref)
       end
+
+      error_check
     end
 
     def clean
       FileUtils.rm_rf @directory if @directory
+    end
+
+    def error_check
+      if $?.exitstatus != 0
+        raise "Did not succeed executing git; check the output above."
+      end
     end
   end
 end
