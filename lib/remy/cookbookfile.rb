@@ -1,7 +1,7 @@
+require 'remy/dsl'
+
 module Remy
   class Cookbookfile
-    DEFAULT_FILENAME = 'Cookbookfile'
-
     class << self
       include DSL
       def read content
@@ -16,6 +16,7 @@ module Remy
         read File.open(DEFAULT_FILENAME).read
         Remy.shelf.resolve_dependencies
         Remy.shelf.populate_cookbooks_directory
+        Remy.shelf.write_lockfile
       end
     end
   end

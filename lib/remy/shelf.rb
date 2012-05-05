@@ -1,3 +1,5 @@
+require 'remy/lockfile'
+
 module Remy
   class Shelf
     META_COOKBOOK_NAME = 'remy_shelf'
@@ -27,6 +29,10 @@ module Remy
       solution
     end
 
+    def write_lockfile
+      Remy::Lockfile.new(@cookbooks).write
+    end
+
     def populate_cookbooks_directory
       cookbooks_from_path = @cookbooks.select(&:from_path?) | @cookbooks.select(&:from_git?)
       
@@ -36,6 +42,7 @@ module Remy
         cookbook.download
         cookbook.unpack
         cookbook.copy_to_cookbooks_directory
+        cookbook.version = version
       end
       @cookbooks.uniq!
     end
