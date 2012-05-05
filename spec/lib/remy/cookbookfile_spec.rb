@@ -12,6 +12,7 @@ module Remy
 cookbook 'ntp', '<= 1.0.0'
 cookbook 'mysql'
 cookbook 'nginx', '< 0.101.2'
+cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
 COOKBOOKFILE
 
         ['ntp', 'mysql'].each do |dep|

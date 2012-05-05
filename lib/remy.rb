@@ -11,7 +11,7 @@ require 'remy/metacookbook'
 require 'remy/dependency_reader'
 require 'remy/dsl'
 require 'remy/cookbookfile'
-
+require 'remy/git'
 
 module Remy
   COOKBOOKS_DIRECTORY = 'cookbooks'
@@ -23,6 +23,10 @@ module Remy
 
     def clear_shelf!
       @shelf = nil
+    end
+
+    def ui=(ui)
+      @ui = ui
     end
 
     def ui
