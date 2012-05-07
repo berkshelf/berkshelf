@@ -81,6 +81,10 @@ module Remy
     end
 
     def latest_constrained_version
+      # TODO: may want to let the each loop select the version if we
+      # put error messages for not finding an acceptable version, ie:
+      # if the available version doesn't fit in the constraints we
+      # have.
       return version_from_metadata_file if from_path? or from_git?
 
       versions.reverse.each do |v|
