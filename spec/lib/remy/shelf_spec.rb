@@ -22,7 +22,7 @@ module Remy
 
       it 'should take version constraints' do
         subject.shelve_cookbook 'acookbook', '= 1.2.3'
-        subject.cookbooks.last.version_constraint.should == DepSelector::VersionConstraint.new('= 1.2.3')
+        subject.cookbooks.last.version_constraints.should == [DepSelector::VersionConstraint.new('= 1.2.3')]
       end
 
       it "should resolve the dependency graph of the cookbooks on the shelf" do

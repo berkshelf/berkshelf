@@ -15,7 +15,7 @@ cookbook 'nginx', '< 0.101.2'
 cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
 COOKBOOKFILE
 
-        ['ntp', 'mysql'].each do |dep|
+        ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |dep|
           Remy.shelf.cookbooks.collect(&:name).should include dep
         end
 

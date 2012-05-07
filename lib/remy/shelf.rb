@@ -47,12 +47,13 @@ module Remy
       def populate_graph(graph, cookbook)
         package = graph.package cookbook.name
         cookbook.versions.each { |v| package.add_version(v) }
-
         cookbook.dependencies.each do |dependency|
           graph = populate_graph(graph, dependency)
           dep = graph.package(dependency.name)
           version = package.versions.select { |v| v.version == cookbook.latest_constrained_version }.first
-          version.dependencies << DepSelector::Dependency.new(dep, dependency.version_constraint)
+          dependency.version_constraints.each do |constraint|
+            version.dependencies << DepSelector::Dependency.new(dep, constraint)
+          end
         end
 
         graph

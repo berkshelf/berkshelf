@@ -5,7 +5,7 @@ require 'chef/knife/cookbook_site_show'
 
 module Remy
   class Cookbook
-    attr_reader :name, :version_constraint
+    attr_reader :name, :version_constraints
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
@@ -18,11 +18,16 @@ module Remy
 
       @options[:path] = File.expand_path(@options[:path]) if from_path?
       @name, constraint_string = args
-      @version_constraint = DepSelector::VersionConstraint.new(if from_path?
-                                                                 "= #{version_from_metadata_file.to_s}"
-                                                               else
-                                                                 constraint_string
-                                                               end)
+      add_version_constraint(if from_path?
+                               "= #{version_from_metadata_file.to_s}"
+                             else
+                               constraint_string
+                             end)
+    end
+
+    def add_version_constraint constraint_string
+      @version_constraints ||= []
+      @version_constraints << DepSelector::VersionConstraint.new(constraint_string) unless @version_constraints.collect(&:to_s).include? constraint_string
     end
 
     def download(show_output = false)
@@ -65,7 +70,7 @@ module Remy
       if File.directory? location
         true # noop
       elsif downloaded_archive_exists?
-        Remy.ui.info "Unpacking #{@name} to #{location}"
+        # Remy.ui.info "Unpacking #{@name} to #{location}"
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
       else
@@ -88,8 +93,12 @@ module Remy
       return version_from_metadata_file if from_path? or from_git?
 
       versions.reverse.each do |v|
-        return v if @version_constraint.include? v
+        return v if version_constraints_include? v
       end
+    end
+
+    def version_constraints_include? version
+      @version_constraints.inject(true) { |check, constraint| check and constraint.include? version }
     end
 
     def versions
@@ -158,7 +167,7 @@ module Remy
     end
 
     def == other
-      other.name == @name and other.version_constraint == @version_constraint
+      other.name == @name and other.version_constraints == @version_constraints
     end
   end
 end
