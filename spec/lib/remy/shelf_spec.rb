@@ -2,9 +2,19 @@ require 'spec_helper'
 
 module Remy
   describe Shelf do
+    describe '#get_cookbook' do
+      it "should return nil if a cookbook doesn't exist on the shelf" do
+        Shelf.new.get_cookbook('arbitrary').should be_nil
+      end
+      it "should return the cookbook if the cookbook exists on the shelf" do
+        s = Shelf.new
+        s.shelve_cookbook example_cookbook_from_path
+        s.get_cookbook(example_cookbook_from_path.name).should_not be_nil
+      end
+    end
+
     describe "#shelve_cookbook" do
       subject { Shelf.new }
-      
       it 'should store shelved cookbooks' do
         subject.shelve_cookbook 'acookbook'
         subject.cookbooks.collect(&:name).should include 'acookbook'

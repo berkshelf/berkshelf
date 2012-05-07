@@ -9,7 +9,7 @@ module Remy
     end
     
     def shelve_cookbook(*args)
-      @cookbooks << Cookbook.new(*args)
+      @cookbooks << (args.first.is_a?(Cookbook) ? args.first : Cookbook.new(*args))
     end
 
     def resolve_dependencies
@@ -18,13 +18,16 @@ module Remy
       # all cookbooks in the Cookbookfile are dependencies of the shelf
       shelf = MetaCookbook.new(META_COOKBOOK_NAME, @cookbooks) 
 
-
       self.class.populate_graph graph, shelf
 
       selector = DepSelector::Selector.new(graph)
       solution = selector.find_solution([DepSelector::SolutionConstraint.new(graph.package(META_COOKBOOK_NAME))])
       solution.delete META_COOKBOOK_NAME
       solution
+    end
+
+    def get_cookbook(name)
+      @cookbooks.select { |c| c.name == name }.first
     end
 
     def populate_cookbooks_directory
