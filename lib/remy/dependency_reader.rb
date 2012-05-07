@@ -16,7 +16,14 @@ module Remy
       end
 
       def method_missing method, *args
-        # Don't blow up when other metadata DSL methods are called, we only care about #depends.
+        # Don't blow up when other metadata DSL methods are called, we
+        # only care about #depends.
+      end
+
+      def name the_name
+        # Module#name is defined, so method_missing won't catch it
+        # when running instance_eval on a metadata.rb that overrides
+        # the name
       end
     end
   end
