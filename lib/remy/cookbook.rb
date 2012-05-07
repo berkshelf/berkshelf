@@ -82,7 +82,7 @@ module Remy
     def dependencies
       download
       unpack
-      @dependencies = DependencyReader.read self
+      @dependencies ||= DependencyReader.new(self).read
     end
 
     def latest_constrained_version

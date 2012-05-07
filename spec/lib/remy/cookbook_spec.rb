@@ -90,7 +90,11 @@ M
       end
     end
 
-
+    describe '#dependencies' do
+      it "should not contain the cookbook itself" do
+        Cookbook.new('riot_base', git: 'git@github.riotgames.com:cookbooks/riot_base.git').dependencies.collect(&:name).include?('riot_base').should_not be_true
+      end
+    end
 
     # TODO figure out how to test this. Stubs on classes don't clear after a test.
     # describe '#unpack' do
