@@ -1,18 +1,21 @@
 module Remy
   module DependencyReader
     class << self
+      def dependency_list
+        @dependency_list ||= []
+      end
+
       def read cookbook
-        @dependency_list = []
         Dir.chdir(cookbook.full_path) do
           # XXX this filename is required because it sets __FILE__, which is
           # used for README.md parsing among other things in metadata.rb files
           instance_eval(cookbook.metadata_file, cookbook.metadata_filename)
         end
-        @dependency_list
+        dependency_list
       end
       
       def depends *args
-        @dependency_list << Cookbook.new(*args)
+        dependency_list << (Remy.shelf.get_cookbook(args.first) || Cookbook.new(*args))
       end
 
       def method_missing method, *args
