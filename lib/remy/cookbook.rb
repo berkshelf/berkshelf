@@ -81,7 +81,7 @@ module Remy
     end
 
     def latest_constrained_version
-      return [version_from_metadata_file] if from_path? or from_git?
+      return version_from_metadata_file if from_path? or from_git?
 
       versions.reverse.each do |v|
         return v if @version_constraint.include? v
