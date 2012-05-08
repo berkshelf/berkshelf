@@ -49,6 +49,21 @@ module Remy
       end
     end
 
+    describe '#version_from_metadata_file' do
+      it "should be able to handle single quoted strings" do
+        Cookbook.any_instance.stub(:metadata_file).and_return <<M
+version '1.2.3'
+M
+        subject.version_from_metadata_file.should == DepSelector::Version.new('1.2.3')
+      end
+      it "should be able to handle double quoted strings" do
+        Cookbook.any_instance.stub(:metadata_file).and_return <<M
+version "1.2.3"
+M
+        subject.version_from_metadata_file.should == DepSelector::Version.new('1.2.3')
+      end
+    end
+
 
     # TODO figure out how to test this. Stubs on classes don't clear after a test.
     # describe '#unpack' do

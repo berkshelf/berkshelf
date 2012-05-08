@@ -102,7 +102,7 @@ module Remy
       # TODO: make a generic metadata file reader to replace
       # dependencyreader and incorporate pulling the version as
       # well... knife probably has something like this I can use/steal
-      DepSelector::Version.new(metadata_file.match(/version\s+\"([0-9\.]*)\"/)[1])
+      DepSelector::Version.new(metadata_file.match(/version\s+[\"\']([0-9\.]*)[\"\']/)[1])
     end
 
     def cookbook_data

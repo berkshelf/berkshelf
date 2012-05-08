@@ -12,5 +12,15 @@ module Remy
       cookbook.unpack
       described_class.read(cookbook).should == [Cookbook.new('openssl')]
     end
+
+    it "should not blow up when reading a metadata.rb that overrides the name" do
+      Cookbook.any_instance.stub(:metadata_file).and_return <<M
+name 'dontblowupplease'
+version '1.2.3'
+M
+      DependencyReader.read(example_cookbook_from_path)
+    end
+
+    it 'should display a warning when no version is defined in the metadata.rb'
   end
 end

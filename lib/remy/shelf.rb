@@ -11,7 +11,7 @@ module Remy
     end
     
     def shelve_cookbook(*args)
-      @cookbooks << Cookbook.new(*args)
+      @cookbooks << (args.first.is_a?(Cookbook) ? args.first : Cookbook.new(*args))
     end
 
     def resolve_dependencies
@@ -30,6 +30,10 @@ module Remy
 
     def write_lockfile
       Remy::Lockfile.new(@cookbooks).write
+    end
+
+    def get_cookbook(name)
+      @cookbooks.select { |c| c.name == name }.first
     end
 
     def populate_cookbooks_directory
