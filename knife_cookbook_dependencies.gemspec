@@ -17,12 +17,17 @@ Gem::Specification.new do |s|
   s.version       = KnifeCookbookDependencies::VERSION
   
   # FIXME will want to adjust this later
-  s.add_runtime_dependency 'dep_selector',    '>= 0' 
+  s.add_runtime_dependency 'dep_selector'
   s.add_runtime_dependency 'chef',            '~> 0.10.0'
-  s.add_runtime_dependency 'minitar',         '>= 0'
+  s.add_runtime_dependency 'minitar'
 
   s.add_development_dependency 'rake',        '~> 0.9.0'
-  s.add_development_dependency 'rspec',       '>= 0'
   s.add_development_dependency 'rdoc',        '~> 3.0'
-  s.add_development_dependency 'simplecov',   '>= 0'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'simplecov'
+  s.add_development_dependency 'fuubar'
+  s.add_development_dependency 'spork'
+  s.add_development_dependency 'guard'
+  s.add_development_dependency 'guard-rspec'
+  s.add_development_dependency 'guard-spork'
 end
