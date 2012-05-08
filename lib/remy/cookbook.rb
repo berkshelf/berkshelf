@@ -6,7 +6,7 @@ require 'chef/knife/cookbook_site_show'
 module Remy
   class Cookbook
     attr_reader :name, :version_constraint
-    attr_accessor :version
+    attr_accessor :locked_version
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
@@ -24,7 +24,7 @@ module Remy
                                                                else
                                                                  constraint_string
                                                                end)
-      @version = @options[:version]
+      @locked_version = DepSelector::Version.new(@options[:locked_version])
     end
 
     def download(show_output = false)
@@ -84,7 +84,7 @@ module Remy
     end
 
     def latest_constrained_version
-      return DepSelector::Version.new(version) if version
+      return @locked_version if @locked_version
       return version_from_metadata_file if from_path? or from_git?
 
       versions.reverse.each do |v|
@@ -93,7 +93,7 @@ module Remy
     end
 
     def versions
-      return [latest_constrained_version] if version
+      return [latest_constrained_version] if @locked_version
       return [version_from_metadata_file] if from_path? or from_git?
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
     end
