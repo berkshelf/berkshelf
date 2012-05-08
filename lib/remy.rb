@@ -14,6 +14,7 @@ require 'remy/cookbookfile'
 require 'remy/git'
 
 module Remy
+  DEFAULT_FILENAME = 'Cookbookfile'
   COOKBOOKS_DIRECTORY = 'cookbooks'
 
   class << self
