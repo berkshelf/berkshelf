@@ -11,4 +11,7 @@ module KnifeCookbookDependencies
       ::KnifeCookbookDependencies::Cookbookfile.process_install
     end
   end
+  
+  class CookbookDepsInstall < CookbookDependenciesInstall; end
+
 end
