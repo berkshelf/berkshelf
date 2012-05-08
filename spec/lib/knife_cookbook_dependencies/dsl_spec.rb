@@ -20,8 +20,9 @@ module KnifeCookbookDependencies
       end
 
       it 'should take version constraints' do
+        Cookbook.any_instance.stub(:clean)
         cookbook 'ntp', '= 1.2.3'
-        KnifeCookbookDependencies.shelf.cookbooks.select {|c| c.name == 'ntp'}.first.version_constraint.should == DepSelector::VersionConstraint.new('= 1.2.3')
+        KnifeCookbookDependencies.shelf.cookbooks.select {|c| c.name == 'ntp'}.first.version_constraints.first.should == DepSelector::VersionConstraint.new('= 1.2.3')
       end
     end
   end

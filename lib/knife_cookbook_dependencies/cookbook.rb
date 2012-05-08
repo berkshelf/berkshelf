@@ -95,7 +95,7 @@ module KnifeCookbookDependencies
       versions.reverse.each do |v|
         return v if version_constraints_include? v
       end
-      Remy.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
+      KnifeCookbookDependencies.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
       exit 1
     end
 
