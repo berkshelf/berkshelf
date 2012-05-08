@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Remy
+module KnifeCookbookDependencies
   describe DependencyReader do
     subject { DependencyReader.new(Cookbook.new('mysql')) }
 
@@ -29,7 +29,7 @@ M
     it 'should display a warning when no version is defined in the metadata.rb'
 
     it "should add a constraint to the cookbook on the shelf instead of adding a new dependency" do
-      Remy.shelf.shelve_cookbook example_cookbook_from_path
+      KnifeCookbookDependencies.shelf.shelve_cookbook example_cookbook_from_path
       subject.depends('example_cookbook')
       subject.dependency_list.should be_empty
     end

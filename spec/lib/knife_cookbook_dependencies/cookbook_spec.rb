@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Remy
+module KnifeCookbookDependencies
   describe Cookbook do
     subject { Cookbook.new('ntp') }
 
@@ -37,7 +37,7 @@ module Remy
       describe "#copy_to" do
         it "should copy from the unpacked cookbook directory to the target" do
           example_cookbook_from_path.copy_to_cookbooks_directory
-          File.exists?(File.join(Remy::COOKBOOKS_DIRECTORY, example_cookbook_from_path.name)).should be_true
+          File.exists?(File.join(KnifeCookbookDependencies::COOKBOOKS_DIRECTORY, example_cookbook_from_path.name)).should be_true
         end
       end
       

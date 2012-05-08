@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module Remy
+module KnifeCookbookDependencies
   describe Cookbookfile do
     describe '::read' do
       after do
-        Remy.shelf.cookbooks.each(&:clean)
+        KnifeCookbookDependencies.shelf.cookbooks.each(&:clean)
       end
 
       it "should read the cookbookfile and build a dependency list" do
@@ -16,10 +16,10 @@ cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_ho
 COOKBOOKFILE
 
         ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |dep|
-          Remy.shelf.cookbooks.collect(&:name).should include dep
+          KnifeCookbookDependencies.shelf.cookbooks.collect(&:name).should include dep
         end
 
-        Remy.shelf.populate_cookbooks_directory
+        KnifeCookbookDependencies.shelf.populate_cookbooks_directory
       end
     end
   end

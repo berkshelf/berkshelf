@@ -4,22 +4,22 @@ require 'archive/tar/minitar'
 require 'chef/config'
 require 'chef/knife/cookbook_site_download'
 
-require 'remy/version'
-require 'remy/shelf'
-require 'remy/cookbook'
-require 'remy/metacookbook'
-require 'remy/dependency_reader'
-require 'remy/dsl'
-require 'remy/cookbookfile'
-require 'remy/git'
+require 'knife_cookbook_dependencies/version'
+require 'knife_cookbook_dependencies/shelf'
+require 'knife_cookbook_dependencies/cookbook'
+require 'knife_cookbook_dependencies/metacookbook'
+require 'knife_cookbook_dependencies/dependency_reader'
+require 'knife_cookbook_dependencies/dsl'
+require 'knife_cookbook_dependencies/cookbookfile'
+require 'knife_cookbook_dependencies/git'
 
-module Remy
+module KnifeCookbookDependencies
   DEFAULT_FILENAME = 'Cookbookfile'
   COOKBOOKS_DIRECTORY = 'cookbooks'
 
   class << self
     def shelf
-      @shelf ||= Remy::Shelf.new
+      @shelf ||= KnifeCookbookDependencies::Shelf.new
     end
 
     def clear_shelf!

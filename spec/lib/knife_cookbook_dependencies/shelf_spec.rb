@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Remy
+module KnifeCookbookDependencies
   describe Shelf do
     describe '#get_cookbook' do
       it "should return nil if a cookbook doesn't exist on the shelf" do

@@ -6,7 +6,7 @@ require 'pp'
 
 RSpec.configure do |config|
   config.after do
-    Remy.clean
+    KnifeCookbookDependencies.clean
   end
 end
 
@@ -14,8 +14,8 @@ SimpleCov.start do
   add_filter 'spec/'
 end
 
-require 'remy'
+require 'knife_cookbook_dependencies'
 
 def example_cookbook_from_path
-  @example_cookbook_from_path ||= Remy::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
+  @example_cookbook_from_path ||= KnifeCookbookDependencies::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
 end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Remy
+module KnifeCookbookDependencies
   describe Git do
 
     it "should find git" do
