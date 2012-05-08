@@ -21,7 +21,7 @@ module Remy
 
       it 'should take version constraints' do
         cookbook 'ntp', '= 1.2.3'
-        Remy.shelf.cookbooks.select {|c| c.name == 'ntp'}.first.version_constraint.should == DepSelector::VersionConstraint.new('= 1.2.3')
+        Remy.shelf.cookbooks.select {|c| c.name == 'ntp'}.first.version_constraints.first.should == DepSelector::VersionConstraint.new('= 1.2.3')
       end
     end
   end
