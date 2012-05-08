@@ -14,7 +14,7 @@ module KnifeCookbookDependencies
     end
 
     def get_cookbook_definition(cookbook)
-      definition = "cookbook '#{cookbook.name}', :version => '#{cookbook.version}'"
+      definition = "cookbook '#{cookbook.name}', :locked_version => '#{cookbook.locked_version}'"
       if cookbook.git_repo
         definition += ", :git => '#{cookbook.git_repo}', :ref => '#{cookbook.git_ref || 'HEAD'}'"
       end
