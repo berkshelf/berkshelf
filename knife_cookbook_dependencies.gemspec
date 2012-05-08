@@ -2,14 +2,12 @@
 require File.expand_path('../lib/knife_cookbook_dependencies/version', __FILE__)
 
 Gem::Specification.new do |s|
-
   # TODO FIXME need to modify all of these
-
-  s.authors       = ["Josiah Kiehl"]
-  s.email         = ["josiah@skirmisher.net"]
+  s.authors       = ["Josiah Kiehl", "Jamie Winsor"]
+  s.email         = ["josiah@skirmisher.net", "jamie@vialstudios.com"]
   s.description   = %q{Resolves cookbook dependencies}
   s.summary       = s.description
-  s.homepage      = "github.com/RiotGames/knife_cookbook_dependencies"
+  s.homepage      = "https://github.com/RiotGames/knife_cookbook_dependencies"
 
   s.files         = `git ls-files`.split($\)
   s.executables   = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
