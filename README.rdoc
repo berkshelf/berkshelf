@@ -1,5 +1,29 @@
-= Remy, cookbook manager
+# Knife Cookbook Dependencies
 
-Gusteau:: What do I always say? Anyone can cook.   
-Remy:: Yeah. Anyone can, that doesn't mean that anyone should.  
-Gusteau:: Well, that is not stopping him. See?
+# Running tests
+
+### Install prerequisites
+
+Install the latest version of [Bundler](http://gembundler.com)
+
+    $ gem install bundler
+
+Clone the project
+
+    $ git clone git://github.com/RiotGames/knife_cookbook_dependencies.git
+
+and run:
+
+    $ cd knife_cookbook_dependencies
+    $ bundle install
+
+Bundler will install all gems and their dependencies required for testing and developing. 
+
+### Running RSpec tests
+
+    $ bundle exec guard start
+
+# Authors and Contributors
+
+* Josiah Kiehl (<josiah@skirmisher.net>)
+* Jamie Winsor (<jamie@vialstudios.com>)

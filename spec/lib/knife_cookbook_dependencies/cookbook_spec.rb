@@ -8,8 +8,7 @@ module KnifeCookbookDependencies
       subject.clean
     end
 
-    describe  do
-
+    describe do
       before do
         Cookbook.any_instance.stub(:versions).and_return ['0.1.1', '0.9.0', '1.0.0', '1.1.8'].collect {|v| Gem::Version.new(v) }
       end
@@ -40,7 +39,6 @@ module KnifeCookbookDependencies
           File.exists?(File.join(KnifeCookbookDependencies::COOKBOOKS_DIRECTORY, example_cookbook_from_path.name)).should be_true
         end
       end
-      
     end
 
     describe "#versions" do
@@ -51,15 +49,14 @@ module KnifeCookbookDependencies
 
     describe '#version_from_metadata_file' do
       it "should be able to handle single quoted strings" do
-        Cookbook.any_instance.stub(:metadata_file).and_return <<M
-version '1.2.3'
-M
+        Cookbook.any_instance.stub(:metadata_file).and_return(%Q{version '1.2.3'})
+
         subject.version_from_metadata_file.should == DepSelector::Version.new('1.2.3')
       end
+
       it "should be able to handle double quoted strings" do
-        Cookbook.any_instance.stub(:metadata_file).and_return <<M
-version "1.2.3"
-M
+        Cookbook.any_instance.stub(:metadata_file).and_return(%Q{version "1.2.3"})
+
         subject.version_from_metadata_file.should == DepSelector::Version.new('1.2.3')
       end
     end
