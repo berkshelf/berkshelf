@@ -61,6 +61,18 @@ module Remy
       error_check
     end
 
+    def ref
+      return nil unless @directory
+
+      this_ref = nil
+
+      Dir.chdir @directory do
+        this_ref = `#{self.class.git} rev-parse HEAD`.strip
+      end
+
+      return this_ref
+    end
+
     def clean
       FileUtils.rm_rf @directory if @directory
     end

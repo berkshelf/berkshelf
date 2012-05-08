@@ -6,6 +6,7 @@ require 'chef/knife/cookbook_site_show'
 module Remy
   class Cookbook
     attr_reader :name, :version_constraint
+    attr_accessor :locked_version
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
@@ -23,6 +24,7 @@ module Remy
                                                                else
                                                                  constraint_string
                                                                end)
+      @locked_version = DepSelector::Version.new(@options[:locked_version])
     end
 
     def download(show_output = false)
@@ -54,6 +56,7 @@ module Remy
       target = File.join(Remy::COOKBOOKS_DIRECTORY, @name)
       FileUtils.rm_rf target
       FileUtils.cp_r full_path, target
+      FileUtils.rm_rf File.join(target, '.git') if from_git?
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
@@ -81,10 +84,7 @@ module Remy
     end
 
     def latest_constrained_version
-      # TODO: may want to let the each loop select the version if we
-      # put error messages for not finding an acceptable version, ie:
-      # if the available version doesn't fit in the constraints we
-      # have.
+      return @locked_version if @locked_version
       return version_from_metadata_file if from_path? or from_git?
 
       versions.reverse.each do |v|
@@ -93,6 +93,7 @@ module Remy
     end
 
     def versions
+      return [latest_constrained_version] if @locked_version
       return [version_from_metadata_file] if from_path? or from_git?
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
     end
@@ -144,6 +145,14 @@ module Remy
       !!@options[:git]
     end
 
+    def git_repo
+      @options[:git]
+    end
+
+    def git_ref
+      (from_git? && @git) ? @git.ref : nil
+    end
+
     def downloaded_archive_exists?
       download_filename && File.exists?(download_filename)
     end
@@ -158,7 +167,7 @@ module Remy
     end
 
     def == other
-      other.name == @name and other.version_constraint == @version_constraint
+      other.name == @name
     end
   end
 end
