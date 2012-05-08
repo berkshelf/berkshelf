@@ -92,6 +92,7 @@ M
 
     describe '#dependencies' do
       it "should not contain the cookbook itself" do
+        # TODO: Mock
         Cookbook.new('riot_base', git: 'git@github.riotgames.com:cookbooks/riot_base.git').dependencies.collect(&:name).include?('riot_base').should_not be_true
       end
     end
