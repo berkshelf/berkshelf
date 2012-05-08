@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["josiah@skirmisher.net"]
   gem.description   = %q{Resolves cookbook dependencies}
   gem.summary       = gem.description
-  gem.homepage      = "github.com/RiotGames/knife_cookbook_dependencies"
+  gem.homepage      = "http://github.com/RiotGames/knife_cookbook_dependencies"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
