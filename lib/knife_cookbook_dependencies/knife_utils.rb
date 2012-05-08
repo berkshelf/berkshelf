@@ -1,7 +1,7 @@
 require 'stringio'
 require 'chef/config'
 
-module Remy
+module KnifeCookbookDependencies
   module KnifeUtils
     def self.capture_knife_output(knife_obj)
       knife_obj.ui = Chef::Knife::UI.new(StringIO.new, StringIO.new, StringIO.new, { :format => :json })

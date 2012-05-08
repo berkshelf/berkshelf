@@ -1,8 +1,8 @@
-require 'remy/lockfile'
+require 'knife_cookbook_dependencies/lockfile'
 
-module Remy
+module KnifeCookbookDependencies
   class Shelf
-    META_COOKBOOK_NAME = 'remy_shelf'
+    META_COOKBOOK_NAME = 'cookbook_dependencies_shelf'
 
     attr_accessor :cookbooks
 
@@ -29,7 +29,7 @@ module Remy
     end
 
     def write_lockfile
-      Remy::Lockfile.new(@cookbooks).write
+      KnifeCookbookDependencies::Lockfile.new(@cookbooks).write
     end
 
     def get_cookbook(name)
@@ -45,9 +45,9 @@ module Remy
         cookbook.download
         cookbook.unpack
         cookbook.copy_to_cookbooks_directory
-        cookbook.version = version
+        cookbook.locked_version = version
       end
-      @cookbooks = @cookbooks.uniq.reject { |x| x.version.nil? }
+      @cookbooks = @cookbooks.uniq.reject { |x| x.locked_version.nil? }
     end
 
     class << self

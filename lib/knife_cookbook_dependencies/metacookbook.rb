@@ -1,4 +1,4 @@
-module Remy
+module KnifeCookbookDependencies
   class MetaCookbook
     attr_reader :name, :dependencies
 

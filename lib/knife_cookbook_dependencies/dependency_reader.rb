@@ -1,4 +1,4 @@
-module Remy
+module KnifeCookbookDependencies
   module DependencyReader
     class << self
       def read cookbook

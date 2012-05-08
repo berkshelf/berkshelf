@@ -1,9 +1,9 @@
-require 'remy/knife_utils'
-require 'remy/git'
+require 'knife_cookbook_dependencies/knife_utils'
+require 'knife_cookbook_dependencies/git'
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 
-module Remy
+module KnifeCookbookDependencies
   class Cookbook
     attr_reader :name, :version_constraint
     attr_accessor :locked_version
@@ -24,7 +24,7 @@ module Remy
                                                                else
                                                                  constraint_string
                                                                end)
-      @locked_version = DepSelector::Version.new(@options[:locked_version])
+      @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
     end
 
     def download(show_output = false)
@@ -32,7 +32,7 @@ module Remy
       return if !from_git? and downloaded_archive_exists?
 
       if from_git? 
-        @git ||= Remy::Git.new(@options[:git])
+        @git ||= KnifeCookbookDependencies::Git.new(@options[:git])
         @git.clone
         @git.checkout(@options[:ref]) if @options[:ref]
         @options[:path] ||= @git.directory
@@ -40,7 +40,7 @@ module Remy
         return
       else
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
-        output = Remy::KnifeUtils.capture_knife_output(csd)
+        output = KnifeCookbookDependencies::KnifeUtils.capture_knife_output(csd)
 
         if show_output
           puts output
@@ -51,9 +51,9 @@ module Remy
     end
 
     def copy_to_cookbooks_directory
-      FileUtils.mkdir_p Remy::COOKBOOKS_DIRECTORY
+      FileUtils.mkdir_p KnifeCookbookDependencies::COOKBOOKS_DIRECTORY
 
-      target = File.join(Remy::COOKBOOKS_DIRECTORY, @name)
+      target = File.join(KnifeCookbookDependencies::COOKBOOKS_DIRECTORY, @name)
       FileUtils.rm_rf target
       FileUtils.cp_r full_path, target
       FileUtils.rm_rf File.join(target, '.git') if from_git?
@@ -68,7 +68,7 @@ module Remy
       if File.directory? location
         true # noop
       elsif downloaded_archive_exists?
-        Remy.ui.info "Unpacking #{@name} to #{location}"
+        KnifeCookbookDependencies.ui.info "Unpacking #{@name} to #{location}"
         Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
         true
       else
@@ -107,7 +107,7 @@ module Remy
 
     def cookbook_data
       css = Chef::Knife::CookbookSiteShow.new([@name])
-      @cookbook_data ||= JSON.parse(Remy::KnifeUtils.capture_knife_output(css))
+      @cookbook_data ||= JSON.parse(KnifeCookbookDependencies::KnifeUtils.capture_knife_output(css))
     end
 
     def download_filename

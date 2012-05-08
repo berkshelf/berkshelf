@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    remy (0.0.1)
+    knife_cookbook_dependencies (0.0.1)
       chef (~> 0.10.0)
       dep_selector
       minitar
@@ -83,8 +83,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  knife_cookbook_dependencies!
   rake (~> 0.9.0)
   rdoc (~> 3.0)
-  remy!
   rspec
   simplecov

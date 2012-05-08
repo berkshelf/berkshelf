@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Remy
+module KnifeCookbookDependencies
   describe DependencyReader do
     after do
       Cookbook.new('mysql').clean

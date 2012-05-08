@@ -1,6 +1,6 @@
 require 'tempfile'
 
-module Remy
+module KnifeCookbookDependencies
   class Git
     class << self
       def git

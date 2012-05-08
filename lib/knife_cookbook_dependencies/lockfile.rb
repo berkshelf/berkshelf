@@ -1,12 +1,12 @@
-require 'remy/cookbookfile'
+require 'knife_cookbook_dependencies/cookbookfile'
 
-module Remy
+module KnifeCookbookDependencies
   class Lockfile
     def initialize(cookbooks)
       @cookbooks = cookbooks
     end
 
-    def write(filename = Remy::DEFAULT_FILENAME)
+    def write(filename = KnifeCookbookDependencies::DEFAULT_FILENAME)
       content = @cookbooks.map do |cookbook|
                   get_cookbook_definition(cookbook)
                 end.join("\n")
