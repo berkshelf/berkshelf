@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler'
 require 'spork'
+require 'test_ui'
 
 Spork.prefork do
   require 'rspec'
@@ -42,6 +43,16 @@ Spork.prefork do
   def example_cookbook_from_path
     @example_cookbook_from_path ||= KnifeCookbookDependencies::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
   end
+
+  def with_cookbookfile content
+    Dir.chdir(ENV['TMPDIR']) do
+      File.open('Cookbookfile', 'w') do |f|
+        f.write content
+      end
+      yield
+    end
+  end
+
 end
 
 Spork.each_run do
