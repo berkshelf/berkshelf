@@ -188,6 +188,7 @@ module KnifeCookbookDependencies
     class << self
       def rescue_404
         begin
+          pp 'sadfasdfsdf'
           yield
         rescue Net::HTTPServerException => e
           KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)

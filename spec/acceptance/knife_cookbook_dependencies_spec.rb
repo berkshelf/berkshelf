@@ -1,13 +1,20 @@
 require 'spec_helper'
+require 'chef/knife/cookbook_dependencies_install'
+require 'aruba/api'
+
 
 describe "knife cookbook dependencies install" do
   describe "should print a friendly error message" do
-    # TODO: Fixme
+    include Aruba::Api
+
     it "for missing cookbooks" do
-      pending
+      pending "Knife commands produce no output. I'm not sure why."
+
       cookbook_name = 'thisisamissingcookbook'
       with_cookbookfile %Q[cookbook "#{cookbook_name}"] do
-        `knife cookbook dependencies install 2>&1`.should match(/#{KnifeCookbookDependencies::ErrorMessages.missing_cookbook(cookbook_name)}/)
+        cmd = 'cat nofile' #'knife cookbook dependencies install'
+        process = run(cmd)
+        process.output(true).should match(/#{KnifeCookbookDependencies::ErrorMessages.missing_cookbook(cookbook_name)}/)
       end
     end
     it "for missing Cookbookfile"
