@@ -5,13 +5,14 @@ require 'chef/knife/cookbook_site_show'
 
 module KnifeCookbookDependencies
   class Cookbook
-    attr_reader :name, :version_constraints
+    attr_reader :name, :version_constraints, :groups
     attr_accessor :locked_version
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
     def initialize *args
       @options = args.last.is_a?(Hash) ? args.pop : {}
+      @groups = [:default]
 
       if from_git? and from_path?
         raise "Invalid: path and git options provided to #{args[0]}. They are mutually exclusive."

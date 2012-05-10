@@ -102,5 +102,10 @@ module KnifeCookbookDependencies
     #     subject.unpack
     #   end
     # end
+    describe '#groups' do
+      it "should have the default group" do
+        subject.groups.should == [:default]
+      end
+    end
   end
 end
