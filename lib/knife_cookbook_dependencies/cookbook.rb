@@ -27,6 +27,7 @@ module KnifeCookbookDependencies
                                constraint_string
                              end)
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
+      add_group(KnifeCookbookDependencies.shelf.active_group) if KnifeCookbookDependencies.shelf.active_group
       add_group(@options[:group]) if @options[:group]
     end
 

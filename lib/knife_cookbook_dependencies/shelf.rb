@@ -4,7 +4,7 @@ module KnifeCookbookDependencies
   class Shelf
     META_COOKBOOK_NAME = 'cookbook_dependencies_shelf'
 
-    attr_accessor :cookbooks
+    attr_accessor :cookbooks, :active_group
 
     def initialize
       @cookbooks = []

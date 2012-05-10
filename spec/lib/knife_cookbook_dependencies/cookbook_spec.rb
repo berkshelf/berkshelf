@@ -126,5 +126,11 @@ module KnifeCookbookDependencies
         subject.add_group "baz", "quux"
         subject.groups.should == [:default, :baz, :quux]
       end
+
+      it "should handle multiple groups as an array" do
+        subject.add_group ["baz", "quux"]
+        subject.groups.should == [:default, :baz, :quux]
+      end
+    end
   end
 end
