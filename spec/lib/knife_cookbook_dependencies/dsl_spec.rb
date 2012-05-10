@@ -27,7 +27,7 @@ module KnifeCookbookDependencies
 
       it 'should take group' do
         cookbook 'nginx', :group => 'web'
-        KnifeCookbookDependencies.shelf.cookbooks.select {|c| c.name == 'nginx'}.first.groups.should == [:default, :web]
+        KnifeCookbookDependencies.shelf.cookbooks.select {|c| c.name == 'nginx'}.first.groups.should == [:web]
       end
     end
 
@@ -38,7 +38,7 @@ module KnifeCookbookDependencies
           cookbooks.each {|c| cookbook c}
         end
         cookbooks.each do |c|
-          KnifeCookbookDependencies.shelf.cookbooks.select {|n| n.name == c}.first.groups.should == [:default, :awesome]
+          KnifeCookbookDependencies.shelf.cookbooks.select {|n| n.name == c}.first.groups.should == [:awesome]
         end
       end
 

@@ -58,7 +58,7 @@ module KnifeCookbookDependencies
         subject.shelve_cookbook "quux", :group => "quux"
         subject.shelve_cookbook "baz2", :group => "baz"
         groups = subject.cookbook_groups
-        groups.keys.size.should == 5 # foo bar baz quux and default
+        groups.keys.size.should == 4
         groups[:foo].should == ["foobar"]
         groups[:bar].should == ["foobar"]
         groups[:baz].should == ["baz", "baz2"]

@@ -12,7 +12,7 @@ module KnifeCookbookDependencies
 
     def initialize *args
       @options = args.last.is_a?(Hash) ? args.pop : {}
-      @groups = [:default]
+      @groups = []
 
       if from_git? and from_path?
         raise "Invalid: path and git options provided to #{args[0]}. They are mutually exclusive."
@@ -29,6 +29,7 @@ module KnifeCookbookDependencies
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
       add_group(KnifeCookbookDependencies.shelf.active_group) if KnifeCookbookDependencies.shelf.active_group
       add_group(@options[:group]) if @options[:group]
+      add_group(:default) if @groups.empty?
     end
 
     def add_version_constraint constraint_string
