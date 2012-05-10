@@ -102,10 +102,29 @@ module KnifeCookbookDependencies
     #     subject.unpack
     #   end
     # end
+
     describe '#groups' do
       it "should have the default group" do
         subject.groups.should == [:default]
       end
     end
+
+    describe '#add_group' do
+      it "should store strings as symbols" do
+        subject.add_group "foo"
+        subject.groups.should == [:default, :foo]
+      end
+
+      it "should not store duplicate groups" do
+        subject.add_group "bar"
+        subject.add_group "bar"
+        subject.add_group :bar
+        subject.groups.should == [:default, :bar]
+      end
+
+      it "should add multiple groups" do
+        subject.add_group "baz", "quux"
+        subject.groups.should == [:default, :baz, :quux]
+      end
   end
 end

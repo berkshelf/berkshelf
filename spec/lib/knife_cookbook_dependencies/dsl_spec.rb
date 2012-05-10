@@ -24,6 +24,10 @@ module KnifeCookbookDependencies
         cookbook 'ntp', '= 1.2.3'
         KnifeCookbookDependencies.shelf.cookbooks.select {|c| c.name == 'ntp'}.first.version_constraints.first.should == DepSelector::VersionConstraint.new('= 1.2.3')
       end
+      it 'should take group' do
+        cookbook 'nginx', :group => 'web'
+        KnifeCookbookDependencies.shelf.cookbooks.select {|c| c.name == 'nginx'}.first.groups.should == [:default, :web]
+      end
     end
   end
 end

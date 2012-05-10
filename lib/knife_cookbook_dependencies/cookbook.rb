@@ -27,6 +27,7 @@ module KnifeCookbookDependencies
                                constraint_string
                              end)
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
+      add_group(@options[:group]) if @options[:group]
     end
 
     def add_version_constraint constraint_string
@@ -167,6 +168,14 @@ module KnifeCookbookDependencies
 
     def git_ref
       (from_git? && @git) ? @git.ref : nil
+    end
+
+    def add_group(*groups)
+      groups = groups.first if groups.first.is_a?(Array)
+      groups.each do |group|
+        group = group.to_sym
+        @groups << group unless @groups.include?(group)
+      end
     end
 
     def downloaded_archive_exists?
