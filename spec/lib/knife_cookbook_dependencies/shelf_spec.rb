@@ -33,5 +33,49 @@ module KnifeCookbookDependencies
         Cookbook.new('openssl').clean
       end
     end
+
+    describe '#exclude' do
+      it "should split on :" do
+        subject.exclude("foo:bar")
+        subject.excluded_groups.should == [:foo, :bar]
+      end
+
+      it "should split on ," do
+        subject.exclude("foo,bar")
+        subject.excluded_groups.should == [:foo, :bar]
+      end
+
+      it "should take an Array" do
+        subject.exclude(["foo","bar"])
+        subject.excluded_groups.should == [:foo, :bar]
+      end
+    end
+
+    describe '#cookbook_groups' do
+      it "should return a hash of groups and associated cookbooks" do
+        subject.shelve_cookbook "foobar", :group => ["foo", "bar"]
+        subject.shelve_cookbook "baz", :group => "baz"
+        subject.shelve_cookbook "quux", :group => "quux"
+        subject.shelve_cookbook "baz2", :group => "baz"
+        groups = subject.cookbook_groups
+        groups.keys.size.should == 5 # foo bar baz quux and default
+        groups[:foo].should == ["foobar"]
+        groups[:bar].should == ["foobar"]
+        groups[:baz].should == ["baz", "baz2"]
+        groups[:quux].should == ["quux"]
+      end
+    end
+
+    describe '#requested_cookbooks'do
+      it "should properly exclude cookbooks in the excluded groups" do
+        subject.shelve_cookbook "a1", :group => "a"
+        subject.shelve_cookbook "a2", :group => "a"
+        subject.shelve_cookbook "b1", :group => "b"
+        subject.shelve_cookbook "b2", :group => "b"
+        subject.shelve_cookbook "c1", :group => ["a","b"]
+        subject.exclude "b"
+        subject.requested_cookbooks.should == ["a1", "a2", "c1"]
+      end
+    end
   end
 end

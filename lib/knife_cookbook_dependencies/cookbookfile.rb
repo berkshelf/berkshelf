@@ -11,7 +11,7 @@ module KnifeCookbookDependencies
         instance_eval(content)
       end
 
-      def process_install
+      def process_install(without=nil)
         # TODO: friendly error message when the file doesn't exist
         
         filename = KnifeCookbookDependencies::DEFAULT_FILENAME + ".lock"
@@ -29,6 +29,8 @@ module KnifeCookbookDependencies
           KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbookfile
           exit 100
         end
+
+        KnifeCookbookDependencies.shelf.exclude(without)
         KnifeCookbookDependencies.shelf.resolve_dependencies
         KnifeCookbookDependencies.shelf.populate_cookbooks_directory
         KnifeCookbookDependencies.shelf.write_lockfile unless lockfile

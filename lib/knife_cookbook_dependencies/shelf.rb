@@ -4,7 +4,7 @@ module KnifeCookbookDependencies
   class Shelf
     META_COOKBOOK_NAME = 'cookbook_dependencies_shelf'
 
-    attr_accessor :cookbooks, :active_group
+    attr_accessor :cookbooks, :active_group, :excluded_groups
 
     def initialize
       @cookbooks = []
@@ -17,8 +17,10 @@ module KnifeCookbookDependencies
     def resolve_dependencies
       graph = DepSelector::DependencyGraph.new
 
+      post_exclusions = requested_cookbooks
+      cookbooks_to_install = @cookbooks.select {|c| post_exclusions.include?(c.name)}
       # all cookbooks in the Cookbookfile are dependencies of the shelf
-      shelf = MetaCookbook.new(META_COOKBOOK_NAME, @cookbooks) 
+      shelf = MetaCookbook.new(META_COOKBOOK_NAME, cookbooks_to_install)
 
       self.class.populate_graph graph, shelf
 
@@ -48,6 +50,31 @@ module KnifeCookbookDependencies
         cookbook.locked_version = version
       end
       @cookbooks = @cookbooks.uniq.reject { |x| x.locked_version.nil? }
+    end
+
+    def exclude(groups)
+      groups = groups.to_s.split(/[,:]/) unless groups.is_a?(Array)
+      @excluded_groups = groups.collect {|c| c.to_sym}
+    end
+
+    def cookbook_groups
+      {}.tap do |groups|
+        @cookbooks.each do |cookbook|
+          cookbook.groups.each do |group|
+            groups[group] ||= []
+            groups[group] << cookbook.name
+          end
+        end
+      end
+    end
+
+    def requested_cookbooks
+      return @cookbooks.collect(&:name) unless @excluded_groups
+      [].tap do |r|
+        cookbook_groups.each do |group, cookbooks|
+          r << cookbooks unless @excluded_groups.include?(group.to_sym)
+        end
+      end.flatten.uniq
     end
 
     class << self
