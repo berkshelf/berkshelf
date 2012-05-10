@@ -8,7 +8,7 @@ describe "knife cookbook dependencies install" do
     include Aruba::Api
 
     it "for missing cookbooks" do
-      pending "Knife commands produce no output. I'm not sure why."
+      pending "Knife commands produce no output when run with aruba. I'm not sure why." # TODO FIXME
 
       cookbook_name = 'thisisamissingcookbook'
       with_cookbookfile %Q[cookbook "#{cookbook_name}"] do
