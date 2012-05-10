@@ -22,8 +22,13 @@ module KnifeCookbookDependencies
         else
           filename = KnifeCookbookDependencies::DEFAULT_FILENAME unless File.exist?(filename)
         end
-          
-        read File.open(filename).read
+
+        begin
+          read File.open(filename).read
+        rescue Errno::ENOENT => e
+          KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbookfile
+          exit 100
+        end
         KnifeCookbookDependencies.shelf.resolve_dependencies
         KnifeCookbookDependencies.shelf.populate_cookbooks_directory
         KnifeCookbookDependencies.shelf.write_lockfile unless lockfile
