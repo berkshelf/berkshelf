@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'bundler'
 require 'spork'
-require 'test_ui'
 
 Spork.prefork do
   require 'rspec'
