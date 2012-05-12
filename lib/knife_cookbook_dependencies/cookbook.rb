@@ -68,10 +68,10 @@ module KnifeCookbookDependencies
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
-    def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
+    def unpack(location = unpacked_cookbook_path, options={ })
       return true if from_path?
-      self.clean(File.join(location, @name)) if do_clean
-      download if do_download
+      self.clean(File.join(location, @name)) if options[:do_clean]
+      download if options[:do_download]
       fname = download_filename
       if File.directory? location
         true # noop

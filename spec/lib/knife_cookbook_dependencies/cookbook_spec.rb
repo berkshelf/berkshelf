@@ -15,7 +15,7 @@ module KnifeCookbookDependencies
 
       # FIXME: This test is flakey
       it "should raise an error if the cookbook is unpacked without being downloaded first" do
-        -> { subject.unpack(subject.unpacked_cookbook_path, true, false) }.should raise_error
+        -> { subject.unpack(subject.unpacked_cookbook_path, :do_clean => true, :do_download => false) }.should raise_error
       end
 
       describe '#unpacked_cookbook_path' do
