@@ -37,20 +37,19 @@ module KnifeCookbookDependencies
     def download(show_output = false)
       return if @downloaded
       return if !from_git? and downloaded_archive_exists?
+      return if from_path? and !from_git?
 
       if from_git? 
-        @git ||= KnifeCookbookDependencies::Git.new(@options[:git])
+        @git ||= KCD::Git.new(@options[:git])
         @git.clone
         @git.checkout(@options[:ref]) if @options[:ref]
         @options[:path] ||= @git.directory
-      elsif from_path?
-        return
       else
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
         output = KCD::KnifeUtils.capture_knife_output(csd)
 
         if show_output
-          puts output
+          output.split(/\r?\n/).each { |x| KCD.ui.info(x) }
         end
       end
 
@@ -146,7 +145,7 @@ module KnifeCookbookDependencies
     def metadata_file
       download
       unpack
-      File.open(metadata_filename).read
+      File.read(metadata_filename)
     end
 
     def from_path?
