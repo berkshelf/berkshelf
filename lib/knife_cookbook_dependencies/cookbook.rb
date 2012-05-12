@@ -1,3 +1,4 @@
+require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/knife_utils'
 require 'knife_cookbook_dependencies/git'
 require 'chef/knife/cookbook_site_download'
@@ -47,7 +48,7 @@ module KnifeCookbookDependencies
       else
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
         self.class.rescue_404 do
-          output = KnifeCookbookDependencies::KnifeUtils.capture_knife_output(csd)
+          output = KCD::KnifeUtils.capture_knife_output(csd)
         end
 
         if show_output
@@ -59,9 +60,9 @@ module KnifeCookbookDependencies
     end
 
     def copy_to_cookbooks_directory
-      FileUtils.mkdir_p KnifeCookbookDependencies::COOKBOOKS_DIRECTORY
+      FileUtils.mkdir_p KCD::COOKBOOKS_DIRECTORY
 
-      target = File.join(KnifeCookbookDependencies::COOKBOOKS_DIRECTORY, @name)
+      target = File.join(KCD::COOKBOOKS_DIRECTORY, @name)
       FileUtils.rm_rf target
       FileUtils.cp_r full_path, target
       FileUtils.rm_rf File.join(target, '.git') if from_git?
@@ -97,7 +98,7 @@ module KnifeCookbookDependencies
       versions.reverse.each do |v|
         return v if version_constraints_include? v
       end
-      KnifeCookbookDependencies.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
+      KCD.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
       exit 1
     end
 
@@ -121,7 +122,7 @@ module KnifeCookbookDependencies
     def cookbook_data
       css = Chef::Knife::CookbookSiteShow.new([@name])
       self.class.rescue_404 do
-        @cookbook_data ||= JSON.parse(KnifeCookbookDependencies::KnifeUtils.capture_knife_output(css))
+        @cookbook_data ||= JSON.parse(KCD::KnifeUtils.capture_knife_output(css))
       end
     end
 
