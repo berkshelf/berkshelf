@@ -70,18 +70,20 @@ module KnifeCookbookDependencies
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
     def unpack(location = unpacked_cookbook_path, options={ })
       return true if from_path?
-      self.clean(File.join(location, @name)) if options[:do_clean]
-      download if options[:do_download]
-      fname = download_filename
-      if File.directory? location
-        true # noop
-      elsif downloaded_archive_exists?
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
-        true
-      else
-        # TODO: Raise friendly error message class
+
+      self.clean  if options[:clean]
+      download    if options[:download]
+
+      unless downloaded_archive_exists? or File.directory?(location)
+        # TODO raise friendly error
         raise "Archive hasn't been downloaded yet"
       end
+
+      if downloaded_archive_exists?
+        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(download_filename)), location)
+      end
+
+      return true
     end
 
     def dependencies
