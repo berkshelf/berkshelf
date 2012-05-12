@@ -71,8 +71,8 @@ module KnifeCookbookDependencies
     def unpack(location = unpacked_cookbook_path, options={ })
       return true if from_path?
 
-      self.clean  if options[:clean]
-      download    if options[:download]
+      clean     if options[:clean]
+      download  if options[:download]
 
       unless downloaded_archive_exists? or File.directory?(location)
         # TODO raise friendly error
