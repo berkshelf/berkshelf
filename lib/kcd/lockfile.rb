@@ -1,5 +1,4 @@
-require 'knife_cookbook_dependencies/alias'
-require 'knife_cookbook_dependencies/cookbookfile'
+require 'kcd/cookbookfile'
 
 module KnifeCookbookDependencies
   class Lockfile

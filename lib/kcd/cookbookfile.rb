@@ -1,5 +1,4 @@
-require 'knife_cookbook_dependencies/alias'
-require 'knife_cookbook_dependencies/dsl'
+require 'kcd/dsl'
 
 module KnifeCookbookDependencies
   class Cookbookfile
