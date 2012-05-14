@@ -29,7 +29,7 @@ module KnifeCookbookDependencies
           exit 100
         end
 
-        KCD.exclude(without)
+        KCD.shelf.exclude(without)
         KCD.shelf.resolve_dependencies
         KCD.shelf.populate_cookbooks_directory
         KCD.shelf.write_lockfile unless lockfile
