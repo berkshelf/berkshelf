@@ -1,6 +1,44 @@
 = Knife Cookbook Dependencies
 
-= Running tests
+A knife plugin to manage cookbook dependencies.
+
+== Getting Started
+
+To start, just install the plugin
+
+    $ gem install knife_cookbook_dependencies
+
+And add your dependencies to the Cookbookfile in the top-level of your repo
+
+    cookbook 'memcached'
+    cookbook 'ngnix'
+
+Install the dependencies to cookbooks/
+
+    $ knife cookbook dependencies install
+
+Put dependencies in a group so they can be ignored at deploy time. This is especially helpful
+when working with chef-solo.
+
+    group :solo do
+      cookbook 'base'
+    end
+
+If you only have 1 in the group, you can pass it as an option
+
+    cookbook 'base', :group => 'solo'
+
+By default, cookbooks are loaded from the community site. You can load them from a git repository
+
+    cookbook 'nfs', :git => 'git://github.com/RiotGames/cookbook-nfs.git'
+
+Or from a local path
+
+    cookbook 'myapp', :path => './cookbook'
+
+= Contributing
+
+== Running tests
 
 === Install prerequisites
 
