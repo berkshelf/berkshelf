@@ -3,13 +3,14 @@ require 'chef/knife/cookbook_site_show'
 
 module KnifeCookbookDependencies
   class Cookbook
-    attr_reader :name, :version_constraints
+    attr_reader :name, :version_constraints, :groups
     attr_accessor :locked_version
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
     def initialize(*args)
       @options = args.last.is_a?(Hash) ? args.pop : {}
+      @groups = []
 
       if from_git? and from_path?
         raise "Invalid: path and git options provided to #{args[0]}. They are mutually exclusive."
@@ -24,6 +25,9 @@ module KnifeCookbookDependencies
                                constraint_string
                              end)
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
+      add_group(KnifeCookbookDependencies.shelf.active_group) if KnifeCookbookDependencies.shelf.active_group
+      add_group(@options[:group]) if @options[:group]
+      add_group(:default) if @groups.empty?
     end
 
     def add_version_constraint(constraint_string)
@@ -165,6 +169,14 @@ module KnifeCookbookDependencies
 
     def git_ref
       (from_git? && @git) ? @git.ref : nil
+    end
+
+    def add_group(*groups)
+      groups = groups.first if groups.first.is_a?(Array)
+      groups.each do |group|
+        group = group.to_sym
+        @groups << group unless @groups.include?(group)
+      end
     end
 
     def downloaded_archive_exists?
