@@ -4,6 +4,7 @@ require 'archive/tar/minitar'
 require 'chef/config'
 require 'chef/knife/cookbook_site_download'
 
+require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/version'
 require 'knife_cookbook_dependencies/shelf'
 require 'knife_cookbook_dependencies/cookbook'
@@ -22,7 +23,7 @@ module KnifeCookbookDependencies
     attr_accessor :ui
 
     def shelf
-      @shelf ||= KnifeCookbookDependencies::Shelf.new
+      @shelf ||= KCD::Shelf.new
     end
 
     def clear_shelf!

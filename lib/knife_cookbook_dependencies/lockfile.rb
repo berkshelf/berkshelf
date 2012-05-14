@@ -1,3 +1,4 @@
+require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/cookbookfile'
 
 module KnifeCookbookDependencies
@@ -6,7 +7,7 @@ module KnifeCookbookDependencies
       @cookbooks = cookbooks
     end
 
-    def write(filename = KnifeCookbookDependencies::DEFAULT_FILENAME)
+    def write(filename = KCD::DEFAULT_FILENAME)
       content = @cookbooks.map do |cookbook|
                   get_cookbook_definition(cookbook)
                 end.join("\n")

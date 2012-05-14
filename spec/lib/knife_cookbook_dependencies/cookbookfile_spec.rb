@@ -4,7 +4,7 @@ module KnifeCookbookDependencies
   describe Cookbookfile do
     describe '::read' do
       after do
-        KnifeCookbookDependencies.shelf.cookbooks.each(&:clean)
+        KCD.shelf.cookbooks.each(&:clean)
       end
 
       it "should read the cookbookfile and build a dependency list" do
@@ -16,10 +16,10 @@ cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_ho
 COOKBOOKFILE
 
         ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |dep|
-          KnifeCookbookDependencies.shelf.cookbooks.collect(&:name).should include dep
+          KCD.shelf.cookbooks.collect(&:name).should include dep
         end
 
-        KnifeCookbookDependencies.shelf.populate_cookbooks_directory
+        KCD.shelf.populate_cookbooks_directory
       end
     end
   end
