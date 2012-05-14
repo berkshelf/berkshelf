@@ -193,7 +193,7 @@ module KnifeCookbookDependencies
         begin
           yield
         rescue Net::HTTPServerException => e
-          KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
+          KCD.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
           exit 100
         end
       end

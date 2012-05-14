@@ -40,7 +40,7 @@ Spork.prefork do
   end
 
   def example_cookbook_from_path
-    @example_cookbook_from_path ||= KnifeCookbookDependencies::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
+    @example_cookbook_from_path ||= KCD::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
   end
 
   def with_cookbookfile content
