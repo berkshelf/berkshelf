@@ -2,7 +2,8 @@ module KnifeCookbookDependencies
   class Cookbookfile
     class << self
       include DSL
-      def read content
+
+      def read(content)
         # This will populate KnifeCookbookDependencies.shelf. TODO: consider making this
         # build and return the shelf rather than building the shelf as
         # a side effect.

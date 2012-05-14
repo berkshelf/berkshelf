@@ -41,6 +41,5 @@ module KnifeCookbookDependencies
       # when running instance_eval on a metadata.rb that overrides
       # the name
     end
-
   end
 end
