@@ -1,5 +1,3 @@
-require 'knife_cookbook_dependencies/knife_utils'
-require 'knife_cookbook_dependencies/git'
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 
@@ -10,7 +8,7 @@ module KnifeCookbookDependencies
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
-    def initialize *args
+    def initialize(*args)
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
       if from_git? and from_path?
@@ -28,7 +26,7 @@ module KnifeCookbookDependencies
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
     end
 
-    def add_version_constraint constraint_string
+    def add_version_constraint(constraint_string)
       @version_constraints ||= []
       @version_constraints << DepSelector::VersionConstraint.new(constraint_string) unless @version_constraints.collect(&:to_s).include? constraint_string
     end
@@ -36,22 +34,21 @@ module KnifeCookbookDependencies
     def download(show_output = false)
       return if @downloaded
       return if !from_git? and downloaded_archive_exists?
+      return if from_path? and !from_git?
 
       if from_git? 
-        @git ||= KnifeCookbookDependencies::Git.new(@options[:git])
+        @git ||= KCD::Git.new(@options[:git])
         @git.clone
         @git.checkout(@options[:ref]) if @options[:ref]
         @options[:path] ||= @git.directory
-      elsif from_path?
-        return
       else
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
         rescue_404 do
-          output = KnifeCookbookDependencies::KnifeUtils.capture_knife_output(csd)
+          output = KCD::KnifeUtils.capture_knife_output(csd)
         end
 
         if show_output
-          puts output
+          output.split(/\r?\n/).each { |x| KCD.ui.info(x) }
         end
       end
 
@@ -59,29 +56,31 @@ module KnifeCookbookDependencies
     end
 
     def copy_to_cookbooks_directory
-      FileUtils.mkdir_p KnifeCookbookDependencies::COOKBOOKS_DIRECTORY
+      FileUtils.mkdir_p KCD::COOKBOOKS_DIRECTORY
 
-      target = File.join(KnifeCookbookDependencies::COOKBOOKS_DIRECTORY, @name)
+      target = File.join(KCD::COOKBOOKS_DIRECTORY, @name)
       FileUtils.rm_rf target
       FileUtils.cp_r full_path, target
       FileUtils.rm_rf File.join(target, '.git') if from_git?
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
-    def unpack(location = unpacked_cookbook_path, do_clean = false, do_download = true)
+    def unpack(location = unpacked_cookbook_path, options={})
       return true if from_path?
-      self.clean(File.join(location, @name)) if do_clean
-      download if do_download
-      fname = download_filename
-      if File.directory? location
-        true # noop
-      elsif downloaded_archive_exists?
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(fname)), location)
-        true
-      else
-        # TODO: Raise friendly error message class
+
+      clean     if options[:clean]
+      download  if options[:download]
+
+      unless downloaded_archive_exists? or File.directory?(location)
+        # TODO raise friendly error
         raise "Archive hasn't been downloaded yet"
       end
+
+      if downloaded_archive_exists?
+        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(download_filename)), location)
+      end
+
+      return true
     end
 
     def dependencies
@@ -97,11 +96,11 @@ module KnifeCookbookDependencies
       versions.reverse.each do |v|
         return v if version_constraints_include? v
       end
-      KnifeCookbookDependencies.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
+      KCD.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
       exit 1
     end
 
-    def version_constraints_include? version
+    def version_constraints_include?(version)
       @version_constraints.inject(true) { |check, constraint| check and constraint.include? version }
     end
 
@@ -121,7 +120,7 @@ module KnifeCookbookDependencies
     def cookbook_data
       css = Chef::Knife::CookbookSiteShow.new([@name])
       rescue_404 do
-        @cookbook_data ||= JSON.parse(KnifeCookbookDependencies::KnifeUtils.capture_knife_output(css))
+        @cookbook_data ||= JSON.parse(KCD::KnifeUtils.capture_knife_output(css))
       end
     end
 
@@ -149,7 +148,7 @@ module KnifeCookbookDependencies
     def metadata_file
       download
       unpack
-      File.open(metadata_filename).read
+      File.read(metadata_filename)
     end
 
     def from_path?
@@ -189,7 +188,7 @@ module KnifeCookbookDependencies
       begin
         yield
       rescue Net::HTTPServerException => e
-        KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
+        KCD.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
         exit 100
       end
     end

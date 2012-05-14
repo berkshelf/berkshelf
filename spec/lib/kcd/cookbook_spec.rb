@@ -15,7 +15,7 @@ module KnifeCookbookDependencies
 
       # FIXME: This test is flakey
       it "should raise an error if the cookbook is unpacked without being downloaded first" do
-        -> { subject.unpack(subject.unpacked_cookbook_path, true, false) }.should raise_error
+        -> { subject.unpack(subject.unpacked_cookbook_path, :clean => true, :download => false) }.should raise_error
       end
 
       describe '#unpacked_cookbook_path' do
@@ -36,7 +36,7 @@ module KnifeCookbookDependencies
       describe "#copy_to" do
         it "should copy from the unpacked cookbook directory to the target" do
           example_cookbook_from_path.copy_to_cookbooks_directory
-          File.exists?(File.join(KnifeCookbookDependencies::COOKBOOKS_DIRECTORY, example_cookbook_from_path.name)).should be_true
+          File.exists?(File.join(KCD::COOKBOOKS_DIRECTORY, example_cookbook_from_path.name)).should be_true
         end
       end
     end
@@ -90,7 +90,7 @@ module KnifeCookbookDependencies
     describe '#dependencies' do
       it "should not contain the cookbook itself" do
         # TODO: Mock
-        Cookbook.new('riot_base', git: 'git@github.riotgames.com:cookbooks/riot_base.git').dependencies.collect(&:name).include?('riot_base').should_not be_true
+        Cookbook.new('nginx').dependencies.collect(&:name).include?('nginx').should_not be_true
       end
     end
 
