@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'knife_cookbook_dependencies/dsl'
+require 'kcd/dsl'
 
 module KnifeCookbookDependencies
   describe DSL do
