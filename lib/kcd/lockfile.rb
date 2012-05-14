@@ -1,6 +1,3 @@
-require 'knife_cookbook_dependencies/alias'
-require 'knife_cookbook_dependencies/cookbookfile'
-
 module KnifeCookbookDependencies
   class Lockfile
     def initialize(cookbooks)

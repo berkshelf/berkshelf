@@ -1,6 +1,3 @@
-require 'knife_cookbook_dependencies/alias'
-require 'knife_cookbook_dependencies/lockfile'
-
 module KnifeCookbookDependencies
   class Shelf
     META_COOKBOOK_NAME = 'cookbook_dependencies_shelf'

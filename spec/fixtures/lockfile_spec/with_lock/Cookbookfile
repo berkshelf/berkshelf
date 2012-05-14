@@ -1,0 +1,1 @@
+cookbook 'nginx', '= 0.101.0'

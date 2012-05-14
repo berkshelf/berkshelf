@@ -1,5 +1,3 @@
-require 'knife_cookbook_dependencies/alias'
-
 module KnifeCookbookDependencies
   class DependencyReader
     attr_reader :dependency_list, :cookbook
@@ -43,6 +41,5 @@ module KnifeCookbookDependencies
       # when running instance_eval on a metadata.rb that overrides
       # the name
     end
-
   end
 end

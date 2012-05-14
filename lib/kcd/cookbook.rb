@@ -1,6 +1,3 @@
-require 'knife_cookbook_dependencies/alias'
-require 'knife_cookbook_dependencies/knife_utils'
-require 'knife_cookbook_dependencies/git'
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 
@@ -11,7 +8,7 @@ module KnifeCookbookDependencies
 
     DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
 
-    def initialize *args
+    def initialize(*args)
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
       if from_git? and from_path?
@@ -29,7 +26,7 @@ module KnifeCookbookDependencies
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
     end
 
-    def add_version_constraint constraint_string
+    def add_version_constraint(constraint_string)
       @version_constraints ||= []
       @version_constraints << DepSelector::VersionConstraint.new(constraint_string) unless @version_constraints.collect(&:to_s).include? constraint_string
     end
@@ -69,7 +66,7 @@ module KnifeCookbookDependencies
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
-    def unpack(location = unpacked_cookbook_path, options={ })
+    def unpack(location = unpacked_cookbook_path, options={})
       return true if from_path?
 
       clean     if options[:clean]
@@ -104,7 +101,7 @@ module KnifeCookbookDependencies
       exit 1
     end
 
-    def version_constraints_include? version
+    def version_constraints_include?(version)
       @version_constraints.inject(true) { |check, constraint| check and constraint.include? version }
     end
 
@@ -194,11 +191,10 @@ module KnifeCookbookDependencies
         begin
           yield
         rescue Net::HTTPServerException => e
-          KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
+          KCD.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
           exit 100
         end
       end
     end
-
   end
 end
