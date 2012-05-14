@@ -23,8 +23,14 @@ module KnifeCookbookDependencies
         else
           filename = KCD::DEFAULT_FILENAME unless File.exist?(filename)
         end
-          
-        read File.read(filename)
+
+        begin
+          read File.read(filename)
+        rescue Errno::ENOENT => e
+          KCD.ui.fatal ErrorMessages.missing_cookbookfile
+          exit 100
+        end
+
         KCD.shelf.resolve_dependencies
         KCD.shelf.populate_cookbooks_directory
         KCD.shelf.write_lockfile unless lockfile

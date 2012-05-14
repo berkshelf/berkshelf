@@ -46,7 +46,10 @@ module KnifeCookbookDependencies
         @options[:path] ||= @git.directory
       else
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
-        output = KCD::KnifeUtils.capture_knife_output(csd)
+
+        self.class.rescue_404 do
+          output = KCD::KnifeUtils.capture_knife_output(csd)
+        end
 
         if show_output
           output.split(/\r?\n/).each { |x| KCD.ui.info(x) }
@@ -120,7 +123,10 @@ module KnifeCookbookDependencies
 
     def cookbook_data
       css = Chef::Knife::CookbookSiteShow.new([@name])
-      @cookbook_data ||= JSON.parse(KCD::KnifeUtils.capture_knife_output(css))
+
+      self.class.rescue_404 do
+        @cookbook_data ||= JSON.parse(KCD::KnifeUtils.capture_knife_output(css))
+      end
     end
 
     def download_filename
@@ -182,5 +188,17 @@ module KnifeCookbookDependencies
     def == other
       other.name == @name and other.version_constraints == @version_constraints
     end
+
+    class << self
+      def rescue_404
+        begin
+          yield
+        rescue Net::HTTPServerException => e
+          KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
+          exit 100
+        end
+      end
+    end
+
   end
 end
