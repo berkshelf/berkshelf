@@ -5,6 +5,7 @@ describe KCD::Lockfile do
     before do
       @old_dir = Dir.pwd
       Dir.chdir "spec/fixtures/lockfile_spec/without_lock"
+      KCD.clear_shelf!
     end
 
     after do
@@ -33,6 +34,7 @@ describe KCD::Lockfile do
       @old_dir = Dir.pwd
       Dir.chdir "spec/fixtures/lockfile_spec/with_lock"
       KCD::Cookbookfile.process_install
+      KCD.clear_shelf!
     end
 
     after do
