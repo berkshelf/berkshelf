@@ -1,5 +1,3 @@
-require 'kcd/dsl'
-
 module KnifeCookbookDependencies
   class Cookbookfile
     class << self

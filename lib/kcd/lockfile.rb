@@ -1,5 +1,3 @@
-require 'kcd/cookbookfile'
-
 module KnifeCookbookDependencies
   class Lockfile
     def initialize(cookbooks)

@@ -1,8 +1,6 @@
 require 'dep_selector'
 require 'zlib'
 require 'archive/tar/minitar'
-require 'chef/config'
-require 'chef/knife/cookbook_site_download'
 
 require 'kcd/version'
 require 'kcd/shelf'
@@ -11,12 +9,15 @@ require 'kcd/metacookbook'
 require 'kcd/dependency_reader'
 require 'kcd/dsl'
 require 'kcd/cookbookfile'
+require 'kcd/lockfile'
 require 'kcd/git'
 require 'kcd/error_messages'
 
 module KnifeCookbookDependencies
   DEFAULT_FILENAME = 'Cookbookfile'
   COOKBOOKS_DIRECTORY = 'cookbooks'
+
+  autoload :KnifeUtils, 'kcd/knife_utils'
 
   class << self
     attr_accessor :ui

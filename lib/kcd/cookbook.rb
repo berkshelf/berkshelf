@@ -1,5 +1,3 @@
-require 'kcd/knife_utils'
-require 'kcd/git'
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 
