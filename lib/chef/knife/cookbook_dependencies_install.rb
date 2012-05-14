@@ -1,5 +1,5 @@
 require 'chef/knife'
-require 'knife_cookbook_dependencies'
+require 'kcd'
 
 module KnifeCookbookDependencies
   class CookbookDependenciesInstall < Chef::Knife
@@ -12,11 +12,12 @@ module KnifeCookbookDependencies
 
     def run
       ui.info 'Reading Cookbookfile'
-      ::KnifeCookbookDependencies.ui = ui
-      ::KnifeCookbookDependencies::Cookbookfile.process_install(config[:without])
+      ::KCD.ui = ui
+      ::KCD::Cookbookfile.process_install(config[:without])
     end
   end
   
-  class CookbookDepsInstall < CookbookDependenciesInstall; end
-
+  class CookbookDepsInstall < CookbookDependenciesInstall
+    banner "knife cookbook deps install"
+  end
 end

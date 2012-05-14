@@ -1,5 +1,3 @@
-require 'knife_cookbook_dependencies/lockfile'
-
 module KnifeCookbookDependencies
   class Shelf
     META_COOKBOOK_NAME = 'cookbook_dependencies_shelf'
@@ -31,7 +29,7 @@ module KnifeCookbookDependencies
     end
 
     def write_lockfile
-      KnifeCookbookDependencies::Lockfile.new(@cookbooks).write
+      KCD::Lockfile.new(@cookbooks).write
     end
 
     def get_cookbook(name)

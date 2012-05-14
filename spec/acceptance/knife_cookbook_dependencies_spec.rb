@@ -14,7 +14,7 @@ describe "knife cookbook dependencies install" do
       with_cookbookfile %Q[cookbook "#{cookbook_name}"] do
         cmd = 'cat nofile' #'knife cookbook dependencies install'
         process = run(cmd)
-        process.output(true).should match(/#{KnifeCookbookDependencies::ErrorMessages.missing_cookbook(cookbook_name)}/)
+        process.output(true).should match(/#{KCD::ErrorMessages.missing_cookbook(cookbook_name)}/)
       end
     end
     it "for missing Cookbookfile"

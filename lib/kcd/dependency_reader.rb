@@ -19,7 +19,7 @@ module KnifeCookbookDependencies
     def depends(*args)
       name, constraint = args
 
-      dependency_cookbook = KnifeCookbookDependencies.shelf.get_cookbook(name) || get_dependency(name)
+      dependency_cookbook = KCD.shelf.get_cookbook(name) || get_dependency(name)
       if dependency_cookbook
         dependency_cookbook.add_version_constraint constraint
       else
@@ -41,6 +41,5 @@ module KnifeCookbookDependencies
       # when running instance_eval on a metadata.rb that overrides
       # the name
     end
-
   end
 end
