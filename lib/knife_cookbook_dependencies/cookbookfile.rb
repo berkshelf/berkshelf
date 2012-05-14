@@ -1,3 +1,4 @@
+require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/dsl'
 
 module KnifeCookbookDependencies
@@ -24,11 +25,12 @@ module KnifeCookbookDependencies
         end
 
         begin
-          read File.open(filename).read
+          read File.read(filename)
         rescue Errno::ENOENT => e
           KCD.ui.fatal ErrorMessages.missing_cookbookfile
           exit 100
         end
+
         KCD.shelf.resolve_dependencies
         KCD.shelf.populate_cookbooks_directory
         KCD.shelf.write_lockfile unless lockfile

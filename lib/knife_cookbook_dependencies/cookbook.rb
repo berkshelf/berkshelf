@@ -1,3 +1,4 @@
+require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/knife_utils'
 require 'knife_cookbook_dependencies/git'
 require 'chef/knife/cookbook_site_download'
@@ -45,6 +46,7 @@ module KnifeCookbookDependencies
         @options[:path] ||= @git.directory
       else
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
+
         self.class.rescue_404 do
           output = KCD::KnifeUtils.capture_knife_output(csd)
         end
@@ -121,6 +123,7 @@ module KnifeCookbookDependencies
 
     def cookbook_data
       css = Chef::Knife::CookbookSiteShow.new([@name])
+
       self.class.rescue_404 do
         @cookbook_data ||= JSON.parse(KCD::KnifeUtils.capture_knife_output(css))
       end

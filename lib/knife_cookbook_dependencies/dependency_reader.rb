@@ -1,3 +1,5 @@
+require 'knife_cookbook_dependencies/alias'
+
 module KnifeCookbookDependencies
   class DependencyReader
     attr_reader :dependency_list, :cookbook

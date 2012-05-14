@@ -12,6 +12,7 @@ module KnifeCookbookDependencies
     end
   end
   
-  class CookbookDepsInstall < CookbookDependenciesInstall; end
-
+  class CookbookDepsInstall < CookbookDependenciesInstall
+    banner "knife cookbook deps install"
+  end
 end
