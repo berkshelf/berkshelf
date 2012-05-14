@@ -28,3 +28,4 @@ Bundler will install all gems and their dependencies required for testing and de
 * Josiah Kiehl (<josiah@skirmisher.net>)
 * Jamie Winsor (<jamie@vialstudios.com>)
 * Erik Hollensbe (<erik@hollensbe.org>)
+* Michael Ivey (<ivey@gweezlebur.com>)
