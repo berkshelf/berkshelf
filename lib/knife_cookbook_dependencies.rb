@@ -40,3 +40,6 @@ module KnifeCookbookDependencies
     end
   end
 end
+
+# Alias for {KnifeCookbookDependencies}
+KCD = KnifeCookbookDependencies
