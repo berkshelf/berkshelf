@@ -1,3 +1,4 @@
+require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/dsl'
 
 module KnifeCookbookDependencies
@@ -14,24 +15,24 @@ module KnifeCookbookDependencies
       def process_install
         # TODO: friendly error message when the file doesn't exist
         
-        filename = KnifeCookbookDependencies::DEFAULT_FILENAME + ".lock"
+        filename = KCD::DEFAULT_FILENAME + ".lock"
         lockfile = false
 
         if File.exist?(filename)
           lockfile = true
         else
-          filename = KnifeCookbookDependencies::DEFAULT_FILENAME unless File.exist?(filename)
+          filename = KCD::DEFAULT_FILENAME unless File.exist?(filename)
         end
 
         begin
           read File.open(filename).read
         rescue Errno::ENOENT => e
-          KnifeCookbookDependencies.ui.fatal ErrorMessages.missing_cookbookfile
+          KCD.ui.fatal ErrorMessages.missing_cookbookfile
           exit 100
         end
-        KnifeCookbookDependencies.shelf.resolve_dependencies
-        KnifeCookbookDependencies.shelf.populate_cookbooks_directory
-        KnifeCookbookDependencies.shelf.write_lockfile unless lockfile
+        KCD.shelf.resolve_dependencies
+        KCD.shelf.populate_cookbooks_directory
+        KCD.shelf.write_lockfile unless lockfile
       end
     end
   end

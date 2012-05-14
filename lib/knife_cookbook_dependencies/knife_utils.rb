@@ -1,5 +1,6 @@
 require 'stringio'
 require 'chef/config'
+require 'knife_cookbook_dependencies/alias'
 
 module KnifeCookbookDependencies
   module KnifeUtils
