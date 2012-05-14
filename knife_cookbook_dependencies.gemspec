@@ -1,4 +1,5 @@
-# -*- encoding: utf-8 -*-
+# -*- encoding: utf-8; mode: ruby -*-
+
 require File.expand_path('../lib/kcd/version', __FILE__)
 
 Gem::Specification.new do |s|
