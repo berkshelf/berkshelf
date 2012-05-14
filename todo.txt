@@ -9,6 +9,7 @@ Add path block support
       cookbook 'ntp'
       cookbook 'mysql'
     end
+Supress dep_selector stdout
 Optimize cookbook retrieval
  - Possible: Pester Opscode till they release an API call to retrieve cookbook dependencies
  - Possible: Keep an index of dependencies so we don't have to download cookbook versions we've seen before
