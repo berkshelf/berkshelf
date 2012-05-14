@@ -1,5 +1,5 @@
 require 'chef/knife'
-require 'knife_cookbook_dependencies'
+require 'kcd'
 
 module KnifeCookbookDependencies
   class CookbookDependenciesInstall < Chef::Knife

@@ -55,5 +55,5 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  require 'knife_cookbook_dependencies'
+  require 'kcd'
 end

@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/knife_cookbook_dependencies/version', __FILE__)
+require File.expand_path('../lib/kcd/version', __FILE__)
 
 Gem::Specification.new do |s|
   # TODO FIXME need to modify all of these
