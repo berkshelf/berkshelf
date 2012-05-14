@@ -10,7 +10,7 @@ module KnifeCookbookDependencies
         instance_eval(content)
       end
 
-      def process_install
+      def process_install(without=nil)
         # TODO: friendly error message when the file doesn't exist
         
         filename = KCD::DEFAULT_FILENAME + ".lock"
@@ -29,6 +29,7 @@ module KnifeCookbookDependencies
           exit 100
         end
 
+        KCD.shelf.exclude(without)
         KCD.shelf.resolve_dependencies
         KCD.shelf.populate_cookbooks_directory
         KCD.shelf.write_lockfile unless lockfile

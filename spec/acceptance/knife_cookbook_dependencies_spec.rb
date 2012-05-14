@@ -18,5 +18,6 @@ describe "knife cookbook dependencies install" do
       end
     end
     it "for missing Cookbookfile"
+    it "for --without option"
   end
 end
