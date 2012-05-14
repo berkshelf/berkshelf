@@ -1,5 +1,4 @@
 require 'tempfile'
-require 'knife_cookbook_dependencies/alias'
 
 module KnifeCookbookDependencies
   class Git

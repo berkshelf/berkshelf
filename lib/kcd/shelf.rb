@@ -1,5 +1,4 @@
-require 'knife_cookbook_dependencies/alias'
-require 'knife_cookbook_dependencies/lockfile'
+require 'kcd/lockfile'
 
 module KnifeCookbookDependencies
   class Shelf

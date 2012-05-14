@@ -1,5 +1,3 @@
-require 'knife_cookbook_dependencies/alias'
-
 module KnifeCookbookDependencies
   module DSL
     def cookbook *args
