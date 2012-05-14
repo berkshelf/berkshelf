@@ -1,4 +1,3 @@
-require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/dsl'
 
 module KnifeCookbookDependencies

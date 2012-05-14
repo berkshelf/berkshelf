@@ -1,4 +1,3 @@
-require 'knife_cookbook_dependencies/alias'
 require 'knife_cookbook_dependencies/knife_utils'
 require 'knife_cookbook_dependencies/git'
 require 'chef/knife/cookbook_site_download'
