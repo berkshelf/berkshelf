@@ -20,3 +20,4 @@ cookbooks
 *.tar*
 \#*
 ^Cookbookfile*
+*.sw[op]

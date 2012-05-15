@@ -47,17 +47,9 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe '#version_from_metadata_file' do
-      it "should be able to handle single quoted strings" do
-        Cookbook.any_instance.stub(:metadata_file).and_return(%Q{version '1.2.3'})
-
-        subject.version_from_metadata_file.should == DepSelector::Version.new('1.2.3')
-      end
-
-      it "should be able to handle double quoted strings" do
-        Cookbook.any_instance.stub(:metadata_file).and_return(%Q{version "1.2.3"})
-
-        subject.version_from_metadata_file.should == DepSelector::Version.new('1.2.3')
+    describe '#version_from_metadata' do
+      it "should return the correct version" do
+        subject.version_from_metadata.should == DepSelector::Version.new('1.1.8')
       end
     end
 
