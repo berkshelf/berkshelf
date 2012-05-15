@@ -1,5 +1,6 @@
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
+require 'chef/cookbook/metadata'
 
 module KnifeCookbookDependencies
   class Cookbook
@@ -20,7 +21,7 @@ module KnifeCookbookDependencies
       @name, constraint_string = args
 
       add_version_constraint(if from_path?
-                               "= #{version_from_metadata_file.to_s}"
+                               "= #{version_from_metadata.to_s}"
                              else
                                constraint_string
                              end)
@@ -95,7 +96,7 @@ module KnifeCookbookDependencies
 
     def latest_constrained_version
       return @locked_version if @locked_version
-      return version_from_metadata_file if from_path? or from_git?
+      return version_from_metadata if from_path? or from_git?
 
       versions.reverse.each do |v|
         return v if version_constraints_include? v
@@ -110,15 +111,12 @@ module KnifeCookbookDependencies
 
     def versions
       return [latest_constrained_version] if @locked_version
-      return [version_from_metadata_file] if from_path? or from_git?
+      return [version_from_metadata] if from_path? or from_git?
       cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
     end
 
-    def version_from_metadata_file
-      # TODO: make a generic metadata file reader to replace
-      # dependencyreader and incorporate pulling the version as
-      # well... knife probably has something like this I can use/steal
-      DepSelector::Version.new(metadata_file.match(/version\s+[\"\']([0-9\.]*)[\"\']/)[1])
+    def version_from_metadata
+      DepSelector::Version.new(metadata.version)
     end
 
     def cookbook_data
@@ -149,10 +147,13 @@ module KnifeCookbookDependencies
       File.join(full_path, "metadata.rb")
     end
 
-    def metadata_file
+    def metadata
       download
       unpack
-      File.read(metadata_filename)
+
+      cookbook_metadata = Chef::Cookbook::Metadata.new
+      cookbook_metadata.from_file(metadata_filename)
+      cookbook_metadata
     end
 
     def from_path?

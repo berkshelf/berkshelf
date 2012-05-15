@@ -22,3 +22,4 @@ cookbooks
 ^Cookbookfile*
 .DS_Store
 spec/fixtures/vcr_cassettes/*
+*.sw[op]
