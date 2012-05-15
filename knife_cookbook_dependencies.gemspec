@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'chef',            '~> 0.10.0'
   s.add_runtime_dependency 'minitar'
 
+  s.add_development_dependency 'cucumber'
   s.add_development_dependency 'vcr'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'aruba'

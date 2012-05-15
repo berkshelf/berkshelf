@@ -17,7 +17,6 @@ describe "knife cookbook dependencies install" do
         process.output(true).should match(/#{KCD::ErrorMessages.missing_cookbook(cookbook_name)}/)
       end
     end
-    it "for missing Cookbookfile"
     it "for --without option"
   end
 end
