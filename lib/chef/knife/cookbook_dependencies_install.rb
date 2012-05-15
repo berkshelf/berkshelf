@@ -18,6 +18,6 @@ module KnifeCookbookDependencies
   end
   
   class CookbookDepsInstall < CookbookDependenciesInstall
-    banner "knife cookbook deps install"
+    banner "knife cookbook deps install (options)"
   end
 end
