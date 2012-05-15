@@ -6,8 +6,8 @@ module KnifeCookbookDependencies
     banner "knife cookbook dependencies install (options)"
 
     option :without,
-      :short => "-W",
-      :long => "--without",
+      :short => "-W WITHOUT",
+      :long => "--without WITHOUT",
       :description => "Exclude cookbooks that are in these groups"
 
     def run

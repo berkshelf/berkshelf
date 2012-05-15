@@ -17,7 +17,7 @@ Feature: --without block
       cookbook "ntp"
     end
     """
-    When I run `knife cookbook dependencies install --without notme`
+    When I run `knife cookbook dependencies install -W notme`
     Then the following directories should exist:
     | cookbooks/mysql   |
     | cookbooks/openssl |
