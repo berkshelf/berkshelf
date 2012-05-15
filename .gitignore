@@ -20,3 +20,5 @@ cookbooks
 *.tar*
 \#*
 ^Cookbookfile*
+.DS_Store
+spec/fixtures/vcr_cassettes/*
