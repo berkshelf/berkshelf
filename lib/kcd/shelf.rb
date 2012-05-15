@@ -51,10 +51,8 @@ module KnifeCookbookDependencies
     end
 
     def exclude(groups)
-      pp groups
       groups = groups.to_s.split(/[,:]/) unless groups.is_a?(Array)
       @excluded_groups = groups.collect {|c| c.to_sym}
-      pp @excluded_groups
     end
 
     def cookbook_groups
