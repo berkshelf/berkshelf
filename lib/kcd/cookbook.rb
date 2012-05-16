@@ -36,7 +36,7 @@ module KnifeCookbookDependencies
       @version_constraints << DepSelector::VersionConstraint.new(constraint_string) unless @version_constraints.collect(&:to_s).include? constraint_string
     end
 
-    def download(show_output = true)
+    def download(show_output = false)
       return if @downloaded
       return if !from_git? and downloaded_archive_exists?
       return if from_path? and !from_git?
@@ -47,6 +47,7 @@ module KnifeCookbookDependencies
         @git.checkout(@options[:ref]) if @options[:ref]
         @options[:path] ||= @git.directory
       else
+        FileUtils.mkdir_p KCD::TMP_DIRECTORY
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
 
         output = ''
