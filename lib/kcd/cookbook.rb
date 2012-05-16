@@ -214,7 +214,6 @@ module KnifeCookbookDependencies
 
     private
       def depends(name, constraint = nil)
-        @dependencies ||= []
         dependency_cookbook = KCD.shelf.get_cookbook(name) || @dependencies.find { |c| c.name == name }
         if dependency_cookbook
           dependency_cookbook.add_version_constraint constraint
