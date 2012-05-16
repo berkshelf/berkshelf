@@ -36,7 +36,7 @@ module KnifeCookbookDependencies
       @version_constraints << DepSelector::VersionConstraint.new(constraint_string) unless @version_constraints.collect(&:to_s).include? constraint_string
     end
 
-    def download(show_output = false)
+    def download(show_output = true)
       return if @downloaded
       return if !from_git? and downloaded_archive_exists?
       return if from_path? and !from_git?
