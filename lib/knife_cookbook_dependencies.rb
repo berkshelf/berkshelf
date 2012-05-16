@@ -22,6 +22,10 @@ module KnifeCookbookDependencies
   class << self
     attr_accessor :ui
 
+    def root
+      File.join(File.dirname(__FILE__), '..')
+    end
+
     def shelf
       @shelf ||= KCD::Shelf.new
     end

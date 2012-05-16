@@ -156,12 +156,16 @@ module KnifeCookbookDependencies
       cookbook_metadata
     end
 
+    def local_path
+      @options[:path]
+    end
+
     def from_path?
-      !!@options[:path]
+      !!local_path
     end
 
     def from_git?
-      !!@options[:git]
+      !!git_repo
     end
 
     def git_repo
