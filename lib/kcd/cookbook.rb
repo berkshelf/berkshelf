@@ -91,7 +91,13 @@ module KnifeCookbookDependencies
     def dependencies
       download
       unpack
-      @dependencies ||= DependencyReader.new(self).read
+
+      unless @dependencies
+        @dependencies = []
+        metadata.dependencies.each { |name, constraint| depends(name, constraint) }
+      end
+
+      @dependencies
     end
 
     def latest_constrained_version
@@ -205,5 +211,15 @@ module KnifeCookbookDependencies
         exit 100
       end
     end
+
+    private
+      def depends(name, constraint = nil)
+        dependency_cookbook = KCD.shelf.get_cookbook(name) || @dependencies.find { |c| c.name == name }
+        if dependency_cookbook
+          dependency_cookbook.add_version_constraint constraint
+        else
+          @dependencies << Cookbook.new(name, constraint) 
+        end
+      end
   end
 end
