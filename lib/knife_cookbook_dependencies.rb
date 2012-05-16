@@ -1,20 +1,8 @@
-require 'dep_selector'
-require 'zlib'
-require 'archive/tar/minitar'
-
-require 'kcd/version'
-require 'kcd/shelf'
-require 'kcd/cookbook'
-require 'kcd/metacookbook'
-require 'kcd/dsl'
-require 'kcd/cookbookfile'
-require 'kcd/lockfile'
-require 'kcd/git'
-require 'kcd/error_messages'
-
 module KnifeCookbookDependencies
   DEFAULT_FILENAME = 'Cookbookfile'
   COOKBOOKS_DIRECTORY = 'cookbooks'
+  TMP_DIRECTORY = File.join(ENV['TMPDIR'], 'knife_cookbook_dependencies')
+  FileUtils.mkdir_p TMP_DIRECTORY
 
   autoload :KnifeUtils, 'kcd/knife_utils'
 
@@ -39,10 +27,26 @@ module KnifeCookbookDependencies
 
     def clean
       clear_shelf!
+      Lockfile.remove!
       FileUtils.rm_rf COOKBOOKS_DIRECTORY
+      FileUtils.rm_rf TMP_DIRECTORY
     end
   end
 end
 
 # Alias for {KnifeCookbookDependencies}
 KCD = KnifeCookbookDependencies
+
+require 'dep_selector'
+require 'zlib'
+require 'archive/tar/minitar'
+
+require 'kcd/version'
+require 'kcd/shelf'
+require 'kcd/cookbook'
+require 'kcd/metacookbook'
+require 'kcd/dsl'
+require 'kcd/cookbookfile'
+require 'kcd/lockfile'
+require 'kcd/git'
+require 'kcd/error_messages'

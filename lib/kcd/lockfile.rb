@@ -1,14 +1,16 @@
 module KnifeCookbookDependencies
   class Lockfile
+    DEFAULT_FILENAME = "#{KCD::DEFAULT_FILENAME}.lock"
+
     def initialize(cookbooks)
       @cookbooks = cookbooks
     end
 
-    def write(filename = KCD::DEFAULT_FILENAME)
+    def write(filename = DEFAULT_FILENAME)
       content = @cookbooks.map do |cookbook|
                   get_cookbook_definition(cookbook)
                 end.join("\n")
-      File::open("#{filename}.lock", "wb") { |f| f.write content }
+      File::open(DEFAULT_FILENAME, "wb") { |f| f.write content }
     end
 
     def get_cookbook_definition(cookbook)
@@ -23,6 +25,16 @@ module KnifeCookbookDependencies
       end
 
       return definition
+    end
+
+    def remove!
+      self.class.remove!
+    end
+
+    class << self
+      def remove!
+        FileUtils.rm_f DEFAULT_FILENAME
+      end
     end
   end
 end

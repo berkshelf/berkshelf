@@ -20,3 +20,7 @@ Then /^the file "(.*?)" should contain in the current directory:$/ do |filename,
     File.read(filename).should match(Regexp.new(string))
   end
 end
+
+Then /^the temp directory should not exist$/ do
+  File.exists?(KCD::TMP_DIRECTORY).should be_false
+end

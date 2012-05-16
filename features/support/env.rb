@@ -20,9 +20,15 @@ Spork.prefork do
     end
   end
 
-  Before('@slow_process') do
+  Before do  
     @aruba_io_wait_seconds = 5
   end
+
+  Before('@slow_process') do
+    @aruba_io_wait_seconds = 10
+  end
+
+
 end
 
 Spork.each_run do
