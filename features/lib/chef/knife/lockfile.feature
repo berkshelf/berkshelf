@@ -3,7 +3,7 @@ Feature: Cookbookfile.lock
   I want my versions to be locked even when I don't specify versions in my Cookbookfile 
   So when I share my repository, all other developers get the same versions that I did when I installed.
 
-@slow_process
+  @slow_process
   Scenario: Writing the Cookbookfile.lock
     Given I write to "Cookbookfile" with:
     """
