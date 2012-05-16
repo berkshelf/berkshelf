@@ -64,7 +64,7 @@ Spork.prefork do
   end
 
   def with_cookbookfile content
-    Dir.chdir(ENV['TMPDIR']) do
+    Dir.chdir(KCD::TMP_DIRECTORY) do
       File.open('Cookbookfile', 'w') do |f|
         f.write content
       end
@@ -76,4 +76,5 @@ end
 
 Spork.each_run do
   require 'kcd'
+  FileUtils.mkdir_p KCD::TMP_DIRECTORY
 end

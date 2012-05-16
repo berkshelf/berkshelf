@@ -20,7 +20,7 @@ module KnifeCookbookDependencies
 
       describe '#unpacked_cookbook_path' do
         it "should give the path to the directory where the archive should get unpacked" do
-          subject.unpacked_cookbook_path.should == File.join(ENV['TMPDIR'], 'ntp-1.1.8')
+          subject.unpacked_cookbook_path.should == File.join(KCD::TMP_DIRECTORY, 'ntp-1.1.8')
         end
       end
 
