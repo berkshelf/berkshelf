@@ -88,6 +88,7 @@ module KnifeCookbookDependencies
       it "should compute the correct dependencies" do
         cookbook = Cookbook.new('mysql')
         cookbook.dependencies.should == [Cookbook.new('openssl')]
+        cookbook.dependencies.should == [Cookbook.new('openssl')]
       end
     end
 
