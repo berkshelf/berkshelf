@@ -15,3 +15,15 @@ Feature: Clean
     | cookbooks |
     And the file "Cookbookfile.lock" should not exist
     And the temp directory should not exist
+
+  Scenario: knife cookbook deps clean
+    Given I write to "Cookbookfile" with:
+    """
+    cookbook "mysql"
+    """
+    When I run `knife cookbook deps install`
+    And I run `knife cookbook deps clean`
+    Then the following directories should not exist:
+    | cookbooks |
+    And the file "Cookbookfile.lock" should not exist
+    And the temp directory should not exist

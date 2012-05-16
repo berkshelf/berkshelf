@@ -48,6 +48,8 @@ module KnifeCookbookDependencies
         @options[:path] ||= @git.directory
       else
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
+
+        output = ''
         rescue_404 do
           output = KCD::KnifeUtils.capture_knife_output(csd)
         end
