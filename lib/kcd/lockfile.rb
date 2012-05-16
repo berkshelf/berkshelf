@@ -8,7 +8,7 @@ module KnifeCookbookDependencies
       content = @cookbooks.map do |cookbook|
                   get_cookbook_definition(cookbook)
                 end.join("\n")
-      File.write(filename + ".lock", content)
+      File::open("#{filename}.lock", "wb") { |f| f.write content }
     end
 
     def get_cookbook_definition(cookbook)
