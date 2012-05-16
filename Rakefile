@@ -2,6 +2,11 @@ require "bundler/gem_tasks"
 require 'rdoc/task'
 require 'rspec/core/rake_task'
 
+desc "clean VCR cassettes"
+task "vcr:clean" do
+  sh "rm -rf spec/fixtures/vcr_cassettes/*"
+end
+
 desc "check documentation coverage"
 task "rdoc:check" do 
   sh "rdoc -C " + Dir["lib/**/*.rb"].join(" ")
