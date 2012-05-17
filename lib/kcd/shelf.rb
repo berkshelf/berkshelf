@@ -43,7 +43,7 @@ module KnifeCookbookDependencies
 
     def populate_cookbooks_directory
       cookbooks_from_path = @cookbooks.select(&:from_path?) | @cookbooks.select(&:from_git?)
-      
+      KCD.ui.info "Fetching cookbooks:"
       resolve_dependencies.each_pair do |cookbook_name, version|
         cookbook = cookbooks_from_path.select { |c| c.name == cookbook_name }.first || Cookbook.new(cookbook_name, version.to_s)
         @cookbooks << cookbook

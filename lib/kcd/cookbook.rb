@@ -36,7 +36,7 @@ module KnifeCookbookDependencies
       @version_constraints << DepSelector::VersionConstraint.new(constraint_string) unless @version_constraints.collect(&:to_s).include? constraint_string
     end
 
-    def download(show_output = true)
+    def download(show_output = false)
       return if @downloaded
       return if !from_git? and downloaded_archive_exists?
       return if from_path? and !from_git?
@@ -69,7 +69,12 @@ module KnifeCookbookDependencies
       target = File.join(KCD::COOKBOOKS_DIRECTORY, @name)
       FileUtils.rm_rf target
       FileUtils.cp_r full_path, target
+      KCD.ui.info "#{@name} (#{identifier})"
       FileUtils.rm_rf File.join(target, '.git') if from_git?
+    end
+
+    def identifier
+      @git_repo || local_path || latest_constrained_version
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.

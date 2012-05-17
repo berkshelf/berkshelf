@@ -11,7 +11,6 @@ module KnifeCookbookDependencies
       :description => "Exclude cookbooks that are in these groups"
 
     def run
-      ui.info 'Reading Cookbookfile'
       ::KCD.ui = ui
       ::KCD::Cookbookfile.process_install(config[:without])
     end
