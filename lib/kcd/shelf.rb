@@ -22,8 +22,13 @@ module KnifeCookbookDependencies
 
       self.class.populate_graph graph, shelf
 
+      
       selector = DepSelector::Selector.new(graph)
-      solution = selector.find_solution([DepSelector::SolutionConstraint.new(graph.package(META_COOKBOOK_NAME))])
+
+      solution = quietly do
+        selector.find_solution([DepSelector::SolutionConstraint.new(graph.package(META_COOKBOOK_NAME))])
+      end
+
       solution.delete META_COOKBOOK_NAME
       solution
     end
