@@ -10,7 +10,7 @@ module KnifeCookbookDependencies
       content = @cookbooks.map do |cookbook|
                   get_cookbook_definition(cookbook)
                 end.join("\n")
-      File::open(DEFAULT_FILENAME, "wb") { |f| f.write content }
+      File.open(DEFAULT_FILENAME, "wb") { |f| f.write content }
     end
 
     def get_cookbook_definition(cookbook)

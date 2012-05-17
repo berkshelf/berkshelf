@@ -46,7 +46,7 @@ describe KCD::Lockfile do
     it "should populate the cookbooks directory from the lockfile" do
       lockfile = File.read('Cookbookfile.lock')
       lockfile.gsub!(/0.101.0/, '0.101.2')
-      File::open('Cookbookfile.lock', 'wb') { |f| f.write lockfile }
+      File.open('Cookbookfile.lock', 'wb') { |f| f.write lockfile }
       KCD::Cookbookfile.process_install
       File.read('cookbooks/nginx/metadata.rb').scan(/version\s*"([^"]+)"/).first.first.should == "0.101.2"
     end
