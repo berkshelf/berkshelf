@@ -7,7 +7,7 @@ module KnifeCookbookDependencies
     attr_reader :name, :version_constraints, :groups
     attr_accessor :locked_version
 
-    DOWNLOAD_LOCATION = ENV["TMPDIR"] || '/tmp'
+    DOWNLOAD_LOCATION = ::KCD::TMP_DIRECTORY || '/tmp'
 
     def initialize(*args)
       @options = args.last.is_a?(Hash) ? args.pop : {}
@@ -47,7 +47,10 @@ module KnifeCookbookDependencies
         @git.checkout(@options[:ref]) if @options[:ref]
         @options[:path] ||= @git.directory
       else
+        FileUtils.mkdir_p KCD::TMP_DIRECTORY
         csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
+
+        output = ''
         rescue_404 do
           output = KCD::KnifeUtils.capture_knife_output(csd)
         end
