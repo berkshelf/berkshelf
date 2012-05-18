@@ -26,15 +26,15 @@ The CLI consists of 3 commands: install, update, clean
     $ knife cookbook dependencies (install|update) [(--without|-W) group_to_exclude]
     $ knife cookbook dependencies clean
 
-[note]
+note::
 
     `knife cookbook dependencies` subcommands can be used by its alias `knife cookbook deps`
 
-install::  Installs the from the Cookbookfile.lock, or Cookbookfile if the the lockfile does not exist.
+[install]  Installs the from the Cookbookfile.lock, or Cookbookfile if the the lockfile does not exist.
 
-update:: Skips the lockfile and installs fresh
+[update] Skips the lockfile and installs fresh
 
-clean:: Removes all of the files managed by the `Cookbookfile`, including the `Cookbookfile.lock`, temp directory used for downloads and extractions and the cookbooks directory.
+[clean] Removes all of the files managed by the `Cookbookfile`, including the `Cookbookfile.lock`, temp directory used for downloads and extractions and the cookbooks directory.
 
 == The Cookbookfile
 
@@ -46,13 +46,13 @@ Cookbooks without additional options are assumed to come from the Opscode Commun
 
 Options available include:
 
-version constraint::  `cookbook "nginx", "= 0.101.2"    # precisely 0.101.2
-                      `cookbook "mysql", "< 1.2.4"      # less than and not including 1.2.4
-                      `cookbook "openssl", "~> 1.0.0"   # greater than 1.0.0, and up to but not including 1.1.0
+[version constraint]  `cookbook "nginx", "= 0.101.2"`    # precisely 0.101.2
+                      `cookbook "mysql", "< 1.2.4"`      # less than and not including 1.2.4
+                      `cookbook "openssl", "~> 1.0.0"`   # greater than 1.0.0, and up to but not including 1.1.0
 
-git::                 `cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "<any git ref>"` # ref can be a branch name, tag, or commit hash
+[git]                 `cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "<any git ref>"` # ref can be a branch name, tag, or commit hash
 
-path::                `cookbook "my_application", path: "/path/to/location/of"` # knife cookbook dependencies will look in /path/to/location/of/my_application for the cookbook
+[path]                `cookbook "my_application", path: "/path/to/location/of"` # knife cookbook dependencies will look in /path/to/location/of/my_application for the cookbook
 
 Put dependencies in a group so they can be ignored at deploy time. This is especially helpful
 when working with chef-solo.
