@@ -62,16 +62,17 @@ path
     # knife cookbook dependencies will look in /path/to/location/of/my_application for the cookbook
     cookbook "my_application", path: "/path/to/location/of"
 
-Put dependencies in a group so they can be ignored at deploy time. This is especially helpful
-when working with chef-solo.
+=== Groups
+
+Groups can be defined via blocks or inline as an option:
 
     group :solo do
       cookbook 'base'
     end
-
-If you only have 1 in the group, you can pass it as an option
-
+    
     cookbook 'base', :group => 'solo'
+
+When using install or update, groups can be excluded with the --without GROUP_NAME or -W GROUP_NAME flags.
 
 = Contributing
 
