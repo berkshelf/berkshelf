@@ -53,8 +53,9 @@ Options available include:
     cookbook "openssl", "~> 1.0.0"   # greater than 1.0.0, and up to but not including 1.1.0
 
 [git]
+    # ref can be a branch name, tag, or commit hash. If ref is not provided, HEAD is used.
 
-    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "<any git ref>" # ref can be a branch name, tag, or commit hash
+    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "<any git ref>" 
 
 [path]
 
