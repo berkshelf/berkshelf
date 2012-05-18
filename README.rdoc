@@ -46,20 +46,21 @@ Cookbooks without additional options are assumed to come from the Opscode Commun
 
 Options available include:
 
-[version constraint]
+version constraint
 
     cookbook "nginx", "= 0.101.2"    # precisely 0.101.2
     cookbook "mysql", "< 1.2.4"      # less than and not including 1.2.4
     cookbook "openssl", "~> 1.0.0"   # greater than 1.0.0, and up to but not including 1.1.0
 
-[git]
-    # ref can be a branch name, tag, or commit hash. If ref is not provided, HEAD is used.
+git
 
+    # ref can be a branch name, tag, or commit hash. If ref is not provided, HEAD is used.
     cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "<any git ref>" 
 
-[path]
+path
 
-    cookbook "my_application", path: "/path/to/location/of" # knife cookbook dependencies will look in /path/to/location/of/my_application for the cookbook
+    # knife cookbook dependencies will look in /path/to/location/of/my_application for the cookbook
+    cookbook "my_application", path: "/path/to/location/of"
 
 Put dependencies in a group so they can be ignored at deploy time. This is especially helpful
 when working with chef-solo.
