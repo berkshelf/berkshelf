@@ -15,7 +15,7 @@ A knife plugin to retrieve cookbook dependencies.
 Dependencies are managed via a `Cookbookfile` in the directory where you want the cookbooks to be installed.  The Cookbookfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
 
     cookbook 'memcached'
-    cookbook 'ngnix'
+    cookbook 'nginx'
     cookbook 'my_app', path: '/path/to/cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
 
