@@ -95,7 +95,7 @@ and run:
 
 Bundler will install all gems and their dependencies required for testing and developing. 
 
-=== Running RSpec tests
+=== Running unit (RSpec) and acceptance (Cucumber) tests
 
     $ bundle exec guard start
 
