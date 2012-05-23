@@ -7,7 +7,7 @@ module KnifeCookbookDependencies
     attr_reader :name, :version_constraints, :groups
     attr_accessor :locked_version
 
-    DOWNLOAD_LOCATION = ::KCD::TMP_DIRECTORY || '/tmp'
+    DOWNLOAD_LOCATION = ::KCD::TMP_DIRECTORY || ENV["TMPDIR"] || '/tmp'
 
     def initialize(*args)
       @options = args.last.is_a?(Hash) ? args.pop : {}
