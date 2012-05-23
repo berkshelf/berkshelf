@@ -17,7 +17,6 @@ Spork.prefork do
     c.hook_into :webmock
   end
 
-
   RSpec.configure do |config|    
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true
@@ -63,7 +62,7 @@ Spork.prefork do
     @example_cookbook_from_path ||= KCD::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
   end
 
-  def with_cookbookfile content
+  def with_cookbookfile(content)
     Dir.chdir(KCD::TMP_DIRECTORY) do
       File.open('Cookbookfile', 'w') do |f|
         f.write content
@@ -71,7 +70,6 @@ Spork.prefork do
       yield
     end
   end
-
 end
 
 Spork.each_run do
