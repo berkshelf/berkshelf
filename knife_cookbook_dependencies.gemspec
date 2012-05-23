@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.version       = KnifeCookbookDependencies::VERSION
   
   # FIXME will want to adjust this later
-  s.add_runtime_dependency 'dep_selector'
+  s.add_runtime_dependency 'dep_selector_over_http'
   s.add_runtime_dependency 'chef',            '~> 0.10.0'
   s.add_runtime_dependency 'minitar'
 
