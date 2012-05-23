@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler'
+Bundler.setup
 require 'spork'
 
 Spork.prefork do
@@ -5,10 +8,6 @@ Spork.prefork do
   require 'pp'
   require 'aruba/cucumber'
   require 'vcr'
-  
-  APP_ROOT = File.expand_path('../../', __FILE__)
-  
-  Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
   After do
     KCD.clean
@@ -27,8 +26,6 @@ Spork.prefork do
   Before('@slow_process') do
     @aruba_io_wait_seconds = 10
   end
-
-
 end
 
 Spork.each_run do
