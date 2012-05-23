@@ -8,11 +8,11 @@ Gem::Specification.new do |s|
   s.email         = ["josiah@skirmisher.net", "jamie@vialstudios.com", "erik@hollensbe.org"]
   s.description   = %q{Resolves cookbook dependencies}
   s.summary       = s.description
-  s.homepage      = "https://github.com/RiotGames/knife_cookbook_dependencies"
+  s.homepage      = "https://github.com/RiotGames/knife_cookbook_dependencies_over_http"
   s.files         = `git ls-files`.split($\)
   s.executables   = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
-  s.name          = "knife_cookbook_dependencies"
+  s.name          = "knife_cookbook_dependencies_over_http"
   s.require_paths = ["lib"]
   s.version       = KnifeCookbookDependencies::VERSION
   
