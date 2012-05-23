@@ -1,3 +1,7 @@
+require 'aruba/api'
+
+World(Aruba::Api)
+
 Then /^I trace$/ do
 end
 
