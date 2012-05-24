@@ -36,6 +36,8 @@ note::
 
 [clean] Removes all of the files managed by the `Cookbookfile`, including the `Cookbookfile.lock`, temp directory used for downloads and extractions and the cookbooks directory.
 
+[init] Prepares a local path to have it's Cookbook dependencies managed by KCD. If the target path is a Cookbook itself, additional KCD support files will be generated to get you started.
+
 == The Cookbookfile
 
 Cookbooks are defined as dependencies by declaring them in the `Cookbookfile`
