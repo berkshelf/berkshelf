@@ -38,10 +38,6 @@ When /^I run the init command with the directory "(.*?)" as the target$/ do |dir
   run_simple(unescape("knife cookbook dependencies init #{directory_name}"), false)
 end
 
-When /^I run the init command with a path that has already been initialized as the target$/ do
-  pending # express the regexp above with the code you wish you had
-end
-
 When /^I run the init command with no value for the target$/ do
   run_simple(unescape("knife cookbook dependencies init"), false)
 end
@@ -53,8 +49,4 @@ end
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
   exit_status = KCD.const_get(error_constant).new.status_code
   assert_exit_status(exit_status)
-end
-
-Then /^the install should successfully run$/ do
-  pending # express the regexp above with the code you wish you had
 end
