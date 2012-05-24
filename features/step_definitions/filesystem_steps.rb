@@ -9,6 +9,14 @@ Given /^a cookbook named "(.*?)"$/ do |name|
   }
 end
 
+Given /^I do not have a Cookbookfile$/ do
+  in_current_dir { FileUtils.rm_f(KCD::DEFAULT_FILENAME) }
+end
+
+Given /^I do not have a Cookbookfile\.lock$/ do
+  in_current_dir { FileUtils.rm_f(KCD::Lockfile::DEFAULT_FILENAME) }
+end
+
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, true)
 end

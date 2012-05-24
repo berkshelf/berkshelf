@@ -1,4 +1,5 @@
 require 'kcd/core_ext'
+require 'kcd/errors'
 
 module KnifeCookbookDependencies
   DEFAULT_FILENAME = 'Cookbookfile'.freeze
