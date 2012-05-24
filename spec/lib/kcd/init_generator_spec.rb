@@ -9,7 +9,7 @@ module KnifeCookbookDependencies
     context "with default options" do
       before do
         generator = subject.new([], :path => target_root)
-        generator.invoke_all
+        capture(:stdout) { generator.invoke_all }
       end
 
       specify do
@@ -23,7 +23,7 @@ module KnifeCookbookDependencies
     context "with a .chefignore" do
       before do
         generator = subject.new([], :path => target_root, :chefignore => true)
-        generator.invoke_all
+        capture(:stdout) { generator.invoke_all }
       end
 
       specify do
@@ -37,7 +37,7 @@ module KnifeCookbookDependencies
     context "with a metadata entry in the Cookbookfile" do
       before do
         generator = subject.new([], :path => target_root, :metadata_entry => true)
-        generator.invoke_all
+        capture(:stdout) { generator.invoke_all }
       end
 
       specify do
