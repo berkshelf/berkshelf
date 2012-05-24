@@ -1,7 +1,7 @@
 require 'kcd/core_ext'
 
 module KnifeCookbookDependencies
-  DEFAULT_FILENAME = 'Cookbookfile'
+  DEFAULT_FILENAME = 'Cookbookfile'.freeze
   COOKBOOKS_DIRECTORY = 'cookbooks'
   TMP_DIRECTORY = File.join(ENV['TMPDIR'], 'knife_cookbook_dependencies')
   FileUtils.mkdir_p TMP_DIRECTORY
