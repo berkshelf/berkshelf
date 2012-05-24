@@ -20,4 +20,8 @@ module KnifeCookbookDependencies
       ::KCD.ui.info "Successfully initialized"
     end
   end
+
+  class CookbookDepsInit < CookbookDependenciesInit
+    banner "knife cookbook deps init [PATH]"
+  end
 end
