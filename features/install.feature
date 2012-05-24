@@ -32,3 +32,15 @@ Feature: install cookbooks from a Cookbookfile
     No Cookbookfile or Cookbookfile.lock found in path:
     """
     And the CLI should exit with the status code for error "CookbookfileNotFound"
+
+  Scenario: running install when the Cookbook is not found on the remote site
+    Given I write to "Cookbookfile" with:
+    """
+    cookbook "doesntexist"
+    """
+    And I run the install command
+    Then the output should contain:
+    """
+    Cookbook 'doesntexist' not found on the Opscode Community site.
+    """
+    And the CLI should exit with the status code for error "RemoteCookbookNotFound"
