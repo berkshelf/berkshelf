@@ -10,23 +10,19 @@ module KnifeCookbookDependencies
         instance_eval(content)
       end
 
-      def process_install(without=nil)
-        # TODO: friendly error message when the file doesn't exist
-        
-        filename = KCD::DEFAULT_FILENAME + ".lock"
-        lockfile = false
-
-        if File.exist?(filename)
+      def process_install(without = nil)        
+        if File.exist?(KCD::Lockfile::DEFAULT_FILENAME)
+          filename = KCD::Lockfile::DEFAULT_FILENAME
           lockfile = true
         else
-          filename = KCD::DEFAULT_FILENAME unless File.exist?(filename)
+          filename = KCD::DEFAULT_FILENAME
+          lockfile = false
         end
 
         begin
           read File.read(filename)
         rescue Errno::ENOENT => e
-          KCD.ui.fatal ErrorMessages.missing_cookbookfile
-          exit 100
+          raise CookbookfileNotFound, "No Cookbookfile or Cookbookfile.lock found in path: #{Dir.pwd}."
         end
 
         KCD.shelf.exclude(without)

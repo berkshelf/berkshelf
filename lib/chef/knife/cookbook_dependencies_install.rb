@@ -13,6 +13,12 @@ module KnifeCookbookDependencies
     def run
       ::KCD.ui = ui
       ::KCD::Cookbookfile.process_install(config[:without])
+    rescue CookbookfileNotFound => e
+      KCD.ui.fatal e
+      exit e.status_code
+    rescue RemoteCookbookNotFound => e
+      KCD.ui.fatal e
+      exit e.status_code
     end
   end
   
