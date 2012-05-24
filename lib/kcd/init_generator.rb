@@ -26,11 +26,10 @@ module KnifeCookbookDependencies
       # Temporarily always create the Cookbookfile without the 'metadata'
       # entry. This cannot happen until we actually have support for the
       # metadata keyword in the Cookbookfile.
-      create_cookbookfile(false)
-      # create_cookbookfile(options[:metadata_entry])
+      template "Cookbookfile.erb", File.join(target_path, "Cookbookfile")
 
       if options[:chefignore]
-        create_chefignore
+        copy_file "chefignore", File.join(target_path, ".chefignore")
       end
     end
 
@@ -38,14 +37,6 @@ module KnifeCookbookDependencies
 
       def target_path
         @target_path ||= File.expand_path(options[:path])
-      end
-
-      def create_cookbookfile(include_metadata)
-        template "Cookbookfile.erb", File.join(target_path, "Cookbookfile")
-      end
-
-      def create_chefignore
-        copy_file "chefignore", File.join(target_path, ".chefignore")
       end
 
       def validate_path!
