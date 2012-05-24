@@ -21,8 +21,6 @@ module KnifeCookbookDependencies
     end
 
     def generate
-      validate_path!
-
       template "Cookbookfile.erb", File.join(target_path, "Cookbookfile")
 
       if options[:chefignore]
@@ -34,11 +32,6 @@ module KnifeCookbookDependencies
 
       def target_path
         @target_path ||= File.expand_path(options[:path])
-      end
-
-      def validate_path!
-        # validate this shit
-        true
       end
   end
 end
