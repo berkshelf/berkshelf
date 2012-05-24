@@ -22,3 +22,13 @@ Feature: install cookbooks from a Cookbookfile
     Then the following directories should exist:
     | cookbooks/mysql   |
     | cookbooks/openssl |
+
+  Scenario: running install with no Cookbookfile or Cookbookfile.lock
+    Given I do not have a Cookbookfile
+    And I do not have a Cookbookfile.lock
+    When I run the install command
+    Then the output should contain:
+    """
+    No Cookbookfile or Cookbookfile.lock found in path:
+    """
+    And the CLI should exit with the status code for error "CookbookfileNotFound"

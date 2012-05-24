@@ -31,11 +31,11 @@ Then /^the temp directory should not exist$/ do
 end
 
 When /^I run the init command with the cookbook "(.*?)" as the target$/ do |cookbook_name|
-  run_simple(unescape("knife cookbook dependencies init #{cookbook_name}"))
+  run_simple(unescape("knife cookbook dependencies init #{cookbook_name}"), false)
 end
 
 When /^I run the init command with the directory "(.*?)" as the target$/ do |directory_name|
-  run_simple(unescape("knife cookbook dependencies init #{directory_name}"))
+  run_simple(unescape("knife cookbook dependencies init #{directory_name}"), false)
 end
 
 When /^I run the init command with a path that has already been initialized as the target$/ do
@@ -43,11 +43,16 @@ When /^I run the init command with a path that has already been initialized as t
 end
 
 When /^I run the init command with no value for the target$/ do
-  run_simple(unescape("knife cookbook dependencies init"))
+  run_simple(unescape("knife cookbook dependencies init"), false)
 end
 
 When /^I run the install command$/ do
-  pending # express the regexp above with the code you wish you had
+  run_simple(unescape("knife cookbook dependencies install"), false)
+end
+
+Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
+  exit_status = KCD.const_get(error_constant).new.status_code
+  assert_exit_status(exit_status)
 end
 
 Then /^the install should successfully run$/ do
