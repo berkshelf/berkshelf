@@ -1,6 +1,6 @@
 module KnifeCookbookDependencies
   class Lockfile
-    DEFAULT_FILENAME = "#{KCD::DEFAULT_FILENAME}.lock"
+    DEFAULT_FILENAME = "#{KCD::DEFAULT_FILENAME}.lock".freeze
 
     def initialize(cookbooks)
       @cookbooks = cookbooks
