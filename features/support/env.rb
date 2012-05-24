@@ -9,6 +9,10 @@ Spork.prefork do
   require 'aruba/cucumber'
   require 'vcr'
 
+  APP_ROOT = File.expand_path('../../../', __FILE__)
+  
+  Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
+
   After do
     KCD.clean
   end
