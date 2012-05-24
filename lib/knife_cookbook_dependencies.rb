@@ -1,7 +1,7 @@
 module KnifeCookbookDependencies
   DEFAULT_FILENAME = 'Cookbookfile'
   COOKBOOKS_DIRECTORY = 'cookbooks'
-  TMP_DIRECTORY = File.join(ENV['TMPDIR'], 'knife_cookbook_dependencies')
+  TMP_DIRECTORY = File.join(ENV['TMPDIR'] || ENV['TEMP'], 'knife_cookbook_dependencies')
   FileUtils.mkdir_p TMP_DIRECTORY
 
   autoload :KnifeUtils, 'kcd/knife_utils'
