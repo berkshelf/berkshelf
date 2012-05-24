@@ -23,9 +23,6 @@ module KnifeCookbookDependencies
     def generate
       validate_path!
 
-      # Temporarily always create the Cookbookfile without the 'metadata'
-      # entry. This cannot happen until we actually have support for the
-      # metadata keyword in the Cookbookfile.
       template "Cookbookfile.erb", File.join(target_path, "Cookbookfile")
 
       if options[:chefignore]
