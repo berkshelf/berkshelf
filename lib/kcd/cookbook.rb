@@ -90,7 +90,7 @@ module KnifeCookbookDependencies
       end
 
       if downloaded_archive_exists?
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(download_filename)), location)
+        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(download_filename, 'rb')), location)
       end
 
       return true
