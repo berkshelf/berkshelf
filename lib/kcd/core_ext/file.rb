@@ -1,7 +1,6 @@
 class File
   class << self
-    # Returns true or false if the given path or one of it's
-    # parent directories contains a Tryhard Pack data directory.
+    # Returns true or false if the given path is a Chef Cookbook
     #
     # @param [#to_s] path
     #   path of directory to reflect on
