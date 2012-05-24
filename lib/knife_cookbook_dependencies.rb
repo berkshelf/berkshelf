@@ -1,3 +1,5 @@
+require 'kcd/core_ext'
+
 module KnifeCookbookDependencies
   DEFAULT_FILENAME = 'Cookbookfile'
   COOKBOOKS_DIRECTORY = 'cookbooks'
@@ -5,6 +7,7 @@ module KnifeCookbookDependencies
   FileUtils.mkdir_p TMP_DIRECTORY
 
   autoload :KnifeUtils, 'kcd/knife_utils'
+  autoload :InitGenerator, 'kcd/init_generator'
 
   class << self
     attr_accessor :ui
@@ -50,4 +53,3 @@ require 'kcd/cookbookfile'
 require 'kcd/lockfile'
 require 'kcd/git'
 require 'kcd/error_messages'
-require 'kcd/core_ext/kernel'
