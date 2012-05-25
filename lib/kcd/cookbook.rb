@@ -1,10 +1,18 @@
 require 'chef/knife/cookbook_site_download'
 require 'chef/knife/cookbook_site_show'
 require 'chef/cookbook/metadata'
+require 'kcd/cookbook/download'
+require 'kcd/cookbook/path'
+require 'kcd/cookbook/git'
 
 module KnifeCookbookDependencies
   class Cookbook
-    attr_reader :name, :version_constraints, :groups
+    attr_reader :name
+    attr_reader :version_constraints
+    attr_reader :groups
+    attr_reader :options
+    attr_reader :driver
+
     attr_accessor :locked_version
 
     DOWNLOAD_LOCATION = ::KCD::TMP_DIRECTORY || '/tmp'
@@ -16,15 +24,17 @@ module KnifeCookbookDependencies
       if from_git? and from_path?
         raise "Invalid: path and git options provided to #{args[0]}. They are mutually exclusive."
       end
+      
+      @name = args[0]
 
-      @options[:path] = File.expand_path(@options[:path]) if from_path?
-      @name, constraint_string = args
+      if from_git?
+        @driver = KCD::Cookbook::Git.new(args, self)
+      elsif from_path?
+        @driver = KCD::Cookbook::Path.new(args, self)
+      else
+        @driver = KCD::Cookbook::Download.new(args, self)
+      end
 
-      add_version_constraint(if from_path?
-                               "= #{version_from_metadata.to_s}"
-                             else
-                               constraint_string
-                             end)
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
       add_group(KnifeCookbookDependencies.shelf.active_group) if KnifeCookbookDependencies.shelf.active_group
       add_group(@options[:group]) if @options[:group]
