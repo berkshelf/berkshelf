@@ -9,6 +9,7 @@ module KnifeCookbookDependencies
 
   autoload :KnifeUtils, 'kcd/knife_utils'
   autoload :InitGenerator, 'kcd/init_generator'
+  autoload :CookbookSource, 'kcd/cookbook_source'
 
   class << self
     attr_accessor :ui
