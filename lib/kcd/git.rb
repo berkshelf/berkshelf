@@ -19,6 +19,11 @@ module KnifeCookbookDependencies
             git_path = potential_path
             break
           end
+          potential_path = File.join(path, 'git.exe')
+          if File.executable?(potential_path)
+            git_path = potential_path
+            break
+          end
         end
 
         unless git_path
@@ -67,7 +72,7 @@ module KnifeCookbookDependencies
       this_ref = nil
 
       Dir.chdir @directory do
-        this_ref = `#{self.class.git} rev-parse HEAD`.strip
+        this_ref = `"#{self.class.git}" rev-parse HEAD`.strip
       end
 
       return this_ref
