@@ -1,10 +1,14 @@
+require 'kcd/core_ext'
+require 'kcd/errors'
+
 module KnifeCookbookDependencies
-  DEFAULT_FILENAME = 'Cookbookfile'
+  DEFAULT_FILENAME = 'Cookbookfile'.freeze
   COOKBOOKS_DIRECTORY = 'cookbooks'
   TMP_DIRECTORY = File.join(ENV['TMPDIR'] || ENV['TEMP'], 'knife_cookbook_dependencies')
   FileUtils.mkdir_p TMP_DIRECTORY
 
   autoload :KnifeUtils, 'kcd/knife_utils'
+  autoload :InitGenerator, 'kcd/init_generator'
 
   class << self
     attr_accessor :ui
@@ -49,5 +53,3 @@ require 'kcd/dsl'
 require 'kcd/cookbookfile'
 require 'kcd/lockfile'
 require 'kcd/git'
-require 'kcd/error_messages'
-require 'kcd/core_ext/kernel'

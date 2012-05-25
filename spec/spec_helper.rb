@@ -17,7 +17,9 @@ Spork.prefork do
     c.hook_into :webmock
   end
 
-  RSpec.configure do |config|    
+  RSpec.configure do |config|
+    config.include KnifeCookbookDependencies::RSpec::FileSystemMatchers
+    
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true
     config.filter_run :focus => true
@@ -36,6 +38,11 @@ Spork.prefork do
         example.run
       end
     end
+
+    config.before(:each) do
+      clean_tmp_path
+    end
+
     config.after do
       KnifeCookbookDependencies.clean
     end
@@ -70,9 +77,23 @@ Spork.prefork do
       yield
     end
   end
+
+  def app_root_path
+    Pathname.new(APP_ROOT)
+  end
+
+  def tmp_path
+    app_root_path.join('spec/tmp')
+  end
+
+  def clean_tmp_path
+    FileUtils.rm_rf(tmp_path)
+    FileUtils.mkdir_p(tmp_path)
+  end
 end
 
 Spork.each_run do
   require 'kcd'
+
   FileUtils.mkdir_p KCD::TMP_DIRECTORY
 end

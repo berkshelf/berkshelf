@@ -7,7 +7,7 @@ module KnifeCookbookDependencies
     attr_reader :name, :version_constraints, :groups
     attr_accessor :locked_version
 
-    DOWNLOAD_LOCATION = ::KCD::TMP_DIRECTORY || ENV["TMPDIR"] || '/tmp'
+    DOWNLOAD_LOCATION = ::KCD::TMP_DIRECTORY || '/tmp'
 
     def initialize(*args)
       @options = args.last.is_a?(Hash) ? args.pop : {}
@@ -78,7 +78,7 @@ module KnifeCookbookDependencies
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
-    def unpack(location = unpacked_cookbook_path, options={})
+    def unpack(location = unpacked_cookbook_path, options = {})
       return true if from_path?
 
       clean     if options[:clean]
@@ -115,8 +115,8 @@ module KnifeCookbookDependencies
       versions.reverse.each do |v|
         return v if version_constraints_include? v
       end
-      KCD.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
-      exit 1
+
+      raise NoVersionForConstraints, "No version for #{@name} that met constraints: #{version_constraints.inspect}. Available versions: #{versions.inspect}"
     end
 
     def version_constraints_include?(version)
@@ -211,7 +211,7 @@ module KnifeCookbookDependencies
       end
     end
 
-    def == other
+    def ==(other)
       other.name == @name and other.version_constraints == @version_constraints
     end
 
@@ -219,12 +219,14 @@ module KnifeCookbookDependencies
       begin
         yield
       rescue Net::HTTPServerException => e
-        KCD.ui.fatal ErrorMessages.missing_cookbook(@name) if e.message.match(/404/)
-        exit 100
+        if e.message.match(/404/)
+          raise RemoteCookbookNotFound, "Cookbook '#{@name}' not found on the Opscode Community site. Maybe use the git or path source if it's unpublished?"
+        end
       end
     end
 
     private
+
       def depends(name, constraint = nil)
         dependency_cookbook = KCD.shelf.get_cookbook(name) || @dependencies.find { |c| c.name == name }
         if dependency_cookbook
