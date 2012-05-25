@@ -17,6 +17,10 @@ Given /^I do not have a Cookbookfile\.lock$/ do
   in_current_dir { FileUtils.rm_f(KCD::Lockfile::DEFAULT_FILENAME) }
 end
 
+Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
+  write_file(File.join(cookbook_name, file_name), content)
+end
+
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, true)
 end

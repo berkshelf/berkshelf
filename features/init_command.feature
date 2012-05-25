@@ -9,10 +9,10 @@ Feature: initialize command
     Then the cookbook "sparkle_motion" should have the following files:
       | Cookbookfile |
       | .chefignore  |
-    # And the file "Cookbookfile" in the cookbook "sparkle_motion" should contain:
-    #   """
-    #   metadata
-    #   """
+    And the file "Cookbookfile" in the cookbook "sparkle_motion" should contain:
+      """
+      metadata
+      """
     And the output should contain "Successfully initialized"
     And the exit status should be 0
 
