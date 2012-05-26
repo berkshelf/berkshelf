@@ -96,8 +96,7 @@ module KnifeCookbookDependencies
 
     def versions
       return [latest_constrained_version] if @locked_version
-      return [version_from_metadata] if from_path? or from_git?
-      cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
+      @driver.versions
     end
 
     def version_from_metadata

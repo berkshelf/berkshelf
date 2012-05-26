@@ -59,6 +59,10 @@ module KnifeCookbookDependencies
         exit 1
       end
 
+      def versions
+        cookbook.cookbook_data['versions'].collect { |v| DepSelector::Version.new(v.split(/\//).last.gsub(/_/, '.')) }.sort
+      end
+
     end
   end
 end
