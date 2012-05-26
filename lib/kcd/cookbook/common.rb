@@ -25,6 +25,12 @@ module KnifeCookbookDependencies
           return true
         end
       end
+
+      module Version
+        def latest_constrained_version
+          return cookbook.version_from_metadata
+        end
+      end
     end
   end
 end

@@ -6,6 +6,7 @@ module KnifeCookbookDependencies
 
       include KCD::Cookbook::Common::Prepare
       include KCD::Cookbook::Common::Unpack
+      include KCD::Cookbook::Common::Version
 
       attr_reader :cookbook
       attr_reader :git

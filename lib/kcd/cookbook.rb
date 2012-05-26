@@ -87,13 +87,7 @@ module KnifeCookbookDependencies
 
     def latest_constrained_version
       return @locked_version if @locked_version
-      return version_from_metadata if from_path? or from_git?
-
-      versions.reverse.each do |v|
-        return v if version_constraints_include? v
-      end
-      KCD.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
-      exit 1
+      return @driver.latest_constrained_version
     end
 
     def version_constraints_include?(version)

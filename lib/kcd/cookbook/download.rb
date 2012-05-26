@@ -51,6 +51,14 @@ module KnifeCookbookDependencies
         return true
       end
 
+      def latest_constrained_version
+        cookbook.versions.reverse.each do |v|
+          return v if cookbook.version_constraints_include? v
+        end
+        KCD.ui.fatal "No version available to fit the following constraints for #{@name}: #{version_constraints.inspect}\nAvailable versions: #{versions.inspect}"
+        exit 1
+      end
+
     end
   end
 end
