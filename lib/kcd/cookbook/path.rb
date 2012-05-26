@@ -2,6 +2,8 @@ module KnifeCookbookDependencies
   class Cookbook
     class Path
 
+      include KCD::Cookbook::Common::Path
+
       attr_reader :cookbook
 
       def initialize(args, cookbook)
@@ -21,15 +23,6 @@ module KnifeCookbookDependencies
       end
 
       def download(show_output)
-      end
-
-      def full_path
-        File.join(cookbook.unpacked_cookbook_path, cookbook.name)
-      end
-
-      def clean(location)
-        FileUtils.rm_rf location
-        FileUtils.rm_f cookbook.download_filename
       end
 
     end

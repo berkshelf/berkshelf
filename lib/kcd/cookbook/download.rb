@@ -1,6 +1,10 @@
+require 'kcd/cookbook/common'
+
 module KnifeCookbookDependencies
   class Cookbook
     class Download
+
+      include KCD::Cookbook::Common::Path
 
       attr_reader :cookbook
 
@@ -25,15 +29,6 @@ module KnifeCookbookDependencies
         if show_output
           output.split(/\r?\n/).each { |x| KCD.ui.info(x) }
         end
-      end
-
-      def full_path
-        File.join(cookbook.unpacked_cookbook_path, cookbook.name)
-      end
-      
-      def clean(location)
-        FileUtils.rm_rf location
-        FileUtils.rm_f cookbook.download_filename
       end
 
     end
