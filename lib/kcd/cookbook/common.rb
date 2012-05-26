@@ -13,6 +13,12 @@ module KnifeCookbookDependencies
         end
 
       end
+
+      module Prepare
+        def prepare
+          cookbook.add_version_constraint("= #{cookbook.version_from_metadata.to_s}")
+        end
+      end
     end
   end
 end

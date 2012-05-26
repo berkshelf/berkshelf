@@ -4,6 +4,8 @@ module KnifeCookbookDependencies
   class Cookbook
     class Git
 
+      include KCD::Cookbook::Common::Prepare
+
       attr_reader :cookbook
       attr_reader :git
 
@@ -11,10 +13,6 @@ module KnifeCookbookDependencies
         @cookbook = cookbook
         @options  = cookbook.options
         @git = KCD::Git.new(@options[:git])
-      end
-
-      def prepare
-        cookbook.add_version_constraint("= #{cookbook.version_from_metadata.to_s}")
       end
 
       def download(show_output)

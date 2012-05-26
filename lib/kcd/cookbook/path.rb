@@ -3,6 +3,7 @@ module KnifeCookbookDependencies
     class Path
 
       include KCD::Cookbook::Common::Path
+      include KCD::Cookbook::Common::Prepare
 
       attr_reader :cookbook
 
@@ -16,10 +17,6 @@ module KnifeCookbookDependencies
         end
 
         @options[:path] = File.expand_path(@options[:path]) 
-      end
-
-      def prepare
-        cookbook.add_version_constraint("= #{cookbook.version_from_metadata.to_s}")
       end
 
       def download(show_output)
