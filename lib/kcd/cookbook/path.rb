@@ -22,6 +22,10 @@ module KnifeCookbookDependencies
       def download(show_output)
       end
 
+      def identifier
+        cookbook.local_path
+      end
+
     end
   end
 end

@@ -25,6 +25,10 @@ module KnifeCookbookDependencies
         cookbook.unpacked_cookbook_path
       end
 
+      def identifier
+        cookbook.git_repo
+      end
+
       def clean(location)
         @git.clean
       end

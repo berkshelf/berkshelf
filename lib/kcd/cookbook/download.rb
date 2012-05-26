@@ -31,6 +31,10 @@ module KnifeCookbookDependencies
         end
       end
 
+      def identifier
+        cookbook.latest_constrained_version
+      end
+
     end
   end
 end

@@ -66,7 +66,7 @@ module KnifeCookbookDependencies
     end
 
     def identifier
-      @git_repo || local_path || latest_constrained_version
+      @driver.identifier
     end
 
     # TODO: Clean up download repetition functionality here, in #download and the associated test.
