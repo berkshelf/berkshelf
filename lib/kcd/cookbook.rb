@@ -35,6 +35,8 @@ module KnifeCookbookDependencies
         @driver = KCD::Cookbook::Download.new(args, self)
       end
 
+      @driver.prepare
+        
       @locked_version = DepSelector::Version.new(@options[:locked_version]) if @options[:locked_version]
       add_group(KnifeCookbookDependencies.shelf.active_group) if KnifeCookbookDependencies.shelf.active_group
       add_group(@options[:group]) if @options[:group]
@@ -48,28 +50,8 @@ module KnifeCookbookDependencies
 
     def download(show_output = false)
       return if @downloaded
-      return if !from_git? and downloaded_archive_exists?
-      return if from_path? and !from_git?
 
-      if from_git? 
-        @git ||= KCD::Git.new(@options[:git])
-        @git.clone
-        @git.checkout(@options[:ref]) if @options[:ref]
-        @options[:path] ||= @git.directory
-      else
-        FileUtils.mkdir_p KCD::TMP_DIRECTORY
-        csd = Chef::Knife::CookbookSiteDownload.new([name, latest_constrained_version.to_s, "--file", download_filename])
-
-        output = ''
-        rescue_404 do
-          output = KCD::KnifeUtils.capture_knife_output(csd)
-        end
-
-        if show_output
-          output.split(/\r?\n/).each { |x| KCD.ui.info(x) }
-        end
-      end
-
+      @driver.download(show_output)
       @downloaded = true
     end
 
@@ -160,11 +142,7 @@ module KnifeCookbookDependencies
     end
 
     def full_path
-      if @git
-        unpacked_cookbook_path
-      else
-        File.join(unpacked_cookbook_path, @name)
-      end
+      @driver.full_path
     end
 
     def metadata_filename
@@ -213,12 +191,7 @@ module KnifeCookbookDependencies
     end
 
     def clean(location = unpacked_cookbook_path)
-      if @git
-        @git.clean
-      else
-        FileUtils.rm_rf location
-        FileUtils.rm_f download_filename
-      end
+      @driver.clean(location)
     end
 
     def == other
