@@ -35,6 +35,22 @@ module KnifeCookbookDependencies
         cookbook.latest_constrained_version
       end
 
+      def unpack(location, options)
+        clean     if options[:clean]
+        download  if options[:download]
+
+        unless cookbook.downloaded_archive_exists? or File.directory?(location)
+          # TODO raise friendly error
+          raise "Archive hasn't been downloaded yet"
+        end
+
+        if cookbook.downloaded_archive_exists?
+          Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(cookbook.download_filename)), location)
+        end
+
+        return true
+      end
+
     end
   end
 end

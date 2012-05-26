@@ -69,23 +69,8 @@ module KnifeCookbookDependencies
       @driver.identifier
     end
 
-    # TODO: Clean up download repetition functionality here, in #download and the associated test.
     def unpack(location = unpacked_cookbook_path, options={})
-      return true if from_path?
-
-      clean     if options[:clean]
-      download  if options[:download]
-
-      unless downloaded_archive_exists? or File.directory?(location)
-        # TODO raise friendly error
-        raise "Archive hasn't been downloaded yet"
-      end
-
-      if downloaded_archive_exists?
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(download_filename)), location)
-      end
-
-      return true
+      @driver.unpack(location, options)
     end
 
     def dependencies

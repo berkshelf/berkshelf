@@ -1,10 +1,11 @@
-require 'kcd/cookbook/path'
+require 'kcd/cookbook/common'
 
 module KnifeCookbookDependencies
   class Cookbook
     class Git
 
       include KCD::Cookbook::Common::Prepare
+      include KCD::Cookbook::Common::Unpack
 
       attr_reader :cookbook
       attr_reader :git

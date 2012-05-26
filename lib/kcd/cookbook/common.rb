@@ -19,6 +19,12 @@ module KnifeCookbookDependencies
           cookbook.add_version_constraint("= #{cookbook.version_from_metadata.to_s}")
         end
       end
+
+      module Unpack
+        def unpack(location, options)
+          return true
+        end
+      end
     end
   end
 end

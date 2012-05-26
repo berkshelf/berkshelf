@@ -1,9 +1,12 @@
+require 'kcd/cookbook/common'
+
 module KnifeCookbookDependencies
   class Cookbook
     class Path
 
       include KCD::Cookbook::Common::Path
       include KCD::Cookbook::Common::Prepare
+      include KCD::Cookbook::Common::Unpack
 
       attr_reader :cookbook
 
