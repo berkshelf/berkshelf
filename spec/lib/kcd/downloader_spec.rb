@@ -3,7 +3,7 @@ require 'spec_helper'
 module KnifeCookbookDependencies
   describe Downloader do
     subject { Downloader.new(tmp_path) }
-    let(:source) { CookbookSource::SiteLocation.new("http://localhost") }
+    let(:source) { CookbookSource.new("sparkle_motion") }
 
     describe "#enqueue" do
       it "should add a source to the queue" do
@@ -32,8 +32,8 @@ module KnifeCookbookDependencies
     describe "#download" do
       context "given there items in the queue" do
         before(:each) do
-          subject.enqueue(CookbookSource::SiteLocation.new("https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/knife_cookbook_dependencies.gemspec"))
-          subject.enqueue(CookbookSource::SiteLocation.new("https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/.gitignore"))
+          subject.enqueue(CookbookSource.new("kcd_gemspec", :site => "https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/knife_cookbook_dependencies.gemspec"))
+          subject.enqueue(CookbookSource.new("gitignore", :site => "https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/.gitignore"))
         end
 
         it "should download all items in the queue to the storage_path" do

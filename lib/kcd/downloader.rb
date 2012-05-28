@@ -14,7 +14,9 @@ module KnifeCookbookDependencies
     end
 
     def enqueue(source)
-      validate_source!(source)
+      unless validate_source(source)
+        raise ArgumentError, "Invalid CookbookSource: can only enqueue valid instances of CookbookSource."
+      end
 
       @queue << source
     end
@@ -43,10 +45,8 @@ module KnifeCookbookDependencies
 
     private
 
-      def validate_source!(source)
-        unless source.respond_to?(:async_download)
-          raise ArgumentError, "Cannot download an object that does not respond to :async_download."
-        end
+      def validate_source(source)
+        source.is_a?(KCD::CookbookSource)
       end
   end
 end

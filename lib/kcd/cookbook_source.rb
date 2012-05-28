@@ -52,16 +52,20 @@ module KnifeCookbookDependencies
       attr_reader :branch
 
       def initialize(uri, options)
-        @uri = uri
+        super(uri)
         @branch = options[:branch] || options[:ref] || options[:tag]
       end
 
       def download
-        @git ||= KCD::Git.new(@options[:git])
-        @git.clone
-        @git.checkout(@options[:ref]) if @options[:ref]
-        @options[:path] ||= @git.directory
+        git.clone
+        git.checkout(branch) if branch
       end
+
+      private
+
+        def git
+          @git ||= KCD::Git.new(uri)
+        end
     end
 
     OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
@@ -111,6 +115,14 @@ module KnifeCookbookDependencies
         group = group.to_sym
         @groups << group unless @groups.include?(group)
       end
+    end
+
+    def async_download(path)
+      location.async_download(path)
+    end
+
+    def download(path)
+      location.download(path)
     end
   end
 end
