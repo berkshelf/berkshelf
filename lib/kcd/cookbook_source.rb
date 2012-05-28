@@ -3,17 +3,26 @@ module KnifeCookbookDependencies
     # @internal
     module Location
       attr_reader :uri
+      attr_accessor :filename
 
       def initialize(uri)
         @uri = uri
       end
 
-      def download
-        raise NotImplemented, "Must implement on inheriting class"
+      def filename
+        @filename ||= File.basename(uri)
+      end
+
+      def download_to(path)
+        raise NotImplemented, "Must implement on includer"
+      end
+
+      def downloaded_to?(path)
+        raise NotImplemented, "Must implement on includer"
       end
 
       def unpack
-        raise NotImplemented, "Must implement on inheriting class"
+        raise NotImplemented, "Must implement on includer"
       end
     end
 
@@ -21,8 +30,17 @@ module KnifeCookbookDependencies
     class SiteLocation
       include Location
 
-      def download
-        # download this
+      def download_to(path)
+        request = EventMachine::HttpRequest.new(uri).aget
+        file = File.new(File.join(path, File.basename(filename)), "wb")
+        
+        request.stream { |chunk| file.write chunk }
+
+        request
+      end
+
+      def downloaded_to?(path)
+        # is it downloaded?
       end
 
       def unpack
@@ -34,7 +52,11 @@ module KnifeCookbookDependencies
     class PathLocation
       include Location
 
-      def download
+      def download_to(path)
+        true
+      end
+
+      def download_to?(path)
         true
       end
 
@@ -113,6 +135,10 @@ module KnifeCookbookDependencies
         group = group.to_sym
         @groups << group unless @groups.include?(group)
       end
+    end
+
+    def download_to(path)
+      location.download_to(path) unless location.downloaded_to?(path)
     end
   end
 end

@@ -2,6 +2,22 @@ require 'spec_helper'
 
 module KnifeCookbookDependencies
   describe CookbookSource do
+    describe CookbookSource::SiteLocation do
+      subject { CookbookSource::SiteLocation.new("https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/knife_cookbook_dependencies.gemspec") }
+
+      describe "#filename" do
+        it "returns the basename of the URI if no filename is explicitly set" do
+          subject.filename.should eql("knife_cookbook_dependencies.gemspec")
+        end
+
+        it "returns the the value explicitly set by filename if one is set" do
+          subject.filename = "hello.txt"
+
+          subject.filename.should eql("hello.txt")
+        end
+      end
+    end
+
     let(:cookbook_name) { "sparkle_motion" }
 
     describe "#initialize" do
