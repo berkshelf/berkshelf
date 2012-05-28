@@ -26,7 +26,7 @@ module KnifeCookbookDependencies
     def download
       EM.synchrony do
         results = EM::Synchrony::Iterator.new(queue, concurrency).map do |source, iter|
-          result = source.download_to(storage_path)
+          result = source.async_download(storage_path)
 
           result.callback do
             dequeue(source)
@@ -44,8 +44,8 @@ module KnifeCookbookDependencies
     private
 
       def validate_source!(source)
-        unless source.respond_to?(:download_to)
-          raise ArgumentError, "Cannot download an object that does not respond to :download_to."
+        unless source.respond_to?(:async_download)
+          raise ArgumentError, "Cannot download an object that does not respond to :async_download."
         end
       end
   end

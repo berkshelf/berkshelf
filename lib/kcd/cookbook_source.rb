@@ -13,15 +13,11 @@ module KnifeCookbookDependencies
         @filename ||= File.basename(uri)
       end
 
-      def download_to(path)
+      def async_download(path)
         raise NotImplemented, "Must implement on includer"
       end
 
-      def downloaded_to?(path)
-        raise NotImplemented, "Must implement on includer"
-      end
-
-      def unpack
+      def download(path)
         raise NotImplemented, "Must implement on includer"
       end
     end
@@ -30,7 +26,7 @@ module KnifeCookbookDependencies
     class SiteLocation
       include Location
 
-      def download_to(path)
+      def async_download(path)
         request = EventMachine::HttpRequest.new(uri).aget
         file = File.new(File.join(path, File.basename(filename)), "wb")
         
@@ -38,29 +34,13 @@ module KnifeCookbookDependencies
 
         request
       end
-
-      def downloaded_to?(path)
-        # is it downloaded?
-      end
-
-      def unpack
-        # unpack this
-      end
     end
 
     # @internal
     class PathLocation
       include Location
 
-      def download_to(path)
-        true
-      end
-
-      def download_to?(path)
-        true
-      end
-
-      def unpack
+      def async_download(path)
         true
       end
     end
@@ -81,10 +61,6 @@ module KnifeCookbookDependencies
         @git.clone
         @git.checkout(@options[:ref]) if @options[:ref]
         @options[:path] ||= @git.directory
-      end
-
-      def unpack
-        true
       end
     end
 
@@ -135,10 +111,6 @@ module KnifeCookbookDependencies
         group = group.to_sym
         @groups << group unless @groups.include?(group)
       end
-    end
-
-    def download_to(path)
-      location.download_to(path) unless location.downloaded_to?(path)
     end
   end
 end
