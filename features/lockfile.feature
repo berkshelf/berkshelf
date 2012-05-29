@@ -17,9 +17,9 @@ Feature: Cookbookfile.lock
     And the file "Cookbookfile.lock" should contain in the current directory:
     """
     cookbook 'mysql', :git => 'https://github.com/opscode-cookbooks/mysql.git', :ref => '190c0c2267785b7b9b303369b8a64ed04364d5f9'
-    cookbook 'example_cookbook', :path => .*
+    cookbook 'example_cookbook', :path => '/Users/jkiehl/Projects/knife_cookbook_dependencies/spec/fixtures/cookbooks'
     cookbook 'ntp', :locked_version => '1.1.8'
     cookbook 'openssl', :locked_version => '1.0.0'
-    cookbook 'windows', :locked_version => '1.2.12'
+    cookbook 'windows', :locked_version => '1.3.0'
     cookbook 'chef_handler', :locked_version => '1.0.6'
     """

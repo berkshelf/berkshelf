@@ -16,8 +16,10 @@ Feature: update
     When I run `knife cookbook dependencies update`
     Then the file "Cookbookfile.lock" should contain exactly:
     """
-    cookbook 'mysql', :locked_version => '1.2.4'
+    cookbook 'mysql', :locked_version => '1.2.6'
     cookbook 'openssl', :locked_version => '1.0.0'
+    cookbook 'windows', :locked_version => '1.3.0'
+    cookbook 'chef_handler', :locked_version => '1.0.6'
     """    
 
   Scenario: knife cookbook deps update
@@ -33,6 +35,8 @@ Feature: update
     When I run `knife cookbook deps update`
     Then the file "Cookbookfile.lock" should contain exactly:
     """
-    cookbook 'mysql', :locked_version => '1.2.4'
+    cookbook 'mysql', :locked_version => '1.2.6'
     cookbook 'openssl', :locked_version => '1.0.0'
+    cookbook 'windows', :locked_version => '1.3.0'
+    cookbook 'chef_handler', :locked_version => '1.0.6'
     """    
