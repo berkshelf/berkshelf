@@ -29,8 +29,8 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe "#download" do
-      context "given there items in the queue" do
+    describe "download" do
+      context "downloading a CookbookSource with no location key" do
         before(:each) do
           subject.enqueue CookbookSource.new("nginx", "0.101.2")
           subject.enqueue CookbookSource.new("mysql", "1.2.6")
@@ -61,12 +61,12 @@ module KnifeCookbookDependencies
         end
       end
 
-      context "downloading a PathSource" do
+      context "downloading a CookbookSource with a :path location key" do
         before(:each) do
           subject.enqueue CookbookSource.new("sparkle_motion", :path => "/tmp/sparkle_motion")
         end
 
-        it "should not dowload items into the storage_path" do
+        it "should not dowload sources into the storage_path" do
           subject.download
 
           tmp_path.should_not have_structure {
@@ -75,7 +75,47 @@ module KnifeCookbookDependencies
           }
         end
 
-        it "should remove items from the queue after a successful download" do
+        it "should remove all sources from the queue after a successful download" do
+          subject.download
+
+          subject.queue.should be_empty
+        end
+      end
+
+      context "downloading a CookbookSource with a :git location key" do
+        before(:each) do
+          subject.enqueue CookbookSource.new("nginx", :git => "https://github.com/erikh/chef-ssh_known_hosts2.git")
+        end
+
+        it "should download the source in the queue to the storage_path" do
+          subject.download
+
+          tmp_path.should have_structure {
+            directory "nginx"
+          }
+        end
+
+        it "should remove the sources from the queue after successful download" do
+          subject.download
+
+          subject.queue.should be_empty
+        end
+      end
+
+      context "downloading a CookbookSource with a :site location key" do
+        before(:each) do
+          subject.enqueue CookbookSource.new("nginx", "0.101.2", :site => "http://cookbooks.opscode.com/api/v1/cookbooks")
+        end
+
+        it "should download the source in the queue to the storage_path" do
+          subject.download
+
+          tmp_path.should have_structure {
+            file "nginx-0.101.2.tar.gz"
+          }
+        end
+
+        it "should remove the sources from the queue after successful download" do
           subject.download
 
           subject.queue.should be_empty

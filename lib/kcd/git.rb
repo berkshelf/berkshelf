@@ -1,4 +1,6 @@
 require 'tempfile'
+require 'shellwords'
+require 'em-systemcommand'
 
 module KnifeCookbookDependencies
   class Git
@@ -53,7 +55,11 @@ module KnifeCookbookDependencies
       end
 
       error_check
+    end
 
+    def async_clone(path = Dir.mktmpdir)
+      cmd = EM::SystemCommand.new("#{self.class.git} clone #{repository} #{path}")
+      cmd.execute
     end
 
     def checkout(ref)
@@ -65,7 +71,7 @@ module KnifeCookbookDependencies
 
       error_check
     end
-
+    
     def ref
       return nil unless @directory
 

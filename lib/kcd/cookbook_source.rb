@@ -54,7 +54,9 @@ module KnifeCookbookDependencies
           file_req = EventMachine::HttpRequest.new(remote_file).aget
           file_req.callback {
             file = File.new(File.join(path, filename), "wb")
-            file_req.stream { |chunk| file.write chunk }
+            EM.next_tick do
+              file_req.stream { |chunk| file.write chunk }
+            end
             succeed(file_req)
           }
           file_req.errback { fail }
@@ -106,9 +108,19 @@ module KnifeCookbookDependencies
         @branch = options[:branch] || options[:ref] || options[:tag]
       end
 
-      def download
-        git.clone
-        git.checkout(branch) if branch
+      def async_download(path)
+        clone = git.async_clone(File.join(path, name))
+        clone.callback {
+          if branch
+            co = git.async_checkout(branch)
+            co.callback { succeed }
+            co.errback { fail }
+          else
+            succeed
+          end
+        }
+
+        clone.errback { fail }
       end
 
       private
