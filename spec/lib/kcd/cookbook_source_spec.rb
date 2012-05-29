@@ -3,7 +3,7 @@ require 'spec_helper'
 module KnifeCookbookDependencies
   describe CookbookSource do
     describe CookbookSource::SiteLocation do
-      subject { CookbookSource::SiteLocation.new("sparkle_motion", "1.0.0") }
+      subject { CookbookSource::SiteLocation.new("sparkle_motion", :version_string => "1.0.0") }
 
       describe "#filename" do
         it "returns a filename including the name of the cookbook and version representing an archive" do
@@ -25,7 +25,7 @@ module KnifeCookbookDependencies
     describe "#initialize" do
       subject { CookbookSource }
 
-      context "given no value for location" do
+      context "given no location key (i.e. :git, :path, :site)" do
         let(:source) { subject.new(cookbook_name) }
 
         it "uses a default SiteLocation pointing to the opscode community api" do
@@ -49,37 +49,37 @@ module KnifeCookbookDependencies
         end
       end
 
-      context "given a location option :git" do
+      context "given a location key :git" do
         let(:url) { "git://url_to_git" }
         let(:source) { subject.new(cookbook_name, :git => url) }
 
-        it "returns a GitLocation for location" do
+        it "initializes a GitLocation for location" do
           source.location.should be_a(subject::GitLocation)
         end
 
-        it "points to the specified URI" do
+        it "points to the given Git URL" do
           source.location.uri.should eql(url)
         end
       end
 
-      context "given a location option :path" do
-        let(:url) { "/Path/To/Cookbook" }
-        let(:source) { subject.new(cookbook_name, :path => url) }
+      context "given a location key :path" do
+        let(:path) { "/Path/To/Cookbook" }
+        let(:source) { subject.new(cookbook_name, :path => path) }
 
-        it "returns a PathLocation for location" do
+        it "initializes a PathLocation for location" do
           source.location.should be_a(subject::PathLocation)
         end
 
-        it "points to the specified URI" do
-          source.location.uri.should eql(url)
+        it "points to the specified path" do
+          source.location.path.should eql(path)
         end
       end
 
-      context "given a location option :site" do
+      context "given a location key :site" do
         let(:url) { "http://path_to_api/v1" }
         let(:source) { subject.new(cookbook_name, :site => url) }
 
-        it "returns a SiteLocation for the location" do
+        it "initializes a SiteLocation for location" do
           source.location.should be_a(subject::SiteLocation)
         end
 

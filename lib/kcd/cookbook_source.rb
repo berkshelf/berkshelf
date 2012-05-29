@@ -6,10 +6,10 @@ module KnifeCookbookDependencies
     module Location
       include EM::Deferrable
 
-      attr_reader :uri
+      attr_reader :name
 
-      def initialize(uri)
-        @uri = uri
+      def initialize(name)
+        @name = name
       end
 
       def async_download(path)
@@ -21,15 +21,14 @@ module KnifeCookbookDependencies
     class SiteLocation
       include Location
 
-      attr_reader :name
       attr_accessor :api_uri
       attr_accessor :target_version
 
       OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
 
-      def initialize(name, version = :latest, options = {})
+      def initialize(name, options = {})
         @name = name
-        @target_version = version
+        @target_version = options[:version_string] || :latest
         @api_uri = options[:site] || OPSCODE_COMMUNITY_API
       end
 
@@ -82,8 +81,15 @@ module KnifeCookbookDependencies
     class PathLocation
       include Location
 
+      attr_accessor :path
+
+      def initialize(name, options = {})
+        @name = name
+        @path = options[:path]
+      end
+
       def async_download(path)
-        true
+        succeed
       end
     end
 
@@ -91,10 +97,12 @@ module KnifeCookbookDependencies
     class GitLocation
       include Location
 
-      attr_reader :branch
+      attr_accessor :uri
+      attr_accessor :branch
 
-      def initialize(uri, options)
-        @uri = uri
+      def initialize(name, options)
+        @name = name
+        @uri = options[:git]
         @branch = options[:branch] || options[:ref] || options[:tag]
       end
 
@@ -133,15 +141,17 @@ module KnifeCookbookDependencies
 
       raise ArgumentError if (options.keys & [:git, :path, :site]).length > 1
 
+      options[:version_string] = version_constraint.version.to_s
+
       @location = case 
       when options[:git]
-        GitLocation.new(options[:git], options)
+        GitLocation.new(name, options)
       when options[:path]
-        PathLocation.new(options[:path])
+        PathLocation.new(name, options)
       when options[:site]
-        SiteLocation.new(name, version_constraint.version.to_s, options)
+        SiteLocation.new(name, options)
       else
-        SiteLocation.new(name, version_constraint.version.to_s)
+        SiteLocation.new(name, options)
       end
 
       @locked_version = DepSelector::Version.new(options[:locked_version]) if options[:locked_version]

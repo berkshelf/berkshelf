@@ -60,6 +60,27 @@ module KnifeCookbookDependencies
           subject.queue.should have(1).source
         end
       end
+
+      context "downloading a PathSource" do
+        before(:each) do
+          subject.enqueue CookbookSource.new("sparkle_motion", :path => "/tmp/sparkle_motion")
+        end
+
+        it "should not dowload items into the storage_path" do
+          subject.download
+
+          tmp_path.should_not have_structure {
+            file "sparkle_motion-latest"
+            directory "sparkle_motion-latest"
+          }
+        end
+
+        it "should remove items from the queue after a successful download" do
+          subject.download
+
+          subject.queue.should be_empty
+        end
+      end
     end
   end
 end
