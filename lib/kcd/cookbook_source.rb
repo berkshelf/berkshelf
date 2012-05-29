@@ -1,7 +1,11 @@
+require 'json'
+
 module KnifeCookbookDependencies
   class CookbookSource
     # @internal
     module Location
+      include EM::Deferrable
+
       attr_reader :uri
       attr_accessor :filename
 
@@ -26,14 +30,61 @@ module KnifeCookbookDependencies
     class SiteLocation
       include Location
 
-      def async_download(path)
-        request = EventMachine::HttpRequest.new(uri).aget
-        file = File.new(File.join(path, File.basename(filename)), "wb")
-        
-        request.stream { |chunk| file.write chunk }
+      attr_reader :name
+      attr_accessor :api_uri
+      attr_accessor :target_version
 
-        request
+      OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
+
+      def initialize(name, version = :latest, options = {})
+        @name = name
+        @target_version = version
+        @api_uri = options[:site] || OPSCODE_COMMUNITY_API
       end
+
+      def async_download(path)
+        uri = if target_version == :latest
+          http = EventMachine::HttpRequest.new("#{api_uri}/#{name}").aget
+          http.callback {
+            begin
+              latest_version = JSON.parse(http.response)['latest_version']
+            rescue JSON::ParserError
+              fail
+            end
+          }
+          http.errback { fail }
+        else
+          uri_for_version(target_version)
+        end
+
+        api_req = EventMachine::HttpRequest.new(uri).aget
+        api_req.callback {
+          remote_file = JSON.parse(api_req.response)['file']
+
+          file_req = EventMachine::HttpRequest.new(remote_file).aget
+          file_req.callback {
+            file = File.new(File.join(path, filename), "wb")
+            file_req.stream { |chunk| file.write chunk }
+            succeed(file_req)
+          }
+          file_req.errback { fail }
+        }
+        api_req.errback { fail }
+      end
+
+      def filename
+        @filename ||= "#{name}-#{target_version}.tar.gz"
+      end
+
+      private
+
+        def uri_for_version(version)
+          "#{api_uri}/#{name}/versions/#{uri_escape_version(version)}"
+        end
+
+        def uri_escape_version(version)
+          version.gsub('.', '_')
+        end
     end
 
     # @internal
@@ -52,7 +103,7 @@ module KnifeCookbookDependencies
       attr_reader :branch
 
       def initialize(uri, options)
-        super(uri)
+        @uri = uri
         @branch = options[:branch] || options[:ref] || options[:tag]
       end
 
@@ -68,7 +119,7 @@ module KnifeCookbookDependencies
         end
     end
 
-    OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
+    include EM::Deferrable
 
     attr_reader :name
     attr_reader :version_constraint
@@ -97,9 +148,9 @@ module KnifeCookbookDependencies
       when options[:path]
         PathLocation.new(options[:path])
       when options[:site]
-        SiteLocation.new(options[:site])
+        SiteLocation.new(name, version_constraint.version.to_s, options)
       else
-        SiteLocation.new(OPSCODE_COMMUNITY_API)
+        SiteLocation.new(name, version_constraint.version.to_s)
       end
 
       @locked_version = DepSelector::Version.new(options[:locked_version]) if options[:locked_version]
@@ -119,10 +170,9 @@ module KnifeCookbookDependencies
 
     def async_download(path)
       location.async_download(path)
-    end
 
-    def download(path)
-      location.download(path)
+      location.callback { succeed }
+      location.errback { fail }
     end
   end
 end

@@ -40,14 +40,14 @@ module KnifeCookbookDependencies
     def download
       EM.synchrony do
         results = EM::Synchrony::Iterator.new(queue, concurrency).map do |source, iter|
-          result = source.async_download(storage_path)
+          source.async_download(storage_path)
 
-          result.callback do
+          source.callback do
             dequeue(source)
-            iter.return(result)
+            iter.return(source)
           end
 
-          result.errback { iter.return(result) }
+          source.errback { iter.return(source) }
         end
 
         EventMachine.stop

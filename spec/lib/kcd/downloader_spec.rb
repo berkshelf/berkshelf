@@ -32,16 +32,16 @@ module KnifeCookbookDependencies
     describe "#download" do
       context "given there items in the queue" do
         before(:each) do
-          subject.enqueue(CookbookSource.new("kcd_gemspec", :site => "https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/knife_cookbook_dependencies.gemspec"))
-          subject.enqueue(CookbookSource.new("gitignore", :site => "https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/.gitignore"))
+          subject.enqueue CookbookSource.new("nginx", "0.101.2")
+          subject.enqueue CookbookSource.new("mysql", "1.2.6")
         end
 
         it "should download all items in the queue to the storage_path" do
           subject.download
 
           tmp_path.should have_structure {
-            file "knife_cookbook_dependencies.gemspec"
-            file ".gitignore"
+            file "nginx-0.101.2.tar.gz"
+            file "mysql-1.2.6.tar.gz"
           }
         end
 
@@ -52,12 +52,12 @@ module KnifeCookbookDependencies
         end
 
         it "should not remove the item from the queue if the download failed" do
-          subject.enqueue(CookbookSource.new("bad_source", :site => "http://localhost/badhost.txt"))
-          VCR.use_cassette('bad_source', :record => :once) do
+          subject.enqueue(CookbookSource.new("bad_source", :site => "http://localhost/api"))
+          VCR.use_cassette('bad_source', :record => :new_episodes) do
             subject.download
           end
 
-          subject.queue.should have(1).thing
+          subject.queue.should have(1).source
         end
       end
     end

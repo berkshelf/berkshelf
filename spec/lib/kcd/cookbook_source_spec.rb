@@ -3,11 +3,11 @@ require 'spec_helper'
 module KnifeCookbookDependencies
   describe CookbookSource do
     describe CookbookSource::SiteLocation do
-      subject { CookbookSource::SiteLocation.new("https://raw.github.com/RiotGames/knife_cookbook_dependencies/master/knife_cookbook_dependencies.gemspec") }
+      subject { CookbookSource::SiteLocation.new("sparkle_motion") }
 
       describe "#filename" do
-        it "returns the basename of the URI if no filename is explicitly set" do
-          subject.filename.should eql("knife_cookbook_dependencies.gemspec")
+        it "returns a filename including the name of the cookbook and version representing an archive" do
+          subject.filename.should eql("sparkle_motion-latest.tar.gz")
         end
 
         it "returns the the value explicitly set by filename if one is set" do
@@ -27,7 +27,7 @@ module KnifeCookbookDependencies
         let(:source) { subject.new(cookbook_name) }
 
         it "uses a default SiteLocation pointing to the opscode community api" do
-          source.location.uri.should eql(subject::OPSCODE_COMMUNITY_API)
+          source.location.api_uri.should eql(subject::SiteLocation::OPSCODE_COMMUNITY_API)
         end
       end
 
@@ -82,7 +82,7 @@ module KnifeCookbookDependencies
         end
 
         it "points to the specified URI" do
-          source.location.uri.should eql(url)
+          source.location.api_uri.should eql(url)
         end
       end
 
