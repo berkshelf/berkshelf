@@ -69,13 +69,9 @@ module KnifeCookbookDependencies
         subject.add_version_constraint ">= 1.0.0"
         subject.add_version_constraint ">= 1.0.0"
         subject.add_version_constraint ">= 1.0.0"
-        subject.version_constraints.size.should == 2 # 1 for the
-                                                     # default when
-                                                     # the cookbook
-                                                     # was created in
-                                                     # the subject
-                                                     # instantiation
-                                                     # line
+        
+        # 1 for the default when the cookbook was created in the subject instantiation line
+        subject.version_constraints.should have(2).things
       end
     end
 
