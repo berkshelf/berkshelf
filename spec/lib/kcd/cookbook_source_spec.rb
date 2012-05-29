@@ -3,17 +3,19 @@ require 'spec_helper'
 module KnifeCookbookDependencies
   describe CookbookSource do
     describe CookbookSource::SiteLocation do
-      subject { CookbookSource::SiteLocation.new("sparkle_motion") }
+      subject { CookbookSource::SiteLocation.new("sparkle_motion", "1.0.0") }
 
       describe "#filename" do
         it "returns a filename including the name of the cookbook and version representing an archive" do
-          subject.filename.should eql("sparkle_motion-latest.tar.gz")
+          subject.filename.should eql("sparkle_motion-1.0.0.tar.gz")
         end
 
-        it "returns the the value explicitly set by filename if one is set" do
-          subject.filename = "hello.txt"
+        context "given no version number specified" do
+          subject { CookbookSource::SiteLocation.new("sparkle_motion") }
 
-          subject.filename.should eql("hello.txt")
+          it "returns a filename containing 'latest' in place of a version number" do
+            subject.filename.should eql("sparkle_motion-latest.tar.gz")
+          end
         end
       end
     end

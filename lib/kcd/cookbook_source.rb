@@ -7,21 +7,12 @@ module KnifeCookbookDependencies
       include EM::Deferrable
 
       attr_reader :uri
-      attr_accessor :filename
 
       def initialize(uri)
         @uri = uri
       end
 
-      def filename
-        @filename ||= File.basename(uri)
-      end
-
       def async_download(path)
-        raise NotImplemented, "Must implement on includer"
-      end
-
-      def download(path)
         raise NotImplemented, "Must implement on includer"
       end
     end
@@ -47,7 +38,7 @@ module KnifeCookbookDependencies
           http = EventMachine::HttpRequest.new("#{api_uri}/#{name}").aget
           http.callback {
             begin
-              latest_version = JSON.parse(http.response)['latest_version']
+              @target_version = JSON.parse(http.response)['latest_version']
             rescue JSON::ParserError
               fail
             end
@@ -73,7 +64,7 @@ module KnifeCookbookDependencies
       end
 
       def filename
-        @filename ||= "#{name}-#{target_version}.tar.gz"
+        "#{name}-#{target_version}.tar.gz"
       end
 
       private
