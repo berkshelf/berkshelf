@@ -9,7 +9,7 @@ module KnifeCookbookDependencies
       it "should add a source to the queue" do
         subject.enqueue(source)
 
-        subject.queue.length.should be(1)
+        subject.queue.should have(1).thing
       end
 
       it "should not allow you to add an invalid source" do
@@ -25,7 +25,7 @@ module KnifeCookbookDependencies
       it "should remove a source from the queue" do
         subject.dequeue(source)
 
-        subject.queue.length.should be(0)
+        subject.queue.should be_empty
       end
     end
 
@@ -51,7 +51,14 @@ module KnifeCookbookDependencies
           subject.queue.should be_empty
         end
 
-        it "should not remove the item from the queue if the download failed"
+        it "should not remove the item from the queue if the download failed" do
+          subject.enqueue(CookbookSource.new("bad_source", :site => "http://localhost/badhost.txt"))
+          VCR.use_cassette('bad_source', :record => :once) do
+            subject.download
+          end
+
+          subject.queue.should have(1).thing
+        end
       end
     end
   end
