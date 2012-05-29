@@ -13,6 +13,12 @@ module KnifeCookbookDependencies
       @queue = []
     end
 
+    # Add a CookbooKSource to the downloader's queue
+    #
+    # @param [KCD::CookbookSource] source
+    # 
+    # @return [Array<KCD::ookbookSource>]
+    #   the queue - an array of KCD::CookbookSources
     def enqueue(source)
       unless validate_source(source)
         raise ArgumentError, "Invalid CookbookSource: can only enqueue valid instances of CookbookSource."
@@ -21,6 +27,12 @@ module KnifeCookbookDependencies
       @queue << source
     end
 
+    # Remove a CookbookSource from the downloader's queue
+    #
+    # @param [KCD::CookbookSource] source
+    #
+    # @return [KCD::CookbookSource]
+    #   the CookbookSource removed from the queue
     def dequeue(source)
       @queue.delete(source)
     end
