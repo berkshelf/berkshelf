@@ -28,7 +28,7 @@ module KnifeCookbookDependencies
     class SiteLocation
       include Location
 
-      attr_accessor :api_uri
+      attr_reader :api_uri
       attr_accessor :target_version
 
       OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
@@ -41,16 +41,18 @@ module KnifeCookbookDependencies
 
       def initialize(name, options = {})
         @name = name
-        @target_version = options[:version_string] || :latest
+        @target_version = options[:version_string] || "0.0.0"
         @api_uri = options[:site] || OPSCODE_COMMUNITY_API
       end
 
       def download(destination)
-        if target_version == :latest
-          @target_version = rest.get_rest(name)['latest_version']
+        uri = if target_version == "0.0.0"
+          rest.get_rest(name)['latest_version']
+        else
+          uri_for_version(target_version)
         end
 
-        remote_file = rest.get_rest(uri_for_version(target_version))['file']
+        remote_file = rest.get_rest(uri)['file']
         downloaded_tf = rest.get_rest(remote_file, true)
 
         self.class.unpack(downloaded_tf.path, destination.to_s)
@@ -134,7 +136,6 @@ module KnifeCookbookDependencies
     attr_reader :location
     attr_reader :locked_version
     attr_reader :local_path
-    attr_reader :cookbook_path
 
     # TODO: describe how the options on this function work.
     #
@@ -182,7 +183,7 @@ module KnifeCookbookDependencies
     end
 
     def download(destination)
-      location.download(destination)
+      set_local_path location.download(destination)
     end
 
     def async_download(destination)
@@ -199,11 +200,7 @@ module KnifeCookbookDependencies
     end
 
     def downloaded?
-      @downloaded_state
-    end
-
-    def unpacked?
-      @unpacked_state
+      !local_path.nil?
     end
 
     def to_s
@@ -218,14 +215,6 @@ module KnifeCookbookDependencies
 
       def set_downloaded_status(state)
         @downloaded_state = state
-      end
-
-      def set_unpacked_status(state)
-        @unpacked_state = state
-      end
-
-      def set_cookbook_path(path)
-        @cookbook_path = path
       end
 
       def set_local_path(path)

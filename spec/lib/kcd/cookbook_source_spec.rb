@@ -3,9 +3,9 @@ require 'spec_helper'
 module KnifeCookbookDependencies
   describe CookbookSource do
     describe CookbookSource::SiteLocation do
-      subject { CookbookSource::SiteLocation.new("nginx", :version_string => "0.101.2") }
-
       describe "#download" do
+        subject { CookbookSource::SiteLocation.new("nginx") }
+
         it "downloads the cookbook to the given destination" do
           subject.download(tmp_path)
 
@@ -18,6 +18,14 @@ module KnifeCookbookDependencies
 
         it "returns the path to the cookbook" do
           subject.download(tmp_path).should eql(tmp_path.join('nginx').to_s)
+        end
+
+        context "given an explicit version_string" do
+          subject { CookbookSource::SiteLocation.new("nginx", :version_string => "0.101.2") }
+        end
+
+        context "given an explicit :site location key" do
+          subject { CookbookSource::SiteLocation.new("nginx", :site => "http://cookbooks.opscode.com/api/v1/cookbooks") }
         end
       end
     end
@@ -189,6 +197,21 @@ module KnifeCookbookDependencies
       it "should handle multiple groups as an array" do
         subject.add_group ["baz", "quux"]
         subject.groups.should == [:default, :baz, :quux]
+      end
+    end
+
+    describe "#download" do
+      it "should mark the source as downloaded after a successful download" do
+        subject.download(tmp_path)
+
+        subject.should be_downloaded
+        subject.should be_downloaded
+      end
+
+      it "should write a value to local_path after a successful download" do
+        subject.download(tmp_path)
+
+        subject.local_path.should_not be_nil
       end
     end
   end
