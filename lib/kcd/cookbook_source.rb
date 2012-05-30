@@ -1,4 +1,7 @@
 require 'json'
+require 'em-synchrony'
+require 'em-synchrony/em-http'
+require 'chef/rest'
 
 module KnifeCookbookDependencies
   class CookbookSource
@@ -12,7 +15,11 @@ module KnifeCookbookDependencies
         @name = name
       end
 
-      def async_download(path)
+      def download(destination)
+        raise NotImplemented, "Must implement on includer"
+      end
+
+      def async_download(destination)
         raise NotImplemented, "Must implement on includer"
       end
     end
@@ -26,53 +33,44 @@ module KnifeCookbookDependencies
 
       OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
 
+      class << self
+        def unpack(target, destination)
+          Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
+        end
+      end
+
       def initialize(name, options = {})
         @name = name
         @target_version = options[:version_string] || :latest
         @api_uri = options[:site] || OPSCODE_COMMUNITY_API
       end
 
-      def async_download(path)
-        uri = if target_version == :latest
-          http = EventMachine::HttpRequest.new("#{api_uri}/#{name}").aget
-          http.callback {
-            begin
-              @target_version = JSON.parse(http.response)['latest_version']
-            rescue JSON::ParserError
-              fail
-            end
-          }
-          http.errback { fail }
-        else
-          uri_for_version(target_version)
+      def download(destination)
+        if target_version == :latest
+          @target_version = rest.get_rest(name)['latest_version']
         end
 
-        api_req = EventMachine::HttpRequest.new(uri).aget
-        api_req.callback {
-          remote_file = JSON.parse(api_req.response)['file']
+        remote_file = rest.get_rest(uri_for_version(target_version))['file']
+        downloaded_tf = rest.get_rest(remote_file, true)
 
-          file_req = EventMachine::HttpRequest.new(remote_file).aget
-          file_req.callback {
-            local_path = File.join(path, filename)
-            file = File.new(local_path, "wb")
-            EM.next_tick do
-              file_req.stream { |chunk| file.write chunk }
-            end
-            succeed(local_path)
-          }
-          file_req.errback { fail }
-        }
-        api_req.errback { fail }
+        self.class.unpack(downloaded_tf.path, destination.to_s)
+
+        File.join(destination, name)
       end
 
-      def filename
-        "#{name}-#{target_version}.tar.gz"
+      def api_uri=(uri)
+        @rest = nil
+        @api_uri = uri
       end
 
       private
 
+        def rest
+          @rest ||= Chef::REST.new(api_uri, false, false)
+        end
+
         def uri_for_version(version)
-          "#{api_uri}/#{name}/versions/#{uri_escape_version(version)}"
+          "#{name}/versions/#{uri_escape_version(version)}"
         end
 
         def uri_escape_version(version)
@@ -91,8 +89,12 @@ module KnifeCookbookDependencies
         @path = options[:path]
       end
 
-      def async_download(path)
-        succeed(File.join(name, path))
+      def download(destination)
+        path
+      end
+
+      def async_download(destination)
+        succeed(File.join(name, destination))
       end
     end
 
@@ -109,20 +111,12 @@ module KnifeCookbookDependencies
         @branch = options[:branch] || options[:ref] || options[:tag]
       end
 
-      def async_download(path)
-        local_path = File.join(path, name)
-        clone = git.async_clone(local_path)
-        clone.callback {
-          if branch
-            co = git.async_checkout(branch)
-            co.callback { succeed(local_path) }
-            co.errback { fail }
-          else
-            succeed(local_path)
-          end
-        }
+      def download(destination)
+        cb_path = File.join(destination, name)
+        ::KCD::Git.clone(uri, cb_path)
+        ::KCD::Git.checkout(cb_path, branch) if branch
 
-        clone.errback { fail }
+        cb_path
       end
 
       private
@@ -140,6 +134,7 @@ module KnifeCookbookDependencies
     attr_reader :location
     attr_reader :locked_version
     attr_reader :local_path
+    attr_reader :cookbook_path
 
     # TODO: describe how the options on this function work.
     #
@@ -186,10 +181,14 @@ module KnifeCookbookDependencies
       end
     end
 
-    def async_download(path)
+    def download(destination)
+      location.download(destination)
+    end
+
+    def async_download(destination)
       return succeed if downloaded?
 
-      location.async_download(path)
+      location.async_download(destination)
 
       location.callback do |l_path|
         set_downloaded_status(true)
@@ -201,6 +200,10 @@ module KnifeCookbookDependencies
 
     def downloaded?
       @downloaded_state
+    end
+
+    def unpacked?
+      @unpacked_state
     end
 
     def to_s
@@ -215,6 +218,14 @@ module KnifeCookbookDependencies
 
       def set_downloaded_status(state)
         @downloaded_state = state
+      end
+
+      def set_unpacked_status(state)
+        @unpacked_state = state
+      end
+
+      def set_cookbook_path(path)
+        @cookbook_path = path
       end
 
       def set_local_path(path)

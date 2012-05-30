@@ -3,24 +3,67 @@ require 'spec_helper'
 module KnifeCookbookDependencies
   describe CookbookSource do
     describe CookbookSource::SiteLocation do
-      subject { CookbookSource::SiteLocation.new("sparkle_motion", :version_string => "1.0.0") }
+      subject { CookbookSource::SiteLocation.new("nginx", :version_string => "0.101.2") }
 
-      describe "#filename" do
-        it "returns a filename including the name of the cookbook and version representing an archive" do
-          subject.filename.should eql("sparkle_motion-1.0.0.tar.gz")
+      describe "#download" do
+        it "downloads the cookbook to the given destination" do
+          subject.download(tmp_path)
+
+          tmp_path.should have_structure {
+            directory "nginx" do
+              file "metadata.rb"
+            end
+          }
         end
 
-        context "given no version number specified" do
-          subject { CookbookSource::SiteLocation.new("sparkle_motion") }
-
-          it "returns a filename containing 'latest' in place of a version number" do
-            subject.filename.should eql("sparkle_motion-latest.tar.gz")
-          end
+        it "returns the path to the cookbook" do
+          subject.download(tmp_path).should eql(tmp_path.join('nginx').to_s)
         end
       end
     end
 
-    let(:cookbook_name) { "sparkle_motion" }
+    describe CookbookSource::GitLocation do
+      subject { CookbookSource::GitLocation.new("nginx", :git => "git://github.com/opscode-cookbooks/nginx.git") }
+
+      describe "#download" do
+        it "downloads the cookbook to the given destination" do
+          subject.download(tmp_path)
+
+          tmp_path.should have_structure {
+            directory "nginx" do
+              file "metadata.rb"
+            end
+          }
+        end
+
+        it "returns the path to the cookbook" do
+          subject.download(tmp_path).should eql(tmp_path.join('nginx').to_s)
+        end
+      end
+    end
+
+    describe CookbookSource::PathLocation do
+      let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
+      subject { CookbookSource::PathLocation.new("nginx", :path => path) }
+
+      describe "#download" do
+        it "downloads the cookbook to the given destination" do
+          subject.download(tmp_path)
+
+          tmp_path.should_not have_structure {
+            directory "example_cookbook" do
+              file "metadata.rb"
+            end
+          }
+        end
+
+        it "returns the path to the cookbook" do
+          subject.download(tmp_path).should eql(path)
+        end
+      end
+    end
+
+    let(:cookbook_name) { "nginx" }
 
     describe "#initialize" do
       subject { CookbookSource }
