@@ -8,6 +8,7 @@ module KnifeCookbookDependencies
       def git
         @git ||= find_git
       end
+      alias_method :git_cmd, :git
 
       #
       # This is to defeat aliases/shell functions called 'git' and a number of
@@ -34,6 +35,29 @@ module KnifeCookbookDependencies
 
         return git_path
       end
+
+      def clone(uri, destination = Dir.mktmpdir)
+        quietly { system(git_cmd, "clone", uri, destination.to_s) }
+        error_check
+
+        destination
+      end
+
+      def checkout(repo_path, ref)
+        Dir.chdir repo_path do
+          quietly { system(git_cmd, "checkout", "-q", ref) }
+        end
+
+        ref
+      end
+
+      private
+
+        def error_check
+          if $?.exitstatus != 0
+            raise "Did not succeed executing git; check the output above."
+          end
+        end
     end
 
     attr_reader :directory
@@ -71,7 +95,7 @@ module KnifeCookbookDependencies
 
       error_check
     end
-    
+
     def ref
       return nil unless @directory
 
