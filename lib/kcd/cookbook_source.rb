@@ -53,11 +53,12 @@ module KnifeCookbookDependencies
 
           file_req = EventMachine::HttpRequest.new(remote_file).aget
           file_req.callback {
-            file = File.new(File.join(path, filename), "wb")
+            local_path = File.join(path, filename)
+            file = File.new(local_path, "wb")
             EM.next_tick do
               file_req.stream { |chunk| file.write chunk }
             end
-            succeed(file_req)
+            succeed(local_path)
           }
           file_req.errback { fail }
         }
@@ -91,7 +92,7 @@ module KnifeCookbookDependencies
       end
 
       def async_download(path)
-        succeed
+        succeed(File.join(name, path))
       end
     end
 
@@ -109,14 +110,15 @@ module KnifeCookbookDependencies
       end
 
       def async_download(path)
-        clone = git.async_clone(File.join(path, name))
+        local_path = File.join(path, name)
+        clone = git.async_clone(local_path)
         clone.callback {
           if branch
             co = git.async_checkout(branch)
-            co.callback { succeed }
+            co.callback { succeed(local_path) }
             co.errback { fail }
           else
-            succeed
+            succeed(local_path)
           end
         }
 
@@ -137,6 +139,7 @@ module KnifeCookbookDependencies
     attr_reader :groups
     attr_reader :location
     attr_reader :locked_version
+    attr_reader :local_path
 
     # TODO: describe how the options on this function work.
     #
@@ -150,6 +153,7 @@ module KnifeCookbookDependencies
       @name = name
       @version_constraint = DepSelector::VersionConstraint.new(constraint)
       @groups = []
+      @local_path = nil
 
       raise ArgumentError if (options.keys & [:git, :path, :site]).length > 1
 
@@ -171,6 +175,7 @@ module KnifeCookbookDependencies
       add_group(KnifeCookbookDependencies.shelf.active_group) if KnifeCookbookDependencies.shelf.active_group
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
+      set_downloaded_status(false)
     end
 
     def add_group(*groups)
@@ -182,10 +187,38 @@ module KnifeCookbookDependencies
     end
 
     def async_download(path)
+      return succeed if downloaded?
+
       location.async_download(path)
 
-      location.callback { succeed }
+      location.callback do |l_path|
+        set_downloaded_status(true)
+        set_local_path(l_path)
+        succeed
+      end
       location.errback { fail }
     end
+
+    def downloaded?
+      @downloaded_state
+    end
+
+    def to_s
+      name
+    end
+
+    def has_group?(group)
+      groups.select { |sg| sg == group }
+    end
+
+    private
+
+      def set_downloaded_status(state)
+        @downloaded_state = state
+      end
+
+      def set_local_path(path)
+        @local_path = path
+      end
   end
 end

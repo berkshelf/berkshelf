@@ -1,28 +1,68 @@
 module KnifeCookbookDependencies
   class Shelf
+    class << self
+      def populate_graph(graph, cookbook)
+        package = graph.package cookbook.name
+        cookbook.versions.each { |v| package.add_version(v) }
+        cookbook.dependencies.each do |dependency|
+          graph = populate_graph(graph, dependency)
+          dep = graph.package(dependency.name)
+          version = package.versions.select { |v| v.version == cookbook.latest_constrained_version }.first
+          dependency.version_constraints.each do |constraint|
+            version.dependencies << DepSelector::Dependency.new(dep, constraint)
+          end
+        end
+
+        graph
+      end
+    end
+
     META_COOKBOOK_NAME = 'cookbook_dependencies_shelf'
 
-    attr_accessor :cookbooks, :active_group, :excluded_groups
+    attr_reader :sources
+    attr_accessor :active_group
+    attr_accessor :excluded_groups
 
     def initialize
-      @cookbooks = []
+      @sources = Hash.new
     end
-    
-    def shelve_cookbook(*args)
-      @cookbooks << (args.first.is_a?(Cookbook) ? args.first : Cookbook.new(*args))
+
+    def sources(scope = :all)
+      case scope
+      when :all; @sources
+      when :permitted; get_permitted_sources
+      else
+        raise ArgumentError, "Unknown scope #{scope}"
+      end
+    end
+
+    def add_source(source)
+      @sources[source.to_s] = source
+    end
+
+    def remove_source(source)
+      @sources.delete(source.to_s)
+    end
+
+    def has_source?(source)
+      @sources.has_key?(source.to_s)
+    end
+
+    def download_sources
+      sources.each { |name, source| KCD.downloader.enqueue(source) }
+      KCD.downloader.download
     end
 
     def resolve_dependencies
       graph = DepSelector::DependencyGraph.new
 
-      post_exclusions = requested_cookbooks
-      cookbooks_to_install = @cookbooks.select {|c| post_exclusions.include?(c.name)}
+      permitted_sources = sources(:permitted)
+
       # all cookbooks in the Cookbookfile are dependencies of the shelf
-      shelf = MetaCookbook.new(META_COOKBOOK_NAME, cookbooks_to_install)
+      shelf = MetaCookbook.new(META_COOKBOOK_NAME, permitted_sources)
 
       self.class.populate_graph graph, shelf
 
-      
       selector = DepSelector::Selector.new(graph)
 
       solution = quietly do
@@ -35,10 +75,6 @@ module KnifeCookbookDependencies
 
     def write_lockfile
       KCD::Lockfile.new(@cookbooks).write
-    end
-
-    def get_cookbook(name)
-      @cookbooks.select { |c| c.name == name }.first
     end
 
     def populate_cookbooks_directory
@@ -60,41 +96,33 @@ module KnifeCookbookDependencies
       @excluded_groups = groups.collect {|c| c.to_sym}
     end
 
-    def cookbook_groups
+    def groups
       {}.tap do |groups|
-        @cookbooks.each do |cookbook|
-          cookbook.groups.each do |group|
+        sources.each_pair do |name, source|
+          source.groups.each do |group|
             groups[group] ||= []
-            groups[group] << cookbook.name
+            groups[group] << source.name
           end
         end
       end
     end
 
-    def requested_cookbooks
-      return @cookbooks.collect(&:name) unless @excluded_groups
-      [].tap do |r|
-        cookbook_groups.each do |group, cookbooks|
-          r << cookbooks unless @excluded_groups.include?(group.to_sym)
-        end
-      end.flatten.uniq
-    end
+    # remove
+    # def requested_cookbooks
+    #   return @cookbooks.collect(&:name) unless @excluded_groups
+    #   [].tap do |r|
+    #     cookbook_groups.each do |group, cookbooks|
+    #       r << cookbooks unless @excluded_groups.include?(group.to_sym)
+    #     end
+    #   end.flatten.uniq
+    # end
 
-    class << self
-      def populate_graph(graph, cookbook)
-        package = graph.package cookbook.name
-        cookbook.versions.each { |v| package.add_version(v) }
-        cookbook.dependencies.each do |dependency|
-          graph = populate_graph(graph, dependency)
-          dep = graph.package(dependency.name)
-          version = package.versions.select { |v| v.version == cookbook.latest_constrained_version }.first
-          dependency.version_constraints.each do |constraint|
-            version.dependencies << DepSelector::Dependency.new(dep, constraint)
-          end
-        end
+    private
 
-        graph
+      def get_permitted_sources
+        s = @sources.clone
+        s.delete_if { |name, source| source.has_group?(excluded_groups) }
+        s
       end
-    end
   end
 end

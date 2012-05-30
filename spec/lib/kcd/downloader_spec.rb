@@ -29,11 +29,13 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe "download" do
+    describe "#download" do
       context "downloading a CookbookSource with no location key" do
+        let(:cookbook_source_one) { CookbookSource.new("nginx", "0.101.2") }
+        let(:cookbook_source_two) { CookbookSource.new("mysql", "1.2.6") }
         before(:each) do
-          subject.enqueue CookbookSource.new("nginx", "0.101.2")
-          subject.enqueue CookbookSource.new("mysql", "1.2.6")
+          subject.enqueue(cookbook_source_one)
+          subject.enqueue(cookbook_source_two)
         end
 
         it "should download all items in the queue to the storage_path" do
@@ -51,6 +53,19 @@ module KnifeCookbookDependencies
           subject.queue.should be_empty
         end
 
+        it "should mark the source as downloaded after a successful download" do
+          subject.download
+
+          cookbook_source_one.should be_downloaded
+          cookbook_source_two.should be_downloaded
+        end
+
+        it "should write a value to local_path after a successful download" do
+          subject.download
+
+          cookbook_source_two.local_path.should_not be_nil
+        end
+
         it "should not remove the item from the queue if the download failed" do
           subject.enqueue(CookbookSource.new("bad_source", :site => "http://localhost/api"))
           VCR.use_cassette('bad_source', :record => :new_episodes) do
@@ -58,6 +73,14 @@ module KnifeCookbookDependencies
           end
 
           subject.queue.should have(1).source
+        end
+
+        it "should return an array of CookbookSource instances" do
+          results = subject.download
+
+          results.each do |source|
+            source.should be_a(CookbookSource)
+          end
         end
       end
 

@@ -38,6 +38,7 @@ module KnifeCookbookDependencies
     end
 
     def download
+      results = nil
       EM.synchrony do
         results = EM::Synchrony::Iterator.new(queue, concurrency).map do |source, iter|
           source.async_download(storage_path)
@@ -51,8 +52,9 @@ module KnifeCookbookDependencies
         end
 
         EventMachine.stop
-        results
       end
+      
+      results
     end
 
     private

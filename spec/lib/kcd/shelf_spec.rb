@@ -2,38 +2,6 @@ require 'spec_helper'
 
 module KnifeCookbookDependencies
   describe Shelf do
-    describe '#get_cookbook' do
-      it "should return nil if a cookbook doesn't exist on the shelf" do
-        Shelf.new.get_cookbook('arbitrary').should be_nil
-      end
-      it "should return the cookbook if the cookbook exists on the shelf" do
-        s = Shelf.new
-        s.shelve_cookbook example_cookbook_from_path
-        s.get_cookbook(example_cookbook_from_path.name).should_not be_nil
-      end
-    end
-
-    describe "#shelve_cookbook" do
-      subject { Shelf.new }
-      it 'should store shelved cookbooks' do
-        subject.shelve_cookbook 'acookbook'
-        subject.cookbooks.collect(&:name).should include 'acookbook'
-      end
-
-      it 'should take version constraints' do
-        subject.shelve_cookbook 'acookbook', '= 1.2.3'
-        subject.cookbooks.last.version_constraints.should == [DepSelector::VersionConstraint.new('= 1.2.3')]
-      end
-
-      it "should resolve the dependency graph of the cookbooks on the shelf" do
-        subject.shelve_cookbook 'mysql', "= 1.2.4"
-        
-        subject.resolve_dependencies.should == ({"mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0")})
-        Cookbook.new('mysql').clean
-        Cookbook.new('openssl').clean
-      end
-    end
-
     describe '#exclude' do
       it "should split on :" do
         subject.exclude("foo:bar")
@@ -51,30 +19,86 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe '#cookbook_groups' do
+    describe '#groups' do
+      before(:each) do
+        subject.add_source CookbookSource.new("foobar", :group => ["foo", "bar"])
+        subject.add_source CookbookSource.new("baz", :group => "baz")
+        subject.add_source CookbookSource.new("quux", :group => "quux")
+        subject.add_source CookbookSource.new("baz2", :group => "baz")
+        @groups = subject.groups
+      end
+
       it "should return a hash of groups and associated cookbooks" do
-        subject.shelve_cookbook "foobar", :group => ["foo", "bar"]
-        subject.shelve_cookbook "baz", :group => "baz"
-        subject.shelve_cookbook "quux", :group => "quux"
-        subject.shelve_cookbook "baz2", :group => "baz"
-        groups = subject.cookbook_groups
-        groups.keys.size.should == 4
-        groups[:foo].should == ["foobar"]
-        groups[:bar].should == ["foobar"]
-        groups[:baz].should == ["baz", "baz2"]
-        groups[:quux].should == ["quux"]
+        @groups.keys.size.should == 4
+        @groups[:foo].should == ["foobar"]
+        @groups[:bar].should == ["foobar"]
+        @groups[:baz].should == ["baz", "baz2"]
+        @groups[:quux].should == ["quux"]
       end
     end
 
-    describe '#requested_cookbooks'do
-      it "should properly exclude cookbooks in the excluded groups" do
-        subject.shelve_cookbook "a1", :group => "a"
-        subject.shelve_cookbook "a2", :group => "a"
-        subject.shelve_cookbook "b1", :group => "b"
-        subject.shelve_cookbook "b2", :group => "b"
-        subject.shelve_cookbook "c1", :group => ["a","b"]
-        subject.exclude "b"
-        subject.requested_cookbooks.should == ["a1", "a2", "c1"]
+    describe "#add_source" do
+      let(:cookbook_source) { CookbookSource.new("mysql", "= 1.2.4") }
+      before(:each) { subject.add_source(cookbook_source) }
+
+      it "should add the given source to the sources" do
+        subject.should have_source(cookbook_source)
+      end
+
+      it "should resolve the dependency graph of the cookbooks on the shelf" do        
+        subject.resolve_dependencies.should == ({"mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0")})
+      end
+    end
+
+    describe "#remove_source" do
+      let(:cookbook_source) { CookbookSource.new("mysql", "= 1.2.4") }
+
+      before(:each) do
+        subject.add_source(cookbook_source)  
+      end
+
+      it "should remove the given source from the sources" do
+        subject.remove_source(cookbook_source)
+
+        subject.should_not have_source(cookbook_source)
+      end
+    end
+
+    describe "#has_source?" do
+      let(:cookbook_source) { CookbookSource.new("sparkle_motion") }
+      let(:invalid_source) { CookbookSource.new("invalid") }
+
+      before(:each) do
+        subject.add_source(cookbook_source)
+      end
+
+      it "should return true if the source is a member of this Shelf" do
+        subject.has_source?(cookbook_source).should be_true
+      end
+
+      it "should return false if the source is not a member of this Shelf" do
+        subject.has_source?(invalid_source).should be_false
+      end
+
+      it "should accept a string for the identifier" do
+        subject.has_source?("sparkle_motion").should be_true
+      end
+
+      it "should accept an instance of CookbookSource for the identifier" do
+        subject.has_source?(cookbook_source).should be_true
+      end
+    end
+
+    describe "#download_sources" do
+      let(:cookbook_source) { CookbookSource.new("mysql", "= 1.2.4") }
+      before(:each) do
+        subject.add_source(cookbook_source)
+      end
+
+      it "should download all sources to a local path on disk" do
+        subject.download_sources
+
+        cookbook_source.should be_downloaded
       end
     end
   end

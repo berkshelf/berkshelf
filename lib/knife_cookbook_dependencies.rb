@@ -23,6 +23,10 @@ module KnifeCookbookDependencies
       @shelf ||= KCD::Shelf.new
     end
 
+    def downloader
+      @downloader ||= KCD::Downloader.new(TMP_DIRECTORY)
+    end
+
     def clear_shelf!
       @shelf = nil
     end

@@ -15,8 +15,8 @@ cookbook 'nginx', '< 0.101.2'
 cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
 COOKBOOKFILE
 
-        ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |dep|
-          KCD.shelf.cookbooks.collect(&:name).should include dep
+        ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |name|
+          KCD.shelf.should have_source(name)
         end
 
         KCD.shelf.populate_cookbooks_directory
