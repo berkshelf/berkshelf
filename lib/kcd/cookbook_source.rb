@@ -2,6 +2,7 @@ require 'json'
 require 'em-synchrony'
 require 'em-synchrony/em-http'
 require 'chef/rest'
+require 'chef/cookbook/metadata'
 
 module KnifeCookbookDependencies
   class CookbookSource
@@ -201,6 +202,14 @@ module KnifeCookbookDependencies
 
     def downloaded?
       !local_path.nil?
+    end
+
+    def metadata
+      return nil unless local_path
+
+      cookbook_metadata = Chef::Cookbook::Metadata.new
+      cookbook_metadata.from_file(File.join(local_path, "metadata.rb"))
+      cookbook_metadata
     end
 
     def to_s

@@ -214,5 +214,17 @@ module KnifeCookbookDependencies
         subject.local_path.should_not be_nil
       end
     end
+
+    describe "#metadata" do
+      it "should return the metadata of a CookbookSource that has been downloaded" do
+        subject.download(tmp_path)
+
+        subject.metadata.should be_a(Chef::Cookbook::Metadata)
+      end
+
+      it "should return nil if the CookbookSource has not been downloaded" do
+        subject.metadata.should be_nil
+      end
+    end
   end
 end
