@@ -34,7 +34,7 @@ module KnifeCookbookDependencies
     # @return [KCD::CookbookSource]
     #   the CookbookSource removed from the queue
     def dequeue(source)
-      @queue.delete(source) { "not found: source "}
+      @queue.delete(source)
     end
 
     def download_all
