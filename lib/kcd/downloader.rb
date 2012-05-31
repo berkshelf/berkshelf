@@ -17,7 +17,7 @@ module KnifeCookbookDependencies
     #
     # @param [KCD::CookbookSource] source
     # 
-    # @return [Array<KCD::ookbookSource>]
+    # @return [Array<KCD::CookbookSource>]
     #   the queue - an array of KCD::CookbookSources
     def enqueue(source)
       unless validate_source(source)
