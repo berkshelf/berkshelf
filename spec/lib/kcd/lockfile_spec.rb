@@ -4,7 +4,7 @@ describe KCD::Lockfile do
   describe "without a lockfile in place already" do
     before do
       @old_dir = Dir.pwd
-      Dir.chdir "spec/fixtures/lockfile_spec/without_lock"
+      Dir.chdir fixtures_path.join("lockfile_spec", "without_lock")
       KCD.clear_shelf!
     end
 
@@ -14,7 +14,7 @@ describe KCD::Lockfile do
     end
 
     it "should be able to write a Cookbookfile.lock from a list of cookbooks" do
-      KCD.shelf.shelve_cookbook('nginx', '= 0.101.0')
+      KCD.shelf.add_source(KCD::CookbookSource.new('nginx', '= 0.101.0'))
       KCD.shelf.resolve_dependencies
       KCD.shelf.populate_cookbooks_directory
       KCD.shelf.write_lockfile
@@ -32,7 +32,7 @@ describe KCD::Lockfile do
   describe "with a lockfile in place" do
     before do
       @old_dir = Dir.pwd
-      Dir.chdir "spec/fixtures/lockfile_spec/with_lock"
+      Dir.chdir fixtures_path.join("lockfile_spec", "with_lock")
       KCD::Cookbookfile.process_install
       KCD.clear_shelf!
     end
