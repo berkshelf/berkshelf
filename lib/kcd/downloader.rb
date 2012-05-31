@@ -13,7 +13,7 @@ module KnifeCookbookDependencies
       @queue = []
     end
 
-    # Add a CookbooKSource to the downloader's queue
+    # Add a CookbookSource to the downloader's queue
     #
     # @param [KCD::CookbookSource] source
     # 
