@@ -9,7 +9,7 @@ module KnifeCookbookDependencies
       it "should add a source to the queue" do
         subject.enqueue(source)
 
-        subject.queue.should have(1).thing
+        subject.queue.should have(1).source
       end
 
       it "should not allow you to add an invalid source" do
@@ -29,43 +29,35 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe "#download" do
-      let(:cookbook_source_one) { CookbookSource.new("nginx", "0.101.2") }
-      let(:cookbook_source_two) { CookbookSource.new("mysql", "1.2.6") }
+    describe "#download_all" do
+      let(:source_one) { CookbookSource.new("nginx") }
+      let(:source_two) { CookbookSource.new("mysql") }
 
       before(:each) do
-        subject.enqueue(cookbook_source_one)
-        subject.enqueue(cookbook_source_two)
-      end
-
-      it "should download all items in the queue to the storage_path" do
-        subject.download
-
-        tmp_path.should have_structure {
-          file "nginx-0.101.2.tar.gz"
-          file "mysql-1.2.6.tar.gz"
-        }
+        subject.enqueue source_one
+        subject.enqueue source_two
       end
 
       it "should remove each item from the queue after a successful download" do
-        subject.download
+        subject.download_all
 
         subject.queue.should be_empty
       end
 
       it "should not remove the item from the queue if the download failed" do
-        subject.enqueue(CookbookSource.new("bad_source", :site => "http://localhost/api"))
-        subject.download
+        subject.enqueue CookbookSource.new("does_not_exist_no_way")
+        subject.download_all
 
-        subject.queue.should have(1).source
+        subject.queue.should have(1).sources
       end
 
-      it "should return an array of CookbookSource instances" do
-        results = subject.download
+      it "should return a hash of sources and statuses" do
+        results = subject.download_all
 
-        results.each do |source|
-          source.should be_a(CookbookSource)
-        end
+        results.should be_a(Hash)
+        results.should have_key(source_one)
+        results.keys.first.should be_a(CookbookSource)
+        results[source_one].should be(:ok)
       end
     end
   end

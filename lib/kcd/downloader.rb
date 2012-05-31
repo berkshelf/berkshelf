@@ -34,10 +34,30 @@ module KnifeCookbookDependencies
     # @return [KCD::CookbookSource]
     #   the CookbookSource removed from the queue
     def dequeue(source)
-      @queue.delete(source)
+      @queue.delete(source) { "not found: source "}
     end
 
-    def download
+    def download_all
+      results = Hash.new
+
+      queue.each do |source|
+        begin
+          if source.download(storage_path)
+            results[source] = :ok
+          else
+            results[source] = :error
+          end
+        rescue Net::HTTPServerException
+          results[source] = :error
+        end
+      end
+
+      results.each { |source, status| dequeue(source) if status == :ok }
+      
+      results
+    end
+
+    def async_download
       results = nil
       EM.synchrony do
         results = EM::Synchrony::Iterator.new(queue, concurrency).map do |source, iter|
