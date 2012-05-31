@@ -52,9 +52,7 @@ module KnifeCookbookDependencies
       private
 
         def error_check
-          if $?.exitstatus != 0
-            raise "Did not succeed executing git; check the output above."
-          end
+          raise "Did not succeed executing git; check the output above." unless $?.success?
         end
     end
 
@@ -106,9 +104,7 @@ module KnifeCookbookDependencies
     end
 
     def error_check
-      if $?.exitstatus != 0
-        raise "Did not succeed executing git; check the output above."
-      end
+      raise "Did not succeed executing git; check the output above." unless $?.success?
     end
   end
 end
