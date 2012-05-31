@@ -47,7 +47,7 @@ module KnifeCookbookDependencies
 
       def download(destination)
         uri = if target_version == "0.0.0"
-          rest.get_rest(name)['latest_version']
+          quietly { rest.get_rest(name)['latest_version'] }
         else
           uri_for_version(target_version)
         end
