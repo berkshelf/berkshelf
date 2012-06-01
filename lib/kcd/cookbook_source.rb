@@ -1,8 +1,3 @@
-require 'json'
-require 'chef/rest'
-require 'chef/platform'
-require 'chef/cookbook/metadata'
-
 module KnifeCookbookDependencies
   class CookbookSource
     # @internal

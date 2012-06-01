@@ -1,5 +1,9 @@
 require 'kcd/core_ext'
 require 'kcd/errors'
+require 'chef/knife'
+require 'chef/rest'
+require 'chef/platform'
+require 'chef/cookbook/metadata'
 
 module KnifeCookbookDependencies
   DEFAULT_FILENAME = 'Cookbookfile'.freeze
@@ -10,6 +14,7 @@ module KnifeCookbookDependencies
   autoload :InitGenerator, 'kcd/init_generator'
   autoload :CookbookSource, 'kcd/cookbook_source'
   autoload :Downloader, 'kcd/downloader'
+  autoload :Resolver, 'kcd/resolver'
 
   class << self
     attr_accessor :ui
