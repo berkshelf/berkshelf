@@ -27,6 +27,16 @@ module KnifeCookbookDependencies
         context "given an explicit :site location key" do
           subject { CookbookSource::SiteLocation.new("nginx", :site => "http://cookbooks.opscode.com/api/v1/cookbooks") }
         end
+
+        context "given a cookbook that does not exist on the specified site" do
+          subject { CookbookSource::SiteLocation.new("nowaythis_exists", :site => "http://cookbooks.opscode.com/api/v1/cookbooks") }
+
+          it "raises a CookbookNotFound error" do
+            lambda {
+              subject.download(tmp_path)
+              }.should raise_error(CookbookNotFound)
+          end
+        end
       end
     end
 
@@ -46,6 +56,26 @@ module KnifeCookbookDependencies
 
         it "returns the path to the cookbook" do
           subject.download(tmp_path).should eql(tmp_path.join('nginx').to_s)
+        end
+
+        context "given a git repo that does not exist" do
+          subject { CookbookSource::GitLocation.new("doesnot_exist", :git => "git://github.com/RiotGames/thisrepo_does_not_exist.git") }
+
+          it "raises a CookbookNotFound error" do
+            lambda {
+              subject.download(tmp_path)
+            }.should raise_error(CookbookNotFound)
+          end
+        end
+
+        context "given a git repo that does not contain a cookbook" do
+          subject { CookbookSource::GitLocation.new("doesnot_exist", :git => "git://github.com/RiotGames/knife_cookbook_dependencies.git") }
+
+          it "raises a CookbookNotFound error" do
+            lambda {
+              subject.download(tmp_path)
+            }.should raise_error(CookbookNotFound)
+          end
         end
       end
     end

@@ -11,4 +11,5 @@ module KnifeCookbookDependencies
   class NoVersionForConstraints < KCDError; status_code(101); end
   class RemoteCookbookNotFound < KCDError; status_code(102); end
   class CookbookNotFound < KCDError; status_code(103); end
+  class GitError < KCDError; status_code(104); end
 end

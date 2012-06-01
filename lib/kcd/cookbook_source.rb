@@ -47,6 +47,12 @@ module KnifeCookbookDependencies
         self.class.unpack(downloaded_tf.path, destination.to_s)
 
         File.join(destination, name)
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
+        else
+          raise
+        end
       end
 
       def api_uri=(uri)
@@ -103,7 +109,13 @@ module KnifeCookbookDependencies
         ::KCD::Git.clone(uri, cb_path)
         ::KCD::Git.checkout(cb_path, branch) if branch
 
+        raise CookbookNotFound unless File.chef_cookbook?(cb_path)
+
         cb_path
+      rescue KCD::GitError
+        msg = "Cookbook '#{name}' not found at git: #{uri}" 
+        msg << " with branch '#{branch}'" if branch
+        raise CookbookNotFound, msg
       end
 
       private

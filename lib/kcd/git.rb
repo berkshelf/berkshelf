@@ -50,7 +50,7 @@ module KnifeCookbookDependencies
       private
 
         def error_check
-          raise "Did not succeed executing git; check the output above." unless $?.success?
+          raise KCD::GitError, "Did not succeed executing git; check the output above." unless $?.success?
         end
     end
   end
