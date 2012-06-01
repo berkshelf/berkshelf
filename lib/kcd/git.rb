@@ -1,5 +1,3 @@
-require 'tempfile'
-
 module KnifeCookbookDependencies
   class Git
     class << self
@@ -54,57 +52,6 @@ module KnifeCookbookDependencies
         def error_check
           raise "Did not succeed executing git; check the output above." unless $?.success?
         end
-    end
-
-    attr_reader :directory
-    attr_reader :repository
-
-    def initialize(repo)
-      @repository = repo
-    end
-
-    def clone
-      # XXX not sure how resilient this is, maybe a fetch/merge strategy would be better.
-      if @directory
-        Dir.chdir @directory do
-          system(self.class.git, "pull")
-        end
-      else
-        @directory = Dir.mktmpdir
-        system(self.class.git, "clone", @repository, @directory)
-      end
-
-      error_check
-    end
-
-    def checkout(ref)
-      clone
-
-      Dir.chdir @directory do
-        system(self.class.git, "checkout", "-q", ref)
-      end
-
-      error_check
-    end
-
-    def ref
-      return nil unless @directory
-
-      this_ref = nil
-
-      Dir.chdir @directory do
-        this_ref = `"#{self.class.git}" rev-parse HEAD`.strip
-      end
-
-      return this_ref
-    end
-
-    def clean
-      FileUtils.rm_rf @directory if @directory
-    end
-
-    def error_check
-      raise "Did not succeed executing git; check the output above." unless $?.success?
     end
   end
 end

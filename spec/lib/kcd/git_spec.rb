@@ -2,55 +2,48 @@ require 'spec_helper'
 
 module KnifeCookbookDependencies
   describe Git do
+    describe "ClassMethods" do
+      subject { Git }
 
-    it "should find git" do
-      Git.find_git.should_not be_nil
-    end
+      describe "#find_git" do
+        it "should find git" do
+          subject.find_git.should_not be_nil
+        end
 
-    it "should raise if it can't find git" do
-      begin
-        path = ENV["PATH"]
-        ENV["PATH"] = ""
+        it "should raise if it can't find git" do
+          begin
+            path = ENV["PATH"]
+            ENV["PATH"] = ""
 
-        lambda { Git.find_git }.should raise_error
-      ensure
-        ENV["PATH"] = path
-      end
-    end
-
-    describe "instances" do
-      subject { Git.new("https://github.com/erikh/chef-ssh_known_hosts2.git") }
-
-      after do
-        subject.clean
+            lambda { subject.find_git }.should raise_error
+          ensure
+            ENV["PATH"] = path
+          end
+        end
       end
 
-      it "should be set the repository accessor" do
-        subject.repository.should == "https://github.com/erikh/chef-ssh_known_hosts2.git"
+      describe "#clone" do
+        let(:target) { tmp_path.join("nginx") }
+
+        it "clones the repository to the target path" do
+          subject.clone("git://github.com/opscode-cookbooks/nginx.git", target)
+
+          target.should exist
+          target.should be_directory
+        end
       end
 
-      it "should be able to clone this repository" do
-        subject.clone
+      describe "#checkout" do
+        let(:repo_path) { tmp_path.join("nginx") }
+        let(:repo) { subject.clone("git://github.com/opscode-cookbooks/nginx.git", repo_path) }
+        let(:tag) { "0.101.2" }
 
-        File.exist?(subject.directory).should be_true
-        File.directory?(subject.directory).should be_true
-      end
+        it "checks out the specified path of the given repository" do
+          subject.checkout(repo, tag)
 
-      it "should clone, then pull if the directory is the same" do
-        subject.clone
-        dir = subject.directory
-        subject.clone
-        dir2 = subject.directory
-
-        dir.should == dir2
-      end
-
-      it "should checkout the v0.1.0 tag" do
-        lambda { subject.checkout "fart" }.should raise_error
-        lambda { subject.checkout "v0.1.0" }.should_not raise_error
-
-        Dir.chdir subject.directory do
-          %x[git rev-parse v0.1.0].should == %x[git rev-parse HEAD]
+          Dir.chdir repo_path do
+            %x[git rev-parse #{tag}].should == %x[git rev-parse HEAD]
+          end
         end
       end
     end
