@@ -251,17 +251,39 @@ module KnifeCookbookDependencies
     end
 
     describe "#download" do
-      it "should mark the source as downloaded after a successful download" do
-        subject.download(tmp_path)
+      context "when download is successful" do
+        it "marks the source as downloaded" do
+          subject.download(tmp_path)
 
-        subject.should be_downloaded
-        subject.should be_downloaded
+          subject.should be_downloaded
+        end
+
+        it "writes a value to local_path" do
+          subject.download(tmp_path)
+
+          subject.local_path.should_not be_nil
+        end
+
+        it "returns an array containing the symbol :ok and the local_path" do
+          result = subject.download(tmp_path)
+
+          result.should be_a(Array)
+          result[0].should eql(:ok)
+          result[1].should eql(subject.local_path)
+        end
       end
 
-      it "should write a value to local_path after a successful download" do
-        subject.download(tmp_path)
+      context "when the download fails" do
+        let(:bad_cb_name) { "NOWAYTHISEXISTS" }
+        subject { CookbookSource.new(bad_cb_name) }
 
-        subject.local_path.should_not be_nil
+        it "returns an array containing the symbol :error and the error message" do
+          result = subject.download(tmp_path)
+
+          result.should be_a(Array)
+          result[0].should eql(:error)
+          result[1].should eql("Cookbook '#{bad_cb_name}' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks")
+        end
       end
     end
 

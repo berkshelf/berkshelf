@@ -88,7 +88,7 @@ module KnifeCookbookDependencies
 
       def download(destination)
         raise CookbookNotFound unless File.chef_cookbook?(path)
-        
+
         path
       end
     end
@@ -179,8 +179,21 @@ module KnifeCookbookDependencies
       end
     end
 
+    # @param [String] destination
+    #   destination to download to
+    #
+    # @returns [Array]
+    #   An array containing the status at index 0 and local path or error message in index 1
+    #
+    #   Example:
+    #     [ :ok, "/tmp/nginx" ]
+    #     [ :error, "Cookbook 'sparkle_motion' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks" ]
     def download(destination)
       set_local_path location.download(destination)
+      [ :ok, local_path ]
+    rescue CookbookNotFound => e
+      set_local_path = nil
+      [ :error, e.message ]
     end
 
     def downloaded?

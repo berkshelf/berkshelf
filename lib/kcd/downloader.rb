@@ -38,15 +38,8 @@ module KnifeCookbookDependencies
       results = Hash.new
 
       queue.each do |source|
-        begin
-          if source.download(storage_path)
-            results[source] = :ok
-          else
-            results[source] = :error
-          end
-        rescue Net::HTTPServerException
-          results[source] = :error
-        end
+        status, path_or_error = source.download(storage_path)
+        results[source] = status
       end
 
       results.each { |source, status| dequeue(source) if status == :ok }
