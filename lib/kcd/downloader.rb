@@ -34,15 +34,31 @@ module KnifeCookbookDependencies
       @queue.delete(source)
     end
 
+    # Download each CookbookSource in the queue. Upon successful download
+    # of a CookbookSource it is removed from the queue. If a CookbookSource
+    # fails to download it remains in the queue.
+    #
+    # @return [Hash]
+    #   a hash containing sources downloaded and their result set. Keys
+    #   are CookbookSource objects with a Hash containing the status and
+    #   result value for each CookbookSource key.
+    #
+    #   Example:
+    #     { 
+    #       #<CookbookSource:1> => {
+    #         :status => :ok,
+    #         :value => "/tmp/path_to_source/nginx"
+    #       }
+    #     }
     def download_all
       results = Hash.new
 
       queue.each do |source|
-        status, path_or_error = source.download(storage_path)
-        results[source] = status
+        status, value = source.download(storage_path)
+        results[source] = { :status => status, :value => value }
       end
 
-      results.each { |source, status| dequeue(source) if status == :ok }
+      results.each { |source, result| dequeue(source) if result[:status] == :ok }
       
       results
     end

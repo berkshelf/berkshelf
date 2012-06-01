@@ -51,13 +51,15 @@ module KnifeCookbookDependencies
         subject.queue.should have(1).sources
       end
 
-      it "should return a hash of sources and statuses" do
+      it "should return a hash of sources and result sets" do
         results = subject.download_all
 
         results.should be_a(Hash)
         results.should have_key(source_one)
         results.keys.first.should be_a(CookbookSource)
-        results[source_one].should be(:ok)
+        results[source_one].should be_a(Hash)
+        results[source_one][:status].should eql(:ok)
+        results[source_one][:value].should eql(File.join(subject.storage_path, source_one.name))
       end
     end
   end
