@@ -7,7 +7,6 @@ module KnifeCookbookDependencies
   TMP_DIRECTORY = File.join(ENV['TMPDIR'] || ENV['TEMP'], 'knife_cookbook_dependencies')
   FileUtils.mkdir_p TMP_DIRECTORY
 
-  autoload :KnifeUtils, 'kcd/knife_utils'
   autoload :InitGenerator, 'kcd/init_generator'
   autoload :CookbookSource, 'kcd/cookbook_source'
   autoload :Downloader, 'kcd/downloader'
@@ -68,7 +67,6 @@ require 'archive/tar/minitar'
 
 require 'kcd/version'
 require 'kcd/shelf'
-require 'kcd/cookbook'
 require 'kcd/metacookbook'
 require 'kcd/dsl'
 require 'kcd/cookbookfile'
