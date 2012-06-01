@@ -50,45 +50,11 @@ module KnifeCookbookDependencies
 
     def download_sources
       sources.each { |name, source| KCD.downloader.enqueue(source) }
-      KCD.downloader.download
-    end
-
-    def resolve_dependencies
-      graph = DepSelector::DependencyGraph.new
-
-      permitted_sources = sources(:permitted)
-
-      # all cookbooks in the Cookbookfile are dependencies of the shelf
-      shelf = MetaCookbook.new(META_COOKBOOK_NAME, permitted_sources)
-
-      self.class.populate_graph graph, shelf
-
-      selector = DepSelector::Selector.new(graph)
-
-      solution = quietly do
-        selector.find_solution([DepSelector::SolutionConstraint.new(graph.package(META_COOKBOOK_NAME))])
-      end
-
-      solution.delete META_COOKBOOK_NAME
-      solution
+      KCD.downloader.download_all
     end
 
     def write_lockfile
       KCD::Lockfile.new(@cookbooks).write
-    end
-
-    def populate_cookbooks_directory
-      cookbooks_from_path = @cookbooks.select(&:from_path?) | @cookbooks.select(&:from_git?)
-      KCD.ui.info "Fetching cookbooks:"
-      resolve_dependencies.each_pair do |cookbook_name, version|
-        cookbook = cookbooks_from_path.select { |c| c.name == cookbook_name }.first || Cookbook.new(cookbook_name, version.to_s)
-        @cookbooks << cookbook
-        cookbook.download
-        cookbook.unpack
-        cookbook.copy_to_cookbooks_directory
-        cookbook.locked_version = version
-      end
-      @cookbooks = @cookbooks.uniq.reject { |x| x.locked_version.nil? }
     end
 
     def exclude(groups)
@@ -107,20 +73,10 @@ module KnifeCookbookDependencies
       end
     end
 
-    # remove
-    # def requested_cookbooks
-    #   return @cookbooks.collect(&:name) unless @excluded_groups
-    #   [].tap do |r|
-    #     cookbook_groups.each do |group, cookbooks|
-    #       r << cookbooks unless @excluded_groups.include?(group.to_sym)
-    #     end
-    #   end.flatten.uniq
-    # end
-
     private
 
       def get_permitted_sources
-        s = @sources.clone
+        s = sources.clone
         s.delete_if { |name, source| source.has_group?(excluded_groups) }
         s
       end

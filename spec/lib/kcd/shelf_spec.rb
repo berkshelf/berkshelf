@@ -44,10 +44,6 @@ module KnifeCookbookDependencies
       it "should add the given source to the sources" do
         subject.should have_source(cookbook_source)
       end
-
-      it "should resolve the dependency graph of the cookbooks on the shelf" do        
-        subject.resolve_dependencies.should == ({"mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0")})
-      end
     end
 
     describe "#remove_source" do

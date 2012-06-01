@@ -72,7 +72,6 @@ require 'archive/tar/minitar'
 
 require 'kcd/version'
 require 'kcd/shelf'
-require 'kcd/metacookbook'
 require 'kcd/dsl'
 require 'kcd/cookbookfile'
 require 'kcd/lockfile'
