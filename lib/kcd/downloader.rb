@@ -1,6 +1,3 @@
-require 'em-synchrony'
-require 'em-synchrony/em-http'
-
 module KnifeCookbookDependencies
   class Downloader
     attr_reader :storage_path
@@ -53,26 +50,6 @@ module KnifeCookbookDependencies
       end
 
       results.each { |source, status| dequeue(source) if status == :ok }
-      
-      results
-    end
-
-    def async_download
-      results = nil
-      EM.synchrony do
-        results = EM::Synchrony::Iterator.new(queue, concurrency).map do |source, iter|
-          source.async_download(storage_path)
-
-          source.callback do
-            dequeue(source)
-            iter.return(source)
-          end
-
-          source.errback { iter.return(source) }
-        end
-
-        EventMachine.stop
-      end
       
       results
     end

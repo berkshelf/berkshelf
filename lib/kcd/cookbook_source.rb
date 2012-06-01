@@ -1,15 +1,12 @@
 require 'json'
-require 'em-synchrony'
-require 'em-synchrony/em-http'
 require 'chef/rest'
+require 'chef/platform'
 require 'chef/cookbook/metadata'
 
 module KnifeCookbookDependencies
   class CookbookSource
     # @internal
     module Location
-      include EM::Deferrable
-
       attr_reader :name
 
       def initialize(name)
@@ -17,11 +14,7 @@ module KnifeCookbookDependencies
       end
 
       def download(destination)
-        raise NotImplemented, "Must implement on includer"
-      end
-
-      def async_download(destination)
-        raise NotImplemented, "Must implement on includer"
+        raise NotImplementedError, "Function must be implemented on includer"
       end
     end
 
@@ -95,10 +88,6 @@ module KnifeCookbookDependencies
       def download(destination)
         path
       end
-
-      def async_download(destination)
-        succeed(File.join(name, destination))
-      end
     end
 
     # @internal
@@ -128,8 +117,6 @@ module KnifeCookbookDependencies
           @git ||= KCD::Git.new(uri)
         end
     end
-
-    include EM::Deferrable
 
     attr_reader :name
     attr_reader :version_constraint
@@ -185,19 +172,6 @@ module KnifeCookbookDependencies
 
     def download(destination)
       set_local_path location.download(destination)
-    end
-
-    def async_download(destination)
-      return succeed if downloaded?
-
-      location.async_download(destination)
-
-      location.callback do |l_path|
-        set_downloaded_status(true)
-        set_local_path(l_path)
-        succeed
-      end
-      location.errback { fail }
     end
 
     def downloaded?
