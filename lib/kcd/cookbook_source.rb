@@ -87,6 +87,8 @@ module KnifeCookbookDependencies
       end
 
       def download(destination)
+        raise CookbookNotFound unless File.chef_cookbook?(path)
+        
         path
       end
     end
