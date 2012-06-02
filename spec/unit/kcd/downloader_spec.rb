@@ -5,6 +5,15 @@ module KnifeCookbookDependencies
     subject { Downloader.new(tmp_path) }
     let(:source) { CookbookSource.new("sparkle_motion") }
 
+    describe "#initialize" do
+      it "creates the storage_path" do
+        storage_path = tmp_path.join("random_storage")
+        subject.class.new(storage_path)
+
+        storage_path.should exist
+      end
+    end
+
     describe "#enqueue" do
       it "should add a source to the queue" do
         subject.enqueue(source)

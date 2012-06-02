@@ -23,12 +23,12 @@ module KnifeCookbookDependencies
       File.join(File.dirname(__FILE__), '..')
     end
 
-    def shelf
-      @shelf ||= KCD::Shelf.new
+    def cookbook_store
+      File.expand_path(File.join("~/.bookshelf"))
     end
 
-    def downloader
-      @downloader ||= KCD::Downloader.new(TMP_DIRECTORY)
+    def shelf
+      @shelf ||= KCD::Shelf.new
     end
 
     def clear_shelf!
@@ -37,6 +37,10 @@ module KnifeCookbookDependencies
 
     def ui
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
+    end
+
+    def downloader
+      @downloader ||= Downloader.new(cookbook_store)
     end
 
     def clean

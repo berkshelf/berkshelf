@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module KnifeCookbookDependencies
   class Downloader
     class ResultSet
@@ -12,11 +14,11 @@ module KnifeCookbookDependencies
       end
 
       def failed
-        results.select { |result| result.status == :error }
+        results.select { |result| result.failed? }
       end
 
       def success
-        results.select { |result| result.status == :ok }
+        results.select { |result| result.success? }
       end
 
       def has_errors?
@@ -30,20 +32,31 @@ module KnifeCookbookDependencies
       attr_reader :message
 
       def initialize(source, status, message)
+        unless [:ok, :error].include?(status)
+          raise ArgumentError, "Invalid download status: #{status}. Valid statuses: :ok, :error."
+        end
+
         @source = source
         @status = status
         @message = message
+      end
+
+      def failed?
+        status == :error
+      end
+
+      def success?
+        status == :ok
       end
     end
 
     attr_reader :storage_path
     attr_reader :queue
-    attr_accessor :concurrency
 
-    def initialize(storage_path, concurrency = 6)
+    def initialize(storage_path)
       @storage_path = storage_path
-      @concurrency = concurrency
       @queue = []
+      initialize_store
     end
 
     # Add a CookbookSource to the downloader's queue
@@ -80,8 +93,7 @@ module KnifeCookbookDependencies
       results = ResultSet.new
 
       queue.each do |source|
-        status, message = source.download(storage_path)
-        results.add_result Result.new(source, status, message)
+        results.add_result download(source)
       end
 
       results.success.each { |result| dequeue(result.source) }
@@ -89,7 +101,23 @@ module KnifeCookbookDependencies
       results
     end
 
+    def download(source)
+      status, message = source.download(storage_path)
+      Result.new(source, status, message)
+    end
+
+    def download!(source)
+      result = download(source)
+      raise DownloadFailure(result) if result.failed?
+      
+      result
+    end
+
     private
+
+      def initialize_store
+        FileUtils.mkdir_p(storage_path, :mode => 0755)
+      end
 
       def validate_source(source)
         source.is_a?(KCD::CookbookSource)
