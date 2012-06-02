@@ -6,7 +6,7 @@ Feature: install cookbooks from a Cookbookfile
   Scenario: install cookbooks
     Given I write to "Cookbookfile" with:
       """
-      cookbook "mysql"
+      cookbook "mysql", "1.2.4"
       """
     When I run `knife cookbook dependencies install`
     Then the following directories should exist:
@@ -16,7 +16,7 @@ Feature: install cookbooks from a Cookbookfile
   Scenario: install cookbooks with the alias
     Given I write to "Cookbookfile" with:
       """
-      cookbook "mysql"
+      cookbook "mysql", "1.2.4"
       """
     When I run `knife cookbook deps install`
     Then the following directories should exist:
