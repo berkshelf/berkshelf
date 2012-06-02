@@ -8,20 +8,10 @@ Feature: install cookbooks from a Cookbookfile
       """
       cookbook "mysql", "1.2.4"
       """
-    When I run `knife cookbook dependencies install`
-    Then the following directories should exist:
-      | cookbooks/mysql   |
-      | cookbooks/openssl |
-
-  Scenario: install cookbooks with the alias
-    Given I write to "Cookbookfile" with:
-      """
-      cookbook "mysql", "1.2.4"
-      """
-    When I run `knife cookbook deps install`
-    Then the following directories should exist:
-      | cookbooks/mysql   |
-      | cookbooks/openssl |
+    When I run the install command
+    Then the cookbook store should have the following cookbooks:
+      | mysql   | 1.2.4 |
+      | openssl | 1.0.0 |
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"
