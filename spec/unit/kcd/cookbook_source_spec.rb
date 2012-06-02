@@ -75,16 +75,32 @@ module KnifeCookbookDependencies
       describe "#download" do
         it "downloads the cookbook to the given destination" do
           subject.download(tmp_path)
+          # have to set outside of custom rspec matcher block
+          name, branch = subject.name, subject.branch
 
           tmp_path.should have_structure {
-            directory "nginx" do
+            directory "#{name}-#{branch}" do
               file "metadata.rb"
             end
           }
         end
 
         it "returns the path to the cookbook" do
-          subject.download(tmp_path).should eql(tmp_path.join('nginx').to_s)
+          result = subject.download(tmp_path)
+          # have to set outside of custom rspec matcher block
+          name, branch = subject.name, subject.branch
+
+          result.should eql(tmp_path.join("#{name}-#{branch}").to_s)
+        end
+
+        context "given no ref/branch/tag options is given" do
+          subject { CookbookSource::GitLocation.new("nginx", :git => "git://github.com/opscode-cookbooks/nginx.git") }
+
+          it "sets the branch attribute to the HEAD revision of the cloned repo" do
+            subject.download(tmp_path)
+
+            subject.branch.should_not be_nil
+          end
         end
 
         context "given a git repo that does not exist" do
@@ -114,16 +130,6 @@ module KnifeCookbookDependencies
       subject { CookbookSource::PathLocation.new("nginx", :path => path) }
 
       describe "#download" do
-        it "downloads the cookbook to the given destination" do
-          subject.download(tmp_path)
-
-          tmp_path.should_not have_structure {
-            directory "example_cookbook" do
-              file "metadata.rb"
-            end
-          }
-        end
-
         it "returns the path to the cookbook" do
           subject.download(tmp_path).should eql(path)
         end

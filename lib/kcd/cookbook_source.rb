@@ -120,11 +120,18 @@ module KnifeCookbookDependencies
       end
 
       def download(destination)
-        cb_path = File.join(destination, name)
-        ::KCD::Git.clone(uri, cb_path)
-        ::KCD::Git.checkout(cb_path, branch) if branch
+        tmp_clone = Dir.mktmpdir
+        ::KCD::Git.clone(uri, tmp_clone)
+        ::KCD::Git.checkout(tmp_clone, branch) if branch
+        unless branch
+          self.branch = ::KCD::Git.rev_parse(tmp_clone)
+        end
 
-        raise CookbookNotFound unless File.chef_cookbook?(cb_path)
+        raise CookbookNotFound unless File.chef_cookbook?(tmp_clone)
+
+        cb_path = File.join(destination, "#{self.name}-#{self.branch}")
+
+        FileUtils.mv(tmp_clone, cb_path)
 
         cb_path
       rescue KCD::GitError
