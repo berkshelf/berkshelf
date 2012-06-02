@@ -47,6 +47,6 @@ When /^I run the install command$/ do
 end
 
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
-  exit_status = KCD.const_get(error_constant).new.status_code
+  exit_status = KCD.const_get(error_constant).status_code
   assert_exit_status(exit_status)
 end

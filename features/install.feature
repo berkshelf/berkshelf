@@ -55,6 +55,6 @@ Feature: install cookbooks from a Cookbookfile
     And I run the install command
     Then the output should contain:
       """
-      Cookbook 'doesntexist' not found on the Opscode Community site.
+      Cookbook 'doesntexist' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks
       """
-    And the CLI should exit with the status code for error "RemoteCookbookNotFound"
+    And the CLI should exit with the status code for error "DownloadFailure"

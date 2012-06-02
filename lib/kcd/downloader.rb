@@ -1,5 +1,41 @@
 module KnifeCookbookDependencies
   class Downloader
+    class ResultSet
+      attr_reader :results
+
+      def initialize
+        @results = []
+      end
+
+      def add_result(result)
+        @results << result
+      end
+
+      def failed
+        results.select { |result| result.status == :error }
+      end
+
+      def success
+        results.select { |result| result.status == :ok }
+      end
+
+      def has_errors?
+        !failed.empty?
+      end
+    end
+
+    class Result
+      attr_reader :source
+      attr_reader :status
+      attr_reader :message
+
+      def initialize(source, status, message)
+        @source = source
+        @status = status
+        @message = message
+      end
+    end
+
     attr_reader :storage_path
     attr_reader :queue
     attr_accessor :concurrency
@@ -38,27 +74,17 @@ module KnifeCookbookDependencies
     # of a CookbookSource it is removed from the queue. If a CookbookSource
     # fails to download it remains in the queue.
     #
-    # @return [Hash]
-    #   a hash containing sources downloaded and their result set. Keys
-    #   are CookbookSource objects with a Hash containing the status and
-    #   result value for each CookbookSource key.
-    #
-    #   Example:
-    #     { 
-    #       #<CookbookSource:1> => {
-    #         :status => :ok,
-    #         :value => "/tmp/path_to_source/nginx"
-    #       }
-    #     }
+    # @return [Downloader::ResultSet]
+    #   a ResultSet containing instaces of Downloader::Result
     def download_all
-      results = Hash.new
+      results = ResultSet.new
 
       queue.each do |source|
-        status, value = source.download(storage_path)
-        results[source] = { :status => status, :value => value }
+        status, message = source.download(storage_path)
+        results.add_result Result.new(source, status, message)
       end
 
-      results.each { |source, result| dequeue(source) if result[:status] == :ok }
+      results.success.each { |result| dequeue(result.source) }
       
       results
     end
