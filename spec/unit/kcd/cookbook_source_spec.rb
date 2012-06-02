@@ -8,24 +8,53 @@ module KnifeCookbookDependencies
 
         it "downloads the cookbook to the given destination" do
           subject.download(tmp_path)
+          # have to set outside of custom rspec matcher block
+          name, target_version = subject.name, subject.target_version
 
           tmp_path.should have_structure {
-            directory "nginx" do
+            directory "#{name}-#{target_version}" do
               file "metadata.rb"
             end
           }
         end
 
         it "returns the path to the cookbook" do
-          subject.download(tmp_path).should eql(tmp_path.join('nginx').to_s)
+          result = subject.download(tmp_path)
+          name, target_version = subject.name, subject.target_version
+
+          result.should eql(tmp_path.join("#{name}-#{target_version}").to_s)
         end
 
         context "given an explicit version_string" do
           subject { CookbookSource::SiteLocation.new("nginx", :version_string => "0.101.2") }
+
+          it "downloads the cookbook to the given destination" do
+            subject.download(tmp_path)
+            # have to set outside of custom rspec matcher block
+            name, target_version = subject.name, subject.target_version
+
+            tmp_path.should have_structure {
+              directory "#{name}-#{target_version}" do
+                file "metadata.rb"
+              end
+            }
+          end
         end
 
         context "given an explicit :site location key" do
           subject { CookbookSource::SiteLocation.new("nginx", :site => "http://cookbooks.opscode.com/api/v1/cookbooks") }
+
+          it "downloads the cookbook to the given destination" do
+            subject.download(tmp_path)
+            # have to set outside of custom rspec matcher block
+            name, target_version = subject.name, subject.target_version
+
+            tmp_path.should have_structure {
+              directory "#{name}-#{target_version}" do
+                file "metadata.rb"
+              end
+            }
+          end
         end
 
         context "given a cookbook that does not exist on the specified site" do

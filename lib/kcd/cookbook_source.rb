@@ -36,7 +36,12 @@ module KnifeCookbookDependencies
 
       def download(destination)
         uri = if target_version == "0.0.0"
-          quietly { rest.get_rest(name)['latest_version'] }
+          quietly {
+            latest_version = rest.get_rest(name)['latest_version']
+            @target_version = version_from_latest_version(latest_version)
+            
+            latest_version
+          }
         else
           uri_for_version(target_version)
         end
@@ -44,9 +49,13 @@ module KnifeCookbookDependencies
         remote_file = rest.get_rest(uri)['file']
         downloaded_tf = rest.get_rest(remote_file, true)
 
-        self.class.unpack(downloaded_tf.path, destination.to_s)
+        dir = Dir.mktmpdir
+        cb_path = File.join(destination, "#{name}-#{target_version}")
 
-        File.join(destination, name)
+        self.class.unpack(downloaded_tf.path, dir)
+        FileUtils.mv(File.join(dir, name), cb_path)
+
+        cb_path
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
           raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
@@ -72,6 +81,10 @@ module KnifeCookbookDependencies
 
         def uri_escape_version(version)
           version.gsub('.', '_')
+        end
+
+        def version_from_latest_version(latest_version)
+          File.basename(latest_version).gsub('_', '.')
         end
     end
 
@@ -214,6 +227,20 @@ module KnifeCookbookDependencies
 
     def has_group?(group)
       groups.select { |sg| sg == group }
+    end
+
+    def dependencies
+      return nil unless metadata
+
+      metadata.dependencies
+    end
+
+    def dependency_sources
+      return nil unless dependencies
+
+      dependencies.collect do |name, constraint|
+        self.class.new(name, constraint)
+      end
     end
 
     private
