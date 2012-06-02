@@ -43,7 +43,7 @@ Feature: install cookbooks from a Cookbookfile
     When I run the install command
     Then the output should contain:
       """
-      No Cookbookfile or Cookbookfile.lock found in path:
+      No Cookbookfile or Cookbookfile.lock found at:
       """
     And the CLI should exit with the status code for error "CookbookfileNotFound"
 
