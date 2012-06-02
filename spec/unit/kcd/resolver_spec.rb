@@ -5,27 +5,39 @@ module KnifeCookbookDependencies
     let(:source) { CookbookSource.new("mysql", "= 1.2.4") }
 
     subject do
-      source.download(tmp_path)
-      Resolver.new(source)
+      downloader = Downloader.new(tmp_path)
+      Resolver.new(downloader)
     end
 
-    describe "#initialize" do
-      it "adds a package named after the given source's name" do
-        subject.prime_package.name.should eql(source.name)
-      end
+    describe "#add_source" do
+      before(:each) { subject.add_source(source) }
 
-      it "sets a prime_version equal to the cookbook's version" do
-        subject.prime_version.version.to_s.should eql("1.2.4")
+      it "adds the source to the instance of resolver" do
+        subject.sources.should include(source)
       end
     end
 
-    describe "#resolve_prime" do
+    describe "#[]" do
+      before(:each) { subject.add_source(source) }
+
+      it "returns the source of the given name" do
+        subject[source.name].should eql(source)
+      end
+    end
+
+    describe "#has_source?" do
+      before(:each) { subject.add_source(source) }
+
+      it "returns the source of the given name" do
+        subject.has_source?(source.name).should be_true
+      end
+    end
+
+    describe "#resolve" do
+      before(:each) { subject.add_source(source) }
+      
       it "fucks up" do
-        s1 = CookbookSource.new("openssl")
-        s1.download(tmp_path)
-
-        subject.add_source(s1)
-        subject.resolve_prime.should eql("mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0"))
+        subject.resolve.should eql("mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0"))
       end
     end
   end

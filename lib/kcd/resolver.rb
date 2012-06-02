@@ -3,39 +3,65 @@ module KnifeCookbookDependencies
     include DepSelector
 
     attr_reader :graph
-    attr_reader :prime_package
-    attr_reader :prime_version
-    attr_reader :prime_metadata
 
-    def initialize(source)
-      @graph = DependencyGraph.new      
-      @prime_package = add_package(source.name)
-      @prime_version = add_version(prime_package, Version.new(source.metadata.version))
-      @prime_metadata = source.metadata
+    def initialize(downloader, sources = Array.new)
+      @downloader = downloader
+      @graph = DependencyGraph.new
+      @sources = Hash.new
 
-      add_dependencies(prime_version, prime_metadata)
+      Array(sources).each do |source|
+        add_source(source)
+      end
     end
 
     # @param [KCD::CookbookSource] source
     #   source to add
     def add_source(source)
+      downloader.download!(source) unless source.downloaded?
+
       package = add_package(source.name)
       version = add_version(package, Version.new(source.metadata.version))
-      add_dependencies(version, source.metadata)
+      add_dependencies(version, source.dependencies)
+
+      @sources[source.name] = source unless has_source?(source.name)
+
+      source.dependency_sources.each { |source| add_source(source) }
+
+      @sources
     end
 
-    def resolve_prime
-      resolve_for(prime_package)
+    def sources
+      @sources.collect { |name, source| source }
     end
 
-    def resolve_for(package)
-      quietly { selector.find_solution([SolutionConstraint.new(package)]) }
+    def resolve
+      quietly { selector.find_solution(solution_constraints) }
+    end
+
+    # @param [String] name
+    #   name of the source to return
+    def [](name)
+      @sources[name]
+    end
+    alias_method :get_source, :[]
+
+    def has_source?(name)
+      !get_source(name).nil?
     end
 
     private
 
+      attr_reader :downloader
+
       def selector
         Selector.new(graph)
+      end
+
+      def solution_constraints
+        constraints = sources.collect do |source|
+          package = graph.package(source.name)
+          SolutionConstraint.new(package)
+        end
       end
 
       def add_package(name)
@@ -55,8 +81,8 @@ module KnifeCookbookDependencies
         version.dependencies << dependency
       end
 
-      def add_dependencies(version, metadata)
-        metadata.dependencies.each do |dep_name, constraint|
+      def add_dependencies(version, dependencies)
+        dependencies.each do |dep_name, constraint|
           add_dependency(version, Dependency.new(graph.package(dep_name), VersionConstraint.new(constraint)))
         end
       end
