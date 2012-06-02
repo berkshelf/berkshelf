@@ -18,7 +18,7 @@ module KnifeCookbookDependencies
       end
     end
 
-    def process_install(without = nil)        
+    def process_install(options = {})
       if File.exist?(KCD::Lockfile::DEFAULT_FILENAME)
         filename = KCD::Lockfile::DEFAULT_FILENAME
         lockfile = true
@@ -27,15 +27,15 @@ module KnifeCookbookDependencies
         lockfile = false
       end
 
-      KCD.shelf.exclude(without)
+      KCD.shelf.exclude(options[:without])
       
       results = KCD.shelf.download_sources
       if results.has_errors?
         raise DownloadFailure.new(results.failed)
       end
 
-      KCD.shelf.resolve_dependencies
-      KCD.shelf.populate_cookbooks_directory
+      sources = KCD.shelf.sources.collect { |name, source| source }
+      Resolver.new(KCD.downloader, sources).resolve
       KCD.shelf.write_lockfile unless lockfile
     end
   end
