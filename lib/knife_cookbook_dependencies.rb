@@ -37,8 +37,12 @@ module KnifeCookbookDependencies
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
     end
 
+    def store_path
+      ENV["BOOKSHELF_PATH"] || DEFAULT_STORE_PATH
+    end
+
     def downloader
-      @downloader ||= Downloader.new(DEFAULT_STORE_PATH)
+      @downloader ||= Downloader.new(store_path)
     end
 
     def clean
