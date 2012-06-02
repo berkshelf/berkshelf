@@ -41,6 +41,7 @@ Spork.prefork do
 
     config.before(:each) do
       clean_tmp_path
+      KCD.downloader = KCD::Downloader.new(tmp_path.join("downloader_tmp"))
     end
 
     config.after do

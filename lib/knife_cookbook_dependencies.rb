@@ -6,6 +6,7 @@ require 'chef/platform'
 require 'chef/cookbook/metadata'
 
 module KnifeCookbookDependencies
+  DEFAULT_STORE_PATH = File.expand_path(File.join("~/.bookshelf")).freeze
   DEFAULT_FILENAME = 'Cookbookfile'.freeze
   COOKBOOKS_DIRECTORY = 'cookbooks'
   TMP_DIRECTORY = File.join(ENV['TMPDIR'] || ENV['TEMP'], 'knife_cookbook_dependencies')
@@ -18,13 +19,10 @@ module KnifeCookbookDependencies
 
   class << self
     attr_accessor :ui
+    attr_accessor :downloader
 
     def root
       File.join(File.dirname(__FILE__), '..')
-    end
-
-    def cookbook_store
-      File.expand_path(File.join("~/.bookshelf"))
     end
 
     def shelf
@@ -40,7 +38,7 @@ module KnifeCookbookDependencies
     end
 
     def downloader
-      @downloader ||= Downloader.new(cookbook_store)
+      @downloader ||= Downloader.new(DEFAULT_STORE_PATH)
     end
 
     def clean
