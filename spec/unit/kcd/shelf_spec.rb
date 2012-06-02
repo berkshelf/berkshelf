@@ -2,6 +2,11 @@ require 'spec_helper'
 
 module KnifeCookbookDependencies
   describe Shelf do
+    let(:source_one) { CookbookSource.new("nginx", :group => ["foo", "bar"]) }
+    let(:source_two) { CookbookSource.new("mysql", :group => "baz") }
+    let(:source_three) { CookbookSource.new("ntp", :group => "baz") }
+    let(:source_four) { CookbookSource.new("sparkle_motion", :group => "quux") }
+
     describe '#exclude' do
       it "should split on :" do
         subject.exclude("foo:bar")
@@ -19,21 +24,47 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe '#groups' do
+    describe "#sources" do
       before(:each) do
-        subject.add_source CookbookSource.new("foobar", :group => ["foo", "bar"])
-        subject.add_source CookbookSource.new("baz", :group => "baz")
-        subject.add_source CookbookSource.new("quux", :group => "quux")
-        subject.add_source CookbookSource.new("baz2", :group => "baz")
-        @groups = subject.groups
+        subject.add_source source_one
+        subject.add_source source_two
+        subject.add_source source_three
+        subject.add_source source_four
       end
 
-      it "should return a hash of groups and associated cookbooks" do
-        @groups.keys.size.should == 4
-        @groups[:foo].should == ["foobar"]
-        @groups[:bar].should == ["foobar"]
-        @groups[:baz].should == ["baz", "baz2"]
-        @groups[:quux].should == ["quux"]
+      it "returns all of the sources" do
+        subject.sources.should have(4).sources
+      end
+
+      context "when given the option :permitted" do
+        it "returns only sources belonging to no groups or groups that have not been excluded" do
+          subject.exclude(["foo", "bar", "baz"])
+
+          subject.sources(:permitted).should include(source_four)
+        end
+      end
+
+      context "when given the option :excluded" do
+        it "returns only sources that belong to groups that have been exclued" do
+          subject.exclude(["quux"])
+
+          subject.sources(:excluded).should include(source_four)
+        end
+      end
+    end
+
+    describe '#groups' do
+      let(:source) { CookbookSource.new("nginx", :group => ["sparkle_motion"]) }
+      before(:each) do
+        subject.add_source source
+      end
+
+      it "contains only groups added by association of CookbookSources" do
+        subject.groups.should have(1).group
+      end
+
+      it "adds the associated CookbookSource to the members of the group" do
+        subject.groups[:sparkle_motion].should include(source)
       end
     end
 

@@ -31,6 +31,7 @@ module KnifeCookbookDependencies
       case scope
       when :all; @sources
       when :permitted; get_permitted_sources
+      when :excluded; get_excluded_sources
       else
         raise ArgumentError, "Unknown scope #{scope}"
       end
@@ -54,7 +55,7 @@ module KnifeCookbookDependencies
     end
 
     def write_lockfile
-      KCD::Lockfile.new(@cookbooks).write
+      # KCD::Lockfile.new(@cookbooks).write
     end
 
     def exclude(groups)
@@ -67,7 +68,7 @@ module KnifeCookbookDependencies
         sources.each_pair do |name, source|
           source.groups.each do |group|
             groups[group] ||= []
-            groups[group] << source.name
+            groups[group] << source
           end
         end
       end
@@ -76,9 +77,13 @@ module KnifeCookbookDependencies
     private
 
       def get_permitted_sources
-        s = sources.clone
-        s.delete_if { |name, source| source.has_group?(excluded_groups) }
-        s
+        g = groups.delete_if { |name, source| excluded_groups.include?(name) }
+        g.collect { |name, source| source }.flatten
+      end
+
+      def get_excluded_sources
+        g = groups.delete_if { |name, source| !excluded_groups.include?(name) }
+        g.collect { |name, source| source }.flatten
       end
   end
 end
