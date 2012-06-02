@@ -1,10 +1,34 @@
 module KnifeCookbookDependencies
   class Git
     class << self
-      def git
-        @git ||= find_git
+      def git(*command)
+        out = quietly {
+          %x{ #{git_cmd} #{command.join(' ')} }
+        }
+        error_check
+        
+        out.chomp
       end
-      alias_method :git_cmd, :git
+
+      def clone(uri, destination = Dir.mktmpdir)
+        git("clone", uri, destination.to_s)
+
+        error_check
+
+        destination
+      end
+
+      def checkout(repo_path, ref)
+        Dir.chdir repo_path do
+          git("checkout", "-q", ref)
+        end
+      end
+
+      def rev_parse(repo_path)
+        Dir.chdir repo_path do
+          git("rev-parse", "HEAD")
+        end
+      end
 
       #
       # This is to defeat aliases/shell functions called 'git' and a number of
@@ -32,22 +56,11 @@ module KnifeCookbookDependencies
         return git_path
       end
 
-      def clone(uri, destination = Dir.mktmpdir)
-        quietly { system(git_cmd, "clone", uri, destination.to_s) }
-        error_check
-
-        destination
-      end
-
-      def checkout(repo_path, ref)
-        Dir.chdir repo_path do
-          quietly { system(git_cmd, "checkout", "-q", ref) }
-        end
-
-        ref
-      end
-
       private
+
+        def git_cmd
+          @git_cmd ||= find_git
+        end
 
         def error_check
           raise KCD::GitError, "Did not succeed executing git; check the output above." unless $?.success?

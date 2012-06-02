@@ -46,6 +46,18 @@ module KnifeCookbookDependencies
           end
         end
       end
+
+      describe "#rev_parse" do
+        let(:repo_path) { tmp_path.join("nginx") }
+        before(:each) do
+          subject.clone("git://github.com/opscode-cookbooks/nginx.git", repo_path)
+          subject.checkout(repo_path, "0e4887d9eef8cb83972f974a85890983c8204c3b")
+        end
+
+        it "returns the ref for HEAD" do
+          subject.rev_parse(repo_path).should eql("0e4887d9eef8cb83972f974a85890983c8204c3b")
+        end
+      end
     end
   end
 end
