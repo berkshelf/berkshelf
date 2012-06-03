@@ -21,9 +21,21 @@ Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, fil
   write_file(File.join(cookbook_name, file_name), content)
 end
 
-Then /^the cookbook store should have the following cookbooks:$/ do |cookbooks|
+Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     cookbook_store.should have_structure {
+      directory "#{name}-#{version}" do
+        file "metadata.rb" do
+          contains version
+        end
+      end
+    }
+  end
+end
+
+Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
+  cookbooks.raw.each do |name, version|
+    cookbook_store.should_not have_structure {
       directory "#{name}-#{version}" do
         file "metadata.rb" do
           contains version

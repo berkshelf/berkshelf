@@ -9,7 +9,7 @@ Feature: install cookbooks from a Cookbookfile
       cookbook "mysql", "1.2.4"
       """
     When I run the install command
-    Then the cookbook store should have the following cookbooks:
+    Then the cookbook store should have the cookbooks:
       | mysql   | 1.2.4 |
       | openssl | 1.0.0 |
 
