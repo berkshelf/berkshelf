@@ -19,13 +19,13 @@ module KnifeCookbookDependencies
     def initialize(results)
       @errors = []
 
-      results.each do |result|
+      Array(results).each do |result|
         @errors << result.message
       end
     end
 
     def message
-      puts errors
+      errors.join("\n")
     end
   end
 

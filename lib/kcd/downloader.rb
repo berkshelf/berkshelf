@@ -108,7 +108,7 @@ module KnifeCookbookDependencies
 
     def download!(source)
       result = download(source)
-      raise DownloadFailure(result) if result.failed?
+      raise DownloadFailure.new(result) if result.failed?
       
       result
     end

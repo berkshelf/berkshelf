@@ -28,9 +28,9 @@ module KnifeCookbookDependencies
       def get_source_definition(source)
         definition = "cookbook '#{source.name}'"
 
-        if source.location.is_a?(GitLocation)
+        if source.location.is_a?(CookbookSource::GitLocation)
           definition += ", :git => '#{source.git_repo}', :ref => '#{source.git_ref || 'HEAD'}'"
-        elsif source.location.is_a?(PathLocation)
+        elsif source.location.is_a?(CookbookSource::PathLocation)
           definition += ", :path => '#{source.local_path}'"
         else
           definition += ", :locked_version => '#{source.locked_version}'"
