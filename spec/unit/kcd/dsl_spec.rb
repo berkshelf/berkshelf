@@ -18,13 +18,13 @@ module KnifeCookbookDependencies
       it 'should take version constraints' do
         cookbook 'ntp', '= 1.2.3'
 
-        KCD.shelf.sources['ntp'].version_constraint.should == DepSelector::VersionConstraint.new('= 1.2.3')
+        KCD.shelf['ntp'].version_constraint.should == DepSelector::VersionConstraint.new('= 1.2.3')
       end
 
       it 'should take group' do
         cookbook 'nginx', :group => 'web'
 
-        KCD.shelf.sources['nginx'].groups.should == [:web]
+        KCD.shelf['nginx'].groups.should == [:web]
       end
     end
 
@@ -36,7 +36,7 @@ module KnifeCookbookDependencies
         end
 
         cookbooks.each do |c|
-          KCD.shelf.sources[c].groups.should == [:awesome]
+          KCD.shelf[c].groups.should == [:awesome]
         end
       end
 
@@ -47,7 +47,7 @@ module KnifeCookbookDependencies
         end
 
         cookbook 'sesame_chicken'
-        KCD.shelf.sources['sesame_chicken'].groups.should == [:default]
+        KCD.shelf['sesame_chicken'].groups.should == [:default]
       end
     end
 

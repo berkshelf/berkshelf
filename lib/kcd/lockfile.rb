@@ -11,7 +11,7 @@ module KnifeCookbookDependencies
     attr_reader :sources
 
     def initialize(sources)
-      @sources = sources
+      @sources = Array(sources)
     end
 
     def write(filename = DEFAULT_FILENAME)

@@ -151,7 +151,6 @@ module KnifeCookbookDependencies
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
-    attr_reader :locked_version
     attr_reader :local_path
 
     # TODO: describe how the options on this function work.
@@ -248,6 +247,10 @@ module KnifeCookbookDependencies
       dependencies.collect do |name, constraint|
         self.class.new(name, constraint)
       end
+    end
+
+    def locked_version
+      @locked_version || metadata.version
     end
 
     private

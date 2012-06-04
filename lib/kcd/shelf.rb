@@ -53,10 +53,6 @@ module KnifeCookbookDependencies
       KCD.downloader.download_all
     end
 
-    def write_lockfile
-      KCD::Lockfile.new(sources).write
-    end
-
     def exclude(groups)
       groups = groups.to_s.split(/[,:]/) unless groups.is_a?(Array)
       @excluded_groups = groups.collect {|c| c.to_sym}
@@ -72,6 +68,13 @@ module KnifeCookbookDependencies
         end
       end
     end
+
+    # @param [String] name
+    #   name of the source to return
+    def [](name)
+      @sources[name]
+    end
+    alias_method :get_source, :[]
 
     private
 

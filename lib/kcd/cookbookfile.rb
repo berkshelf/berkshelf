@@ -30,10 +30,17 @@ module KnifeCookbookDependencies
       KCD.shelf.exclude(options[:without])
       
       sources = KCD.shelf.sources(:permitted)
-      Resolver.new(KCD.downloader, sources).resolve
-      KCD.shelf.write_lockfile unless lockfile
+      resolver = Resolver.new(KCD.downloader, sources)
+      resolver.resolve
+      write_lockfile(resolver.sources) unless lockfile
 
       true
     end
+
+    private
+
+      def write_lockfile(sources)
+        KCD::Lockfile.new(sources).write
+      end
   end
 end
