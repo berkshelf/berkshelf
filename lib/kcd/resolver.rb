@@ -25,7 +25,7 @@ module KnifeCookbookDependencies
 
       @sources[source.name] = source unless has_source?(source.name)
 
-      source.dependency_sources.each { |source| add_source(source) }
+      source.dependency_sources.each { |source| add_source(source) unless has_source?(source.name) }
 
       @sources
     end
