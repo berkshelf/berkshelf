@@ -96,11 +96,13 @@ module KnifeCookbookDependencies
 
       def initialize(name, options = {})
         @name = name
-        @path = options[:path]
+        @path = File.expand_path(options[:path])
       end
 
       def download(destination)
-        raise CookbookNotFound unless File.chef_cookbook?(path)
+        unless File.chef_cookbook?(path)
+          raise CookbookNotFound, "Cookbook '#{name}' not found at path: #{path}"
+        end
 
         path
       end
@@ -127,7 +129,11 @@ module KnifeCookbookDependencies
           self.branch = ::KCD::Git.rev_parse(tmp_clone)
         end
 
-        raise CookbookNotFound unless File.chef_cookbook?(tmp_clone)
+        unless File.chef_cookbook?(tmp_clone)
+          msg = "Cookbook '#{name}' not found at git: #{uri}" 
+          msg << " with branch '#{branch}'" if branch
+          raise CookbookNotFound, msg
+        end
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
 
