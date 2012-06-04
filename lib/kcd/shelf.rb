@@ -19,7 +19,6 @@ module KnifeCookbookDependencies
 
     META_COOKBOOK_NAME = 'cookbook_dependencies_shelf'
 
-    attr_reader :sources
     attr_accessor :active_group
     attr_accessor :excluded_groups
 
@@ -29,7 +28,7 @@ module KnifeCookbookDependencies
 
     def sources(scope = :all)
       case scope
-      when :all; @sources
+      when :all; @sources.collect { |name, source| source }.flatten
       when :permitted; get_permitted_sources
       when :excluded; get_excluded_sources
       else
@@ -50,12 +49,12 @@ module KnifeCookbookDependencies
     end
 
     def download_sources
-      sources.each { |name, source| KCD.downloader.enqueue(source) }
+      sources.each { |source| KCD.downloader.enqueue(source) }
       KCD.downloader.download_all
     end
 
     def write_lockfile
-      # KCD::Lockfile.new(@cookbooks).write
+      KCD::Lockfile.new(sources).write
     end
 
     def exclude(groups)
@@ -65,7 +64,7 @@ module KnifeCookbookDependencies
 
     def groups
       {}.tap do |groups|
-        sources.each_pair do |name, source|
+        @sources.each_pair do |name, source|
           source.groups.each do |group|
             groups[group] ||= []
             groups[group] << source

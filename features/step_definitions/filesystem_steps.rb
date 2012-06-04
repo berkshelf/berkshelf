@@ -36,11 +36,7 @@ end
 Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     cookbook_store.should_not have_structure {
-      directory "#{name}-#{version}" do
-        file "metadata.rb" do
-          contains version
-        end
-      end
+      directory "#{name}-#{version}"
     }
   end
 end

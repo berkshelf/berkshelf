@@ -29,11 +29,6 @@ module KnifeCookbookDependencies
 
       KCD.shelf.exclude(options[:without])
       
-      results = KCD.shelf.download_sources
-      if results.has_errors?
-        raise DownloadFailure.new(results.failed)
-      end
-
       sources = KCD.shelf.sources(:permitted)
       Resolver.new(KCD.downloader, sources).resolve
       KCD.shelf.write_lockfile unless lockfile

@@ -14,12 +14,12 @@ Feature: --without block
     cookbook "mysql", "= 1.2.4"
 
     group :takeme do
-      cookbook "ntp", "= 1.1.9"
+      cookbook "ntp", "= 1.1.8"
     end
     """
     When I run `knife cookbook dependencies install --without notme`
     Then the cookbook store should have the cookbooks:
       | mysql | 1.2.4 |
-      | ntp   | 1.1.9 |
+      | ntp   | 1.1.8 |
     And the cookbook store should not have the cookbooks:
       | nginx | 0.101.2 |
