@@ -37,7 +37,16 @@ module KnifeCookbookDependencies
       def download(destination)
         uri = if target_version == "0.0.0"
           quietly {
-            latest_version = rest.get_rest(name)['latest_version']
+            begin
+              latest_version = rest.get_rest(name)['latest_version']
+            rescue Net::HTTPServerException => e
+              if e.response.code == "404"
+                raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
+              else
+                raise
+              end
+            end
+
             @target_version = version_from_latest_version(latest_version)
             
             latest_version
@@ -46,7 +55,16 @@ module KnifeCookbookDependencies
           uri_for_version(target_version)
         end
 
-        remote_file = rest.get_rest(uri)['file']
+        begin
+          remote_file = rest.get_rest(uri)['file']
+        rescue Net::HTTPServerException => e
+          if e.response.code == "404"
+            raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{target_version}' not found at site: #{api_uri}"
+          else
+            raise
+          end
+        end
+
         downloaded_tf = rest.get_rest(remote_file, true)
 
         dir = Dir.mktmpdir
@@ -56,12 +74,6 @@ module KnifeCookbookDependencies
         FileUtils.mv(File.join(dir, name), cb_path, :force => true)
 
         cb_path
-      rescue Net::HTTPServerException => e
-        if e.response.code == "404"
-          raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{target_version}' not found at site: #{api_uri}"
-        else
-          raise
-        end
       end
 
       def downloaded?(destination)
