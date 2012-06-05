@@ -25,14 +25,6 @@ module KnifeCookbookDependencies
       File.join(File.dirname(__FILE__), '..')
     end
 
-    def shelf
-      @shelf ||= KCD::Shelf.new
-    end
-
-    def clear_shelf!
-      @shelf = nil
-    end
-
     def ui
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
     end
@@ -46,7 +38,6 @@ module KnifeCookbookDependencies
     end
 
     def clean
-      clear_shelf!
       Lockfile.remove!
       FileUtils.rm_rf COOKBOOKS_DIRECTORY
       FileUtils.rm_rf TMP_DIRECTORY
@@ -77,7 +68,6 @@ require 'zlib'
 require 'archive/tar/minitar'
 
 require 'kcd/version'
-require 'kcd/shelf'
 require 'kcd/dsl'
 require 'kcd/cookbookfile'
 require 'kcd/lockfile'

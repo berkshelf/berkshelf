@@ -1,14 +1,17 @@
 module KnifeCookbookDependencies
   module DSL
+    @@active_group = nil
+
     def cookbook(*args)
       source = CookbookSource.new(*args)
-      KCD.shelf.add_source(source)
+      source.add_group(@@active_group) if @@active_group
+      add_source(source)
     end
 
     def group(*args)
-      KCD.shelf.active_group = args
+      @@active_group = args
       yield
-      KCD.shelf.active_group = nil
+      @@active_group = nil
     end
 
     def metadata(options = {})
@@ -30,7 +33,7 @@ module KnifeCookbookDependencies
       end
 
       source = CookbookSource.new(name, :path => File.dirname(metadata_file))
-      KCD.shelf.add_source(source)
+      add_source(source)
     end
   end
 end

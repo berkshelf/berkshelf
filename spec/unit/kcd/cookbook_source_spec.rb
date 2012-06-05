@@ -333,5 +333,27 @@ module KnifeCookbookDependencies
         subject.metadata.should be_nil
       end
     end
+
+    describe "#dependency_sources" do
+      subject { CookbookSource.new("mysql", "= 1.2.4") }
+
+      before(:each) { subject.download(tmp_path) }
+
+      it "returns the dependencies of the CookbookSource as CookbookSources" do
+        subject.dependency_sources.each do |dep|
+          dep.should be_a(CookbookSource)
+        end
+      end
+
+      context "when the CookbookSource has no dependencies" do
+        subject { CookbookSource.new("apt", "= 1.4.2") }
+
+        before(:each) { subject.download(tmp_path) }
+
+        it "returns an empty array" do
+          subject.dependency_sources.should be_empty
+        end
+      end
+    end
   end
 end

@@ -5,7 +5,6 @@ describe KCD::Lockfile do
     before do
       @old_dir = Dir.pwd
       Dir.chdir fixtures_path.join("lockfile_spec", "without_lock")
-      KCD.clear_shelf!
     end
 
     it "should be able to write a Cookbookfile.lock from a list of cookbooks" do

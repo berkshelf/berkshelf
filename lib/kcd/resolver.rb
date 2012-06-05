@@ -17,17 +17,33 @@ module KnifeCookbookDependencies
     # @param [KCD::CookbookSource] source
     #   source to add
     def add_source(source)
+      raise DuplicateSourceDefined if has_source?(source.name)
+
+      set_source(source.name, source)
+
       downloader.download!(source) unless source.downloaded?
 
       package = add_package(source.name)
       version = add_version(package, Version.new(source.metadata.version))
       add_dependencies(version, source.dependencies)
 
-      @sources[source.name] = source unless has_source?(source.name)
+      set_source(source.name, source)
 
-      source.dependency_sources.each { |source| add_source(source) unless has_source?(source.name) }
+      source.dependency_sources.each { |source| add_source_dependency(source) }
 
-      @sources
+      sources
+    end
+
+    def add_source_dependency(source)
+      downloader.download!(source) unless source.downloaded?
+
+      package = add_package(source.name)
+      version = add_version(package, Version.new(source.metadata.version))
+      add_dependencies(version, source.dependencies)
+
+      set_source(source.name, source) unless has_source?(source.name)
+
+      source.dependency_sources.each { |source| add_source_dependency(source) }
     end
 
     def sources
@@ -52,6 +68,11 @@ module KnifeCookbookDependencies
     private
 
       attr_reader :downloader
+
+      def []=(name, value)
+        @sources[name] = value
+      end
+      alias_method :set_source, :[]=
 
       def selector
         Selector.new(graph)

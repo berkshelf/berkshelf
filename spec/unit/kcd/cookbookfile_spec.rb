@@ -16,9 +16,10 @@ EOF
 
       describe "#read" do
         it "reads the content of a Cookbookfile and adds the sources to the Shelf" do
-          subject.read(content)
+          cbfile = subject.read(content)
+
           ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |name|
-            KCD.shelf.should have_source(name)
+            cbfile.should have_source(name)
           end
         end
 

@@ -18,6 +18,45 @@ module KnifeCookbookDependencies
       end
     end
 
+    def initialize
+      @sources = Hash.new
+    end
+
+    def add_source(source)
+      raise DuplicateSourceDefined if has_source?(source)
+      @sources[source.to_s] = source
+    end
+
+    def remove_source(source)
+      @sources.delete(source.to_s)
+    end
+
+    def has_source?(source)
+      @sources.has_key?(source.to_s)
+    end
+
+    def sources
+      @sources.collect { |name, source| source }.flatten
+    end
+
+    def groups
+      {}.tap do |groups|
+        @sources.each_pair do |name, source|
+          source.groups.each do |group|
+            groups[group] ||= []
+            groups[group] << source
+          end
+        end
+      end
+    end
+
+    # @param [String] name
+    #   name of the source to return
+    def [](name)
+      @sources[name]
+    end
+    alias_method :get_source, :[]
+
     def process_install(options = {})
       if File.exist?(KCD::Lockfile::DEFAULT_FILENAME)
         filename = KCD::Lockfile::DEFAULT_FILENAME
@@ -27,10 +66,13 @@ module KnifeCookbookDependencies
         lockfile = false
       end
 
-      KCD.shelf.exclude(options[:without])
-      
-      sources = KCD.shelf.sources(:permitted)
-      resolver = Resolver.new(KCD.downloader, sources)
+      l_sources = if options[:without]
+        filter_sources(options[:without])
+      else
+        sources
+      end
+
+      resolver = Resolver.new(KCD.downloader, l_sources)
       resolver.resolve
       write_lockfile(resolver.sources) unless lockfile
 
@@ -38,6 +80,13 @@ module KnifeCookbookDependencies
     end
 
     private
+
+      def filter_sources(excluded)
+        excluded.collect!(&:to_sym)
+        sources.select do |source|
+          (excluded & source.groups).empty?
+        end
+      end
 
       def write_lockfile(sources)
         KCD::Lockfile.new(sources).write
