@@ -64,6 +64,15 @@ module KnifeCookbookDependencies
         end
       end
 
+      def downloaded?(destination)
+        cb_path = File.join(destination, "#{name}-#{target_version}")
+        if File.exists?(cb_path) && File.chef_cookbook?(cb_path)
+          cb_path
+        else
+          nil
+        end
+      end
+
       def api_uri=(uri)
         @rest = nil
         @api_uri = uri
@@ -106,6 +115,14 @@ module KnifeCookbookDependencies
 
         path
       end
+
+      def downloaded?(destination)
+        if File.exists?(path) && File.chef_cookbook?(path)
+          path
+        else
+          nil
+        end
+      end
     end
 
     # @internal
@@ -144,6 +161,15 @@ module KnifeCookbookDependencies
         msg = "Cookbook '#{name}' not found at git: #{uri}" 
         msg << " with branch '#{branch}'" if branch
         raise CookbookNotFound, msg
+      end
+
+      def downloaded?(destination)
+        cb_path = File.join(destination, "#{name}-#{branch}")
+        if File.exists?(cb_path) && File.chef_cookbook?(cb_path)
+          cb_path
+        else
+          nil
+        end
       end
 
       private
@@ -220,8 +246,8 @@ module KnifeCookbookDependencies
       [ :error, e.message ]
     end
 
-    def downloaded?
-      !local_path.nil?
+    def downloaded?(destination)
+      set_local_path location.downloaded?(destination)
     end
 
     def metadata

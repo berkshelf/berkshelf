@@ -66,5 +66,13 @@ module KnifeCookbookDependencies
         results.should be_a(Downloader::ResultSet)
       end
     end
+
+    describe "#downloaded?" do
+      it "delegates downloaded? to the CookbookSource" do
+        source.should_receive(:downloaded?).with(subject.storage_path)
+
+        subject.downloaded?(source)
+      end
+    end
   end
 end

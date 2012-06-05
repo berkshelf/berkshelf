@@ -113,6 +113,10 @@ module KnifeCookbookDependencies
       result
     end
 
+    def downloaded?(source)
+      source.downloaded?(storage_path)
+    end
+
     private
 
       def initialize_store

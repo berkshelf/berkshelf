@@ -290,7 +290,7 @@ module KnifeCookbookDependencies
         it "marks the source as downloaded" do
           subject.download(tmp_path)
 
-          subject.should be_downloaded
+          subject.should be_downloaded(tmp_path)
         end
 
         it "writes a value to local_path" do
@@ -353,6 +353,23 @@ module KnifeCookbookDependencies
         it "returns an empty array" do
           subject.dependency_sources.should be_empty
         end
+      end
+    end
+
+    describe "#downloaded?" do
+      context "given a source with a PathLocation" do
+        it "returns true if the PathLocation is downloaded"
+        it "returns false if the PathLocation is not downloaded"
+      end
+
+      context "given a source with a GitLocation" do
+        it "returns true if the GitLocation is downloaded"
+        it "returns false if the GitLocation is not downloaded"
+      end
+
+      context "given a source with a SiteLocation" do
+        it "returns true if the SiteLocation is downloaded"
+        it "returns false if the SiteLocation is not downloaded"
       end
     end
   end
