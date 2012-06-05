@@ -26,10 +26,6 @@ Then /^the file "(.*?)" should contain in the current directory:$/ do |filename,
   end
 end
 
-Then /^the temp directory should not exist$/ do
-  File.exists?(KCD::TMP_DIRECTORY).should be_false
-end
-
 When /^I run the init command with the cookbook "(.*?)" as the target$/ do |cookbook_name|
   run_simple(unescape("knife cookbook dependencies init #{cookbook_name}"), false)
 end
@@ -44,6 +40,14 @@ end
 
 When /^I run the install command$/ do
   run_simple(unescape("knife cookbook dependencies install"), false)
+end
+
+When /^I run the clean command$/ do
+  run_simple(unescape("knife cookbook dependencies clean"), false)
+end
+
+When /^I run the update command$/ do
+  run_simple(unescape("knife cookbook dependencies update"), false)
 end
 
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|

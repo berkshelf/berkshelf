@@ -70,15 +70,6 @@ Spork.prefork do
     @example_cookbook_from_path ||= KCD::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
   end
 
-  def with_cookbookfile(content)
-    Dir.chdir(KCD::TMP_DIRECTORY) do
-      File.open('Cookbookfile', 'w') do |f|
-        f.write content
-      end
-      yield
-    end
-  end
-
   def app_root_path
     Pathname.new(APP_ROOT)
   end
@@ -99,6 +90,4 @@ end
 
 Spork.each_run do
   require 'kcd'
-
-  FileUtils.mkdir_p KCD::TMP_DIRECTORY
 end

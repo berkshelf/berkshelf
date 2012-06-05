@@ -8,9 +8,6 @@ require 'chef/cookbook/metadata'
 module KnifeCookbookDependencies
   DEFAULT_STORE_PATH = File.expand_path(File.join("~/.bookshelf")).freeze
   DEFAULT_FILENAME = 'Cookbookfile'.freeze
-  COOKBOOKS_DIRECTORY = 'cookbooks'
-  TMP_DIRECTORY = File.join(ENV['TMPDIR'] || ENV['TEMP'], 'knife_cookbook_dependencies')
-  FileUtils.mkdir_p TMP_DIRECTORY
 
   autoload :InitGenerator, 'kcd/init_generator'
   autoload :CookbookSource, 'kcd/cookbook_source'
@@ -39,8 +36,6 @@ module KnifeCookbookDependencies
 
     def clean
       Lockfile.remove!
-      FileUtils.rm_rf COOKBOOKS_DIRECTORY
-      FileUtils.rm_rf TMP_DIRECTORY
     end
 
     # Ascend the directory structure from the given path to find a
