@@ -58,7 +58,7 @@ module KnifeCookbookDependencies
         cb_path
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
-          raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
+          raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{target_version}' not found at site: #{api_uri}"
         else
           raise
         end
@@ -270,14 +270,6 @@ module KnifeCookbookDependencies
       return nil unless metadata
 
       metadata.dependencies
-    end
-
-    def dependency_sources
-      return nil unless dependencies
-
-      dependencies.collect do |name, constraint|
-        self.class.new(name, constraint)
-      end
     end
 
     def locked_version

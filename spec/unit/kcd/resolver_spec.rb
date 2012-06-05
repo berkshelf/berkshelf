@@ -2,6 +2,48 @@ require 'spec_helper'
 
 module KnifeCookbookDependencies
   describe Resolver do
+    describe "ClassMethods" do
+      subject { Resolver }
+
+      describe "#initialize" do
+        let(:downloader) { Downloader.new(tmp_path) }
+
+        it "adds the specified sources to the sources hash" do
+          source = CookbookSource.new("mysql", "= 1.2.4")
+          resolver = subject.new(downloader, source)
+
+          resolver.should have_source(source)
+        end
+
+        it "adds the dependencies of the source as packages of the graph" do
+          source = CookbookSource.new("mysql", "= 1.2.4")
+          resolver = subject.new(downloader, source)
+
+          source.dependencies.each do |name, constraint|
+            resolver.package(name).should_not be_nil
+          end
+        end
+
+        it "adds the version_constraints of the dependencies to the graph" do
+          source = CookbookSource.new("mysql", "= 1.2.4")
+          resolver = subject.new(downloader, source)
+
+          source.dependencies.each do |name, constraint|
+            resolver.package(name).versions.should_not be_empty
+          end
+        end
+
+        context "given an array of sources" do
+          it "adds the sources to the sources hash" do
+            sources = [CookbookSource.new("mysql", "= 1.2.4")]
+            resolver = subject.new(downloader, sources)
+
+            resolver.should have_source(sources[0])
+          end
+        end
+      end
+    end
+
     let(:source) { CookbookSource.new("mysql", "= 1.2.4") }
 
     subject do
@@ -16,6 +58,20 @@ module KnifeCookbookDependencies
         subject.sources.should include(source)
       end
 
+      it "adds a package of the same name of the source to the graph" do
+        subject.package(source.name).should_not be_nil
+      end
+
+      it "adds a version constraint specified by the source to the package of the same name" do
+        subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
+      end
+
+      it "adds the dependencies of the source as packages to the graph" do
+        source.dependencies.each do |name, constraint|
+          subject.package(name).should_not be_nil
+        end
+      end
+
       it "raises a DuplicateSourceDefined exception if a source of the same name is added" do
         dup_source = CookbookSource.new(source.name)
 
@@ -25,27 +81,19 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe "#add_source_dependency" do
-      before(:each) do
-        subject.add_source(source)
-        @dependencies = source.dependency_sources
-        @dependencies.each do |dep|
-          subject.add_source_dependency(dep)
-        end
+    describe "#add_dependencies" do
+      it "adds a package for each dependency to the graph" do
+        pkg_ver = subject.add_source(source)
+        subject.add_dependencies(pkg_ver, source.dependencies)
+
+        subject.package(source.name).should_not be_nil
       end
 
-      it "adds the dependencies of the source as sources" do
-        @dependencies.each do |dep|
-          subject.should have_source(dep.name)
-        end
-      end
+      it "adds a version constraint to the graph for each dependency" do
+        pkg_ver = subject.add_source(source)
+        subject.add_dependencies(pkg_ver, source.dependencies)
 
-      it "doesn't overwrite a source that has already been set" do
-        dup_source = CookbookSource.new(source.name).clone
-
-        subject.add_source_dependency(dup_source)
-
-        subject[source.name].should === source
+        subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
       end
     end
 
@@ -66,7 +114,9 @@ module KnifeCookbookDependencies
     end
 
     describe "#resolve" do
-      before(:each) { subject.add_source(source) }
+      before(:each) do
+        subject.add_source(source)
+      end
       
       it "fucks up" do
         subject.resolve.should eql("mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0"))
