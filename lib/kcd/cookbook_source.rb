@@ -53,7 +53,7 @@ module KnifeCookbookDependencies
         cb_path = File.join(destination, "#{name}-#{target_version}")
 
         self.class.unpack(downloaded_tf.path, dir)
-        FileUtils.mv(File.join(dir, name), cb_path)
+        FileUtils.mv(File.join(dir, name), cb_path, :force => true)
 
         cb_path
       rescue Net::HTTPServerException => e
@@ -137,7 +137,7 @@ module KnifeCookbookDependencies
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
 
-        FileUtils.mv(tmp_clone, cb_path)
+        FileUtils.mv(tmp_clone, cb_path, :force => true)
 
         cb_path
       rescue KCD::GitError
