@@ -191,6 +191,8 @@ module KnifeCookbookDependencies
         end
     end
 
+    LOCATION_KEYS = [:git, :path, :site]
+
     attr_reader :name
     attr_reader :version_constraint
     attr_reader :groups
@@ -211,7 +213,9 @@ module KnifeCookbookDependencies
       @groups = []
       @local_path = nil
 
-      raise ArgumentError if (options.keys & [:git, :path, :site]).length > 1
+      if (options.keys & LOCATION_KEYS).length > 1
+        raise ArgumentError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
+      end
 
       options[:version_string] = version_constraint.version.to_s
 
