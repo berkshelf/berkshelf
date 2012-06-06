@@ -75,12 +75,7 @@ module KnifeCookbookDependencies
       end
 
       def download(destination)
-        version, uri = if version_constraint
-          self.class.solve_for_constraint(version_constraint, versions)
-        else
-          latest_version
-        end
-
+        version, uri = target_version
         remote_file = rest.get_rest(uri)['file']
         downloaded_tf = rest.get_rest(remote_file, true)
 
@@ -93,8 +88,10 @@ module KnifeCookbookDependencies
         cb_path
       end
 
-      def downloaded?(destination, version = nil)
+      def downloaded?(destination)
+        version, uri = target_version
         cb_path = File.join(destination, "#{name}-#{version}")
+
         if File.exists?(cb_path) && File.chef_cookbook?(cb_path)
           cb_path
         else
@@ -118,7 +115,7 @@ module KnifeCookbookDependencies
         }
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
-          raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{version_string}' not found at site: #{api_uri}"
+          raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{version_string}' not found at site: '#{api_uri}'"
         else
           raise
         end
@@ -150,7 +147,7 @@ module KnifeCookbookDependencies
         versions
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
-          raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
+          raise CookbookNotFound, "Cookbook '#{name}' not found at site: '#{api_uri}'"
         else
           raise
         end
@@ -173,7 +170,7 @@ module KnifeCookbookDependencies
         }
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
-          raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
+          raise CookbookNotFound, "Cookbook '#{name}' not found at site: '#{api_uri}'"
         else
           raise
         end
@@ -182,6 +179,10 @@ module KnifeCookbookDependencies
       def api_uri=(uri)
         @rest = nil
         @api_uri = uri
+      end
+
+      def to_s
+        "site: '#{api_uri}'"
       end
 
       private
@@ -196,6 +197,29 @@ module KnifeCookbookDependencies
 
         def version_from_uri(latest_version)
           File.basename(latest_version).gsub('_', '.')
+        end
+
+        # @return [Array]
+        #   an Array where the first element is a DepSelector::Version and the second element is
+        #   the URI to where the corrosponding version of the Cookbook can be downloaded from.
+        #
+        #
+        #   The version is determined by the value of the version_constraint attribute of this
+        #   instance of SiteLocation:
+        #
+        #   If it is not set: the latest_version of the Cookbook will be returned
+        #
+        #   If it is set: the return value will be determined by the version_constraint and the 
+        #     available versions will be solved
+        #
+        #   Example:
+        #       [ 0.101.2, "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
+        def target_version
+          if version_constraint
+            self.class.solve_for_constraint(version_constraint, versions)
+          else
+            latest_version
+          end
         end
     end
 
@@ -212,7 +236,7 @@ module KnifeCookbookDependencies
 
       def download(destination)
         unless File.chef_cookbook?(path)
-          raise CookbookNotFound, "Cookbook '#{name}' not found at path: #{path}"
+          raise CookbookNotFound, "Cookbook '#{name}' not found at path: '#{path}'"
         end
 
         path
@@ -224,6 +248,10 @@ module KnifeCookbookDependencies
         else
           nil
         end
+      end
+
+      def to_s
+        "path: '#{path}'"
       end
     end
 
@@ -272,6 +300,12 @@ module KnifeCookbookDependencies
         else
           nil
         end
+      end
+
+      def to_s
+        s = "git: '#{uri}'"
+        s << " with branch '#{branch}" if branch
+        s
       end
 
       private

@@ -413,7 +413,7 @@ module KnifeCookbookDependencies
 
           result.should be_a(Array)
           result[0].should eql(:error)
-          result[1].should eql("Cookbook '#{bad_cb_name}' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks")
+          result[1].should eql("Cookbook '#{bad_cb_name}' not found at site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
         end
       end
     end
@@ -432,18 +432,48 @@ module KnifeCookbookDependencies
 
     describe "#downloaded?" do
       context "given a source with a PathLocation" do
-        it "returns true if the PathLocation is downloaded"
-        it "returns false if the PathLocation is not downloaded"
+        let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
+        subject { CookbookSource.new("example_cookbook", :path => path) }
+
+        it "returns true if the PathLocation is downloaded" do
+          subject.download(tmp_path)
+
+          subject.downloaded?(tmp_path).should be_true
+        end
+
+        it "returns false if the PathLocation does not exist" do
+          source = CookbookSource.new("doesnot_exist", :path => tmp_path.join("doesntexist_noway").to_s)
+
+          source.downloaded?(tmp_path).should be_false
+        end
       end
 
       context "given a source with a GitLocation" do
-        it "returns true if the GitLocation is downloaded"
-        it "returns false if the GitLocation is not downloaded"
+        subject { CookbookSource.new("nginx", :git => "git://github.com/opscode-cookbooks/nginx.git") }
+
+        it "returns true if the GitLocation is downloaded" do
+          subject.download(tmp_path)
+
+          subject.downloaded?(tmp_path).should be_true
+        end
+
+        it "returns false if the GitLocation is not downloaded" do
+          subject.downloaded?(tmp_path).should be_false
+        end
       end
 
       context "given a source with a SiteLocation" do
-        it "returns true if the SiteLocation is downloaded"
-        it "returns false if the SiteLocation is not downloaded"
+        subject { CookbookSource.new("nginx", "= 0.101.2") }
+
+        it "returns true if the SiteLocation is downloaded" do
+          subject.download(tmp_path)
+
+          subject.downloaded?(tmp_path).should be_true
+        end
+
+        it "returns false if the SiteLocation is not downloaded" do
+          subject.downloaded?(tmp_path).should be_false
+        end
       end
     end
   end
