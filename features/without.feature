@@ -8,20 +8,18 @@ Feature: --without block
     Given I write to "Cookbookfile" with:
     """
     group :notme do
-      cookbook "nginx"
+      cookbook "nginx", "= 0.101.2"
     end
     
-    cookbook "mysql"
+    cookbook "mysql", "= 1.2.4"
 
     group :takeme do
-      cookbook "ntp"
+      cookbook "ntp", "= 1.1.8"
     end
     """
     When I run `knife cookbook dependencies install --without notme`
-    Then the following directories should exist:
-    | cookbooks/mysql   |
-    | cookbooks/openssl |
-    | cookbooks/ntp     |
-    And the following directories should not exist:
-    | cookbooks/nginx |
-
+    Then the cookbook store should have the cookbooks:
+      | mysql | 1.2.4 |
+      | ntp   | 1.1.8 |
+    And the cookbook store should not have the cookbooks:
+      | nginx | 0.101.2 |

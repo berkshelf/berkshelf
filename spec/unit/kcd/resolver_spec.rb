@@ -1,0 +1,126 @@
+require 'spec_helper'
+
+module KnifeCookbookDependencies
+  describe Resolver do
+    describe "ClassMethods" do
+      subject { Resolver }
+
+      describe "#initialize" do
+        let(:downloader) { Downloader.new(tmp_path) }
+
+        it "adds the specified sources to the sources hash" do
+          source = CookbookSource.new("mysql", "= 1.2.4")
+          resolver = subject.new(downloader, source)
+
+          resolver.should have_source(source)
+        end
+
+        it "adds the dependencies of the source as packages of the graph" do
+          source = CookbookSource.new("mysql", "= 1.2.4")
+          resolver = subject.new(downloader, source)
+
+          source.dependencies.each do |name, constraint|
+            resolver.package(name).should_not be_nil
+          end
+        end
+
+        it "adds the version_constraints of the dependencies to the graph" do
+          source = CookbookSource.new("mysql", "= 1.2.4")
+          resolver = subject.new(downloader, source)
+
+          source.dependencies.each do |name, constraint|
+            resolver.package(name).versions.should_not be_empty
+          end
+        end
+
+        context "given an array of sources" do
+          it "adds the sources to the sources hash" do
+            sources = [CookbookSource.new("mysql", "= 1.2.4")]
+            resolver = subject.new(downloader, sources)
+
+            resolver.should have_source(sources[0])
+          end
+        end
+      end
+    end
+
+    let(:source) { CookbookSource.new("mysql", "= 1.2.4") }
+
+    subject do
+      downloader = Downloader.new(tmp_path)
+      Resolver.new(downloader)
+    end
+
+    describe "#add_source" do
+      before(:each) { subject.add_source(source) }
+
+      it "adds the source to the instance of resolver" do
+        subject.sources.should include(source)
+      end
+
+      it "adds a package of the same name of the source to the graph" do
+        subject.package(source.name).should_not be_nil
+      end
+
+      it "adds a version constraint specified by the source to the package of the same name" do
+        subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
+      end
+
+      it "adds the dependencies of the source as packages to the graph" do
+        source.dependencies.each do |name, constraint|
+          subject.package(name).should_not be_nil
+        end
+      end
+
+      it "raises a DuplicateSourceDefined exception if a source of the same name is added" do
+        dup_source = CookbookSource.new(source.name)
+
+        lambda {
+          subject.add_source(dup_source)
+        }.should raise_error(DuplicateSourceDefined)
+      end
+    end
+
+    describe "#add_dependencies" do
+      it "adds a package for each dependency to the graph" do
+        pkg_ver = subject.add_source(source)
+        subject.add_dependencies(pkg_ver, source.dependencies)
+
+        subject.package(source.name).should_not be_nil
+      end
+
+      it "adds a version constraint to the graph for each dependency" do
+        pkg_ver = subject.add_source(source)
+        subject.add_dependencies(pkg_ver, source.dependencies)
+
+        subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
+      end
+    end
+
+    describe "#[]" do
+      before(:each) { subject.add_source(source) }
+
+      it "returns the source of the given name" do
+        subject[source.name].should eql(source)
+      end
+    end
+
+    describe "#has_source?" do
+      before(:each) { subject.add_source(source) }
+
+      it "returns the source of the given name" do
+        subject.has_source?(source.name).should be_true
+      end
+    end
+
+    describe "#resolve" do
+      before(:each) do
+        subject.add_source(source)
+      end
+      
+      it "returns a hash containing the solution for the sources and dependencies" do
+        subject.resolve.should eql("mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0"))
+      end
+    end
+  end
+end

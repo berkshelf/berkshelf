@@ -18,6 +18,9 @@ module KnifeCookbookDependencies
       generator.invoke_all
 
       ::KCD.ui.info "Successfully initialized"
+    rescue KCDError => e
+      KCD.ui.fatal e
+      exit e.status_code
     end
   end
 

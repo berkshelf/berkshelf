@@ -5,25 +5,9 @@ Feature: Clean
     and so I can get rid of installations I don't want any more
 
   Scenario: knife cookbook dependencies clean
-    Given I write to "Cookbookfile" with:
-    """
-    cookbook "mysql"
-    """
-    When I run `knife cookbook dependencies install`
-    And I run `knife cookbook dependencies clean`
-    Then the following directories should not exist:
-    | cookbooks |
+    Given I write to "Cookbookfile.lock" with:
+      """
+      cookbook "mysql", :locked_version => "1.2.0"
+      """
+    When I run the clean command
     And the file "Cookbookfile.lock" should not exist
-    And the temp directory should not exist
-
-  Scenario: knife cookbook deps clean
-    Given I write to "Cookbookfile" with:
-    """
-    cookbook "mysql"
-    """
-    When I run `knife cookbook deps install`
-    And I run `knife cookbook deps clean`
-    Then the following directories should not exist:
-    | cookbooks |
-    And the file "Cookbookfile.lock" should not exist
-    And the temp directory should not exist

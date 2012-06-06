@@ -1,10 +1,33 @@
-require 'tempfile'
-
 module KnifeCookbookDependencies
   class Git
     class << self
-      def git
-        @git ||= find_git
+      def git(*command)
+        out = quietly {
+          %x{ #{git_cmd} #{command.join(' ')} }
+        }
+        error_check
+        
+        out.chomp
+      end
+
+      def clone(uri, destination = Dir.mktmpdir)
+        git("clone", uri, destination.to_s)
+
+        error_check
+
+        destination
+      end
+
+      def checkout(repo_path, ref)
+        Dir.chdir repo_path do
+          git("checkout", "-q", ref)
+        end
+      end
+
+      def rev_parse(repo_path)
+        Dir.chdir repo_path do
+          git("rev-parse", "HEAD")
+        end
       end
 
       #
@@ -32,60 +55,16 @@ module KnifeCookbookDependencies
 
         return git_path
       end
-    end
 
-    attr_reader :directory
-    attr_reader :repository
+      private
 
-    def initialize(repo)
-      @repository = repo
-    end
-
-    def clone
-      # XXX not sure how resilient this is, maybe a fetch/merge strategy would be better.
-      if @directory
-        Dir.chdir @directory do
-          system(self.class.git, "pull")
+        def git_cmd
+          @git_cmd ||= find_git
         end
-      else
-        @directory = Dir.mktmpdir
-        system(self.class.git, "clone", @repository, @directory)
-      end
 
-      error_check
-
-    end
-
-    def checkout(ref)
-      clone
-
-      Dir.chdir @directory do
-        system(self.class.git, "checkout", "-q", ref)
-      end
-
-      error_check
-    end
-
-    def ref
-      return nil unless @directory
-
-      this_ref = nil
-
-      Dir.chdir @directory do
-        this_ref = `"#{self.class.git}" rev-parse HEAD`.strip
-      end
-
-      return this_ref
-    end
-
-    def clean
-      FileUtils.rm_rf @directory if @directory
-    end
-
-    def error_check
-      if $?.exitstatus != 0
-        raise "Did not succeed executing git; check the output above."
-      end
+        def error_check
+          raise KCD::GitError, "Did not succeed executing git; check the output above." unless $?.success?
+        end
     end
   end
 end
