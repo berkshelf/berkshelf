@@ -118,7 +118,7 @@ module KnifeCookbookDependencies
         subject.add_source(source)
       end
       
-      it "fucks up" do
+      it "returns a hash containing the solution for the sources and dependencies" do
         subject.resolve.should eql("mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0"))
       end
     end
