@@ -14,7 +14,7 @@ module KnifeCookbookDependencies
     def run
       ::KCD.ui = ui
       cookbook_file = ::KCD::Cookbookfile.from_file(File.join(Dir.pwd, "Cookbookfile"))
-      cookbook_file.process_install(:without => config[:without])
+      cookbook_file.install(:without => config[:without])
     rescue KCDError => e
       KCD.ui.fatal e
       exit e.status_code

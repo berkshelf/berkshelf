@@ -37,13 +37,13 @@ EOF
       end
     end
 
-    describe "#process_install" do
+    describe "#install" do
       let(:cbfile_path) { fixtures_path.join('Cookbookfile') }
 
       subject { ::KCD::Cookbookfile.from_file(cbfile_path) }
 
       it "installs Cookbooks from sources defined in the given Cookbookfile" do
-        subject.process_install.should be_true
+        subject.install.should be_true
       end
 
       context "when Cookbookfile does not exist at given path" do
@@ -51,7 +51,7 @@ EOF
 
         it "raises CookbookfileNotFound" do
           lambda {
-            subject.process_install
+            subject.install
           }.should raise_error(CookbookfileNotFound)
         end
       end

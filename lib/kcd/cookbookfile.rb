@@ -57,7 +57,7 @@ module KnifeCookbookDependencies
     end
     alias_method :get_source, :[]
 
-    def process_install(options = {})
+    def install(options = {})
       if File.exist?(KCD::Lockfile::DEFAULT_FILENAME)
         filename = KCD::Lockfile::DEFAULT_FILENAME
         lockfile = true
