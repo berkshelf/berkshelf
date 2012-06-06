@@ -23,7 +23,7 @@ Feature: install cookbooks from a Cookbookfile
     And I run the install command
     Then the output should contain:
       """
-      Using cookbook found in current directory as 'sparkle_motion'
+      Using sparkle_motion 0.0.0 at path:
       """
     And the exit status should be 0
 
@@ -45,6 +45,6 @@ Feature: install cookbooks from a Cookbookfile
     And I run the install command
     Then the output should contain:
       """
-      Cookbook 'doesntexist' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks
+      Cookbook 'doesntexist' not found at site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
-    And the CLI should exit with the status code for error "DownloadFailure"
+    And the CLI should exit with the status code for error "CookbookNotFound"

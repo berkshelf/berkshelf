@@ -32,12 +32,7 @@ module KnifeCookbookDependencies
 
       set_source(source.name, source)
 
-      if downloader.downloaded?(source)
-        KCD.ui.info "Using #{source.name} #{source.metadata.version}"
-      else
-        KCD.ui.info "Downloading #{source.name} #{source.version_constraint} from #{source.location}"
-        downloader.download!(source)
-      end
+      install_or_use_source(source)
 
       package = add_package(source.name)
       package_version = add_version(package, Version.new(source.metadata.version))
@@ -68,15 +63,11 @@ module KnifeCookbookDependencies
         unless has_source?(name)
           source = CookbookSource.new(name, constraint)
 
-          if downloader.downloaded?(source)
-            KCD.ui.info "Using #{source.name} #{source.metadata.version}"
-          else
-            KCD.ui.info "Downloading #{source.name} #{source.version_constraint} from #{source.location}"
-            downloader.download!(source)
-          end
+          install_or_use_source(source)
 
           dep_pkgver = add_version(dep_package, Version.new(source.metadata.version))
           add_dependencies(dep_pkgver, source.dependencies)
+          set_source(source.name, source)
         end
       end
     end
@@ -131,6 +122,21 @@ module KnifeCookbookDependencies
         @sources[source.to_s] = value
       end
       alias_method :set_source, :[]=
+
+      def install_or_use_source(source)
+        if downloader.downloaded?(source)
+          msg = "Using #{source.name} #{source.metadata.version}"
+
+          if source.location.is_a?(CookbookSource::PathLocation)
+            msg << " at #{source.location}"  
+          end
+
+          KCD.ui.info msg
+        else
+          downloader.download!(source)
+          KCD.ui.info "Installing #{source.name} #{source.local_version} from #{source.location}"
+        end
+      end
 
       def selector
         Selector.new(graph)
