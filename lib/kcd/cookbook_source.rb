@@ -18,57 +18,74 @@ module KnifeCookbookDependencies
       include Location
 
       attr_reader :api_uri
-      attr_accessor :target_version
+      attr_accessor :version_constraint
 
       OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
 
       class << self
+        # @param [String] target
+        #   file path to the tar.gz archive on disk
+        # @param [String] destination
+        #   file path to extract the contents of the target to
         def unpack(target, destination)
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
+        end
+
+        # @param [DepSelector::VersionConstraint] constraint
+        #   version constraint to solve for
+        #
+        # @param [Hash] versions
+        #   a hash where the keys are a DepSelector::Version representing a Cookbook version
+        #   number and their values are the URI the Cookbook of the corrosponding version can
+        #   be downloaded from. This format is also the output of the #versions function on 
+        #   instances of this class.
+        #
+        #   Example:
+        #       { 
+        #         0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
+        #         0.101.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0",
+        #         0.100.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2",
+        #         0.100.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0"
+        #       }
+        #
+        # @return [Array]
+        #   an array where the first element is a DepSelector::Version representing the best version
+        #   for the given constraint and the second element is the URI to where the corrosponding
+        #   version of the Cookbook can be downloaded from
+        #
+        #   Example:
+        #       [ 0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
+        def solve_for_constraint(constraint, versions)
+          versions.each do |version, uri|
+            if constraint.include?(version)
+              return [ version, uri ]
+            end
+          end
+
+          raise "NO FUCKING SOLUTION"
         end
       end
 
       def initialize(name, options = {})
+        options[:site] ||= OPSCODE_COMMUNITY_API
+
         @name = name
-        @target_version = options[:version_string] || "0.0.0"
-        @api_uri = options[:site] || OPSCODE_COMMUNITY_API
+        @version_constraint = options[:version_constraint]
+        @api_uri = options[:site]
       end
 
       def download(destination)
-        uri = if target_version == "0.0.0"
-          quietly {
-            begin
-              latest_version = rest.get_rest(name)['latest_version']
-            rescue Net::HTTPServerException => e
-              if e.response.code == "404"
-                raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
-              else
-                raise
-              end
-            end
-
-            @target_version = version_from_latest_version(latest_version)
-            
-            latest_version
-          }
+        version, uri = if version_constraint
+          self.class.solve_for_constraint(version_constraint, versions)
         else
-          uri_for_version(target_version)
+          latest_version
         end
 
-        begin
-          remote_file = rest.get_rest(uri)['file']
-        rescue Net::HTTPServerException => e
-          if e.response.code == "404"
-            raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{target_version}' not found at site: #{api_uri}"
-          else
-            raise
-          end
-        end
-
+        remote_file = rest.get_rest(uri)['file']
         downloaded_tf = rest.get_rest(remote_file, true)
 
         dir = Dir.mktmpdir
-        cb_path = File.join(destination, "#{name}-#{target_version}")
+        cb_path = File.join(destination, "#{name}-#{version}")
 
         self.class.unpack(downloaded_tf.path, dir)
         FileUtils.mv(File.join(dir, name), cb_path, :force => true)
@@ -76,12 +93,89 @@ module KnifeCookbookDependencies
         cb_path
       end
 
-      def downloaded?(destination)
-        cb_path = File.join(destination, "#{name}-#{target_version}")
+      def downloaded?(destination, version = nil)
+        cb_path = File.join(destination, "#{name}-#{version}")
         if File.exists?(cb_path) && File.chef_cookbook?(cb_path)
           cb_path
         else
           nil
+        end
+      end
+
+      # @return [Array]
+      #   an Array where the first element is a DepSelector::Version representing the latest version of
+      #   the Cookbook and the second element is the URI to where the corrosponding version of the
+      #   Cookbook can be downloaded from
+      #
+      #   Example:
+      #       [ 0.101.2, "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
+      def version(version_string)
+        quietly {
+          result = rest.get_rest("#{name}/versions/#{uri_escape_version(version_string)}")
+          dep_ver = DepSelector::Version.new(result['version'])
+
+          [ dep_ver, result['file'] ]
+        }
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{version_string}' not found at site: #{api_uri}"
+        else
+          raise
+        end
+      end
+
+      # @return [Hash]
+      #   a hash where the keys are a DepSelector::Version representing a Cookbook version
+      #   number and their values are the URI the Cookbook of the corrosponding version can
+      #   be downloaded from
+      #
+      #   Example:
+      #       { 
+      #         0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
+      #         0.101.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0",
+      #         0.100.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2",
+      #         0.100.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0"
+      #       }
+      def versions
+        versions = Hash.new
+        quietly {
+          rest.get_rest(name)['versions'].each do |uri|
+            version_string = version_from_uri(File.basename(uri))
+            version = DepSelector::Version.new(version_string)
+
+            versions[version] = uri
+          end
+        }
+
+        versions
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
+        else
+          raise
+        end
+      end
+
+      # @return [Array]
+      #   an array where the first element is a DepSelector::Version representing the latest version of
+      #   the Cookbook and the second element is the URI to where the corrosponding version of the
+      #   Cookbook can be downloaded from
+      #
+      #   Example:
+      #       [ 0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
+      def latest_version
+        quietly {
+          uri = rest.get_rest(name)['latest_version']
+          version_string = version_from_uri(uri)
+          dep_ver = DepSelector::Version.new(version_string)
+
+          [ dep_ver, uri ]
+        }
+      rescue Net::HTTPServerException => e
+        if e.response.code == "404"
+          raise CookbookNotFound, "Cookbook '#{name}' not found at site: #{api_uri}"
+        else
+          raise
         end
       end
 
@@ -96,15 +190,11 @@ module KnifeCookbookDependencies
           @rest ||= Chef::REST.new(api_uri, false, false)
         end
 
-        def uri_for_version(version)
-          "#{name}/versions/#{uri_escape_version(version)}"
-        end
-
         def uri_escape_version(version)
           version.gsub('.', '_')
         end
 
-        def version_from_latest_version(latest_version)
+        def version_from_uri(latest_version)
           File.basename(latest_version).gsub('_', '.')
         end
     end
@@ -217,7 +307,7 @@ module KnifeCookbookDependencies
         raise ArgumentError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
       end
 
-      options[:version_string] = version_constraint.version.to_s
+      options[:version_constraint] = version_constraint if version_constraint
 
       @location = case 
       when options[:git]
@@ -288,8 +378,14 @@ module KnifeCookbookDependencies
       metadata.dependencies
     end
 
+    def local_version
+      return nil unless metadata
+
+      metadata.version
+    end
+
     def locked_version
-      @locked_version || metadata.version
+      @locked_version || local_version
     end
 
     private
