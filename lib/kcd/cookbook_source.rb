@@ -61,8 +61,6 @@ module KnifeCookbookDependencies
               return [ version, uri ]
             end
           end
-
-          raise "NO FUCKING SOLUTION"
         end
       end
 
@@ -216,7 +214,13 @@ module KnifeCookbookDependencies
         #       [ 0.101.2, "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
         def target_version
           if version_constraint
-            self.class.solve_for_constraint(version_constraint, versions)
+            solution = self.class.solve_for_constraint(version_constraint, versions)
+            
+            unless solution
+              raise NoSolution, "Could not satisfy version constraint: #{version_constraint} for Cookbook '#{name}'"
+            end
+
+            solution
           else
             latest_version
           end

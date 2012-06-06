@@ -32,4 +32,5 @@ module KnifeCookbookDependencies
   class CookbookNotFound < KCDError; status_code(103); end
   class GitError < KCDError; status_code(104); end
   class DuplicateSourceDefined < KCDError; status_code(105); end
+  class NoSolution < KCDError; status_code(106); end
 end
