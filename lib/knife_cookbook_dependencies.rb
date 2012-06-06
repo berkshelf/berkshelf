@@ -23,7 +23,7 @@ module KnifeCookbookDependencies
     end
 
     def ui
-      @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
+      @ui ||= Chef::Knife::UI.new(null_stream, null_stream, STDIN, {})
     end
 
     def store_path
@@ -52,6 +52,17 @@ module KnifeCookbookDependencies
         end
       end
     end
+
+    private
+
+      def null_stream
+        @null ||= begin
+          strm = STDOUT.clone
+          strm.reopen(RbConfig::CONFIG['host_os'] =~ /mswin|mingw/ ? 'NUL:' : '/dev/null')
+          strm.sync = true
+          strm
+        end
+      end
   end
 end
 
