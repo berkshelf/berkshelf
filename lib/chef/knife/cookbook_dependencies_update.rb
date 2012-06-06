@@ -12,11 +12,8 @@ module KnifeCookbookDependencies
 
       Lockfile.remove!
       install_run
-    rescue CookbookfileNotFound => e
+    rescue KCDError => e
       KCD.ui.fatal e
-      exit e.status_code
-    rescue DownloadFailure => e
-      KCD.ui.fatal e.message
       exit e.status_code
     end
   end
