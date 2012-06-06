@@ -10,14 +10,14 @@ module KnifeCookbookDependencies
       @graph = DependencyGraph.new
       @sources = Hash.new
 
+      # Dependencies need to be added AFTER the sources. If they are
+      # not, then one of the dependencies of a source that is added
+      # may take precedence over an explicitly set source that appears
+      # later in the iterator.
       Array(sources).each do |source|
         add_source(source, false)
       end
-
-      self.sources.each do |source|
-        package_version = package(source.name)[Version.new(source.metadata.version)]
-        add_dependencies(package_version, source.dependencies)
-      end
+      add_sources_dependencies
     end
 
     # @param [KCD::CookbookSource] source
@@ -145,6 +145,14 @@ module KnifeCookbookDependencies
       def solution_constraints
         constraints = graph.packages.collect do |name, package|
           SolutionConstraint.new(package)
+        end
+      end
+
+      # Add the dependencies of each source to the graph
+      def add_sources_dependencies
+        sources.each do |source|
+          package_version = package(source.name)[Version.new(source.metadata.version)]
+          add_dependencies(package_version, source.dependencies)
         end
       end
 
