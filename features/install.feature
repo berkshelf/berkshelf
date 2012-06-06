@@ -12,6 +12,11 @@ Feature: install cookbooks from a Cookbookfile
     Then the cookbook store should have the cookbooks:
       | mysql   | 1.2.4 |
       | openssl | 1.0.0 |
+    And the output should contain:
+      """
+      Installing mysql (1.2.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing openssl (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      """
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"
@@ -23,7 +28,7 @@ Feature: install cookbooks from a Cookbookfile
     And I run the install command
     Then the output should contain:
       """
-      Using sparkle_motion 0.0.0 at path:
+      Using sparkle_motion (0.0.0) at path:
       """
     And the exit status should be 0
 

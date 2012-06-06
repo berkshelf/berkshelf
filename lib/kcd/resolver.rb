@@ -125,7 +125,7 @@ module KnifeCookbookDependencies
 
       def install_or_use_source(source)
         if downloader.downloaded?(source)
-          msg = "Using #{source.name} #{source.metadata.version}"
+          msg = "Using #{source.name} (#{source.metadata.version})"
 
           if source.location.is_a?(CookbookSource::PathLocation)
             msg << " at #{source.location}"  
@@ -134,7 +134,7 @@ module KnifeCookbookDependencies
           KCD.ui.info msg
         else
           downloader.download!(source)
-          KCD.ui.info "Installing #{source.name} #{source.local_version} from #{source.location}"
+          KCD.ui.info "Installing #{source.name} (#{source.local_version}) from #{source.location}"
         end
       end
 
