@@ -34,6 +34,16 @@ EOF
         it "reads a Cookbookfile and returns an instance Cookbookfile" do
           subject.from_file(cookbook_file).should be_a(Cookbookfile)
         end
+
+        context "when Cookbookfile does not exist at given path" do
+          let(:bad_path) { tmp_path.join("thisdoesnotexist") }
+
+          it "raises CookbookfileNotFound" do
+            lambda {
+              subject.from_file(bad_path)
+            }.should raise_error(CookbookfileNotFound)
+          end
+        end
       end
     end
 
