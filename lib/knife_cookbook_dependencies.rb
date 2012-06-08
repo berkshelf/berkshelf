@@ -6,7 +6,7 @@ require 'chef/platform'
 require 'chef/cookbook/metadata'
 
 module KnifeCookbookDependencies
-  DEFAULT_STORE_PATH = File.expand_path(File.join("~/.bookshelf")).freeze
+  DEFAULT_STORE_PATH = File.expand_path("~/.bookshelf").freeze
   DEFAULT_FILENAME = 'Cookbookfile'.freeze
 
   autoload :InitGenerator, 'kcd/init_generator'
