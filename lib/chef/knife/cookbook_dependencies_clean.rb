@@ -10,6 +10,9 @@ module KnifeCookbookDependencies
       ::KCD.ui = ui
 
       ::KCD.clean
+    rescue KCDError => e
+      KCD.ui.fatal e
+      exit e.status_code
     end
   end
   

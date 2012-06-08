@@ -90,6 +90,14 @@ module KnifeCookbookDependencies
           end
         end
 
+        def negative_failure_message
+          if @failure.is_a?(Array) && @failure[0] == :not
+            "Structure had #{@failure}, but it shouldn't have"
+          else
+            "Structure had #{@failure}, but it shouldn't have"
+          end
+        end
+
         def matches?(root)
           @failure = catch :failure do
             super
