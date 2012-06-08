@@ -60,10 +60,31 @@ module KnifeCookbookDependencies
         subject.queue.should have(1).sources
       end
 
-      it "should return a ResultSet" do
+      it "should return a TXResultSet" do
         results = subject.download_all
 
-        results.should be_a(Downloader::ResultSet)
+        results.should be_a(TXResultSet)
+      end
+    end
+
+    describe "#download" do
+      let(:source) { CookbookSource.new("nginx") }
+      let(:bad_source) { CookbookSource.new("donowaytexists") }
+
+      it "returns a TXResult" do
+        subject.download(source).should be_a(TXResult)
+      end
+
+      context "when successful" do
+        it "returns a successesful TXResult" do
+          subject.download(source).should be_success
+        end
+      end
+
+      context "when failure" do
+        it "returns a failed TXResult" do
+          subject.download(bad_source).should be_failed
+        end
       end
     end
 

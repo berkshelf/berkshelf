@@ -2,54 +2,6 @@ require 'fileutils'
 
 module KnifeCookbookDependencies
   class Downloader
-    class ResultSet
-      attr_reader :results
-
-      def initialize
-        @results = []
-      end
-
-      def add_result(result)
-        @results << result
-      end
-
-      def failed
-        results.select { |result| result.failed? }
-      end
-
-      def success
-        results.select { |result| result.success? }
-      end
-
-      def has_errors?
-        !failed.empty?
-      end
-    end
-
-    class Result
-      attr_reader :source
-      attr_reader :status
-      attr_reader :message
-
-      def initialize(source, status, message)
-        unless [:ok, :error].include?(status)
-          raise ArgumentError, "Invalid download status: #{status}. Valid statuses: :ok, :error."
-        end
-
-        @source = source
-        @status = status
-        @message = message
-      end
-
-      def failed?
-        status == :error
-      end
-
-      def success?
-        status == :ok
-      end
-    end
-
     attr_reader :storage_path
     attr_reader :queue
 
@@ -87,10 +39,10 @@ module KnifeCookbookDependencies
     # of a CookbookSource it is removed from the queue. If a CookbookSource
     # fails to download it remains in the queue.
     #
-    # @return [Downloader::ResultSet]
-    #   a ResultSet containing instaces of Downloader::Result
+    # @return [Downloader::TXResultSet]
+    #   a TXResultSet containing instaces of Downloader::Result
     def download_all
-      results = ResultSet.new
+      results = TXResultSet.new
 
       queue.each do |source|
         results.add_result download(source)
@@ -103,7 +55,7 @@ module KnifeCookbookDependencies
 
     def download(source)
       status, message = source.download(storage_path)
-      Result.new(source, status, message)
+      TXResult.new(source, status, message)
     end
 
     def download!(source)
