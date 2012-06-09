@@ -181,49 +181,13 @@ module KnifeCookbookDependencies
     end
 
     describe "#downloaded?" do
-      context "given a source with a PathLocation" do
-        let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
-        subject { CookbookSource.new("example_cookbook", :path => path) }
+      let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
+      subject { CookbookSource.new("example_cookbook", :path => path) }
 
-        it "returns true if the PathLocation is downloaded" do
-          subject.download(tmp_path)
+      it "returns true if the local_path has been set" do
+        subject.stub(:local_path) { path }
 
-          subject.downloaded?(tmp_path).should be_true
-        end
-
-        it "returns false if the PathLocation does not exist" do
-          source = CookbookSource.new("doesnot_exist", :path => tmp_path.join("doesntexist_noway").to_s)
-
-          source.downloaded?(tmp_path).should be_false
-        end
-      end
-
-      context "given a source with a GitLocation" do
-        subject { CookbookSource.new("nginx", :git => "git://github.com/opscode-cookbooks/nginx.git") }
-
-        it "returns true if the GitLocation is downloaded" do
-          subject.download(tmp_path)
-
-          subject.downloaded?(tmp_path).should be_true
-        end
-
-        it "returns false if the GitLocation is not downloaded" do
-          subject.downloaded?(tmp_path).should be_false
-        end
-      end
-
-      context "given a source with a SiteLocation" do
-        subject { CookbookSource.new("nginx", "= 0.101.2") }
-
-        it "returns true if the SiteLocation is downloaded" do
-          subject.download(tmp_path)
-
-          subject.downloaded?(tmp_path).should be_true
-        end
-
-        it "returns false if the SiteLocation is not downloaded" do
-          subject.downloaded?(tmp_path).should be_false
-        end
+        subject.downloaded?.should be_true
       end
     end
   end
