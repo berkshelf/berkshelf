@@ -58,7 +58,7 @@ module KnifeCookbookDependencies
 
     def download(source)
       status, message = source.download(storage_path)
-      TXResult.new(source, status, message)
+      TXResult.new(status, message, source)
     end
 
     def download!(source)
