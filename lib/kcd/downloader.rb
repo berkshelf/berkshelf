@@ -42,8 +42,7 @@ module KnifeCookbookDependencies
     # of a CookbookSource it is removed from the queue. If a CookbookSource
     # fails to download it remains in the queue.
     #
-    # @return [Downloader::TXResultSet]
-    #   a TXResultSet containing instaces of Downloader::Result
+    # @return [TXResultSet]
     def download_all
       results = TXResultSet.new
 
@@ -56,11 +55,24 @@ module KnifeCookbookDependencies
       results
     end
 
+    # Downloads the given CookbookSource
+    #
+    # @param [CookbookSource] source
+    #   the source to download
+    #
+    # @return [TXResult]
     def download(source)
       status, message = source.download(storage_path)
       TXResult.new(status, message, source)
     end
 
+    # Downloads the given CookbookSource. Raises a DownloadFailure error
+    # if the download was not successful.
+    #
+    # @param [CookbookSource] source
+    #   the source to download
+    #
+    # @return [TXResult]
     def download!(source)
       result = download(source)
       raise DownloadFailure, result.message if result.failed?
