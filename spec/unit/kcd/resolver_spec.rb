@@ -6,7 +6,7 @@ module KnifeCookbookDependencies
       subject { Resolver }
 
       describe "#initialize" do
-        let(:downloader) { Downloader.new(tmp_path) }
+        let(:downloader) { KCD.downloader }
 
         it "adds the specified sources to the sources hash" do
           source = CookbookSource.new("mysql", "= 1.2.4")
@@ -47,7 +47,7 @@ module KnifeCookbookDependencies
     let(:source) { CookbookSource.new("mysql", "= 1.2.4") }
 
     subject do
-      downloader = Downloader.new(tmp_path)
+      downloader = KCD.downloader
       Resolver.new(downloader)
     end
 

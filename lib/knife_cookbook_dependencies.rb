@@ -11,6 +11,7 @@ module KnifeCookbookDependencies
 
   autoload :InitGenerator, 'kcd/init_generator'
   autoload :CookbookSource, 'kcd/cookbook_source'
+  autoload :CookbookStore, 'kcd/cookbook_store'
   autoload :TXResult, 'kcd/tx_result'
   autoload :TXResultSet, 'kcd/tx_result_set'
   autoload :Downloader, 'kcd/downloader'
@@ -18,6 +19,7 @@ module KnifeCookbookDependencies
 
   class << self
     attr_accessor :ui
+    attr_accessor :cookbook_store
     attr_accessor :downloader
 
     def root
@@ -28,12 +30,16 @@ module KnifeCookbookDependencies
       @ui ||= Chef::Knife::UI.new(null_stream, null_stream, STDIN, {})
     end
 
-    def store_path
+    def default_store_path
       ENV["BOOKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
 
+    def cookbook_store
+      @cookbook_store ||= CookbookStore.new(default_store_path)
+    end
+
     def downloader
-      @downloader ||= Downloader.new(store_path)
+      @downloader ||= Downloader.new(cookbook_store)
     end
 
     def clean
