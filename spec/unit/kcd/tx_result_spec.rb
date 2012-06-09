@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module KnifeCookbookDependencies
-  describe TXResult, :focus => true do
+  describe TXResult do
     describe "#failed?" do
       subject { TXResult.new(CookbookSource.new("asdf"), :error, "message") }
 
