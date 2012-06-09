@@ -2,13 +2,16 @@ require 'fileutils'
 
 module KnifeCookbookDependencies
   class Downloader
-    attr_reader :storage_path
+    extend Forwardable
+
+    attr_reader :cookbook_store
     attr_reader :queue
 
-    def initialize(storage_path)
-      @storage_path = storage_path
+    def_delegators :@cookbook_store, :storage_path
+
+    def initialize(cookbook_store)
+      @cookbook_store = cookbook_store
       @queue = []
-      initialize_store
     end
 
     # Add a CookbookSource to the downloader's queue
@@ -60,20 +63,16 @@ module KnifeCookbookDependencies
 
     def download!(source)
       result = download(source)
-      raise DownloadFailure.new(result) if result.failed?
+      raise DownloadFailure, result.message if result.failed?
       
       result
     end
 
     def downloaded?(source)
-      source.downloaded?(storage_path)
+      source.downloaded? || cookbook_store.downloaded?(source.name, source.local_version)
     end
 
     private
-
-      def initialize_store
-        FileUtils.mkdir_p(storage_path, :mode => 0755)
-      end
 
       def validate_source(source)
         source.is_a?(KCD::CookbookSource)

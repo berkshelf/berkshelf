@@ -52,4 +52,4 @@ Feature: install cookbooks from a Cookbookfile
       """
       Cookbook 'doesntexist' not found at site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
-    And the CLI should exit with the status code for error "CookbookNotFound"
+    And the CLI should exit with the status code for error "DownloadFailure"

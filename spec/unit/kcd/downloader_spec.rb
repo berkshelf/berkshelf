@@ -2,17 +2,8 @@ require 'spec_helper'
 
 module KnifeCookbookDependencies
   describe Downloader do
-    subject { Downloader.new(tmp_path) }
+    subject { Downloader.new(CookbookStore.new(tmp_path)) }
     let(:source) { CookbookSource.new("sparkle_motion") }
-
-    describe "#initialize" do
-      it "creates the storage_path" do
-        storage_path = tmp_path.join("random_storage")
-        subject.class.new(storage_path)
-
-        storage_path.should exist
-      end
-    end
 
     describe "#enqueue" do
       it "should add a source to the queue" do
@@ -85,14 +76,6 @@ module KnifeCookbookDependencies
         it "returns a failed TXResult" do
           subject.download(bad_source).should be_failed
         end
-      end
-    end
-
-    describe "#downloaded?" do
-      it "delegates downloaded? to the CookbookSource" do
-        source.should_receive(:downloaded?).with(subject.storage_path)
-
-        subject.downloaded?(source)
       end
     end
   end

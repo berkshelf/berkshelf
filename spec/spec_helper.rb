@@ -41,7 +41,7 @@ Spork.prefork do
 
     config.before(:each) do
       clean_tmp_path
-      KCD.downloader = KCD::Downloader.new(tmp_path.join("downloader_tmp"))
+      KCD.cookbook_store = KCD::CookbookStore.new(tmp_path.join("downloader_tmp"))
     end
 
     config.after do
