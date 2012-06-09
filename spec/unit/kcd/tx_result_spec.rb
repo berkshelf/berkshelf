@@ -3,7 +3,7 @@ require 'spec_helper'
 module KnifeCookbookDependencies
   describe TXResult do
     describe "#failed?" do
-      subject { TXResult.new(CookbookSource.new("asdf"), :error, "message") }
+      subject { TXResult.new(:error, "message") }
 
       it "returns true when the status is :error" do
         subject.failed?.should be_true
@@ -11,7 +11,7 @@ module KnifeCookbookDependencies
     end
 
     describe "#success" do
-      subject { TXResult.new(CookbookSource.new("asdf"), :ok, "message") }
+      subject { TXResult.new(:ok, "message") }
 
       it "returns true when the status is :ok" do
         subject.success?.should be_true
