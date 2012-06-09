@@ -7,6 +7,10 @@ module KnifeCookbookDependencies
     end
 
     def add_result(result)
+      unless validate_result(result)
+        raise ArgumentError, "Invalid Result: results must respond to :failed? and :success?"
+      end
+
       @results << result
     end
 
@@ -21,5 +25,12 @@ module KnifeCookbookDependencies
     def has_errors?
       !failed.empty?
     end
+
+    private
+
+      def validate_result(result)
+        result.respond_to?(:failed?) &&
+          result.respond_to?(:success?)
+      end
   end
 end

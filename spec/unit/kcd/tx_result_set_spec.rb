@@ -19,12 +19,16 @@ module KnifeCookbookDependencies
     end
 
     describe "#add_result" do
-      let(:result) { double("result") }
-
       it "adds a result to the results attribute" do
-        subject.add_result(result)
+        subject.add_result(successful_result)
 
         subject.results.should have(1).result
+      end
+
+      it "raises an ArgumentError if an invalid result is given" do
+        lambda {
+          subject.add_result("string_isnt_a_result")
+        }.should raise_error(ArgumentError)
       end
     end
 
