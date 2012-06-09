@@ -49,7 +49,9 @@ module KnifeCookbookDependencies
       when options[:git]
         GitLocation.new(name, options)
       when options[:path]
-        PathLocation.new(name, options)
+        loc = PathLocation.new(name, options)
+        set_local_path loc.path
+        loc
       when options[:site]
         SiteLocation.new(name, options)
       else
@@ -88,8 +90,8 @@ module KnifeCookbookDependencies
       [ :error, e.message ]
     end
 
-    def downloaded?(destination)
-      set_local_path location.downloaded?(destination)
+    def downloaded?
+      !local_path.nil?
     end
 
     def metadata
