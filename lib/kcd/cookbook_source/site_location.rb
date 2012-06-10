@@ -73,17 +73,6 @@ module KnifeCookbookDependencies
         cb_path
       end
 
-      def downloaded?(destination)
-        version, uri = target_version
-        cb_path = File.join(destination, "#{name}-#{version}")
-
-        if File.exists?(cb_path) && File.chef_cookbook?(cb_path)
-          cb_path
-        else
-          nil
-        end
-      end
-
       # @return [Array]
       #   an Array where the first element is a DepSelector::Version representing the latest version of
       #   the Cookbook and the second element is the URI to where the corrosponding version of the

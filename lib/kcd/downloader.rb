@@ -2,13 +2,16 @@ require 'fileutils'
 
 module KnifeCookbookDependencies
   class Downloader
-    attr_reader :storage_path
+    extend Forwardable
+
+    attr_reader :cookbook_store
     attr_reader :queue
 
-    def initialize(storage_path)
-      @storage_path = storage_path
+    def_delegators :@cookbook_store, :storage_path
+
+    def initialize(cookbook_store)
+      @cookbook_store = cookbook_store
       @queue = []
-      initialize_store
     end
 
     # Add a CookbookSource to the downloader's queue
@@ -39,8 +42,7 @@ module KnifeCookbookDependencies
     # of a CookbookSource it is removed from the queue. If a CookbookSource
     # fails to download it remains in the queue.
     #
-    # @return [Downloader::TXResultSet]
-    #   a TXResultSet containing instaces of Downloader::Result
+    # @return [TXResultSet]
     def download_all
       results = TXResultSet.new
 
@@ -53,27 +55,36 @@ module KnifeCookbookDependencies
       results
     end
 
+    # Downloads the given CookbookSource
+    #
+    # @param [CookbookSource] source
+    #   the source to download
+    #
+    # @return [TXResult]
     def download(source)
       status, message = source.download(storage_path)
-      TXResult.new(source, status, message)
+      TXResult.new(status, message, source)
     end
 
+    # Downloads the given CookbookSource. Raises a DownloadFailure error
+    # if the download was not successful.
+    #
+    # @param [CookbookSource] source
+    #   the source to download
+    #
+    # @return [TXResult]
     def download!(source)
       result = download(source)
-      raise DownloadFailure.new(result) if result.failed?
+      raise DownloadFailure, result.message if result.failed?
       
       result
     end
 
     def downloaded?(source)
-      source.downloaded?(storage_path)
+      source.downloaded? || cookbook_store.downloaded?(source.name, source.local_version)
     end
 
     private
-
-      def initialize_store
-        FileUtils.mkdir_p(storage_path, :mode => 0755)
-      end
 
       def validate_source(source)
         source.is_a?(KCD::CookbookSource)

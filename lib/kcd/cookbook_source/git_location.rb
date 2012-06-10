@@ -38,15 +38,6 @@ module KnifeCookbookDependencies
         raise CookbookNotFound, msg
       end
 
-      def downloaded?(destination)
-        cb_path = File.join(destination, "#{name}-#{branch}")
-        if File.exists?(cb_path) && File.chef_cookbook?(cb_path)
-          cb_path
-        else
-          nil
-        end
-      end
-
       def to_s
         s = "git: '#{uri}'"
         s << " with branch '#{branch}" if branch

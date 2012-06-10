@@ -55,16 +55,6 @@ EOF
       it "installs Cookbooks from sources defined in the given Cookbookfile" do
         subject.install.should be_true
       end
-
-      context "when Cookbookfile does not exist at given path" do
-        subject { ::KCD::Cookbookfile.from_file(tmp_path.join("thisdoesnotexist")) }
-
-        it "raises CookbookfileNotFound" do
-          lambda {
-            subject.install
-          }.should raise_error(CookbookfileNotFound)
-        end
-      end
     end
   end
 end

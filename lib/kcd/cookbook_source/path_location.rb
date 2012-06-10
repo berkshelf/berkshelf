@@ -19,14 +19,6 @@ module KnifeCookbookDependencies
         path
       end
 
-      def downloaded?(destination)
-        if File.exists?(path) && File.chef_cookbook?(path)
-          path
-        else
-          nil
-        end
-      end
-
       def to_s
         "path: '#{path}'"
       end
