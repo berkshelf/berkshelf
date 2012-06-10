@@ -1,14 +1,20 @@
 module KnifeCookbookDependencies
   class CookbookStore
     attr_reader :storage_path
-    attr_accessor :downloader
-    attr_accessor :uploader
 
     def initialize(storage_path)
       @storage_path = Pathname.new(storage_path)
       initialize_filesystem
+    end
 
-      @downloader = Downloader.new(storage_path)
+    def cookbooks
+      [].tap do |cookbooks|
+        storage_path.each_child do |p|
+          cached_cookbook = CachedCookbook.from_path(p)
+          
+          cookbooks << cached_cookbook if cached_cookbook
+        end
+      end
     end
 
     def cookbook_path(name, version)

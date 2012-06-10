@@ -45,5 +45,15 @@ module KnifeCookbookDependencies
         subject.downloaded?("notthere", "0.0.0").should be_false
       end
     end
+
+    describe "#cookbooks" do
+      it "returns a list of CachedCookbooks" do
+        CookbookSource.new("nginx", "0.101.2").download(subject.storage_path)
+
+        subject.cookbooks.each do |cb|
+          cb.should be_a(CachedCookbook)
+        end
+      end
+    end
   end
 end
