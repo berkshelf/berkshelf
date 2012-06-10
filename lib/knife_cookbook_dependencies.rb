@@ -12,6 +12,7 @@ module KnifeCookbookDependencies
   autoload :InitGenerator, 'kcd/init_generator'
   autoload :CookbookSource, 'kcd/cookbook_source'
   autoload :CookbookStore, 'kcd/cookbook_store'
+  autoload :CachedCookbook, 'kcd/cached_cookbook'
   autoload :TXResult, 'kcd/tx_result'
   autoload :TXResultSet, 'kcd/tx_result_set'
   autoload :Downloader, 'kcd/downloader'
