@@ -1,5 +1,5 @@
 module KnifeCookbookDependencies
-  class TXResult < Struct.new(:source, :status, :message)
+  class TXResult < Struct.new(:status, :message, :source)
     def failed?
       status == :error
     end
