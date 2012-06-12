@@ -79,6 +79,24 @@ module KnifeCookbookDependencies
       true
     end
 
+    def upload(chef_server_url, options = {})
+      l_sources = if options[:without]
+        filter_sources(options[:without])
+      else
+        sources
+      end
+
+      resolver = Resolver.new(KCD.downloader, l_sources)
+      cookbooks = resolver.resolve
+
+      uploader = Uploader.new(cookbook_store, chef_server_url)
+
+      cookbooks.each do |name, version|
+        KCD.ui.info "Uploading #{name} (#{version}) to: #{chef_server_url}"
+        uploader.upload!(name, version)
+      end
+    end
+
     private
 
       def filter_sources(excluded)
