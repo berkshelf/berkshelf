@@ -11,6 +11,10 @@ module KnifeCookbookDependencies
       :description => "Exclude cookbooks that are in these groups",
       :proc => lambda { |w| w.split(",") }
 
+    option :freeze,
+      :long => "--freeze",
+      :description => "Freeze the uploaded cookbooks so that they cannot be overwritten"
+
     def run
       ::KCD.ui = ui
       cookbook_file = ::KCD::Cookbookfile.from_file(File.join(Dir.pwd, "Cookbookfile"))
