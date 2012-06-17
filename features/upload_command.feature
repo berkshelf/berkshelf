@@ -3,7 +3,7 @@ Feature: initialize command
   I need a way to upload cookbooks to a Chef server that I have installed into my Bookshelf
   So they are available to Chef cleints
 
-  @wip
+  @wip @slow_process
   Scenario: running the upload command when the Cookbookfile contains only cookbooks that have been installed
     Given I write to "Cookbookfile" with:
       """
@@ -17,7 +17,7 @@ Feature: initialize command
     And the output should contain "Upload complete"
     And the exit status should be 0
 
-  @wip
+  @wip @slow_process
   Scenario: running the upload command when the Cookbookfile contains cookbooks that have not been installed
     Given I write to "Cookbookfile" with:
       """
