@@ -15,6 +15,10 @@ module KnifeCookbookDependencies
       :long => "--freeze",
       :description => "Freeze the uploaded cookbooks so that they cannot be overwritten"
 
+    option :force,
+      :long => "--force",
+      :description => "Upload all cookbooks even if a frozen one exists on the target Chef Server"
+
     def run
       ::KCD.ui = ui
       cookbook_file = ::KCD::Cookbookfile.from_file(File.join(Dir.pwd, "Cookbookfile"))
