@@ -30,8 +30,10 @@ module KnifeCookbookDependencies
 
     extend Forwardable
 
+    attr_reader :cookbook_name
     attr_reader :path
-
+    attr_reader :metadata
+    
     attr_reader :recipes
     attr_reader :definitions
     attr_reader :libraries
@@ -41,8 +43,6 @@ module KnifeCookbookDependencies
     attr_reader :resources
     attr_reader :providers
     attr_reader :root_files
-    attr_reader :cookbook_name
-    attr_reader :metadata
 
     def_delegators :@metadata, :version
 
@@ -129,7 +129,6 @@ module KnifeCookbookDependencies
 
     private
 
-      attr_reader :relative_path
       attr_reader :cookbook_files
 
       def chef_type
