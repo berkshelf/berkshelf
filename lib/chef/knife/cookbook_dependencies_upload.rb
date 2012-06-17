@@ -1,8 +1,11 @@
 require 'chef/knife'
-require 'kcd'
 
 module KnifeCookbookDependencies
   class CookbookDependenciesUpload < Chef::Knife
+    deps do
+      require 'kcd'
+    end
+    
     banner "knife cookbook dependencies upload (options)"
 
     option :without,
