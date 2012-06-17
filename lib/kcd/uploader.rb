@@ -125,14 +125,17 @@ module KnifeCookbookDependencies
       end
 
       def save_cookbook(cookbook, options = {})
-        KCD.ui.debug "Saving cookbook #{cookbook}"
+        options[:freeze] ||= false
+        options[:force] ||= false
+
         url = "cookbooks/#{cookbook.name}/#{cookbook.version}"
+        url << "?force=true" if options[:force]
 
-        if options[:force]
-          url << "?force=true"
-        end
+        json = cookbook.to_json
+        json['frozen?'] = options[:freeze]
 
-        rest.put_rest(url, cookbook)
+        KCD.ui.debug "Saving cookbook #{cookbook}"
+        rest.put_rest(url, json)
       end
 
       def rest

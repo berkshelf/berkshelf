@@ -221,7 +221,6 @@ module KnifeCookbookDependencies
     def to_json(*a)
       result = self.to_hash
       result['json_class'] = chef_json_class
-      result['frozen?'] = false
       result.to_json(*a)
     end
 
