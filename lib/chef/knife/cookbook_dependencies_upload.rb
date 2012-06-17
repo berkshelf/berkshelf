@@ -29,7 +29,7 @@ module KnifeCookbookDependencies
     end
   end
   
-  class CookbookDepsInstall < CookbookDependenciesInstall
+  class CookbookDepsUpload < CookbookDependenciesUpload
     banner "knife cookbook deps upload (options)"
   end
 end
