@@ -46,17 +46,98 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe "#checksums" do
-      let(:cb_path) { fixtures_path.join("cookbooks", "example_cookbook-0.5.0") }
-      subject { CachedCookbook.from_path(cb_path) }
+    let(:cb_path) { fixtures_path.join("cookbooks", "nginx-0.100.5") }
+    subject { CachedCookbook.from_path(cb_path) }
 
-      it "returns a Hash that has checksum values of the files on disk as keys" do
-        subject.checksums.should have_key("da97c94bb6acb2b7900cbf951654fea3")
+    describe "#checksums" do
+      it "returns a Hash containing an entry for all matching cookbook files on disk" do
+        subject.checksums.should have(11).items
       end
 
-      it "returns a Mash that has a 'checksum' key and value" do
-        subject.checksums["da97c94bb6acb2b7900cbf951654fea3"].should eql(cb_path.join("recipes/default.rb").to_s)
-        puts subject.checksums
+      it "has a checksum for each key" do
+        subject.checksums.should have_key("fb1f925dcd5fc4ebf682c4442a21c619")
+      end
+
+      it "has a filepath for each value" do
+        subject.checksums.should have_value(cb_path.join("recipes/default.rb").to_s)
+      end
+    end
+
+    describe "#cookbook_files" do
+      it "returns an Array containing an entry for all cookbook files on disk" do
+        subject.cookbook_files.should have(11).items
+      end
+    end
+
+    describe "#recipes" do
+      it "returns an Array containing an entry for all 'recipes' files on disk" do
+        subject.recipes.should have(1).item
+      end
+    end
+
+    describe "#definitions" do
+      it "returns an Array containing an entry for all 'definition' files on disk" do
+        subject.definitions.should have(1).item
+      end
+    end
+
+    describe "#libraries" do
+      it "returns an Array containing an entry for all 'library' files on disk" do
+        subject.libraries.should have(1).item
+      end
+    end
+
+    describe "#attributes" do
+      it "returns an Array containing an entry for all 'attribute' files on disk" do
+        subject.attributes.should have(1).item
+      end
+    end
+
+    describe "#files" do
+      it "returns an Array containing an entry for all 'file' files on disk" do
+        subject.files.should have(1).item
+      end
+    end
+
+    describe "#templates" do
+      it "returns an Array containing an entry for all 'template' files on disk" do
+        subject.templates.should have(2).item
+      end
+    end
+
+    describe "#resources" do
+      it "returns an Array containing an entry for all 'resource' files on disk" do
+        subject.resources.should have(1).item
+      end
+    end
+
+    describe "#providers" do
+      it "returns an Array containing an entry for all 'provider' files on disk" do
+        subject.providers.should have(1).item
+      end
+    end
+
+    describe "#root_files" do
+      it "returns an Array containing an entry for all 'root' files on disk" do
+        subject.root_files.should have(2).item
+      end
+    end
+
+    describe "#manifest" do
+      it "returns a Mash with a key for each cookbook file category" do
+        [
+          :recipes,
+          :definitions,
+          :libraries,
+          :attributes,
+          :files,
+          :templates,
+          :resources,
+          :providers,
+          :root_files
+        ].each do |category|
+          subject.manifest.should have_key(category)
+        end
       end
     end
 
@@ -86,12 +167,11 @@ module KnifeCookbookDependencies
 
     describe "#to_hash" do
       before(:each) do
-        cb = CachedCookbook.from_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
-        @hash = cb.to_hash
+        @hash = subject.to_hash
       end
 
-      let(:cookbook_name) { "example_cookbook" }
-      let(:cookbook_version) { "0.5.0" }
+      let(:cookbook_name) { subject.cookbook_name }
+      let(:cookbook_version) { subject.version }
 
       it "has a 'recipes' key with an Array value" do
         @hash.should have_key('recipes')
@@ -173,8 +253,7 @@ module KnifeCookbookDependencies
 
     describe "#to_json" do
       before(:each) do
-        cb = CachedCookbook.from_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
-        @json = cb.to_json
+        @json = subject.to_json
       end
 
       it "has a 'json_class' key with 'Chef::CookbookVersion' as the value" do
