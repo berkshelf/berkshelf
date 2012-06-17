@@ -5,6 +5,8 @@ require 'chef/rest'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
 
+Chef::Config[:cache_options][:path] = Dir.mktmpdir
+
 module KnifeCookbookDependencies
   DEFAULT_STORE_PATH = File.expand_path("~/.bookshelf").freeze
   DEFAULT_FILENAME = 'Cookbookfile'.freeze
@@ -16,6 +18,7 @@ module KnifeCookbookDependencies
   autoload :TXResult, 'kcd/tx_result'
   autoload :TXResultSet, 'kcd/tx_result_set'
   autoload :Downloader, 'kcd/downloader'
+  autoload :Uploader, 'kcd/uploader'
   autoload :Resolver, 'kcd/resolver'
 
   class << self

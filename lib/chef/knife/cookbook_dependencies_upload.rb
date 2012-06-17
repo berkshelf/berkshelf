@@ -14,7 +14,7 @@ module KnifeCookbookDependencies
     def run
       ::KCD.ui = ui
       cookbook_file = ::KCD::Cookbookfile.from_file(File.join(Dir.pwd, "Cookbookfile"))
-      cookbook_file.upload(:without => config[:without])
+      cookbook_file.upload(Chef::Config[:server_url], :without => config[:without])
     rescue KCDError => e
       KCD.ui.fatal e
       exit e.status_code

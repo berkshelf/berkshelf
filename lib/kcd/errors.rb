@@ -15,5 +15,6 @@ module KnifeCookbookDependencies
   class GitError < KCDError; status_code(104); end
   class DuplicateSourceDefined < KCDError; status_code(105); end
   class NoSolution < KCDError; status_code(106); end
-  class SourceNotDownloaded < KCDError; status_code(107); end
+  class CookbookSyntaxError < KCDError; status_code(107); end
+  class UploadFailure < KCDError; status_code(108); end
 end

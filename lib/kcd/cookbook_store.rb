@@ -7,6 +7,13 @@ module KnifeCookbookDependencies
       initialize_filesystem
     end
 
+    def cookbook(name, version)
+      return nil unless downloaded?(name, version)
+
+      path = cookbook_path(name, version)
+      CachedCookbook.from_path(path)
+    end
+
     def cookbooks
       [].tap do |cookbooks|
         storage_path.each_child do |p|
