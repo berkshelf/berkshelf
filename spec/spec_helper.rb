@@ -46,10 +46,6 @@ Spork.prefork do
       clean_tmp_path
       KCD.cookbook_store = KCD::CookbookStore.new(tmp_path.join("downloader_tmp"))
     end
-
-    config.after do
-      KnifeCookbookDependencies.clean
-    end
   end
 
   SimpleCov.start do
