@@ -1,6 +1,6 @@
-require 'fileutils'
 require 'rest_client'
 require 'chef/sandbox'
+require 'chef/config'
 
 module KnifeCookbookDependencies
   class Uploader
@@ -8,9 +8,30 @@ module KnifeCookbookDependencies
     attr_reader :server_url
     attr_reader :queue
 
-    def initialize(cookbook_store, server_url)
+    # @param [KCD::CookbookStore] cookbook_store
+    #   the CookbookStore containing the Cookbooks you with to upload
+    # @param [String] server_url
+    #   the URL to the Chef Server to upload Cookbooks to
+    # @param [Hash] options
+    #   a hash of options
+    #
+    #   Options:
+    #     client_name: the name of the client used to sign REST requests to
+    #       the Chef Server. 
+    #       
+    #       Default: the value of Chef::Config[:client_name]
+    #
+    #     client_key: the filepath location for the client's key used to sign
+    #       REST requests to the Chef Server.
+    #
+    #       Default: the value of Chef::Config[:client_key]
+    def initialize(cookbook_store, server_url, options = {})
+      options[:client_name] ||= Chef::Config[:client_name]
+      options[:client_key] ||= Chef::Config[:client_key]
+
       @cookbook_store = cookbook_store
       @server_url = server_url
+      @rest = Chef::Rest.new(server_url, options[:client_name], options[:client_key])
       @queue = []
     end
 
@@ -54,6 +75,8 @@ module KnifeCookbookDependencies
 
     private
 
+      attr_reader :rest
+
       def create_sandbox(checksums)
         massaged_sums = checksums.inject({}) do |memo, elt|
           memo[elt.first] = nil
@@ -83,6 +106,7 @@ module KnifeCookbookDependencies
       def upload_checksums_to_sandbox(checksums, sandbox)
         sandbox['checksums'].each do |checksum, info|
           if info['needs_upload'] == true
+            # JW TODO: threads, fibers, or evented uploads here
             upload_file(checksums[checksum], checksum, info['url'])
           else
             KCD.ui.debug "#{checksums[checksum]} has not changed"
@@ -112,8 +136,7 @@ module KnifeCookbookDependencies
 
           RestClient::Resource.new(url, headers: headers, timeout: 1800, open_timeout: 1800).put(file_contents)
         rescue RestClient::Exception => e
-          KCD.ui.error "Failed to upload 'cookbook' : #{e.message}\n#{e.response.body}"
-          raise
+          raise KCD::UploadFailure, "Failed to upload 'file' to 'url': #{e.message}\n#{e.response.body}"
         end
       end
 
@@ -129,10 +152,6 @@ module KnifeCookbookDependencies
 
         KCD.ui.debug "Saving cookbook #{cookbook}"
         rest.put_rest(url, json)
-      end
-
-      def rest
-        @rest ||= Chef::REST.new(server_url)
       end
 
       def validate_source(source)

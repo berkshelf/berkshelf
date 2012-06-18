@@ -4,8 +4,10 @@ module KnifeCookbookDependencies
   describe Uploader do
     let(:cookbook_store) { double('cookbook_store') }
     let(:server_url) { "https://api.opscode.com/organizations/vialstudios" }
+    let(:client_key) { '/Users/reset/.chef/reset.pem' }
+    let(:node_name) { 'reset' }
 
-    subject { Uploader.new(cookbook_store, server_url) }
+    subject { Uploader.new(cookbook_store, server_url, client_key: client_key, node_name: node_name) }
 
     describe "#upload" do
       let(:cookbook) { double('nginx', name: "nginx", version: "0.101.2") }
