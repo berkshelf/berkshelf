@@ -20,43 +20,36 @@ module KnifeCookbookDependencies
     #   name of the Cookbook to upload
     # @params [String] version
     #   version of the Cookbook to upload
+    # @param [Hash] options
+    #   a hash of options
+    #
+    #   Options:
+    #     force: Upload the Cookbook even if the version already exists and is
+    #       frozen on the target Chef Server
+    #     freeze: Freeze the uploaded Cookbook on the Chef Server so that it
+    #       cannot be overwritten
     #
     # @return [TXResult]
-    def upload(name, version)
-      upload!(name, version)
+    def upload(name, version, options = {})
+      upload!(name, version, options)
     rescue KCDError => e
       TXResult.new(:error, e.message)
     end
 
-    # Uploads the given CookbookSource to the given Chef server url.
-    #
-    # @params [String] name
-    #   name of the Cookbook to upload
-    # @params [String] version
-    #   version of the Cookbook to upload
-    #
-    # @return [TXResult]
+    # See #upload. This function will raise if an error occurs.
     def upload!(name, version, options = {})
-      options[:force] ||= false
-
       cookbook = cookbook_store.cookbook(name, version)
       raise UploadFailure, "Source not downloaded" if cookbook.nil?
 
       cookbook.validate!
 
-      Chef::Config[:client_key] = '/Users/reset/.chef/reset.pem'
-      Chef::Config[:node_name] = 'reset'
-
-      checksums = cookbook.checksums
-
+      checksums = cookbook.checksums.dup
       new_sandbox = create_sandbox(checksums)
       upload_checksums_to_sandbox(checksums, new_sandbox)
       commit_sandbox(new_sandbox)
-
       save_cookbook(cookbook, options)
 
-
-      TXResult.new(:ok)
+      TXResult.new(:ok, "#{name} (#{version}) uploaded to: #{server_url}")
     end
 
     private
