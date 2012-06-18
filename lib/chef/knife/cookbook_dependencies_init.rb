@@ -26,8 +26,4 @@ module KnifeCookbookDependencies
       exit e.status_code
     end
   end
-
-  class CookbookDepsInit < CookbookDependenciesInit
-    banner "knife cookbook deps init [PATH]"
-  end
 end
