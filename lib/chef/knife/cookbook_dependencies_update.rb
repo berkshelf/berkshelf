@@ -20,8 +20,4 @@ module KnifeCookbookDependencies
       exit e.status_code
     end
   end
-  
-  class CookbookDepsUpdate < CookbookDependenciesUpdate
-    banner "knife cookbook deps update"
-  end
 end

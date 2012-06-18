@@ -24,8 +24,4 @@ module KnifeCookbookDependencies
       exit e.status_code
     end
   end
-  
-  class CookbookDepsInstall < CookbookDependenciesInstall
-    banner "knife cookbook deps install (options)"
-  end
 end

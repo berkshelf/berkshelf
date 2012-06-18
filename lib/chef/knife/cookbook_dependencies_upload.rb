@@ -36,8 +36,4 @@ module KnifeCookbookDependencies
       exit e.status_code
     end
   end
-  
-  class CookbookDepsUpload < CookbookDependenciesUpload
-    banner "knife cookbook deps upload (options)"
-  end
 end
