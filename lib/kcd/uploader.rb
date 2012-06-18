@@ -31,7 +31,7 @@ module KnifeCookbookDependencies
 
       @cookbook_store = cookbook_store
       @server_url = server_url
-      @rest = Chef::Rest.new(server_url, options[:client_name], options[:client_key])
+      @rest = Chef::REST.new(server_url, options[:client_name], options[:client_key])
       @queue = []
     end
 
