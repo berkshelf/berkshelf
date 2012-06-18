@@ -34,12 +34,17 @@ module KnifeCookbookDependencies
       @ui ||= Chef::Knife::UI.new(null_stream, null_stream, STDIN, {})
     end
 
-    def default_store_path
+    # Returns the filepath to the location Cookbooks will be downloaded to
+    # or uploaded from. By default this is '~/.bookshelf' but can be overridden
+    # by specifying a value for the ENV variable 'BOOKSHELF_PATH'.
+    # 
+    # @return [Stirng]
+    def bookshelf_path
       ENV["BOOKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
 
     def cookbook_store
-      @cookbook_store ||= CookbookStore.new(default_store_path)
+      @cookbook_store ||= CookbookStore.new(bookshelf_path)
     end
 
     def downloader
