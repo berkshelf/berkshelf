@@ -16,22 +16,22 @@ module KnifeCookbookDependencies
     #   a hash of options
     #
     #   Options:
-    #     client_name: the name of the client used to sign REST requests to
+    #     node_name: the name of the client used to sign REST requests to
     #       the Chef Server. 
     #       
-    #       Default: the value of Chef::Config[:client_name]
+    #       Default: the value of Chef::Config[:node_name]
     #
     #     client_key: the filepath location for the client's key used to sign
     #       REST requests to the Chef Server.
     #
     #       Default: the value of Chef::Config[:client_key]
     def initialize(cookbook_store, server_url, options = {})
-      options[:client_name] ||= Chef::Config[:client_name]
+      options[:node_name] ||= Chef::Config[:node_name]
       options[:client_key] ||= Chef::Config[:client_key]
 
       @cookbook_store = cookbook_store
       @server_url = server_url
-      @rest = Chef::REST.new(server_url, options[:client_name], options[:client_key])
+      @rest = Chef::REST.new(server_url, options[:node_name], options[:client_key])
       @queue = []
     end
 
