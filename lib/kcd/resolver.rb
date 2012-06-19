@@ -89,7 +89,7 @@ module KnifeCookbookDependencies
     #         "runit" => 0.15.0,
     #         "bluepill" => 1.0.4,
     #         "ohai" => 1.0.2
-    #        }
+    #       }
     def resolve
       quietly { selector.find_solution(solution_constraints) }
     end

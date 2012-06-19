@@ -46,6 +46,18 @@ module KnifeCookbookDependencies
       end
     end
 
+    describe "#cookbook" do
+      subject { CookbookStore.new(fixtures_path.join("cookbooks")) }
+
+      it "returns a CachedCookbook if the specified cookbook version exists" do
+        subject.cookbook("example_cookbook", "0.5.0").should be_a(CachedCookbook)
+      end
+
+      it "returns nil if the specified cookbook version does not exist" do
+        subject.cookbook("doesnotexist", "0.1.0").should be_nil
+      end
+    end
+
     describe "#cookbooks" do
       it "returns a list of CachedCookbooks" do
         CookbookSource.new("nginx", "0.101.2").download(subject.storage_path)

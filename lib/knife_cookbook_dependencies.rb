@@ -5,6 +5,8 @@ require 'chef/rest'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
 
+Chef::Config[:cache_options][:path] = Dir.mktmpdir
+
 module KnifeCookbookDependencies
   DEFAULT_STORE_PATH = File.expand_path("~/.bookshelf").freeze
   DEFAULT_FILENAME = 'Cookbookfile'.freeze
@@ -16,6 +18,7 @@ module KnifeCookbookDependencies
   autoload :TXResult, 'kcd/tx_result'
   autoload :TXResultSet, 'kcd/tx_result_set'
   autoload :Downloader, 'kcd/downloader'
+  autoload :Uploader, 'kcd/uploader'
   autoload :Resolver, 'kcd/resolver'
 
   class << self
@@ -31,12 +34,17 @@ module KnifeCookbookDependencies
       @ui ||= Chef::Knife::UI.new(null_stream, null_stream, STDIN, {})
     end
 
-    def default_store_path
+    # Returns the filepath to the location Cookbooks will be downloaded to
+    # or uploaded from. By default this is '~/.bookshelf' but can be overridden
+    # by specifying a value for the ENV variable 'BOOKSHELF_PATH'.
+    # 
+    # @return [Stirng]
+    def bookshelf_path
       ENV["BOOKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
 
     def cookbook_store
-      @cookbook_store ||= CookbookStore.new(default_store_path)
+      @cookbook_store ||= CookbookStore.new(bookshelf_path)
     end
 
     def downloader

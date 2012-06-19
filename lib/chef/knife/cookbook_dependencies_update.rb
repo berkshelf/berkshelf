@@ -1,8 +1,11 @@
 require 'chef/knife'
-require 'kcd'
 
 module KnifeCookbookDependencies
   class CookbookDependenciesUpdate < CookbookDependenciesInstall
+    deps do
+      require 'kcd'
+    end
+
     banner "knife cookbook dependencies update"
 
     alias :install_run :run
