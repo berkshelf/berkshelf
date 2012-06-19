@@ -87,7 +87,6 @@ module KnifeCookbookDependencies
       end
 
       def commit_sandbox(sandbox)
-        KCD.ui.debug "Committing sandbox #{sandbox['uri']}"
         # Retry if S3 is claims a checksum doesn't exist (the eventual
         # in eventual consistency)
         retries = 0
@@ -108,8 +107,6 @@ module KnifeCookbookDependencies
           if info['needs_upload'] == true
             # JW TODO: threads, fibers, or evented uploads here
             upload_file(checksums[checksum], checksum, info['url'])
-          else
-            KCD.ui.debug "#{checksums[checksum]} has not changed"
           end
         end
       end
@@ -132,8 +129,6 @@ module KnifeCookbookDependencies
         headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
 
         begin
-          KCD.ui.debug "Uploading #{file} (checksum hex = #{checksum}) to #{url}"
-
           RestClient::Resource.new(url, headers: headers, timeout: 1800, open_timeout: 1800).put(file_contents)
         rescue RestClient::Exception => e
           raise KCD::UploadFailure, "Failed to upload 'file' to 'url': #{e.message}\n#{e.response.body}"
@@ -144,14 +139,10 @@ module KnifeCookbookDependencies
         options[:freeze] ||= false
         options[:force] ||= false
 
-        url = "cookbooks/#{cookbook.name}/#{cookbook.version}"
+        url = "cookbooks/#{cookbook.cookbook_name}/#{cookbook.version}"
         url << "?force=true" if options[:force]
 
-        json = cookbook.to_json
-        json['frozen?'] = options[:freeze]
-
-        KCD.ui.debug "Saving cookbook #{cookbook}"
-        rest.put_rest(url, json)
+        rest.put_rest(url, cookbook)
       end
 
       def validate_source(source)

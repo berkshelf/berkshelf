@@ -52,7 +52,19 @@ module KnifeCookbookDependencies
       @cookbook_name = name
       @path = path
       @metadata = metadata
-      @cookbook_files = []
+      @cookbook_files = {
+        recipe: Array.new,
+        definition: Array.new,
+        library: Array.new,
+        attribute: Array.new,
+        file: Array.new,
+        template: Array.new,
+        resource: Array.new,
+        provider: Array.new,
+        root_file: Array.new
+      }
+
+      load_cookbook_files
     end
 
     # @return [String]
@@ -65,86 +77,66 @@ module KnifeCookbookDependencies
     end
 
     # @return [Array]
-    #   an array containing all of the files found in instance of CachedCookbook
-    def cookbook_files
-      [].tap do |all_files|
-        [
-          :recipes,
-          :definitions,
-          :libraries,
-          :attributes,
-          :files,
-          :templates,
-          :resources,
-          :providers,
-          :root_files
-        ].each do |segment|
-          all_files.concat send(segment)
-        end
-      end
-    end
-
-    # @return [Array]
     #   an array containing only the 'recipes' files found in the instance of 
     #   CachedCookbook
     def recipes
-      load_shallow('recipes', '*.rb')
+      cookbook_files[:recipe]
     end
 
     # @return [Array]
     #   an array containing only the 'definition' files found in the instance of 
     #   CachedCookbook
     def definitions
-      load_shallow('definitions', '*.rb')
+      cookbook_files[:definition]
     end
 
     # @return [Array]
     #   an array containing only the 'library' files found in the instance of 
     #   CachedCookbook
     def libraries
-      load_shallow('libraries', '*.rb')
+      cookbook_files[:library]
     end
 
     # @return [Array]
     #   an array containing only the 'attribute' files found in the instance of 
     #   CachedCookbook
     def attributes
-      load_shallow('attributes', '*.rb')
+      cookbook_files[:attribute]
     end
 
     # @return [Array]
     #   an array containing only the 'files' files found in the instance of 
     #   CachedCookbook
     def files
-      load_recursively("files", "*")
+      cookbook_files[:file]
     end
 
     # @return [Array]
     #   an array containing only the 'template' files found in the instance of 
     #   CachedCookbook
     def templates
-      load_recursively("templates", "*")
+      cookbook_files[:template]
     end
 
     # @return [Array]
     #   an array containing only the 'resource' files found in the instance of 
     #   CachedCookbook
     def resources
-      load_recursively("resources", "*.rb")
+      cookbook_files[:resource]
     end
 
     # @return [Array]
     #   an array containing only the 'provider' files found in the instance of 
     #   CachedCookbook
     def providers
-      load_recursively("providers", "*.rb")
+      cookbook_files[:provider]
     end
 
     # @return [Array]
     #   an array containing only the 'root' files found in the instance of 
     #   CachedCookbook
     def root_files
-      load_root
+      cookbook_files[:root_file]
     end
 
     # @return [Hash]
@@ -157,8 +149,11 @@ module KnifeCookbookDependencies
     #     }
     def checksums
       {}.tap do |checksums|
-        cookbook_files.each do |file|
-          checksums[self.class.checksum(file)] = file
+        cookbook_files.each do |category, files|
+          files.each do |file|
+            expanded_path = path.join(file[:path]).to_s
+            checksums[self.class.checksum(expanded_path)] = expanded_path
+          end
         end
       end
     end
@@ -187,6 +182,34 @@ module KnifeCookbookDependencies
         providers: providers,
         root_files: root_files
       )
+    end
+
+    # @param [Symbol] type
+    #   the type of file to generate metadata about
+    # @param [String] path
+    #   the filepath to the file to get metadata information about
+    #
+    # @return [Hash]
+    #   a Hash containing a name, path, checksum, and specificity key representing the
+    #   metadata about a file contained in a Cookbook. This metadata is used when
+    #   uploading a Cookbook's files to a Chef Server.
+    #
+    #   example:
+    #     {
+    #       name: "default.rb",
+    #       path: "recipes/default.rb",
+    #       checksum: "fb1f925dcd5fc4ebf682c4442a21c619",
+    #       specificity: "default"
+    #     }
+    def file_metadata(type, target)
+      target = Pathname.new(target)
+
+      {
+        name: target.basename.to_s,
+        path: target.relative_path_from(path).to_s,
+        checksum: self.class.checksum(target),
+        specificity: file_specificity(type, target)
+      }
     end
 
     # Validates that this instance of CachedCookbook points to a valid location on disk that
@@ -221,10 +244,13 @@ module KnifeCookbookDependencies
     def to_json(*a)
       result = self.to_hash
       result['json_class'] = chef_json_class
+      result['frozen?'] = false
       result.to_json(*a)
     end
 
     private
+
+      attr_reader :cookbook_files
 
       def chef_type
         CHEF_TYPE
@@ -238,30 +264,55 @@ module KnifeCookbookDependencies
         @syntax_checker ||= Chef::Cookbook::SyntaxCheck.new(path.to_s)
       end
 
+      def load_cookbook_files
+        load_shallow(:recipe, 'recipes', '*.rb')
+        load_shallow(:definition, 'definitions', '*.rb')
+        load_shallow(:library, 'libraries', '*.rb')
+        load_shallow(:attribute, 'attributes', '*.rb')
+        load_recursively(:file, "files", "*")
+        load_recursively(:template, "templates", "*")
+        load_recursively(:resource, "resources", "*.rb")
+        load_recursively(:provider, "providers", "*.rb")
+        load_root
+      end
+
       def load_root
         [].tap do |files|
           Dir.glob(path.join('*'), File::FNM_DOTMATCH).each do |file|
             next if File.directory?(file)
-            files << file
+            cookbook_files[:root_file] << file_metadata(:root_file, file)
           end
         end
       end
 
-      def load_recursively(category_dir, glob)
+      def load_recursively(type, category_dir, glob)
         [].tap do |files|
           file_spec = path.join(category_dir, '**', glob)
           Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
             next if File.directory?(file)
-            files << file
+            cookbook_files[type] << file_metadata(type, file)
           end
         end
       end
 
-      def load_shallow(*path_glob)
+      def load_shallow(type, *path_glob)
         [].tap do |files|
           Dir[path.join(*path_glob)].each do |file|
-            files << file
+            cookbook_files[type] << file_metadata(type, file)
           end
+        end
+      end
+
+      # @param [Pathname] path
+      #
+      # @reutrn [String]
+      def file_specificity(type, target)
+        case type
+        when :file, :template
+          relpath = target.relative_path_from(path).to_s
+          relpath.slice(/(.+)\/(.+)\/.+/, 2)
+        else
+          'default'
         end
       end
   end
