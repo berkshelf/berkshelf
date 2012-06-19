@@ -63,12 +63,6 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe "#cookbook_files" do
-      it "returns an Array containing an entry for all cookbook files on disk" do
-        subject.cookbook_files.should have(11).items
-      end
-    end
-
     describe "#recipes" do
       it "returns an Array containing an entry for all 'recipes' files on disk" do
         subject.recipes.should have(1).item
@@ -95,7 +89,7 @@ module KnifeCookbookDependencies
 
     describe "#files" do
       it "returns an Array containing an entry for all 'file' files on disk" do
-        subject.files.should have(1).item
+        subject.files.should have(2).item
       end
     end
 
@@ -165,6 +159,50 @@ module KnifeCookbookDependencies
       end
     end
 
+    describe "#file_metadata" do
+      let(:file) { subject.path.join("files", "default", "mime.types") }
+
+      before(:each) { @metadata = subject.file_metadata(:file, file) }
+
+      it "has a 'path' key whose value is a relative path from the CachedCookbook's path" do
+        @metadata.should have_key(:path)
+        @metadata[:path].should be_relative_path
+        @metadata[:path].should eql("files/default/mime.types")
+      end
+
+      it "has a 'name' key whose value is the basename of the target file" do
+        @metadata.should have_key(:name)
+        @metadata[:name].should eql("mime.types")
+      end
+
+      it "has a 'checksum' key whose value is the checksum of the target file" do
+        @metadata.should have_key(:checksum)
+        @metadata[:checksum].should eql("06e7eca1d6cb608e2e74fd1f8e059f34")
+      end
+
+      it "has a 'specificity' key" do
+        @metadata.should have_key(:specificity)
+      end
+
+      context "given a 'template' or 'file' cookbookfile type" do
+        let(:file) { subject.path.join("files", "ubuntu", "mime.types") }
+        before(:each) { @metadata = subject.file_metadata(:file, file) }
+
+        it "has a 'specificity' key whose value represents the specificity found in filepath" do
+          @metadata[:specificity].should eql("ubuntu")
+        end
+      end
+
+      context "given any cookbookfile type that is not a 'template' or 'file'" do
+        let(:file) { subject.path.join("README.md") }
+        before(:each) { @metadata = subject.file_metadata(:root, file) }
+
+        it "has a 'specificity' key whose value is 'default'" do
+          @metadata[:specificity].should eql("default")
+        end
+      end
+    end
+
     describe "#to_hash" do
       before(:each) do
         @hash = subject.to_hash
@@ -173,49 +211,220 @@ module KnifeCookbookDependencies
       let(:cookbook_name) { subject.cookbook_name }
       let(:cookbook_version) { subject.version }
 
-      it "has a 'recipes' key with an Array value" do
+      it "has a 'recipes' key with a value of an Array Hashes" do
         @hash.should have_key('recipes')
         @hash['recipes'].should be_a(Array)
+        @hash['recipes'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has a 'definitions' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'recipes' Array of Hashes" do
+        @hash['recipes'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'recipes' Array of Hashes" do
+        @hash['recipes'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'recipes' Array of Hashes" do
+        @hash['recipes'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'recipes' Array of Hashes" do
+        @hash['recipes'].first.should have_key('specificity')
+      end
+
+      it "has a 'definitions' key with a value of an Array Hashes" do
         @hash.should have_key('definitions')
         @hash['definitions'].should be_a(Array)
+        @hash['definitions'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has a 'libraries' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'definitions' Array of Hashes" do
+        @hash['definitions'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'definitions' Array of Hashes" do
+        @hash['definitions'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'definitions' Array of Hashes" do
+        @hash['definitions'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'definitions' Array of Hashes" do
+        @hash['definitions'].first.should have_key('specificity')
+      end
+
+      it "has a 'libraries' key with a value of an Array Hashes" do
         @hash.should have_key('libraries')
         @hash['libraries'].should be_a(Array)
+        @hash['libraries'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has an 'attributes' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'libraries' Array of Hashes" do
+        @hash['libraries'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'libraries' Array of Hashes" do
+        @hash['libraries'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'libraries' Array of Hashes" do
+        @hash['libraries'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'libraries' Array of Hashes" do
+        @hash['libraries'].first.should have_key('specificity')
+      end
+
+      it "has a 'attributes' key with a value of an Array Hashes" do
         @hash.should have_key('attributes')
         @hash['attributes'].should be_a(Array)
+        @hash['attributes'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has a 'files' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'attributes' Array of Hashes" do
+        @hash['attributes'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'attributes' Array of Hashes" do
+        @hash['attributes'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'attributes' Array of Hashes" do
+        @hash['attributes'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'attributes' Array of Hashes" do
+        @hash['attributes'].first.should have_key('specificity')
+      end
+
+      it "has a 'files' key with a value of an Array Hashes" do
         @hash.should have_key('files')
         @hash['files'].should be_a(Array)
+        @hash['files'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has a 'templates' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'files' Array of Hashes" do
+        @hash['files'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'files' Array of Hashes" do
+        @hash['files'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'files' Array of Hashes" do
+        @hash['files'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'files' Array of Hashes" do
+        @hash['files'].first.should have_key('specificity')
+      end
+
+      it "has a 'templates' key with a value of an Array Hashes" do
         @hash.should have_key('templates')
         @hash['templates'].should be_a(Array)
+        @hash['templates'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has a 'resources' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'templates' Array of Hashes" do
+        @hash['templates'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'templates' Array of Hashes" do
+        @hash['templates'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'templates' Array of Hashes" do
+        @hash['templates'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'templates' Array of Hashes" do
+        @hash['templates'].first.should have_key('specificity')
+      end
+
+      it "has a 'resources' key with a value of an Array Hashes" do
         @hash.should have_key('resources')
         @hash['resources'].should be_a(Array)
+        @hash['resources'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has a 'providers' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'resources' Array of Hashes" do
+        @hash['resources'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'resources' Array of Hashes" do
+        @hash['resources'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'resources' Array of Hashes" do
+        @hash['resources'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'resources' Array of Hashes" do
+        @hash['resources'].first.should have_key('specificity')
+      end
+
+      it "has a 'providers' key with a value of an Array Hashes" do
         @hash.should have_key('providers')
         @hash['providers'].should be_a(Array)
+        @hash['providers'].each do |item|
+          item.should be_a(Hash)
+        end
       end
 
-      it "has a 'root_files' key with an Array value" do
+      it "has a 'name' key value pair in a Hash of the 'providers' Array of Hashes" do
+        @hash['providers'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'providers' Array of Hashes" do
+        @hash['providers'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'providers' Array of Hashes" do
+        @hash['providers'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'providers' Array of Hashes" do
+        @hash['providers'].first.should have_key('specificity')
+      end
+
+      it "has a 'root_files' key with a value of an Array Hashes" do
         @hash.should have_key('root_files')
         @hash['root_files'].should be_a(Array)
+        @hash['root_files'].each do |item|
+          item.should be_a(Hash)
+        end
+      end
+
+      it "has a 'name' key value pair in a Hash of the 'root_files' Array of Hashes" do
+        @hash['root_files'].first.should have_key('name')
+      end
+
+      it "has a 'path' key value pair in a Hash of the 'root_files' Array of Hashes" do
+        @hash['root_files'].first.should have_key('path')
+      end
+
+      it "has a 'checksum' key value pair in a Hash of the 'root_files' Array of Hashes" do
+        @hash['root_files'].first.should have_key('checksum')
+      end
+
+      it "has a 'specificity' key value pair in a Hash of the 'root_files' Array of Hashes" do
+        @hash['root_files'].first.should have_key('specificity')
       end
 
       it "has a 'cookbook_name' key with a String value" do
