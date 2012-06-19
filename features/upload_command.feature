@@ -14,7 +14,8 @@ Feature: initialize command
     And the Chef server should have the cookbooks:
       | mysql   | 1.2.4 |
       | openssl | 1.0.0 |
-    And the output should contain "Upload complete"
+    And the output should contain "Uploading mysql (1.2.4) to:"
+    And the output should contain "Uploading openssl (1.0.0) to:"
     And the exit status should be 0
 
   @wip @slow_process
@@ -30,5 +31,6 @@ Feature: initialize command
     And the Chef server should have the cookbooks:
       | mysql   | 1.2.4 |
       | openssl | 1.0.0 |
-    And the output should contain "Upload complete"
+    And the output should contain "Uploading mysql (1.2.4) to:"
+    And the output should contain "Uploading openssl (1.0.0) to:"
     And the exit status should be 0
