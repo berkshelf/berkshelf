@@ -47,13 +47,19 @@ module KnifeCookbookDependencies
     attr_reader :metadata
 
     # @return [Mash]
-    #   a Mash containing Cookbook file category names as keys and an Array of those files as
-    #   the value.
+    #   a Mash containing Cookbook file category names as keys and an Array of Hashes
+    #   containing metadata about the files belonging to that category. This is used
+    #   to communicate what a Cookbook looks like when uploading to a Chef Server.
     #
     #   example:
     #     {
     #       :recipes => [
-    #         "/Users/reset/.bookshelf/nginx-0.101.2/recipes/default.rb"
+    #         {
+    #           name: "default.rb",
+    #           path: "recipes/default.rb",
+    #           checksum: "fb1f925dcd5fc4ebf682c4442a21c619",
+    #           specificity: "default"
+    #         }
     #       ]
     #       ...
     #       ...
