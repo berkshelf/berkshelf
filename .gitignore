@@ -8,7 +8,6 @@ _yardoc
 /coverage
 /doc/
 /pkg
-/rdoc
 /spec/reports
 /Cookbookfile*
 tmp
