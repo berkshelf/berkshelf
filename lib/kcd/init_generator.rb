@@ -1,6 +1,7 @@
 require 'thor/group'
 
 module KnifeCookbookDependencies
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class InitGenerator < Thor::Group
     include Thor::Actions
 

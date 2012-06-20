@@ -1,4 +1,5 @@
 module KnifeCookbookDependencies
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class TXResult < Struct.new(:status, :message, :source)
     def failed?
       status == :error

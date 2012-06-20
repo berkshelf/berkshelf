@@ -1,4 +1,5 @@
 module KnifeCookbookDependencies
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class Downloader
     extend Forwardable
 

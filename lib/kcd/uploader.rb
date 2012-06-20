@@ -3,6 +3,7 @@ require 'chef/sandbox'
 require 'chef/config'
 
 module KnifeCookbookDependencies
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class Uploader
     attr_reader :cookbook_store
     attr_reader :server_url

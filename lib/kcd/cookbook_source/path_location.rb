@@ -1,6 +1,6 @@
 module KnifeCookbookDependencies
   class CookbookSource
-    # @internal
+    # @author Jamie Winsor <jamie@vialstudios.com>
     class PathLocation
       include Location
 

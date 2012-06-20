@@ -1,6 +1,7 @@
 require 'fileutils'
 
 module KnifeCookbookDependencies
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookStore
     attr_reader :storage_path
 

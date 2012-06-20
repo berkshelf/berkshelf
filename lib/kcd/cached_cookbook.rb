@@ -2,6 +2,7 @@ require 'chef/checksum_cache'
 require 'chef/cookbook/syntax_check'
 
 module KnifeCookbookDependencies
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class CachedCookbook
     class << self
       # @param [String] path

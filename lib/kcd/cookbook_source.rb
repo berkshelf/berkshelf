@@ -1,4 +1,5 @@
 module KnifeCookbookDependencies
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
     module Location
       attr_reader :name
