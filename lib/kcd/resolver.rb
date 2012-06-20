@@ -168,9 +168,6 @@ module KnifeCookbookDependencies
       #   the package to add a version to
       # @param [DepSelector::Version] version
       #   the version to add the the package
-      #
-      # @param [DepSelector::Version] version
-      #   version to add
       def add_version(package, version)
         package.add_version(version)
       end

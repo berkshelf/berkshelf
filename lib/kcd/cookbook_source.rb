@@ -1,6 +1,5 @@
 module KnifeCookbookDependencies
   class CookbookSource
-    # @internal
     module Location
       attr_reader :name
 
