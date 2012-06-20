@@ -37,9 +37,9 @@ module KnifeCookbookDependencies
 
     # Uploads the given CookbookSource to the given Chef server url.
     #
-    # @params [String] name
+    # @param [String] name
     #   name of the Cookbook to upload
-    # @params [String] version
+    # @param [String] version
     #   version of the Cookbook to upload
     # @param [Hash] options
     #   a hash of options

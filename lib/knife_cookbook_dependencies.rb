@@ -59,7 +59,7 @@ module KnifeCookbookDependencies
     # metadata.rb file of a Chef Cookbook. If no metadata.rb file
     # was found, nil is returned.
     #
-    # @returns[Pathname] 
+    # @return [Pathname] 
     #   path to metadata.rb 
     def find_metadata(path = Dir.pwd)
       path = Pathname.new(path)
