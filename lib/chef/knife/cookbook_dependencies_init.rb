@@ -1,8 +1,11 @@
 require 'chef/knife'
-require 'kcd'
 
 module KnifeCookbookDependencies
   class CookbookDependenciesInit < Chef::Knife
+    deps do
+      require 'kcd'
+    end
+    
     banner "knife cookbook dependencies init [PATH]"
 
     def run

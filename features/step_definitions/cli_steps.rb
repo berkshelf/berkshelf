@@ -50,6 +50,10 @@ When /^I run the update command$/ do
   run_simple(unescape("knife cookbook dependencies update"), false)
 end
 
+When /^I run the upload command$/ do
+  run_simple(unescape("knife cookbook dependencies upload"), false)
+end
+
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
   exit_status = KCD.const_get(error_constant).status_code
   assert_exit_status(exit_status)

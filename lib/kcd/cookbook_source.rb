@@ -76,7 +76,7 @@ module KnifeCookbookDependencies
     # @param [String] destination
     #   destination to download to
     #
-    # @returns [Array]
+    # @return [Array]
     #   An array containing the status at index 0 and local path or error message in index 1
     #
     #   Example:

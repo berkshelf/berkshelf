@@ -26,7 +26,7 @@ module KnifeCookbookDependencies
     #   if true, after adding the source the dependencies defined in the
     #   sources metadata will be added to the graph and downloaded
     #
-    # @returns [DepSelector::PackageVersion]
+    # @return [DepSelector::PackageVersion]
     def add_source(source, include_dependencies = true)
       raise DuplicateSourceDefined if has_source?(source.name)
 
@@ -89,7 +89,7 @@ module KnifeCookbookDependencies
     #         "runit" => 0.15.0,
     #         "bluepill" => 1.0.4,
     #         "ohai" => 1.0.2
-    #        }
+    #       }
     def resolve
       quietly { selector.find_solution(solution_constraints) }
     end
