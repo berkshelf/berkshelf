@@ -237,7 +237,7 @@ module KnifeCookbookDependencies
 
       # @param [Pathname] path
       #
-      # @reutrn [String]
+      # @return [String]
       def file_specificity(type, target)
         case type
         when :file, :template
