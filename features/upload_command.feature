@@ -9,6 +9,9 @@ Feature: initialize command
       """
       cookbook "mysql", "1.2.4"
       """
+    And the Chef server does not have the cookbooks:
+      | mysql   | 1.2.4 |
+      | openssl | 1.0.0 |
     And I run the install command
     When I run the upload command
     Then the output should not contain "Using mysql (1.2.4)"
@@ -26,6 +29,9 @@ Feature: initialize command
       """
       cookbook "mysql", "1.2.4"
       """
+    And the Chef server does not have the cookbooks:
+      | mysql   | 1.2.4 |
+      | openssl | 1.0.0 |
     When I run the upload command
     Then the output should contain "Installing mysql (1.2.4) from site:"
     And the output should contain "Installing openssl (1.0.0) from site:"

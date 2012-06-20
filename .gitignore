@@ -17,4 +17,5 @@ tmp
 \#*
 .DS_Store
 /spec/fixtures/vcr_cassettes/*
+/features/config.yml
 *.sw[op]
