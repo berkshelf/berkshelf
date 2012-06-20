@@ -125,17 +125,9 @@ module KnifeCookbookDependencies
     #     without: An array of groups to exclude which will cause any sources
     #       marked as a member of the group to not be installed
     def install(options = {})
-      if File.exist?(KCD::Lockfile::DEFAULT_FILENAME)
-        filename = KCD::Lockfile::DEFAULT_FILENAME
-        lockfile = true
-      else
-        filename = KCD::DEFAULT_FILENAME
-        lockfile = false
-      end
-
       resolver = Resolver.new(KCD.downloader, sources(exclude: options[:without]))
       resolver.resolve
-      write_lockfile(resolver.sources) unless lockfile
+      write_lockfile(resolver.sources) unless lockfile_present?
     end
 
     # @param [String] chef_server_url
@@ -165,6 +157,10 @@ module KnifeCookbookDependencies
     end
 
     private
+
+      def lockfile_present?
+        File.exist?(KCD::Lockfile::DEFAULT_FILENAME)
+      end
 
       def write_lockfile(sources)
         KCD::Lockfile.new(sources).write

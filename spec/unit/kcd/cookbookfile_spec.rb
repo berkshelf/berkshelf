@@ -123,24 +123,37 @@ EOF
 
     describe "#install" do
       let(:resolver) { double('resolver') }
+      before(:each) { KCD::Resolver.stub(:new) { resolver } }
 
-      before(:each) do
-        KCD::Resolver.stub(:new) { resolver }
+      context "when a lockfile is not present" do
+        before(:each) do
+          subject.should_receive(:lockfile_present?).and_return(false)
+          resolver.should_receive(:sources).and_return([])
+        end
+
+        it "creates a new resolver and finds a solution by calling resolve on the resolver" do
+          resolver.should_receive(:resolve)
+
+          subject.install
+        end
+
+        it "writes a lockfile with the resolvers sources" do
+          resolver.should_receive(:resolve)
+          subject.should_receive(:write_lockfile).with([])
+
+          subject.install
+        end
       end
 
-      it "creates a new resolver and finds a solution by calling resolve on the resolver" do
-        resolver.should_receive(:resolve)
-        resolver.should_receive(:sources)
+      context "when a lockfile is present" do
+        before(:each) { subject.should_receive(:lockfile_present?).and_return(true) }
 
-        subject.install
-      end
+        it "does not write a new lock file" do
+          resolver.should_receive(:resolve)
+          subject.should_not_receive(:write_lockfile)
 
-      it "writes a lockfile with the resolvers sources" do
-        resolver.should_receive(:resolve)
-        resolver.should_receive(:sources).and_return([source_one])
-        subject.should_receive(:write_lockfile).with([source_one])
-
-        subject.install
+          subject.install
+        end
       end
     end
   end
