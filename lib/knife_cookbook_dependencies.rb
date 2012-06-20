@@ -51,10 +51,6 @@ module KnifeCookbookDependencies
       @downloader ||= Downloader.new(cookbook_store)
     end
 
-    def clean
-      Lockfile.remove!
-    end
-
     # Ascend the directory structure from the given path to find a
     # metadata.rb file of a Chef Cookbook. If no metadata.rb file
     # was found, nil is returned.

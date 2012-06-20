@@ -15,10 +15,6 @@ Spork.prefork do
   
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
-  After do
-    KCD.clean
-  end
-
   Around do |scenario, block|
     VCR.use_cassette(scenario.title) do
       block.call

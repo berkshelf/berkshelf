@@ -21,10 +21,9 @@ Dependencies are managed via a `Cookbookfile` in the directory where you want th
 
 ==== CLI
 
-The CLI consists of 3 commands: install, update, clean
+The CLI consists of 2 commands: install, update
 
     $ knife cookbook dependencies (install|update) [(--without|-W) group_to_exclude]
-    $ knife cookbook dependencies clean
 
 note::
 
@@ -33,8 +32,6 @@ note::
 [install]  Installs the from the Cookbookfile.lock, or Cookbookfile if the the lockfile does not exist.
 
 [update] Skips the lockfile and installs fresh
-
-[clean] Removes all of the files managed by the `Cookbookfile`, including the `Cookbookfile.lock`, temp directory used for downloads and extractions and the cookbooks directory.
 
 [init] Prepares a local path to have it's Cookbook dependencies managed by KCD. If the target path is a Cookbook itself, additional KCD support files will be generated to get you started.
 
