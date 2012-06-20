@@ -113,9 +113,9 @@ module KnifeCookbookDependencies
       end
     end
 
-    # @param [Symbol] type
-    #   the type of file to generate metadata about
-    # @param [String] path
+    # @param [Symbol] category
+    #   the category of file to generate metadata about
+    # @param [String] target
     #   the filepath to the file to get metadata information about
     #
     # @return [Hash]
@@ -130,14 +130,14 @@ module KnifeCookbookDependencies
     #       checksum: "fb1f925dcd5fc4ebf682c4442a21c619",
     #       specificity: "default"
     #     }
-    def file_metadata(type, target)
+    def file_metadata(category, target)
       target = Pathname.new(target)
 
       {
         name: target.basename.to_s,
         path: target.relative_path_from(path).to_s,
         checksum: self.class.checksum(target),
-        specificity: file_specificity(type, target)
+        specificity: file_specificity(category, target)
       }
     end
 
@@ -210,37 +210,38 @@ module KnifeCookbookDependencies
           Dir.glob(path.join('*'), File::FNM_DOTMATCH).each do |file|
             next if File.directory?(file)
             @files << file
-            @manifest[:root_files] << file_metadata(:root_file, file)
+            @manifest[:root_files] << file_metadata(:root_files, file)
           end
         end
       end
 
-      def load_recursively(type, category_dir, glob)
+      def load_recursively(category, category_dir, glob)
         [].tap do |files|
           file_spec = path.join(category_dir, '**', glob)
           Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
             next if File.directory?(file)
             @files << file
-            @manifest[type] << file_metadata(type, file)
+            @manifest[category] << file_metadata(category, file)
           end
         end
       end
 
-      def load_shallow(type, *path_glob)
+      def load_shallow(category, *path_glob)
         [].tap do |files|
           Dir[path.join(*path_glob)].each do |file|
             @files << file
-            @manifest[type] << file_metadata(type, file)
+            @manifest[category] << file_metadata(category, file)
           end
         end
       end
 
-      # @param [Pathname] path
+      # @param [Symbol] category
+      # @param [Pathname] target
       #
       # @return [String]
-      def file_specificity(type, target)
-        case type
-        when :file, :template
+      def file_specificity(category, target)
+        case category
+        when :files, :templates
           relpath = target.relative_path_from(path).to_s
           relpath.slice(/(.+)\/(.+)\/.+/, 2)
         else

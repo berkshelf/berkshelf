@@ -132,7 +132,7 @@ module KnifeCookbookDependencies
 
       context "given a 'template' or 'file' cookbookfile type" do
         let(:file) { subject.path.join("files", "ubuntu", "mime.types") }
-        before(:each) { @metadata = subject.file_metadata(:file, file) }
+        before(:each) { @metadata = subject.file_metadata(:files, file) }
 
         it "has a 'specificity' key whose value represents the specificity found in filepath" do
           @metadata[:specificity].should eql("ubuntu")
