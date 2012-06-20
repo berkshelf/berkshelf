@@ -1,5 +1,4 @@
 require "bundler/gem_tasks"
-require 'rdoc/task'
 require 'rspec/core/rake_task'
 
 desc "clean VCR cassettes"
@@ -7,21 +6,9 @@ task "vcr:clean" do
   sh "rm -rf spec/fixtures/vcr_cassettes/*"
 end
 
-desc "check documentation coverage"
-task "rdoc:check" do 
-  sh "rdoc -C " + Dir["lib/**/*.rb"].join(" ")
-end
-
-desc "clean up doco/coverage"
+desc "clean up coverage"
 task :clean do
-  sh "rm -fr rdoc coverage"
-end
-
-desc "generate documentation"
-RDoc::Task.new :rdoc do |r|
-  r.main = "README.rdoc"
-  r.rdoc_files.include("README.rdoc", "lib/**/*.rb")
-  r.rdoc_dir = "rdoc"
+  sh "rm -fr coverage"
 end
 
 desc "Run specs"
@@ -30,7 +17,7 @@ RSpec::Core::RakeTask.new do |t|
   # Put spec opts in a file named .rspec in root
 end
 
-task :check => [:default, "rdoc:check"]
+task :check => [:default]
 task :default => [:clean, :spec]
 
 begin
