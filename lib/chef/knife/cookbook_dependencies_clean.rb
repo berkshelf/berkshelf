@@ -18,8 +18,4 @@ module KnifeCookbookDependencies
       exit e.status_code
     end
   end
-  
-  class CookbookDepsClean < CookbookDependenciesClean
-    banner "knife cookbook deps clean"
-  end
 end
