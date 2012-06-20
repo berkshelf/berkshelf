@@ -94,7 +94,7 @@ module KnifeCookbookDependencies
       quietly { selector.find_solution(solution_constraints) }
     end
 
-    # @param [#to_s] name
+    # @param [#to_s] source
     #   name of the source to return
     #
     # @return [KCD::CookbookSource]
@@ -114,7 +114,7 @@ module KnifeCookbookDependencies
       attr_reader :downloader
       attr_reader :graph
 
-      # @param [#to_s] name
+      # @param [#to_s] source
       #   name of the source to set
       # @param [CookbookSource] value
       #   source to set as value
@@ -162,8 +162,12 @@ module KnifeCookbookDependencies
         graph.package(name)
       end
 
-      # @param [String] name
-      #   package name
+      # Add a version to a package
+      #
+      # @param [DepSelector::Package] package
+      #   the package to add a version to
+      # @param [DepSelector::Version] version
+      #   the version to add the the package
       #
       # @param [DepSelector::Version] version
       #   version to add
