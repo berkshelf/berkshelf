@@ -1,4 +1,4 @@
-Feature: initialize command
+Feature: upload command
   As a KCD CLI user
   I need a way to upload cookbooks to a Chef server that I have installed into my Bookshelf
   So they are available to Chef clients

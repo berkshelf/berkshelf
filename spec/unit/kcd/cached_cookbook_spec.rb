@@ -63,60 +63,6 @@ module KnifeCookbookDependencies
       end
     end
 
-    describe "#recipes" do
-      it "returns an Array containing an entry for all 'recipes' files on disk" do
-        subject.recipes.should have(1).item
-      end
-    end
-
-    describe "#definitions" do
-      it "returns an Array containing an entry for all 'definition' files on disk" do
-        subject.definitions.should have(1).item
-      end
-    end
-
-    describe "#libraries" do
-      it "returns an Array containing an entry for all 'library' files on disk" do
-        subject.libraries.should have(1).item
-      end
-    end
-
-    describe "#attributes" do
-      it "returns an Array containing an entry for all 'attribute' files on disk" do
-        subject.attributes.should have(1).item
-      end
-    end
-
-    describe "#files" do
-      it "returns an Array containing an entry for all 'file' files on disk" do
-        subject.files.should have(2).item
-      end
-    end
-
-    describe "#templates" do
-      it "returns an Array containing an entry for all 'template' files on disk" do
-        subject.templates.should have(2).item
-      end
-    end
-
-    describe "#resources" do
-      it "returns an Array containing an entry for all 'resource' files on disk" do
-        subject.resources.should have(1).item
-      end
-    end
-
-    describe "#providers" do
-      it "returns an Array containing an entry for all 'provider' files on disk" do
-        subject.providers.should have(1).item
-      end
-    end
-
-    describe "#root_files" do
-      it "returns an Array containing an entry for all 'root' files on disk" do
-        subject.root_files.should have(2).item
-      end
-    end
-
     describe "#manifest" do
       it "returns a Mash with a key for each cookbook file category" do
         [
