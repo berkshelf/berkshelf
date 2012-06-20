@@ -46,118 +46,6 @@ module KnifeCookbookDependencies
     attr_reader :path
     attr_reader :metadata
 
-    def_delegators :@metadata, :version
-
-    def initialize(name, path, metadata)
-      @cookbook_name = name
-      @path = path
-      @metadata = metadata
-      @cookbook_files = {
-        recipe: Array.new,
-        definition: Array.new,
-        library: Array.new,
-        attribute: Array.new,
-        file: Array.new,
-        template: Array.new,
-        resource: Array.new,
-        provider: Array.new,
-        root_file: Array.new
-      }
-
-      load_cookbook_files
-    end
-
-    # @return [String]
-    #   the name of the cookbook and the version number separated by a dash (-).
-    #
-    #   example:
-    #     "nginx-0.101.2"
-    def name
-      "#{cookbook_name}-#{version}"
-    end
-
-    # @return [Array]
-    #   an array containing only the 'recipes' files found in the instance of 
-    #   CachedCookbook
-    def recipes
-      cookbook_files[:recipe]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'definition' files found in the instance of 
-    #   CachedCookbook
-    def definitions
-      cookbook_files[:definition]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'library' files found in the instance of 
-    #   CachedCookbook
-    def libraries
-      cookbook_files[:library]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'attribute' files found in the instance of 
-    #   CachedCookbook
-    def attributes
-      cookbook_files[:attribute]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'files' files found in the instance of 
-    #   CachedCookbook
-    def files
-      cookbook_files[:file]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'template' files found in the instance of 
-    #   CachedCookbook
-    def templates
-      cookbook_files[:template]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'resource' files found in the instance of 
-    #   CachedCookbook
-    def resources
-      cookbook_files[:resource]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'provider' files found in the instance of 
-    #   CachedCookbook
-    def providers
-      cookbook_files[:provider]
-    end
-
-    # @return [Array]
-    #   an array containing only the 'root' files found in the instance of 
-    #   CachedCookbook
-    def root_files
-      cookbook_files[:root_file]
-    end
-
-    # @return [Hash]
-    #   an hash containing the checksums and expanded file paths of all of the
-    #   files found in the instance of CachedCookbook
-    #
-    #   example:
-    #     {
-    #       "da97c94bb6acb2b7900cbf951654fea3" => "/Users/reset/.bookshelf/nginx-0.101.2/README.md"  
-    #     }
-    def checksums
-      {}.tap do |checksums|
-        cookbook_files.each do |category, files|
-          files.each do |file|
-            expanded_path = path.join(file[:path]).to_s
-            checksums[self.class.checksum(expanded_path)] = expanded_path
-          end
-        end
-      end
-    end
-
     # @return [Mash]
     #   a Mash containing Cookbook file category names as keys and an Array of those files as
     #   the value.
@@ -170,18 +58,53 @@ module KnifeCookbookDependencies
     #       ...
     #       ...
     #     }
-    def manifest
-      Mash.new(
-        recipes: recipes,
-        definitions: definitions,
-        libraries: libraries,
-        attributes: attributes,
-        files: files,
-        templates: templates,
-        resources: resources,
-        providers: providers,
-        root_files: root_files
+    attr_reader :manifest
+
+    def_delegators :@metadata, :version
+
+    def initialize(name, path, metadata)
+      @cookbook_name = name
+      @path = path
+      @metadata = metadata
+      @files = Array.new
+      @manifest = Mash.new(
+        recipes: Array.new,
+        definitions: Array.new,
+        libraries: Array.new,
+        attributes: Array.new,
+        files: Array.new,
+        templates: Array.new,
+        resources: Array.new,
+        providers: Array.new,
+        root_files: Array.new
       )
+
+      load_files
+    end
+
+    # @return [String]
+    #   the name of the cookbook and the version number separated by a dash (-).
+    #
+    #   example:
+    #     "nginx-0.101.2"
+    def name
+      "#{cookbook_name}-#{version}"
+    end
+
+    # @return [Hash]
+    #   an hash containing the checksums and expanded file paths of all of the
+    #   files found in the instance of CachedCookbook
+    #
+    #   example:
+    #     {
+    #       "da97c94bb6acb2b7900cbf951654fea3" => "/Users/reset/.bookshelf/nginx-0.101.2/README.md"  
+    #     }
+    def checksums
+      {}.tap do |checksums|
+        files.each do |file|
+          checksums[self.class.checksum(file)] = file
+        end
+      end
     end
 
     # @param [Symbol] type
@@ -250,7 +173,7 @@ module KnifeCookbookDependencies
 
     private
 
-      attr_reader :cookbook_files
+      attr_reader :files
 
       def chef_type
         CHEF_TYPE
@@ -264,15 +187,15 @@ module KnifeCookbookDependencies
         @syntax_checker ||= Chef::Cookbook::SyntaxCheck.new(path.to_s)
       end
 
-      def load_cookbook_files
-        load_shallow(:recipe, 'recipes', '*.rb')
-        load_shallow(:definition, 'definitions', '*.rb')
-        load_shallow(:library, 'libraries', '*.rb')
-        load_shallow(:attribute, 'attributes', '*.rb')
-        load_recursively(:file, "files", "*")
-        load_recursively(:template, "templates", "*")
-        load_recursively(:resource, "resources", "*.rb")
-        load_recursively(:provider, "providers", "*.rb")
+      def load_files
+        load_shallow(:recipes, 'recipes', '*.rb')
+        load_shallow(:definitions, 'definitions', '*.rb')
+        load_shallow(:libraries, 'libraries', '*.rb')
+        load_shallow(:attributes, 'attributes', '*.rb')
+        load_recursively(:files, "files", "*")
+        load_recursively(:templates, "templates", "*")
+        load_recursively(:resources, "resources", "*.rb")
+        load_recursively(:providers, "providers", "*.rb")
         load_root
       end
 
@@ -280,7 +203,8 @@ module KnifeCookbookDependencies
         [].tap do |files|
           Dir.glob(path.join('*'), File::FNM_DOTMATCH).each do |file|
             next if File.directory?(file)
-            cookbook_files[:root_file] << file_metadata(:root_file, file)
+            @files << file
+            @manifest[:root_files] << file_metadata(:root_file, file)
           end
         end
       end
@@ -290,7 +214,8 @@ module KnifeCookbookDependencies
           file_spec = path.join(category_dir, '**', glob)
           Dir.glob(file_spec, File::FNM_DOTMATCH).each do |file|
             next if File.directory?(file)
-            cookbook_files[type] << file_metadata(type, file)
+            @files << file
+            @manifest[type] << file_metadata(type, file)
           end
         end
       end
@@ -298,7 +223,8 @@ module KnifeCookbookDependencies
       def load_shallow(type, *path_glob)
         [].tap do |files|
           Dir[path.join(*path_glob)].each do |file|
-            cookbook_files[type] << file_metadata(type, file)
+            @files << file
+            @manifest[type] << file_metadata(type, file)
           end
         end
       end
