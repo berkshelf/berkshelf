@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'aruba'
   s.add_development_dependency 'rake',        '~> 0.9.0'
   s.add_development_dependency 'rdoc',        '~> 3.0'
+  s.add_development_dependency 'yard'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'json_spec'
   s.add_development_dependency 'simplecov'
@@ -36,4 +37,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'guard-cucumber'
   s.add_development_dependency 'guard-spork'
+  s.add_development_dependency 'guard-yard'
 end
