@@ -7,6 +7,8 @@ Spork.prefork do
   require 'rspec'
   require 'simplecov'
   require 'pp'
+  require 'json_spec'
+  require 'webmock/rspec'
   
   APP_ROOT = File.expand_path('../../', __FILE__)
   
@@ -19,6 +21,7 @@ Spork.prefork do
 
   RSpec.configure do |config|
     config.include KnifeCookbookDependencies::RSpec::FileSystemMatchers
+    config.include JsonSpec::Helpers
     
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true

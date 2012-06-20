@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module KnifeCookbookDependencies
   class Downloader
     extend Forwardable
