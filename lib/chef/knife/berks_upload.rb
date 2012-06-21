@@ -29,7 +29,7 @@ module Berkshelf
 
     def run
       ::Berkshelf.ui = ui
-      cookbook_file = ::Berkshelf::Cookbookfile.from_file(File.join(Dir.pwd, "Cookbookfile"))
+      cookbook_file = ::Berkshelf::Berksfile.from_file(File.join(Dir.pwd, "Berksfile"))
       cookbook_file.upload(Chef::Config[:chef_server_url], config)
     rescue BerkshelfError => e
       Berkshelf.ui.fatal e

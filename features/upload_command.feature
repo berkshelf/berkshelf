@@ -4,8 +4,8 @@ Feature: upload command
   So they are available to Chef clients
 
   @wip @slow_process
-  Scenario: running the upload command when the Sources in the Cookbookfile are already installed
-    Given I write to "Cookbookfile" with:
+  Scenario: running the upload command when the Sources in the Berksfile are already installed
+    Given I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4"
       """
@@ -24,8 +24,8 @@ Feature: upload command
     And the exit status should be 0
 
   @slow_process
-  Scenario: running the upload command when the Sources in the Cookbookfile have not been installed
-    Given I write to "Cookbookfile" with:
+  Scenario: running the upload command when the Sources in the Berksfile have not been installed
+    Given I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4"
       """

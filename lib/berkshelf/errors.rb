@@ -8,7 +8,7 @@ module Berkshelf
     end
   end
 
-  class CookbookfileNotFound < BerkshelfError; status_code(100); end
+  class BerksfileNotFound < BerkshelfError; status_code(100); end
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DownloadFailure < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError; status_code(103); end

@@ -14,7 +14,7 @@ module Berkshelf
 
       specify do
         target_root.should have_structure {
-          file "Cookbookfile"
+          file "Berksfile"
           no_file ".chefignore"
         }
       end
@@ -28,13 +28,13 @@ module Berkshelf
 
       specify do
         target_root.should have_structure {
-          file "Cookbookfile"
+          file "Berksfile"
           file ".chefignore"
         }
       end
     end
 
-    context "with a metadata entry in the Cookbookfile" do
+    context "with a metadata entry in the Berksfile" do
       before do
         generator = subject.new([], :path => target_root, :metadata_entry => true)
         capture(:stdout) { generator.invoke_all }
@@ -42,7 +42,7 @@ module Berkshelf
 
       specify do
         target_root.should have_structure {
-          file "Cookbookfile" do
+          file "Berksfile" do
             contains "metadata"
           end
         }

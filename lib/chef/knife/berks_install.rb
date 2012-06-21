@@ -17,7 +17,7 @@ module Berkshelf
 
     def run
       ::Berkshelf.ui = ui
-      cookbook_file = ::Berkshelf::Cookbookfile.from_file(File.join(Dir.pwd, "Cookbookfile"))
+      cookbook_file = ::Berkshelf::Berksfile.from_file(File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME))
       cookbook_file.install(config)
     rescue BerkshelfError => e
       Berkshelf.ui.fatal e

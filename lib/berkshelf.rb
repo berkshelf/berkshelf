@@ -8,8 +8,8 @@ require 'chef/cookbook/metadata'
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
 module Berkshelf
-  DEFAULT_STORE_PATH = File.expand_path("~/.bookshelf").freeze
-  DEFAULT_FILENAME = 'Cookbookfile'.freeze
+  DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
+  DEFAULT_FILENAME = 'Berksfile'.freeze
 
   autoload :InitGenerator, 'berkshelf/init_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
@@ -35,16 +35,16 @@ module Berkshelf
     end
 
     # Returns the filepath to the location Cookbooks will be downloaded to
-    # or uploaded from. By default this is '~/.bookshelf' but can be overridden
-    # by specifying a value for the ENV variable 'BOOKSHELF_PATH'.
+    # or uploaded from. By default this is '~/.berkshelf' but can be overridden
+    # by specifying a value for the ENV variable 'BERKSHELF_PATH'.
     # 
     # @return [Stirng]
-    def bookshelf_path
-      ENV["BOOKSHELF_PATH"] || DEFAULT_STORE_PATH
+    def berkshelf_path
+      ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
 
     def cookbook_store
-      @cookbook_store ||= CookbookStore.new(bookshelf_path)
+      @cookbook_store ||= CookbookStore.new(berkshelf_path)
     end
 
     def downloader
@@ -85,6 +85,6 @@ require 'archive/tar/minitar'
 
 require 'berkshelf/version'
 require 'berkshelf/dsl'
-require 'berkshelf/cookbookfile'
+require 'berkshelf/berksfile'
 require 'berkshelf/lockfile'
 require 'berkshelf/git'

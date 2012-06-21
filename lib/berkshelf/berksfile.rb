@@ -1,6 +1,6 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
-  class Cookbookfile
+  class Berksfile
     include DSL
 
     class << self
@@ -8,7 +8,7 @@ module Berkshelf
         content = File.read(file)
         read(content)
       rescue Errno::ENOENT => e
-        raise CookbookfileNotFound, "No Cookbookfile or Cookbookfile.lock found at: #{file}."
+        raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
       end
 
       def read(content)

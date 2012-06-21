@@ -22,7 +22,7 @@ module Berkshelf
     end
 
     def generate
-      template "Cookbookfile.erb", File.join(target_path, "Cookbookfile")
+      template "Berksfile.erb", File.join(target_path, "Berksfile")
 
       if options[:chefignore]
         copy_file "chefignore", File.join(target_path, ".chefignore")

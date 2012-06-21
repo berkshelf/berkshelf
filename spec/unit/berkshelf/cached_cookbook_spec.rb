@@ -130,7 +130,7 @@ module Berkshelf
         @metadata.should have_key(:specificity)
       end
 
-      context "given a 'template' or 'file' cookbookfile type" do
+      context "given a 'template' or 'file' berksfile type" do
         let(:file) { subject.path.join("files", "ubuntu", "mime.types") }
         before(:each) { @metadata = subject.file_metadata(:files, file) }
 
@@ -139,7 +139,7 @@ module Berkshelf
         end
       end
 
-      context "given any cookbookfile type that is not a 'template' or 'file'" do
+      context "given any berksfile type that is not a 'template' or 'file'" do
         let(:file) { subject.path.join("README.md") }
         before(:each) { @metadata = subject.file_metadata(:root, file) }
 

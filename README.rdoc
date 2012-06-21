@@ -10,9 +10,9 @@ A knife plugin to retrieve berkshelf.
 
 === Use
 
-==== Cookbookfile
+==== Berksfile
 
-Dependencies are managed via a `Cookbookfile` in the directory where you want the cookbooks to be installed.  The Cookbookfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
+Dependencies are managed via a `Berksfile` in the directory where you want the cookbooks to be installed.  The Berksfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
 
     cookbook 'memcached'
     cookbook 'nginx'
@@ -25,15 +25,15 @@ The CLI consists of 2 commands: install, update
 
     $ knife berks (install|update) [(--without|-W) group_to_exclude]
 
-[install]  Installs the from the Cookbookfile.lock, or Cookbookfile if the the lockfile does not exist.
+[install]  Installs the from the Berksfile.lock, or Berksfile if the the lockfile does not exist.
 
 [update] Skips the lockfile and installs fresh
 
 [init] Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
 
-== The Cookbookfile
+== The Berksfile
 
-Cookbooks are defined as dependencies by declaring them in the `Cookbookfile`
+Cookbooks are defined as dependencies by declaring them in the `Berksfile`
 
     cookbook 'nginx'
 

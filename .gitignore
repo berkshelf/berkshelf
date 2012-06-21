@@ -9,7 +9,7 @@ _yardoc
 /doc/
 /pkg
 /spec/reports
-/Cookbookfile*
+/Berksfile*
 tmp
 *~
 *.tar*

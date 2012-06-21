@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe Cookbookfile do
+  describe Berksfile do
     describe "ClassMethods" do
-      subject { Cookbookfile }
+      subject { Berksfile }
 
       let(:content) do
 <<-EOF
@@ -15,7 +15,7 @@ EOF
       end
 
       describe "#read" do
-        it "reads the content of a Cookbookfile and adds the sources to the Shelf" do
+        it "reads the content of a Berksfile and adds the sources to the Shelf" do
           cbfile = subject.read(content)
 
           ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |name|
@@ -23,25 +23,25 @@ EOF
           end
         end
 
-        it "returns an instance of Cookbookfile" do
-          subject.read(content).should be_a(Cookbookfile)
+        it "returns an instance of Berksfile" do
+          subject.read(content).should be_a(Berksfile)
         end
       end
 
       describe "#from_file" do
-        let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Cookbookfile') }
+        let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
 
-        it "reads a Cookbookfile and returns an instance Cookbookfile" do
-          subject.from_file(cookbook_file).should be_a(Cookbookfile)
+        it "reads a Berksfile and returns an instance Berksfile" do
+          subject.from_file(cookbook_file).should be_a(Berksfile)
         end
 
-        context "when Cookbookfile does not exist at given path" do
+        context "when Berksfile does not exist at given path" do
           let(:bad_path) { tmp_path.join("thisdoesnotexist") }
 
-          it "raises CookbookfileNotFound" do
+          it "raises BerksfileNotFound" do
             lambda {
               subject.from_file(bad_path)
-            }.should raise_error(CookbookfileNotFound)
+            }.should raise_error(BerksfileNotFound)
           end
         end
       end
@@ -77,14 +77,14 @@ EOF
     let(:source_two) { double('source_two', name: "mysql") }
 
     subject do
-      cbf = Cookbookfile.new
+      cbf = Berksfile.new
       cbf.add_source(source_one)
       cbf.add_source(source_two)
       cbf
     end
 
     describe "#sources" do
-      it "returns all CookbookSources added to the instance of Cookbookfile" do
+      it "returns all CookbookSources added to the instance of Berksfile" do
         result = subject.sources
 
         result.should have(2).items

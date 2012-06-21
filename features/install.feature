@@ -1,10 +1,10 @@
-Feature: install cookbooks from a Cookbookfile
-  As a user with a Cookbookfile
+Feature: install cookbooks from a Berksfile
+  As a user with a Berksfile
   I want to be able to run knife berkshelf install to install my cookbooks
   So that I don't have to download my cookbooks and their dependencies manually
 
   Scenario: install cookbooks
-    Given I write to "Cookbookfile" with:
+    Given I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4"
       """
@@ -20,7 +20,7 @@ Feature: install cookbooks from a Cookbookfile
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"
-    And the cookbook "sparkle_motion" has the file "Cookbookfile" with:
+    And the cookbook "sparkle_motion" has the file "Berksfile" with:
       """
       metadata
       """
@@ -32,18 +32,18 @@ Feature: install cookbooks from a Cookbookfile
       """
     And the exit status should be 0
 
-  Scenario: running install with no Cookbookfile or Cookbookfile.lock
-    Given I do not have a Cookbookfile
-    And I do not have a Cookbookfile.lock
+  Scenario: running install with no Berksfile or Berksfile.lock
+    Given I do not have a Berksfile
+    And I do not have a Berksfile.lock
     When I run the install command
     Then the output should contain:
       """
-      No Cookbookfile or Cookbookfile.lock found at:
+      No Berksfile or Berksfile.lock found at:
       """
-    And the CLI should exit with the status code for error "CookbookfileNotFound"
+    And the CLI should exit with the status code for error "BerksfileNotFound"
 
   Scenario: running install when the Cookbook is not found on the remote site
-    Given I write to "Cookbookfile" with:
+    Given I write to "Berksfile" with:
       """
       cookbook "doesntexist"
       """
