@@ -1,6 +1,6 @@
-= Knife Cookbook Dependencies
+= Berkshelf
 
-A knife plugin to retrieve berkshelf.
+A knife plugin to manage an Cookbook's, or an Application's Cookbook dependencies.
 
 == Getting Started
 

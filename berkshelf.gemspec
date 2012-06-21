@@ -3,8 +3,8 @@
 require File.expand_path('../lib/berkshelf/version', __FILE__)
 
 Gem::Specification.new do |s|
-  s.authors               = ["Josiah Kiehl", "Jamie Winsor", "Erik Hollensbe"]
-  s.email                 = ["josiah@skirmisher.net", "jamie@vialstudios.com", "erik@hollensbe.org"]
+  s.authors               = ["Josiah Kiehl", "Jamie Winsor", "Michael Ivey", "Erik Hollensbe"]
+  s.email                 = ["josiah@skirmisher.net", "jamie@vialstudios.com", "ivey@gweezlebur.com", "erik@hollensbe.org"]
   s.description           = %q{Resolves berkshelf}
   s.summary               = s.description
   s.homepage              = "https://github.com/RiotGames/berkshelf"
