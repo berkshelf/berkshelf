@@ -9,12 +9,12 @@ Given /^a cookbook named "(.*?)"$/ do |name|
   }
 end
 
-Given /^I do not have a Cookbookfile$/ do
-  in_current_dir { FileUtils.rm_f(KCD::DEFAULT_FILENAME) }
+Given /^I do not have a Berksfile$/ do
+  in_current_dir { FileUtils.rm_f(Berkshelf::DEFAULT_FILENAME) }
 end
 
-Given /^I do not have a Cookbookfile\.lock$/ do
-  in_current_dir { FileUtils.rm_f(KCD::Lockfile::DEFAULT_FILENAME) }
+Given /^I do not have a Berksfile\.lock$/ do
+  in_current_dir { FileUtils.rm_f(Berkshelf::Lockfile::DEFAULT_FILENAME) }
 end
 
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
@@ -47,7 +47,7 @@ end
 
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|
   Pathname.new(current_dir).join(cookbook_name).should have_structure {
-    file "Cookbookfile" do
+    file "Berksfile" do
       contains content
     end
     file ".chefignore"
@@ -64,7 +64,7 @@ end
 
 Then /^the file "(.*?)" in the directory "(.*?)" should not contain:$/ do |file_name, directory_name, content|
   Pathname.new(current_dir).join(directory_name).should_not have_structure {
-    file "Cookbookfile" do
+    file "Berksfile" do
       contains content
     end
   }

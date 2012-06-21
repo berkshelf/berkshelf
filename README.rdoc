@@ -1,18 +1,18 @@
-= Knife Cookbook Dependencies
+= Berkshelf
 
-A knife plugin to retrieve cookbook dependencies.
+Manages a Cookbook's, or an Application's, Cookbook dependencies
 
 == Getting Started
 
 === Install
 
-    $ gem install knife_cookbook_dependencies
+    $ gem install berkshelf
 
 === Use
 
-==== Cookbookfile
+==== Berksfile
 
-Dependencies are managed via a `Cookbookfile` in the directory where you want the cookbooks to be installed.  The Cookbookfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
+Dependencies are managed via a `Berksfile` in the directory where you want the cookbooks to be installed.  The Berksfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
 
     cookbook 'memcached'
     cookbook 'nginx'
@@ -23,21 +23,17 @@ Dependencies are managed via a `Cookbookfile` in the directory where you want th
 
 The CLI consists of 2 commands: install, update
 
-    $ knife cookbook dependencies (install|update) [(--without|-W) group_to_exclude]
+    $ knife berks (install|update) [(--without|-W) group_to_exclude]
 
-note::
-
-    `knife cookbook dependencies` subcommands can be used by its alias `knife cookbook deps`
-
-[install]  Installs the from the Cookbookfile.lock, or Cookbookfile if the the lockfile does not exist.
+[install]  Installs the from the Berksfile.lock, or Berksfile if the the lockfile does not exist.
 
 [update] Skips the lockfile and installs fresh
 
-[init] Prepares a local path to have it's Cookbook dependencies managed by KCD. If the target path is a Cookbook itself, additional KCD support files will be generated to get you started.
+[init] Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
 
-== The Cookbookfile
+== The Berksfile
 
-Cookbooks are defined as dependencies by declaring them in the `Cookbookfile`
+Cookbooks are defined as dependencies by declaring them in the `Berksfile`
 
     cookbook 'nginx'
 
@@ -58,7 +54,7 @@ git
 
 path
 
-    # knife cookbook dependencies will look in /path/to/location/of/my_application for the cookbook
+    # knife berks will look in /path/to/location/of/my_application for the cookbook
     cookbook "my_application", path: "/path/to/location/of"
 
 === Groups
@@ -85,11 +81,11 @@ Install the latest version of {Bundler}[http://gembundler.com]
 
 Clone the project
 
-    $ git clone git://github.com/RiotGames/knife_cookbook_dependencies.git
+    $ git clone git://github.com/RiotGames/berkshelf.git
 
 and run:
 
-    $ cd knife_cookbook_dependencies
+    $ cd berkshelf
     $ bundle install
 
 Bundler will install all gems and their dependencies required for testing and developing. 

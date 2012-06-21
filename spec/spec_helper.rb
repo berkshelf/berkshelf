@@ -20,7 +20,7 @@ Spork.prefork do
   end
 
   RSpec.configure do |config|
-    config.include KnifeCookbookDependencies::RSpec::FileSystemMatchers
+    config.include Berkshelf::RSpec::FileSystemMatchers
     config.include JsonSpec::Helpers
     
     config.mock_with :rspec
@@ -44,7 +44,7 @@ Spork.prefork do
 
     config.before(:each) do
       clean_tmp_path
-      KCD.cookbook_store = KCD::CookbookStore.new(tmp_path.join("downloader_tmp"))
+      Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
     end
   end
 
@@ -66,7 +66,7 @@ Spork.prefork do
   end
 
   def example_cookbook_from_path
-    @example_cookbook_from_path ||= KCD::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
+    @example_cookbook_from_path ||= Berkshelf::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
   end
 
   def app_root_path
@@ -88,5 +88,5 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  require 'kcd'
+  require 'berkshelf'
 end
