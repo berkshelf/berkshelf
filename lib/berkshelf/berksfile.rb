@@ -67,12 +67,9 @@ module Berkshelf
       @sources.has_key?(source.to_s)
     end
 
-    # @param [Hash] options
-    #   a hash of options
-    #
-    #   Options:
-    #     exclude: An array of groups to exclude from the returned Array
-    #       of sources
+    # @option options [Symbol, Array] :exclude 
+    #   Group(s) to exclude to exclude from the returned Array of sources
+    #   group to not be installed
     #
     # @return [Array<Berkshelf::CookbookSource>]
     def sources(options = {})
@@ -119,12 +116,9 @@ module Berkshelf
     end
     alias_method :get_source, :[]
 
-    # @param [Hash] options
-    #   a hash of options
-    #   
-    #   Options:
-    #     without: An array of groups to exclude which will cause any sources
-    #       marked as a member of the group to not be installed
+    # @option options [Symbol, Array] :without 
+    #   Group(s) to exclude which will cause any sources marked as a member of the 
+    #   group to not be installed
     def install(options = {})
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))
       resolver.resolve
@@ -134,19 +128,15 @@ module Berkshelf
     # @param [String] chef_server_url
     #   the full URL to the Chef Server to upload to
     #
-    #   Example:
     #     "https://api.opscode.com/organizations/vialstudios"
     #
-    # @param [Hash] options
-    #   a hash of options
-    #
-    #   Options:
-    #     without: An array of groups to exclude which will cause any sources
-    #       marked as a member of the group to not be installed
-    #     force: Upload the Cookbook even if the version already exists and is
-    #       frozen on the target Chef Server
-    #     freeze: Freeze the uploaded Cookbook on the Chef Server so that it
-    #       cannot be overwritten
+    # @option options [Symbol, Array] :without 
+    #   Group(s) to exclude which will cause any sources marked as a member of the 
+    #   group to not be installed
+    # @option options [Boolean] :force Upload the Cookbook even if the version 
+    #   already exists and is frozen on the target Chef Server
+    # @option options [Boolean] :freeze Freeze the uploaded Cookbook on the Chef 
+    #   Server so that it cannot be overwritten
     def upload(chef_server_url, options = {})
       uploader = Uploader.new(Berkshelf.cookbook_store, chef_server_url)
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))  

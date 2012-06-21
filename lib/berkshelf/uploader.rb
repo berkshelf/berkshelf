@@ -13,19 +13,16 @@ module Berkshelf
     #   the CookbookStore containing the Cookbooks you with to upload
     # @param [String] server_url
     #   the URL to the Chef Server to upload Cookbooks to
-    # @param [Hash] options
-    #   a hash of options
     #
-    #   Options:
-    #     node_name: the name of the client used to sign REST requests to
-    #       the Chef Server. 
-    #       
-    #       Default: the value of Chef::Config[:node_name]
+    # @option options [String] :node_name
+    #   the name of the client used to sign REST requests to the Chef Server
+    # 
+    #   Default: the value of Chef::Config[:node_name]
+    # @option options [String] :client_key
+    #   the filepath location for the client's key used to sign REST requests
+    #   to the Chef Server
     #
-    #     client_key: the filepath location for the client's key used to sign
-    #       REST requests to the Chef Server.
-    #
-    #       Default: the value of Chef::Config[:client_key]
+    #   Default: the value of Chef::Config[:client_key]
     def initialize(cookbook_store, server_url, options = {})
       options[:node_name] ||= Chef::Config[:node_name]
       options[:client_key] ||= Chef::Config[:client_key]
@@ -42,14 +39,13 @@ module Berkshelf
     #   name of the Cookbook to upload
     # @param [String] version
     #   version of the Cookbook to upload
-    # @param [Hash] options
-    #   a hash of options
     #
-    #   Options:
-    #     force: Upload the Cookbook even if the version already exists and is
-    #       frozen on the target Chef Server
-    #     freeze: Freeze the uploaded Cookbook on the Chef Server so that it
-    #       cannot be overwritten
+    # @option options [Boolean] :force
+    #   Upload the Cookbook even if the version already exists and is frozen on
+    #   the target Chef Server
+    # @option options [Boolean] :freeze
+    #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be
+    #   overwritten
     #
     # @return [TXResult]
     def upload(name, version, options = {})
@@ -58,7 +54,7 @@ module Berkshelf
       TXResult.new(:error, e.message)
     end
 
-    # See #upload. This function will raise if an error occurs.
+    # @see #upload
     def upload!(name, version, options = {})
       cookbook = cookbook_store.cookbook(name, version)
       raise UploadFailure, "Source not downloaded" if cookbook.nil?

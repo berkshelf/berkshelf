@@ -79,18 +79,19 @@ module Berkshelf
       @sources.collect { |name, source| source }
     end
 
-    # @return [Hash]
-    #   a hash containing package names - in this case Cookbook names - as keys and
-    #   their locked version as values.
+    # Finds a solution for the currently added sources and their dependencies
     #
-    #   Example:
-    #       { 
-    #         "nginx" => 0.101.0,
-    #         "build-essential" => 1.0.2,
-    #         "runit" => 0.15.0,
-    #         "bluepill" => 1.0.4,
-    #         "ohai" => 1.0.2
-    #       }
+    # @example
+    #   { 
+    #     "nginx" => 0.101.0,
+    #     "build-essential" => 1.0.2,
+    #     "runit" => 0.15.0,
+    #     "bluepill" => 1.0.4,
+    #     "ohai" => 1.0.2
+    #   }
+    #
+    # @return [Hash]
+    #   a solution containing Cookbook names for keys and a locked version for values
     def resolve
       quietly { selector.find_solution(solution_constraints) }
     end
