@@ -5,7 +5,7 @@ require File.expand_path('../lib/berkshelf/version', __FILE__)
 Gem::Specification.new do |s|
   s.authors               = ["Josiah Kiehl", "Jamie Winsor", "Michael Ivey", "Erik Hollensbe"]
   s.email                 = ["josiah@skirmisher.net", "jamie@vialstudios.com", "ivey@gweezlebur.com", "erik@hollensbe.org"]
-  s.description           = %q{Resolves berkshelf}
+  s.description           = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
   s.summary               = s.description
   s.homepage              = "https://github.com/RiotGames/berkshelf"
   s.files                 = `git ls-files`.split($\)

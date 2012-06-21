@@ -1,6 +1,6 @@
 = Berkshelf
 
-A knife plugin to manage an Cookbook's, or an Application's Cookbook dependencies.
+Manages a Cookbook's, or an Application's, Cookbook dependencies
 
 == Getting Started
 
