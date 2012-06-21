@@ -116,10 +116,24 @@ module Berkshelf
     describe "#resolve" do
       before(:each) do
         subject.add_source(source)
+        @solution = subject.resolve
       end
       
-      it "returns a hash containing the solution for the sources and dependencies" do
-        subject.resolve.should eql("mysql" => DepSelector::Version.new("1.2.4"), "openssl" => DepSelector::Version.new("1.0.0"))
+      it "returns an array of CachedCookbooks" do
+        @solution.each do |item|
+          item.should be_a(CachedCookbook)
+        end
+      end
+
+      it "returns a CachedCookbook for each resolved source" do
+        @solution.should have(2).items
+      end
+
+      it "resolves the given mysql source" do
+        @solution[0].cookbook_name.should eql("mysql")
+        @solution[0].version.should eql("1.2.4")
+        @solution[1].cookbook_name.should eql("openssl")
+        @solution[1].version.should eql("1.0.0")
       end
     end
   end
