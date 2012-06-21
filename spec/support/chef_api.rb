@@ -1,7 +1,7 @@
 require 'chef/rest'
 require 'chef/cookbook_version'
 
-module KnifeCookbookDependencies
+module Berkshelf
   module RSpec
     module ChefAPI
       def purge_cookbook(name, version)

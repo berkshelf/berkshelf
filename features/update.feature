@@ -3,18 +3,18 @@ Feature: update
   I want a way to update the versions without clearing out the files I've downloaded
   So that I can update faster than a clean install
 
-  Scenario: knife cookbook dependencies update
-    Given I write to "Cookbookfile" with:
+  Scenario: knife berkshelf update
+    Given I write to "Berksfile" with:
       """
       cookbook "mysql"
       """
-    Given I write to "Cookbookfile.lock" with:
+    Given I write to "Berksfile.lock" with:
       """
       cookbook 'mysql', :locked_version => '0.0.1'
       cookbook 'openssl', :locked_version => '0.0.1'
       """
     When I run the update command
-    Then the file "Cookbookfile.lock" should contain exactly:
+    Then the file "Berksfile.lock" should contain exactly:
       """
       cookbook 'mysql', :locked_version => '1.2.6'
       cookbook 'openssl', :locked_version => '1.0.0'

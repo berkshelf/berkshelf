@@ -11,7 +11,7 @@ Spork.prefork do
 
   APP_ROOT = File.expand_path('../../../', __FILE__)
 
-  ENV["BOOKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "bookshelf")
+  ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "berkshelf")
   
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
@@ -35,7 +35,7 @@ Spork.prefork do
   end
 
   def cookbook_store
-    Pathname.new(ENV["BOOKSHELF_PATH"])
+    Pathname.new(ENV["BERKSHELF_PATH"])
   end
 
   def clean_cookbook_store
@@ -51,5 +51,5 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  require 'kcd'
+  require 'berkshelf'
 end
