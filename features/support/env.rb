@@ -13,6 +13,12 @@ Spork.prefork do
 
   ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "berkshelf")
   
+  begin
+    CONFIG = YAML.load(File.read(File.join(APP_ROOT, "features", "config.yml")))
+  rescue Errno::ENOENT
+    raise "Please create a config file at features/config.yml from the sample found at features/config.sample.yml"
+  end
+  
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
   Around do |scenario, block|
@@ -22,9 +28,9 @@ Spork.prefork do
   end
 
   Before do
-    Chef::Config[:chef_server_url] = config['chef_server_url']
-    Chef::Config[:client_key] = config['client_key']
-    Chef::Config[:node_name] = config['node_name']
+    Chef::Config[:chef_server_url] = CONFIG['chef_server_url']
+    Chef::Config[:client_key] = CONFIG['client_key']
+    Chef::Config[:node_name] = CONFIG['node_name']
     clean_cookbook_store
     @aruba_io_wait_seconds = 5
   end
@@ -41,12 +47,6 @@ Spork.prefork do
   def clean_cookbook_store
     FileUtils.rm_rf(cookbook_store)
     FileUtils.mkdir_p(cookbook_store)
-  end
-
-  def config
-    @config ||= YAML.load(File.read(File.join(APP_ROOT, "features", "config.yml")))
-  rescue Errno::ENOENT
-    raise "Please create a config file at features/config.yml from the sample found at features/config.sample.yml"
   end
 end
 
