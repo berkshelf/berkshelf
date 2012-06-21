@@ -71,7 +71,7 @@ module Berkshelf
 
     def initialize(name, path, metadata)
       @cookbook_name = name
-      @path = path
+      @path = Pathname.new(path)
       @metadata = metadata
       @files = Array.new
       @manifest = Mash.new(
@@ -176,6 +176,10 @@ module Berkshelf
       result['json_class'] = chef_json_class
       result['frozen?'] = false
       result.to_json(*a)
+    end
+
+    def to_s
+      "#{cookbook_name} (#{version}) '#{path}'"
     end
 
     private
