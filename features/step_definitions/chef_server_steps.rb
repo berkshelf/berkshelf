@@ -1,4 +1,4 @@
-World(KCD::RSpec::ChefAPI)
+World(Berkshelf::RSpec::ChefAPI)
 
 Given /^the Chef server does not have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|

@@ -6,18 +6,18 @@ Feature: --without block
   @slow_process
   Scenario: Exclude a block
     Given I write to "Cookbookfile" with:
-    """
-    group :notme do
-      cookbook "nginx", "= 0.101.2"
-    end
-    
-    cookbook "mysql", "= 1.2.4"
+      """
+      group :notme do
+        cookbook "nginx", "= 0.101.2"
+      end
+      
+      cookbook "mysql", "= 1.2.4"
 
-    group :takeme do
-      cookbook "ntp", "= 1.1.8"
-    end
-    """
-    When I run `knife cookbook dependencies install --without notme`
+      group :takeme do
+        cookbook "ntp", "= 1.1.8"
+      end
+      """
+    When I run `knife berkshelf install --without notme`
     Then the cookbook store should have the cookbooks:
       | mysql | 1.2.4 |
       | ntp   | 1.1.8 |

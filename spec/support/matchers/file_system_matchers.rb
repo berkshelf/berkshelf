@@ -1,6 +1,6 @@
 # Taken from (https://github.com/carlhuda/beard)
 # Permission granted by Yehuda Katz (Jan 4th, 2012)
-module KnifeCookbookDependencies
+module Berkshelf
   module RSpec
     module FileSystemMatchers
       class File

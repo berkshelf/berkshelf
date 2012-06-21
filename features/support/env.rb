@@ -51,5 +51,5 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  require 'kcd'
+  require 'berkshelf'
 end

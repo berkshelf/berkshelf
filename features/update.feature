@@ -3,7 +3,7 @@ Feature: update
   I want a way to update the versions without clearing out the files I've downloaded
   So that I can update faster than a clean install
 
-  Scenario: knife cookbook dependencies update
+  Scenario: knife berkshelf update
     Given I write to "Cookbookfile" with:
       """
       cookbook "mysql"

@@ -1,7 +1,7 @@
 Feature: initialize command
   As a Cookbook author  
-  I want a way to quickly prepare a Cookbook on my local disk with KCD files
-  So that I can resolve my Cookbook's dependencies with KCD
+  I want a way to quickly prepare a Cookbook on my local disk with Berkshelf files
+  So that I can resolve my Cookbook's dependencies with Berkshelf
 
   Scenario: initializing a path containing a cookbook
     Given a cookbook named "sparkle_motion"

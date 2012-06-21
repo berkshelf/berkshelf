@@ -1,7 +1,7 @@
 require 'aruba/api'
 
 World(Aruba::Api)
-World(KnifeCookbookDependencies::RSpec::FileSystemMatchers)
+World(Berkshelf::RSpec::FileSystemMatchers)
 
 Then /^I trace$/ do
 end
@@ -27,34 +27,30 @@ Then /^the file "(.*?)" should contain in the current directory:$/ do |filename,
 end
 
 When /^I run the init command with the cookbook "(.*?)" as the target$/ do |cookbook_name|
-  run_simple(unescape("knife cookbook dependencies init #{cookbook_name}"), false)
+  run_simple(unescape("knife berks init #{cookbook_name}"), false)
 end
 
 When /^I run the init command with the directory "(.*?)" as the target$/ do |directory_name|
-  run_simple(unescape("knife cookbook dependencies init #{directory_name}"), false)
+  run_simple(unescape("knife berks init #{directory_name}"), false)
 end
 
 When /^I run the init command with no value for the target$/ do
-  run_simple(unescape("knife cookbook dependencies init"), false)
+  run_simple(unescape("knife berks init"), false)
 end
 
 When /^I run the install command$/ do
-  run_simple(unescape("knife cookbook dependencies install"), false)
-end
-
-When /^I run the clean command$/ do
-  run_simple(unescape("knife cookbook dependencies clean"), false)
+  run_simple(unescape("knife berks install"), false)
 end
 
 When /^I run the update command$/ do
-  run_simple(unescape("knife cookbook dependencies update"), false)
+  run_simple(unescape("knife berks update"), false)
 end
 
 When /^I run the upload command$/ do
-  run_simple(unescape("knife cookbook dependencies upload"), false)
+  run_simple(unescape("knife berks upload"), false)
 end
 
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
-  exit_status = KCD.const_get(error_constant).status_code
+  exit_status = Berkshelf.const_get(error_constant).status_code
   assert_exit_status(exit_status)
 end
