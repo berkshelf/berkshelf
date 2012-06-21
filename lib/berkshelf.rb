@@ -1,9 +1,15 @@
-require 'berkshelf/core_ext'
-require 'berkshelf/errors'
+require 'pathname'
+require 'dep_selector'
+require 'zlib'
+require 'archive/tar/minitar'
 require 'chef/knife'
 require 'chef/rest'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
+
+require 'berkshelf/version'
+require 'berkshelf/core_ext'
+require 'berkshelf/errors'
 
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
@@ -11,6 +17,10 @@ module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
+  autoload :DSL, 'berkshelf/dsl'
+  autoload :Git, 'berkshelf/git'
+  autoload :Berksfile, 'berkshelf/berksfile'
+  autoload :Lockfile, 'berkshelf/lockfile'
   autoload :InitGenerator, 'berkshelf/init_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
   autoload :CookbookStore, 'berkshelf/cookbook_store'
@@ -38,7 +48,7 @@ module Berkshelf
     # or uploaded from. By default this is '~/.berkshelf' but can be overridden
     # by specifying a value for the ENV variable 'BERKSHELF_PATH'.
     # 
-    # @return [Stirng]
+    # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
@@ -78,13 +88,3 @@ module Berkshelf
       end
   end
 end
-
-require 'dep_selector'
-require 'zlib'
-require 'archive/tar/minitar'
-
-require 'berkshelf/version'
-require 'berkshelf/dsl'
-require 'berkshelf/berksfile'
-require 'berkshelf/lockfile'
-require 'berkshelf/git'
