@@ -79,21 +79,19 @@ module Berkshelf
       @sources.collect { |name, source| source }
     end
 
-    # Finds a solution for the currently added sources and their dependencies
+    # Finds a solution for the currently added sources and their dependencies and
+    # returns an array of CachedCookbooks.
     #
-    # @example
-    #   { 
-    #     "nginx" => 0.101.0,
-    #     "build-essential" => 1.0.2,
-    #     "runit" => 0.15.0,
-    #     "bluepill" => 1.0.4,
-    #     "ohai" => 1.0.2
-    #   }
-    #
-    # @return [Hash]
-    #   a solution containing Cookbook names for keys and a locked version for values
+    # @return [Array<Berkshelf::CachedCookbook>]
     def resolve
-      quietly { selector.find_solution(solution_constraints) }
+      solution = quietly { selector.find_solution(solution_constraints) }
+
+      [].tap do |cached_cookbooks|
+        solution.each do |name, version|
+          source = get_source(name)
+          cached_cookbooks << CachedCookbook.new(source.name, source.local_path, source.metadata)
+        end
+      end
     end
 
     # @param [#to_s] source

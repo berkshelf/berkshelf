@@ -5,12 +5,9 @@ require 'chef/config'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Uploader
-    attr_reader :cookbook_store
     attr_reader :server_url
     attr_reader :queue
 
-    # @param [Berkshelf::CookbookStore] cookbook_store
-    #   the CookbookStore containing the Cookbooks you with to upload
     # @param [String] server_url
     #   the URL to the Chef Server to upload Cookbooks to
     #
@@ -23,22 +20,19 @@ module Berkshelf
     #   to the Chef Server
     #
     #   Default: the value of Chef::Config[:client_key]
-    def initialize(cookbook_store, server_url, options = {})
+    def initialize(server_url, options = {})
       options[:node_name] ||= Chef::Config[:node_name]
       options[:client_key] ||= Chef::Config[:client_key]
 
-      @cookbook_store = cookbook_store
       @server_url = server_url
       @rest = Chef::REST.new(server_url, options[:node_name], options[:client_key])
       @queue = []
     end
 
-    # Uploads the given CookbookSource to the given Chef server url.
+    # Uploads a CachedCookbook from a CookbookStore to this instances Chef Server URL
     #
-    # @param [String] name
-    #   name of the Cookbook to upload
-    # @param [String] version
-    #   version of the Cookbook to upload
+    # @param [CachedCookbook] cookbook
+    #   a cached cookbook to upload
     #
     # @option options [Boolean] :force
     #   Upload the Cookbook even if the version already exists and is frozen on
@@ -48,17 +42,14 @@ module Berkshelf
     #   overwritten
     #
     # @return [TXResult]
-    def upload(name, version, options = {})
-      upload!(name, version, options)
+    def upload(cookbook, options = {})
+      upload!(cookbook, options)
     rescue BerkshelfError => e
       TXResult.new(:error, e.message)
     end
 
     # @see #upload
-    def upload!(name, version, options = {})
-      cookbook = cookbook_store.cookbook(name, version)
-      raise UploadFailure, "Source not downloaded" if cookbook.nil?
-
+    def upload!(cookbook, options = {})
       cookbook.validate!
 
       checksums = cookbook.checksums.dup
@@ -67,7 +58,7 @@ module Berkshelf
       commit_sandbox(new_sandbox)
       save_cookbook(cookbook, options)
 
-      TXResult.new(:ok, "#{name} (#{version}) uploaded to: #{server_url}")
+      TXResult.new(:ok, "#{cookbook.cookbook_name} (#{cookbook.version}) uploaded to: #{server_url}")
     end
 
     private
