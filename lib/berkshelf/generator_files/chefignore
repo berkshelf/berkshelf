@@ -40,5 +40,9 @@ spec/*
 spec/fixtures/*
 features/*
 
+## SCM
+.gitignore
+
 # Berkshelf
 Berksfile
+Berksfile.lock
