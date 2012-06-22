@@ -147,7 +147,7 @@ module Berkshelf
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))  
 
       resolver.resolve.each do |cb|
-        Berkshelf.ui.info "Uploading #{cb.cookbook_name} (#{cb.version}) to: #{chef_server_url}"
+        Berkshelf.ui.info "Uploading #{cb.cookbook_name} (#{cb.version}) to: '#{chef_server_url}'"
         uploader.upload!(cb, options)
       end
     end
