@@ -41,3 +41,16 @@ Feature: upload command
       | mysql   | 1.2.4 |
       | openssl | 1.0.0 |
     And the exit status should be 0
+
+  @slow_process
+  Scenario: running the upload command with a Berksfile containing a source that has a path location
+    Given a Berksfile with path location sources to fixtures:
+      | example_cookbook | example_cookbook-0.5.0 |
+    And the Chef server does not have the cookbooks:
+      | example_cookbook | 0.5.0 |
+    When I run the upload command
+    Then the output should contain "Using example_cookbook (0.5.0) at path:"
+    And the output should contain "Uploading example_cookbook (0.5.0) to:"
+    And the Chef server should have the cookbooks:
+      | example_cookbook | 0.5.0 |
+    And the exit status should be 0

@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'bundler'
-Bundler.setup
 require 'spork'
 
 Spork.prefork do
@@ -12,7 +11,7 @@ Spork.prefork do
   APP_ROOT = File.expand_path('../../../', __FILE__)
 
   ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "berkshelf")
-  
+
   begin
     CONFIG = YAML.load(File.read(File.join(APP_ROOT, "features", "config.yml")))
   rescue Errno::ENOENT
@@ -47,6 +46,14 @@ Spork.prefork do
   def clean_cookbook_store
     FileUtils.rm_rf(cookbook_store)
     FileUtils.mkdir_p(cookbook_store)
+  end
+
+  def app_root_path
+    Pathname.new(APP_ROOT)
+  end
+
+  def fixtures_path
+    app_root_path.join('spec/fixtures')
   end
 end
 
