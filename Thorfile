@@ -7,7 +7,7 @@ require 'bundler/setup'
 require 'berkshelf'
 require 'thor/rake_compat'
 
-class Berks < Thor
+class Default < Thor
   include Thor::RakeCompat
   Bundler::GemHelper.install_tasks
 
