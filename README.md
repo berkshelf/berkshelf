@@ -1,16 +1,16 @@
-= Berkshelf
+# Berkshelf
 
 Manages a Cookbook's, or an Application's, Cookbook dependencies
 
-== Getting Started
+## Getting Started
 
-=== Install
+### Install
 
     $ gem install berkshelf
 
-=== Use
+### Use
 
-==== Berksfile
+#### Berksfile
 
 Dependencies are managed via a `Berksfile` in the directory where you want the cookbooks to be installed.  The Berksfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
 
@@ -19,7 +19,7 @@ Dependencies are managed via a `Berksfile` in the directory where you want the c
     cookbook 'my_app', path: '/path/to/cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
 
-==== CLI
+#### CLI
 
 The CLI consists of 2 commands: install, update
 
@@ -31,7 +31,7 @@ The CLI consists of 2 commands: install, update
 
 [init] Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
 
-== The Berksfile
+## The Berksfile
 
 Cookbooks are defined as dependencies by declaring them in the `Berksfile`
 
@@ -57,7 +57,7 @@ path
     # knife berks will look in /path/to/location/of/my_application for the cookbook
     cookbook "my_application", path: "/path/to/location/of"
 
-=== Groups
+### Groups
 
 Groups can be defined via blocks or inline as an option:
 
@@ -69,11 +69,11 @@ Groups can be defined via blocks or inline as an option:
 
 When using install or update, groups can be excluded with the --without GROUP_NAME or -W GROUP_NAME flags.
 
-= Contributing
+# Contributing
 
-== Running tests
+## Running tests
 
-=== Install prerequisites
+### Install prerequisites
 
 Install the latest version of {Bundler}[http://gembundler.com]
 
@@ -90,11 +90,11 @@ and run:
 
 Bundler will install all gems and their dependencies required for testing and developing. 
 
-=== Running unit (RSpec) and acceptance (Cucumber) tests
+### Running unit (RSpec) and acceptance (Cucumber) tests
 
     $ bundle exec guard start
 
-= Authors and Contributors
+# Authors and Contributors
 
 * Josiah Kiehl (<josiah@skirmisher.net>)
 * Jamie Winsor (<jamie@vialstudios.com>)
