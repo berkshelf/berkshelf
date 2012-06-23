@@ -22,7 +22,7 @@ module Berkshelf
       type: :boolean,
       desc: "Freeze the uploaded cookbooks so that they cannot be overwritten.",
       default: false
-    desc "upload", "shit"
+    desc "upload", "Upload the sources defined in your Berksfile and their dependencies to a Chef Server."
     def upload
       begin
         Chef::Config.from_file(File.expand_path(options[:config]))
