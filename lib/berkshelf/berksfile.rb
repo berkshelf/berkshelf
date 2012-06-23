@@ -121,9 +121,7 @@ module Berkshelf
     #   group to not be installed
     # @option options [String, Pathname] :shims
     #   Path to a directory of shims each pointing to a Cookbook Version that is
-    #   part of the dependnecy solution. Each shim is a hard link on disk. Useful 
-    #   for getting Cookbooks in a single location for consumption by Vagrant, 
-    #   or another tool that expect this format
+    #   part of the dependnecy solution. Each shim is a hard link on disk.
     def install(options = {})
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))
       solution = resolver.resolve
@@ -161,6 +159,16 @@ module Berkshelf
       end
     end
 
+    # Write a collection of hard links to the given path representing the given
+    # CachedCookbooks. Useful for getting Cookbooks in a single location for 
+    # consumption by Vagrant, or another tool that expect this structure.
+    #
+    # @example 
+    #   Given the path: '/Users/reset/code/pvpnet/cookbooks'
+    #   And a CachedCookbook: 'nginx' verison '0.100.5' at '/Users/reset/.berkshelf/nginx-0.100.5'
+    #
+    #   A hardlink will be created at: '/Users/reset/code/pvpnet/cookbooks/nginx'
+    #
     # @param [Pathname, String] path
     # @param [Array<Berkshelf::CachedCookbook>] cached_cookbooks
     def write_shims(path, cached_cookbooks)
