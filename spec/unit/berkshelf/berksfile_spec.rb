@@ -156,7 +156,7 @@ EOF
         end
       end
 
-      context "when given a value for :shims pointing to a valid path", focus: true do
+      context "when given a value for :shims pointing to a valid path" do
         let(:cached_one) { double('cached_one', cookbook_name: 'nginx', path: fixtures_path.join("cookbooks", "nginx-0.100.5")) }
         let(:cached_two) { double('cached_two', cookbook_name: 'example_cookbook', path: fixtures_path.join("cookbooks", "example_cookbook-0.5.0")) }
         let(:shims_path) { tmp_path.join("cookbook_shims") }
@@ -174,9 +174,13 @@ EOF
 
         it "writes a symlink of the name of each source within the given directory" do
           subject.install(shims: shims_path)
-
-          shims_path.join(cached_one.cookbook_name).should exist
-          shims_path.join(cached_two.cookbook_name).should exist
+          linked_path_one = shims_path.join(cached_one.cookbook_name)
+          linked_path_two = shims_path.join(cached_two.cookbook_name)
+          
+          linked_path_one.should exist
+          linked_path_one.should be_cookbook
+          linked_path_two.should exist
+          linked_path_two.should be_cookbook
         end
       end
     end
