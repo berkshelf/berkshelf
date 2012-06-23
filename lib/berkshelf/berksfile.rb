@@ -121,8 +121,9 @@ module Berkshelf
     #   group to not be installed
     # @option options [String, Pathname] :shims
     #   Path to a directory of shims each pointing to a Cookbook Version that is
-    #   part of the dependnecy solution. Useful for getting Cookbooks in a single
-    #   location for consumption by Vagrant, or other tools that expect this format
+    #   part of the dependnecy solution. Each shim is a hard link on disk. Useful 
+    #   for getting Cookbooks in a single location for consumption by Vagrant, 
+    #   or another tool that expect this format
     def install(options = {})
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))
       solution = resolver.resolve
@@ -171,7 +172,7 @@ module Berkshelf
         FileUtils.mkdir_p(path)
         cached_cookbooks.each do |cached_cookbook|
           destination = File.join(path, cached_cookbook.cookbook_name)
-          FileUtils.ln_s(cached_cookbook.path, destination, force: true)
+          FileUtils.ln(cached_cookbook.path, destination, force: true)
         end
         Berkshelf.ui.info "Shims written to: '#{path}'"
       end
