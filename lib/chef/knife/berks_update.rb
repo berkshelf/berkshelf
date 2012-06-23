@@ -1,4 +1,5 @@
 require 'chef/knife'
+require 'chef/knife/berks_install'
 
 module Berkshelf
   class BerksUpdate < BerksInstall
