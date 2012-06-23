@@ -40,7 +40,7 @@ module Berkshelf
 
       def to_s
         s = "git: '#{uri}'"
-        s << " with branch '#{branch}" if branch
+        s << " with branch '#{branch}'" if branch
         s
       end
 
