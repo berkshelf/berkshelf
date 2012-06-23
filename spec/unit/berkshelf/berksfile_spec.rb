@@ -156,15 +156,12 @@ EOF
         end
       end
 
-      context "when given a value for :shims pointing to a valid path" do
-        let(:cached_one) { double('cached_one', cookbook_name: 'nginx', path: tmp_path.join("fake_berkshelf", "nginx-0.100.5")) }
-        let(:cached_two) { double('cached_two', cookbook_name: 'example_cookbook', path: tmp_path.join("fake_berkshelf", "example_cookbook-0.5.0")) }
+      context "when given a value for :shims pointing to a valid path", focus: true do
+        let(:cached_one) { double('cached_one', cookbook_name: 'nginx', path: fixtures_path.join("cookbooks", "nginx-0.100.5")) }
+        let(:cached_two) { double('cached_two', cookbook_name: 'example_cookbook', path: fixtures_path.join("cookbooks", "example_cookbook-0.5.0")) }
         let(:shims_path) { tmp_path.join("cookbook_shims") }
 
         before(:each) do
-          FileUtils.mkdir_p(cached_one.path)
-          FileUtils.mkdir_p(cached_two.path)
-          FileUtils.mkdir_p(shims_path.to_s)
           resolver.stub(:resolve).and_return([cached_one, cached_two])
         end
 
