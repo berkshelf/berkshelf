@@ -127,7 +127,10 @@ module Berkshelf
     def install(options = {})
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))
       solution = resolver.resolve
-      write_shims(options[:shims], solution) if options[:shims]
+      if options[:shims]
+        write_shims(options[:shims], solution)
+        Berkshelf.ui.info "Shims written to: '#{options[:shims]}'"
+      end
       write_lockfile(resolver.sources) unless lockfile_present?
     end
 
@@ -158,6 +161,16 @@ module Berkshelf
       end
     end
 
+    # @param [Pathname, String] path
+    # @param [Array<Berkshelf::CachedCookbook>] cached_cookbooks
+    def write_shims(path, cached_cookbooks)
+      FileUtils.mkdir_p(path)
+      cached_cookbooks.each do |cached_cookbook|
+        destination = File.join(path, cached_cookbook.cookbook_name)
+        FileUtils.ln_r(cached_cookbook.path, destination, force: true)
+      end
+    end
+
     private
 
       def lockfile_present?
@@ -166,15 +179,6 @@ module Berkshelf
 
       def write_lockfile(sources)
         Berkshelf::Lockfile.new(sources).write
-      end
-
-      def write_shims(path, cached_cookbooks)
-        FileUtils.mkdir_p(path)
-        cached_cookbooks.each do |cached_cookbook|
-          destination = File.join(path, cached_cookbook.cookbook_name)
-          FileUtils.ln_r(cached_cookbook.path, destination, force: true)
-        end
-        Berkshelf.ui.info "Shims written to: '#{path}'"
       end
   end
 end

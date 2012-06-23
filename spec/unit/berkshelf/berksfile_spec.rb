@@ -156,7 +156,7 @@ EOF
         end
       end
 
-      context "when given a value for :shims pointing to a valid path" do
+      context "when given a value for :shims pointing to a valid path"do
         let(:cached_one) { double('cached_one', cookbook_name: 'nginx', path: fixtures_path.join("cookbooks", "nginx-0.100.5")) }
         let(:cached_two) { double('cached_two', cookbook_name: 'example_cookbook', path: fixtures_path.join("cookbooks", "example_cookbook-0.5.0")) }
         let(:shims_path) { tmp_path.join("cookbook_shims") }
@@ -165,23 +165,33 @@ EOF
           resolver.stub(:resolve).and_return([cached_one, cached_two])
         end
 
-        it "writes a directory at the given path" do
+        it "sends a message to write_shims with the given directory and the resolver's solution" do
+          subject.should_receive(:write_shims).with(shims_path, [cached_one, cached_two])
           subject.install(shims: shims_path)
-
-          shims_path.should exist
-          shims_path.should be_directory
         end
+      end
+    end
 
-        it "writes a symlink of the name of each source within the given directory" do
-          subject.install(shims: shims_path)
-          linked_path_one = shims_path.join(cached_one.cookbook_name)
-          linked_path_two = shims_path.join(cached_two.cookbook_name)
-          
-          linked_path_one.should exist
-          linked_path_one.should be_cookbook
-          linked_path_two.should exist
-          linked_path_two.should be_cookbook
-        end
+    describe "#write_shims" do
+      let(:cached_one) { double('cached_one', cookbook_name: 'nginx', path: fixtures_path.join("cookbooks", "nginx-0.100.5")) }
+      let(:cached_two) { double('cached_two', cookbook_name: 'example_cookbook', path: fixtures_path.join("cookbooks", "example_cookbook-0.5.0")) }
+      let(:shims_path) { tmp_path.join("cookbook_shims") }
+
+      before(:each) { subject.write_shims(shims_path, [cached_one, cached_two]) }
+
+      it "writes a directory at the given path" do
+        shims_path.should exist
+        shims_path.should be_directory
+      end
+
+      it "writes a symlink of the name of each source within the given directory" do
+        linked_path_one = shims_path.join(cached_one.cookbook_name)
+        linked_path_two = shims_path.join(cached_two.cookbook_name)
+        
+        linked_path_one.should exist
+        linked_path_one.should be_cookbook
+        linked_path_two.should exist
+        linked_path_two.should be_cookbook
       end
     end
   end
