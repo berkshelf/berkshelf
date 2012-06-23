@@ -173,6 +173,7 @@ module Berkshelf
           destination = File.join(path, cached_cookbook.cookbook_name)
           FileUtils.ln_s(cached_cookbook.path, destination, force: true)
         end
+        Berkshelf.ui.info "Shims written to: '#{path}'"
       end
   end
 end

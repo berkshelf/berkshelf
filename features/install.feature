@@ -65,4 +65,8 @@ Feature: install cookbooks from a Berksfile
     Then the following directories should exist:
       | cookbooks       |
       | cookbooks/mysql |
+    And the output should contain:
+      """
+      Shims written to: 
+      """
     And the exit status should be 0
