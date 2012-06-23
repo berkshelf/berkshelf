@@ -60,8 +60,9 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "mysql", "1.2.4"
       """
-    When I run the install command with "--shims"
-    Then a directory named "Cookbooks" should exist
-    And the directory "Cookbooks" should have the symlinks:
-      | mysql |
+    When I run the install command with flags:
+      | --shims |
+    Then the following directories should exist:
+      | cookbooks       |
+      | cookbooks/mysql |
     And the exit status should be 0

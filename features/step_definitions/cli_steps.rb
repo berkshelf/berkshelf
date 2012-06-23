@@ -39,7 +39,11 @@ When /^I run the init command with no value for the target$/ do
 end
 
 When /^I run the install command$/ do
-  run_simple(unescape("knife berks install"), false)
+  run_simple(unescape("knife berks install"), true)
+end
+
+When /^I run the install command with flags:$/ do |flags|
+  run_simple(unescape("knife berks install #{flags.raw.join(" ")}"), true)
 end
 
 When /^I run the update command$/ do

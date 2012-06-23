@@ -119,9 +119,14 @@ module Berkshelf
     # @option options [Symbol, Array] :without 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
     #   group to not be installed
+    # @option options [String, Pathname] :shims
+    #   Path to a directory of shims each pointing to a Cookbook Version that is
+    #   part of the dependnecy solution. Useful for getting Cookbooks in a single
+    #   location for consumption by Vagrant, or other tools that expect this format
     def install(options = {})
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))
-      resolver.resolve
+      solution = resolver.resolve
+      write_shims(options[:shims], solution) if options[:shims]
       write_lockfile(resolver.sources) unless lockfile_present?
     end
 
@@ -160,6 +165,14 @@ module Berkshelf
 
       def write_lockfile(sources)
         Berkshelf::Lockfile.new(sources).write
+      end
+
+      def write_shims(path, cached_cookbooks)
+        FileUtils.mkdir_p(path)
+        cached_cookbooks.each do |cached_cookbook|
+          destination = File.join(path, cached_cookbook.cookbook_name)
+          FileUtils.ln_s(cached_cookbook.path, destination, force: true)
+        end
       end
   end
 end
