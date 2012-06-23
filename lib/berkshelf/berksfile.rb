@@ -172,8 +172,7 @@ module Berkshelf
         FileUtils.mkdir_p(path)
         cached_cookbooks.each do |cached_cookbook|
           destination = File.join(path, cached_cookbook.cookbook_name)
-          FileUtils.rmdir(destination)
-          FileUtils.ln_r(cached_cookbook.path, destination)
+          FileUtils.ln_r(cached_cookbook.path, destination, force: true)
         end
         Berkshelf.ui.info "Shims written to: '#{path}'"
       end

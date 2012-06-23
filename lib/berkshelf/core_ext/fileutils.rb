@@ -3,7 +3,7 @@ module FileUtils
   # @note {http://redmine.ruby-lang.org/issues/show/4189}
   # @note {https://github.com/ruby/ruby/pull/4}
   #
-  # Options: noop verbose dereference_root remove_destination
+  # Options: noop verbose dereference_root force
   #
   # Hard link +src+ to +dest+. If +src+ is a directory, this method links
   # all its contents recursively. If +dest+ is a directory, links
@@ -24,21 +24,19 @@ module FileUtils
   #   # use following code.
   #   FileUtils.ln_r 'src/.', 'dest'     # cp_r('src', 'dest') makes src/dest,
   #                                      # but this doesn't.
-  #
-  # TODO: Why --remove-destination and not --force?
   def ln_r(src, dest, options = {})
     fu_check_options options, OPT_TABLE['ln_r']
-    fu_output_message "ln -r#{options[:remove_destination] ? ' --remove-destination' : ''} #{[src,dest].flatten.join ' '}" if options[:verbose]
+    fu_output_message "ln -r#{options[:force] ? ' --remove-destination' : ''} #{[src,dest].flatten.join ' '}" if options[:verbose]
     return if options[:noop]
     options = options.dup
     options[:dereference_root] = true unless options.key?(:dereference_root)
     fu_each_src_dest(src, dest) do |s, d|
-      link_entry s, d, options[:dereference_root], options[:remove_destination]
+      link_entry s, d, options[:dereference_root], options[:force]
     end
   end
   module_function :ln_r
 
-  OPT_TABLE['ln_r'] = [:noop, :verbose, :dereference_root, :remove_destination]
+  OPT_TABLE['ln_r'] = [:noop, :verbose, :dereference_root, :force]
 
   #
   # Hard links a file system entry +src+ to +dest+.
@@ -49,12 +47,12 @@ module FileUtils
   #
   # If +dereference_root+ is true, this method dereference tree root.
   #
-  # If +remove_destination+ is true, this method removes each destination file before copy.
+  # If +force+ is true, this method removes each destination file before copy.
   #
-  def link_entry(src, dest, dereference_root = false, remove_destination = false)
+  def link_entry(src, dest, dereference_root = false, force = false)
     Entry_.new(src, nil, dereference_root).traverse do |ent|
       destent = Entry_.new(dest, ent.rel, false)
-      File.unlink destent.path if remove_destination && File.file?(destent.path)
+      File.unlink destent.path if force && File.file?(destent.path)
       ent.link destent.path
     end
   end
