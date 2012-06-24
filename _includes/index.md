@@ -6,14 +6,14 @@
 
 ### Berksfile
 
-Dependencies are managed via a `Berksfile` in the directory where you want the cookbooks to be installed.  The Berksfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
+Dependencies are managed via a `Berksfile` in the directory where you want the cookbooks to be installed. The Berksfile is like Bundler's Gemfile. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
 
     cookbook 'memcached'
     cookbook 'nginx'
     cookbook 'my_app', path: '/path/to/cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
 
-Once you have a Berksfile run the install command and the Cookbooks and their dependencies, recurisively, will be installed to a central location on your local disk called a `Berkshelf`. The Berkshelf is by default located at `~/.berkshelf`.
+Once you have a Berksfile run the install command. The Cookbooks and their dependencies, recurisively, will be installed to a central location on your local disk called a Berkshelf. The Berkshelf is by default located at `~/.berkshelf`.
 
     $ knife berks install
 
