@@ -19,7 +19,7 @@
           <a id="forkme_banner" href="https://github.com/RiotGames/berkshelf">View on GitHub</a>
 
           <h1 id="project_title">Berkshelf</h1>
-          <h2 id="project_tagline">Manage a Cookbook's, or an Application's, Cookbook dependencies</h2>
+          <h2 id="project_tagline">Manage a Cookbook or an Application's Cookbook dependencies</h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/RiotGames/berkshelf/zipball/master">Download this project as a .zip file</a>
@@ -38,6 +38,8 @@
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
+        <h3 id="authors">Authors</h2>
+        {% capture authors %}{% include authors.md %}{% endcapture %}{{ authors | markdownify }}
         <p class="copyright">Berkshelf maintained by <a href="https://github.com/RiotGames">RiotGames</a></p>
       </footer>
     </div>

@@ -43,24 +43,23 @@ Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. I
 
 ## Berkshelf with Vagrant
 
-Because Berkshelf stores your Cookbooks in a central location and can store multiple versions of the same Cookbook, we need a way to present these Cookbooks in a structure that is familiar to other tools that expect your Cookbooks to be located all in the same directory and have their folder names the same as the Cookbook name.
+Because Berkshelf stores your Cookbooks in a central location and can store multiple versions of the same Cookbook, we need a way to present these Cookbooks in a structure that is familiar to other tools that expect your Cookbooks to be located all in the same directory and have their folder names the same as the Cookbook name. Enter shims:
 
 ### Shims
 
-Enter shims
-
-    a shim (from shim) or shiv is a small library that transparently intercepts an API and changes the parameters
-    passed, handles the operation itself, or redirects the operation elsewhere.
+    a shim (from shim) or shiv is a small library that transparently intercepts 
+    an API and changes the parameters passed, handles the operation itself, or 
+    redirects the operation elsewhere.
 
 Berkshelf handles shims by hard linking Cookbooks from your Berkshelf to a directory named `cookbooks` in your current working directory. You can install shims by adding the `--shims` flag to the install command.
 
     $ knife berks install --shims
 
-If we had a Berksfile that had a source for
+If we had a Berksfile with the source
 
     cookbook "nginx", "= 0.100.5"
 
-This would install your Cookbook to `~/.berkshelf/nginx-0.100.5` and also create a shim at `cookbooks/nginx`.
+Running the install command would write the Cookbook to `~/.berkshelf/nginx-0.100.5` and also create a shim at `{pwd}/cookbooks/nginx`.
 
 In your Vagrant file you should add this shims directory to the `cookbooks_path`
 
@@ -70,29 +69,53 @@ In your Vagrant file you should add this shims directory to the `cookbooks_path`
 
 ## The Berksfile
 
-Cookbooks are defined as dependencies by declaring them in the `Berksfile`
+Entries in the Berskfile are known as sources. Sources are defined in the format:
 
-    cookbook 'nginx'
+    cookook {name}, {version_constraint}, {options}
+    cookbook "nginx", "= 0.101.2"
+    cookbook "mysql", path: "/Users/reset/code/mysql-cookbook"
+    cookbook "openssl", git: "https://github.com/opscode-cookbooks/openssl.git"
 
-Cookbooks without additional options are assumed to come from the Opscode Community site at the latest available version: http://community.opscode.com/cookbooks
+The first parameter is the `name` and is the only required parameter
 
-Options available include:
+    cookbook "nginx"
 
-version constraint
+The second parameter is a `version constraint` and is optional. If no version cosntraint is specified the latest is assumed.
 
-    cookbook "nginx", "= 0.101.2"    # precisely 0.101.2
-    cookbook "mysql", "< 1.2.4"      # less than and not including 1.2.4
-    cookbook "openssl", "~> 1.0.0"   # greater than 1.0.0, and up to but not including 1.1.0
+    cookbook "nginx", ">= 0.101.2"
 
-git
+Constraints can be specified as
 
-    # ref can be a branch name, tag, or commit hash. If ref is not provided, HEAD is used.
-    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "<any git ref>" 
+    * Equal to (=)
+    * Greater than (>)
+    * Greater than equal to (<)
+    * Less than (<)
+    * Less than equal to (<=)
+    * Pessimistic (~>)
 
-path
+The final parameter is an options hash
 
-    # knife berks will look in /path/to/location/of/my_application for the cookbook
-    cookbook "my_application", path: "/path/to/location/of"
+### Options
+
+#### Locations
+
+A cookbook source without a location option, by default, is assumed to come from the Opscode Community site `http://cookbooks.opscode.com/api/v1/cookbooks` and will install the latest available version.
+
+##### Git
+
+    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git"
+
+Optional branch
+
+    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", branch: "1.0.1"
+
+##### Path
+
+    cookbook "pvpnet", path: "/Users/reset/code/pvpnet-cookbook"
+
+##### Site
+
+    cookbook "pvpnet", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
 
 ### Groups
 
@@ -105,35 +128,3 @@ Groups can be defined via blocks or inline as an option:
     cookbook 'base', :group => 'solo'
 
 When using install or update, groups can be excluded with the --without GROUP_NAME or -W GROUP_NAME flags.
-
-# Contributing
-
-## Running tests
-
-### Install prerequisites
-
-Install the latest version of {Bundler}[http://gembundler.com]
-
-    $ gem install bundler
-
-Clone the project
-
-    $ git clone git://github.com/RiotGames/berkshelf.git
-
-and run:
-
-    $ cd berkshelf
-    $ bundle install
-
-Bundler will install all gems and their dependencies required for testing and developing. 
-
-### Running unit (RSpec) and acceptance (Cucumber) tests
-
-    $ bundle exec guard start
-
-# Authors and Contributors
-
-* Josiah Kiehl (<josiah@skirmisher.net>)
-* Jamie Winsor (<jamie@vialstudios.com>)
-* Erik Hollensbe (<erik@hollensbe.org>)
-* Michael Ivey (<ivey@gweezlebur.com>)
