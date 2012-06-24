@@ -16,7 +16,7 @@ See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
 ### Install prerequisites
 
-Install the latest version of {Bundler}[http://gembundler.com]
+Install the latest version of [Bundler](http://gembundler.com)
 
     $ gem install bundler
 
