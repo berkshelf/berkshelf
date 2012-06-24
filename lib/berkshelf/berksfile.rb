@@ -121,7 +121,7 @@ module Berkshelf
     #   group to not be installed
     # @option options [String, Pathname] :shims
     #   Path to a directory of shims each pointing to a Cookbook Version that is
-    #   part of the dependnecy solution. Each shim is a hard link on disk.
+    #   part of the dependency solution. Each shim is a hard link on disk.
     def install(options = {})
       resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))
       solution = resolver.resolve
