@@ -53,3 +53,20 @@ Feature: install cookbooks from a Berksfile
       Cookbook 'doesntexist' not found at site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the CLI should exit with the status code for error "DownloadFailure"
+
+  @wip
+  Scenario: running install command with the --shims flag to create a directory of shims
+    Given I write to "Berksfile" with:
+      """
+      cookbook "mysql", "1.2.4"
+      """
+    When I run the install command with flags:
+      | --shims |
+    Then the following directories should exist:
+      | cookbooks       |
+      | cookbooks/mysql |
+    And the output should contain:
+      """
+      Shims written to: 
+      """
+    And the exit status should be 0
