@@ -2,15 +2,13 @@
 
 Manages a Cookbook's, or an Application's, Cookbook dependencies
 
-## Getting Started
-
-### Install
+## Install
 
     $ gem install berkshelf
 
-### Use
+## Getting Started
 
-#### Berksfile
+### Berksfile
 
 Dependencies are managed via a `Berksfile` in the directory where you want the cookbooks to be installed.  The Berksfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:
 
@@ -19,17 +17,60 @@ Dependencies are managed via a `Berksfile` in the directory where you want the c
     cookbook 'my_app', path: '/path/to/cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
 
-#### CLI
+Once you have a Berksfile run the install command and the Cookbooks and their dependencies, recurisively, will be installed to a central location on your local disk called a `Berkshelf`. The Berkshelf is by default located at `~/.berkshelf`.
 
-The CLI consists of 2 commands: install, update
+    $ knife berks install
 
-    $ knife berks (install|update) [(--without|-W) group_to_exclude]
+## CLI Commands
 
-[install]  Installs the from the Berksfile.lock, or Berksfile if the the lockfile does not exist.
+### knife berks install
 
-[update] Skips the lockfile and installs fresh
+Install the Cookbooks defined by sources in your Berksfile and their dependencies, recursively, to your Berkshelf.
 
-[init] Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
+    $ knife berks install
+
+A Berksfile.lock will be generated if one does not already exist that will contain the dependency solution.
+
+If a Berksfile.lock is present when the install command is run, the locked sources in the Lockfile will take precedence over any sources defined in the Berksfile.
+
+### knife berks update
+
+This will still perform an install on your Berksfile, but it will skip a Lockfile if it is present and install fresh
+
+    $ knife berks update
+
+### knife berks init
+
+Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
+
+    $ knife berks init nginx-cookbook
+
+## Berkshelf with Vagrant
+
+Because Berkshelf stores your Cookbooks in a central location and can store multiple versions of the same Cookbook, we need a way to present these Cookbooks in a structure that is familiar to other tools that expect your Cookbooks to be located all in the same directory and have their folder names the same as the Cookbook name.
+
+### Shims
+
+Enter shims
+
+    a shim (from shim) or shiv is a small library that transparently intercepts an API and changes the parameters
+    passed, handles the operation itself, or redirects the operation elsewhere.
+
+Berkshelf handles shims by hard linking Cookbooks from your Berkshelf to a directory named `cookbooks` in your current working directory. You can install shims by adding the `--shims` flag to the install command.
+
+    $ knife berks install --shims
+
+If we had a Berksfile that had a source for
+
+    cookbook "nginx", "= 0.100.5"
+
+This would install your Cookbook to `~/.berkshelf/nginx-0.100.5` and also create a shim at `cookbooks/nginx`.
+
+In your Vagrant file you should add this shims directory to the `cookbooks_path`
+
+    config.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = [ "cookbooks" ]
+    end
 
 ## The Berksfile
 
