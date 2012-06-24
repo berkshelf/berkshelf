@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Berkshelf : Manage a Cookbook's, or an Application's, Cookbook dependencies" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Berkshelf</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/RiotGames/berkshelf">View on GitHub</a>
+
+          <h1 id="project_title">Berkshelf</h1>
+          <h2 id="project_tagline">Manage a Cookbook's, or an Application's, Cookbook dependencies</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/RiotGames/berkshelf/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/RiotGames/berkshelf/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Berkshelf</h1>
+
+<p>Manages a Cookbook's, or an Application's, Cookbook dependencies</p>
+
+<h2>Install</h2>
+
+<pre><code>$ gem install berkshelf
+</code></pre>
+
+<h2>Getting Started</h2>
+
+<h3>Berksfile</h3>
+
+<p>Dependencies are managed via a <code>Berksfile</code> in the directory where you want the cookbooks to be installed.  The Berksfile, like Bundler's Gemfile, contains which cookbooks are needed and, optionally, where to find them:</p>
+
+<pre><code>cookbook 'memcached'
+cookbook 'nginx'
+cookbook 'my_app', path: '/path/to/cookbook'
+cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
+</code></pre>
+
+<p>Once you have a Berksfile run the install command and the Cookbooks and their dependencies, recurisively, will be installed to a central location on your local disk called a <code>Berkshelf</code>. The Berkshelf is by default located at <code>~/.berkshelf</code>.</p>
+
+<pre><code>$ knife berks install
+</code></pre>
+
+<h2>CLI Commands</h2>
+
+<h3>knife berks install</h3>
+
+<p>Install the Cookbooks defined by sources in your Berksfile and their dependencies, recursively, to your Berkshelf.</p>
+
+<pre><code>$ knife berks install
+</code></pre>
+
+<p>A Berksfile.lock will be generated if one does not already exist that will contain the dependency solution.</p>
+
+<p>If a Berksfile.lock is present when the install command is run, the locked sources in the Lockfile will take precedence over any sources defined in the Berksfile.</p>
+
+<h3>knife berks update</h3>
+
+<p>This will still perform an install on your Berksfile, but it will skip a Lockfile if it is present and install fresh</p>
+
+<pre><code>$ knife berks update
+</code></pre>
+
+<h3>knife berks init</h3>
+
+<p>Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.</p>
+
+<pre><code>$ knife berks init nginx-cookbook
+</code></pre>
+
+<h2>Berkshelf with Vagrant</h2>
+
+<p>Because Berkshelf stores your Cookbooks in a central location and can store multiple versions of the same Cookbook, we need a way to present these Cookbooks in a structure that is familiar to other tools that expect your Cookbooks to be located all in the same directory and have their folder names the same as the Cookbook name.</p>
+
+<h3>Shims</h3>
+
+<p>Enter shims</p>
+
+<pre><code>a shim (from shim) or shiv is a small library that transparently intercepts an API and changes the parameters
+passed, handles the operation itself, or redirects the operation elsewhere.
+</code></pre>
+
+<p>Berkshelf handles shims by hard linking Cookbooks from your Berkshelf to a directory named <code>cookbooks</code> in your current working directory. You can install shims by adding the <code>--shims</code> flag to the install command.</p>
+
+<pre><code>$ knife berks install --shims
+</code></pre>
+
+<p>If we had a Berksfile that had a source for</p>
+
+<pre><code>cookbook "nginx", "= 0.100.5"
+</code></pre>
+
+<p>This would install your Cookbook to <code>~/.berkshelf/nginx-0.100.5</code> and also create a shim at <code>cookbooks/nginx</code>.</p>
+
+<p>In your Vagrant file you should add this shims directory to the <code>cookbooks_path</code></p>
+
+<pre><code>config.vm.provision :chef_solo do |chef|
+  chef.cookbooks_path = [ "cookbooks" ]
+end
+</code></pre>
+
+<h2>The Berksfile</h2>
+
+<p>Cookbooks are defined as dependencies by declaring them in the <code>Berksfile</code></p>
+
+<pre><code>cookbook 'nginx'
+</code></pre>
+
+<p>Cookbooks without additional options are assumed to come from the Opscode Community site at the latest available version: <a href="http://community.opscode.com/cookbooks">http://community.opscode.com/cookbooks</a></p>
+
+<p>Options available include:</p>
+
+<p>version constraint</p>
+
+<pre><code>cookbook "nginx", "= 0.101.2"    # precisely 0.101.2
+cookbook "mysql", "&lt; 1.2.4"      # less than and not including 1.2.4
+cookbook "openssl", "~&gt; 1.0.0"   # greater than 1.0.0, and up to but not including 1.1.0
+</code></pre>
+
+<p>git</p>
+
+<pre><code># ref can be a branch name, tag, or commit hash. If ref is not provided, HEAD is used.
+cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "&lt;any git ref&gt;" 
+</code></pre>
+
+<p>path</p>
+
+<pre><code># knife berks will look in /path/to/location/of/my_application for the cookbook
+cookbook "my_application", path: "/path/to/location/of"
+</code></pre>
+
+<h3>Groups</h3>
+
+<p>Groups can be defined via blocks or inline as an option:</p>
+
+<pre><code>group :solo do
+  cookbook 'base'
+end
+
+cookbook 'base', :group =&gt; 'solo'
+</code></pre>
+
+<p>When using install or update, groups can be excluded with the --without GROUP_NAME or -W GROUP_NAME flags.</p>
+
+<h1>Contributing</h1>
+
+<h2>Running tests</h2>
+
+<h3>Install prerequisites</h3>
+
+<p>Install the latest version of {Bundler}[<a href="http://gembundler.com">http://gembundler.com</a>]</p>
+
+<pre><code>$ gem install bundler
+</code></pre>
+
+<p>Clone the project</p>
+
+<pre><code>$ git clone git://github.com/RiotGames/berkshelf.git
+</code></pre>
+
+<p>and run:</p>
+
+<pre><code>$ cd berkshelf
+$ bundle install
+</code></pre>
+
+<p>Bundler will install all gems and their dependencies required for testing and developing. </p>
+
+<h3>Running unit (RSpec) and acceptance (Cucumber) tests</h3>
+
+<pre><code>$ bundle exec guard start
+</code></pre>
+
+<h1>Authors and Contributors</h1>
+
+<ul>
+<li>Josiah Kiehl (<a href="mailto:josiah@skirmisher.net">josiah@skirmisher.net</a>)</li>
+<li>Jamie Winsor (<a href="mailto:jamie@vialstudios.com">jamie@vialstudios.com</a>)</li>
+<li>Erik Hollensbe (<a href="mailto:erik@hollensbe.org">erik@hollensbe.org</a>)</li>
+<li>Michael Ivey (<a href="mailto:ivey@gweezlebur.com">ivey@gweezlebur.com</a>)</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Berkshelf maintained by <a href="https://github.com/RiotGames">RiotGames</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
