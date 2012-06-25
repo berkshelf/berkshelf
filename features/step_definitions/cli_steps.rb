@@ -27,31 +27,31 @@ Then /^the file "(.*?)" should contain in the current directory:$/ do |filename,
 end
 
 When /^I run the init command with the cookbook "(.*?)" as the target$/ do |cookbook_name|
-  run_simple(unescape("knife berks init #{cookbook_name}"), false)
+  run_simple(unescape("berks init #{cookbook_name}"), true)
 end
 
 When /^I run the init command with the directory "(.*?)" as the target$/ do |directory_name|
-  run_simple(unescape("knife berks init #{directory_name}"), false)
+  run_simple(unescape("berks init #{directory_name}"), true)
 end
 
 When /^I run the init command with no value for the target$/ do
-  run_simple(unescape("knife berks init"), false)
+  run_simple(unescape("berks init"), true)
 end
 
 When /^I run the install command$/ do
-  run_simple(unescape("knife berks install"), true)
+  run_simple(unescape("berks install"), true)
 end
 
 When /^I run the install command with flags:$/ do |flags|
-  run_simple(unescape("knife berks install #{flags.raw.join(" ")}"), true)
+  run_simple(unescape("berks install #{flags.raw.join(" ")}"), true)
 end
 
 When /^I run the update command$/ do
-  run_simple(unescape("knife berks update"), false)
+  run_simple(unescape("berks update"), true)
 end
 
 When /^I run the upload command$/ do
-  run_simple(unescape("knife berks upload"), false)
+  run_simple(unescape("berks upload"), true)
 end
 
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
