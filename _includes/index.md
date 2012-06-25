@@ -23,20 +23,20 @@ Add the Berksfile to your project
 
 ## The Berkshelf
 
-> After running `$ berks install` you may ask yourself, "Where did my cookbooks go?". They were added to The Berkshelf.
+> After running `berks install` you may ask yourself, "Where did my cookbooks go?". They were added to The Berkshelf.
 
 The Berkshelf is a location on your local disk which contains the cookbooks you have installed and their dependencies. By default, The Berkshelf is located at `~/.berkshelf` but this can be altered by setting the environment variable `BERKSHELF_PATH`.
 
-This central location is not the typical pattern of cookbook storage that you may be used to with Chef. The traditional pattern is to place all of your cookbooks in a directory called `cookbooks` or `site-cookbooks` within your [Chef Repository](http://wiki.opscode.com/display/chef/Chef+Repository). We do have all of our cookbooks in one central place, it's just not the Chef Repository and they're stored with a main version format.
+Berkshelf stores every version of a cookbook that you have ever installed. This is the same pattern found with RubyGems where once you have resolved and installed a gem, you will have that gem and it's dependencies until you delete it.
 
-Herein lies another key difference: The Berkshelf contains every version of a cookbook that you have ever installed. This is the same pattern found with RubyGems where once you have resolved and installed a dependency, you will have that gem until you delete it. 
+This central location is not the typical pattern of cookbook storage that you may be used to with Chef. The traditional pattern is to place all of your cookbooks in a directory called `cookbooks` or `site-cookbooks` within your [Chef Repository](http://wiki.opscode.com/display/chef/Chef+Repository). We do have all of our cookbooks in one central place, it's just not the Chef Repository and they're stored within directories of the naming convention `{name}-{version}`.
 
-Given the following cookbooks are installed:
+Given you have the cookbooks installed:
 
     * nginx - 0.101.2
     * mysql - 1.2.4
 
-The cookbooks will be located at:
+These cookbooks will be located at:
 
     ~/.berkshelf/nginx-0.101.2
     ~/.berkshelf/mysql-1.2.4
