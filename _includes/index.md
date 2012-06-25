@@ -15,37 +15,43 @@ Dependencies are managed via a `Berksfile` in the directory where you want the c
 
 Once you have a Berksfile run the install command. The Cookbooks and their dependencies, recurisively, will be installed to a central location on your local disk called a Berkshelf. The Berkshelf is by default located at `~/.berkshelf`.
 
-    $ knife berks install
+    $ berks install
 
 ## CLI Commands
 
-### knife berks install
+### install
 
 Install the Cookbooks defined by sources in your Berksfile and their dependencies, recursively, to your Berkshelf.
 
-    $ knife berks install
+    $ berks install
 
 A Berksfile.lock will be generated if one does not already exist that will contain the dependency solution.
 
 If a Berksfile.lock is present when the install command is run, the locked sources in the Lockfile will take precedence over any sources defined in the Berksfile.
 
-### knife berks update
+### upload
+
+Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server.
+
+    $ berks upload
+
+### update
 
 This will still perform an install on your Berksfile, but it will skip a Lockfile if it is present and install fresh
 
-    $ knife berks update
+    $ berks update
 
-### knife berks init
+### init
 
 Prepares a local path to have it's Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
 
-    $ knife berks init nginx-cookbook
+    $ berks init nginx-cookbook
 
 ## Berkshelf with Vagrant
 
 Because Berkshelf stores your Cookbooks in a central location and can store multiple versions of the same Cookbook, we need a way to present these Cookbooks in a structure that is familiar to other tools that expect your Cookbooks to be located all in the same directory and have their folder names the same as the Cookbook name. Enter shims:
 
-### Shims
+### shims
 
     a shim (from shim) or shiv is a small library that transparently intercepts 
     an API and changes the parameters passed, handles the operation itself, or 
@@ -53,7 +59,7 @@ Because Berkshelf stores your Cookbooks in a central location and can store mult
 
 Berkshelf handles shims by hard linking Cookbooks from your Berkshelf to a directory named `cookbooks` in your current working directory. You can install shims by adding the `--shims` flag to the install command.
 
-    $ knife berks install --shims
+    $ berks install --shims
 
 If we had a Berksfile with the source
 
