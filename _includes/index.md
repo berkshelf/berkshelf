@@ -85,12 +85,29 @@ Now when we start our virtual machine it will have the cookbooks from The Berksh
 
 Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berskfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
 
+    metadata
     cookbook 'memcached'
     cookbook 'nginx'
     cookbook 'pvpnet', path: '/Users/reset/code/riot-cookbooks/pvpnet-cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
 
-Sources are defined with the format
+Two kinds of sources can be defined
+
+### Metadata Source
+
+The metadata source is like saying `gemspec` in Bundler's [Gemfile](http://gembundler.com/man/gemfile.5.html). It says, "There is a metadata.rb file within the same relative path of my Berksfile". This allows you to resolve a Cookbook's dependencies that you are currently working on just like you would resolve the dependencies of a Gem that you are currently working on with Bundler.
+
+Given a Berksfile at `~/code/nginx-cookbook` containing:
+
+    metadata
+
+A `metadata.rb` file is assumed to be located at `~/code/nginx-cookbook/metadata.rb` describing your nginx cookbook.
+
+### Cookbook Source
+
+A cookbook source is a way to describe a cookbook to install or a way to override the location of a dependency.
+
+Cookbook sources are defined with the format:
 
     cookook {name}, {version_constraint}, {options}
 
@@ -98,7 +115,7 @@ The first parameter is the `name` and is the only required parameter
 
     cookbook "nginx"
 
-The second parameter is a `version constraint` and is optional. If no version constraint is specified the latest is assumed.
+The second parameter is a `version constraint` and is optional. If no version constraint is specified the latest is assumed
 
     cookbook "nginx", ">= 0.101.2"
 
