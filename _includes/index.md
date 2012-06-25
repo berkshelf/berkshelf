@@ -36,8 +36,8 @@ Therein lies another key difference: The Berkshelf contains every version of a c
 
 The cookbooks will be located at:
 
-    `~/.berkshelf/nginx-0.101.2`
-    `~/.berkshelf/mysql-1.2.4`
+    ~/.berkshelf/nginx-0.101.2
+    ~/.berkshelf/mysql-1.2.4
 
 By default Chef interprets the name of a cookbook by the directory name. Some Chef internals take the name of the directory as a larger weight than if a cookbook developer explicitly sets the `name` attribute in their metadata. Because the directory structure contains the cookbook's version number, do not treat The Berkshelf as just another entry in your `Chef::Config#cookbooks_path`.
 
