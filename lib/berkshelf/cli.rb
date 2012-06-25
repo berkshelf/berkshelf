@@ -26,20 +26,25 @@ module Berkshelf
       type: :string,
       default: File.expand_path("~/.chef/knife.rb"),
       desc: "Path to Knife or Chef configuration to use.",
-      aliases: "-c"
+      aliases: "-c",
+      banner: "PATH"
 
     method_option :shims,
       type: :string,
       default: nil,
-      desc: "Create a directory of shims pointing to Cookbook Versions."
+      desc: "Create a directory of shims pointing to Cookbook Versions.",
+      banner: "PATH"
     method_option :without,
       type: :array,
       default: Array.new,
-      desc: "Exclude cookbooks that are in these groups."
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-w"
     method_option :berksfile,
       type: :string,
       default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: "Path to a Berksfile to operate off of."
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berskfile.lock."
     def install
       if options[:shims] == "shims" # This means 'no value given'.
@@ -56,7 +61,14 @@ module Berkshelf
     method_option :berksfile,
       type: :string,
       default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: "Path to a Berksfile to operate off of."
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    method_option :without,
+      type: :array,
+      default: Array.new,
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-w"
     desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions."
     def update
       Lockfile.remove!
@@ -69,7 +81,14 @@ module Berkshelf
     method_option :berksfile,
       type: :string,
       default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: "Path to a Berksfile to operate off of."
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    method_option :without,
+      type: :array,
+      default: Array.new,
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-w"
     method_option :freeze,
       type: :boolean,
       default: false,
