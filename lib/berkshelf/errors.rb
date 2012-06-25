@@ -17,4 +17,5 @@ module Berkshelf
   class NoSolution < BerkshelfError; status_code(106); end
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
   class UploadFailure < BerkshelfError; status_code(108); end
+  class KnifeConfigNotFound < BerkshelfError; status_code(109); end
 end

@@ -5,9 +5,13 @@ module Berkshelf
   class Cli < Thor
     def initialize(*)
       super
+      # JW TODO: Replace Chef::Knife::UI with our own UI class
       ::Berkshelf.ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
-      Chef::Config.from_file(options[:config])
+      load_config
       @options = options.dup # unfreeze frozen options Hash from Thor
+    rescue BerkshelfError => e
+      Berkshelf.ui.fatal e
+      exit e.status_code
     end
 
     map 'in'        => :install
@@ -111,6 +115,12 @@ module Berkshelf
 
       def license
         File.read(Berkshelf.root.join('LICENSE'))
+      end
+
+      def load_config
+        Chef::Config.from_file(File.expand_path(options[:config]))
+      rescue Errno::ENOENT
+        raise KnifeConfigNotFound, "Unable to find a Knife config at #{options[:config]}. Specify a different path with --config."
       end
 
       def default_shims_path
