@@ -19,7 +19,7 @@ Add the Berksfile to your project
     $ git commit -m "add Berksfile to project"
 
 > A Berksfile.lock will also be created. Add this to version control if you want to ensure that
-> other developers (or your build server) will use the same versions of all cookbook dependencies
+> other developers (or your build server) will use the same versions of all cookbook dependencies.
 
 ## The Berkshelf
 
@@ -27,9 +27,11 @@ Add the Berksfile to your project
 
 The Berkshelf is a location on your local disk which contains the cookbooks you have installed and their dependencies. By default, The Berkshelf is located at `~/.berkshelf` but this can be altered by setting the environment variable `BERKSHELF_PATH`.
 
-This central location is not the typical pattern of cookbook storage that you may be used to with Chef. The traditional pattern is to place all of your cookbooks in a directory called `cookbooks` or `site-cookbooks` within your [Chef Repository](http://wiki.opscode.com/display/chef/Chef+Repository). This may not seem far off - we do have all of our cookbooks in one central place, it's just not the Chef Repository.
+This central location is not the typical pattern of cookbook storage that you may be used to with Chef. The traditional pattern is to place all of your cookbooks in a directory called `cookbooks` or `site-cookbooks` within your [Chef Repository](http://wiki.opscode.com/display/chef/Chef+Repository). We do have all of our cookbooks in one central place, it's just not the Chef Repository and they're stored with a main version format.
 
-Therein lies another key difference: The Berkshelf contains every version of a cookbook that you have ever installed. This is the same pattern found with RubyGems where once you have resolved and installed a dependency, you will have that gem until you delete it. Given the following cookbooks are installed:
+Herein lies another key difference: The Berkshelf contains every version of a cookbook that you have ever installed. This is the same pattern found with RubyGems where once you have resolved and installed a dependency, you will have that gem until you delete it. 
+
+Given the following cookbooks are installed:
 
     * nginx - 0.101.2
     * mysql - 1.2.4
@@ -39,7 +41,7 @@ The cookbooks will be located at:
     ~/.berkshelf/nginx-0.101.2
     ~/.berkshelf/mysql-1.2.4
 
-By default Chef interprets the name of a cookbook by the directory name. Some Chef internals take the name of the directory as a larger weight than if a cookbook developer explicitly sets the `name` attribute in their metadata. Because the directory structure contains the cookbook's version number, do not treat The Berkshelf as just another entry in your `Chef::Config#cookbooks_path`.
+By default Chef interprets the name of a cookbook by the directory name. Some Chef internals weigh the name of the directory more heavily than if a cookbook developer were to explicitly set the `name` attribute in their metadata. Because the directory structure contains the cookbook's version number, do not treat The Berkshelf as just another entry in your `Chef::Config#cookbooks_path`.
 
 ## Vagrant with Berkshelf 
 
@@ -63,7 +65,7 @@ Shims will be written to the directory `cookbooks` in your local working directo
 
     $ berks install --shims site-cookbooks
 
-Given we have the following Berksfile
+Given we have the following Berksfile:
 
     cookbook "nginx", "= 0.100.5"
 
@@ -96,7 +98,7 @@ The first parameter is the `name` and is the only required parameter
 
     cookbook "nginx"
 
-The second parameter is a `version constraint` and is optional. If no version cosntraint is specified the latest is assumed.
+The second parameter is a `version constraint` and is optional. If no version constraint is specified the latest is assumed.
 
     cookbook "nginx", ">= 0.101.2"
 
@@ -117,7 +119,7 @@ Options passed to a source can contain a location or a group(s).
 
 #### Locations
 
-By default a cookbook source is assumed to come from the Opscode Community site `http://cookbooks.opscode.com/api/v1/cookbooks`. This behavior can be customized with a different location type.
+By default a cookbook source is assumed to come from the Opscode Community site `http://cookbooks.opscode.com/api/v1/cookbooks`. This behavior can be customized with a different location type. You might want to use a different location type if the cookbook is stored in a git repository, at a local file path, or at a different community site.
 
 ##### Git Location
 
@@ -157,7 +159,7 @@ Groups can be defined via blocks:
       cookbook 'riot_base'
     end
 
-Groups can also be defined inline, as an option:
+Groups can also be defined inline as an option:
     
     cookbook 'riot_base', :group => 'solo'
 
