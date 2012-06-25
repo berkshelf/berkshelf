@@ -17,6 +17,7 @@ module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
+  autoload :Cli, 'berkshelf/cli'
   autoload :DSL, 'berkshelf/dsl'
   autoload :Git, 'berkshelf/git'
   autoload :Berksfile, 'berkshelf/berksfile'
@@ -37,7 +38,7 @@ module Berkshelf
     attr_accessor :downloader
 
     def root
-      File.join(File.dirname(__FILE__), '..')
+      @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
 
     def ui
