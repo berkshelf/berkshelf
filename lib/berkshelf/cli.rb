@@ -1,4 +1,5 @@
 require 'thor'
+require 'berkshelf'
 
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
@@ -13,6 +14,8 @@ module Berkshelf
       Berkshelf.ui.fatal e
       exit e.status_code
     end
+
+    namespace "berkshelf"
 
     map 'in'        => :install
     map 'up'        => :upload
