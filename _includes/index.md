@@ -167,6 +167,28 @@ To exclude the groups when installing or updating just add the `--without` flag.
 
     $ berks install --without solo
 
+## Build Integration
+
+Instead of invoking Berkshelf directly on the command-line, you can also run Berkshelf from within a Thor process. 
+
+### Thor
+
+Just add the following line to your Thorfile:
+
+    require 'berkshelf/thor'
+
+Now you have access to common Berkshelf tasks without shelling out
+
+    $ thor list
+
+    $ berkshelf
+    $ ---------
+    $ thor berkshelf:init [PATH]  # Prepare a local path to have it's Cook...
+    $ thor berkshelf:install      # Install the Cookbooks specified by a B...
+    $ thor berkshelf:update       # Update all Cookbooks and their depende...
+    $ thor berkshelf:upload       # Upload the Cookbooks specified by a Be...
+    $ thor berkshelf:version      # Display version and copyright informat...
+
 ## CLI Reference
 
 ### install
