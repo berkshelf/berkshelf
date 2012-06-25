@@ -29,7 +29,7 @@ module Berkshelf
       template "Berksfile.erb", File.join(target_path, "Berksfile")
 
       if options[:chefignore]
-        copy_file "chefignore", File.join(target_path, ".chefignore")
+        copy_file "chefignore", File.join(target_path, "chefignore")
       end
     end
   end
