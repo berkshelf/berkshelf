@@ -43,7 +43,9 @@ By default Chef interprets the name of a cookbook by the directory name. Some Ch
 
 ## Vagrant with Berkshelf 
 
-[Vagrant](http://vagrantup.com)
+Berkshelf was designed for iterating on cookbooks and applications quickly. [Vagrant](http://vagrantup.com) provides us with a way to spin up a virtual environment and configure it using a built-in Chef provisioner. If you have never used Vagrant before - stop now - read the Vagrant documentation and give it a try. Your cookbook development life is about to become 100% better.
+
+If you have used Vagrant before, READ ON!
 
 Because all cookbooks are stored in The Berkshelf, we need a way to present these cookbooks in the familiar structure that other tools expect. The typical pattern for having all cookbooks stored in the same directory with their folder names reflecting the name of the cookbook contained inside can be achieved easily with Berkshelf. Enter shims.
 
