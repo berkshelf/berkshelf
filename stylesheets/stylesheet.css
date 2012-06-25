@@ -110,10 +110,6 @@ footer h3 {
   font-weight: 100;
 }
 
-footer p, ul {
-  color: #f2f2f2;
-}
-
 a {
   text-decoration: none;
   color: #007edf;
@@ -175,9 +171,6 @@ pre, code {
   border-radius: 2px;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
-
-
-
 }
 
 pre {
@@ -376,8 +369,16 @@ Full-Width Styles
   padding-top: 40px;
 }
 
+#main_content li {
+  color: #000000;
+}
+
 #footer_wrap {
   background: #212121;
+}
+
+#footer_wrap ul, li {
+  color: #f2f2f2;
 }
 
 /*******************************************************************************
