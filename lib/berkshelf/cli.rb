@@ -32,6 +32,7 @@ module Berkshelf
     method_option :shims,
       type: :string,
       default: nil,
+      lazy_default: File.join(Dir.pwd, "cookbooks"),
       desc: "Create a directory of shims pointing to Cookbook Versions.",
       banner: "PATH"
     method_option :without,
@@ -47,10 +48,6 @@ module Berkshelf
       banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berskfile.lock."
     def install
-      if options[:shims] == "shims" # This means 'no value given'.
-        options[:shims] = default_shims_path
-      end
-
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
     rescue BerkshelfError => e
@@ -143,10 +140,6 @@ module Berkshelf
         Chef::Config.from_file(File.expand_path(options[:config]))
       rescue Errno::ENOENT
         raise KnifeConfigNotFound, "Unable to find a Knife config at #{options[:config]}. Specify a different path with --config."
-      end
-
-      def default_shims_path
-        File.join(Dir.pwd, "cookbooks")
       end
   end
 end
