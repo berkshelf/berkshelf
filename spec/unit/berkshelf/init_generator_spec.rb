@@ -8,7 +8,7 @@ module Berkshelf
 
     context "with default options" do
       before do
-        generator = subject.new([], :path => target_root)
+        generator = subject.new([target_root])
         capture(:stdout) { generator.invoke_all }
       end
 
@@ -22,21 +22,21 @@ module Berkshelf
 
     context "with a .chefignore" do
       before do
-        generator = subject.new([], :path => target_root, :chefignore => true)
+        generator = subject.new([target_root], chefignore: true)
         capture(:stdout) { generator.invoke_all }
       end
 
       specify do
         target_root.should have_structure {
           file "Berksfile"
-          file ".chefignore"
+          file "chefignore"
         }
       end
     end
 
     context "with a metadata entry in the Berksfile" do
       before do
-        generator = subject.new([], :path => target_root, :metadata_entry => true)
+        generator = subject.new([target_root], metadata_entry: true)
         capture(:stdout) { generator.invoke_all }
       end
 
