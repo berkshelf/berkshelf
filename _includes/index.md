@@ -109,7 +109,7 @@ A cookbook source is a way to describe a cookbook to install or a way to overrid
 
 Cookbook sources are defined with the format:
 
-    cookook {name}, {version_constraint}, {options}
+    cookbook {name}, {version_constraint}, {options}
 
 The first parameter is the `name` and is the only required parameter
 
