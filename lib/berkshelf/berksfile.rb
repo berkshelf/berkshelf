@@ -151,12 +151,23 @@ module Berkshelf
     #   Server so that it cannot be overwritten
     def upload(chef_server_url, options = {})
       uploader = Uploader.new(chef_server_url, options)
-      resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))  
+      solution = resolve(options)
 
-      resolver.resolve.each do |cb|
+      solution.each do |cb|
         Berkshelf.ui.info "Uploading #{cb.cookbook_name} (#{cb.version}) to: '#{chef_server_url}'"
         uploader.upload!(cb, options)
       end
+    end
+
+    # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
+    #
+    # @option options [Symbol, Array] :without 
+    #   Group(s) to exclude which will cause any sources marked as a member of the 
+    #   group to not be installed
+    #
+    # @return [Array<Berkshelf::CachedCookbooks]
+    def resolve(options = {})
+      Resolver.new(Berkshelf.downloader, sources(exclude: options[:without])).resolve
     end
 
     # Write a collection of hard links to the given path representing the given
