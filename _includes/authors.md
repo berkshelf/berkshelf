@@ -2,3 +2,4 @@
 * Jamie Winsor (<jamie@vialstudios.com>)
 * Michael Ivey (<ivey@gweezlebur.com>)
 * Erik Hollensbe (<erik@hollensbe.org>)
+* Special [Cake Thanks](./cakethanks.html) to [@RiotSorrmi](https://twitter.com/RiotSorrmi)

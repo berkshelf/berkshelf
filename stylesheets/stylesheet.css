@@ -304,6 +304,10 @@ Full-Width Styles
   padding: 50px 10px 30px 10px;
 }
 
+#header_wrap a {
+  color: #ffffff;
+}
+
 #project_title {
   margin: 0;
   color: #fff;
