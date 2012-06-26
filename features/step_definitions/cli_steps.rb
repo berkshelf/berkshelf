@@ -39,7 +39,7 @@ When /^I run the init command with no value for the target$/ do
 end
 
 When /^I run the install command$/ do
-  run_simple(unescape("berks install"), true)
+  run_simple(unescape("berks install"), false)
 end
 
 When /^I run the install command with flags:$/ do |flags|

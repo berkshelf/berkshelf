@@ -17,7 +17,8 @@ Feature: --without block
         cookbook "ntp", "= 1.1.8"
       end
       """
-    When I run `knife berks install --without notme`
+    When I run the install command with flags:
+      | --without notme |
     Then the cookbook store should have the cookbooks:
       | mysql | 1.2.4 |
       | ntp   | 1.1.8 |

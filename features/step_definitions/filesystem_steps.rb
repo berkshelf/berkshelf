@@ -50,7 +50,7 @@ Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name,
     file "Berksfile" do
       contains content
     end
-    file ".chefignore"
+    file "chefignore"
   }
 end
 

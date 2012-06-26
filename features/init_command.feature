@@ -7,8 +7,8 @@ Feature: initialize command
     Given a cookbook named "sparkle_motion"
     When I run the init command with the cookbook "sparkle_motion" as the target
     Then the cookbook "sparkle_motion" should have the following files:
-      | Berksfile |
-      | .chefignore  |
+      | Berksfile  |
+      | chefignore |
     And the file "Berksfile" in the cookbook "sparkle_motion" should contain:
       """
       metadata
@@ -22,7 +22,7 @@ Feature: initialize command
     Then the directory "not_a_cookbook" should have the following files:
       | Berksfile |
     And the directory "not_a_cookbook" should not have the following files:
-      | .chefignore  |
+      | chefignore |
     And the file "Berksfile" in the directory "not_a_cookbook" should not contain:
       """
       metadata
@@ -36,5 +36,5 @@ Feature: initialize command
     And the current directory should have the following files:
       | Berksfile |
     And the current directory should not have the following files:
-      | .chefignore  |
+      | chefignore |
     And the exit status should be 0

@@ -15,12 +15,12 @@ module Berkshelf
       specify do
         target_root.should have_structure {
           file "Berksfile"
-          no_file ".chefignore"
+          no_file "chefignore"
         }
       end
     end
 
-    context "with a .chefignore" do
+    context "with a chefignore" do
       before do
         generator = subject.new([target_root], chefignore: true)
         capture(:stdout) { generator.invoke_all }
