@@ -163,7 +163,7 @@ module Berkshelf
     #
     # @option options [Symbol, Array] :without 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
-    #   group to not be installed
+    #   group to not be resolved
     #
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
