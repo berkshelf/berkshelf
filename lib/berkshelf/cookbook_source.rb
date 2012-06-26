@@ -4,14 +4,32 @@ module Berkshelf
     module Location
       attr_reader :name
 
+      # @param [#to_s] name
       def initialize(name)
         @name = name
+        @downloaded_status = false
       end
 
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
         raise NotImplementedError, "Function must be implemented on includer"
       end
+
+      # @return [Boolean]
+      def downloaded?
+        @downloaded_status
+      end
+
+      private
+
+        def set_downloaded_status(state)
+          @downloaded_status = state
+        end
     end
+
+    extend Forwardable
 
     autoload :SiteLocation, 'berkshelf/cookbook_source/site_location'
     autoload :GitLocation, 'berkshelf/cookbook_source/git_location'
@@ -23,7 +41,9 @@ module Berkshelf
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
-    attr_reader :local_path
+    attr_reader :cached_cookbook
+
+    def_delegators :@location, :downloaded?
 
     # TODO: describe how the options on this function work.
     #
@@ -37,7 +57,7 @@ module Berkshelf
       @name = name
       @version_constraint = DepSelector::VersionConstraint.new(constraint)
       @groups = []
-      @local_path = nil
+      @cached_cookbook = nil
 
       if (options.keys & LOCATION_KEYS).length > 1
         raise ArgumentError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
@@ -49,9 +69,7 @@ module Berkshelf
       when options[:git]
         GitLocation.new(name, options)
       when options[:path]
-        loc = PathLocation.new(name, options)
-        set_local_path loc.path
-        loc
+        PathLocation.new(name, options)
       when options[:site]
         SiteLocation.new(name, options)
       else
@@ -62,7 +80,6 @@ module Berkshelf
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
-      set_downloaded_status(false)
     end
 
     def add_group(*groups)
@@ -83,54 +100,28 @@ module Berkshelf
     #     [ :ok, "/tmp/nginx" ]
     #     [ :error, "Cookbook 'sparkle_motion' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks" ]
     def download(destination)
-      set_local_path location.download(destination)
-      [ :ok, local_path ]
+      self.cached_cookbook = location.download(destination)
+      [ :ok, cached_cookbook ]
     rescue CookbookNotFound => e
-      set_local_path = nil
+      self.cached_cookbook = nil
       [ :error, e.message ]
-    end
-
-    def downloaded?
-      !local_path.nil?
-    end
-
-    def metadata
-      return nil unless local_path
-
-      cookbook_metadata = Chef::Cookbook::Metadata.new
-      cookbook_metadata.from_file(File.join(local_path, "metadata.rb"))
-      cookbook_metadata
-    end
-
-    def to_s
-      name
     end
 
     def has_group?(group)
       groups.include?(group.to_sym)
     end
 
-    def dependencies
-      return nil unless metadata
-
-      metadata.dependencies
-    end
-
-    def local_version
-      return nil unless metadata
-
-      metadata.version
-    end
-
     def locked_version
-      @locked_version || local_version
+      @locked_version || cached_cookbook.version
+    end
+
+    def to_s
+      "#{name} (#{version_constraint})"
     end
 
     private
 
-      def set_downloaded_status(state)
-        @downloaded_state = state
-      end
+      attr_writer :cached_cookbook
 
       def set_local_path(path)
         @local_path = path

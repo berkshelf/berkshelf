@@ -30,10 +30,10 @@ module Berkshelf
         end
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
-
         FileUtils.mv(tmp_clone, cb_path, :force => true)
-
-        cb_path
+        
+        set_downloaded_status(true)
+        CachedCookbook.from_path(cb_path)
       rescue Berkshelf::GitError
         msg = "Cookbook '#{name}' not found at git: #{uri}" 
         msg << " with branch '#{branch}'" if branch

@@ -15,8 +15,9 @@ module Berkshelf
         unless File.chef_cookbook?(path)
           raise CookbookNotFound, "Cookbook '#{name}' not found at path: '#{path}'"
         end
-
-        path
+        
+        set_downloaded_status(true)
+        CachedCookbook.from_path(path)
       end
 
       def to_s

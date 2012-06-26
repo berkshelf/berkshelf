@@ -10,6 +10,12 @@ module Berkshelf
         subject.download(tmp_path).should eql(path)
       end
 
+      it "sets the downloaded status to true" do
+        subject.download(tmp_path)
+
+        subject.should be_downloaded
+      end
+
       context "given a path that does not exist" do
         subject { CookbookSource::PathLocation.new("doesnot_exist", :path => tmp_path.join("doesntexist_noway")) }
 

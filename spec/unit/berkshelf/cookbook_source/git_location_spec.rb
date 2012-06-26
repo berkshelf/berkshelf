@@ -29,12 +29,16 @@ module Berkshelf
         }
       end
 
-      it "returns the path to the cookbook" do
-        result = subject.download(tmp_path)
-        # have to set outside of custom rspec matcher block
-        name, branch = subject.name, subject.branch
+      it "sets the downloaded status to true" do
+        subject.download(tmp_path)
 
-        result.should eql(tmp_path.join("#{name}-#{branch}").to_s)
+        subject.should be_downloaded
+      end
+
+      it "returns an instance of Berkshelf::CachedCookbook" do
+        result = subject.download(tmp_path)
+
+        result.should be_a(Berkshelf::CachedCookbook)
       end
 
       context "given no ref/branch/tag options is given" do

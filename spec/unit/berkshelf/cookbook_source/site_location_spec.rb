@@ -50,6 +50,12 @@ module Berkshelf
         result.should eql(tmp_path.join("#{name}-#{ver}").to_s)
       end
 
+      it "sets the downloaded status to true" do
+        subject.download(tmp_path)
+
+        subject.should be_downloaded
+      end
+
       context "when no version constraint is specified" do
         it "the latest version of the cookbook is downloaded to the given destination" do
           subject.download(tmp_path)

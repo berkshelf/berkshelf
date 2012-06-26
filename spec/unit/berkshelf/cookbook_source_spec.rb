@@ -180,14 +180,12 @@ module Berkshelf
       end
     end
 
-    describe "#downloaded?" do
-      let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
-      subject { CookbookSource.new("example_cookbook", :path => path) }
+    describe "#downloaded?", focus: true do
+      subject{ CookbookSource.new("nginx", ">= 1.0.1") }
 
-      it "returns true if the local_path has been set" do
-        subject.stub(:local_path) { path }
-
-        subject.downloaded?.should be_true
+      it "sends the message 'downloaded?' with the value of version_constraint to the location" do
+        subject.location.should_receive(:downloaded?).with(subject.version_constraint)
+        subject.downloaded?
       end
     end
   end

@@ -72,7 +72,8 @@ module Berkshelf
         self.class.unpack(downloaded_tf.path, dir)
         FileUtils.mv(File.join(dir, name), cb_path, :force => true)
 
-        cb_path
+        set_downloaded_status(true)
+        CachedCookbook.from_path(cb_path)
       end
 
       # @return [Array]
