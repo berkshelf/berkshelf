@@ -35,7 +35,7 @@ module Berkshelf
         #         0.100.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0"
         #       }
         #
-        # @return [Array]
+        # @return [Array, nil]
         #   an array where the first element is a DepSelector::Version representing the best version
         #   for the given constraint and the second element is the URI to where the corrosponding
         #   version of the Cookbook can be downloaded from
@@ -48,6 +48,8 @@ module Berkshelf
               return [ version, uri ]
             end
           end
+
+          nil
         end
       end
 
@@ -193,7 +195,7 @@ module Berkshelf
             solution = self.class.solve_for_constraint(version_constraint, versions)
             
             unless solution
-              raise NoSolution, "Could not satisfy version constraint: #{version_constraint} for Cookbook '#{name}'"
+              raise NoSolution, "No cookbook version of '#{name}' found at '#{api_uri}' that would satisfy constraint (#{version_constraint})."
             end
 
             solution
