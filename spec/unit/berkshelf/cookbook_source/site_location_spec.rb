@@ -30,6 +30,12 @@ module Berkshelf
         it "should return the best match for the constraint and versions given" do
           subject.solve_for_constraint(constraint, versions)[0].to_s.should eql("0.101.2")
         end
+
+        context "given a solution can not be found for constraint" do
+          it "returns nil" do
+            subject.solve_for_constraint(DepSelector::VersionConstraint.new(">= 1.0"), versions).should be_nil
+          end
+        end
       end
     end
 
