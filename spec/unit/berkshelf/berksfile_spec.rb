@@ -121,6 +121,17 @@ EOF
       end
     end
 
+    describe "#resolve" do
+      let(:resolver) { double('resolver') }
+      before(:each) { Berkshelf::Resolver.stub(:new) { resolver } }
+
+      it "resolves the Berksfile" do
+        resolver.should_receive(:resolve).and_return([double('cached_cookbook_one'), double('cached_cookbook_two')])
+        solution = subject.resolve
+        solution.should have(2).items
+      end
+    end
+
     describe "#install" do
       let(:resolver) { double('resolver') }
       before(:each) { Berkshelf::Resolver.stub(:new) { resolver } }
