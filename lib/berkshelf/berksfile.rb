@@ -185,8 +185,13 @@ module Berkshelf
     def write_shims(path, cached_cookbooks)
       FileUtils.mkdir_p(path)
       cached_cookbooks.each do |cached_cookbook|
-        destination = File.join(path, cached_cookbook.cookbook_name)
-        FileUtils.ln_r(cached_cookbook.path, destination, force: true)
+        destination = File.expand_path(File.join(path, cached_cookbook.cookbook_name))
+        begin
+          FileUtils.ln_r(cached_cookbook.path, destination, force: true)
+        rescue ArgumentError
+          Berkshelf.ui.warn "Skipping shim for #{cached_cookbook}."
+          Berkshelf.ui.warn "Cannot write a shim for a path location source into a subdirectory of itself."
+        end
       end
     end
 
