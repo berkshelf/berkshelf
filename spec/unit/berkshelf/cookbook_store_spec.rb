@@ -34,15 +34,41 @@ module Berkshelf
       end
     end
 
-    describe "#downloaded?" do
-      it "returns true if the store contains a Cookbook of the given name and version" do
-        CookbookSource.new("nginx", "0.101.2").download(subject.storage_path)
+    describe "#satisfy" do
+      let(:name) { "nginx" }
+      let(:version) { DepSelector::Version.new("0.101.4") }
+      let(:constraint) { DepSelector::VersionConstraint.new("~> 0.101.2") }
+      let(:cached_cb) { double('cached_cb', version: version) }
 
-        subject.downloaded?("nginx", "0.101.2").should be_true
+      before(:each) do
+        subject.stub(:cookbooks).and_return([cached_cb])
       end
 
-      it "returns false if the store does not contain a Cookbook of the given name and version" do
-        subject.downloaded?("notthere", "0.0.0").should be_false
+      it "gets and returns the the CachedCookbook best matching the name and constraint" do
+        subject.should_receive(:cookbook).with(name, version).and_return(cached_cb)
+
+        subject.satisfy(name, constraint).should eql(cached_cb)
+      end
+
+      context "when there are no cookbooks in the cookbook store" do
+        before(:each) { subject.stub(:cookbooks).and_return([]) }
+
+        it "returns nil" do
+          subject.satisfy(name, constraint).should be_nil
+        end
+      end
+
+      context "when there is no matching cookbook for the given name and constraint" do
+        let(:version) { DepSelector::Version.new("1.0.0") }
+        let(:constraint) { DepSelector::VersionConstraint.new("= 0.0.1") }
+
+        before(:each) do
+          subject.stub(:cookbooks).and_return([ double('badcache', name: 'none', version: version) ])
+        end
+
+        it "returns nil if there is no matching cookbook for the name and constraint" do
+          subject.satisfy(name, constraint).should be_nil
+        end
       end
     end
 

@@ -3,6 +3,9 @@ require 'fileutils'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookStore
+    include DepSelector
+    include DepSelector::Exceptions
+
     attr_reader :storage_path
 
     # Create a new instance of CookbookStore with the given
@@ -24,11 +27,11 @@ module Berkshelf
     # @param [String] version
     #   version of the Cookbook you want to retrieve
     #
-    # @return [Berkshelf::CachedCookbook]
+    # @return [Berkshelf::CachedCookbook, nil]
     def cookbook(name, version)
-      return nil unless downloaded?(name, version)
-
       path = cookbook_path(name, version)
+      return nil unless path.cookbook?
+
       CachedCookbook.from_path(path)
     end
 
@@ -57,15 +60,25 @@ module Berkshelf
       storage_path.join("#{name}-#{version}")
     end
 
-    # Returns true if the Cookbook of the given name and verion is downloaded
-    # to this instance of CookbookStore.
+    # Return a CachedCookbook matching the best solution for the given name and
+    # constraint. Nil is returned if no matching CachedCookbook is found.
     #
-    # @param [String] name
-    # @param [String] version
+    # @param [#to_s] name
+    # @param [DepSelector::VersionConstraint] constraint
     #
-    # @return [Boolean]
-    def downloaded?(name, version)
-      cookbook_path(name, version).cookbook?
+    # @return [Berkshelf::CachedCookbook, nil]
+    def satisfy(name, constraint)
+      graph                = DependencyGraph.new
+      selector             = Selector.new(graph)
+      package              = graph.package(name)
+      solution_constraints = [ SolutionConstraint.new(graph.package(name), constraint) ]
+
+      cookbooks.each { |cookbook| package.add_version(cookbook.version) }
+      name, version = quietly { selector.find_solution(solution_constraints).first }
+      
+      cookbook(name, version)
+    rescue InvalidSolutionConstraints, NoSolutionExists
+      nil
     end
 
     private
