@@ -118,25 +118,33 @@ module Berkshelf
     end
 
     describe "#validate!" do
-      it "returns true if the cookbook of the given name and version is valid" do
-        @cb = CachedCookbook.from_store_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
+      let(:syntax_checker) { double('syntax_checker') }
 
-        @cb.validate!.should be_true
+      before(:each) do
+        subject.stub(:syntax_checker) { syntax_checker }
+      end
+
+      it "asks the syntax_checker to validate the ruby and template files of the cookbook" do
+        syntax_checker.should_receive(:validate_ruby_files).and_return(true)
+        syntax_checker.should_receive(:validate_templates).and_return(true)
+
+        subject.validate!
       end
 
       it "raises CookbookSyntaxError if the cookbook contains invalid ruby files" do
-        @cb = CachedCookbook.from_store_path(fixtures_path.join("cookbooks", "invalid_ruby_files-1.0.0"))
+        syntax_checker.should_receive(:validate_ruby_files).and_return(false)
 
         lambda {
-          @cb.validate!
+          subject.validate!
         }.should raise_error(CookbookSyntaxError)
       end
 
       it "raises CookbookSyntaxError if the cookbook contains invalid template files" do
-        @cb = CachedCookbook.from_store_path(fixtures_path.join("cookbooks", "invalid_template_files-1.0.0"))
+        syntax_checker.should_receive(:validate_ruby_files).and_return(true)
+        syntax_checker.should_receive(:validate_templates).and_return(false)
 
         lambda {
-          @cb.validate!
+          subject.validate!
         }.should raise_error(CookbookSyntaxError)
       end
     end
