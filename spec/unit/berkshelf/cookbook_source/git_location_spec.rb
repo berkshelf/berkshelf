@@ -17,6 +17,10 @@ module Berkshelf
     subject { CookbookSource::GitLocation.new("nginx", git: "git://github.com/opscode-cookbooks/nginx.git") }
 
     describe "#download" do
+      it "returns an instance of Berkshelf::CachedCookbook" do
+        subject.download(tmp_path).should be_a(Berkshelf::CachedCookbook)
+      end
+
       it "downloads the cookbook to the given destination" do
         subject.download(tmp_path)
         # have to set outside of custom rspec matcher block
@@ -33,12 +37,6 @@ module Berkshelf
         subject.download(tmp_path)
 
         subject.should be_downloaded
-      end
-
-      it "returns an instance of Berkshelf::CachedCookbook" do
-        result = subject.download(tmp_path)
-
-        result.should be_a(Berkshelf::CachedCookbook)
       end
 
       context "given no ref/branch/tag options is given" do

@@ -12,6 +12,9 @@ module Berkshelf
         set_downloaded_status(true)
       end
 
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
         CachedCookbook.from_path(path)
       end

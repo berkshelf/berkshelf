@@ -65,7 +65,7 @@ module Berkshelf
       end
     end
 
-    DIRNAME_REGEXP = /^(.+)-(\d+\.\d+\.\d+)$/
+    DIRNAME_REGEXP = /^(.+)-(.+)$/
     CHEF_TYPE = "cookbook_version".freeze
     CHEF_JSON_CLASS = "Chef::CookbookVersion".freeze
 

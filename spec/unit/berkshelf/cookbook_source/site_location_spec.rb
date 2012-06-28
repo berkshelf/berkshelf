@@ -42,12 +42,12 @@ module Berkshelf
     subject { CookbookSource::SiteLocation.new("nginx") }
 
     describe "#download" do
-      it "returns the path to the cookbook" do
+      it "returns a CachedCookbook" do
         result = subject.download(tmp_path)
         name = subject.name
         ver, uri = subject.latest_version
 
-        result.should eql(tmp_path.join("#{name}-#{ver}").to_s)
+        result.should be_a(CachedCookbook)
       end
 
       it "sets the downloaded status to true" do

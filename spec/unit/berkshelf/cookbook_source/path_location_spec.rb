@@ -6,8 +6,8 @@ module Berkshelf
     subject { CookbookSource::PathLocation.new("nginx", :path => path) }
 
     describe "#download" do
-      it "returns the path to the cookbook" do
-        subject.download(tmp_path).should eql(path)
+      it "returns an instance of CachedCookbook" do
+        subject.download(tmp_path).should be_a(CachedCookbook)
       end
 
       it "sets the downloaded status to true" do

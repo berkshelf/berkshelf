@@ -15,6 +15,9 @@ module Berkshelf
         Git.validate_uri!(@uri)
       end
 
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
         tmp_clone = Dir.mktmpdir
         ::Berkshelf::Git.clone(uri, tmp_clone)
@@ -30,7 +33,7 @@ module Berkshelf
         end
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
-        FileUtils.mv(tmp_clone, cb_path, :force => true)
+        FileUtils.mv(tmp_clone, cb_path, force: true)
         
         set_downloaded_status(true)
         CachedCookbook.from_store_path(cb_path)

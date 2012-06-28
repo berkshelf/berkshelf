@@ -61,6 +61,9 @@ module Berkshelf
         @api_uri = options[:site]
       end
 
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
         version, uri = target_version
         remote_file = rest.get_rest(uri)['file']
@@ -70,7 +73,7 @@ module Berkshelf
         cb_path = File.join(destination, "#{name}-#{version}")
 
         self.class.unpack(downloaded_tf.path, dir)
-        FileUtils.mv(File.join(dir, name), cb_path, :force => true)
+        FileUtils.mv(File.join(dir, name), cb_path, force: true)
 
         set_downloaded_status(true)
         CachedCookbook.from_store_path(cb_path)
