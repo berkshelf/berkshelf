@@ -38,10 +38,8 @@ module Berkshelf
       #   given path.
       def from_store_path(path)
         path = Pathname.new(path)
-        matchdata = File.basename(path.to_s).match(DIRNAME_REGEXP)
-        return nil if matchdata.nil?
-
-        cached_name = matchdata[1]
+        cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
+        return nil if cached_name.nil?
 
         metadata = Chef::Cookbook::Metadata.new
 
