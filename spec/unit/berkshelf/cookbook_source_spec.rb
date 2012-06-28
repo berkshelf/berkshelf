@@ -45,15 +45,26 @@ module Berkshelf
       end
 
       context "given a location key :path" do
-        let(:path) { "/Path/To/Cookbook" }
-        let(:source) { subject.new(cookbook_name, :path => path) }
+        context "given a value for path that contains a cookbook" do
+          let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
 
-        it "initializes a PathLocation for location" do
-          source.location.should be_a(subject::PathLocation)
+          it "initializes a PathLocation for location" do
+            subject.new(cookbook_name, path: path).location.should be_a(subject::PathLocation)
+          end
+
+          it "points to the specified path" do
+            subject.new(cookbook_name, path: path).location.path.should eql(path)
+          end
         end
 
-        it "points to the specified path" do
-          source.location.path.should eql(path)
+        context "given a value for path that does not contain a cookbook" do
+          let(:path) { "/does/not/exist" }
+
+          it "rasies Berkshelf::CookbookNotFound" do
+            lambda {
+              subject.new(cookbook_name, path: path)
+            }.should raise_error(Berkshelf::CookbookNotFound)
+          end
         end
       end
 
