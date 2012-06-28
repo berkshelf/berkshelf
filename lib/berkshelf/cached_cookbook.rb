@@ -17,11 +17,15 @@ module Berkshelf
       # @return [Berkshelf::CachedCookbook]
       def from_path(path)
         path = Pathname.new(path)
-
         metadata = Chef::Cookbook::Metadata.new
-        metadata.from_file(path.join("metadata.rb").to_s)
 
-        name = metadata.name || File.basename(path)
+        begin
+          metadata.from_file(path.join("metadata.rb").to_s)
+        rescue IOError
+          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
+        end
+
+        name = metadata.name.empty? ? File.basename(path) : metadata.name
 
         new(name, path, metadata)
       end
@@ -41,8 +45,10 @@ module Berkshelf
 
         metadata = Chef::Cookbook::Metadata.new
 
-        if path.join("metadata.rb").exist?
+        begin
           metadata.from_file(path.join("metadata.rb").to_s)
+        rescue IOError
+          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
         end
 
         new(cached_name, path, metadata)

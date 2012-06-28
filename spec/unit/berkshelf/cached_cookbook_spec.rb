@@ -5,6 +5,42 @@ module Berkshelf
     describe "ClassMethods" do
       subject { CachedCookbook }
 
+      describe "#from_path" do
+        context "given a path that contains a cookbook with a metadata file that contains a name attribute" do
+          let(:cookbook_path) { fixtures_path.join("cookbooks", "example_metadata_name") }
+
+          it "returns an instance of CachedCookbook" do
+            subject.from_path(cookbook_path).should be_a(CachedCookbook)
+          end
+
+          it "has a cookbook_name attribute set to what is found in the metadata" do
+            subject.from_path(cookbook_path).cookbook_name.should eql("has_metadata")
+          end
+        end
+
+        context "given a path that contains a cookbook with a metadata file that does not contain a name attribute" do
+          let(:cookbook_path) { fixtures_path.join("cookbooks", "example_metadata_no_name") }
+
+          it "returns an instnace of CachedCookbook" do
+            subject.from_path(cookbook_path).should be_a(CachedCookbook)
+          end
+
+          it "has a cookbook_name attribute set to the basename of the folder" do
+            subject.from_path(cookbook_path).cookbook_name.should eql("example_metadata_no_name")
+          end
+        end
+
+        context "given a path that does not contain a metadata file" do
+          let(:cookbook_path) { fixtures_path.join("cookbooks", "example_no_metadata") }
+
+          it "raises a CookbookNotFound error" do
+            lambda {
+              subject.from_path(cookbook_path)
+            }.should raise_error(Berkshelf::CookbookNotFound)
+          end
+        end
+      end
+
       describe "#from_store_path" do
         before(:each) do
           @cached_cb = subject.from_store_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
