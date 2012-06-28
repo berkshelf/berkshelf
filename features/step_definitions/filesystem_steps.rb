@@ -1,6 +1,7 @@
 require 'aruba/api'
 
 World(Aruba::Api)
+World(Berkshelf::RSpec::ChefAPI)
 
 Given /^a cookbook named "(.*?)"$/ do |name|
   steps %{
@@ -19,6 +20,12 @@ end
 
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
   write_file(File.join(cookbook_name, file_name), content)
+end
+
+Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
+  cookbooks.raw.each do |name, version|
+    generate_cookbook(cookbook_store, name, version)
+  end
 end
 
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|

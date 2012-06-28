@@ -19,6 +19,34 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
+  Scenario: installing a Berksfile that contains the cookbook explicitly desired by a source
+    Given the cookbook store has the cookbooks:
+      | mysql   | 1.2.4 |
+    And I write to "Berksfile" with:
+      """
+      cookbook "mysql", "= 1.2.4"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Using mysql (1.2.4)
+      """
+    And the exit status should be 0
+
+  Scenario: installing a Berksfile that contains a cookbook matching the version constraint of a source
+    Given the cookbook store has the cookbooks:
+      | mysql   | 1.2.4 |
+    And I write to "Berksfile" with:
+      """
+      cookbook "mysql", "~> 1.2.0"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Using mysql (1.2.4)
+      """
+    And the exit status should be 0
+
   Scenario: installing a Berksfile that contains a path location
     Given a Berksfile with path location sources to fixtures:
       | example_cookbook | example_cookbook-0.5.0 |
