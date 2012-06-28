@@ -3,7 +3,7 @@ Feature: upload command
   I need a way to upload cookbooks to a Chef server that I have installed into my Bookshelf
   So they are available to Chef clients
 
-  @wip @slow_process
+  @no_run @slow_process
   Scenario: running the upload command when the Sources in the Berksfile are already installed
     Given I write to "Berksfile" with:
       """

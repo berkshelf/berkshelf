@@ -38,14 +38,12 @@ module Berkshelf
         set_downloaded_status(true)
         CachedCookbook.from_store_path(cb_path)
       rescue Berkshelf::GitError
-        msg = "Cookbook '#{name}' not found at git: #{uri}" 
-        msg << " with branch '#{branch}'" if branch
-        raise CookbookNotFound, msg
+        raise CookbookNotFound, "Cookbook '#{name}' not found at #{self}" 
       end
 
       def to_s
         s = "git: '#{uri}'"
-        s << " with branch '#{branch}'" if branch
+        s << " with branch: '#{branch}'" if branch
         s
       end
 
