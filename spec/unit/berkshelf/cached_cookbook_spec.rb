@@ -5,9 +5,9 @@ module Berkshelf
     describe "ClassMethods" do
       subject { CachedCookbook }
 
-      describe "#from_path" do
+      describe "#from_store_path" do
         before(:each) do
-          @cached_cb = subject.from_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
+          @cached_cb = subject.from_store_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
         end
 
         it "returns an instance of CachedCookbook" do
@@ -20,13 +20,13 @@ module Berkshelf
 
         context "given a path that does not contain a cookbook" do
           it "returns nil" do
-            subject.from_path(tmp_path).should be_nil
+            subject.from_store_path(tmp_path).should be_nil
           end
         end
 
         context "given a path that does not match the CachedCookbook dirname format" do
           it "returns nil" do
-            subject.from_path(fixtures_path.join("cookbooks", "example_cookbook")).should be_nil
+            subject.from_store_path(fixtures_path.join("cookbooks", "example_cookbook")).should be_nil
           end
         end
       end
@@ -47,7 +47,7 @@ module Berkshelf
     end
 
     let(:cb_path) { fixtures_path.join("cookbooks", "nginx-0.100.5") }
-    subject { CachedCookbook.from_path(cb_path) }
+    subject { CachedCookbook.from_store_path(cb_path) }
 
     describe "#checksums" do
       it "returns a Hash containing an entry for all matching cookbook files on disk" do
@@ -83,13 +83,13 @@ module Berkshelf
 
     describe "#validate!" do
       it "returns true if the cookbook of the given name and version is valid" do
-        @cb = CachedCookbook.from_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
+        @cb = CachedCookbook.from_store_path(fixtures_path.join("cookbooks", "example_cookbook-0.5.0"))
 
         @cb.validate!.should be_true
       end
 
       it "raises CookbookSyntaxError if the cookbook contains invalid ruby files" do
-        @cb = CachedCookbook.from_path(fixtures_path.join("cookbooks", "invalid_ruby_files-1.0.0"))
+        @cb = CachedCookbook.from_store_path(fixtures_path.join("cookbooks", "invalid_ruby_files-1.0.0"))
 
         lambda {
           @cb.validate!
@@ -97,7 +97,7 @@ module Berkshelf
       end
 
       it "raises CookbookSyntaxError if the cookbook contains invalid template files" do
-        @cb = CachedCookbook.from_path(fixtures_path.join("cookbooks", "invalid_template_files-1.0.0"))
+        @cb = CachedCookbook.from_store_path(fixtures_path.join("cookbooks", "invalid_template_files-1.0.0"))
 
         lambda {
           @cb.validate!

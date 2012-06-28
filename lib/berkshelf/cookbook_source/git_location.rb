@@ -33,7 +33,7 @@ module Berkshelf
         FileUtils.mv(tmp_clone, cb_path, :force => true)
         
         set_downloaded_status(true)
-        CachedCookbook.from_path(cb_path)
+        CachedCookbook.from_store_path(cb_path)
       rescue Berkshelf::GitError
         msg = "Cookbook '#{name}' not found at git: #{uri}" 
         msg << " with branch '#{branch}'" if branch

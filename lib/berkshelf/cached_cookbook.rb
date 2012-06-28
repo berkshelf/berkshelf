@@ -5,13 +5,34 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CachedCookbook
     class << self
+      # Creates a new instance of Berkshelf::CachedCookbook from a path on disk that
+      # contains a Cookbook. The name of the Cookbook will be determined first by the
+      # name attribute of the metadata.rb file if it is present. If the name attribute
+      # has not been set the Cookbook name will be determined by the basename of the
+      # given filepath.
+      #
+      # @param [#to_s] path
+      #   a path on disk to the location of a Cookbook
+      #
+      # @return [Berkshelf::CachedCookbook]
+      def from_path(path)
+        path = Pathname.new(path)
+
+        metadata = Chef::Cookbook::Metadata.new
+        metadata.from_file(path.join("metadata.rb").to_s)
+
+        name = metadata.name || File.basename(path)
+
+        new(name, path, metadata)
+      end
+
       # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
       #
       # @return [CachedCookbook]
       #   an instance of CachedCookbook initialized by the contents found at the
       #   given path.
-      def from_path(path)
+      def from_store_path(path)
         path = Pathname.new(path)
         matchdata = File.basename(path.to_s).match(DIRNAME_REGEXP)
         return nil if matchdata.nil?

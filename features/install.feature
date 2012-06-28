@@ -54,7 +54,6 @@ Feature: install cookbooks from a Berksfile
       """
     And the CLI should exit with the status code for error "DownloadFailure"
 
-  @wip
   Scenario: running install command with the --shims flag to create a directory of shims
     Given I write to "Berksfile" with:
       """

@@ -32,7 +32,7 @@ module Berkshelf
       path = cookbook_path(name, version)
       return nil unless path.cookbook?
 
-      CachedCookbook.from_path(path)
+      CachedCookbook.from_store_path(path)
     end
 
     # Returns an array of all of the Cookbooks that have been cached
@@ -42,7 +42,7 @@ module Berkshelf
     def cookbooks
       [].tap do |cookbooks|
         storage_path.each_child do |p|
-          cached_cookbook = CachedCookbook.from_path(p)
+          cached_cookbook = CachedCookbook.from_store_path(p)
           
           cookbooks << cached_cookbook if cached_cookbook
         end
@@ -73,7 +73,7 @@ module Berkshelf
       package              = graph.package(name)
       solution_constraints = [ SolutionConstraint.new(graph.package(name), constraint) ]
 
-      cookbooks.each { |cookbook| package.add_version(cookbook.version) }
+      cookbooks.each { |cookbook| package.add_version(Version.new(cookbook.version)) }
       name, version = quietly { selector.find_solution(solution_constraints).first }
       
       cookbook(name, version)

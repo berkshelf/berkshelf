@@ -4,7 +4,8 @@ module Berkshelf
     extend Forwardable
     include DepSelector
 
-    def_delegators :@graph, :package, :packages
+    def_delegator :@graph, :package
+    def_delegator :@graph, :packages
 
     def initialize(downloader, sources = Array.new)
       @downloader = downloader
@@ -117,10 +118,9 @@ module Berkshelf
       #   name of the source to set
       # @param [CookbookSource] value
       #   source to set as value
-      def []=(source, value)
+      def set_source(source, value)
         @sources[source.to_s] = value
       end
-      alias_method :set_source, :[]=
 
       # @param [Berkshelf::CookbookSource] source
       #
@@ -134,27 +134,19 @@ module Berkshelf
       #
       # @return [Boolean]
       def use_source(source)
-        cookbook_name    = nil
-        cookbook_version = nil
-        cookbook_path    = nil
-
         if source.downloaded?
-          cookbook_name = source.name
-          cookbook_version = source.local_version
-          cookbook_path = source.path
+          cached = source.cached_cookbook
         else
           cached = downloader.cookbook_store.satisfy(source.name, source.version_constraint)
           return false if cached.nil?
 
-          cookbook_name = cached.cookbook_name
-          cookbook_version = cached.version
-          cookbook_path = cached.path
+          get_source(source).cached_cookbook = cached
         end
 
-        msg = "Using #{cookbook_name} (#{cookbook_version})"
-        msg << " at #{cookbook_path}" if source.location.is_a?(CookbookSource::PathLocation)
+        msg = "Using #{cached.cookbook_name} (#{cached.version})"
+        msg << " at #{cached.path}" if source.location.is_a?(CookbookSource::PathLocation)
         Berkshelf.ui.info msg
-        
+
         true
       end
 

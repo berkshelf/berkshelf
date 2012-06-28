@@ -73,7 +73,7 @@ module Berkshelf
         FileUtils.mv(File.join(dir, name), cb_path, :force => true)
 
         set_downloaded_status(true)
-        CachedCookbook.from_path(cb_path)
+        CachedCookbook.from_store_path(cb_path)
       end
 
       # @return [Array]

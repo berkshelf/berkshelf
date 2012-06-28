@@ -38,10 +38,12 @@ module Berkshelf
     LOCATION_KEYS = [:git, :path, :site]
 
     attr_reader :name
+    alias_method :to_s, :name
+
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
-    attr_reader :cached_cookbook
+    attr_accessor :cached_cookbook
 
     def_delegator :@location, :downloaded?
 
@@ -69,7 +71,9 @@ module Berkshelf
       when options[:git]
         GitLocation.new(name, options)
       when options[:path]
-        PathLocation.new(name, options)
+        loc = PathLocation.new(name, options)
+        @cached_cookbook = CachedCookbook.from_path(loc.path)
+        loc
       when options[:site]
         SiteLocation.new(name, options)
       else
@@ -115,13 +119,7 @@ module Berkshelf
       @locked_version || cached_cookbook.version
     end
 
-    def to_s
-      "#{name} (#{version_constraint})"
-    end
-
     private
-
-      attr_writer :cached_cookbook
 
       def set_local_path(path)
         @local_path = path
