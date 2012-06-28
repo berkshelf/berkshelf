@@ -19,7 +19,7 @@ module Berkshelf
           source = CookbookSource.new("mysql", "= 1.2.4")
           resolver = subject.new(downloader, source)
 
-          source.dependencies.each do |name, constraint|
+          source.cached_cookbook.dependencies.each do |name, constraint|
             resolver.package(name).should_not be_nil
           end
         end
@@ -28,7 +28,7 @@ module Berkshelf
           source = CookbookSource.new("mysql", "= 1.2.4")
           resolver = subject.new(downloader, source)
 
-          source.dependencies.each do |name, constraint|
+          source.cached_cookbook.dependencies.each do |name, constraint|
             resolver.package(name).versions.should_not be_empty
           end
         end
@@ -67,7 +67,7 @@ module Berkshelf
       end
 
       it "adds the dependencies of the source as packages to the graph" do
-        source.dependencies.each do |name, constraint|
+        source.cached_cookbook.dependencies.each do |name, constraint|
           subject.package(name).should_not be_nil
         end
       end
@@ -84,14 +84,14 @@ module Berkshelf
     describe "#add_dependencies" do
       it "adds a package for each dependency to the graph" do
         pkg_ver = subject.add_source(source)
-        subject.add_dependencies(pkg_ver, source.dependencies)
+        subject.add_dependencies(pkg_ver, source.cached_cookbook.dependencies)
 
         subject.package(source.name).should_not be_nil
       end
 
       it "adds a version constraint to the graph for each dependency" do
         pkg_ver = subject.add_source(source)
-        subject.add_dependencies(pkg_ver, source.dependencies)
+        subject.add_dependencies(pkg_ver, source.cached_cookbook.dependencies)
 
         subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
       end

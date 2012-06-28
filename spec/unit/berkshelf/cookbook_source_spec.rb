@@ -133,16 +133,10 @@ module Berkshelf
 
     describe "#download" do
       context "when download is successful" do
-        it "writes a value to local_path" do
+        it "sets a CachedCookbook to the cached_cookbook attr" do
           subject.download(tmp_path)
 
-          subject.local_path.should_not be_nil
-        end
-
-        it "writes a value to local_version" do
-          subject.download(tmp_path)
-
-          subject.local_version.should_not be_nil
+          subject.cached_cookbook.should be_a(Berkshelf::CachedCookbook)
         end
 
         it "returns an array containing the symbol :ok and the local_path" do
@@ -150,7 +144,7 @@ module Berkshelf
 
           result.should be_a(Array)
           result[0].should eql(:ok)
-          result[1].should eql(subject.local_path)
+          result[1].should eql(subject.cached_cookbook)
         end
       end
 
@@ -168,23 +162,11 @@ module Berkshelf
       end
     end
 
-    describe "#metadata" do
-      it "should return the metadata of a CookbookSource that has been downloaded" do
-        subject.download(tmp_path)
-
-        subject.metadata.should be_a(Chef::Cookbook::Metadata)
-      end
-
-      it "should return nil if the CookbookSource has not been downloaded" do
-        subject.metadata.should be_nil
-      end
-    end
-
-    describe "#downloaded?", focus: true do
+    describe "#downloaded?" do
       subject{ CookbookSource.new("nginx", ">= 1.0.1") }
 
-      it "sends the message 'downloaded?' with the value of version_constraint to the location" do
-        subject.location.should_receive(:downloaded?).with(subject.version_constraint)
+      it "delegates the message ':downloaded?' to the location" do
+        subject.location.should_receive(:downloaded?)
         subject.downloaded?
       end
     end

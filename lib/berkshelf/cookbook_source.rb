@@ -43,7 +43,7 @@ module Berkshelf
     attr_reader :location
     attr_reader :cached_cookbook
 
-    def_delegators :@location, :downloaded?
+    def_delegator :@location, :downloaded?
 
     # TODO: describe how the options on this function work.
     #

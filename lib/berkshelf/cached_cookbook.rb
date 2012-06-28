@@ -5,13 +5,14 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CachedCookbook
     class << self
-      # @param [String] path
+      # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
       #
       # @return [CachedCookbook]
       #   an instance of CachedCookbook initialized by the contents found at the
       #   given path.
-      def from_path(path)        
+      def from_path(path)
+        path = Pathname.new(path)
         matchdata = File.basename(path.to_s).match(DIRNAME_REGEXP)
         return nil if matchdata.nil?
 
@@ -67,7 +68,8 @@ module Berkshelf
     #     }
     attr_reader :manifest
 
-    def_delegators :@metadata, :version
+    def_delegator :@metadata, :version
+    def_delegator :@metadata, :dependencies
 
     def initialize(name, path, metadata)
       @cookbook_name = name

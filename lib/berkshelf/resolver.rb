@@ -33,12 +33,12 @@ module Berkshelf
 
       set_source(source.name, source)
 
-      install_or_use_source(source)
+      use_source(source) || install_source(source)
 
       package = add_package(source.name)
-      package_version = add_version(package, Version.new(source.metadata.version))
+      package_version = add_version(package, Version.new(source.cached_cookbook.version))
       
-      add_dependencies(package_version, source.dependencies) if include_dependencies
+      add_dependencies(package_version, source.cached_cookbook.dependencies) if include_dependencies
 
       package_version
     end
@@ -64,10 +64,10 @@ module Berkshelf
         unless has_source?(name)
           source = CookbookSource.new(name, constraint)
 
-          install_or_use_source(source)
+          use_source(source) || install_source(source)
 
-          dep_pkgver = add_version(dep_package, Version.new(source.metadata.version))
-          add_dependencies(dep_pkgver, source.dependencies)
+          dep_pkgver = add_version(dep_package, Version.new(source.cached_cookbook.version))
+          add_dependencies(dep_pkgver, source.cached_cookbook.dependencies)
           set_source(source.name, source)
         end
       end
@@ -88,8 +88,7 @@ module Berkshelf
 
       [].tap do |cached_cookbooks|
         solution.each do |name, version|
-          source = get_source(name)
-          cached_cookbooks << CachedCookbook.new(source.name, source.local_path, source.metadata)
+          cached_cookbooks << get_source(name).cached_cookbook
         end
       end
     end
@@ -123,19 +122,40 @@ module Berkshelf
       end
       alias_method :set_source, :[]=
 
-      def install_or_use_source(source)
-        if downloader.downloaded?(source)
-          msg = "Using #{source.name} (#{source.metadata.version})"
+      # @param [Berkshelf::CookbookSource] source
+      #
+      # @return [Boolean]
+      def install_source(source)
+        downloader.download!(source)
+        Berkshelf.ui.info "Installing #{source.name} (#{source.cached_cookbook.version}) from #{source.location}"
+      end
 
-          if source.location.is_a?(CookbookSource::PathLocation)
-            msg << " at #{source.location}"  
-          end
+      # @param [Berkshelf::CookbookSource] source
+      #
+      # @return [Boolean]
+      def use_source(source)
+        cookbook_name    = nil
+        cookbook_version = nil
+        cookbook_path    = nil
 
-          Berkshelf.ui.info msg
+        if source.downloaded?
+          cookbook_name = source.name
+          cookbook_version = source.local_version
+          cookbook_path = source.path
         else
-          downloader.download!(source)
-          Berkshelf.ui.info "Installing #{source.name} (#{source.local_version}) from #{source.location}"
+          cached = downloader.cookbook_store.satisfy(source.name, source.version_constraint)
+          return false if cached.nil?
+
+          cookbook_name = cached.cookbook_name
+          cookbook_version = cached.version
+          cookbook_path = cached.path
         end
+
+        msg = "Using #{cookbook_name} (#{cookbook_version})"
+        msg << " at #{cookbook_path}" if source.location.is_a?(CookbookSource::PathLocation)
+        Berkshelf.ui.info msg
+        
+        true
       end
 
       def selector
@@ -151,8 +171,8 @@ module Berkshelf
       # Add the dependencies of each source to the graph
       def add_sources_dependencies
         sources.each do |source|
-          package_version = package(source.name)[Version.new(source.metadata.version)]
-          add_dependencies(package_version, source.dependencies)
+          package_version = package(source.name)[Version.new(source.cached_cookbook.version)]
+          add_dependencies(package_version, source.cached_cookbook.dependencies)
         end
       end
 
