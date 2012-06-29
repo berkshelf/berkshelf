@@ -28,6 +28,11 @@ Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
   end
 end
 
+Given /^the cookbook store contains a cookbook "(.*?)" "(.*?)" with dependencies:$/ do |name, version, dependencies|
+  generate_cookbook(cookbook_store, name, version, dependencies: dependencies.raw)
+end
+
+
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     cookbook_store.should have_structure {

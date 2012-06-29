@@ -33,9 +33,14 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
-  Scenario: installing a Berksfile that contains a cookbook matching the version constraint of a source
-    Given the cookbook store has the cookbooks:
-      | mysql   | 1.2.4 |
+  Scenario: installing a Berksfile that contains a source with dependencies, all of which already have been installed
+    Given the cookbook store contains a cookbook "mysql" "1.2.4" with dependencies:
+      | openssl      | = 1.0.0 |
+      | windows      | = 1.3.0 |
+      | chef_handler | = 1.0.6 |
+    And the cookbook store has the cookbooks:
+      | openssl      | 1.0.0 |
+      | windows      | 1.3.0 |
     And I write to "Berksfile" with:
       """
       cookbook "mysql", "~> 1.2.0"
@@ -44,6 +49,9 @@ Feature: install cookbooks from a Berksfile
     Then the output should contain:
       """
       Using mysql (1.2.4)
+      Using openssl (1.0.0)
+      Using windows (1.3.0)
+      Installing chef_handler (1.0.6) from site:
       """
     And the exit status should be 0
 

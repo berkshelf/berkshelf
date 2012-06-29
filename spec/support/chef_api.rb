@@ -18,7 +18,7 @@ module Berkshelf
         false
       end
 
-      def generate_cookbook(path, name, version)
+      def generate_cookbook(path, name, version, options = {})
         path = Pathname.new(path)
         cookbook_path = path.join("#{name}-#{version}")
         directories = [
@@ -49,6 +49,13 @@ module Berkshelf
 name "#{name}"
 version "#{version}"
 EOF
+
+        if options[:dependencies]
+          options[:dependencies].each do |name, constraint|
+            metadata << "depends '#{name}', '#{constraint}'\n"
+          end
+        end
+
         File.write(cookbook_path.join("metadata.rb"), metadata)
       end
 
