@@ -5,7 +5,7 @@ module Berkshelf
     describe "ClassMethods" do
       subject { Resolver }
 
-      describe "#initialize" do
+      describe "::initialize" do
         let(:downloader) { Berkshelf.downloader }
 
         it "adds the specified sources to the sources hash" do
@@ -46,15 +46,27 @@ module Berkshelf
 
     let(:source) { CookbookSource.new("mysql", "= 1.2.4") }
 
-    subject do
-      downloader = Berkshelf.downloader
-      Resolver.new(downloader)
-    end
+    subject { Resolver.new(Berkshelf.downloader) }
 
     describe "#add_source" do
-      before(:each) { subject.add_source(source) }
+      let(:source) do
+        double('source',
+          name: 'mysql',
+          version_constraint: DepSelector::VersionConstraint.new('= 1.2.4'),
+          downloaded?: true,
+          cached_cookbook: double('cached_cb', 
+            name: 'mysql-1.2.4',
+            cookbook_name: 'mysql',
+            version: '1.2.4',
+            dependencies: Array.new
+          ),
+          location: double('location')
+        )
+      end
 
       it "adds the source to the instance of resolver" do
+        subject.add_source(source)
+
         subject.sources.should include(source)
       end
 
@@ -63,6 +75,8 @@ module Berkshelf
       end
 
       it "adds a version constraint specified by the source to the package of the same name" do
+        subject.add_source(source)
+
         subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
       end
 
@@ -73,10 +87,10 @@ module Berkshelf
       end
 
       it "raises a DuplicateSourceDefined exception if a source of the same name is added" do
-        dup_source = CookbookSource.new(source.name)
+        subject.should_receive(:has_source?).with(source).and_return(true)
 
         lambda {
-          subject.add_source(dup_source)
+          subject.add_source(source)
         }.should raise_error(DuplicateSourceDefined)
       end
     end
