@@ -24,7 +24,7 @@ module Berkshelf
 
     class_option :config,
       type: :string,
-      default: File.expand_path("~/.chef/knife.rb"),
+      default: File.expand_path(ENV["CHEF_CONFIG"] || "~/.chef/knife.rb"),
       desc: "Path to Knife or Chef configuration to use.",
       aliases: "-c",
       banner: "PATH"
