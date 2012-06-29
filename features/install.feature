@@ -71,7 +71,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.9.8"
       """
     When I run the install command
-    Then the cookbook sotre should have the cookbooks:
+    Then the cookbook store should have the cookbooks:
       | artifact | 0.9.8 |
     And the output should contain:
       """
@@ -158,3 +158,16 @@ Feature: install cookbooks from a Berksfile
       '/something/on/disk' is not a valid Git URI.
       """
     And the CLI should exit with the status code for error "InvalidGitURI"
+
+  Scenario: installing when there are sources with duplicate names defined
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact"
+      cookbook "artifact"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Berksfile contains two sources named 'artifact'. Remove one and try again.
+      """
+    And the CLI should exit with the status code for error "DuplicateSourceDefined"
