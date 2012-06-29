@@ -2,16 +2,7 @@ require 'spec_helper'
 
 module Berkshelf
   describe Uploader do
-
-    unless config = YAML.load_file('features/config.yml')
-      raise "Could not load features/config.yml -- please generate it from features/config.sample.yml"
-    end
-
-    let(:server_url) { config["chef_server_url"] }
-    let(:client_key) { config["client_key"] }
-    let(:node_name) { config["node_name"] }
-
-    subject { Uploader.new(server_url, client_key: client_key, node_name: node_name) }
+    subject { Uploader.new(Chef::Config[:chef_server_url], client_key: Chef::Config[:client_key], node_name: Chef::Config[:node_name]) }
 
     describe "#upload" do
       let(:cookbook) { double('nginx', name: "nginx-0.101.2", cookbook_name: "nginx", version: "0.101.2") }

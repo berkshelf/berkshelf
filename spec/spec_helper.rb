@@ -89,4 +89,5 @@ end
 
 Spork.each_run do
   require 'berkshelf'
+  Chef::Config.from_file(Berkshelf::DEFAULT_CONFIG)
 end
