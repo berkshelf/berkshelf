@@ -144,7 +144,7 @@ module Berkshelf
         end
 
         msg = "Using #{cached.cookbook_name} (#{cached.version})"
-        msg << " at path: '#{cached.path}'" if source.location.is_a?(CookbookSource::PathLocation)
+        msg << " at #{source.location}" if source.location.is_a?(CookbookSource::PathLocation)
         Berkshelf.ui.info msg
 
         true
