@@ -30,7 +30,9 @@ module Berkshelf
     #
     # @return [DepSelector::PackageVersion]
     def add_source(source, include_dependencies = true)
-      raise DuplicateSourceDefined if has_source?(source)
+      if has_source?(source)
+        raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
+      end
 
       set_source(source.name, source)
 

@@ -47,7 +47,9 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CookbookSource]
     def add_source(source)
-      raise DuplicateSourceDefined if has_source?(source)
+      if has_source?(source)
+        raise DuplicateSourceDefined, "Berksfile contains two sources named '#{source.name}'. Remove one and try again."
+      end
       @sources[source.to_s] = source
     end
 
