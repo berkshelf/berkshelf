@@ -24,7 +24,7 @@ module Berkshelf
 
     class_option :config,
       type: :string,
-      default: DEFAULT_CONFIG,
+      default: Berkshelf::DEFAULT_CONFIG,
       desc: "Path to Knife or Chef configuration to use.",
       aliases: "-c",
       banner: "PATH"
