@@ -2,9 +2,14 @@ require 'spec_helper'
 
 module Berkshelf
   describe Uploader do
-    let(:server_url) { "https://api.opscode.com/organizations/vialstudios" }
-    let(:client_key) { '/Users/reset/.chef/reset.pem' }
-    let(:node_name) { 'reset' }
+
+    unless config = YAML.load_file('features/config.yml')
+      raise "Could not load features/config.yml -- please generate it from features/config.sample.yml"
+    end
+
+    let(:server_url) { config["chef_server_url"] }
+    let(:client_key) { config["client_key"] }
+    let(:node_name) { config["node_name"] }
 
     subject { Uploader.new(server_url, client_key: client_key, node_name: node_name) }
 
@@ -14,7 +19,10 @@ module Berkshelf
       context "when cookbook is valid" do
         before(:each) do
           cookbook.should_receive(:validate!).and_return(true)
-          cookbook.should_receive(:checksums).and_return("da97c94bb6acb2b7900cbf951654fea3"=>"/Users/reset/code/berkshelf/spec/fixtures/cookbooks/example_cookbook-0.5.0/recipes/default.rb")
+          cookbook.should_receive(:checksums).and_return(
+            "da97c94bb6acb2b7900cbf951654fea3" => 
+              File.expand_path("spec/fixtures/cookbooks/example_cookbook-0.5.0/recipes/default.rb")
+          )
           subject.should_receive(:create_sandbox)
           subject.should_receive(:upload_checksums_to_sandbox)
           subject.should_receive(:commit_sandbox)
