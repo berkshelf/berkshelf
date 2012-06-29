@@ -47,11 +47,13 @@ module Berkshelf
 
     def_delegator :@location, :downloaded?
 
-    # TODO: describe how the options on this function work.
-    #
-    # @param [String] name
-    # @param [String] version_constraint (optional)
-    # @param [Hash] options (optional)
+    # @overload initialize(name, version_constraint, options = {})
+    #   @param [#to_s] name
+    #   @param [#to_s] version_constraint
+    #   @param [Hash] options
+    # @overload initialize(name, options = {})
+    #   @param [#to_s] name
+    #   @param [Hash] options
     def initialize(*args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       name, constraint = args
