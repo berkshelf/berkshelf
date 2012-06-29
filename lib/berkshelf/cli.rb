@@ -8,7 +8,6 @@ module Berkshelf
       super
       # JW TODO: Replace Chef::Knife::UI with our own UI class
       ::Berkshelf.ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
-      load_config
       @options = options.dup # unfreeze frozen options Hash from Thor
     rescue BerkshelfError => e
       Berkshelf.ui.fatal e
@@ -96,6 +95,7 @@ module Berkshelf
       desc: "Upload all cookbooks even if a frozen one exists on the target Chef Server"
     desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server."
     def upload
+      load_config 
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.upload(Chef::Config[:chef_server_url], options)
     rescue BerkshelfError => e
