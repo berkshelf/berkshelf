@@ -21,60 +21,55 @@ module Berkshelf
       Array(sources).each do |source|
         add_source(source, false)
       end
-      add_sources_dependencies
+
+      Array(sources).each do |source|
+        add_source_dependencies(source)
+      end
     end
 
+    # Add the given source to the collection of sources for this instance
+    # of Resolver. By default the dependencies of the given source will also
+    # be added as sources to the collection.
+    #
     # @param [Berkshelf::CookbookSource] source
     #   source to add
     # @param [Boolean] include_dependencies
-    #   if true, after adding the source the dependencies defined in the
-    #   sources metadata will be added to the graph and downloaded
+    #   adds the dependencies of the given source as sources to the collection of
+    #   if true. Dependencies will be ignored if false.
     #
-    # @return [DepSelector::PackageVersion]
+    # @return [Array<CookbookSource>]
     def add_source(source, include_dependencies = true)
       if has_source?(source)
         raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
       end
 
       set_source(source)
-
       use_source(source) || install_source(source)
 
       package = add_package(source.name)
       package_version = add_version(package, Version.new(source.cached_cookbook.version))
       
-      add_dependencies(package_version, source.cached_cookbook.dependencies) if include_dependencies
+      if include_dependencies
+        add_source_dependencies(source)
+      end
 
-      package_version
+      sources
     end
 
-    # @param [DepSelector::PackageVersion] parent_pkgver
-    #   the PackageVersion you would like to add the given dependencies to. In this case
-    #   the package version is a version of a Cookbook.
-    # @param [Hash] dependencies
-    #   A hash containing Cookbook names for keys and version constraint strings for
-    #   values. This is the same format obtained by sending the 'dependencies' message
-    #   to an instance of Chef::Cookbook::Metadata.
+    # Add the dependencies of the given source as sources in the collection of sources
+    # on this instance of Resolver. Any dependencies which already have a source in the
+    # collection of sources of the same name will not be added to the collection a second
+    # time.
     #
-    #   Example:
-    #       { 
-    #         "build-essential" => ">= 0.0.0",
-    #         "ohai" => "~> 1.0.2"
-    #       }
-    def add_dependencies(parent_pkgver, dependencies)
-      dependencies.each do |name, constraint|
-        dep_package = add_package(name)
-        parent_pkgver.dependencies << Dependency.new(dep_package, VersionConstraint.new(constraint))
+    # @param [CookbookSource] source
+    #   source to convert dependencies into sources
+    #
+    # @return [Array<CookbookSource>]
+    def add_source_dependencies(source)
+      source.cached_cookbook.dependencies.each do |name, constraint|
+        next if has_source?(name)
 
-        unless has_source?(name)
-          source = CookbookSource.new(name, constraint)
-
-          use_source(source) || install_source(source)
-
-          dep_pkgver = add_version(dep_package, Version.new(source.cached_cookbook.version))
-          add_dependencies(dep_pkgver, source.cached_cookbook.dependencies)
-          set_source(source)
-        end
+        add_source(CookbookSource.new(name, constraint))
       end
     end
 
@@ -161,14 +156,6 @@ module Berkshelf
       def solution_constraints
         constraints = graph.packages.collect do |name, package|
           SolutionConstraint.new(package)
-        end
-      end
-
-      # Add the dependencies of each source to the graph
-      def add_sources_dependencies
-        sources.each do |source|
-          package_version = package(source.name)[Version.new(source.cached_cookbook.version)]
-          add_dependencies(package_version, source.cached_cookbook.dependencies)
         end
       end
 

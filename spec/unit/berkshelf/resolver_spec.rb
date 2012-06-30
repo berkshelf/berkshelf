@@ -11,7 +11,7 @@ module Berkshelf
           name: 'mysql-1.2.4',
           cookbook_name: 'mysql',
           version: '1.2.4',
-          dependencies: Array.new
+          dependencies: { "nginx" => ">= 0.1.0", "artifact" => "~> 0.10.0" }
         ),
         location: double('location')
       )
@@ -26,7 +26,7 @@ module Berkshelf
           name: 'nginx-0.101.2',
           cookbook_name: 'nginx',
           version: '0.101.2',
-          dependencies: Array.new
+          dependencies: Hash.new
         ),
         location: double('location')
       )
@@ -74,6 +74,8 @@ module Berkshelf
     subject { Resolver.new(Berkshelf.downloader) }
 
     describe "#add_source" do
+      let(:package_version) { double('package-version', dependencies: Array.new) }
+
       it "adds the source to the instance of resolver" do
         subject.add_source(source)
 
@@ -91,7 +93,7 @@ module Berkshelf
       end
 
       it "adds the dependencies of the source as packages to the graph" do
-        subject.should_receive(:add_dependencies).with(anything, source.cached_cookbook.dependencies)
+        subject.should_receive(:add_source_dependencies).with(source)
         
         subject.add_source(source)
       end
@@ -104,28 +106,20 @@ module Berkshelf
         }.should raise_error(DuplicateSourceDefined)
       end
 
+      it "adds a package for each dependency to the packages attribute" do
+        subject.add_source(source)
+
+        source.cached_cookbook.dependencies.each do |name, constraint|
+          subject.package(name).should_not be_nil
+        end
+      end
+
       context "when include_dependencies is false" do
         it "does not try to include_dependencies" do
-          subject.should_not_receive(:include_dependencies)
+          subject.should_not_receive(:add_source_dependencies)
 
           subject.add_source(source, false)
         end
-      end
-    end
-
-    describe "#add_dependencies" do
-      it "adds a package for each dependency to the graph" do
-        pkg_ver = subject.add_source(source)
-        subject.add_dependencies(pkg_ver, source.cached_cookbook.dependencies)
-
-        subject.package(source.name).should_not be_nil
-      end
-
-      it "adds a version constraint to the graph for each dependency" do
-        pkg_ver = subject.add_source(source)
-        subject.add_dependencies(pkg_ver, source.cached_cookbook.dependencies)
-
-        subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
       end
     end
 
@@ -158,11 +152,7 @@ module Berkshelf
         @solution.should include(source.cached_cookbook)
         @solution.should include(source_two.cached_cookbook)
       end
-
-      it "returns a CachedCookbook for each resolved source" do
-        @solution.should have(2).items
-      end
-
+      
       it "resolves the given mysql source" do
         @solution[0].cookbook_name.should eql("mysql")
         @solution[0].version.should eql("1.2.4")
