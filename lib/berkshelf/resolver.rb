@@ -7,6 +7,8 @@ module Berkshelf
     def_delegator :@graph, :package
     def_delegator :@graph, :packages
 
+    # @param [Downloader] downloader
+    # @param [Array<CookbookSource>, CookbookSource] sources
     def initialize(downloader, sources = Array.new)
       @downloader = downloader
       @graph = DependencyGraph.new
@@ -34,7 +36,7 @@ module Berkshelf
         raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
       end
 
-      set_source(source.name, source)
+      set_source(source)
 
       use_source(source) || install_source(source)
 
@@ -71,7 +73,7 @@ module Berkshelf
 
           dep_pkgver = add_version(dep_package, Version.new(source.cached_cookbook.version))
           add_dependencies(dep_pkgver, source.cached_cookbook.dependencies)
-          set_source(source.name, source)
+          set_source(source)
         end
       end
     end
@@ -96,16 +98,19 @@ module Berkshelf
       end
     end
 
-    # @param [#to_s] source
+    # @param [CookbookSource, #to_s] source
     #   name of the source to return
     #
     # @return [Berkshelf::CookbookSource]
     def [](source)
+      if source.is_a?(CookbookSource)
+        source = source.name
+      end
       @sources[source.to_s]
     end
     alias_method :get_source, :[]
 
-    # @param [#to_s] source
+    # @param [CoobookSource, #to_s] source
     #   the source to test if the resolver has added
     def has_source?(source)
       !get_source(source).nil?
@@ -116,12 +121,9 @@ module Berkshelf
       attr_reader :downloader
       attr_reader :graph
 
-      # @param [#to_s] source
-      #   name of the source to set
-      # @param [CookbookSource] value
-      #   source to set as value
-      def set_source(source, value)
-        @sources[source.to_s] = value
+      # @param [CookbookSource] source
+      def set_source(source)
+        @sources[source.name] = source
       end
 
       # @param [Berkshelf::CookbookSource] source
