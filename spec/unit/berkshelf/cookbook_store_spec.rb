@@ -38,10 +38,11 @@ module Berkshelf
       let(:name) { "nginx" }
       let(:version) { DepSelector::Version.new("0.101.4") }
       let(:constraint) { DepSelector::VersionConstraint.new("~> 0.101.2") }
-      let(:cached_cb) { double('cached_cb', version: version) }
+      let(:cached_cb) { double('cached-cb', name: name, version: version) }
+      let(:cached_two) { double('cached-two', name: "mysql", version: DepSelector::Version.new("1.2.6")) }
 
       before(:each) do
-        subject.stub(:cookbooks).and_return([cached_cb])
+        subject.stub(:cookbooks).and_return([cached_cb, cached_two])
       end
 
       it "gets and returns the the CachedCookbook best matching the name and constraint" do
@@ -85,11 +86,24 @@ module Berkshelf
     end
 
     describe "#cookbooks" do
-      it "returns a list of CachedCookbooks" do
+      before(:each) do
         CookbookSource.new("nginx", "0.101.2").download(subject.storage_path)
+        CookbookSource.new("mysql", "1.2.6").download(subject.storage_path)
+      end
 
+      it "returns a list of CachedCookbooks" do
         subject.cookbooks.each do |cb|
           cb.should be_a(CachedCookbook)
+        end
+      end
+
+      it "return an instance of CachedCookbook for every downloaded cookbook" do
+        subject.cookbooks.should have(2).items
+      end
+
+      context "given a value for the filter parameter" do
+        it "returns only the CachedCookbooks whose name match the filter" do          
+          subject.cookbooks("mysql").should have(1).item
         end
       end
     end

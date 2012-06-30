@@ -35,16 +35,21 @@ module Berkshelf
       CachedCookbook.from_store_path(path)
     end
 
-    # Returns an array of all of the Cookbooks that have been cached
-    # to the storage_path of this instance of CookbookStore.
+    # Returns an array of the Cookbooks that have been cached to the
+    # storage_path of this instance of CookbookStore. Passing the filter
+    # option will return only the CachedCookbooks whose name match the
+    # filter.
     #
     # @return [Array<Berkshelf::CachedCookbook>]
-    def cookbooks
+    def cookbooks(filter = nil)
       [].tap do |cookbooks|
         storage_path.each_child do |p|
           cached_cookbook = CachedCookbook.from_store_path(p)
           
-          cookbooks << cached_cookbook if cached_cookbook
+          next unless cached_cookbook
+          next if filter && cached_cookbook.cookbook_name != filter
+
+          cookbooks << cached_cookbook
         end
       end
     end
@@ -73,7 +78,7 @@ module Berkshelf
       package              = graph.package(name)
       solution_constraints = [ SolutionConstraint.new(graph.package(name), constraint) ]
 
-      cookbooks.each { |cookbook| package.add_version(Version.new(cookbook.version)) }
+      cookbooks(name).each { |cookbook| package.add_version(Version.new(cookbook.version)) }
       name, version = quietly { selector.find_solution(solution_constraints).first }
       
       cookbook(name, version)
