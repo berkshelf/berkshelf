@@ -2,7 +2,19 @@ require 'spec_helper'
 
 module Berkshelf
   describe CookbookSource::GitLocation do
-    subject { CookbookSource::GitLocation.new("nginx", :git => "git://github.com/opscode-cookbooks/nginx.git") }
+    describe "ClassMethods" do
+      subject { CookbookSource::GitLocation }
+
+      describe "::initialize" do
+        it "raises InvalidGitURI if given an invalid Git URI for options[:git]" do
+          lambda {
+            subject.new("nginx", git: "/something/on/disk")
+          }.should raise_error(InvalidGitURI)
+        end
+      end
+    end
+
+    subject { CookbookSource::GitLocation.new("nginx", git: "git://github.com/opscode-cookbooks/nginx.git") }
 
     describe "#download" do
       it "downloads the cookbook to the given destination" do
