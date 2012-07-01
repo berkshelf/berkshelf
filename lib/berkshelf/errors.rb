@@ -6,6 +6,8 @@ module Berkshelf
         define_singleton_method(:status_code) { code }
       end
     end
+
+    alias_method :message, :to_s
   end
 
   class BerksfileNotFound < BerkshelfError; status_code(100); end
@@ -27,7 +29,7 @@ module Berkshelf
       @uri = uri
     end
 
-    def message
+    def to_s
       "'#{uri}' is not a valid Git URI."
     end
   end
