@@ -1,5 +1,11 @@
+require 'uri'
+
 module Berkshelf
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class Git
+    GIT_REGEXP = URI.regexp(%w{ https git })
+    SSH_REGEXP = /(.+)@(.+):(.+)\/(.+)\.git/
+
     class << self
       def git(*command)
         out = quietly {
@@ -54,6 +60,47 @@ module Berkshelf
         end
 
         return git_path
+      end
+
+      # Determines if the given URI is a valid Git URI. A valid Git URI is a string
+      # containing the location of a Git repository by either the Git protocol,
+      # SSH protocol, or HTTPS protocol.
+      #
+      # @example Valid Git protocol URI
+      #   "git://github.com/reset/thor-foodcritic.git"
+      # @example Valid HTTPS URI
+      #   "https://github.com/reset/solve.git"
+      # @example Valid SSH protocol URI
+      #   "git@github.com:reset/solve.git"
+      # 
+      # @param [String] uri
+      #
+      # @return [Boolean]
+      def validate_uri(uri)
+        unless uri.is_a?(String)
+          return false
+        end
+
+        unless uri.slice(SSH_REGEXP).nil?
+          return true
+        end
+
+        unless uri.slice(GIT_REGEXP).nil?
+          return true
+        end
+
+        false
+      end
+
+      # @raise [InvalidGitURI] if the given object is not a String containing a valid Git URI
+      #
+      # @see validate_uri
+      def validate_uri!(uri)
+        unless validate_uri(uri)
+          raise InvalidGitURI.new(uri)
+        end
+
+        true
       end
 
       private

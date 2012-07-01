@@ -18,4 +18,17 @@ module Berkshelf
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
   class UploadFailure < BerkshelfError; status_code(108); end
   class KnifeConfigNotFound < BerkshelfError; status_code(109); end
+
+  class InvalidGitURI < BerkshelfError
+    status_code(110)
+    attr_reader :uri
+
+    def initialize(uri)
+      @uri = uri
+    end
+
+    def message
+      "'#{uri}' is not a valid Git URI."
+    end
+  end
 end
