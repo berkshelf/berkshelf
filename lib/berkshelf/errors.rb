@@ -1,6 +1,7 @@
 module Berkshelf
   class BerkshelfError < StandardError
     class << self
+      # @param [Integer] code
       def status_code(code)
         define_method(:status_code) { code }
         define_singleton_method(:status_code) { code }
@@ -25,6 +26,7 @@ module Berkshelf
     status_code(110)
     attr_reader :uri
 
+    # @param [String] uri
     def initialize(uri)
       @uri = uri
     end

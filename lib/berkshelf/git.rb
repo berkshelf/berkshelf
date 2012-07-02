@@ -7,6 +7,13 @@ module Berkshelf
     SSH_REGEXP = /(.+)@(.+):(.+)\/(.+)\.git/
 
     class << self
+      # @overload git(commands)
+      #   Shellout to the Git executable on your system with the given commands.
+      #
+      #   @param [Array<String>]
+      #
+      #   @return [String]
+      #     the output of the execution of the Git command
       def git(*command)
         out = quietly {
           %x{ #{git_cmd} #{command.join(' ')} }
@@ -16,6 +23,15 @@ module Berkshelf
         out.chomp
       end
 
+      # Clone a remote Git repository to disk
+      #
+      # @param [String] uri
+      #   a Git URI to clone
+      # @param [#to_s] destination
+      #   a local path on disk to clone to
+      #
+      # @return [String]
+      #   the destination the URI was cloned to
       def clone(uri, destination = Dir.mktmpdir)
         git("clone", uri, destination.to_s)
 
@@ -24,22 +40,29 @@ module Berkshelf
         destination
       end
 
+      # Checkout the given reference in the given repository
+      #
+      # @param [String] repo_path
+      #   path to a Git repo on disk
+      # @param [String] ref
+      #   reference to checkout
       def checkout(repo_path, ref)
         Dir.chdir repo_path do
           git("checkout", "-q", ref)
         end
       end
 
+      # @param [Strin] repo_path
       def rev_parse(repo_path)
         Dir.chdir repo_path do
           git("rev-parse", "HEAD")
         end
       end
 
+      # Return an absolute path to the Git executable on your system
       #
-      # This is to defeat aliases/shell functions called 'git' and a number of
-      # other problems.
-      #
+      # @return [String]
+      #   absolute path to git executable
       def find_git
         git_path = nil
         ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
