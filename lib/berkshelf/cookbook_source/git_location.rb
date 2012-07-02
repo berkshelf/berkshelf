@@ -11,6 +11,8 @@ module Berkshelf
         @name = name
         @uri = options[:git]
         @branch = options[:branch] || options[:ref] || options[:tag]
+
+        Git.validate_uri!(@uri)
       end
 
       def download(destination)

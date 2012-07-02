@@ -70,3 +70,15 @@ Feature: install cookbooks from a Berksfile
       Shims written to: 
       """
     And the exit status should be 0
+
+  Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
+    Given I write to "Berksfile" with:
+      """
+      cookbook "nginx", git: "/something/on/disk"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      '/something/on/disk' is not a valid Git URI.
+      """
+    And the CLI should exit with the status code for error "InvalidGitURI"
