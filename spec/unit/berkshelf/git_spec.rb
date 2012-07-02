@@ -15,7 +15,7 @@ module Berkshelf
           
           lambda {
             subject.find_git
-          }.should raise_error
+          }.should raise_error(GitNotFound)
         end
       end
 

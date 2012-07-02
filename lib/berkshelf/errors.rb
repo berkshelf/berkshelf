@@ -35,4 +35,12 @@ module Berkshelf
       "'#{uri}' is not a valid Git URI."
     end
   end
+
+  class GitNotFound < BerkshelfError
+    status_code(110)
+
+    def to_s
+      "Could not find a Git executable in your path. Please add it and try again."
+    end
+  end
 end
