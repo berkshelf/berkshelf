@@ -186,6 +186,7 @@ module Berkshelf
       FileUtils.mkdir_p(path)
       cached_cookbooks.each do |cached_cookbook|
         destination = File.expand_path(File.join(path, cached_cookbook.cookbook_name))
+        FileUtils.rm_rf(destination)
         begin
           FileUtils.ln_r(cached_cookbook.path, destination, force: true)
         rescue ArgumentError
