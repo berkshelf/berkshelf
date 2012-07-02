@@ -11,14 +11,11 @@ module Berkshelf
         end
 
         it "should raise if it can't find git" do
-          begin
-            path = ENV["PATH"]
-            ENV["PATH"] = ""
-
-            lambda { subject.find_git }.should raise_error
-          ensure
-            ENV["PATH"] = path
-          end
+          ENV.should_receive(:[]).with("PATH").and_return(String.new)
+          
+          lambda {
+            subject.find_git
+          }.should raise_error
         end
       end
 
@@ -126,15 +123,15 @@ module Berkshelf
           it "raises InvalidGitURI" do
             lambda {
               subject.validate_uri!(invalid_uri)
-            }.should raise_error(InvalidGitURI, "'#{invalid_uri}' is not a valid Git URI.")
+            }.should raise_error(InvalidGitURI)
           end
         end
 
-        context "given a HTTP URI", focus: true do
+        context "given a HTTP URI" do
           it "raises InvalidGitURI" do
             lambda {
               subject.validate_uri!(http_uri)
-            }.should raise_error(InvalidGitURI, "'#{http_uri}' is not a valid Git URI.")
+            }.should raise_error(InvalidGitURI)
           end
         end
 
@@ -142,7 +139,7 @@ module Berkshelf
           it "raises InvalidGitURI" do
             lambda {
               subject.validate_uri!(123)
-            }.should raise_error(InvalidGitURI, "'123' is not a valid Git URI.")
+            }.should raise_error(InvalidGitURI)
           end
         end
       end
