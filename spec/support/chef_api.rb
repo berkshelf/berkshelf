@@ -1,3 +1,4 @@
+require 'pathname'
 require 'chef/rest'
 require 'chef/cookbook_version'
 
@@ -15,6 +16,47 @@ module Berkshelf
         true
       rescue Net::HTTPServerException => e
         false
+      end
+
+      def generate_cookbook(path, name, version, options = {})
+        path = Pathname.new(path)
+        cookbook_path = path.join("#{name}-#{version}")
+        directories = [
+          "recipes",
+          "templates/default",
+          "files/default",
+          "attributes",
+          "definitions",
+          "providers",
+          "resources"
+        ]
+        files = [
+          "recipes/default.rb",
+          "templates/default/template.erb",
+          "files/default/file.h",
+          "attributes/default.rb"
+        ]
+
+        directories.each do |directory|
+          FileUtils.mkdir_p(cookbook_path.join(directory))
+        end
+
+        files.each do |file|
+          FileUtils.touch(cookbook_path.join(file))
+        end
+
+        metadata = <<-EOF
+name "#{name}"
+version "#{version}"
+EOF
+
+        if options[:dependencies]
+          options[:dependencies].each do |name, constraint|
+            metadata << "depends '#{name}', '#{constraint}'\n"
+          end
+        end
+
+        File.write(cookbook_path.join("metadata.rb"), metadata)
       end
 
       private

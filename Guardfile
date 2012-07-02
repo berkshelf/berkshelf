@@ -16,7 +16,7 @@ guard 'rspec', :version => 2, :cli => "--color --drb --format Fuubar", :all_on_s
   watch('spec/spec_helper.rb')       { "spec" }
 end
 
-guard 'cucumber', :cli => "--drb --format pretty --tags ~@wip", :all_on_start => false, :all_after_pass => false, :notification => false do
+guard 'cucumber', :cli => "--drb --format pretty --tags ~@no_run", :all_on_start => false, :all_after_pass => false, :notification => false do
   watch(%r{^features/.+\.feature$})
   watch(%r{^features/support/.+$})                      { 'features' }
   watch(%r{^features/step_definitions/(.+)_steps\.rb$}) { |m| Dir[File.join("**/#{m[1]}.feature")][0] || 'features' }

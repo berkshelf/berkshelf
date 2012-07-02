@@ -15,6 +15,9 @@ module Berkshelf
         Git.validate_uri!(@uri)
       end
 
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
         tmp_clone = Dir.mktmpdir
         ::Berkshelf::Git.clone(uri, tmp_clone)
@@ -30,19 +33,17 @@ module Berkshelf
         end
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
-
-        FileUtils.mv(tmp_clone, cb_path, :force => true)
-
-        cb_path
+        FileUtils.mv(tmp_clone, cb_path, force: true)
+        
+        set_downloaded_status(true)
+        CachedCookbook.from_store_path(cb_path)
       rescue Berkshelf::GitError
-        msg = "Cookbook '#{name}' not found at git: #{uri}" 
-        msg << " with branch '#{branch}'" if branch
-        raise CookbookNotFound, msg
+        raise CookbookNotFound, "Cookbook '#{name}' not found at #{self}" 
       end
 
       def to_s
         s = "git: '#{uri}'"
-        s << " with branch '#{branch}'" if branch
+        s << " with branch: '#{branch}'" if branch
         s
       end
 

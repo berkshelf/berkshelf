@@ -45,15 +45,26 @@ module Berkshelf
       end
 
       context "given a location key :path" do
-        let(:path) { "/Path/To/Cookbook" }
-        let(:source) { subject.new(cookbook_name, :path => path) }
+        context "given a value for path that contains a cookbook" do
+          let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
 
-        it "initializes a PathLocation for location" do
-          source.location.should be_a(subject::PathLocation)
+          it "initializes a PathLocation for location" do
+            subject.new(cookbook_name, path: path).location.should be_a(subject::PathLocation)
+          end
+
+          it "points to the specified path" do
+            subject.new(cookbook_name, path: path).location.path.should eql(path)
+          end
         end
 
-        it "points to the specified path" do
-          source.location.path.should eql(path)
+        context "given a value for path that does not contain a cookbook" do
+          let(:path) { "/does/not/exist" }
+
+          it "rasies Berkshelf::CookbookNotFound" do
+            lambda {
+              subject.new(cookbook_name, path: path)
+            }.should raise_error(Berkshelf::CookbookNotFound)
+          end
         end
       end
 
@@ -133,16 +144,10 @@ module Berkshelf
 
     describe "#download" do
       context "when download is successful" do
-        it "writes a value to local_path" do
+        it "sets a CachedCookbook to the cached_cookbook attr" do
           subject.download(tmp_path)
 
-          subject.local_path.should_not be_nil
-        end
-
-        it "writes a value to local_version" do
-          subject.download(tmp_path)
-
-          subject.local_version.should_not be_nil
+          subject.cached_cookbook.should be_a(Berkshelf::CachedCookbook)
         end
 
         it "returns an array containing the symbol :ok and the local_path" do
@@ -150,7 +155,7 @@ module Berkshelf
 
           result.should be_a(Array)
           result[0].should eql(:ok)
-          result[1].should eql(subject.local_path)
+          result[1].should eql(subject.cached_cookbook)
         end
       end
 
@@ -168,26 +173,12 @@ module Berkshelf
       end
     end
 
-    describe "#metadata" do
-      it "should return the metadata of a CookbookSource that has been downloaded" do
-        subject.download(tmp_path)
-
-        subject.metadata.should be_a(Chef::Cookbook::Metadata)
-      end
-
-      it "should return nil if the CookbookSource has not been downloaded" do
-        subject.metadata.should be_nil
-      end
-    end
-
     describe "#downloaded?" do
-      let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
-      subject { CookbookSource.new("example_cookbook", :path => path) }
+      subject{ CookbookSource.new("nginx", ">= 1.0.1") }
 
-      it "returns true if the local_path has been set" do
-        subject.stub(:local_path) { path }
-
-        subject.downloaded?.should be_true
+      it "delegates the message ':downloaded?' to the location" do
+        subject.location.should_receive(:downloaded?)
+        subject.downloaded?
       end
     end
   end
