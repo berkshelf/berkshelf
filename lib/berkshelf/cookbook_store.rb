@@ -3,6 +3,9 @@ require 'fileutils'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookStore
+    include DepSelector
+    include DepSelector::Exceptions
+
     attr_reader :storage_path
 
     # Create a new instance of CookbookStore with the given
@@ -24,24 +27,29 @@ module Berkshelf
     # @param [String] version
     #   version of the Cookbook you want to retrieve
     #
-    # @return [Berkshelf::CachedCookbook]
+    # @return [Berkshelf::CachedCookbook, nil]
     def cookbook(name, version)
-      return nil unless downloaded?(name, version)
-
       path = cookbook_path(name, version)
-      CachedCookbook.from_path(path)
+      return nil unless path.cookbook?
+
+      CachedCookbook.from_store_path(path)
     end
 
-    # Returns an array of all of the Cookbooks that have been cached
-    # to the storage_path of this instance of CookbookStore.
+    # Returns an array of the Cookbooks that have been cached to the
+    # storage_path of this instance of CookbookStore. Passing the filter
+    # option will return only the CachedCookbooks whose name match the
+    # filter.
     #
     # @return [Array<Berkshelf::CachedCookbook>]
-    def cookbooks
+    def cookbooks(filter = nil)
       [].tap do |cookbooks|
         storage_path.each_child do |p|
-          cached_cookbook = CachedCookbook.from_path(p)
+          cached_cookbook = CachedCookbook.from_store_path(p)
           
-          cookbooks << cached_cookbook if cached_cookbook
+          next unless cached_cookbook
+          next if filter && cached_cookbook.cookbook_name != filter
+
+          cookbooks << cached_cookbook
         end
       end
     end
@@ -57,15 +65,25 @@ module Berkshelf
       storage_path.join("#{name}-#{version}")
     end
 
-    # Returns true if the Cookbook of the given name and verion is downloaded
-    # to this instance of CookbookStore.
+    # Return a CachedCookbook matching the best solution for the given name and
+    # constraint. Nil is returned if no matching CachedCookbook is found.
     #
-    # @param [String] name
-    # @param [String] version
+    # @param [#to_s] name
+    # @param [DepSelector::VersionConstraint] constraint
     #
-    # @return [Boolean]
-    def downloaded?(name, version)
-      cookbook_path(name, version).cookbook?
+    # @return [Berkshelf::CachedCookbook, nil]
+    def satisfy(name, constraint)
+      graph                = DependencyGraph.new
+      selector             = Selector.new(graph)
+      package              = graph.package(name)
+      solution_constraints = [ SolutionConstraint.new(graph.package(name), constraint) ]
+
+      cookbooks(name).each { |cookbook| package.add_version(Version.new(cookbook.version)) }
+      name, version = quietly { selector.find_solution(solution_constraints).first }
+      
+      cookbook(name, version)
+    rescue InvalidSolutionConstraints, NoSolutionExists
+      nil
     end
 
     private

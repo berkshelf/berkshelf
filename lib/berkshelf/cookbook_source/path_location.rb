@@ -9,14 +9,14 @@ module Berkshelf
       def initialize(name, options = {})
         @name = name
         @path = File.expand_path(options[:path])
+        set_downloaded_status(true)
       end
 
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
-        unless File.chef_cookbook?(path)
-          raise CookbookNotFound, "Cookbook '#{name}' not found at path: '#{path}'"
-        end
-
-        path
+        CachedCookbook.from_path(path)
       end
 
       def to_s

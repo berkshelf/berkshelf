@@ -1,3 +1,4 @@
+name             "example_cookbook"
 maintainer       "Josiah Kiehl"
 maintainer_email "josiah@skirmisher.net"
 license          "DO WHAT YOU WANT CAUSE A PIRATE IS FREE"
