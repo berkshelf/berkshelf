@@ -81,6 +81,8 @@ Now when we start our virtual machine it will have the cookbooks from The Berksh
 
     $ vagrant up
 
+__Known Issue__: since shims are hard links to files on disk, changes to files will automatically be present in the shims directory. However, if a new file is added to a cookbook, it will not be present in the shims directory until the install command is run again.
+
 ## The Berksfile
 
 Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berskfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
