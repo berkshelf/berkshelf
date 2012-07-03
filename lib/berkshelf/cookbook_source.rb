@@ -1,36 +1,9 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
-    module Location
-      attr_reader :name
-
-      # @param [#to_s] name
-      def initialize(name)
-        @name = name
-        @downloaded_status = false
-      end
-
-      # @param [#to_s] destination
-      #
-      # @return [Berkshelf::CachedCookbook]
-      def download(destination)
-        raise NotImplementedError, "Function must be implemented on includer"
-      end
-
-      # @return [Boolean]
-      def downloaded?
-        @downloaded_status
-      end
-
-      private
-
-        def set_downloaded_status(state)
-          @downloaded_status = state
-        end
-    end
-
     extend Forwardable
 
+    autoload :Location, 'berkshelf/cookbook_source/location'
     autoload :SiteLocation, 'berkshelf/cookbook_source/site_location'
     autoload :GitLocation, 'berkshelf/cookbook_source/git_location'
     autoload :PathLocation, 'berkshelf/cookbook_source/path_location'
@@ -59,7 +32,7 @@ module Berkshelf
       name, constraint = args
 
       @name = name
-      @version_constraint = DepSelector::VersionConstraint.new(constraint)
+      @version_constraint = DepSelector::VersionConstraint.new(constraint || ">= 0.0.0")
       @groups = []
       @cached_cookbook = nil
 
@@ -67,19 +40,17 @@ module Berkshelf
         raise ArgumentError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
       end
 
-      options[:version_constraint] = version_constraint if version_constraint
-
       @location = case 
       when options[:git]
-        GitLocation.new(name, options)
+        GitLocation.new(name, version_constraint, options)
       when options[:path]
-        loc = PathLocation.new(name, options)
+        loc = PathLocation.new(name, version_constraint, options)
         @cached_cookbook = CachedCookbook.from_path(loc.path)
         loc
       when options[:site]
-        SiteLocation.new(name, options)
+        SiteLocation.new(name, version_constraint, options)
       else
-        SiteLocation.new(name, options)
+        SiteLocation.new(name, version_constraint, options)
       end
 
       @locked_version = DepSelector::Version.new(options[:locked_version]) if options[:locked_version]
@@ -107,7 +78,8 @@ module Berkshelf
     #     [ :error, "Cookbook 'sparkle_motion' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks" ]
     def download(destination)
       self.cached_cookbook = location.download(destination)
-      [ :ok, cached_cookbook ]
+
+      [ :ok, self.cached_cookbook ]
     rescue CookbookNotFound => e
       self.cached_cookbook = nil
       [ :error, e.message ]

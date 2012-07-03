@@ -13,7 +13,7 @@ module Berkshelf
           version: '1.2.4',
           dependencies: { "nginx" => ">= 0.1.0", "artifact" => "~> 0.10.0" }
         ),
-        location: double('location')
+        location: double('location', validate_cached: true)
       )
     end
 
@@ -28,7 +28,7 @@ module Berkshelf
           version: '0.101.2',
           dependencies: Hash.new
         ),
-        location: double('location')
+        location: double('location', validate_cached: true)
       )
     end
 

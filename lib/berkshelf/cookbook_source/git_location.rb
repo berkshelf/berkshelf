@@ -7,8 +7,15 @@ module Berkshelf
       attr_accessor :uri
       attr_accessor :branch
 
-      def initialize(name, options)
+      alias_method :ref, :branch
+      alias_method :tag, :branch
+
+      # @param [#to_s] name
+      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Hash] options
+      def initialize(name, version_constraint, options)
         @name = name
+        @version_constraint = version_constraint
         @uri = options[:git]
         @branch = options[:branch] || options[:ref] || options[:tag]
 
@@ -34,9 +41,12 @@ module Berkshelf
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
         FileUtils.mv(tmp_clone, cb_path, force: true)
-        
+                
+        cached = CachedCookbook.from_store_path(cb_path)
+        validate_cached(cached)
+
         set_downloaded_status(true)
-        CachedCookbook.from_store_path(cb_path)
+        cached
       rescue Berkshelf::GitError
         raise CookbookNotFound, "Cookbook '#{name}' not found at #{self}" 
       end
