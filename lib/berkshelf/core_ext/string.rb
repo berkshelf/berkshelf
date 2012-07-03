@@ -7,6 +7,6 @@ class String
   #
   # @return [String]
   def prepend_each(separator, value)
-    lines(separator).collect { |x| x.prepend(value) }.join
+    lines(separator).collect { |x| value + x }.join
   end
 end
