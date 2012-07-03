@@ -15,7 +15,20 @@ module Berkshelf
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DownloadFailure < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError; status_code(103); end
-  class GitError < BerkshelfError; status_code(104); end
+  class GitError < BerkshelfError
+    status_code(104)
+    attr_reader :stderr
+
+    def initialize(stderr)
+      @stderr = stderr
+    end
+
+    def to_s
+      out = "An error occured during Git execution:\n"
+      out << stderr.prepend_each("\n", "\t")
+    end
+  end
+
   class DuplicateSourceDefined < BerkshelfError; status_code(105); end
   class NoSolution < BerkshelfError; status_code(106); end
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
