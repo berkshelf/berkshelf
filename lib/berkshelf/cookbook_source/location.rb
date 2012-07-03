@@ -24,33 +24,29 @@ module Berkshelf
         @downloaded_status
       end
 
+      # Ensures that the given CachedCookbook satisfies the constraint and contains a valid
+      # cookbook.
+      #
+      # @param [CachedCookbook] cached_cookbook
+      #
+      # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
+      #   this instance of Location.
+      #   contain a cookbook that satisfies the given version constraint of this instance of
+      #   CookbookSource.
+      #
+      # @return [Boolean]
+      def validate_cached(cached_cookbook)
+        unless version_constraint.include?(cached_cookbook.version)
+          raise ConstraintNotSatisfied, "A cookbook satisfying '#{name}' (#{version_constraint}) not found at #{self}"
+        end
+
+        true
+      end
+
       private
 
         def set_downloaded_status(state)
           @downloaded_status = state
-        end
-
-        # Ensures that the given CachedCookbook satisfies the constraint and contains a valid
-        # cookbook.
-        #
-        # @param [CachedCookbook] cached_cookbook
-        #
-        # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
-        #   this instance of Location.
-        #   contain a cookbook that satisfies the given version constraint of this instance of
-        #   CookbookSource.
-        # @raise [CookbookSyntaxError] if the CachedCookbook contains syntax errors in it's templates
-        #   or Ruby files.
-        #
-        # @return [Boolean]
-        def validate_cached(cached_cookbook)
-          cached_cookbook.validate!
-
-          unless version_constraint.include?(cached_cookbook.version)
-            raise ConstraintNotSatisfied, "A cookbook satisfying '#{name}' (#{version_constraint}) not found at #{self}"
-          end
-
-          true
         end
     end
   end
