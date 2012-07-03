@@ -24,15 +24,12 @@ module Berkshelf
         @downloaded_status
       end
 
-      # Ensures that the given CachedCookbook satisfies the constraint and contains a valid
-      # cookbook.
+      # Ensures that the given CachedCookbook satisfies the constraint
       #
       # @param [CachedCookbook] cached_cookbook
       #
       # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
       #   this instance of Location.
-      #   contain a cookbook that satisfies the given version constraint of this instance of
-      #   CookbookSource.
       #
       # @return [Boolean]
       def validate_cached(cached_cookbook)
