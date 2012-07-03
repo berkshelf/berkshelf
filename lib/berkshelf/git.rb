@@ -1,4 +1,5 @@
 require 'uri'
+require 'mixlib/shellout'
 
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
@@ -15,12 +16,14 @@ module Berkshelf
       #   @return [String]
       #     the output of the execution of the Git command
       def git(*command)
-        out = quietly {
-          %x{ #{git_cmd} #{command.join(' ')} }
-        }
-        error_check
+        cmd = Mixlib::ShellOut.new(git_cmd, *command)
+        cmd.run_command
+
+        unless cmd.exitstatus == 0
+          raise GitError.new(cmd.stderr)
+        end
         
-        out.chomp
+        cmd.stdout.chomp
       end
 
       # Clone a remote Git repository to disk
@@ -34,8 +37,6 @@ module Berkshelf
       #   the destination the URI was cloned to
       def clone(uri, destination = Dir.mktmpdir)
         git("clone", uri, destination.to_s)
-
-        error_check
 
         destination
       end
@@ -132,10 +133,6 @@ module Berkshelf
 
         def git_cmd
           @git_cmd ||= find_git
-        end
-
-        def error_check
-          raise Berkshelf::GitError, "Did not succeed executing git; check the output above." unless $?.success?
         end
     end
   end

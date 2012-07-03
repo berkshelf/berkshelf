@@ -47,8 +47,6 @@ module Berkshelf
 
         set_downloaded_status(true)
         cached
-      rescue Berkshelf::GitError
-        raise CookbookNotFound, "Cookbook '#{name}' not found at #{self}" 
       end
 
       def to_s

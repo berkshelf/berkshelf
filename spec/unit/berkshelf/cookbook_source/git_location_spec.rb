@@ -54,10 +54,10 @@ module Berkshelf
       context "given a git repo that does not exist" do
         subject { CookbookSource::GitLocation.new("doesnot_exist", complacent_constraint, git: "git://github.com/RiotGames/thisrepo_does_not_exist.git") }
 
-        it "raises a CookbookNotFound error" do
+        it "raises a GitError" do
           lambda {
             subject.download(tmp_path)
-          }.should raise_error(CookbookNotFound)
+          }.should raise_error(GitError)
         end
       end
 
