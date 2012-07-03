@@ -18,13 +18,13 @@ module Berkshelf
 
       # @param [#to_s] destination
       #
-      # @return [String]
-      #   path to the downloaded source
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
-        validate_downloaded!(path)
+        cached = CachedCookbook.from_path(path)
+        validate_cached(cached)
 
         set_downloaded_status(true)
-        CachedCookbook.from_path(path)
+        cached
       end
 
       def to_s

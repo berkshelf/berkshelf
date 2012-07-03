@@ -43,4 +43,6 @@ module Berkshelf
       "Could not find a Git executable in your path. Please add it and try again."
     end
   end
+
+  class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
 end

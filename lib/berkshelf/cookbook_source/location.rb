@@ -14,8 +14,7 @@ module Berkshelf
 
       # @param [#to_s] destination
       #
-      # @return [String]
-      #   path to the downloaded source
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
         raise NotImplementedError, "Function must be implemented on includer"
       end
@@ -31,19 +30,26 @@ module Berkshelf
           @downloaded_status = state
         end
 
-        # Ensures that the given path contains a Cookbook that satisfies the version constraint
-        # of this instance of CookbookSource.
+        # Ensures that the given CachedCookbook satisfies the constraint and contains a valid
+        # cookbook.
         #
-        # @param [#to_s] path
-        #   path to the downloaded Cookbook
+        # @param [CachedCookbook] cached_cookbook
         #
-        # @raise [CookbookNotFound] if downloaded path does not contain a Cookbook or does not
+        # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
+        #   this instance of Location.
         #   contain a cookbook that satisfies the given version constraint of this instance of
         #   CookbookSource.
+        # @raise [CookbookSyntaxError] if the CachedCookbook contains syntax errors in it's templates
+        #   or Ruby files.
         #
         # @return [Boolean]
-        def validate_downloaded!(path)
-          # do a validation
+        def validate_cached(cached_cookbook)
+          cached_cookbook.validate!
+
+          unless version_constraint.include?(cached_cookbook.version)
+            raise ConstraintNotSatisfied, "A cookbook satisfying '#{name}' (#{version_constraint}) not found at #{self}"
+          end
+
           true
         end
     end

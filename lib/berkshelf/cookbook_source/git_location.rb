@@ -24,8 +24,7 @@ module Berkshelf
 
       # @param [#to_s] destination
       #
-      # @return [String]
-      #   path to the downloaded source
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
         tmp_clone = Dir.mktmpdir
         ::Berkshelf::Git.clone(uri, tmp_clone)
@@ -42,11 +41,12 @@ module Berkshelf
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
         FileUtils.mv(tmp_clone, cb_path, force: true)
-        
-        validate_downloaded!(cb_path)
-        
+                
+        cached = CachedCookbook.from_store_path(cb_path)
+        validate_cached(cached)
+
         set_downloaded_status(true)
-        CachedCookbook.from_store_path(cb_path)
+        cached
       rescue Berkshelf::GitError
         raise CookbookNotFound, "Cookbook '#{name}' not found at #{self}" 
       end
