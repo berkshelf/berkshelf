@@ -7,8 +7,15 @@ module Berkshelf
       attr_accessor :uri
       attr_accessor :branch
 
-      def initialize(name, options)
+      alias_method :ref, :branch
+      alias_method :tag, :branch
+
+      # @param [#to_s] name
+      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Hash] options
+      def initialize(name, version_constraint, options)
         @name = name
+        @version_constraint = version_constraint
         @uri = options[:git]
         @branch = options[:branch] || options[:ref] || options[:tag]
 
@@ -17,7 +24,8 @@ module Berkshelf
 
       # @param [#to_s] destination
       #
-      # @return [Berkshelf::CachedCookbook]
+      # @return [String]
+      #   path to the downloaded source
       def download(destination)
         tmp_clone = Dir.mktmpdir
         ::Berkshelf::Git.clone(uri, tmp_clone)
@@ -34,6 +42,8 @@ module Berkshelf
 
         cb_path = File.join(destination, "#{self.name}-#{self.branch}")
         FileUtils.mv(tmp_clone, cb_path, force: true)
+        
+        validate_downloaded!(cb_path)
         
         set_downloaded_status(true)
         CachedCookbook.from_store_path(cb_path)

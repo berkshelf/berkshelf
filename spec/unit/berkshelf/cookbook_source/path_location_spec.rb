@@ -2,8 +2,9 @@ require 'spec_helper'
 
 module Berkshelf
   describe CookbookSource::PathLocation do
+    let(:constraint) { double('v-constraint') }
     let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
-    subject { CookbookSource::PathLocation.new("nginx", :path => path) }
+    subject { CookbookSource::PathLocation.new("nginx", constraint, path: path) }
 
     describe "#download" do
       it "returns an instance of CachedCookbook" do
@@ -17,7 +18,7 @@ module Berkshelf
       end
 
       context "given a path that does not exist" do
-        subject { CookbookSource::PathLocation.new("doesnot_exist", :path => tmp_path.join("doesntexist_noway")) }
+        subject { CookbookSource::PathLocation.new("doesnot_exist", constraint, path: tmp_path.join("doesntexist_noway")) }
 
         it "raises a CookbookNotFound error" do
           lambda {
@@ -27,7 +28,7 @@ module Berkshelf
       end
 
       context "given a path that does not contain a cookbook" do
-        subject { CookbookSource::PathLocation.new("doesnot_exist", :path => fixtures_path) }
+        subject { CookbookSource::PathLocation.new("doesnot_exist", constraint, path: fixtures_path) }
 
         it "raises a CookbookNotFound error" do
           lambda {
