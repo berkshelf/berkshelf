@@ -53,11 +53,14 @@ module Berkshelf
         end
       end
 
-      def initialize(name, options = {})
+      # @param [#to_s] name
+      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Hash] options
+      def initialize(name, version_constraint, options = {})
         options[:site] ||= OPSCODE_COMMUNITY_API
 
         @name = name
-        @version_constraint = options[:version_constraint]
+        @version_constraint = version_constraint
         @api_uri = options[:site]
       end
 
@@ -75,8 +78,11 @@ module Berkshelf
         self.class.unpack(downloaded_tf.path, dir)
         FileUtils.mv(File.join(dir, name), cb_path, force: true)
 
+        cached = CachedCookbook.from_store_path(cb_path)
+        validate_cached(cached)
+        
         set_downloaded_status(true)
-        CachedCookbook.from_store_path(cb_path)
+        cached
       end
 
       # @return [Array]

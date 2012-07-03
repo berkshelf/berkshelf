@@ -131,10 +131,16 @@ module Berkshelf
 
       # @param [Berkshelf::CookbookSource] source
       #
+      # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
+      #   this instance of Location.
+      #   contain a cookbook that satisfies the given version constraint of this instance of
+      #   CookbookSource.
+      #
       # @return [Boolean]
       def use_source(source)
         if source.downloaded?
           cached = source.cached_cookbook
+          source.location.validate_cached(cached)
         else
           cached = downloader.cookbook_store.satisfy(source.name, source.version_constraint)
           return false if cached.nil?

@@ -6,8 +6,12 @@ module Berkshelf
 
       attr_accessor :path
 
-      def initialize(name, options = {})
+      # @param [#to_s] name
+      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Hash] options
+      def initialize(name, version_constraint, options = {})
         @name = name
+        @version_constraint = version_constraint
         @path = File.expand_path(options[:path])
         set_downloaded_status(true)
       end
@@ -16,7 +20,11 @@ module Berkshelf
       #
       # @return [Berkshelf::CachedCookbook]
       def download(destination)
-        CachedCookbook.from_path(path)
+        cached = CachedCookbook.from_path(path)
+        validate_cached(cached)
+
+        set_downloaded_status(true)
+        cached
       end
 
       def to_s

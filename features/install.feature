@@ -171,3 +171,15 @@ Feature: install cookbooks from a Berksfile
       Berksfile contains two sources named 'artifact'. Remove one and try again.
       """
     And the CLI should exit with the status code for error "DuplicateSourceDefined"
+
+  Scenario: installing when a git source defines a branch that does not satisfy the version constraint
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", "= 0.9.8", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.10.0"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      A cookbook satisfying 'artifact' (= 0.9.8) not found at git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
+      """
+    And the CLI should exit with the status code for error "ConstraintNotSatisfied"
