@@ -39,7 +39,7 @@ module Berkshelf
           raise CookbookNotFound, msg
         end
 
-        cb_path = File.join(destination, "#{self.name}-#{self.branch}")
+        cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(tmp_clone)}")
         FileUtils.mv(tmp_clone, cb_path, force: true)
                 
         cached = CachedCookbook.from_store_path(cb_path)
