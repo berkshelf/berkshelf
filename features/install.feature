@@ -183,3 +183,17 @@ Feature: install cookbooks from a Berksfile
       A cookbook satisfying 'artifact' (= 0.9.8) not found at git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
       """
     And the CLI should exit with the status code for error "ConstraintNotSatisfied"
+
+  Scenario: when a git location source is defined and a cookbook of the same name is already cached in the cookbook store
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.10.0"
+      """
+    And the cookbook store has the cookbooks:
+      | artifact | 0.10.0 |
+    When I run the install command
+    Then the output should contain:
+      """
+      Installing artifact (0.10.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
+      """
+    And the exit status should be 0
