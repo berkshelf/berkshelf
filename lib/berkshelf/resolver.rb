@@ -129,6 +129,12 @@ module Berkshelf
         Berkshelf.ui.info "Installing #{source.name} (#{source.cached_cookbook.version}) from #{source.location}"
       end
 
+      # Use the given source to create a constraint solution if the source has been downloaded or can
+      # be satisfied by a cached cookbook that is already present in the cookbook store.
+      #
+      # @note Git location sources which have not yet been downloaded will not be satisfied by a
+      #   cached cookbook from the cookbook store.
+      #
       # @param [Berkshelf::CookbookSource] source
       #
       # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
@@ -137,11 +143,15 @@ module Berkshelf
       #   CookbookSource.
       #
       # @return [Boolean]
-      def use_source(source)
+      def use_source(source)        
         if source.downloaded?
           cached = source.cached_cookbook
           source.location.validate_cached(cached)
         else
+          if source.location.is_a?(CookbookSource::GitLocation)
+            return false
+          end
+
           cached = downloader.cookbook_store.satisfy(source.name, source.version_constraint)
           return false if cached.nil?
 
