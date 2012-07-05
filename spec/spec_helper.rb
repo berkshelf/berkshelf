@@ -89,5 +89,11 @@ end
 
 Spork.each_run do
   require 'berkshelf'
-  Chef::Config.from_file(Berkshelf::DEFAULT_CONFIG)
+
+  if File.exist?("spec/knife.rb")
+    Chef::Config.from_file(File.join(Dir.pwd, "spec/knife.rb"))
+    ENV["CHEF_CONFIG"] = File.join(Dir.pwd, "spec/knife.rb")
+  else
+    raise "Cannot continue; 'spec/knife.rb' must exist and have testing credentials."
+  end
 end
