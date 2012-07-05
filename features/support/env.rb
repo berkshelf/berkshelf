@@ -32,6 +32,7 @@ Spork.prefork do
     Chef::Config[:node_name] = CONFIG['node_name']
     clean_cookbook_store
     @aruba_io_wait_seconds = 5
+    @aruba_timeout_seconds = 5
   end
 
   Before('@slow_process') do
