@@ -33,7 +33,7 @@ class Default < Thor
 
   desc "cucumber", "Run Cucumber features"
   def cucumber
-    exec "cucumber --color --format=progress"
+    exec "cucumber --color --format progress --tags ~@no_run"
   end
 
   class VCR < Thor
