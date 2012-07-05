@@ -79,10 +79,6 @@ module Berkshelf
       result
     end
 
-    def downloaded?(source)
-      source.downloaded? || cookbook_store.downloaded?(source.name, source.local_version)
-    end
-
     private
 
       def validate_source(source)

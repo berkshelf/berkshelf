@@ -18,6 +18,6 @@ Feature: update
       """
       cookbook 'mysql', :locked_version => '1.2.6'
       cookbook 'openssl', :locked_version => '1.0.0'
-      cookbook 'chef_handler', :locked_version => '1.0.6'
       cookbook 'windows', :locked_version => '1.3.0'
+      cookbook 'chef_handler', :locked_version => '1.0.6'
       """

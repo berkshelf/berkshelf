@@ -17,6 +17,6 @@ Feature: Berksfile.lock
       cookbook 'ntp', :locked_version => '1.1.8'
       cookbook 'mysql', :git => 'https://github.com/opscode-cookbooks/mysql.git', :ref => '190c0c2267785b7b9b303369b8a64ed04364d5f9'
       cookbook 'openssl', :locked_version => '1.0.0'
-      cookbook 'chef_handler', :locked_version => '1.0.6'
       cookbook 'windows', :locked_version => '1.3.0'
+      cookbook 'chef_handler', :locked_version => '1.0.6'
       """

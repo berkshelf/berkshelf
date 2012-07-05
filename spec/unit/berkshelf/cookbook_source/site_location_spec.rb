@@ -3,8 +3,8 @@ require 'spec_helper'
 module Berkshelf
   describe CookbookSource::SiteLocation do
     describe "ClassMethods" do
-      subject { CookbookSource::SiteLocation }
       let(:constraint) { DepSelector::VersionConstraint.new("~> 0.101.2") }
+      subject { CookbookSource::SiteLocation }
       let(:versions) do
         { 
           DepSelector::Version.new("0.101.2") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
@@ -39,19 +39,28 @@ module Berkshelf
       end
     end
 
-    subject { CookbookSource::SiteLocation.new("nginx") }
+    let(:complacent_constraint) { double('comp-vconstraint', include?: true) }
+    subject { CookbookSource::SiteLocation.new("nginx", complacent_constraint) }
 
     describe "#download" do
-      it "returns the path to the cookbook" do
+      it "returns a CachedCookbook" do
         result = subject.download(tmp_path)
         name = subject.name
         ver, uri = subject.latest_version
 
-        result.should eql(tmp_path.join("#{name}-#{ver}").to_s)
+        result.should be_a(CachedCookbook)
       end
 
-      context "when no version constraint is specified" do
-        it "the latest version of the cookbook is downloaded to the given destination" do
+      it "sets the downloaded status to true" do
+        subject.download(tmp_path)
+
+        subject.should be_downloaded
+      end
+
+      context "given a wildcard '>= 0.0.0' version constraint is specified" do
+        subject { CookbookSource::SiteLocation.new("nginx", DepSelector::VersionConstraint.new(">= 0.0.0")) }
+
+        it "downloads the latest version of the cookbook to the given destination" do
           subject.download(tmp_path)
           name = subject.name
           ver, uri = subject.latest_version
@@ -64,8 +73,8 @@ module Berkshelf
         end
       end
 
-      context "given an explicit version_constraint" do
-        subject { CookbookSource::SiteLocation.new("nginx", :version_constraint => DepSelector::VersionConstraint.new("= 0.101.2")) }
+      context "given an exact match version constraint" do
+        subject { CookbookSource::SiteLocation.new("nginx", DepSelector::VersionConstraint.new("= 0.101.2")) }
 
         it "downloads the cookbook with the version matching the version_constraint to the given destination" do
           subject.download(tmp_path)
@@ -79,8 +88,8 @@ module Berkshelf
         end
       end
 
-      context "given a more broad version_constraint" do
-        subject { CookbookSource::SiteLocation.new("nginx", :version_constraint => DepSelector::VersionConstraint.new("~> 0.99.0")) }
+      context "given a more broad version constraint" do
+        subject { CookbookSource::SiteLocation.new("nginx", DepSelector::VersionConstraint.new("~> 0.99.0")) }
 
         it "downloads the best matching cookbook version for the constraint to the given destination" do
           subject.download(tmp_path)
@@ -95,7 +104,12 @@ module Berkshelf
       end
 
       context "given an explicit :site location key" do
-        subject { CookbookSource::SiteLocation.new("nginx", :site => "http://cookbooks.opscode.com/api/v1/cookbooks") }
+        subject do
+          CookbookSource::SiteLocation.new("nginx",
+            complacent_constraint,
+            site: "http://cookbooks.opscode.com/api/v1/cookbooks"
+          )
+        end
 
         it "downloads the cookbook to the given destination" do
           subject.download(tmp_path)
@@ -111,12 +125,17 @@ module Berkshelf
       end
 
       context "given a cookbook that does not exist on the specified site" do
-        subject { CookbookSource::SiteLocation.new("nowaythis_exists", :site => "http://cookbooks.opscode.com/api/v1/cookbooks") }
+        subject do
+          CookbookSource::SiteLocation.new("nowaythis_exists",
+            complacent_constraint,
+            site: "http://cookbooks.opscode.com/api/v1/cookbooks"
+          )
+        end
 
         it "raises a CookbookNotFound error" do
           lambda {
             subject.download(tmp_path)
-            }.should raise_error(CookbookNotFound)
+          }.should raise_error(CookbookNotFound)
         end
       end
     end

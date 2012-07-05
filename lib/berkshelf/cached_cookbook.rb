@@ -5,22 +5,48 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CachedCookbook
     class << self
-      # @param [String] path
+      # Creates a new instance of Berkshelf::CachedCookbook from a path on disk that
+      # contains a Cookbook. The name of the Cookbook will be determined first by the
+      # name attribute of the metadata.rb file if it is present. If the name attribute
+      # has not been set the Cookbook name will be determined by the basename of the
+      # given filepath.
+      #
+      # @param [#to_s] path
+      #   a path on disk to the location of a Cookbook
+      #
+      # @return [Berkshelf::CachedCookbook]
+      def from_path(path)
+        path = Pathname.new(path)
+        metadata = Chef::Cookbook::Metadata.new
+
+        begin
+          metadata.from_file(path.join("metadata.rb").to_s)
+        rescue IOError
+          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
+        end
+
+        name = metadata.name.empty? ? File.basename(path) : metadata.name
+
+        new(name, path, metadata)
+      end
+
+      # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
       #
       # @return [CachedCookbook]
       #   an instance of CachedCookbook initialized by the contents found at the
       #   given path.
-      def from_path(path)        
-        matchdata = File.basename(path.to_s).match(DIRNAME_REGEXP)
-        return nil if matchdata.nil?
-
-        cached_name = matchdata[1]
+      def from_store_path(path)
+        path = Pathname.new(path)
+        cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
+        return nil if cached_name.nil?
 
         metadata = Chef::Cookbook::Metadata.new
 
-        if path.join("metadata.rb").exist?
+        begin
           metadata.from_file(path.join("metadata.rb").to_s)
+        rescue IOError
+          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
         end
 
         new(cached_name, path, metadata)
@@ -37,7 +63,7 @@ module Berkshelf
       end
     end
 
-    DIRNAME_REGEXP = /^(.+)-(\d+\.\d+\.\d+)$/
+    DIRNAME_REGEXP = /^(.+)-(.+)$/
     CHEF_TYPE = "cookbook_version".freeze
     CHEF_JSON_CLASS = "Chef::CookbookVersion".freeze
 
@@ -67,7 +93,8 @@ module Berkshelf
     #     }
     attr_reader :manifest
 
-    def_delegators :@metadata, :version
+    def_delegator :@metadata, :version
+    def_delegator :@metadata, :dependencies
 
     def initialize(name, path, metadata)
       @cookbook_name = name

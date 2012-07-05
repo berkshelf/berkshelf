@@ -4,8 +4,11 @@ module Berkshelf
     extend Forwardable
     include DepSelector
 
-    def_delegators :@graph, :package, :packages
+    def_delegator :@graph, :package
+    def_delegator :@graph, :packages
 
+    # @param [Downloader] downloader
+    # @param [Array<CookbookSource>, CookbookSource] sources
     def initialize(downloader, sources = Array.new)
       @downloader = downloader
       @graph = DependencyGraph.new
@@ -18,58 +21,55 @@ module Berkshelf
       Array(sources).each do |source|
         add_source(source, false)
       end
-      add_sources_dependencies
+
+      Array(sources).each do |source|
+        add_source_dependencies(source)
+      end
     end
 
+    # Add the given source to the collection of sources for this instance
+    # of Resolver. By default the dependencies of the given source will also
+    # be added as sources to the collection.
+    #
     # @param [Berkshelf::CookbookSource] source
     #   source to add
     # @param [Boolean] include_dependencies
-    #   if true, after adding the source the dependencies defined in the
-    #   sources metadata will be added to the graph and downloaded
+    #   adds the dependencies of the given source as sources to the collection of
+    #   if true. Dependencies will be ignored if false.
     #
-    # @return [DepSelector::PackageVersion]
+    # @return [Array<CookbookSource>]
     def add_source(source, include_dependencies = true)
-      raise DuplicateSourceDefined if has_source?(source.name)
+      if has_source?(source)
+        raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
+      end
 
-      set_source(source.name, source)
-
-      install_or_use_source(source)
+      set_source(source)
+      use_source(source) || install_source(source)
 
       package = add_package(source.name)
-      package_version = add_version(package, Version.new(source.metadata.version))
+      package_version = add_version(package, Version.new(source.cached_cookbook.version))
       
-      add_dependencies(package_version, source.dependencies) if include_dependencies
+      if include_dependencies
+        add_source_dependencies(source)
+      end
 
-      package_version
+      sources
     end
 
-    # @param [DepSelector::PackageVersion] parent_pkgver
-    #   the PackageVersion you would like to add the given dependencies to. In this case
-    #   the package version is a version of a Cookbook.
-    # @param [Hash] dependencies
-    #   A hash containing Cookbook names for keys and version constraint strings for
-    #   values. This is the same format obtained by sending the 'dependencies' message
-    #   to an instance of Chef::Cookbook::Metadata.
+    # Add the dependencies of the given source as sources in the collection of sources
+    # on this instance of Resolver. Any dependencies which already have a source in the
+    # collection of sources of the same name will not be added to the collection a second
+    # time.
     #
-    #   Example:
-    #       { 
-    #         "build-essential" => ">= 0.0.0",
-    #         "ohai" => "~> 1.0.2"
-    #       }
-    def add_dependencies(parent_pkgver, dependencies)
-      dependencies.each do |name, constraint|
-        dep_package = add_package(name)
-        parent_pkgver.dependencies << Dependency.new(dep_package, VersionConstraint.new(constraint))
+    # @param [CookbookSource] source
+    #   source to convert dependencies into sources
+    #
+    # @return [Array<CookbookSource>]
+    def add_source_dependencies(source)
+      source.cached_cookbook.dependencies.each do |name, constraint|
+        next if has_source?(name)
 
-        unless has_source?(name)
-          source = CookbookSource.new(name, constraint)
-
-          install_or_use_source(source)
-
-          dep_pkgver = add_version(dep_package, Version.new(source.metadata.version))
-          add_dependencies(dep_pkgver, source.dependencies)
-          set_source(source.name, source)
-        end
+        add_source(CookbookSource.new(name, constraint))
       end
     end
 
@@ -88,22 +88,24 @@ module Berkshelf
 
       [].tap do |cached_cookbooks|
         solution.each do |name, version|
-          source = get_source(name)
-          cached_cookbooks << CachedCookbook.new(source.name, source.local_path, source.metadata)
+          cached_cookbooks << get_source(name).cached_cookbook
         end
       end
     end
 
-    # @param [#to_s] source
+    # @param [CookbookSource, #to_s] source
     #   name of the source to return
     #
     # @return [Berkshelf::CookbookSource]
     def [](source)
+      if source.is_a?(CookbookSource)
+        source = source.name
+      end
       @sources[source.to_s]
     end
     alias_method :get_source, :[]
 
-    # @param [#to_s] source
+    # @param [CoobookSource, #to_s] source
     #   the source to test if the resolver has added
     def has_source?(source)
       !get_source(source).nil?
@@ -114,28 +116,53 @@ module Berkshelf
       attr_reader :downloader
       attr_reader :graph
 
-      # @param [#to_s] source
-      #   name of the source to set
-      # @param [CookbookSource] value
-      #   source to set as value
-      def []=(source, value)
-        @sources[source.to_s] = value
+      # @param [CookbookSource] source
+      def set_source(source)
+        @sources[source.name] = source
       end
-      alias_method :set_source, :[]=
 
-      def install_or_use_source(source)
-        if downloader.downloaded?(source)
-          msg = "Using #{source.name} (#{source.metadata.version})"
+      # @param [Berkshelf::CookbookSource] source
+      #
+      # @return [Boolean]
+      def install_source(source)
+        downloader.download!(source)
+        Berkshelf.ui.info "Installing #{source.name} (#{source.cached_cookbook.version}) from #{source.location}"
+      end
 
-          if source.location.is_a?(CookbookSource::PathLocation)
-            msg << " at #{source.location}"  
+      # Use the given source to create a constraint solution if the source has been downloaded or can
+      # be satisfied by a cached cookbook that is already present in the cookbook store.
+      #
+      # @note Git location sources which have not yet been downloaded will not be satisfied by a
+      #   cached cookbook from the cookbook store.
+      #
+      # @param [Berkshelf::CookbookSource] source
+      #
+      # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
+      #   this instance of Location.
+      #   contain a cookbook that satisfies the given version constraint of this instance of
+      #   CookbookSource.
+      #
+      # @return [Boolean]
+      def use_source(source)        
+        if source.downloaded?
+          cached = source.cached_cookbook
+          source.location.validate_cached(cached)
+        else
+          if source.location.is_a?(CookbookSource::GitLocation)
+            return false
           end
 
-          Berkshelf.ui.info msg
-        else
-          downloader.download!(source)
-          Berkshelf.ui.info "Installing #{source.name} (#{source.local_version}) from #{source.location}"
+          cached = downloader.cookbook_store.satisfy(source.name, source.version_constraint)
+          return false if cached.nil?
+
+          get_source(source).cached_cookbook = cached
         end
+
+        msg = "Using #{cached.cookbook_name} (#{cached.version})"
+        msg << " at #{source.location}" if source.location.is_a?(CookbookSource::PathLocation)
+        Berkshelf.ui.info msg
+
+        true
       end
 
       def selector
@@ -145,14 +172,6 @@ module Berkshelf
       def solution_constraints
         constraints = graph.packages.collect do |name, package|
           SolutionConstraint.new(package)
-        end
-      end
-
-      # Add the dependencies of each source to the graph
-      def add_sources_dependencies
-        sources.each do |source|
-          package_version = package(source.name)[Version.new(source.metadata.version)]
-          add_dependencies(package_version, source.dependencies)
         end
       end
 

@@ -6,17 +6,25 @@ module Berkshelf
 
       attr_accessor :path
 
-      def initialize(name, options = {})
+      # @param [#to_s] name
+      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Hash] options
+      def initialize(name, version_constraint, options = {})
         @name = name
+        @version_constraint = version_constraint
         @path = File.expand_path(options[:path])
+        set_downloaded_status(true)
       end
 
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
       def download(destination)
-        unless File.chef_cookbook?(path)
-          raise CookbookNotFound, "Cookbook '#{name}' not found at path: '#{path}'"
-        end
+        cached = CachedCookbook.from_path(path)
+        validate_cached(cached)
 
-        path
+        set_downloaded_status(true)
+        cached
       end
 
       def to_s

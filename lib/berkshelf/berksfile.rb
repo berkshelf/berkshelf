@@ -47,7 +47,9 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CookbookSource]
     def add_source(source)
-      raise DuplicateSourceDefined if has_source?(source)
+      if has_source?(source)
+        raise DuplicateSourceDefined, "Berksfile contains two sources named '#{source.name}'. Remove one and try again."
+      end
       @sources[source.to_s] = source
     end
 
@@ -186,6 +188,7 @@ module Berkshelf
       FileUtils.mkdir_p(path)
       cached_cookbooks.each do |cached_cookbook|
         destination = File.expand_path(File.join(path, cached_cookbook.cookbook_name))
+        FileUtils.rm_rf(destination)
         begin
           FileUtils.ln_r(cached_cookbook.path, destination, force: true)
         rescue ArgumentError

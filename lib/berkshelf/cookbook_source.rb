@@ -1,18 +1,9 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
-    module Location
-      attr_reader :name
+    extend Forwardable
 
-      def initialize(name)
-        @name = name
-      end
-
-      def download(destination)
-        raise NotImplementedError, "Function must be implemented on includer"
-      end
-    end
-
+    autoload :Location, 'berkshelf/cookbook_source/location'
     autoload :SiteLocation, 'berkshelf/cookbook_source/site_location'
     autoload :GitLocation, 'berkshelf/cookbook_source/git_location'
     autoload :PathLocation, 'berkshelf/cookbook_source/path_location'
@@ -20,49 +11,52 @@ module Berkshelf
     LOCATION_KEYS = [:git, :path, :site]
 
     attr_reader :name
+    alias_method :to_s, :name
+
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
-    attr_reader :local_path
+    attr_accessor :cached_cookbook
 
-    # TODO: describe how the options on this function work.
-    #
-    # @param [String] name
-    # @param [String] version_constraint (optional)
-    # @param [Hash] options (optional)
+    def_delegator :@location, :downloaded?
+
+    # @overload initialize(name, version_constraint, options = {})
+    #   @param [#to_s] name
+    #   @param [#to_s] version_constraint
+    #   @param [Hash] options
+    # @overload initialize(name, options = {})
+    #   @param [#to_s] name
+    #   @param [Hash] options
     def initialize(*args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       name, constraint = args
 
       @name = name
-      @version_constraint = DepSelector::VersionConstraint.new(constraint)
+      @version_constraint = DepSelector::VersionConstraint.new(constraint || ">= 0.0.0")
       @groups = []
-      @local_path = nil
+      @cached_cookbook = nil
 
       if (options.keys & LOCATION_KEYS).length > 1
         raise ArgumentError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
       end
 
-      options[:version_constraint] = version_constraint if version_constraint
-
       @location = case 
       when options[:git]
-        GitLocation.new(name, options)
+        GitLocation.new(name, version_constraint, options)
       when options[:path]
-        loc = PathLocation.new(name, options)
-        set_local_path loc.path
+        loc = PathLocation.new(name, version_constraint, options)
+        @cached_cookbook = CachedCookbook.from_path(loc.path)
         loc
       when options[:site]
-        SiteLocation.new(name, options)
+        SiteLocation.new(name, version_constraint, options)
       else
-        SiteLocation.new(name, options)
+        SiteLocation.new(name, version_constraint, options)
       end
 
       @locked_version = DepSelector::Version.new(options[:locked_version]) if options[:locked_version]
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
-      set_downloaded_status(false)
     end
 
     def add_group(*groups)
@@ -83,54 +77,23 @@ module Berkshelf
     #     [ :ok, "/tmp/nginx" ]
     #     [ :error, "Cookbook 'sparkle_motion' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks" ]
     def download(destination)
-      set_local_path location.download(destination)
-      [ :ok, local_path ]
+      self.cached_cookbook = location.download(destination)
+
+      [ :ok, self.cached_cookbook ]
     rescue CookbookNotFound => e
-      set_local_path = nil
+      self.cached_cookbook = nil
       [ :error, e.message ]
-    end
-
-    def downloaded?
-      !local_path.nil?
-    end
-
-    def metadata
-      return nil unless local_path
-
-      cookbook_metadata = Chef::Cookbook::Metadata.new
-      cookbook_metadata.from_file(File.join(local_path, "metadata.rb"))
-      cookbook_metadata
-    end
-
-    def to_s
-      name
     end
 
     def has_group?(group)
       groups.include?(group.to_sym)
     end
 
-    def dependencies
-      return nil unless metadata
-
-      metadata.dependencies
-    end
-
-    def local_version
-      return nil unless metadata
-
-      metadata.version
-    end
-
     def locked_version
-      @locked_version || local_version
+      @locked_version || cached_cookbook.version
     end
 
     private
-
-      def set_downloaded_status(state)
-        @downloaded_state = state
-      end
 
       def set_local_path(path)
         @local_path = path
