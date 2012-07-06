@@ -185,20 +185,32 @@ module Berkshelf
     # @param [Pathname, String] path
     # @param [Array<Berkshelf::CachedCookbook>] cached_cookbooks
     def write_shims(path, cached_cookbooks)
+      actual_path = nil
+
+      if descendant_directory?(path, Dir.pwd)
+        actual_path = path
+        FileUtils.rm_rf(actual_path)
+        path = Dir.mktmpdir("berkshelf-")
+      end
+
       FileUtils.mkdir_p(path)
       cached_cookbooks.each do |cached_cookbook|
         destination = File.expand_path(File.join(path, cached_cookbook.cookbook_name))
         FileUtils.rm_rf(destination)
-        begin
-          FileUtils.ln_r(cached_cookbook.path, destination, force: true)
-        rescue ArgumentError
-          Berkshelf.ui.warn "Skipping shim for #{cached_cookbook}."
-          Berkshelf.ui.warn "Cannot write a shim for a path location source into a subdirectory of itself."
-        end
+        FileUtils.ln_r(cached_cookbook.path, destination, force: true)
+      end
+
+      if actual_path
+        FileUtils.mv(path, actual_path)
       end
     end
 
     private
+
+      def descendant_directory?(candidate, parent)
+        hack = FileUtils::Entry_.new('/tmp')
+        hack.send(:descendant_diretory?, candidate, parent)
+      end
 
       def lockfile_present?
         File.exist?(Berkshelf::Lockfile::DEFAULT_FILENAME)
