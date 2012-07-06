@@ -202,11 +202,7 @@ module Berkshelf
       cached_cookbooks.each do |cached_cookbook|
         destination = File.expand_path(File.join(path, cached_cookbook.cookbook_name))
         FileUtils.rm_rf(destination)
-        begin
-          FileUtils.ln_r(cached_cookbook.path, destination, force: true)
-        rescue ArgumentError
-          Berkshelf.ui.warn "Skipping shim for #{cached_cookbook}."
-        end
+        FileUtils.ln_r(cached_cookbook.path, destination, force: true)
       end
 
       if actual_path
