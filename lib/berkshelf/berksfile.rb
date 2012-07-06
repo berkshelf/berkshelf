@@ -187,12 +187,7 @@ module Berkshelf
     def write_shims(path, cached_cookbooks)
       actual_path = nil
 
-      # Private code from FileUtils' internal _Entry class
-      # Used to determine if a path is (or would be) a descendent
-      # of the current directory
-      directory_term = (File::ALT_SEPARATOR ? "(?=[/#{Regexp.quote(File::ALT_SEPARATOR)}]|\\z)" : "(?=/|\\z)").freeze
-      syscase = File::FNM_SYSCASE.nonzero? ? "-i" : ""
-      if /\A(?#{syscase}:#{Regexp.quote(Dir.pwd)})#{directory_term}/ =~ File.dirname(path)
+      if descendant_directory?(path, Dir.pwd)
         actual_path = path
         FileUtils.rm_rf(actual_path)
         path = Dir.mktmpdir("berkshelf-")
@@ -211,6 +206,11 @@ module Berkshelf
     end
 
     private
+
+      def descendant_directory?(candidate, parent)
+        hack = FileUtils::Entry_.new('/tmp')
+        hack.send(:descendant_diretory?, candidate, parent)
+      end
 
       def lockfile_present?
         File.exist?(Berkshelf::Lockfile::DEFAULT_FILENAME)
