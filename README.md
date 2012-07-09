@@ -34,11 +34,11 @@ Bundler will install all gems and their dependencies required for testing and de
 
 ### Running unit (RSpec) and acceptance (Cucumber) tests
 
-    $ CHEF_CONFIG=~/.chef/knife.test-config.rb bundle exec guard start
+Simply copy the `spec/knife.rb.sample` to `spec/knife.rb`, and point it at a
+chef server. Berkshelf tests may upload and destroy cookbooks on your chef
+server, so be sure to configure a server safe for this task.
 
-Note that `CHEF_CONFIG` needs to be set to a meaningful value, otherwise
-`~/.chef/knife.rb` will be used. **As we upload and purge cookbooks from the chef
-servers during our test runs, this may not be what you desire!**
+    $ bundle exec guard start
 
 See [here](https://github.com/tdegrunt/vagrant-chef-server-bootstrap) for a
 quick way to get a testing chef server up.
