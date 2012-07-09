@@ -26,7 +26,7 @@ module Berkshelf
       context "given a value for constraint" do
         let(:source) { subject.new(cookbook_name, "~> 1.0.84") }
 
-        it "returns a DepSelector::VersionConstraint for the given version for version_constraint" do
+        it "returns a Solve::Constraint for the given version for version_constraint" do
           source.version_constraint.to_s.should eql("~> 1.0.84")
         end
       end

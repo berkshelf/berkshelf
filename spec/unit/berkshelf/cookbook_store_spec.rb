@@ -36,10 +36,10 @@ module Berkshelf
 
     describe "#satisfy" do
       let(:name) { "nginx" }
-      let(:version) { DepSelector::Version.new("0.101.4") }
-      let(:constraint) { DepSelector::VersionConstraint.new("~> 0.101.2") }
-      let(:cached_cb) { double('cached-cb', name: name, version: version) }
-      let(:cached_two) { double('cached-two', name: "mysql", version: DepSelector::Version.new("1.2.6")) }
+      let(:version) { "0.101.4" }
+      let(:constraint) { Solve::Constraint.new("~> 0.101.2") }
+      let(:cached_cb) { double('cached-cb', name: name, version: Solve::Version.new(version)) }
+      let(:cached_two) { double('cached-two', name: "mysql", version: Solve::Version.new("1.2.6")) }
 
       before(:each) do
         subject.stub(:cookbooks).and_return([cached_cb, cached_two])
@@ -60,8 +60,8 @@ module Berkshelf
       end
 
       context "when there is no matching cookbook for the given name and constraint" do
-        let(:version) { DepSelector::Version.new("1.0.0") }
-        let(:constraint) { DepSelector::VersionConstraint.new("= 0.0.1") }
+        let(:version) { Solve::Version.new("1.0.0") }
+        let(:constraint) { Solve::Constraint.new("= 0.0.1") }
 
         before(:each) do
           subject.stub(:cookbooks).and_return([ double('badcache', name: 'none', version: version) ])

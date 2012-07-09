@@ -11,7 +11,7 @@ module Berkshelf
       alias_method :tag, :branch
 
       # @param [#to_s] name
-      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
       def initialize(name, version_constraint, options)
         @name = name

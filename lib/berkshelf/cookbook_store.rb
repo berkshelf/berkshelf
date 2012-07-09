@@ -3,9 +3,6 @@ require 'fileutils'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookStore
-    include DepSelector
-    include DepSelector::Exceptions
-
     attr_reader :storage_path
 
     # Create a new instance of CookbookStore with the given
@@ -69,20 +66,18 @@ module Berkshelf
     # constraint. Nil is returned if no matching CachedCookbook is found.
     #
     # @param [#to_s] name
-    # @param [DepSelector::VersionConstraint] constraint
+    # @param [Solve::Constraint] constraint
     #
     # @return [Berkshelf::CachedCookbook, nil]
     def satisfy(name, constraint)
-      graph                = DependencyGraph.new
-      selector             = Selector.new(graph)
-      package              = graph.package(name)
-      solution_constraints = [ SolutionConstraint.new(graph.package(name), constraint) ]
+      graph = Solve::Graph.new
+      cookbooks(name).each { |cookbook| graph.artifacts(name, cookbook.version) }
+      graph.demands(name, constraint)
 
-      cookbooks(name).each { |cookbook| package.add_version(Version.new(cookbook.version)) }
-      name, version = quietly { selector.find_solution(solution_constraints).first }
+      name, version = Solve.it!(graph).first
       
       cookbook(name, version)
-    rescue InvalidSolutionConstraints, NoSolutionExists
+    rescue Solve::NoSolutionError
       nil
     end
 
