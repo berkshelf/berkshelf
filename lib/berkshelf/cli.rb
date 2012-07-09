@@ -4,7 +4,6 @@ require 'berkshelf'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Cli < Thor
-
     def initialize(*)
       super
       # JW TODO: Replace Chef::Knife::UI with our own UI class
