@@ -41,7 +41,7 @@ class Default < Thor
 
     desc "clean", "clean VCR cassettes"
     def clean
-      FileUtils.rm_rf("spec/fixtures/vcr_cassettes/*")
+      FileUtils.rm_rf("spec/fixtures/vcr_cassettes")
     end
   end
 end
