@@ -15,6 +15,7 @@ tmp
 *.tar*
 \#*
 .DS_Store
-/spec/fixtures/vcr_cassettes/*
+/spec/knife.rb
+/spec/fixtures/vcr_cassettes
 /features/config.yml
 *.sw[op]

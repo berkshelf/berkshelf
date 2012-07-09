@@ -89,4 +89,6 @@ end
 
 Spork.each_run do
   require 'berkshelf'
+
+  Berkshelf::RSpec::Knife.check_knife_rb
 end
