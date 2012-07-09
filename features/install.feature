@@ -71,8 +71,8 @@ Feature: install cookbooks from a Berksfile
       cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.9.8"
       """
     When I run the install command
-    Then the cookbook store should have the cookbooks:
-      | artifact | 0.9.8 |
+    Then the cookbook store should have the git cookbooks:
+      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
     And the output should contain:
       """
       Installing artifact (0.9.8) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.9.8'
@@ -146,6 +146,29 @@ Feature: install cookbooks from a Berksfile
       Shims written to: 
       """
     And the exit status should be 0
+
+  Scenario: running install with --shims when current project is a cookbook and the 'metadata' is specified
+    Given a cookbook named "sparkle_motion"
+    And the cookbook "sparkle_motion" has the file "Berksfile" with:
+      """
+      metadata
+      """
+    When I cd to "sparkle_motion"
+    And I run the install command with flags:
+      | --shims |
+    Then the following directories should exist:
+      | cookbooks                |
+      | cookbooks/sparkle_motion |
+    And the output should contain:
+      """
+      Shims written to: 
+      """
+    And the output should contain:
+      """
+      Using sparkle_motion (0.0.0) at path:
+      """
+    And the exit status should be 0
+
 
   Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
     Given I write to "Berksfile" with:

@@ -45,6 +45,18 @@ Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   end
 end
 
+Then /^the cookbook store should have the git cookbooks:$/ do |cookbooks|
+  cookbooks.raw.each do |name, version, sha1|
+    cookbook_store.should have_structure {
+      directory "#{name}-#{sha1}" do
+        file "metadata.rb" do
+          contains version
+        end
+      end
+    }
+  end
+end
+
 Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     cookbook_store.should_not have_structure {
