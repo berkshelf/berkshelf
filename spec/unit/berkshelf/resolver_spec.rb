@@ -46,18 +46,9 @@ module Berkshelf
 
         it "adds the dependencies of the source as sources" do
           resolver = subject.new(downloader, source)
-
-          source.cached_cookbook.dependencies.each do |name, constraint|
-            resolver.package(name).should_not be_nil
-          end
-        end
-
-        it "adds the version_constraints of the dependencies to the graph" do
-          resolver = subject.new(downloader, source)
-
-          source.cached_cookbook.dependencies.each do |name, constraint|
-            resolver.package(name).versions.should_not be_empty
-          end
+          
+          resolver.should have_source("nginx")
+          resolver.should have_source("artifact")
         end
 
         context "given an array of sources" do
@@ -82,14 +73,10 @@ module Berkshelf
         subject.sources.should include(source)
       end
 
-      it "adds a package of the same name of the source to the graph" do
-        subject.package(source.name).should_not be_nil
-      end
-
-      it "adds a version constraint specified by the source to the package of the same name" do
-        subject.add_source(source)
-
-        subject.package(source.name).versions.collect(&:version).should include(source.version_constraint.version)
+      it "adds an artifact of the same name of the source to the graph" do
+        subject.graph.should_receive(:artifacts).with(source.name, source.cached_cookbook.version)
+        
+        subject.add_source(source, false)
       end
 
       it "adds the dependencies of the source as packages to the graph" do
@@ -104,14 +91,6 @@ module Berkshelf
         lambda {
           subject.add_source(source)
         }.should raise_error(DuplicateSourceDefined)
-      end
-
-      it "adds a package for each dependency to the packages attribute" do
-        subject.add_source(source)
-
-        source.cached_cookbook.dependencies.each do |name, constraint|
-          subject.package(name).should_not be_nil
-        end
       end
 
       context "when include_dependencies is false" do
