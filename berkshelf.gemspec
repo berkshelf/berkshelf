@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
 
-  s.add_runtime_dependency 'dep_selector'
+  s.add_runtime_dependency 'solve',           '~> 0.2.1'
   s.add_runtime_dependency 'chef',            '~> 10.12.0'
   s.add_runtime_dependency 'minitar'
   s.add_runtime_dependency 'thor',            '~> 0.15.2'

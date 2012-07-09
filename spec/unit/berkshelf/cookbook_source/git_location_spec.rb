@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Berkshelf
   describe CookbookSource::GitLocation do
-    let(:complacent_constraint) { double('comp-vconstraint', include?: true) }
+    let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
     
     describe "ClassMethods" do
       subject { CookbookSource::GitLocation }
@@ -72,7 +72,7 @@ module Berkshelf
       context "given the content at the Git repo does not satisfy the version constraint" do
         subject do
           CookbookSource::GitLocation.new("nginx",
-            double('constraint', include?: false),
+            double('constraint', satisfies?: false),
             git: "git://github.com/opscode-cookbooks/nginx.git"
           )
         end

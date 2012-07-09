@@ -2,16 +2,14 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Resolver
     extend Forwardable
-    include DepSelector
 
-    def_delegator :@graph, :package
-    def_delegator :@graph, :packages
+    attr_reader :graph
 
     # @param [Downloader] downloader
     # @param [Array<CookbookSource>, CookbookSource] sources
     def initialize(downloader, sources = Array.new)
       @downloader = downloader
-      @graph = DependencyGraph.new
+      @graph = Solve::Graph.new
       @sources = Hash.new
 
       # Dependencies need to be added AFTER the sources. If they are
@@ -46,8 +44,7 @@ module Berkshelf
       set_source(source)
       use_source(source) || install_source(source)
 
-      package = add_package(source.name)
-      package_version = add_version(package, Version.new(source.cached_cookbook.version))
+      graph.artifacts(source.name, source.cached_cookbook.version)
       
       if include_dependencies
         add_source_dependencies(source)
@@ -84,7 +81,11 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def resolve
-      solution = quietly { selector.find_solution(solution_constraints) }
+      graph.artifacts.each do |artifact|
+        graph.demands(artifact.name)
+      end
+
+      solution = Solve.it!(graph)
 
       [].tap do |cached_cookbooks|
         solution.each do |name, version|
@@ -114,7 +115,6 @@ module Berkshelf
     private
 
       attr_reader :downloader
-      attr_reader :graph
 
       # @param [CookbookSource] source
       def set_source(source)
@@ -163,32 +163,6 @@ module Berkshelf
         Berkshelf.ui.info msg
 
         true
-      end
-
-      def selector
-        Selector.new(graph)
-      end
-
-      def solution_constraints
-        constraints = graph.packages.collect do |name, package|
-          SolutionConstraint.new(package)
-        end
-      end
-
-      # @param [String] name
-      #   name of the package to add to the graph
-      def add_package(name)
-        graph.package(name)
-      end
-
-      # Add a version to a package
-      #
-      # @param [DepSelector::Package] package
-      #   the package to add a version to
-      # @param [DepSelector::Version] version
-      #   the version to add the the package
-      def add_version(package, version)
-        package.add_version(version)
       end
   end
 end

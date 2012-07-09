@@ -6,6 +6,7 @@ module Berkshelf
       attr_reader :version_constraint
 
       # @param [#to_s] name
+      # @param [Solve::Constraint] version_constraint
       def initialize(name, version_constraint)
         @name = name
         @version_constraint = version_constraint
@@ -33,7 +34,7 @@ module Berkshelf
       #
       # @return [Boolean]
       def validate_cached(cached_cookbook)
-        unless version_constraint.include?(cached_cookbook.version)
+        unless version_constraint.satisfies?(cached_cookbook.version)
           raise ConstraintNotSatisfied, "A cookbook satisfying '#{name}' (#{version_constraint}) not found at #{self}"
         end
 

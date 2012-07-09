@@ -32,7 +32,7 @@ module Berkshelf
       name, constraint = args
 
       @name = name
-      @version_constraint = DepSelector::VersionConstraint.new(constraint || ">= 0.0.0")
+      @version_constraint = Solve::Constraint.new(constraint || ">= 0.0.0")
       @groups = []
       @cached_cookbook = nil
 
@@ -53,7 +53,7 @@ module Berkshelf
         SiteLocation.new(name, version_constraint, options)
       end
 
-      @locked_version = DepSelector::Version.new(options[:locked_version]) if options[:locked_version]
+      @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
