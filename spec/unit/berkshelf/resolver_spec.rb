@@ -5,7 +5,7 @@ module Berkshelf
     let(:source) do
       double('source',
         name: 'mysql',
-        version_constraint: DepSelector::VersionConstraint.new('= 1.2.4'),
+        version_constraint: Solve::Constraint.new('= 1.2.4'),
         downloaded?: true,
         cached_cookbook: double('mysql-cookbook', 
           name: 'mysql-1.2.4',
@@ -20,7 +20,7 @@ module Berkshelf
     let(:source_two) do
       double('source-two',
         name: 'nginx',
-        version_constraint: DepSelector::VersionConstraint.new('= 0.101.2'),
+        version_constraint: Solve::Constraint.new('= 0.101.2'),
         downloaded?: true,
         cached_cookbook: double('nginx-cookbook', 
           name: 'nginx-0.101.2',

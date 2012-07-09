@@ -3,22 +3,22 @@ require 'spec_helper'
 module Berkshelf
   describe CookbookSource::SiteLocation do
     describe "ClassMethods" do
-      let(:constraint) { DepSelector::VersionConstraint.new("~> 0.101.2") }
+      let(:constraint) { Solve::Constraint.new("~> 0.101.2") }
       subject { CookbookSource::SiteLocation }
       let(:versions) do
         { 
-          DepSelector::Version.new("0.101.2") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
-          DepSelector::Version.new("0.101.0") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0",
-          DepSelector::Version.new("0.100.2") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2",
-          DepSelector::Version.new("0.100.0") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0"
+          Solve::Version.new("0.101.2") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
+          Solve::Version.new("0.101.0") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0",
+          Solve::Version.new("0.100.2") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2",
+          Solve::Version.new("0.100.0") => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0"
         }
       end
 
       describe "#solve_for_constraint" do
-        it "returns an array containing a DepSelector::Version at index 0" do
+        it "returns an array containing a Solve::Version at index 0" do
           result = subject.solve_for_constraint(constraint, versions)
 
-          result[0].should be_a(DepSelector::Version)
+          result[0].should be_a(Solve::Version)
         end
 
         it "returns an array containing a URI at index 0" do
@@ -33,13 +33,13 @@ module Berkshelf
 
         context "given a solution can not be found for constraint" do
           it "returns nil" do
-            subject.solve_for_constraint(DepSelector::VersionConstraint.new(">= 1.0"), versions).should be_nil
+            subject.solve_for_constraint(Solve::Constraint.new(">= 1.0"), versions).should be_nil
           end
         end
       end
     end
 
-    let(:complacent_constraint) { double('comp-vconstraint', include?: true) }
+    let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
     subject { CookbookSource::SiteLocation.new("nginx", complacent_constraint) }
 
     describe "#download" do
@@ -58,7 +58,7 @@ module Berkshelf
       end
 
       context "given a wildcard '>= 0.0.0' version constraint is specified" do
-        subject { CookbookSource::SiteLocation.new("nginx", DepSelector::VersionConstraint.new(">= 0.0.0")) }
+        subject { CookbookSource::SiteLocation.new("nginx", Solve::Constraint.new(">= 0.0.0")) }
 
         it "downloads the latest version of the cookbook to the given destination" do
           subject.download(tmp_path)
@@ -74,7 +74,7 @@ module Berkshelf
       end
 
       context "given an exact match version constraint" do
-        subject { CookbookSource::SiteLocation.new("nginx", DepSelector::VersionConstraint.new("= 0.101.2")) }
+        subject { CookbookSource::SiteLocation.new("nginx", Solve::Constraint.new("= 0.101.2")) }
 
         it "downloads the cookbook with the version matching the version_constraint to the given destination" do
           subject.download(tmp_path)
@@ -89,7 +89,7 @@ module Berkshelf
       end
 
       context "given a more broad version constraint" do
-        subject { CookbookSource::SiteLocation.new("nginx", DepSelector::VersionConstraint.new("~> 0.99.0")) }
+        subject { CookbookSource::SiteLocation.new("nginx", Solve::Constraint.new("~> 0.99.0")) }
 
         it "downloads the best matching cookbook version for the constraint to the given destination" do
           subject.download(tmp_path)
@@ -143,7 +143,7 @@ module Berkshelf
     describe "#versions" do
       it "returns a hash containing versions for keys" do
         subject.versions.each do |key, val|
-          key.should be_a(DepSelector::Version)
+          key.should be_a(Solve::Version)
         end
       end
 
@@ -155,10 +155,10 @@ module Berkshelf
     end
 
     describe "#version" do
-      it "returns an array containing a DepSelector::Version at index 0" do
+      it "returns an array containing a Solve::Version at index 0" do
         result = subject.version("0.101.2")
 
-        result[0].should be_a(DepSelector::Version)
+        result[0].should be_a(Solve::Version)
       end
 
       it "returns an array containing a URI at index 0" do
@@ -167,7 +167,7 @@ module Berkshelf
         result[1].should match(URI.regexp)
       end
 
-      it "returns a DepSelector::Version that matches the given version" do
+      it "returns a Solve::Version that matches the given version" do
         result = subject.version("0.101.2")
 
         result[0].to_s.should eql("0.101.2")
@@ -175,10 +175,10 @@ module Berkshelf
     end
 
     describe "#latest_version" do
-      it "returns an array containing a DepSelector::Version at index 0" do
+      it "returns an array containing a Solve::Version at index 0" do
         result = subject.latest_version
 
-        result[0].should be_a(DepSelector::Version)
+        result[0].should be_a(Solve::Version)
       end
 
       it "returns an array containing a URI at index 0" do

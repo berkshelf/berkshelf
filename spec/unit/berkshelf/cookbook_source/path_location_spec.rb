@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Berkshelf
   describe CookbookSource::PathLocation do
-    let(:complacent_constraint) { double('comp-vconstraint', include?: true) }
+    let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
     let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
     subject { CookbookSource::PathLocation.new("nginx", complacent_constraint, path: path) }
 
@@ -38,7 +38,7 @@ module Berkshelf
       end
 
       context "given the content at path does not satisfy the version constraint" do
-        subject { CookbookSource::PathLocation.new("nginx", double('constraint', include?: false), path: path) }
+        subject { CookbookSource::PathLocation.new("nginx", double('constraint', satisfies?: false), path: path) }
 
         it "raises a ConstraintNotSatisfied error" do
           lambda {
