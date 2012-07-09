@@ -4,6 +4,7 @@ require 'berkshelf'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Cli < Thor
+
     def initialize(*)
       super
       # JW TODO: Replace Chef::Knife::UI with our own UI class
@@ -23,7 +24,7 @@ module Berkshelf
 
     class_option :config,
       type: :string,
-      default: File.expand_path(ENV["CHEF_CONFIG"] || "~/.chef/knife.rb"),
+      default: Berkshelf::DEFAULT_CONFIG,
       desc: "Path to Knife or Chef configuration to use.",
       aliases: "-c",
       banner: "PATH"

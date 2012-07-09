@@ -1,0 +1,12 @@
+# vim: ft=ruby
+
+user = 'erikh'
+
+log_level                :info
+log_location             STDOUT
+node_name                user
+client_key               "/Users/#{user}/.chef/test.pem"
+chef_server_url          'http://localhost:4000'
+cache_type               'BasicFile'
+cache_options( :path => "/Users/#{user}/.chef/checksums" )
+cookbook_path [ '/etc/chef/cookbooks', '/etc/chef/site-cookbooks' ]

@@ -14,6 +14,7 @@ require 'berkshelf/errors'
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
 module Berkshelf
+  DEFAULT_CONFIG = File.expand_path(ENV["CHEF_CONFIG"] || "~/.chef/knife.rb")
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
