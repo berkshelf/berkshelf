@@ -140,10 +140,11 @@ module Berkshelf
       end
 
       def validate_options(options)
-        options.keys.each do |opt|
-          unless VALID_OPTIONS.include?(opt)
-            raise BerkshelfError, "Invalid option for Cookbook Source: '#{opt}'."
-          end
+        invalid_options = options.keys - VALID_OPTIONS
+
+        unless invalid_options.empty?
+          invalid_options.collect! { |opt| "'#{opt}'" }
+          raise BerkshelfError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
         end
 
         if (options.keys & LOCATION_KEYS).length > 1

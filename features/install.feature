@@ -224,11 +224,11 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a cookbook definition containing an invalid option
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", whatisthis: "I don't even know"
+      cookbook "artifact", whatisthis: "I don't even know", anotherwat: "isthat"
       """
     When I run the install command
     Then the output should contain:
       """
-      Invalid option for Cookbook Source: 'whatisthis'.
+      Invalid options for Cookbook Source: 'whatisthis', 'anotherwat'.
       """
     And the exit status should be 1

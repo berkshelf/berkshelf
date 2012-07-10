@@ -71,7 +71,13 @@ module Berkshelf
           it "raises BerkshelfError with a friendly message" do
             lambda {
               subject.new(cookbook_name, invalid_opt: "thisisnotvalid")
-            }.should raise_error(Berkshelf::BerkshelfError, "Invalid option for Cookbook Source: 'invalid_opt'.")
+            }.should raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_opt'.")
+          end
+
+          it "raises BerkshelfError with a messaging containing all of the invalid options" do
+            lambda {
+              subject.new(cookbook_name, invalid_one: "one", invalid_two: "two")
+            }.should raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_one', 'invalid_two'.")
           end
         end
       end
