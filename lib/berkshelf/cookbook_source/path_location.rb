@@ -1,8 +1,12 @@
+require 'berkshelf/cookbook_source/location'
+
 module Berkshelf
   class CookbookSource
     # @author Jamie Winsor <jamie@vialstudios.com>
     class PathLocation
       include Location
+
+      location_key :path
 
       attr_accessor :path
 
