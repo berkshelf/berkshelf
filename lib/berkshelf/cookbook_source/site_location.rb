@@ -1,8 +1,12 @@
+require 'berkshelf/cookbook_source/location'
+
 module Berkshelf
   class CookbookSource
     # @author Jamie Winsor <jamie@vialstudios.com>
     class SiteLocation
       include Location
+
+      location_key :site
 
       attr_reader :api_uri
       attr_accessor :version_constraint
