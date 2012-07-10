@@ -12,16 +12,16 @@ module Berkshelf
     include Thor::Actions
 
     argument :path,
-      :type => :string,
-      :required => true
+      type: :string,
+      required: true
 
     class_option :metadata_entry,
-      :type => :boolean,
-      :default => false
+      type: :boolean,
+      default: false
 
     class_option :chefignore,
-      :type => :boolean,
-      :default => false
+      type: :boolean,
+      default: false
 
     def generate
       target_path = File.expand_path(path)

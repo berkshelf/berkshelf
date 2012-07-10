@@ -32,7 +32,7 @@ module Berkshelf
         metadata.name
       end
 
-      source = CookbookSource.new(name, :path => File.dirname(metadata_file))
+      source = CookbookSource.new(name, path: File.dirname(metadata_file))
       add_source(source)
     end
   end

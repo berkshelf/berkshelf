@@ -137,7 +137,7 @@ module Berkshelf
 
         context "given a location key :site" do
           let(:url) { "http://path_to_api/v1" }
-          let(:source) { subject.new(cookbook_name, :site => url) }
+          let(:source) { subject.new(cookbook_name, site: url) }
 
           it "initializes a SiteLocation for location" do
             source.location.should be_a(subject::SiteLocation)
@@ -151,14 +151,14 @@ module Berkshelf
         context "given multiple location options" do
           it "raises with an Berkshelf::BerkshelfError" do
             lambda {
-              subject.new(cookbook_name, :site => "something", :git => "something")
+              subject.new(cookbook_name, site: "something", git: "something")
             }.should raise_error(Berkshelf::BerkshelfError)
           end
         end
 
         context "given a group option containing a single group" do
           let(:group) { :production }
-          let(:source) { subject.new(cookbook_name, :group => group) }
+          let(:source) { subject.new(cookbook_name, group: group) }
 
           it "assigns the single group to the groups attribute" do
             source.groups.should include(group)
@@ -167,7 +167,7 @@ module Berkshelf
 
         context "given a group option containing an array of groups" do
           let(:groups) { [ :development, :test ] }
-          let(:source) { subject.new(cookbook_name, :group => groups) }
+          let(:source) { subject.new(cookbook_name, group: groups) }
 
           it "assigns all the groups to the group attribute" do
             source.groups.should eql(groups)

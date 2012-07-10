@@ -84,7 +84,7 @@ module Berkshelf
     private
 
       def initialize_filesystem
-        FileUtils.mkdir_p(storage_path, :mode => 0755)
+        FileUtils.mkdir_p(storage_path, mode: 0755)
       end
   end
 end
