@@ -7,7 +7,8 @@ module Berkshelf
 
       # @param [#to_s] name
       # @param [Solve::Constraint] version_constraint
-      def initialize(name, version_constraint)
+      # @param [Hash] options
+      def initialize(name, version_constraint, options = {})
         @name = name
         @version_constraint = version_constraint
         @downloaded_status = false

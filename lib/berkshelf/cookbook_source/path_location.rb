@@ -9,6 +9,9 @@ module Berkshelf
       # @param [#to_s] name
       # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
+      #
+      # @option options [String] :path
+      #   a filepath to the cookbook on your local disk
       def initialize(name, version_constraint, options = {})
         @name = name
         @version_constraint = version_constraint

@@ -24,9 +24,41 @@ module Berkshelf
     #   @param [#to_s] name
     #   @param [#to_s] version_constraint
     #   @param [Hash] options
+    #
+    #   @option options [String] :git
+    #     the Git URL to clone
+    #   @option options [String] :site
+    #     a URL pointing to a community API endpoint
+    #   @option options [String] :path
+    #     a filepath to the cookbook on your local disk
+    #   @option options [Symbol, Array] :group
+    #     the group or groups that the cookbook belongs to
+    #   @option options [String] :ref
+    #     the commit hash or an alias to a commit hash to clone
+    #   @option options [String] :branch
+    #     same as ref
+    #   @option options [String] :tag
+    #     same as tag
+    #   @option options [String] :locked_version
     # @overload initialize(name, options = {})
     #   @param [#to_s] name
     #   @param [Hash] options
+    #
+    #   @option options [String] :git
+    #     the Git URL to clone
+    #   @option options [String] :site
+    #     a URL pointing to a community API endpoint
+    #   @option options [String] :path
+    #     a filepath to the cookbook on your local disk
+    #   @option options [Symbol, Array] :group
+    #     the group or groups that the cookbook belongs to
+    #   @option options [String] :ref
+    #     the commit hash or an alias to a commit hash to clone
+    #   @option options [String] :branch
+    #     same as ref
+    #   @option options [String] :tag
+    #     same as tag
+    #   @option options [String] :locked_version
     def initialize(*args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       name, constraint = args

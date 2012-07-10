@@ -13,7 +13,16 @@ module Berkshelf
       # @param [#to_s] name
       # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
-      def initialize(name, version_constraint, options)
+      #
+      # @option options [String] :git
+      #   the Git URL to clone
+      # @option options [String] :ref
+      #   the commit hash or an alias to a commit hash to clone
+      # @option options [String] :branch
+      #   same as ref
+      # @option options [String] :tag
+      #   same as tag
+      def initialize(name, version_constraint, options = {})
         @name = name
         @version_constraint = version_constraint
         @uri = options[:git]

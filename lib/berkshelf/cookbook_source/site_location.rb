@@ -56,6 +56,9 @@ module Berkshelf
       # @param [#to_s] name
       # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
+      #
+      # @option options [String] :site
+      #   a URL pointing to a community API endpoint
       def initialize(name, version_constraint, options = {})
         options[:site] ||= OPSCODE_COMMUNITY_API
 
