@@ -10,6 +10,9 @@ module Berkshelf
           CookbookSource.add_location_key(key)
         end
 
+        # Register a valid option or multiple options with the CookbookSource class
+        #
+        # @param [Symbol] opts
         def valid_options(*opts)
           Array(opts).each do |opt|
             CookbookSource.add_valid_option(opt)
