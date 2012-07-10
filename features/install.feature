@@ -220,3 +220,15 @@ Feature: install cookbooks from a Berksfile
       Installing artifact (0.10.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
       """
     And the exit status should be 0
+
+  Scenario: with a cookbook definition containing an invalid option
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", whatisthis: "I don't even know"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Invalid option for Cookbook Source: 'whatisthis'.
+      """
+    And the exit status should be 1

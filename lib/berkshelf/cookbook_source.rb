@@ -9,6 +9,16 @@ module Berkshelf
     autoload :PathLocation, 'berkshelf/cookbook_source/path_location'
 
     LOCATION_KEYS = [:git, :path, :site]
+    VALID_OPTIONS = [
+      :git,
+      :site,
+      :path,
+      :group,
+      :ref,
+      :branch,
+      :tag,
+      :locked_version
+    ]
 
     attr_reader :name
     alias_method :to_s, :name
@@ -68,9 +78,7 @@ module Berkshelf
       @groups = []
       @cached_cookbook = nil
 
-      if (options.keys & LOCATION_KEYS).length > 1
-        raise ArgumentError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
-      end
+      validate_options(options)
 
       @location = case 
       when options[:git]
@@ -129,6 +137,20 @@ module Berkshelf
 
       def set_local_path(path)
         @local_path = path
+      end
+
+      def validate_options(options)
+        options.keys.each do |opt|
+          unless VALID_OPTIONS.include?(opt)
+            raise BerkshelfError, "Invalid option for Cookbook Source: '#{opt}'."
+          end
+        end
+
+        if (options.keys & LOCATION_KEYS).length > 1
+          raise BerkshelfError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
+        end
+
+        true
       end
   end
 end

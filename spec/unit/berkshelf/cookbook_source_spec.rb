@@ -60,10 +60,18 @@ module Berkshelf
         context "given a value for path that does not contain a cookbook" do
           let(:path) { "/does/not/exist" }
 
-          it "rasies Berkshelf::CookbookNotFound" do
+          it "raises Berkshelf::CookbookNotFound" do
             lambda {
               subject.new(cookbook_name, path: path)
             }.should raise_error(Berkshelf::CookbookNotFound)
+          end
+        end
+
+        context "given an invalid option" do
+          it "raises BerkshelfError with a friendly message" do
+            lambda {
+              subject.new(cookbook_name, invalid_opt: "thisisnotvalid")
+            }.should raise_error(Berkshelf::BerkshelfError, "Invalid option for Cookbook Source: 'invalid_opt'.")
           end
         end
       end
@@ -82,10 +90,10 @@ module Berkshelf
       end
 
       context "given multiple location options" do
-        it "raises with an ArgumentError" do
+        it "raises with an Berkshelf::BerkshelfError" do
           lambda {
             subject.new(cookbook_name, :site => "something", :git => "something")
-          }.should raise_error(ArgumentError)
+          }.should raise_error(Berkshelf::BerkshelfError)
         end
       end
 
