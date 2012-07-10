@@ -1,14 +1,60 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
+    class << self
+      @@valid_options = [:group, :locked_version]
+      @@location_keys = []
+
+      # Returns an array of valid options to pass to the initializer
+      #
+      # @return [Array<Symbol>]
+      def valid_options
+        @@valid_options
+      end
+
+      # Returns an array of the registered source location keys. Every source
+      # location is identified by a key (symbol) to differentiate which class
+      # to instantiate for the location of a CookbookSource at initialization.
+      #
+      # @return [Array<Symbol>]
+      def location_keys
+        @@location_keys
+      end
+
+      # Add a option to the list of valid options
+      # @see #valid_options
+      #
+      # @param [Symbol] option
+      #
+      # @return [Array<Symbol>]
+      def add_valid_option(option)
+        @@valid_options.push(option) unless @@valid_options.include?(option)
+        @@valid_options
+      end
+
+      # Register a location key with the CookbookSource class
+      # @see #location_keys
+      #
+      # @param [Symbol] location
+      #
+      # @raise [ArgumentError] if the location key has already been defined
+      #
+      # @return [Array<Symbol>]
+      def add_location_key(location)
+        unless @@location_keys.include?(location)
+          add_valid_option(location)
+          @@location_keys.push(location)
+        end
+
+        @@location_keys
+      end
+    end
+
     extend Forwardable
 
-    autoload :Location, 'berkshelf/cookbook_source/location'
-    autoload :SiteLocation, 'berkshelf/cookbook_source/site_location'
-    autoload :GitLocation, 'berkshelf/cookbook_source/git_location'
-    autoload :PathLocation, 'berkshelf/cookbook_source/path_location'
-
-    LOCATION_KEYS = [:git, :path, :site]
+    require 'berkshelf/cookbook_source/site_location'
+    require 'berkshelf/cookbook_source/git_location'
+    require 'berkshelf/cookbook_source/path_location'
 
     attr_reader :name
     alias_method :to_s, :name
@@ -68,9 +114,7 @@ module Berkshelf
       @groups = []
       @cached_cookbook = nil
 
-      if (options.keys & LOCATION_KEYS).length > 1
-        raise ArgumentError, "Only one location key (#{LOCATION_KEYS.join(', ')}) may be specified"
-      end
+      validate_options(options)
 
       @location = case 
       when options[:git]
@@ -129,6 +173,21 @@ module Berkshelf
 
       def set_local_path(path)
         @local_path = path
+      end
+
+      def validate_options(options)
+        invalid_options = options.keys - self.class.valid_options
+
+        unless invalid_options.empty?
+          invalid_options.collect! { |opt| "'#{opt}'" }
+          raise BerkshelfError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
+        end
+
+        if (options.keys & self.class.location_keys).length > 1
+          raise BerkshelfError, "Only one location key (#{self.class.location_keys.join(', ')}) may be specified"
+        end
+
+        true
       end
   end
 end
