@@ -20,7 +20,7 @@ module Berkshelf
         end
 
         # Returns an array where the first element is string representing the best version
-        # for the given constraint and the second element is the URI to where the corrosponding
+        # for the given constraint and the second element is the URI to where the corresponding
         # version of the Cookbook can be downloaded from
         #
         # @example:
