@@ -33,7 +33,7 @@ module Berkshelf
         #   subject.solve_for_constraint(versions, constraint) =>
         #     [ "2.0.0", "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/2_0_0" ]
         #
-        # @param [Solve::Constraint] constraint
+        # @param [String, Solve::Constraint] constraint
         #   version constraint to solve for
         #
         # @param [Hash] versions
