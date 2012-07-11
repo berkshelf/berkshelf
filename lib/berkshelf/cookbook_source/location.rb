@@ -19,7 +19,7 @@ module Berkshelf
           end
         end
 
-        # Returns an array where the first element is a Solve::Version representing the best version
+        # Returns an array where the first element is string representing the best version
         # for the given constraint and the second element is the URI to where the corrosponding
         # version of the Cookbook can be downloaded from
         #
