@@ -1,7 +1,7 @@
 require 'pathname'
-require 'dep_selector'
 require 'zlib'
 require 'archive/tar/minitar'
+require 'solve'
 require 'chef/knife'
 require 'chef/rest'
 require 'chef/platform'

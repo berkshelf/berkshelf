@@ -1,14 +1,21 @@
+require 'berkshelf/cookbook_source/location'
+
 module Berkshelf
   class CookbookSource
     # @author Jamie Winsor <jamie@vialstudios.com>
     class PathLocation
       include Location
 
+      location_key :path
+
       attr_accessor :path
 
       # @param [#to_s] name
-      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
+      #
+      # @option options [String] :path
+      #   a filepath to the cookbook on your local disk
       def initialize(name, version_constraint, options = {})
         @name = name
         @version_constraint = version_constraint

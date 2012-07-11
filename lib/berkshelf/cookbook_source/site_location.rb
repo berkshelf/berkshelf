@@ -1,8 +1,12 @@
+require 'berkshelf/cookbook_source/location'
+
 module Berkshelf
   class CookbookSource
     # @author Jamie Winsor <jamie@vialstudios.com>
     class SiteLocation
       include Location
+
+      location_key :site
 
       attr_reader :api_uri
       attr_accessor :version_constraint
@@ -18,11 +22,11 @@ module Berkshelf
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
         end
 
-        # @param [DepSelector::VersionConstraint] constraint
+        # @param [Solve::Constraint] constraint
         #   version constraint to solve for
         #
         # @param [Hash] versions
-        #   a hash where the keys are a DepSelector::Version representing a Cookbook version
+        #   a hash where the keys are a Solve::Version representing a Cookbook version
         #   number and their values are the URI the Cookbook of the corrosponding version can
         #   be downloaded from. This format is also the output of the #versions function on 
         #   instances of this class.
@@ -36,7 +40,7 @@ module Berkshelf
         #       }
         #
         # @return [Array, nil]
-        #   an array where the first element is a DepSelector::Version representing the best version
+        #   an array where the first element is a Solve::Version representing the best version
         #   for the given constraint and the second element is the URI to where the corrosponding
         #   version of the Cookbook can be downloaded from
         #
@@ -44,7 +48,7 @@ module Berkshelf
         #       [ 0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
         def solve_for_constraint(constraint, versions)
           versions.each do |version, uri|
-            if constraint.include?(version)
+            if constraint.satisfies?(version)
               return [ version, uri ]
             end
           end
@@ -54,8 +58,11 @@ module Berkshelf
       end
 
       # @param [#to_s] name
-      # @param [DepSelector::VersionConstraint] version_constraint
+      # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
+      #
+      # @option options [String] :site
+      #   a URL pointing to a community API endpoint
       def initialize(name, version_constraint, options = {})
         options[:site] ||= OPSCODE_COMMUNITY_API
 
@@ -86,7 +93,7 @@ module Berkshelf
       end
 
       # @return [Array]
-      #   an Array where the first element is a DepSelector::Version representing the latest version of
+      #   an Array where the first element is a Solve::Version representing the latest version of
       #   the Cookbook and the second element is the URI to where the corrosponding version of the
       #   Cookbook can be downloaded from
       #
@@ -95,7 +102,7 @@ module Berkshelf
       def version(version_string)
         quietly {
           result = rest.get_rest("#{name}/versions/#{uri_escape_version(version_string)}")
-          dep_ver = DepSelector::Version.new(result['version'])
+          dep_ver = Solve::Version.new(result['version'])
 
           [ dep_ver, result['file'] ]
         }
@@ -108,7 +115,7 @@ module Berkshelf
       end
 
       # @return [Hash]
-      #   a hash where the keys are a DepSelector::Version representing a Cookbook version
+      #   a hash where the keys are a Solve::Version representing a Cookbook version
       #   number and their values are the URI the Cookbook of the corrosponding version can
       #   be downloaded from
       #
@@ -124,7 +131,7 @@ module Berkshelf
         quietly {
           rest.get_rest(name)['versions'].each do |uri|
             version_string = version_from_uri(File.basename(uri))
-            version = DepSelector::Version.new(version_string)
+            version = Solve::Version.new(version_string)
 
             versions[version] = uri
           end
@@ -140,7 +147,7 @@ module Berkshelf
       end
 
       # @return [Array]
-      #   an array where the first element is a DepSelector::Version representing the latest version of
+      #   an array where the first element is a Solve::Version representing the latest version of
       #   the Cookbook and the second element is the URI to where the corrosponding version of the
       #   Cookbook can be downloaded from
       #
@@ -150,7 +157,7 @@ module Berkshelf
         quietly {
           uri = rest.get_rest(name)['latest_version']
           version_string = version_from_uri(uri)
-          dep_ver = DepSelector::Version.new(version_string)
+          dep_ver = Solve::Version.new(version_string)
 
           [ dep_ver, uri ]
         }
@@ -186,7 +193,7 @@ module Berkshelf
         end
 
         # @return [Array]
-        #   an Array where the first element is a DepSelector::Version and the second element is
+        #   an Array where the first element is a Solve::Version and the second element is
         #   the URI to where the corrosponding version of the Cookbook can be downloaded from.
         #
         #

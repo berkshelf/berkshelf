@@ -71,7 +71,7 @@ module Berkshelf
           memo
         end
         
-        rest.post_rest("sandboxes", :checksums => massaged_sums)
+        rest.post_rest("sandboxes", checksums: massaged_sums)
       end
 
       def commit_sandbox(sandbox)
@@ -107,13 +107,13 @@ module Berkshelf
         file_contents = File.open(file, "rb") {|f| f.read}
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-          :http_method => :put,
-          :path        => URI.parse(url).path,
-          :body        => file_contents,
-          :timestamp   => timestamp,
-          :user_id     => rest.client_name
+          http_method: :put,
+          path: URI.parse(url).path,
+          body: file_contents,
+          timestamp: timestamp,
+          user_id: rest.client_name
         )
-        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
+        headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, accept: 'application/json' }
         headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
 
         begin
