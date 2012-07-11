@@ -46,17 +46,38 @@ module Berkshelf
       @ui ||= Chef::Knife::UI.new(null_stream, null_stream, STDIN, {})
     end
 
-    # Returns the filepath to the location Cookbooks will be downloaded to
-    # or uploaded from. By default this is '~/.berkshelf' but can be overridden
-    # by specifying a value for the ENV variable 'BERKSHELF_PATH'.
+    # Returns the filepath to the location Berskhelf will use for
+    # storage; temp files will go here, Cookbooks will be downloaded
+    # to or uploaded from here. By default this is '~/.berkshelf' but
+    # can be overridden by specifying a value for the ENV variable
+    # 'BERKSHELF_DIR'.
     # 
     # @return [String]
+    def berkshelf_dir
+      # TODO: remove support for BERKSHELF_PATH
+      return ENV["BERKSHELF_DIR"] if ENV["BERKSHELF_DIR"]
+      if ENV["BERKSHELF_PATH"]
+        ui.warn "BERKSHELF_PATH environment variable is deprecated - use BERKSHELF_DIR instead"
+        return ENV["BERKSHELF_PATH"]
+      end
+      DEFAULT_STORE_PATH
+    end
+
     def berkshelf_path
-      ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
+      ui.warn "#berkself_path is deprecated - #berkshelf_dir is preferred"
+      berkshelf_dir
+    end
+
+    def tmp_dir
+      File.join(berkshelf_dir, "tmp")
+    end
+
+    def cookbooks_dir
+      File.join(berkshelf_dir, "cookbooks")
     end
 
     def cookbook_store
-      @cookbook_store ||= CookbookStore.new(berkshelf_path)
+      @cookbook_store ||= CookbookStore.new(cookbooks_dir)
     end
 
     def downloader

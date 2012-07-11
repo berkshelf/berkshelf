@@ -190,7 +190,7 @@ module Berkshelf
       if descendant_directory?(path, Dir.pwd)
         actual_path = path
         FileUtils.rm_rf(actual_path)
-        path = File.join(Berkshelf.berkshelf_path, "tmpshims")
+        path = File.join(Berkshelf.tmp_dir, "shims")
       end
 
       FileUtils.mkdir_p(path)
