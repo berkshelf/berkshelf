@@ -21,40 +21,6 @@ module Berkshelf
         def unpack(target, destination)
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
         end
-
-        # @param [Solve::Constraint] constraint
-        #   version constraint to solve for
-        #
-        # @param [Hash] versions
-        #   a hash where the keys are a Solve::Version representing a Cookbook version
-        #   number and their values are the URI the Cookbook of the corrosponding version can
-        #   be downloaded from. This format is also the output of the #versions function on 
-        #   instances of this class.
-        #
-        #   Example:
-        #       { 
-        #         0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
-        #         0.101.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0",
-        #         0.100.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2",
-        #         0.100.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0"
-        #       }
-        #
-        # @return [Array, nil]
-        #   an array where the first element is a Solve::Version representing the best version
-        #   for the given constraint and the second element is the URI to where the corrosponding
-        #   version of the Cookbook can be downloaded from
-        #
-        #   Example:
-        #       [ 0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
-        def solve_for_constraint(constraint, versions)
-          versions.each do |version, uri|
-            if constraint.satisfies?(version)
-              return [ version, uri ]
-            end
-          end
-
-          nil
-        end
       end
 
       # @param [#to_s] name
@@ -77,6 +43,7 @@ module Berkshelf
       def download(destination)
         version, uri = target_version
         remote_file = rest.get_rest(uri)['file']
+
         downloaded_tf = rest.get_rest(remote_file, true)
 
         dir = Dir.mktmpdir
@@ -114,18 +81,18 @@ module Berkshelf
         end
       end
 
-      # @return [Hash]
-      #   a hash where the keys are a Solve::Version representing a Cookbook version
-      #   number and their values are the URI the Cookbook of the corrosponding version can
-      #   be downloaded from
+      # Returns a hash of all the cookbook versions found at communite site URL for the cookbook
+      # name of this location.
       #
-      #   Example:
-      #       { 
-      #         0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
-      #         0.101.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0",
-      #         0.100.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2",
-      #         0.100.0 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0"
-      #       }
+      # @example
+      #   { 
+      #     "0.101.2" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
+      #     "0.101.0" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0"
+      #   }
+      #
+      # @return [Hash]
+      #   a hash representing the cookbook versions on at a Chef API for location's cookbook.
+      #   The keys are version strings and the values are URLs to download the cookbook version.
       def versions
         versions = Hash.new
         quietly {
@@ -146,20 +113,19 @@ module Berkshelf
         end
       end
 
-      # @return [Array]
-      #   an array where the first element is a Solve::Version representing the latest version of
-      #   the Cookbook and the second element is the URI to where the corrosponding version of the
-      #   Cookbook can be downloaded from
+      # Returns the latest version of the cookbook and it's download link.
       #
-      #   Example:
-      #       [ 0.101.2 => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
+      # @example
+      #   [ "0.101.2" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2" ]
+      #
+      # @return [Array]
+      #   an array containing the version and download URL for the cookbook version that
+      #   should be downloaded for this location.
       def latest_version
         quietly {
           uri = rest.get_rest(name)['latest_version']
-          version_string = version_from_uri(uri)
-          dep_ver = Solve::Version.new(version_string)
 
-          [ dep_ver, uri ]
+          [ version_from_uri(uri), uri ]
         }
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
@@ -192,27 +158,19 @@ module Berkshelf
           File.basename(latest_version).gsub('_', '.')
         end
 
+        # Returns an array containing the version and download URL for the cookbook version that
+        # should be downloaded for this location.
+        #
+        # @example
+        #   [ "0.101.2" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2" ]
+        #
         # @return [Array]
-        #   an Array where the first element is a Solve::Version and the second element is
-        #   the URI to where the corrosponding version of the Cookbook can be downloaded from.
-        #
-        #
-        #   The version is determined by the value of the version_constraint attribute of this
-        #   instance of SiteLocation:
-        #
-        #   If it is not set: the latest_version of the Cookbook will be returned
-        #
-        #   If it is set: the return value will be determined by the version_constraint and the 
-        #     available versions will be solved
-        #
-        #   Example:
-        #       [ 0.101.2, "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
         def target_version
           if version_constraint
             solution = self.class.solve_for_constraint(version_constraint, versions)
             
             unless solution
-              raise NoSolution, "No cookbook version of '#{name}' found at '#{api_uri}' that would satisfy constraint (#{version_constraint})."
+              raise NoSolution, "No cookbook version of '#{name}' found at #{self} that would satisfy constraint (#{version_constraint})."
             end
 
             solution
