@@ -91,26 +91,6 @@ module Berkshelf
       end
     end
 
-    describe "#version" do
-      it "returns an array containing a Solve::Version at index 0" do
-        result = subject.version("0.101.2")
-
-        result[0].should be_a(Solve::Version)
-      end
-
-      it "returns an array containing a URI at index 0" do
-        result = subject.version("0.101.2")
-
-        result[1].should match(URI.regexp)
-      end
-
-      it "returns a Solve::Version that matches the given version" do
-        result = subject.version("0.101.2")
-
-        result[0].to_s.should eql("0.101.2")
-      end
-    end
-
     describe "#latest_version" do
       it "returns an array containing a version string at index 0" do
         result = subject.latest_version

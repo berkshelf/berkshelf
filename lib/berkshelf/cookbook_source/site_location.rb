@@ -60,28 +60,6 @@ module Berkshelf
         cached
       end
 
-      # @return [Array]
-      #   an Array where the first element is a Solve::Version representing the latest version of
-      #   the Cookbook and the second element is the URI to where the corrosponding version of the
-      #   Cookbook can be downloaded from
-      #
-      #   Example:
-      #       [ 0.101.2, "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2" ]
-      def version(version_string)
-        quietly {
-          result = rest.get_rest("#{name}/versions/#{uri_escape_version(version_string)}")
-          dep_ver = Solve::Version.new(result['version'])
-
-          [ dep_ver, result['file'] ]
-        }
-      rescue Net::HTTPServerException => e
-        if e.response.code == "404"
-          raise CookbookNotFound, "Cookbook name: '#{name}' version: '#{version_string}' not found at site: '#{api_uri}'"
-        else
-          raise
-        end
-      end
-
       # Returns a hash of all the cookbook versions found at communite site URL for the cookbook
       # name of this location.
       #
