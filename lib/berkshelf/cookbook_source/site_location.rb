@@ -35,6 +35,7 @@ module Berkshelf
         @name = name
         @version_constraint = version_constraint
         @api_uri = options[:site]
+        @rest = Chef::REST.new(api_uri, false, false)
       end
 
       # @param [#to_s] destination
@@ -94,17 +95,13 @@ module Berkshelf
       #   a hash representing the cookbook versions on at a Chef API for location's cookbook.
       #   The keys are version strings and the values are URLs to download the cookbook version.
       def versions
-        versions = Hash.new
-        quietly {
+        {}.tap do |versions|
           rest.get_rest(name)['versions'].each do |uri|
-            version_string = version_from_uri(File.basename(uri))
-            version = Solve::Version.new(version_string)
+            version = version_from_uri(File.basename(uri))
 
             versions[version] = uri
           end
-        }
-
-        versions
+        end
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
           raise CookbookNotFound, "Cookbook '#{name}' not found at site: '#{api_uri}'"
@@ -135,20 +132,13 @@ module Berkshelf
         end
       end
 
-      def api_uri=(uri)
-        @rest = nil
-        @api_uri = uri
-      end
-
       def to_s
         "site: '#{api_uri}'"
       end
 
       private
 
-        def rest
-          @rest ||= Chef::REST.new(api_uri, false, false)
-        end
+        attr_reader :rest
 
         def uri_escape_version(version)
           version.gsub('.', '_')

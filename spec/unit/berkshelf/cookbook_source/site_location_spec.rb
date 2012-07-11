@@ -82,16 +82,12 @@ module Berkshelf
     end
 
     describe "#versions" do
-      it "returns a hash containing versions for keys" do
-        subject.versions.each do |key, val|
-          key.should be_a(Solve::Version)
-        end
+      it "returns a hash containing a string containing the version number of each cookbook version as the keys" do
+        subject.versions.should have_key("0.101.2")
       end
 
-      it "returns a hash containing uris for values" do
-        subject.versions.each do |key, val|
-          val.should match(URI.regexp)
-        end
+      it "returns a hash containing a string containing the download URL for each cookbook version as the values" do
+        subject.versions["0.101.2"].should eql("http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2")
       end
     end
 
