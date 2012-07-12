@@ -50,7 +50,11 @@ module Berkshelf
       #   Default: Chef::Config[:client_key]
       def initialize(name, version_constraint, options = {})
         if options[:chef_api] == :knife
-          Berkshelf.load_config
+          begin
+            Berkshelf.load_config
+          rescue KnifeConfigNotFound => e
+            raise KnifeConfigNotFound, "A Knife config is required when ':knife' is given for the value of a 'chef_api' location. #{e}"
+          end
           @node_name  = Chef::Config[:node_name]
           @client_key = Chef::Config[:client_key]
           @uri        = Chef::Config[:chef_server_url]
