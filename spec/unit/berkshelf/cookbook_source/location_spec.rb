@@ -22,7 +22,7 @@ module Berkshelf
 
           CookbookSource.location_keys.should have(1).item
           CookbookSource.location_keys.should include(:reset)
-          CookbookSource.location_keys[:reset].should eql(subject.class)
+          CookbookSource.location_keys[:reset].should eql(subject)
         end
       end
 
@@ -116,6 +116,14 @@ module Berkshelf
           result = subject.init(name, constraint)
 
           result.should be_a(CookbookSource::SiteLocation)
+        end
+
+        context "given two location_keys" do
+          it "raises an InternalError" do
+            lambda {
+              subject.init(name, constraint, git: :value, path: :value)
+            }.should raise_error(InternalError)
+          end
         end
       end
     end 

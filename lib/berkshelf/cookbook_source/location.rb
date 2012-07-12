@@ -7,7 +7,7 @@ module Berkshelf
         #
         # @param [Symbol] key
         def location_key(key)
-          CookbookSource.add_location_key(key, self.class)
+          CookbookSource.add_location_key(key, self)
         end
 
         # Register a valid option or multiple options with the CookbookSource class
@@ -83,6 +83,9 @@ module Berkshelf
         #   Location.init("nginx", ">= 0.0.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks") =>
         #     instantiates a SiteLocation
         #
+        #   Location.init("nginx", ">= 0.0.0", chef_api: "https://api.opscode.com/organizations/vialstudios") =>
+        #     instantiates a ChefAPILocation
+        #
         #   Location.init("nginx", ">= 0.0.0") =>
         #     instantiates a SiteLocation
         #
@@ -90,7 +93,7 @@ module Berkshelf
         # @param [String, Solve::Constraint] constraint
         # @param [Hash] options
         #
-        # @return [SiteLocation, PathLocation, GitLocation]
+        # @return [SiteLocation, PathLocation, GitLocation, ChefAPILocation]
         def init(name, constraint, options = {})
           klass = klass_from_options(options)
 
@@ -100,12 +103,16 @@ module Berkshelf
         private
 
           def klass_from_options(options)
-            case
-            when options[:git]; GitLocation
-            when options[:path]; PathLocation
-            when options[:site]; SiteLocation
-            else
+            location_keys = (options.keys & CookbookSource.location_keys.keys)
+            if location_keys.length > 1
+              location_keys.collect! { |opt| "'#{opt}'" }
+              raise InternalError, "Only one location key (#{CookbookSource.location_keys.keys.join(', ')}) may be specified. You gave #{location_keys.join(', ')}."
+            end
+
+            if location_keys.empty?
               SiteLocation
+            else
+              CookbookSource.location_keys[location_keys.first]
             end
           end
       end
