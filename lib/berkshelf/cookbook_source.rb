@@ -55,6 +55,7 @@ module Berkshelf
     require 'berkshelf/cookbook_source/site_location'
     require 'berkshelf/cookbook_source/git_location'
     require 'berkshelf/cookbook_source/path_location'
+    require 'berkshelf/cookbook_source/chef_api_location'
 
     attr_reader :name
     alias_method :to_s, :name
@@ -173,11 +174,7 @@ module Berkshelf
 
         unless invalid_options.empty?
           invalid_options.collect! { |opt| "'#{opt}'" }
-          raise BerkshelfError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
-        end
-
-        if (options.keys & self.class.location_keys.keys).length > 1
-          raise BerkshelfError, "Only one location key (#{self.class.location_keys.keys.join(', ')}) may be specified"
+          raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
         end
 
         true

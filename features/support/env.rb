@@ -44,6 +44,10 @@ Spork.prefork do
     Pathname.new(APP_ROOT)
   end
 
+  def tmp_path
+    app_root_path.join('spec/tmp')
+  end
+
   def fixtures_path
     app_root_path.join('spec/fixtures')
   end

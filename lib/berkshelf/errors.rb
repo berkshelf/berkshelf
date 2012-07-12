@@ -11,6 +11,7 @@ module Berkshelf
     alias_method :message, :to_s
   end
 
+  class InternalError < BerkshelfError; status_code(99); end
   class BerksfileNotFound < BerkshelfError; status_code(100); end
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DownloadFailure < BerkshelfError; status_code(102); end
@@ -58,4 +59,18 @@ module Berkshelf
   end
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
+
+  class InvalidChefAPIURI < BerkshelfError
+    status_code(112)
+    attr_reader :uri
+
+    # @param [String] uri
+    def initialize(uri)
+      @uri = uri
+    end
+
+    def to_s
+      "'#{uri}' is not a valid Chef API URI."
+    end
+  end
 end

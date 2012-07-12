@@ -232,3 +232,17 @@ Feature: install cookbooks from a Berksfile
       Invalid options for Cookbook Source: 'whatisthis', 'anotherwat'.
       """
     And the exit status should be 1
+
+  Scenario: with a cookbook definition containing a chef_api source location
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios"
+      """
+    And the Chef server has cookbooks:
+      | artifact | 0.10.0 |
+    When I run the install command
+    Then the output should contain:
+      """
+      Installing artifact (0.10.0) from chef_api: 'https://api.opscode.com/organizations/vialstudios'
+      """
+    And the exit status should be 0
