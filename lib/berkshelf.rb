@@ -6,6 +6,7 @@ require 'chef/knife'
 require 'chef/rest'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
+require 'chef/cookbook_version'
 
 require 'berkshelf/version'
 require 'berkshelf/core_ext'
