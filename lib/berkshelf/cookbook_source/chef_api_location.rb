@@ -38,8 +38,10 @@ module Berkshelf
       # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
       #
-      # @option options [String] :chef_api
-      #   a URL to a Chef API
+      # @option options [String, Symbol] :chef_api
+      #   a URL to a Chef API. Alternatively the symbol :knife can be provided
+      #   which will instantiate this location with the values found in your
+      #   knife configuration.
       # @option options [String] :node_name
       #   the name of the client to use to communicate with the Chef API.
       #   Default: Chef::Config[:node_name]
@@ -47,17 +49,23 @@ module Berkshelf
       #   the filepath to the authentication key for the client
       #   Default: Chef::Config[:client_key]
       def initialize(name, version_constraint, options = {})
-        @node_name = (options[:node_name] ||= Chef::Config[:node_name])
-        @client_key = (options[:client_key] ||= Chef::Config[:client_key])
+        if options[:chef_api] == :knife
+          @node_name  = Chef::Config[:node_name]
+          @client_key = Chef::Config[:client_key]
+          @uri        = Chef::Config[:chef_server_url]
+        else
+          @node_name  = options[:node_name] || Chef::Config[:node_name]
+          @client_key = options[:client_key] || Chef::Config[:client_key]
+          @uri        = options[:chef_api]
+        end
 
         @name = name
         @version_constraint = version_constraint
         @downloaded_status = false
-        @uri = options[:chef_api]
         
         self.class.validate_uri!(@uri)
 
-        @rest = Chef::REST.new(uri, options[:node_name], options[:client_key])
+        @rest = Chef::REST.new(uri, node_name, client_key)
       end
 
       # @param [#to_s] destination

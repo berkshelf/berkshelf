@@ -58,6 +58,22 @@ module Berkshelf
             loc.client_key.should eql(Chef::Config[:client_key])
           end
         end
+
+        context "when given the symbol :knife for the value of chef_api:" do
+          before(:each) { @loc = subject.new("nginx", constraint, chef_api: :knife) }
+
+          it "uses the value of Chef::Config[:chef_server_url] for the uri attribute" do
+            @loc.uri.should eql(Chef::Config[:chef_server_url])
+          end
+
+          it "uses the value of Chef::Config[:node_name] for the node_name attribute" do
+            @loc.node_name.should eql(Chef::Config[:node_name])
+          end
+
+          it "uses the value of Chef::Config[:client_key] for the client_key attribute" do
+            @loc.client_key.should eql(Chef::Config[:client_key])
+          end
+        end
       end
 
       describe "::validate_uri" do
