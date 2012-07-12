@@ -86,10 +86,10 @@ Spork.prefork do
     FileUtils.rm_rf(tmp_path)
     FileUtils.mkdir_p(tmp_path)
   end
+
+  Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
 end
 
 Spork.each_run do
   require 'berkshelf'
-
-  Berkshelf::RSpec::Knife.check_knife_rb
 end
