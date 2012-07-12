@@ -116,19 +116,12 @@ module Berkshelf
 
       validate_options(options)
 
-      @location = case 
-      when options[:git]
-        GitLocation.new(name, version_constraint, options)
-      when options[:path]
-        loc = PathLocation.new(name, version_constraint, options)
-        @cached_cookbook = CachedCookbook.from_path(loc.path)
-        loc
-      when options[:site]
-        SiteLocation.new(name, version_constraint, options)
-      else
-        SiteLocation.new(name, version_constraint, options)
-      end
+      @location = Location.init(name, version_constraint, options)
 
+      if @location.is_a?(PathLocation)
+        @cached_cookbook = CachedCookbook.from_path(@location.path)
+      end
+      
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
 
       add_group(options[:group]) if options[:group]

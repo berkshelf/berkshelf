@@ -64,6 +64,50 @@ module Berkshelf
         def included(base)
           base.send :extend, ClassMethods
         end
+
+        # Creates a new instance of a Class implementing Location with the given name and
+        # constraint. Which Class to instantiated is determined by the values in the given
+        # options Hash. Source Locations have an associated location_key registered with
+        # CookbookSource. If your options Hash contains a key matching one of these location_keys
+        # then the Class who registered that location_key will be instantiated. If you do not
+        # provide an option with a matching location_key a SiteLocation class will be
+        # instantiated.
+        #
+        # @example
+        #   Location.init("nginx", ">= 0.0.0", git: "git://github.com/RiotGames/artifact-cookbook.git") =>
+        #     instantiates a GitLocation
+        #
+        #   Location.init("nginx", ">= 0.0.0", path: "/Users/reset/code/nginx-cookbook") =>
+        #     instantiates a PathLocation
+        #
+        #   Location.init("nginx", ">= 0.0.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks") =>
+        #     instantiates a SiteLocation
+        #
+        #   Location.init("nginx", ">= 0.0.0") =>
+        #     instantiates a SiteLocation
+        #
+        # @param [String] name
+        # @param [String, Solve::Constraint] constraint
+        # @param [Hash] options
+        #
+        # @return [SiteLocation, PathLocation, GitLocation]
+        def init(name, constraint, options = {})
+          klass = klass_from_options(options)
+
+          klass.new(name, constraint, options)
+        end
+
+        private
+
+          def klass_from_options(options)
+            case
+            when options[:git]; GitLocation
+            when options[:path]; PathLocation
+            when options[:site]; SiteLocation
+            else
+              SiteLocation
+            end
+          end
       end
 
       attr_reader :name

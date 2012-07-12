@@ -1,6 +1,6 @@
 module Berkshelf
   describe CookbookSource::Location do
-    describe "ClassMethods" do
+    describe "ClassMethods Module" do
       subject do
         Class.new do
           include CookbookSource::Location
@@ -86,6 +86,39 @@ module Berkshelf
         end
       end
     end
+
+    describe "ModuleFunctions" do
+      subject { CookbookSource::Location }
+
+      describe "::init" do
+        let(:name) { "artifact" }
+        let(:constraint) { double("constraint") }
+
+        it "returns an instance of SiteLocation given a site: option key" do
+          result = subject.init(name, constraint, site: "http://site/value")
+
+          result.should be_a(CookbookSource::SiteLocation)
+        end
+
+        it "returns an instance of PathLocation given a path: option key" do
+          result = subject.init(name, constraint, path: "/Users/reset/code")
+
+          result.should be_a(CookbookSource::PathLocation)
+        end
+
+        it "returns an instance of GitLocation given a git: option key" do
+          result = subject.init(name, constraint, git: "git://github.com/something.git")
+
+          result.should be_a(CookbookSource::GitLocation)
+        end
+
+        it "returns an instance of SiteLocation when no option key is given that matches a registered location_key" do
+          result = subject.init(name, constraint)
+
+          result.should be_a(CookbookSource::SiteLocation)
+        end
+      end
+    end 
 
     let(:name) { "nginx" }
     let(:constraint) { double('constraint') }
