@@ -3,7 +3,7 @@ module Berkshelf
   class CookbookSource
     class << self
       @@valid_options = [:group, :locked_version]
-      @@location_keys = []
+      @@location_keys = Hash.new
 
       # Returns an array of valid options to pass to the initializer
       #
@@ -40,10 +40,10 @@ module Berkshelf
       # @raise [ArgumentError] if the location key has already been defined
       #
       # @return [Array<Symbol>]
-      def add_location_key(location)
-        unless @@location_keys.include?(location)
+      def add_location_key(location, klass)
+        unless @@location_keys.has_key?(location)
           add_valid_option(location)
-          @@location_keys.push(location)
+          @@location_keys[location] = klass
         end
 
         @@location_keys
@@ -183,8 +183,8 @@ module Berkshelf
           raise BerkshelfError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
         end
 
-        if (options.keys & self.class.location_keys).length > 1
-          raise BerkshelfError, "Only one location key (#{self.class.location_keys.join(', ')}) may be specified"
+        if (options.keys & self.class.location_keys.keys).length > 1
+          raise BerkshelfError, "Only one location key (#{self.class.location_keys.keys.join(', ')}) may be specified"
         end
 
         true

@@ -7,7 +7,7 @@ module Berkshelf
         #
         # @param [Symbol] key
         def location_key(key)
-          CookbookSource.add_location_key(key)
+          CookbookSource.add_location_key(key, self.class)
         end
 
         # Register a valid option or multiple options with the CookbookSource class

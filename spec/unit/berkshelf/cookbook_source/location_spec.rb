@@ -10,18 +10,19 @@ module Berkshelf
       describe "::location_key" do
         before(:each) do
           @original = CookbookSource.class_variable_get :@@location_keys
-          CookbookSource.class_variable_set :@@location_keys, []
+          CookbookSource.class_variable_set :@@location_keys, {}
         end
 
         after(:each) do
           CookbookSource.class_variable_set :@@location_keys, @original
         end
 
-        it "adds the given location key to CookbookSource.location_keys" do
+        it "adds the given location key with the includer's Class to CookbookSource.location_keys" do
           subject.location_key(:reset)
 
           CookbookSource.location_keys.should have(1).item
           CookbookSource.location_keys.should include(:reset)
+          CookbookSource.location_keys[:reset].should eql(subject.class)
         end
       end
 

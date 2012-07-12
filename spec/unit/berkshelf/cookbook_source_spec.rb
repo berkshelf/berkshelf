@@ -111,23 +111,24 @@ module Berkshelf
           describe "::add_location_key" do
             before(:each) do
               @original = subject.class_variable_get :@@location_keys
-              subject.class_variable_set :@@location_keys, []
+              subject.class_variable_set :@@location_keys, {}
             end
 
             after(:each) do
               subject.class_variable_set :@@location_keys, @original
             end
             
-            it "adds a location key to the list of valid locations" do
-              subject.add_location_key(:git)
+            it "adds a location key and the associated class to the list of valid locations" do
+              subject.add_location_key(:git, subject.class)
 
               subject.location_keys.should have(1).item
               subject.location_keys.should include(:git)
+              subject.location_keys[:git].should eql(subject.class)
             end
 
-            it "does not add duplicate locatoin keys to the list of location keys" do
-              subject.add_location_key(:git)
-              subject.add_location_key(:git)
+            it "does not add duplicate location keys to the list of location keys" do
+              subject.add_location_key(:git, subject.class)
+              subject.add_location_key(:git, subject.class)
               
               subject.location_keys.should have(1).item
               subject.location_keys.should include(:git)
