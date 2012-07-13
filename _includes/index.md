@@ -142,7 +142,7 @@ By default a cookbook source is assumed to come from the Opscode Community site 
 
 ##### Chef API Location
 
-The Chef API location allows you to treat your Chef Server like an [artifact](http://en.wikipedia.org/wiki/Artifact_(software_development)) server. Cookbooks or dependencies can be pulled directly out of a Chef Server. This is super useful if your organization has cookbooks that isn't available to the community but may be a dependency of other proprietary cookbooks in your organization.
+The Chef API location allows you to treat your Chef Server like an [artifact](http://en.wikipedia.org/wiki/Artifact_%28software_development%29) server. Cookbooks or dependencies can be pulled directly out of a Chef Server. This is super useful if your organization has cookbooks that isn't available to the community but may be a dependency of other proprietary cookbooks in your organization.
 
 A Chef API Location is expressed with the `chef_api` key followed by some options. You can tell Berkshelf to use your Knife config by passing the `chef_api` key the symbol `:knife`.
 
