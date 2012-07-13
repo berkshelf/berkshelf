@@ -140,6 +140,36 @@ Options passed to a source can contain a location or a group(s).
 
 By default a cookbook source is assumed to come from the Opscode Community site `http://cookbooks.opscode.com/api/v1/cookbooks`. This behavior can be customized with a different location type. You might want to use a different location type if the cookbook is stored in a git repository, at a local file path, or at a different community site.
 
+##### Chef API Location
+
+The Chef API location allows you to treat your Chef Server like an [artifact](http://en.wikipedia.org/wiki/Artifact_(software_development)) server. Cookbooks or dependencies can be pulled directly out of a Chef Server. This is super useful if your organization has cookbooks that isn't available to the community but may be a dependency of other proprietary cookbooks in your organization.
+
+A Chef API Location is expressed with the `chef_api` key followed by some options. You can tell Berkshelf to use your Knife config by passing the `chef_api` key the symbol `:knife`.
+
+    cookbook "pvpnet", chef_api: :knife
+
+The Knife config used is located at `~/.chef/knife.rb` or the value of `ENV["CHEF_CONFIG"]` by default. This can be overridden by passing the `-c` flag to the `berks` command.
+
+    $ berks in -c /Users/reset/code/chef-repo/.chef/knife.rb
+
+You can also explicitly define the `chef_server_url`, `node_name`, and `client_key` to use:
+
+    cookbook "pvpnet", chef_api: "http://cookbooks.opscode.com/api/v1/cookbooks", node_name: "reset", client_key: "/Users/reset/.chef/knife.rb"
+
+##### Site Location
+
+The Site location can be used to specify an alternate community site in the case where one other than the opscode provided one exists. For now, this is just present for completeness.
+
+    cookbook "pvpnet", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
+
+##### Path Location
+
+The Path location is useful for rapid iteration because it does not download, copy, or move the cookbook to The Berkshelf or change the contents of the target. Instead the cookbook found at the given filepath will be used alongside the cookbooks found in The Berkshelf.
+
+    cookbook "pvpnet", path: "/Users/reset/code/pvpnet-cookbook"
+
+The value given to `:path` should contain a single cookbook.
+
 ##### Git Location
 
 The Git location will clone the given Git repository to The Berkshelf if the Git repository contains a valid cookbook.
@@ -153,20 +183,6 @@ An optional `branch` key can be specified whose value is a tag, branch, or ref t
     cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", branch: "1.0.1"
 
 Given the previous example, the cookbook found at tag `1.0.1` of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
-
-##### Path Location
-
-The Path location is useful for rapid iteration because it does not download, copy, or move the cookbook to The Berkshelf or change the contents of the target. Instead the cookbook found at the given filepath will be used alongside the cookbooks found in The Berkshelf.
-
-    cookbook "pvpnet", path: "/Users/reset/code/pvpnet-cookbook"
-
-The value given to `:path` should contain a single cookbook.
-
-##### Site Location
-
-The Site location can be used to specify an alternate community site in the case where one other than the opscode provided one exists. For now, this is just present for completeness.
-
-    cookbook "pvpnet", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
 
 ### Groups
 
