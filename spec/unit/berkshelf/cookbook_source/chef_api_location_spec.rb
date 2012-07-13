@@ -12,7 +12,7 @@ module Berkshelf
 
       describe "::initialize" do
         let(:node_name) { "reset" }
-        let(:client_key) { fixtures_path.join("reset.pem") }
+        let(:client_key) { fixtures_path.join("reset.pem").to_s }
 
         before(:each) do
           @location = subject.new("nginx",
@@ -23,11 +23,15 @@ module Berkshelf
           )
         end
 
-        it "sets the option for node_name to the node_name attribute" do
+        it "sets the uri attribute to the value of the chef_api option" do
+          @location.uri.should eql(test_chef_api)
+        end
+
+        it "sets the node_name attribute to the value of the node_name option" do
           @location.node_name.should eql(node_name)
         end
 
-        it "sets the option for client_key to the client_key attribute" do
+        it "sets the client_key attribute to the value of the client_key option" do
           @location.client_key.should eql(client_key)
         end
 
@@ -36,30 +40,30 @@ module Berkshelf
         end
 
         context "when an invalid Chef API URI is given" do
-          it "raises InvalidChefAPIURI" do
+          it "raises InvalidChefAPILocation" do
             lambda {
-              subject.new("nginx", constraint, chef_api: invalid_uri)
-            }.should raise_error(InvalidChefAPIURI)
+              subject.new("nginx", constraint, chef_api: invalid_uri, node_name: node_name, client_key: client_key)
+            }.should raise_error(InvalidChefAPILocation, "'notauri' is not a valid Chef API URI.")
           end
         end
 
         context "when no option for node_name is supplied" do
-          it "uses the value of Chef::Config[:node_name]" do
-            loc = subject.new("nginx", constraint, chef_api: test_chef_api)
-
-            loc.node_name.should eql(Chef::Config[:node_name])
+          it "raises InvalidChefAPILocation" do
+            lambda {
+              subject.new("nginx", constraint, chef_api: invalid_uri, client_key: client_key)
+            }.should raise_error(InvalidChefAPILocation)
           end
         end
 
         context "when no option for client_key is supplied" do
-          it "uses the value of Chef::Config[:client_key]" do
-            loc = subject.new("nginx", constraint, chef_api: test_chef_api)
-
-            loc.client_key.should eql(Chef::Config[:client_key])
+          it "raises InvalidChefAPILocation" do
+            lambda {
+              subject.new("nginx", constraint, chef_api: invalid_uri, node_name: node_name)
+            }.should raise_error(InvalidChefAPILocation)
           end
         end
 
-        context "when given the symbol :knife for the value of chef_api:" do
+        context "given the symbol :knife for the value of chef_api:" do
           before(:each) { @loc = subject.new("nginx", constraint, chef_api: :knife) }
 
           it "uses the value of Chef::Config[:chef_server_url] for the uri attribute" do
@@ -93,10 +97,10 @@ module Berkshelf
       end
 
       describe "::validate_uri!" do
-        it "raises InvalidChefAPIURI if the given URI is invalid" do
+        it "raises InvalidChefAPILocation if the given URI is invalid" do
           lambda {
             subject.validate_uri!(invalid_uri)
-          }.should raise_error(InvalidChefAPIURI)
+          }.should raise_error(InvalidChefAPILocation, "'notauri' is not a valid Chef API URI.")
         end
 
         it "returns true if the given URI is valid" do
@@ -108,7 +112,7 @@ module Berkshelf
     subject do
       loc = CookbookSource::ChefAPILocation.new("nginx",
         double('constraint', satisfies?: true),
-        chef_api: Chef::Config[:chef_server_url]
+        chef_api: :knife
       )
     end
 
@@ -227,12 +231,12 @@ module Berkshelf
       subject do
         CookbookSource::ChefAPILocation.new('nginx',
           double('constraint'),
-          chef_api: test_chef_api
+          chef_api: :knife
         )
       end
 
       it "returns a string containing the location key and the Chef API URI" do
-        subject.to_s.should eql("chef_api: 'https://chefserver:8081'")
+        subject.to_s.should eql("chef_api: '#{Chef::Config[:chef_server_url]}'")
       end
     end
   end

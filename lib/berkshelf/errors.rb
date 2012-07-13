@@ -59,18 +59,5 @@ module Berkshelf
   end
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
-
-  class InvalidChefAPIURI < BerkshelfError
-    status_code(112)
-    attr_reader :uri
-
-    # @param [String] uri
-    def initialize(uri)
-      @uri = uri
-    end
-
-    def to_s
-      "'#{uri}' is not a valid Chef API URI."
-    end
-  end
+  class InvalidChefAPILocation < BerkshelfError; status_code(112); end
 end

@@ -5,6 +5,42 @@ module Berkshelf
     # @author Jamie Winsor <jamie@vialstudios.com>
     class ChefAPILocation
       class << self
+        # @param [String] node_name
+        #
+        # @return [Boolean]
+        def validate_node_name(node_name)
+          node_name.is_a?(String) && !node_name.empty?
+        end
+
+        # @raise [InvalidChefAPILocation]
+        #
+        # @see validate_node_name
+        def validate_node_name!(node_name)
+          unless validate_node_name(node_name)
+            raise InvalidChefAPILocation
+          end
+
+          true
+        end
+
+        # @param [String] client_key
+        #
+        # @return [Boolean]
+        def validate_client_key(client_key)
+          File.exists?(client_key)
+        end
+
+        # @raise [InvalidChefAPILocation]
+        #
+        # @see validate_client_key
+        def validate_client_key!(client_key)
+          unless validate_client_key(client_key)
+            raise InvalidChefAPILocation
+          end
+
+          true
+        end
+
         # @param [String] uri
         #
         # @return [Boolean]
@@ -12,13 +48,13 @@ module Berkshelf
           uri =~ URI.regexp(['http', 'https'])
         end
 
-        # @raise [InvalidChefAPIURI] if the given object is not a String containing a 
+        # @raise [InvalidChefAPILocation] if the given object is not a String containing a 
         #   valid Chef API URI
         #
         # @see validate_uri
         def validate_uri!(uri)
           unless validate_uri(uri)
-            raise InvalidChefAPIURI.new(uri)
+            raise InvalidChefAPILocation, "'#{uri}' is not a valid Chef API URI."
           end
 
           true
@@ -49,6 +85,12 @@ module Berkshelf
       #   the filepath to the authentication key for the client
       #   Default: Chef::Config[:client_key]
       def initialize(name, version_constraint, options = {})
+        @name = name
+        @version_constraint = version_constraint
+        @downloaded_status = false
+
+        validate_options!(options)
+
         if options[:chef_api] == :knife
           begin
             Berkshelf.load_config
@@ -59,16 +101,10 @@ module Berkshelf
           @client_key = Chef::Config[:client_key]
           @uri        = Chef::Config[:chef_server_url]
         else
-          @node_name  = options[:node_name] || Chef::Config[:node_name]
-          @client_key = options[:client_key] || Chef::Config[:client_key]
+          @node_name  = options[:node_name]
+          @client_key = options[:client_key]
           @uri        = options[:chef_api]
         end
-
-        @name = name
-        @version_constraint = version_constraint
-        @downloaded_status = false
-        
-        self.class.validate_uri!(@uri)
 
         @rest = Chef::REST.new(uri, node_name, client_key)
       end
@@ -191,6 +227,29 @@ module Berkshelf
           end
 
           destination
+        end
+
+        # Validates the options hash given to the constructor.
+        #
+        # @param [Hash] options
+        #
+        # @raise [InvalidChefAPILocation] if any of the options are missing or their values do not
+        #   pass validation
+        def validate_options!(options)
+          if options[:chef_api] == :knife
+            return true
+          end
+
+          missing_options = [:node_name, :client_key] - options.keys
+
+          unless missing_options.empty?
+            missing_options.collect! { |opt| "'#{opt}'" }
+            raise InvalidChefAPILocation, "Source '#{name}' is a 'chef_api' location with a URL for it's value but is missing options: #{missing_options.join(', ')}."
+          end
+
+          self.class.validate_node_name!(options[:node_name])
+          self.class.validate_client_key!(options[:client_key])
+          self.class.validate_uri!(options[:chef_api])          
         end
     end
   end

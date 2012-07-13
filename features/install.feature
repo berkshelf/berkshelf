@@ -254,8 +254,6 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", chef_api: :knife
       """
-    And the Chef server has cookbooks:
-      | artifact | 0.10.0 |
     When I run the install command with flags:
       | -c /tmp/nothere.lol |
     Then the output should contain:
@@ -263,3 +261,39 @@ Feature: install cookbooks from a Berksfile
       A Knife config is required when ':knife' is given for the value of a 'chef_api' location. Attempted to load configuration from: '/tmp/nothere.lol' but not found.
       """
     And the CLI should exit with the status code for error "KnifeConfigNotFound"
+
+  Scenario: with a chef_api source location specifying a Chef API URL but missing a node_name option
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", client_key: "/Users/reset/.chef/knife.rb"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name'.
+      """
+    And the CLI should exit with the status code for error "InvalidChefAPILocation"
+
+  Scenario: with a chef_api source location specifying a Chef API URL but missing a client_key option
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", node_name: "reset"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'client_key'.
+      """
+    And the CLI should exit with the status code for error "InvalidChefAPILocation"
+
+  Scenario: with a chef_api source location specifying a Chef API URL but missing a client_key option
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name', 'client_key'.
+      """
+    And the CLI should exit with the status code for error "InvalidChefAPILocation"
