@@ -92,6 +92,7 @@ Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler
     cookbook 'nginx'
     cookbook 'pvpnet', path: '/Users/reset/code/riot-cookbooks/pvpnet-cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
+    cookbook 'myapp', chef_api: :knife
 
 Two kinds of sources can be defined
 
