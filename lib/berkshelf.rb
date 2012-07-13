@@ -50,30 +50,19 @@ module Berkshelf
     # storage; temp files will go here, Cookbooks will be downloaded
     # to or uploaded from here. By default this is '~/.berkshelf' but
     # can be overridden by specifying a value for the ENV variable
-    # 'BERKSHELF_DIR'.
+    # 'BERKSHELF_PATH'.
     # 
     # @return [String]
-    def berkshelf_dir
-      # TODO: remove support for BERKSHELF_PATH
-      return ENV["BERKSHELF_DIR"] if ENV["BERKSHELF_DIR"]
-      if ENV["BERKSHELF_PATH"]
-        ui.warn "BERKSHELF_PATH environment variable is deprecated - use BERKSHELF_DIR instead"
-        return ENV["BERKSHELF_PATH"]
-      end
-      DEFAULT_STORE_PATH
-    end
-
     def berkshelf_path
-      ui.warn "#berkself_path is deprecated - #berkshelf_dir is preferred"
-      berkshelf_dir
+      ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
 
     def tmp_dir
-      File.join(berkshelf_dir, "tmp")
+      File.join(berkshelf_path, "tmp")
     end
 
     def cookbooks_dir
-      File.join(berkshelf_dir, "cookbooks")
+      File.join(berkshelf_path, "cookbooks")
     end
 
     def cookbook_store
