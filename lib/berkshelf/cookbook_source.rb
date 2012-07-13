@@ -3,7 +3,7 @@ module Berkshelf
   class CookbookSource
     class << self
       @@valid_options = [:group, :locked_version]
-      @@location_keys = []
+      @@location_keys = Hash.new
 
       # Returns an array of valid options to pass to the initializer
       #
@@ -40,10 +40,10 @@ module Berkshelf
       # @raise [ArgumentError] if the location key has already been defined
       #
       # @return [Array<Symbol>]
-      def add_location_key(location)
-        unless @@location_keys.include?(location)
+      def add_location_key(location, klass)
+        unless @@location_keys.has_key?(location)
           add_valid_option(location)
-          @@location_keys.push(location)
+          @@location_keys[location] = klass
         end
 
         @@location_keys
@@ -52,9 +52,14 @@ module Berkshelf
 
     extend Forwardable
 
+    # JW TODO: Move locations out of CookbookSource namespace.
+    #   Move all locations into berkshelf/locations/*
+    #   Autorequire all items in berkshelf/locations/
+    require 'berkshelf/cookbook_source/location'
     require 'berkshelf/cookbook_source/site_location'
     require 'berkshelf/cookbook_source/git_location'
     require 'berkshelf/cookbook_source/path_location'
+    require 'berkshelf/cookbook_source/chef_api_location'
 
     attr_reader :name
     alias_method :to_s, :name
@@ -116,19 +121,12 @@ module Berkshelf
 
       validate_options(options)
 
-      @location = case 
-      when options[:git]
-        GitLocation.new(name, version_constraint, options)
-      when options[:path]
-        loc = PathLocation.new(name, version_constraint, options)
-        @cached_cookbook = CachedCookbook.from_path(loc.path)
-        loc
-      when options[:site]
-        SiteLocation.new(name, version_constraint, options)
-      else
-        SiteLocation.new(name, version_constraint, options)
-      end
+      @location = Location.init(name, version_constraint, options)
 
+      if @location.is_a?(PathLocation)
+        @cached_cookbook = CachedCookbook.from_path(@location.path)
+      end
+      
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
 
       add_group(options[:group]) if options[:group]
@@ -180,11 +178,7 @@ module Berkshelf
 
         unless invalid_options.empty?
           invalid_options.collect! { |opt| "'#{opt}'" }
-          raise BerkshelfError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
-        end
-
-        if (options.keys & self.class.location_keys).length > 1
-          raise BerkshelfError, "Only one location key (#{self.class.location_keys.join(', ')}) may be specified"
+          raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
         end
 
         true

@@ -22,6 +22,7 @@ Spork.prefork do
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
     config.include JsonSpec::Helpers
+    config.include Berkshelf::RSpec::ChefAPI
     
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true
@@ -85,10 +86,10 @@ Spork.prefork do
     FileUtils.rm_rf(tmp_path)
     FileUtils.mkdir_p(tmp_path)
   end
+
+  Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
 end
 
 Spork.each_run do
   require 'berkshelf'
-
-  Berkshelf::RSpec::Knife.check_knife_rb
 end
