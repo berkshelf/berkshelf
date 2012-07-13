@@ -44,13 +44,17 @@ Spork.prefork do
     Pathname.new(APP_ROOT)
   end
 
+  def tmp_path
+    app_root_path.join('spec/tmp')
+  end
+
   def fixtures_path
     app_root_path.join('spec/fixtures')
   end
 end
 
 Spork.each_run do
+  Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
+  
   require 'berkshelf'
-
-  Berkshelf::RSpec::Knife.check_knife_rb
 end

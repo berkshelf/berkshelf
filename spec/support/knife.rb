@@ -4,14 +4,12 @@ module Berkshelf
   module RSpec
     module Knife
       class << self
-        def check_knife_rb
-          knife_rb = File.join(Dir.pwd, "spec/knife.rb")
-
-          if File.exist?(knife_rb)
-            Chef::Config.from_file(knife_rb)
-            ENV["CHEF_CONFIG"] = knife_rb
+        def load_knife_config(path)
+          if File.exist?(path)
+            Chef::Config.from_file(path)
+            ENV["CHEF_CONFIG"] = path
           else
-            raise "Cannot continue; '#{knife_rb}' must exist and have testing credentials."
+            raise "Cannot continue; '#{path}' must exist and have testing credentials."
           end
         end
       end

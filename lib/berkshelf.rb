@@ -6,6 +6,7 @@ require 'chef/knife'
 require 'chef/rest'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
+require 'chef/cookbook_version'
 
 require 'berkshelf/version'
 require 'berkshelf/core_ext'
@@ -38,6 +39,8 @@ module Berkshelf
     attr_accessor :cookbook_store
     attr_accessor :downloader
 
+    attr_writer :config_path
+
     def root
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
@@ -61,6 +64,20 @@ module Berkshelf
 
     def downloader
       @downloader ||= Downloader.new(cookbook_store)
+    end
+
+    def config_path
+      @config_path ||= DEFAULT_CONFIG
+    end
+
+    # Load the config found at the given path as the Chef::Config. If no path is specified
+    # the value of Berkshelf.chef_config will be used.
+    #
+    # @param [String] path
+    def load_config(path = config_path)
+      Chef::Config.from_file(File.expand_path(path))
+    rescue Errno::ENOENT
+      raise KnifeConfigNotFound, "Attempted to load configuration from: '#{path}' but not found."
     end
 
     # Ascend the directory structure from the given path to find a

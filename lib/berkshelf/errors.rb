@@ -11,6 +11,7 @@ module Berkshelf
     alias_method :message, :to_s
   end
 
+  class InternalError < BerkshelfError; status_code(99); end
   class BerksfileNotFound < BerkshelfError; status_code(100); end
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DownloadFailure < BerkshelfError; status_code(102); end
@@ -58,4 +59,5 @@ module Berkshelf
   end
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
+  class InvalidChefAPILocation < BerkshelfError; status_code(112); end
 end
