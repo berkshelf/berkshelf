@@ -38,8 +38,8 @@ Given you have the cookbooks installed:
 
 These cookbooks will be located at:
 
-    ~/.berkshelf/nginx-0.101.2
-    ~/.berkshelf/mysql-1.2.4
+    ~/.berkshelf/cookbooks/nginx-0.101.2
+    ~/.berkshelf/cookbooks/mysql-1.2.4
 
 By default Chef interprets the name of a cookbook by the directory name. Some Chef internals weigh the name of the directory more heavily than if a cookbook developer were to explicitly set the `name` attribute in their metadata. Because the directory structure contains the cookbook's version number, do not treat The Berkshelf as just another entry in your `Chef::Config#cookbooks_path`.
 
@@ -69,7 +69,7 @@ Given we have the following Berksfile:
 
     cookbook "nginx", "= 0.100.5"
 
-Running the install command with the `--shims` flag would write the cookbook to `~/.berkshelf/nginx-0.100.5` and also create a shim at `cookbooks/nginx`.
+Running the install command with the `--shims` flag would write the cookbook to `~/.berkshelf/cookbooks/nginx-0.100.5` and also create a shim at `cookbooks/nginx`.
 
 In your Vagrant file you should add this shims directory to the `cookbooks_path`
 
