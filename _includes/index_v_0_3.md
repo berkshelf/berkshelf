@@ -180,7 +180,7 @@ Groups can be defined via blocks:
 
 Groups can also be defined inline as an option:
     
-    cookbook 'riot_base', :group => 'solo'
+    cookbook 'riot_base', group: 'solo'
 
 To exclude the groups when installing or updating just add the `--without` flag.
 
