@@ -385,6 +385,16 @@ Full-Width Styles
   color: #f2f2f2;
 }
 
+#versions {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+}
+
+.active_version {
+  font-size: 20px;
+}
+
 /*******************************************************************************
 Small Device Styles
 *******************************************************************************/
