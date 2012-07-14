@@ -133,7 +133,7 @@ module Berkshelf
       #
       # @return [Berkshelf::CachedCookbook]
       def download(destination)
-        raise NotImplementedError, "Function must be implemented on includer"
+        raise AbstractFunction
       end
 
       # @return [Boolean]
