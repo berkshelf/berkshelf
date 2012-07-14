@@ -50,7 +50,7 @@ module Berkshelf
 
       context "given the symbol :opscode" do
         it "sends an add_location message with the default Opscode Community API as the first parameter" do
-          subject.should_receive(:add_location).with(:site, CookbookSource::SiteLocation::OPSCODE_COMMUNITY_API)
+          subject.should_receive(:add_location).with(:site, :opscode)
 
           subject.site(:opscode)
         end

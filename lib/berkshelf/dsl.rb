@@ -36,16 +36,19 @@ module Berkshelf
       add_source(source)
     end
 
-    def site(uri)
-      if uri == :opscode
-        uri = CookbookSource::SiteLocation::OPSCODE_COMMUNITY_API
-      end
-
-      add_location(:site, uri)
+    # @param [String, Symbol] value
+    #
+    # @return [Hash]
+    def site(value)
+      add_location(:site, value)
     end
 
-    def chef_api(uri, options = {})
-      add_location(:chef_api, uri, options)
+    # @param [String, Symbol] value
+    # @param [Hash] options
+    #
+    # @return [Hash]
+    def chef_api(value, options = {})
+      add_location(:chef_api, value, options)
     end
 
     private

@@ -29,10 +29,12 @@ module Berkshelf
     end
 
     attr_reader :filepath
+    attr_reader :locations
 
     def initialize(path)
       @filepath = path
       @sources = Hash.new
+      @locations = Array.new
     end
 
     # Add the given source to the sources array. A DuplicateSourceDefined
@@ -219,6 +221,15 @@ module Berkshelf
     end
 
     private
+
+      # @param [Symbol] type
+      # @param [String, Symbol] value
+      # @param [Hash] options
+      #
+      # @return [Hash]
+      def add_location(type, value, options = {})
+        @locations.push(type: type, value: value, options: options)
+      end
 
       def descendant_directory?(candidate, parent)
         hack = FileUtils::Entry_.new('/tmp')

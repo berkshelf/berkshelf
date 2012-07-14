@@ -205,5 +205,77 @@ EOF
         subject.load(content).should be_a(Berksfile)
       end
     end
+
+    describe "Included by DSL" do
+      describe "#site" do
+        it "adds a hash with a type, value, and options key to the end of the array of locations" do
+          subject.site(:opscode)
+          
+          subject.locations.last.should have_key(:type)
+          subject.locations.last.should have_key(:value)
+          subject.locations.last.should have_key(:options)
+        end
+
+        it "adds a site location to the end of the array of locations" do
+          subject.site(:opscode)
+
+          subject.locations.last[:type].should eql(:site)
+        end
+
+        it "adds a location with the given value as the value key to the end of the array of locations" do
+          subject.site(:opscode)
+
+          subject.locations.last[:value].should eql(:opscode)
+        end
+
+        context "adding multiple locations" do
+          it "adds locations in the order they are added" do
+            subject.site(:opscode)
+            subject.site("http://opscode/v1")
+
+            subject.locations[0][:value].should eql(:opscode)
+            subject.locations[1][:value].should eql("http://opscode/v1")
+          end
+        end
+      end
+
+      describe "#chef_api" do
+        it "adds a hash with a type, value, and options key to the end of the array of locations" do
+          subject.chef_api(:knife)
+          
+          subject.locations.last.should have_key(:type)
+          subject.locations.last.should have_key(:value)
+          subject.locations.last.should have_key(:options)
+        end
+
+        it "adds a chef_api location to the end of the array of locations" do
+          subject.chef_api(:knife)
+
+          subject.locations.last[:type].should eql(:chef_api)
+        end
+
+        it "adds a location with the given value as the value key to the end of the array of locations" do
+          subject.chef_api(:knife)
+
+          subject.locations.last[:value].should eql(:knife)
+        end
+
+        it "adds a location with the given options as the options key to the end of the array of locations" do
+          subject.chef_api("http://chef:8080/", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem")
+
+          subject.locations.last[:options].should eql(node_name: "reset", client_key: "/Users/reset/.chef/reset.pem")
+        end
+
+        context "adding multiple locations" do
+          it "adds locations in the order they are added" do
+            subject.chef_api(:knife)
+            subject.chef_api("http://chef:8080/")
+
+            subject.locations[0][:value].should eql(:knife)
+            subject.locations[1][:value].should eql("http://chef:8080/")
+          end
+        end
+      end
+    end
   end
 end
