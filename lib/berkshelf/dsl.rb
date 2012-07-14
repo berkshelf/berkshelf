@@ -51,6 +51,14 @@ module Berkshelf
       add_location(:chef_api, value, options)
     end
 
+    def add_source(source)
+      raise NotImplementedError, "Function must be implemented on includer"
+    end
+
+    def add_location(type, value, options)
+      raise NotImplementedError, "Function must be implemented on includer"
+    end
+
     private
 
       def filepath
