@@ -361,7 +361,7 @@ Feature: install cookbooks from a Berksfile
     When I run the install command
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'.
+      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the cookbook store should have the cookbooks:
       | artifact | 0.10.0 |
@@ -381,7 +381,7 @@ Feature: install cookbooks from a Berksfile
     When I run the install command
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'.
+      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the cookbook store should have the cookbooks:
       | artifact | 0.10.0 |
