@@ -36,6 +36,18 @@ module Berkshelf
       add_source(source)
     end
 
+    def site(uri)
+      if uri == :opscode
+        uri = CookbookSource::SiteLocation::OPSCODE_COMMUNITY_API
+      end
+
+      add_location(:site, uri)
+    end
+
+    def chef_api(uri, options = {})
+      add_location(:chef_api, uri, options)
+    end
+
     private
 
       def filepath
