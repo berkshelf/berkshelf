@@ -51,6 +51,26 @@ module Berkshelf
           resolver.should have_source("artifact")
         end
 
+        context "given no option for :locations" do
+          it "adds the default Opscode Community Site to the array of locations" do
+            resolver = subject.new(downloader)
+
+            resolver.locations.should have(1).item
+            resolver.locations[0][:type].should eql(:site)
+            resolver.locations[0][:value].should eql(:opscode)
+          end
+        end
+
+        context "given a value for :locations" do
+          it "adds the value for locations to the array of locations" do
+            resolver = subject.new(downloader, locations: [{ type: :path, value: "/Users/reset/cookbooks/nginx", options: Hash.new }])
+
+            resolver.locations.should have(1).item
+            resolver.locations[0][:type].should eql(:path)
+            resolver.locations[0][:value].should eql("/Users/reset/cookbooks/nginx")
+          end
+        end
+
         context "given an array of sources" do
           it "adds each source to the sources hash" do
             sources = [source]

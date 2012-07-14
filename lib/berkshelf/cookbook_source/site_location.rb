@@ -9,8 +9,6 @@ module Berkshelf
       attr_reader :api_uri
       attr_accessor :version_constraint
 
-      OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
-
       class << self
         # @param [String] target
         #   file path to the tar.gz archive on disk
@@ -33,7 +31,7 @@ module Berkshelf
         @version_constraint = version_constraint
 
         @api_uri = if options[:site].nil? || options[:site] == :opscode
-          OPSCODE_COMMUNITY_API
+          Location::OPSCODE_COMMUNITY_API
         else
           options[:site]
         end

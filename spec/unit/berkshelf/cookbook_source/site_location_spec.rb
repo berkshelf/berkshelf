@@ -10,7 +10,7 @@ module Berkshelf
           it "creates a SiteLocation with a URI equal to the default Opscode Community Site API" do
             result = subject.new("nginx", double('constraint'), site: :opscode)
 
-            result.api_uri.should eql(CookbookSource::SiteLocation::OPSCODE_COMMUNITY_API)
+            result.api_uri.should eql(CookbookSource::Location::OPSCODE_COMMUNITY_API)
           end
         end
       end

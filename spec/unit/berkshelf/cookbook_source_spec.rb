@@ -12,7 +12,7 @@ module Berkshelf
           let(:source) { subject.new(cookbook_name) }
 
           it "uses a default SiteLocation pointing to the opscode community api" do
-            source.location.api_uri.should eql(subject::SiteLocation::OPSCODE_COMMUNITY_API)
+            source.location.api_uri.should eql(subject::Location::OPSCODE_COMMUNITY_API)
           end
         end
 

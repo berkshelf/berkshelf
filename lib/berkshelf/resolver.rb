@@ -3,7 +3,16 @@ module Berkshelf
   class Resolver
     extend Forwardable
 
+    DEFAULT_LOCATIONS = [
+      {
+        type: :site,
+        value: :opscode,
+        options: Hash.new
+      }
+    ].freeze
+
     attr_reader :graph
+    attr_reader :locations
 
     # @param [Downloader] downloader
     # @param [Hash] options
@@ -14,7 +23,7 @@ module Berkshelf
       @downloader = downloader
       @graph = Solve::Graph.new
       @sources = Hash.new
-      @locations = options[:locations] || Array.new
+      @locations = options[:locations] || DEFAULT_LOCATIONS
 
       # Dependencies need to be added AFTER the sources. If they are
       # not, then one of the dependencies of a source that is added
@@ -119,7 +128,6 @@ module Berkshelf
     private
 
       attr_reader :downloader
-      attr_reader :locations
 
       # @param [CookbookSource] source
       def set_source(source)

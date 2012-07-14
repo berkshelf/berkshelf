@@ -2,6 +2,8 @@ module Berkshelf
   class CookbookSource
     # @author Jamie Winsor <jamie@vialstudios.com>
     module Location
+      OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
+      
       module ClassMethods
         # Register the location key for the including source location with CookbookSource
         #
