@@ -52,6 +52,20 @@ module Berkshelf
       @sources[source.to_s] = source
     end
 
+    # Create a location hash and add it to the end of the array of locations.
+    #
+    # subject.add_location(:chef_api, "http://chef:8080", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem") =>
+    #   [ { type: :chef_api, value: "http://chef:8080/", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem" } ]
+    #
+    # @param [Symbol] type
+    # @param [String, Symbol] value
+    # @param [Hash] options
+    #
+    # @return [Hash]
+    def add_location(type, value, options = {})
+      @locations.push(type: type, value: value, options: options)
+    end
+
     # @param [#to_s] source
     #   the source to remove
     #
@@ -221,15 +235,6 @@ module Berkshelf
     end
 
     private
-
-      # @param [Symbol] type
-      # @param [String, Symbol] value
-      # @param [Hash] options
-      #
-      # @return [Hash]
-      def add_location(type, value, options = {})
-        @locations.push(type: type, value: value, options: options)
-      end
 
       def descendant_directory?(candidate, parent)
         hack = FileUtils::Entry_.new('/tmp')
