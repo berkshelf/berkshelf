@@ -25,14 +25,19 @@ module Berkshelf
       # @param [Solve::Constraint] version_constraint
       # @param [Hash] options
       #
-      # @option options [String] :site
-      #   a URL pointing to a community API endpoint
+      # @option options [String, Symbol] :site
+      #   a URL pointing to a community API endpoint. Alternatively the symbol :opscode can
+      #   be provided to initialize a SiteLocation pointing to the Opscode Community Site.
       def initialize(name, version_constraint, options = {})
-        options[:site] ||= OPSCODE_COMMUNITY_API
-
         @name = name
         @version_constraint = version_constraint
-        @api_uri = options[:site]
+
+        @api_uri = if options[:site].nil? || options[:site] == :opscode
+          OPSCODE_COMMUNITY_API
+        else
+          options[:site]
+        end
+
         @rest = Chef::REST.new(api_uri, false, false)
       end
 

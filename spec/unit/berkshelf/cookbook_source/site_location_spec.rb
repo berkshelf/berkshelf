@@ -2,6 +2,20 @@ require 'spec_helper'
 
 module Berkshelf
   describe CookbookSource::SiteLocation do
+    describe "ClassMethods" do
+      subject { CookbookSource::SiteLocation }
+
+      describe "::initialize" do
+        context "given the symbol :opscode for the value of URI" do
+          it "creates a SiteLocation with a URI equal to the default Opscode Community Site API" do
+            result = subject.new("nginx", double('constraint'), site: :opscode)
+
+            result.api_uri.should eql(CookbookSource::SiteLocation::OPSCODE_COMMUNITY_API)
+          end
+        end
+      end
+    end
+
     let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
     subject { CookbookSource::SiteLocation.new("nginx", complacent_constraint) }
 
