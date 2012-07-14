@@ -145,7 +145,12 @@ module Berkshelf
     #   Path to a directory of shims each pointing to a Cookbook Version that is
     #   part of the dependency solution. Each shim is a hard link on disk.
     def install(options = {})
-      resolver = Resolver.new(Berkshelf.downloader, sources(exclude: options[:without]))
+      resolver = Resolver.new(
+        Berkshelf.downloader,
+        sources: sources(exclude: options[:without]),
+        locations: locations
+      )
+
       solution = resolver.resolve
       if options[:shims]
         write_shims(options[:shims], solution)
@@ -189,7 +194,11 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
-      Resolver.new(Berkshelf.downloader, sources(exclude: options[:without])).resolve
+      Resolver.new(
+        Berkshelf.downloader,
+        sources: sources(exclude: options[:without]),
+        locations: locations
+      ).resolve
     end
 
     # Write a collection of hard links to the given path representing the given

@@ -6,21 +6,25 @@ module Berkshelf
     attr_reader :graph
 
     # @param [Downloader] downloader
-    # @param [Array<CookbookSource>, CookbookSource] sources
-    def initialize(downloader, sources = Array.new)
+    # @param [Hash] options
+    #
+    # @option options [Array<CookbookSource>, CookbookSource] sources
+    # @option options [Array<Hash>] locations
+    def initialize(downloader, options = {})
       @downloader = downloader
       @graph = Solve::Graph.new
       @sources = Hash.new
+      @locations = options[:locations] || Array.new
 
       # Dependencies need to be added AFTER the sources. If they are
       # not, then one of the dependencies of a source that is added
       # may take precedence over an explicitly set source that appears
       # later in the iterator.
-      Array(sources).each do |source|
+      Array(options[:sources]).each do |source|
         add_source(source, false)
       end
 
-      Array(sources).each do |source|
+      Array(options[:sources]).each do |source|
         add_source_dependencies(source)
       end
     end
@@ -115,6 +119,7 @@ module Berkshelf
     private
 
       attr_reader :downloader
+      attr_reader :locations
 
       # @param [CookbookSource] source
       def set_source(source)
