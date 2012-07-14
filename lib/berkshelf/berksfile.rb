@@ -37,19 +37,26 @@ module Berkshelf
       @locations = Array.new
     end
 
-    # Add the given source to the sources array. A DuplicateSourceDefined
-    # exception will be raised if a source is added whose name conflicts
-    # with a source who has already been added.
+    # Add a source of the given name and constraint to the array of sources.
     #
-    # @param [Berkshelf::CookbookSource] source
-    #   the source to add
+    # @param [String] name
+    #   the name of the source to add
+    # @param [String, Solve::Constraint] constraint
+    #   the constraint to lock the source to
+    # @param [Hash] options
+    #
+    # @raise [DuplicateSourceDefined] if a source is added whose name conflicts
+    #   with a source who has already been added.
     #
     # @return [Array<Berkshelf::CookbookSource]
-    def add_source(source)
-      if has_source?(source)
-        raise DuplicateSourceDefined, "Berksfile contains two sources named '#{source.name}'. Remove one and try again."
+    def add_source(name, constraint = nil, options = {})
+      if has_source?(name)
+        raise DuplicateSourceDefined, "Berksfile contains two sources named '#{name}'. Remove one and try again."
       end
-      @sources[source.to_s] = source
+
+      options[:constraint] = constraint
+
+      @sources[name] = CookbookSource.new(name, options)
     end
 
     # Create a location hash and add it to the end of the array of locations.
@@ -63,7 +70,7 @@ module Berkshelf
     #
     # @return [Hash]
     def add_location(type, value, options = {})
-      @locations.push(type: type, value: value, options: options)
+      locations.push(type: type, value: value, options: options)
     end
 
     # @param [#to_s] source
@@ -113,7 +120,7 @@ module Berkshelf
     #     }
     def groups
       {}.tap do |groups|
-        @sources.each_pair do |name, source|
+        sources.each do |source|
           source.groups.each do |group|
             groups[group] ||= []
             groups[group] << source

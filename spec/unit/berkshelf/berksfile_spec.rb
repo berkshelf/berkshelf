@@ -62,20 +62,16 @@ EOF
     let(:source_one) { double('source_one', name: "nginx") }
     let(:source_two) { double('source_two', name: "mysql") }
 
-    subject do
-      cbf = Berksfile.new(tmp_path.join("Berksfile"))
-      cbf.add_source(source_one)
-      cbf.add_source(source_two)
-      cbf
-    end
+    subject { Berksfile.new(tmp_path.join("Berksfile")) }
 
     describe "#sources" do
       it "returns all CookbookSources added to the instance of Berksfile" do
-        result = subject.sources
+        subject.add_source(source_one.name)
+        subject.add_source(source_two.name)
 
-        result.should have(2).items
-        result.should include(source_one)
-        result.should include(source_two)
+        subject.sources.should have(2).items
+        subject.should have_source(source_one.name)
+        subject.should have_source(source_two.name)
       end
 
       context "given the option :exclude" do
@@ -89,6 +85,7 @@ EOF
 
     describe "#groups" do
       before(:each) do
+        subject.stub(:sources) { [source_one, source_two] }
         source_one.stub(:groups) { [:nautilus, :skarner] }
         source_two.stub(:groups) { [:nautilus, :riven] }
       end
@@ -101,9 +98,8 @@ EOF
       end
 
       it "returns an Array of CookbookSources who are members of the group for value" do
-        subject.groups[:nautilus].should include(source_one)
-        subject.groups[:nautilus].should include(source_two)
-        subject.groups[:riven].should_not include(source_one)
+        subject.groups[:nautilus].should have(2).items
+        subject.groups[:riven].should have(1).item
       end
     end
 

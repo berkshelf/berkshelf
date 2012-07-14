@@ -87,8 +87,8 @@ module Berkshelf
 
     describe "#cookbooks" do
       before(:each) do
-        CookbookSource.new("nginx", "0.101.2").download(subject.storage_path)
-        CookbookSource.new("mysql", "1.2.6").download(subject.storage_path)
+        CookbookSource.new("nginx", constraint: "= 0.101.2").download(subject.storage_path)
+        CookbookSource.new("mysql", constraint: "= 1.2.6").download(subject.storage_path)
       end
 
       it "returns a list of CachedCookbooks" do

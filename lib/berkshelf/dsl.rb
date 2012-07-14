@@ -2,10 +2,60 @@ module Berkshelf
   module DSL
     @@active_group = nil
 
+    # @overload cookbook(name, version_constraint, options = {})
+    #   @param [#to_s] name
+    #   @param [#to_s] version_constraint
+    #   @param [Hash] options
+    #
+    #   @option options [Symbol, Array] :group
+    #     the group or groups that the cookbook belongs to
+    #   @option options [String, Symbol] :chef_api
+    #     a URL to a Chef API. Alternatively the symbol :knife can be provided
+    #     which will instantiate this location with the values found in your
+    #     knife configuration.
+    #   @option options [String] :site
+    #     a URL pointing to a community API endpoint
+    #   @option options [String] :path
+    #     a filepath to the cookbook on your local disk
+    #   @option options [String] :git
+    #     the Git URL to clone
+    #
+    #   @see ChefAPILocation
+    #   @see SiteLocation
+    #   @see PathLocation
+    #   @see GitLocation
+    # @overload cookbook(name, options = {})
+    #   @param [#to_s] name
+    #   @param [Hash] options
+    #
+    #   @option options [Symbol, Array] :group
+    #     the group or groups that the cookbook belongs to
+    #   @option options [String, Symbol] :chef_api
+    #     a URL to a Chef API. Alternatively the symbol :knife can be provided
+    #     which will instantiate this location with the values found in your
+    #     knife configuration.
+    #   @option options [String] :site
+    #     a URL pointing to a community API endpoint
+    #   @option options [String] :path
+    #     a filepath to the cookbook on your local disk
+    #   @option options [String] :git
+    #     the Git URL to clone
+    #
+    #   @see ChefAPILocation
+    #   @see SiteLocation
+    #   @see PathLocation
+    #   @see GitLocation
     def cookbook(*args)
-      source = CookbookSource.new(*args)
-      source.add_group(@@active_group) if @@active_group
-      add_source(source)
+      options = args.last.is_a?(Hash) ? args.pop : Hash.new
+      name, constraint = args
+
+      options[:group] = Array(options[:group])
+      
+      if @@active_group
+        options[:group] += @@active_group
+      end
+
+      add_source(name, constraint, options)
     end
 
     def group(*args)
@@ -14,6 +64,10 @@ module Berkshelf
       @@active_group = nil
     end
 
+    # @param [Hash] options
+    #
+    # @option options [String] :path
+    #   path to the metadata file
     def metadata(options = {})
       path = options[:path] || File.dirname(filepath)
 
@@ -32,8 +86,9 @@ module Berkshelf
         metadata.name
       end
 
-      source = CookbookSource.new(name, path: File.dirname(metadata_file))
-      add_source(source)
+      constraint = "= #{metadata.version}"
+
+      add_source(name, constraint, path: File.dirname(metadata_file))
     end
 
     # @param [String, Symbol] value
@@ -51,12 +106,12 @@ module Berkshelf
       add_location(:chef_api, value, options)
     end
 
-    def add_source(source)
-      raise NotImplementedError, "Function must be implemented on includer"
+    def add_source(name, constraint, options)
+      raise AbstractFunction
     end
 
     def add_location(type, value, options)
-      raise NotImplementedError, "Function must be implemented on includer"
+      raise AbstractFunction
     end
 
     private

@@ -25,7 +25,7 @@ module Berkshelf
         end
 
         context "given a value for constraint" do
-          let(:source) { subject.new(cookbook_name, "~> 1.0.84") }
+          let(:source) { subject.new(cookbook_name, constraint: "~> 1.0.84") }
 
           it "returns a Solve::Constraint for the given version for version_constraint" do
             source.version_constraint.to_s.should eql("~> 1.0.84")
@@ -243,7 +243,7 @@ module Berkshelf
     end
 
     describe "#downloaded?" do
-      subject{ CookbookSource.new("nginx", ">= 1.0.1") }
+      subject{ CookbookSource.new("nginx", constraint: ">= 1.0.1") }
 
       it "delegates the message ':downloaded?' to the location" do
         subject.location.should_receive(:downloaded?)

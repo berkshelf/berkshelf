@@ -10,30 +10,65 @@ module Berkshelf
     end
 
     describe "#cookbook" do
-      it "calls add source to the instance of the implementing class with a CookbookSource" do
-        subject.should_receive(:add_source).with(kind_of(CookbookSource))
-        
-        subject.cookbook "ntp"
+      let(:name) { "artifact" }
+      let(:constraint) { double('constraint') }
+      let(:default_options) { { group: [] } }
+
+      it "sends the add_source message with the name, constraint, and options to the instance of the includer" do
+        subject.should_receive(:add_source).with(name, constraint, default_options)
+
+        subject.cookbook name, constraint, default_options
+      end
+
+      it "merges the default options into specified options" do
+        subject.should_receive(:add_source).with(name, constraint, path: "/Users/reset", group: [])
+
+        subject.cookbook name, constraint, path: "/Users/reset"
+      end
+
+      it "converts a single specified group option into an array of groups" do
+        subject.should_receive(:add_source).with(name, constraint, group: [:production])
+
+        subject.cookbook name, constraint, group: :production
+      end
+
+      context "when no constraint specified" do
+        it "sends the add_source message with a nil value for constraint" do
+          subject.should_receive(:add_source).with(name, nil, default_options)
+
+          subject.cookbook name, default_options
+        end
+      end
+
+      context "when no options specified" do
+        it "sends the add_source message with an empty Hash for the value of options" do
+          subject.should_receive(:add_source).with(name, constraint, default_options)
+
+          subject.cookbook name, constraint
+        end
       end
     end
 
     describe '#group' do
-      it "calls add source to the instance of the implementing class with a CookbookSource" do
-        subject.should_receive(:add_source).with(kind_of(CookbookSource))
+      let(:name) { "artifact" }
+      let(:group) { "production" }
+
+      it "sends the add_source message with an array of groups determined by the parameter passed to the group block" do
+        subject.should_receive(:add_source).with(name, nil, group: [group])
         
-        subject.group "awesome" do
-          subject.cookbook "ntp"
+        subject.group group do
+          subject.cookbook name
         end
       end
     end
 
     describe "#metadata" do
-      before(:each) do
-        Dir.chdir fixtures_path.join('cookbooks/example_cookbook')
-      end
+      let(:cb_path) { fixtures_path.join('cookbooks/example_cookbook').to_s }
 
-      it "calls add source to the instance of the implementing class with a CookbookSource" do
-        subject.should_receive(:add_source).with(kind_of(CookbookSource))
+      before(:each) { Dir.chdir(cb_path) }
+
+      it "sends the add_source message with an explicit version constraint and the path to the cookbook" do
+        subject.should_receive(:add_source).with("example_cookbook", "= 0.5.0", path: cb_path)
         
         subject.metadata
       end

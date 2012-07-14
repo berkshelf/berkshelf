@@ -2,7 +2,7 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
     class << self
-      @@valid_options = [:group, :locked_version]
+      @@valid_options = [:constraint, :group, :locked_version]
       @@location_keys = Hash.new
 
       # Returns an array of valid options to pass to the initializer
@@ -71,51 +71,29 @@ module Berkshelf
 
     def_delegator :@location, :downloaded?
 
-    # @overload initialize(name, version_constraint, options = {})
-    #   @param [#to_s] name
-    #   @param [#to_s] version_constraint
-    #   @param [Hash] options
+    #  @param [String] name
+    #  @param [Hash] options
     #
-    #   @option options [String] :git
-    #     the Git URL to clone
-    #   @option options [String] :site
-    #     a URL pointing to a community API endpoint
-    #   @option options [String] :path
-    #     a filepath to the cookbook on your local disk
-    #   @option options [Symbol, Array] :group
-    #     the group or groups that the cookbook belongs to
-    #   @option options [String] :ref
-    #     the commit hash or an alias to a commit hash to clone
-    #   @option options [String] :branch
-    #     same as ref
-    #   @option options [String] :tag
-    #     same as tag
-    #   @option options [String] :locked_version
-    # @overload initialize(name, options = {})
-    #   @param [#to_s] name
-    #   @param [Hash] options
-    #
-    #   @option options [String] :git
-    #     the Git URL to clone
-    #   @option options [String] :site
-    #     a URL pointing to a community API endpoint
-    #   @option options [String] :path
-    #     a filepath to the cookbook on your local disk
-    #   @option options [Symbol, Array] :group
-    #     the group or groups that the cookbook belongs to
-    #   @option options [String] :ref
-    #     the commit hash or an alias to a commit hash to clone
-    #   @option options [String] :branch
-    #     same as ref
-    #   @option options [String] :tag
-    #     same as tag
-    #   @option options [String] :locked_version
-    def initialize(*args)
-      options = args.last.is_a?(Hash) ? args.pop : {}
-      name, constraint = args
-
+    #  @option options [String, Solve::Constraint] constraint
+    #    version constraint to resolve for this source
+    #  @option options [String] :git
+    #    the Git URL to clone
+    #  @option options [String] :site
+    #    a URL pointing to a community API endpoint
+    #  @option options [String] :path
+    #    a filepath to the cookbook on your local disk
+    #  @option options [Symbol, Array] :group
+    #    the group or groups that the cookbook belongs to
+    #  @option options [String] :ref
+    #    the commit hash or an alias to a commit hash to clone
+    #  @option options [String] :branch
+    #    same as ref
+    #  @option options [String] :tag
+    #    same as tag
+    #  @option options [String] :locked_version
+    def initialize(name, options = {})
       @name = name
-      @version_constraint = Solve::Constraint.new(constraint || ">= 0.0.0")
+      @version_constraint = Solve::Constraint.new(options[:constraint] || ">= 0.0.0")
       @groups = []
       @cached_cookbook = nil
 
