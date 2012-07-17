@@ -65,37 +65,37 @@ module Berkshelf
       describe "::validate_uri" do
         context "given a valid Git read-only URI" do
           it "returns true" do
-            subject.validate_uri(readonly_uri)
+            subject.validate_uri(readonly_uri).should be_true
           end
         end
 
         context "given a valid Git HTTPS URI" do
           it "returns true" do
-            subject.validate_uri(https_uri)
+            subject.validate_uri(https_uri).should be_true
           end
         end
 
         context "given a valid Git SSH URI" do
           it "returns true" do
-            subject.validate_uri(ssh_uri)
+            subject.validate_uri(ssh_uri).should be_true
           end
         end
 
         context "given an invalid URI" do
           it "returns false" do
-            subject.validate_uri(invalid_uri)
+            subject.validate_uri(invalid_uri).should be_false
           end
         end
 
         context "given a HTTP URI" do
           it "returns false" do
-            subject.validate_uri(http_uri)
+            subject.validate_uri(http_uri).should be_false
           end
         end
 
         context "given an integer" do
           it "returns false" do
-            subject.validate_uri(123)
+            subject.validate_uri(123).should be_false
           end
         end
       end
@@ -103,19 +103,19 @@ module Berkshelf
       describe "::validate_uri!" do
         context "given a valid Git read-only URI" do
           it "returns true" do
-            subject.validate_uri!(readonly_uri)
+            subject.validate_uri!(readonly_uri).should be_true
           end
         end
 
         context "given a valid Git HTTPS URI" do
           it "returns true" do
-            subject.validate_uri!(https_uri)
+            subject.validate_uri!(https_uri).should be_true
           end
         end
 
         context "given a valid Git SSH URI" do
           it "returns true" do
-            subject.validate_uri!(ssh_uri)
+            subject.validate_uri!(ssh_uri).should be_true
           end
         end
 
