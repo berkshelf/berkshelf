@@ -2,7 +2,7 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
     class << self
-      @@valid_options = [:constraint, :group, :locked_version]
+      @@valid_options = [:constraint, :locations, :group, :locked_version]
       @@location_keys = Hash.new
 
       # Returns an array of valid options to pass to the initializer
@@ -67,6 +67,7 @@ module Berkshelf
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
+    attr_reader :locations
     attr_accessor :cached_cookbook
 
     def_delegator :@location, :downloaded?
@@ -95,6 +96,7 @@ module Berkshelf
       @name = name
       @version_constraint = Solve::Constraint.new(options[:constraint] || ">= 0.0.0")
       @groups = []
+      @locations = []
       @cached_cookbook = nil
 
       validate_options(options)
@@ -102,7 +104,13 @@ module Berkshelf
       @location = Location.init(name, version_constraint, options)
 
       if @location.is_a?(PathLocation)
-        @cached_cookbook = CachedCookbook.from_path(@location.path)
+        @cached_cookbook = CachedCookbook.from_path(location.path)
+      end
+
+      @locations.push(location)
+
+      Array(options[:locations]).each do |location|
+        add_location(location[:type], location[:value], location[:options])
       end
       
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
@@ -146,6 +154,11 @@ module Berkshelf
     end
 
     private
+
+      def add_location(type, value, options = {})
+        options[type] = value
+        @locations.push(Location.init(name, version_constraint, options))
+      end
 
       def set_local_path(path)
         @local_path = path

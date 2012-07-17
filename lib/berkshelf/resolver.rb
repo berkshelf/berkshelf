@@ -79,7 +79,7 @@ module Berkshelf
       source.cached_cookbook.dependencies.each do |name, constraint|
         next if has_source?(name)
 
-        add_source(CookbookSource.new(name, constraint: constraint))
+        add_source(CookbookSource.new(name, constraint: constraint, locations: locations))
       end
     end
 
