@@ -46,10 +46,6 @@ module Berkshelf
         copy_file "chefignore", target.join("chefignore")
       end
 
-      if options[:vagrant]
-        template "Vagrantfile.erb", target.join("Vagrantfile")
-      end
-
       if options[:git]
         copy_file "gitignore", target.join(".gitignore")
       end
@@ -60,6 +56,11 @@ module Berkshelf
 
       unless options[:no_bundler]
         template "Gemfile.erb", target.join("Gemfile")
+      end
+
+      if options[:vagrant]
+        template "Vagrantfile.erb", target.join("Vagrantfile")
+        ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile"), shims: target.join("cookbooks")).invoke(:install)
       end
     end
 

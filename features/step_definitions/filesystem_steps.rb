@@ -109,6 +109,9 @@ Then /^I should have a new cookbook skeleton "(.*?)" with Vagrant support$/ do |
     file "Vagrantfile" do
       contains "recipe[#{name}::default]"
     end
+    directory "cookbooks" do
+      directory name
+    end
   }
 end
 

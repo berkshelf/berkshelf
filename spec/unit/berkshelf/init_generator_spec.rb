@@ -55,7 +55,7 @@ module Berkshelf
     context "with the vagrant option true" do
       before do
         generator = subject.new([target], vagrant: true)
-        capture(:stdout) { generator.invoke_all }
+        quietly { generator.invoke_all }
       end
 
       specify do
@@ -66,6 +66,7 @@ module Berkshelf
           file "Gemfile" do
             contains "gem 'vagrant'"
           end
+          directory "cookbooks"
         }
       end
     end

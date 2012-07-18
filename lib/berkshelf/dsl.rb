@@ -15,7 +15,7 @@ module Berkshelf
     end
 
     def metadata(options = {})
-      path = options[:path] || File.expand_path('.')
+      path = options[:path] || File.dirname(filepath)
 
       metadata_file = Berkshelf.find_metadata(path)
 
@@ -35,5 +35,11 @@ module Berkshelf
       source = CookbookSource.new(name, path: File.dirname(metadata_file))
       add_source(source)
     end
+
+    private
+
+      def filepath
+        File.join(File.expand_path('.'), "DSLFile")
+      end
   end
 end

@@ -46,3 +46,4 @@ features/*
 # Berkshelf
 Berksfile
 Berksfile.lock
+cookbooks/*
