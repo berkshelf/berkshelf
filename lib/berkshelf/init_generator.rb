@@ -37,7 +37,7 @@ module Berkshelf
       end
 
       if options[:vagrant]
-        copy_file "Vagrantfile", target.join("Vagrantfile")
+        template "Vagrantfile.erb", target.join("Vagrantfile")
       end
 
       if options[:git]
@@ -52,5 +52,18 @@ module Berkshelf
         template "Gemfile.erb", target.join("Gemfile")
       end
     end
+
+    private
+
+      def cookbook_name
+        @cookbook_name ||= begin
+          metadata = Chef::Cookbook::Metadata.new
+          
+          metadata.from_file(target.join("metadata.rb").to_s)
+          metadata.name.empty? ? File.basename(target) : metadata.name
+        rescue IOError
+          File.basename(target)
+        end
+      end
   end
 end

@@ -113,6 +113,15 @@ module Berkshelf
       Berkshelf.ui.info license
     end
 
+    method_option :vagrant,
+      type: :boolean,
+      desc: "Creates a Vagrantfile and dynamically change other generated files to support Vagrant"
+    method_option :git,
+      type: :boolean,
+      desc: "Creates additional git specific files if your project will be managed by git"
+    method_option :foodcritic,
+      type: :boolean,
+      desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
     desc "cookbook NAME", "Create a skeleton for a new Cookbook"
     def cookbook(name)
       generator = ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options)
