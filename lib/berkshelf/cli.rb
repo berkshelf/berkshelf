@@ -100,8 +100,7 @@ module Berkshelf
         options[:metadata_entry] = true
       end
 
-      generator = ::Berkshelf::InitGenerator.new([path], options)
-      generator.invoke_all
+      ::Berkshelf::InitGenerator.new([path], options).invoke_all
 
       ::Berkshelf.ui.info "Successfully initialized"
     end
@@ -127,8 +126,7 @@ module Berkshelf
       desc: "Skips generation of a Gemfile and other Bundler specific support"
     desc "cookbook NAME", "Create a skeleton for a new Cookbook"
     def cookbook(name)
-      generator = ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options)
-      generator.invoke_all
+      ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
     end
 
     private
