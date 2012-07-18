@@ -17,7 +17,7 @@ module Berkshelf
       type: :boolean,
       default: false
 
-    class_option :thor,
+    class_option :foodcritic,
       type: :boolean,
       default: false
 

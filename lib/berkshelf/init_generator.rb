@@ -21,7 +21,7 @@ module Berkshelf
       type: :boolean,
       default: false
 
-    class_option :thor,
+    class_option :foodcritic,
       type: :boolean,
       default: false
 
@@ -44,7 +44,7 @@ module Berkshelf
         copy_file "gitignore", target.join(".gitignore")
       end
 
-      if options[:thor]
+      if options[:foodcritic]
         copy_file "Thorfile", target.join("Thorfile")
       end
 

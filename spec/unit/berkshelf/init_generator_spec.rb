@@ -81,9 +81,9 @@ module Berkshelf
       end
     end
 
-    context "with the thor option true" do
+    context "with the foodcritic option true" do
       before do
-        generator = subject.new([target], thor: true)
+        generator = subject.new([target], foodcritic: true)
         capture(:stdout) { generator.invoke_all }
       end
 
