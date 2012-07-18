@@ -111,5 +111,21 @@ module Berkshelf
         }
       end
     end
+
+    context "given a value for the cookbook_name option" do
+      it "sets the value of cookbook_name attribute to the specified option" do
+        generator = subject.new([target], cookbook_name: "nautilus")
+
+        generator.send(:cookbook_name).should eql("nautilus")
+      end
+    end
+
+    context "when no value for cookbook_name option is specified" do
+      it "infers the name of the cookbook from the directory name" do
+        generator = subject.new([target])
+
+        generator.send(:cookbook_name).should eql("some_cookbook")
+      end
+    end
   end
 end

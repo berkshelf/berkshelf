@@ -45,7 +45,7 @@ module Berkshelf
     private
 
       def default_options
-        { metadata_entry: true, chefignore: true }
+        { metadata_entry: true, chefignore: true, cookbook_name: name }
       end
   end
 end

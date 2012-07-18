@@ -1,6 +1,13 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class InitGenerator < BaseGenerator
+    def initialize(*)
+      super
+      if @options[:cookbook_name]
+        @cookbook_name = @options[:cookbook_name]
+      end
+    end
+
     argument :path,
       type: :string,
       required: true
@@ -28,6 +35,9 @@ module Berkshelf
     class_option :no_bundler,
       type: :boolean,
       default: false
+
+    class_option :cookbook_name,
+      type: :string
 
     def generate
       template "Berksfile.erb", target.join("Berksfile")
