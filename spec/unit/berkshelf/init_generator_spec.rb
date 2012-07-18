@@ -4,16 +4,16 @@ module Berkshelf
   describe InitGenerator do
     subject { InitGenerator }
 
-    let(:target_root) { tmp_path.join("some_cookbook") }
+    let(:target) { tmp_path.join("some_cookbook") }
 
     context "with default options" do
       before do
-        generator = subject.new([target_root])
+        generator = subject.new([target])
         capture(:stdout) { generator.invoke_all }
       end
 
       specify do
-        target_root.should have_structure {
+        target.should have_structure {
           file "Berksfile"
           no_file "chefignore"
         }
@@ -22,12 +22,12 @@ module Berkshelf
 
     context "with a chefignore" do
       before do
-        generator = subject.new([target_root], chefignore: true)
+        generator = subject.new([target], chefignore: true)
         capture(:stdout) { generator.invoke_all }
       end
 
       specify do
-        target_root.should have_structure {
+        target.should have_structure {
           file "Berksfile"
           file "chefignore"
         }
@@ -36,15 +36,67 @@ module Berkshelf
 
     context "with a metadata entry in the Berksfile" do
       before do
-        generator = subject.new([target_root], metadata_entry: true)
+        generator = subject.new([target], metadata_entry: true)
         capture(:stdout) { generator.invoke_all }
       end
 
       specify do
-        target_root.should have_structure {
+        target.should have_structure {
           file "Berksfile" do
             contains "metadata"
           end
+        }
+      end
+    end
+
+    context "with the vagrant option true" do
+      before do
+        generator = subject.new([target], vagrant: true)
+        capture(:stdout) { generator.invoke_all }
+      end
+
+      specify do
+        target.should have_structure {
+          file "Vagrantfile"
+        }
+      end
+    end
+
+    context "with the git option true" do
+      before do
+        generator = subject.new([target], git: true)
+        capture(:stdout) { generator.invoke_all }
+      end
+
+      specify do
+        target.should have_structure {
+          file ".gitignore"
+        }
+      end
+    end
+
+    context "with the thor option true" do
+      before do
+        generator = subject.new([target], thor: true)
+        capture(:stdout) { generator.invoke_all }
+      end
+
+      specify do
+        target.should have_structure {
+          file "Thorfile"
+        }
+      end
+    end
+
+    context "with the bundler option true" do
+      before do
+        generator = subject.new([target], bundler: true)
+        capture(:stdout) { generator.invoke_all }
+      end
+
+      specify do
+        target.should have_structure {
+          file "Gemfile"
         }
       end
     end

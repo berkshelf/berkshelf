@@ -1,0 +1,4 @@
+source "http://rubygems.org"
+
+gem 'thor-foodcritic'
+gem 'berkshelf'
