@@ -15,6 +15,7 @@ module Berkshelf
       specify do
         target.should have_structure {
           file "Berksfile"
+          file "Gemfile"
           no_file "chefignore"
         }
       end
@@ -90,13 +91,13 @@ module Berkshelf
 
     context "with the bundler option true" do
       before do
-        generator = subject.new([target], bundler: true)
+        generator = subject.new([target], no_bundler: true)
         capture(:stdout) { generator.invoke_all }
       end
 
       specify do
         target.should have_structure {
-          file "Gemfile"
+          no_file "Gemfile"
         }
       end
     end

@@ -34,6 +34,7 @@ module Berkshelf
           file "Berksfile" do
             contains "metadata"
           end
+          file "Gemfile"
           file "chefignore"
         }
       end

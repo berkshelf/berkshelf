@@ -25,7 +25,7 @@ module Berkshelf
       type: :boolean,
       default: false
 
-    class_option :bundler,
+    class_option :no_bundler,
       type: :boolean,
       default: false
 
@@ -48,7 +48,7 @@ module Berkshelf
         copy_file "Thorfile", target.join("Thorfile")
       end
 
-      if options[:bundler]
+      unless options[:no_bundler]
         copy_file "Gemfile", target.join("Gemfile")
       end
     end
