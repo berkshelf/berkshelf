@@ -37,7 +37,7 @@ module Berkshelf
       end
 
       if options[:vagrant]
-        create_file target.join("Vagrantfile")
+        copy_file "Vagrantfile", target.join("Vagrantfile")
       end
 
       if options[:git]
