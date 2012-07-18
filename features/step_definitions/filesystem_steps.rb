@@ -32,7 +32,6 @@ Given /^the cookbook store contains a cookbook "(.*?)" "(.*?)" with dependencies
   generate_cookbook(cookbook_store, name, version, dependencies: dependencies.raw)
 end
 
-
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     cookbook_store.should have_structure {
@@ -63,6 +62,11 @@ Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
       directory "#{name}-#{version}"
     }
   end
+end
+
+Then /^I should have the cookbook "(.*?)"$/ do |name|
+  sleep 5
+  Pathname.new(current_dir).join(name).should be_cookbook
 end
 
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|

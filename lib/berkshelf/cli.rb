@@ -18,6 +18,7 @@ module Berkshelf
     map 'up'        => :upload
     map 'ud'        => :update
     map 'ver'       => :version
+    map 'book'      => :cookbook
 
     class_option :config,
       type: :string,
@@ -110,6 +111,15 @@ module Berkshelf
       Berkshelf.ui.info version_header
       Berkshelf.ui.info "\n"
       Berkshelf.ui.info license
+    end
+
+    desc "cookbook NAME", "Create a skeleton for a new Cookbook"
+    def cookbook(name)
+      generator = ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options)
+      generator.invoke_all
+    rescue BerkshelfError => e
+      Berkshelf.ui.fatal e
+      exit e.status_code
     end
 
     private
