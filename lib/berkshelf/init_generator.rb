@@ -49,7 +49,7 @@ module Berkshelf
       end
 
       unless options[:no_bundler]
-        copy_file "Gemfile", target.join("Gemfile")
+        template "Gemfile.erb", target.join("Gemfile")
       end
     end
   end

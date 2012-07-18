@@ -15,7 +15,9 @@ module Berkshelf
       specify do
         target.should have_structure {
           file "Berksfile"
-          file "Gemfile"
+          file "Gemfile" do
+            contains "gem 'berkshelf'"
+          end
           no_file "chefignore"
         }
       end
@@ -59,6 +61,9 @@ module Berkshelf
       specify do
         target.should have_structure {
           file "Vagrantfile"
+          file "Gemfile" do
+            contains "gem 'vagrant'"
+          end
         }
       end
     end
@@ -85,6 +90,9 @@ module Berkshelf
       specify do
         target.should have_structure {
           file "Thorfile"
+          file "Gemfile" do
+            contains "gem 'thor-foodcritic'"
+          end
         }
       end
     end

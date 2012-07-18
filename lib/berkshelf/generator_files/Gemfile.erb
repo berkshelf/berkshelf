@@ -1,0 +1,9 @@
+source "http://rubygems.org"
+
+gem 'berkshelf'
+<% if options[:thor] -%>
+gem 'thor-foodcritic'
+<% end -%>
+<% if options[:vagrant] -%>
+gem 'vagrant'
+<% end -%>
