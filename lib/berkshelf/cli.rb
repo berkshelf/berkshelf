@@ -18,6 +18,7 @@ module Berkshelf
     map 'up'        => :upload
     map 'ud'        => :update
     map 'ver'       => :version
+    map 'book'      => :cookbook
 
     class_option :config,
       type: :string,
@@ -99,8 +100,7 @@ module Berkshelf
         options[:metadata_entry] = true
       end
 
-      generator = ::Berkshelf::InitGenerator.new([path], options)
-      generator.invoke_all
+      ::Berkshelf::InitGenerator.new([path], options).invoke_all
 
       ::Berkshelf.ui.info "Successfully initialized"
     end
@@ -110,6 +110,23 @@ module Berkshelf
       Berkshelf.ui.info version_header
       Berkshelf.ui.info "\n"
       Berkshelf.ui.info license
+    end
+
+    method_option :vagrant,
+      type: :boolean,
+      desc: "Creates a Vagrantfile and dynamically change other generated files to support Vagrant"
+    method_option :git,
+      type: :boolean,
+      desc: "Creates additional git specific files if your project will be managed by git"
+    method_option :foodcritic,
+      type: :boolean,
+      desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+    method_option :no_bundler,
+      type: :boolean,
+      desc: "Skips generation of a Gemfile and other Bundler specific support"
+    desc "cookbook NAME", "Create a skeleton for a new Cookbook"
+    def cookbook(name)
+      ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
     end
 
     private

@@ -6,16 +6,10 @@ module Berkshelf
     class << self
       def from_file(file)
         content = File.read(file)
-        read(content)
+        object = new(file)
+        object.load(content)
       rescue Errno::ENOENT => e
         raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
-      end
-
-      def read(content)
-        object = new
-        object.instance_eval(content)
-
-        object
       end
 
       # @param [Array] sources
@@ -34,7 +28,10 @@ module Berkshelf
       end
     end
 
-    def initialize
+    attr_reader :filepath
+
+    def initialize(path)
+      @filepath = path
       @sources = Hash.new
     end
 
@@ -203,6 +200,17 @@ module Berkshelf
       if actual_path
         FileUtils.mv(path, actual_path)
       end
+    end
+
+    # Reload this instance of Berksfile with the given content. The content
+    # is a string that may contain terms from the included DSL.
+    #
+    # @param [String] content
+    #
+    # @return [Berksfile]
+    def load(content)
+      instance_eval(content)
+      self
     end
 
     private
