@@ -58,6 +58,10 @@ When /^I run the cookbook command to create "(.*?)"$/ do |name|
   run_simple(unescape("berks cookbook #{name}"))
 end
 
+When /^I run the cookbook command to create "(.*?)" with options:$/ do |name, options|
+  run_simple(unescape("berks cookbook #{name} #{options.raw.join(" ")}"))
+end
+
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
   exit_status = Berkshelf.const_get(error_constant).status_code
   assert_exit_status(exit_status)

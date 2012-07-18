@@ -21,6 +21,10 @@ module Berkshelf
       type: :boolean,
       default: false
 
+    class_option :no_bundler,
+      type: :boolean,
+      default: false
+
     def generate
       empty_directory target.join("files/default")
       empty_directory target.join("templates/default")

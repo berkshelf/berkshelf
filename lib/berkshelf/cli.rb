@@ -122,6 +122,9 @@ module Berkshelf
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+    method_option :no_bundler,
+      type: :boolean,
+      desc: "Skips generation of a Gemfile and other Bundler specific support"
     desc "cookbook NAME", "Create a skeleton for a new Cookbook"
     def cookbook(name)
       generator = ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options)

@@ -65,12 +65,108 @@ Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
 end
 
 Then /^I should have the cookbook "(.*?)"$/ do |name|
-  sleep 5
   Pathname.new(current_dir).join(name).should be_cookbook
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
+  cb_path = Pathname.new(current_dir).join(name)
+  cb_path.should have_structure {
+    directory "attributes"
+    directory "definitions"
+    directory "files" do
+      directory "default"
+    end
+    directory "libraries"
+    directory "providers"
+    directory "recipes" do
+      file "default.rb"
+    end
+    directory "resources"
+    directory "templates" do
+      directory "default"
+    end
+    file "README.md"
+    file "metadata.rb"
+    file "Berksfile" do
+      contains "metadata"
+    end
+    file "chefignore"
+    file "Berksfile"
+    file "Gemfile" do
+      contains "gem 'berkshelf'"
+    end
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" with Vagrant support$/ do |name|
+  steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
+
+  cb_path = Pathname.new(current_dir).join(name)
+  cb_path.should have_structure {
+    file "Gemfile" do
+      contains "gem 'vagrant'"
+    end
+    file "Vagrantfile" do
+      contains "recipe[#{name}::default]"
+    end
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" with Git support$/ do |name|
+  steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
+
+  cb_path = Pathname.new(current_dir).join(name)
+  cb_path.should have_structure {
+    file ".gitignore"
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" with Foodcritic support$/ do |name|
+  steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
+
+  cb_path = Pathname.new(current_dir).join(name)
+  cb_path.should have_structure {
+    file "Gemfile" do
+      contains "gem 'thor-foodcritic'"
+    end
+    file "Thorfile"
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" without Bundler support$/ do |name|
+  cb_path = Pathname.new(current_dir).join(name)
+  cb_path.should have_structure {
+    directory "attributes"
+    directory "definitions"
+    directory "files" do
+      directory "default"
+    end
+    directory "libraries"
+    directory "providers"
+    directory "recipes" do
+      file "default.rb"
+    end
+    directory "resources"
+    directory "templates" do
+      directory "default"
+    end
+    file "README.md"
+    file "metadata.rb"
+    file "Berksfile" do
+      contains "metadata"
+    end
+    file "chefignore"
+    file "Berksfile"
+    no_file "Gemfile"
+  }
 end
 
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, true)
+end
+
+Then /^the cookbook "(.*?)" should not have the following files:$/ do |name, files|
+  check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, false)
 end
 
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|
