@@ -126,9 +126,6 @@ module Berkshelf
     def cookbook(name)
       generator = ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options)
       generator.invoke_all
-    rescue BerkshelfError => e
-      Berkshelf.ui.fatal e
-      exit e.status_code
     end
 
     private
