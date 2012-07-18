@@ -10,9 +10,6 @@ module Berkshelf
       ::Berkshelf.ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
       ::Berkshelf.config_path = @options[:config]
       @options = options.dup # unfreeze frozen options Hash from Thor
-    rescue BerkshelfError => e
-      Berkshelf.ui.fatal e
-      exit e.status_code
     end
 
     namespace "berkshelf"
@@ -50,9 +47,6 @@ module Berkshelf
     def install
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
-    rescue BerkshelfError => e
-      Berkshelf.ui.fatal e
-      exit e.status_code
     end
 
     method_option :berksfile,
@@ -70,9 +64,6 @@ module Berkshelf
     def update
       Lockfile.remove!
       invoke :install
-    rescue BerkshelfError => e
-      Berkshelf.ui.fatal e
-      exit e.status_code
     end
 
     method_option :berksfile,
@@ -99,9 +90,6 @@ module Berkshelf
       Berkshelf.load_config 
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.upload(Chef::Config[:chef_server_url], options)
-    rescue BerkshelfError => e
-      Berkshelf.ui.fatal e
-      exit e.status_code
     end
 
     desc "init [PATH]", "Prepare a local path to have it's Cookbook dependencies managed by Berkshelf."
@@ -115,9 +103,6 @@ module Berkshelf
       generator.invoke_all
 
       ::Berkshelf.ui.info "Successfully initialized"
-    rescue BerkshelfError => e
-      Berkshelf.ui.fatal e
-      exit e.status_code
     end
 
     desc "version", "Display version and copyright information"

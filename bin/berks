@@ -2,4 +2,9 @@
 $:.push File.expand_path("../../lib", __FILE__)
 require 'berkshelf'
 
-Berkshelf::Cli.start
+begin
+  Berkshelf::Cli.start
+rescue BerkshelfError => e
+  Berkshelf.ui.fatal e
+  exit e.status_code
+end
