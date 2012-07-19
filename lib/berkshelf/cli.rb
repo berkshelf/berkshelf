@@ -124,7 +124,20 @@ module Berkshelf
     method_option :no_bundler,
       type: :boolean,
       desc: "Skips generation of a Gemfile and other Bundler specific support"
-    desc "cookbook NAME", "Create a skeleton for a new Cookbook"
+    method_option :license,
+      type: :string,
+      default: "reserved",
+      desc: "License for cookbook (apachev2, gplv2, gplv3, mit, reserved)",
+      aliases: "-L"
+    method_option :maintainer,
+      type: :string,
+      desc: "Name of cookbook maintainer",
+      aliases: "-m"
+    method_option :maintainer_email,
+      type: :string,
+      desc: "Email address of cookbook maintainer",
+      aliases: "-e"
+    desc "cookbook NAME", "Create a skeleton for a new cookbook"
     def cookbook(name)
       ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
     end
