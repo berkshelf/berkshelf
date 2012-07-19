@@ -2,31 +2,17 @@ require 'spec_helper'
 
 module Berkshelf
   describe Berksfile do
-    describe "ClassMethods" do
-      subject { Berksfile }
-
-      let(:content) do
+    let(:content) do
 <<-EOF
 cookbook 'ntp', '<= 1.0.0'
 cookbook 'mysql'
 cookbook 'nginx', '< 0.101.2'
 cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
 EOF
-      end
-
-      describe "#read" do
-        it "reads the content of a Berksfile and adds the sources to the Shelf" do
-          cbfile = subject.read(content)
-
-          ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |name|
-            cbfile.should have_source(name)
-          end
-        end
-
-        it "returns an instance of Berksfile" do
-          subject.read(content).should be_a(Berksfile)
-        end
-      end
+    end
+    
+    describe "ClassMethods" do
+      subject { Berksfile }
 
       describe "#from_file" do
         let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
@@ -77,7 +63,7 @@ EOF
     let(:source_two) { double('source_two', name: "mysql") }
 
     subject do
-      cbf = Berksfile.new
+      cbf = Berksfile.new(tmp_path.join("Berksfile"))
       cbf.add_source(source_one)
       cbf.add_source(source_two)
       cbf
@@ -203,6 +189,20 @@ EOF
         linked_path_one.should be_cookbook
         linked_path_two.should exist
         linked_path_two.should be_cookbook
+      end
+    end
+
+    describe "#load" do
+      it "reads the content of a Berksfile and adds the sources to the Shelf" do
+        subject.load(content)
+
+        ['ntp', 'mysql', 'nginx', 'ssh_known_hosts2'].each do |name|
+          subject.should have_source(name)
+        end
+      end
+
+      it "returns an instance of Berksfile" do
+        subject.load(content).should be_a(Berksfile)
       end
     end
   end

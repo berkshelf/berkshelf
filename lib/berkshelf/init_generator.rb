@@ -1,15 +1,12 @@
-require 'thor/group'
-
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
-  class InitGenerator < Thor::Group
-    class << self
-      def source_root
-        File.expand_path(File.join(File.dirname(__FILE__), "generator_files"))
+  class InitGenerator < BaseGenerator
+    def initialize(*)
+      super
+      if @options[:cookbook_name]
+        @cookbook_name = @options[:cookbook_name]
       end
     end
-    
-    include Thor::Actions
 
     argument :path,
       type: :string,
@@ -23,14 +20,61 @@ module Berkshelf
       type: :boolean,
       default: false
 
-    def generate
-      target_path = File.expand_path(path)
+    class_option :vagrant,
+      type: :boolean,
+      default: false
 
-      template "Berksfile.erb", File.join(target_path, "Berksfile")
+    class_option :git,
+      type: :boolean,
+      default: false
+
+    class_option :foodcritic,
+      type: :boolean,
+      default: false
+
+    class_option :no_bundler,
+      type: :boolean,
+      default: false
+
+    class_option :cookbook_name,
+      type: :string
+
+    def generate
+      template "Berksfile.erb", target.join("Berksfile")
 
       if options[:chefignore]
-        copy_file "chefignore", File.join(target_path, "chefignore")
+        copy_file "chefignore", target.join("chefignore")
+      end
+
+      if options[:git]
+        copy_file "gitignore", target.join(".gitignore")
+      end
+
+      if options[:foodcritic]
+        copy_file "Thorfile", target.join("Thorfile")
+      end
+
+      unless options[:no_bundler]
+        template "Gemfile.erb", target.join("Gemfile")
+      end
+
+      if options[:vagrant]
+        template "Vagrantfile.erb", target.join("Vagrantfile")
+        ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile"), shims: target.join("cookbooks")).invoke(:install)
       end
     end
+
+    private
+
+      def cookbook_name
+        @cookbook_name ||= begin
+          metadata = Chef::Cookbook::Metadata.new
+          
+          metadata.from_file(target.join("metadata.rb").to_s)
+          metadata.name.empty? ? File.basename(target) : metadata.name
+        rescue IOError
+          File.basename(target)
+        end
+      end
   end
 end
