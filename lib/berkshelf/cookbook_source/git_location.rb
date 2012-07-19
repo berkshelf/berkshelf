@@ -52,6 +52,7 @@ module Berkshelf
         end
 
         cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(tmp_clone)}")
+        FileUtils.rm_rf(cb_path)
         FileUtils.mv(tmp_clone, cb_path, force: true)
                 
         cached = CachedCookbook.from_store_path(cb_path)
