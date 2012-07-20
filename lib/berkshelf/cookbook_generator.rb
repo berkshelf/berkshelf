@@ -21,6 +21,10 @@ module Berkshelf
       type: :boolean,
       default: false
 
+    class_option :scmversion,
+      type: :boolean,
+      default: false
+
     class_option :no_bundler,
       type: :boolean,
       default: false

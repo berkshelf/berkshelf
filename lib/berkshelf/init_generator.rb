@@ -32,6 +32,10 @@ module Berkshelf
       type: :boolean,
       default: false
 
+    class_option :scmversion,
+      type: :boolean,
+      default: false
+
     class_option :no_bundler,
       type: :boolean,
       default: false
@@ -46,12 +50,21 @@ module Berkshelf
         copy_file "chefignore", target.join("chefignore")
       end
 
-      if options[:git]
-        copy_file "gitignore", target.join(".gitignore")
+      if options[:git] || options[:scmversion]
+        template "gitignore.erb", target.join(".gitignore")
+        unless File.exists?(target.join(".git"))
+          inside target do
+            run "git init"
+          end
+        end
       end
 
-      if options[:foodcritic]
-        copy_file "Thorfile", target.join("Thorfile")
+      if options[:foodcritic] || options[:scmversion]
+        template "Thorfile.erb", target.join("Thorfile")
+      end
+
+      if options[:scmversion]
+        create_file target.join("VERSION"), "0.0.1"
       end
 
       unless options[:no_bundler]

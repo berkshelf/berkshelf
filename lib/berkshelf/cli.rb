@@ -93,7 +93,7 @@ module Berkshelf
       berksfile.upload(Chef::Config[:chef_server_url], options)
     end
 
-    desc "init [PATH]", "Prepare a local path to have it's Cookbook dependencies managed by Berkshelf."
+    desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf."
     def init(path = Dir.pwd)
       if File.chef_cookbook?(path)
         options[:chefignore] = true
@@ -121,6 +121,9 @@ module Berkshelf
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+    method_option :scmversion,
+      type: :boolean,
+      desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"
     method_option :no_bundler,
       type: :boolean,
       desc: "Skips generation of a Gemfile and other Bundler specific support"

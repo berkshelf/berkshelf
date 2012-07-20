@@ -2,5 +2,10 @@
 
 require 'bundler'
 require 'bundler/setup'
+<% if options[:foodcritic] -%>
 require 'thor/foodcritic'
+<% end -%>
+<% if options[:scmversion] -%>
+require 'thor/scmversion'
+<% end -%>
 require 'berkshelf/thor'
