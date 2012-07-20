@@ -26,6 +26,12 @@ Feature: cookbook command
     Then I should have a new cookbook skeleton "sparkle_motion" with Foodcritic support
     And the exit status should be 0
 
+  Scenario: creating a new cookbook skeleton with SCMVersion support
+    When I run the cookbook command to create "sparkle_motion" with options:
+      | --scmversion |
+    Then I should have a new cookbook skeleton "sparkle_motion" with SCMVersion support
+    And the exit status should be 0
+
   Scenario: creating a new cookbook skeleton without Bundler support
     When I run the cookbook command to create "sparkle_motion" with options:
       | --no-bundler |

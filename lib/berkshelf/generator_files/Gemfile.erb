@@ -4,6 +4,9 @@ gem 'berkshelf'
 <% if options[:foodcritic] -%>
 gem 'thor-foodcritic'
 <% end -%>
+<% if options[:scmversion] -%>
+gem 'thor-scmversion'
+<% end -%>
 <% if options[:vagrant] -%>
 gem 'vagrant', '~> 1.0.3'
 <% end -%>
