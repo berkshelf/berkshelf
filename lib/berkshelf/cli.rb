@@ -93,7 +93,7 @@ module Berkshelf
       berksfile.upload(Chef::Config[:chef_server_url], options)
     end
 
-    desc "init [PATH]", "Prepare a local path to have it's Cookbook dependencies managed by Berkshelf."
+    desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf."
     def init(path = Dir.pwd)
       if File.chef_cookbook?(path)
         options[:chefignore] = true
