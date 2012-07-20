@@ -121,6 +121,9 @@ module Berkshelf
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+    method_option :scmversion,
+      type: :boolean,
+      desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"
     method_option :no_bundler,
       type: :boolean,
       desc: "Skips generation of a Gemfile and other Bundler specific support"

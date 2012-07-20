@@ -92,9 +92,29 @@ module Berkshelf
 
       specify do
         target.should have_structure {
-          file "Thorfile"
+          file "Thorfile" do
+            contains "require 'thor/foodcritic'"
+          end
           file "Gemfile" do
             contains "gem 'thor-foodcritic'"
+          end
+        }
+      end
+    end
+
+    context "with the scmversion option true" do
+      before do
+        generator = subject.new([target], scmversion: true)
+        capture(:stdout) { generator.invoke_all }
+      end
+
+      specify do
+        target.should have_structure {
+          file "Thorfile" do
+            contains "require 'thor/scmversion'"
+          end
+          file "Gemfile" do
+            contains "gem 'thor-scmversion'"
           end
         }
       end

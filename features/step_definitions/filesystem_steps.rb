@@ -132,7 +132,23 @@ Then /^I should have a new cookbook skeleton "(.*?)" with Foodcritic support$/ d
     file "Gemfile" do
       contains "gem 'thor-foodcritic'"
     end
-    file "Thorfile"
+    file "Thorfile" do
+      contains "require 'thor/foodcritic'"
+    end
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" with SCMVersion support$/ do |name|
+  steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
+
+  cb_path = Pathname.new(current_dir).join(name)
+  cb_path.should have_structure {
+    file "Gemfile" do
+      contains "gem 'thor-scmversion'"
+    end
+    file "Thorfile" do
+      contains "require 'thor/scmversion'"
+    end
   }
 end
 
