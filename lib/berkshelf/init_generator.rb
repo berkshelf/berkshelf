@@ -52,6 +52,11 @@ module Berkshelf
 
       if options[:git] || options[:scmversion]
         template "gitignore.erb", target.join(".gitignore")
+        unless File.exists?(target.join(".git"))
+          inside target do
+            run "git init"
+          end
+        end
       end
 
       if options[:foodcritic] || options[:scmversion]
