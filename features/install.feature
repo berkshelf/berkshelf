@@ -71,8 +71,8 @@ Feature: install cookbooks from a Berksfile
     When I run the install command with flags:
       | --shims |
     Then the following directories should exist:
-      | cookbooks                              |
-      | cookbooks/example_cookbook_broken_link |
+      | cookbooks                  |
+      | cookbooks/example_cookbook |
     And the output should contain:
       """
       Shims written to: 
