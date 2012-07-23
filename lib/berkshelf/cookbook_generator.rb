@@ -21,9 +21,25 @@ module Berkshelf
       type: :boolean,
       default: false
 
+    class_option :scmversion,
+      type: :boolean,
+      default: false
+
     class_option :no_bundler,
       type: :boolean,
       default: false
+
+    class_option :license,
+      type: :string,
+      default: "reserved"
+
+    class_option :maintainer,
+      type: :string,
+      default: "YOUR_NAME"
+
+    class_option :maintainer_email,
+      type: :string,
+      default: "YOUR_EMAIL"
 
     def generate
       empty_directory target.join("files/default")
@@ -34,15 +50,60 @@ module Berkshelf
       empty_directory target.join("providers")
       empty_directory target.join("recipes")
       empty_directory target.join("resources")
-      
-      create_file target.join("recipes/default.rb")
-      create_file target.join("README.md")
-      create_file target.join("metadata.rb")
+            
+      template "default_recipe.erb", target.join("recipes/default.rb")
+      template "metadata.rb.erb", target.join("metadata.rb")
+      template license_file, target.join("LICENSE")
+      template "README.md.erb", target.join("README.md")
 
       ::Berkshelf::InitGenerator.new([target], options.merge(default_options)).invoke_all
     end
 
     private
+
+      def commented(content)
+        content.split("\n").collect { |s| "# #{s}" }.join("\n")
+      end
+
+      def license_name
+        case options[:license]
+        when "apachev2"; "Apache 2.0"
+        when "gplv2"; "GNU Public License 2.0"
+        when "gplv3"; "GNU Public License 3.0"
+        when "mit"; "MIT"
+        when "reserved"; "All rights reserved"
+        else
+          raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
+        end
+      end
+
+      def license
+        ERB.new(File.read(File.join(self.class.source_root, license_file))).result(binding)
+      end
+
+      def license_file
+        case options[:license]
+        when "apachev2"; "licenses/apachev2.erb"
+        when "gplv2"; "licenses/gplv2.erb"
+        when "gplv3"; "licenses/gplv3.erb"
+        when "mit"; "licenses/mit.erb"
+        when "reserved"; "licenses/reserved.erb"
+        else
+          raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
+        end
+      end
+
+      def copyright_year
+        Time.now.year
+      end
+
+      def maintainer
+        options[:maintainer]
+      end
+
+      def maintainer_email
+        options[:maintainer_email]
+      end
 
       def default_options
         { metadata_entry: true, chefignore: true, cookbook_name: name }
