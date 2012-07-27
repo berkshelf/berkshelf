@@ -3,6 +3,8 @@ Vagrant::Config.run do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
+  config.vm.host_name = "<%= cookbook_name %>-berkshelf"
+
   # CentOS 6.3
   config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal"
   config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box"
@@ -48,4 +50,14 @@ Vagrant::Config.run do |config|
       "recipe[<%= cookbook_name %>::default]"
     ]
   end
+
+  # config.vm.provision :chef_client do |chef|
+  #   chef.chef_server_url = 'https://api.opscode.com/organizations/vialstudios'
+  #   chef.validation_client_name = 'vialstudios-validator'
+  #   chef.validation_key_path = '/Users/reset/.chef/vialstudios-validator.pem'
+  #
+  #   chef.run_list = [
+  #     "recipe[<%= cookbook_name %>::default]"
+  #   ]
+  # end
 end
