@@ -47,3 +47,6 @@ features/*
 Berksfile
 Berksfile.lock
 cookbooks/*
+
+# Vagrant
+.vagrant
