@@ -63,6 +63,8 @@ module FileUtils
     class Entry_ #:nodoc:
       def link(dest)
         case
+        when broken_symlink?
+          warn "#{path} is a broken symlink. No link created."
         when directory?
           if !File.exist?(dest) and descendant_diretory?(dest, path)
             raise ArgumentError, "cannot link directory %s to itself %s" % [path, dest]
@@ -76,5 +78,13 @@ module FileUtils
           File.link path(), dest
         end
       end
+
+      # Check if the file at path is a broken symlink
+      #
+      # @return [Boolean]
+      def broken_symlink?
+        File.symlink?(path) && !File.exists?(File.readlink(path))
+      end
+
     end
 end

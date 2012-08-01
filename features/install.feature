@@ -65,6 +65,20 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
+  Scenario: installing a Berksfile that contains a path location which contains a broken symlink
+    Given a Berksfile with path location sources to fixtures:
+      | example_cookbook_broken_link | example_cookbook_broken_link |
+    When I run the install command with flags:
+      | --shims |
+    Then the following directories should exist:
+      | cookbooks                  |
+      | cookbooks/example_cookbook |
+    And the output should contain:
+      """
+      Shims written to: 
+      """
+    And the exit status should be 0
+
   Scenario: installing a Berksfile that contains a Git location
     Given I write to "Berksfile" with:
       """
