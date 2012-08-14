@@ -59,7 +59,7 @@ module Berkshelf
       #   a checksum that can be used to uniquely identify the file understood
       #   by a Chef Server.
       def checksum(filepath)
-        Chef::ChecksumCache.generate_md5_checksum_for_file(filepath) if File.exist?(filepath)
+        Chef::ChecksumCache.generate_md5_checksum_for_file(filepath)
       end
     end
 
