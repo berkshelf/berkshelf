@@ -209,7 +209,11 @@ module Berkshelf
     #
     # @return [Berksfile]
     def load(content)
-      instance_eval(content)
+      begin
+        instance_eval(content)
+      rescue => e
+        raise BerksfileReadError.new(e), "An error occurred while reading the Berksfile: #{e.message}"
+      end
       self
     end
 
