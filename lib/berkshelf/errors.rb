@@ -60,5 +60,15 @@ module Berkshelf
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
   class InvalidChefAPILocation < BerkshelfError; status_code(112); end
-  class BerksfileReadError < BerkshelfError; status_code(113); end
+  class BerksfileReadError < BerkshelfError
+    def initialize(original_error)
+      @original_error = original_error
+    end
+
+    status_code(113)
+
+    def status_code
+      @original_error ? @original_error.status_code : 113
+    end
+  end
 end
