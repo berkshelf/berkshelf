@@ -5,6 +5,12 @@ module Berkshelf
 
     module Formatter
 
+      def before_hook
+      end
+
+      def after_hook
+      end
+
       def install(cookbook, version, location)
         raise MethodNotImplmentedError, "#install must be implemented on #{self.class}"
       end

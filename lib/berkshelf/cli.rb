@@ -145,6 +145,12 @@ module Berkshelf
       ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
     end
 
+    def self.dispatch(meth, given_args, given_opts, config)
+      Berkshelf.formatter.before_hook
+      super
+      Berkshelf.formatter.after_hook
+    end
+
     private
 
       def version_header
