@@ -102,14 +102,14 @@ module Berkshelf
 
       ::Berkshelf::InitGenerator.new([path], options).invoke_all
 
-      ::Berkshelf.ui.info "Successfully initialized"
+      ::Berkshelf.formatter.msg "Successfully initialized"
     end
 
     desc "version", "Display version and copyright information"
     def version
-      Berkshelf.ui.info version_header
-      Berkshelf.ui.info "\n"
-      Berkshelf.ui.info license
+      Berkshelf.formatter.msg version_header
+      Berkshelf.formatter.msg "\n"
+      Berkshelf.formatter.msg license
     end
 
     method_option :vagrant,
