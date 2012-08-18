@@ -46,6 +46,7 @@ module Berkshelf
     attr_accessor :downloader
 
     attr_writer :config_path
+    attr_writer :formatter_class
 
     def root
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
@@ -113,10 +114,6 @@ module Berkshelf
 
     def formatter
       @formatter ||= (@formatter_class || Formatters::HumanReadable).new
-    end
-
-    def formatter_class=(klass)
-      @formatter_class = klass
     end
 
     private
