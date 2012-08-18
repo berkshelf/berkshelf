@@ -5,7 +5,11 @@ module Berkshelf
 
     module Formatter
 
-      def install(cookbook, version, location, cached=false)
+      def install(cookbook, version, location)
+        raise MethodNotImplmentedError, "#install must be implemented on #{self.class}"
+      end
+
+      def use(cookbook, version, path=nil)
         raise MethodNotImplmentedError, "#install must be implemented on #{self.class}"
       end
 

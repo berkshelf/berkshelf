@@ -12,6 +12,10 @@ require 'berkshelf/version'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 
+# require the formatters
+Dir[File.join(File.dirname(__FILE__), 'berkshelf', 'formatters', '*.rb')].each {|f| require f}
+
+
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
 module Berkshelf
@@ -105,6 +109,14 @@ module Berkshelf
           return potential_root.join('metadata.rb')
         end
       end
+    end
+
+    def formatter
+      @formatter ||= (@formatter_class || Formatters::HumanReadable).new
+    end
+
+    def formatter_class=(klass)
+      @formatter_class = klass
     end
 
     private

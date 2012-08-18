@@ -45,5 +45,29 @@ describe Berkshelf do
         subject.load_config
       end
     end
+
+    describe "::formatter" do
+      context "with default formatter" do
+        it "should be human readable" do
+          Berkshelf.formatter.should be_an_instance_of(Berkshelf::Formatters::HumanReadable)
+        end
+      end
+
+      context "with a custom formatter" do
+        before(:all) do
+          Berkshelf.instance_eval { @formatter = nil }
+        end
+
+        class CustomFormatter ; include Berkshelf::Formatters::Formatter ; end
+
+        before do
+          Berkshelf.formatter_class = CustomFormatter
+        end
+
+        it "should be the custom class" do
+          Berkshelf.formatter.should be_an_instance_of(CustomFormatter)
+        end
+      end
+    end
   end
 end
