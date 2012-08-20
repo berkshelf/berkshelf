@@ -152,9 +152,8 @@ module Berkshelf
     end
 
     def self.dispatch(meth, given_args, given_opts, config)
-      Berkshelf.formatter.before_hook
       super
-      Berkshelf.formatter.after_hook
+      Berkshelf.formatter.cleanup_hook
     end
 
     private

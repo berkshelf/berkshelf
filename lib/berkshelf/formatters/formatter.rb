@@ -5,10 +5,8 @@ module Berkshelf
 
     module Formatter
 
-      def before_hook
-      end
-
-      def after_hook
+      def cleanup_hook
+        # run after the task is finished
       end
 
       def install(cookbook, version, location)
