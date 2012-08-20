@@ -58,7 +58,6 @@ module Berkshelf
 
       let(:readonly_uri) { "git://github.com/reset/thor-foodcritic.git" }
       let(:https_uri) { "https://github.com/reset/solve.git" }
-      let(:ssh_uri) { "git@github.com:reset/solve.git" }
       let(:http_uri) { "http://github.com/reset/solve.git" }
       let(:invalid_uri) { "/something/on/disk" }
 
@@ -75,9 +74,15 @@ module Berkshelf
           end
         end
 
-        context "given a valid Git SSH URI" do
+        context "given a valid Github SSH URI" do
           it "returns true" do
-            subject.validate_uri(ssh_uri).should be_true
+            subject.validate_uri("git@github.com:reset/solve.git").should be_true
+          end
+        end
+
+        context "given a valid SSH URI without an 'organization'" do
+          it "returns true" do
+            subject.validate_uri("gituser@githost:solve.git").should be_true
           end
         end
 
@@ -115,7 +120,13 @@ module Berkshelf
 
         context "given a valid Git SSH URI" do
           it "returns true" do
-            subject.validate_uri!(ssh_uri).should be_true
+            subject.validate_uri!("git@github.com:reset/solve.git").should be_true
+          end
+        end
+
+        context "given a valid SSH URI without an 'organization'" do
+          it "returns true" do
+            subject.validate_uri("gituser@githost:solve.git").should be_true
           end
         end
 
