@@ -5,7 +5,7 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Git
     GIT_REGEXP = URI.regexp(%w{ https git })
-    SSH_REGEXP = /(.+)@(.+):(.+)\/(.+)\.git/
+    SSH_REGEXP = /(.+)@(.+):(.+)\.git/
 
     class << self
       # @overload git(commands)
