@@ -9,6 +9,7 @@ module Berkshelf
       # JW TODO: Replace Chef::Knife::UI with our own UI class
       ::Berkshelf.ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
       ::Berkshelf.config_path = @options[:config]
+      ::Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
 
@@ -26,6 +27,11 @@ module Berkshelf
       desc: "Path to Knife or Chef configuration to use.",
       aliases: "-c",
       banner: "PATH"
+    class_option :format,
+      type: :string,
+      desc: "Output format to use.",
+      aliases: "-F",
+      banner: "FORMAT"
 
     method_option :shims,
       type: :string,

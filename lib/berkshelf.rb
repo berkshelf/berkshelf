@@ -113,7 +113,12 @@ module Berkshelf
     end
 
     def formatter
-      @formatter ||= (@formatter_class || Formatters::HumanReadable).new
+      @formatter ||= (@formatter_class || @_format == "json" ? Formatters::JSON : Formatters::HumanReadable).new
+    end
+
+    def set_format(format)
+      @_format = format
+      @formatter = nil
     end
 
     private
