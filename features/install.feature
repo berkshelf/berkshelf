@@ -65,6 +65,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
+  @wip
   Scenario: installing a Berksfile that contains a path location which contains a broken symlink
     Given a Berksfile with path location sources to fixtures:
       | example_cookbook_broken_link | example_cookbook_broken_link |
