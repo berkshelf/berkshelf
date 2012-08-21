@@ -258,10 +258,10 @@ Feature: install cookbooks from a Berksfile
     When I run the install command
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from chef_api:
+      Installing artifact (0.10.2) from chef_api:
       """
     And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
+      | artifact | 0.10.2 |
     And the exit status should be 0
 
   Scenario: with a chef_api source location specifying :knife when a Knife config is not found at the given path

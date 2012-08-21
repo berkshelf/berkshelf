@@ -126,7 +126,7 @@ module Berkshelf
       solution = resolver.resolve
       if options[:shims]
         write_shims(options[:shims], solution)
-        Berkshelf.ui.info "Shims written to: '#{options[:shims]}'"
+        Berkshelf.formatter.shims_written options[:shims]
       end
       write_lockfile(resolver.sources) unless lockfile_present?
     end
@@ -153,7 +153,7 @@ module Berkshelf
       solution = resolve(options)
 
       solution.each do |cb|
-        Berkshelf.ui.info "Uploading #{cb.cookbook_name} (#{cb.version}) to: '#{chef_server_url}'"
+        Berkshelf.formatter.upload cb.cookbook_name, cb.version, chef_server_url
         uploader.upload!(cb, options)
       end
     end
@@ -212,7 +212,7 @@ module Berkshelf
       begin
         instance_eval(content)
       rescue => e
-        raise BerksfileReadError.new(e), "An error occurred while reading the Berksfile: #{e.message}"
+        raise BerksfileReadError.new(e), "An error occurred while reading the Berksfile: #{e.to_s}"
       end
       self
     end

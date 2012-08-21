@@ -54,6 +54,10 @@ When /^I run the upload command$/ do
   run_simple(unescape("berks upload"), true)
 end
 
+When /^I run the upload command with flags:$/ do |flags|
+  run_simple(unescape("berks upload #{flags.raw.join(" ")}"), false)
+end
+
 When /^I run the cookbook command to create "(.*?)"$/ do |name|
   run_simple(unescape("berks cookbook #{name}"))
 end
