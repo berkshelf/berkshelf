@@ -4,6 +4,13 @@ require 'berkshelf'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Cli < Thor
+    class << self
+      def dispatch(meth, given_args, given_opts, config)
+        super
+        Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+      end
+    end
+    
     def initialize(*)
       super
       # JW TODO: Replace Chef::Knife::UI with our own UI class
@@ -149,11 +156,6 @@ module Berkshelf
     desc "cookbook NAME", "Create a skeleton for a new cookbook"
     def cookbook(name)
       ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
-    end
-
-    def self.dispatch(meth, given_args, given_opts, config)
-      super
-      Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
     end
 
     private
