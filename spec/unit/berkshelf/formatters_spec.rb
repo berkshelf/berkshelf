@@ -1,13 +1,12 @@
 require 'spec_helper'
-require 'berkshelf/formatters/formatter'
 
 module Berkshelf
   module Formatters
     class TestFormatter
-      include Formatter
+      include AbstractFormatter
     end
 
-    describe Formatter do
+    describe AbstractFormatter do
       
       subject { TestFormatter.new }
 

@@ -146,7 +146,4 @@ module Berkshelf
   end
 end
 
-# require the formatters
-Dir[File.join(File.dirname(__FILE__), 'berkshelf', 'formatters', '*.rb')].each {|f| require f}
-
-
+require 'berkshelf/formatters'

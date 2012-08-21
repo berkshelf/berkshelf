@@ -1,9 +1,7 @@
-require 'berkshelf/formatters/formatter'
-
 module Berkshelf
   module Formatters
     class JSON
-      include Formatter
+      include AbstractFormatter
 
       Berkshelf.formatters["json"] = self
 

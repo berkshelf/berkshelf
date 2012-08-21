@@ -1,9 +1,7 @@
-require 'berkshelf/formatters/formatter'
-
 module Berkshelf
   module Formatters
     class HumanReadable
-      include Formatter
+      include AbstractFormatter
 
       Berkshelf.formatters["human"] = self
 

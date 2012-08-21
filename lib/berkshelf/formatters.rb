@@ -2,7 +2,7 @@ module Berkshelf
   module Formatters
     class MethodNotImplmentedError < ::Berkshelf::InternalError ; end
 
-    module Formatter
+    module AbstractFormatter
       def cleanup_hook
         # run after the task is finished
       end
@@ -32,4 +32,8 @@ module Berkshelf
       end
     end
   end
+end
+
+Dir["#{File.dirname(__FILE__)}/formatters/*.rb"].sort.each do |path|
+  require "berkshelf/formatters/#{File.basename(path, '.rb')}"
 end
