@@ -117,7 +117,8 @@ module Berkshelf
 
     # Specify a formatter identifier
     #
-    # @param [String] which formatter to use
+    # @param [String] format
+    #   which formatter to use
     #
     # @example Berkshelf.set_format "json"
     def set_format(format)
