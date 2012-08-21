@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler'
 require 'spork'
+require "json_spec/cucumber"
 
 Spork.prefork do
   require 'rspec'
@@ -50,6 +51,11 @@ Spork.prefork do
 
   def fixtures_path
     app_root_path.join('spec/fixtures')
+  end
+
+  # Set the output json_spec will parse for testing JSON responses
+  def last_json
+    all_output
   end
 end
 

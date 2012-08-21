@@ -4,11 +4,19 @@ require 'berkshelf'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Cli < Thor
+    class << self
+      def dispatch(meth, given_args, given_opts, config)
+        super
+        Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+      end
+    end
+    
     def initialize(*)
       super
       # JW TODO: Replace Chef::Knife::UI with our own UI class
       ::Berkshelf.ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
       ::Berkshelf.config_path = @options[:config]
+      ::Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
 
@@ -26,6 +34,11 @@ module Berkshelf
       desc: "Path to Knife or Chef configuration to use.",
       aliases: "-c",
       banner: "PATH"
+    class_option :format,
+      type: :string,
+      desc: "Output format to use.",
+      aliases: "-F",
+      banner: "FORMAT"
 
     method_option :shims,
       type: :string,
@@ -44,7 +57,7 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "install", "Install the Cookbooks specified by a Berksfile or a Berskfile.lock."
+    desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock."
     def install
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
@@ -102,14 +115,14 @@ module Berkshelf
 
       ::Berkshelf::InitGenerator.new([path], options).invoke_all
 
-      ::Berkshelf.ui.info "Successfully initialized"
+      ::Berkshelf.formatter.msg "Successfully initialized"
     end
 
     desc "version", "Display version and copyright information"
     def version
-      Berkshelf.ui.info version_header
-      Berkshelf.ui.info "\n"
-      Berkshelf.ui.info license
+      Berkshelf.formatter.msg version_header
+      Berkshelf.formatter.msg "\n"
+      Berkshelf.formatter.msg license
     end
 
     method_option :vagrant,

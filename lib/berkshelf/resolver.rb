@@ -126,7 +126,7 @@ module Berkshelf
       # @return [Boolean]
       def install_source(source)
         downloader.download!(source)
-        Berkshelf.ui.info "Installing #{source.name} (#{source.cached_cookbook.version}) from #{source.location}"
+        Berkshelf.formatter.install source.name, source.cached_cookbook.version, source.location
       end
 
       # Use the given source to create a constraint solution if the source has been downloaded or can
@@ -158,9 +158,8 @@ module Berkshelf
           get_source(source).cached_cookbook = cached
         end
 
-        msg = "Using #{cached.cookbook_name} (#{cached.version})"
-        msg << " at #{source.location}" if source.location.is_a?(CookbookSource::PathLocation)
-        Berkshelf.ui.info msg
+        path = source.location.is_a?(CookbookSource::PathLocation) ? "#{source.location}" : nil
+        Berkshelf.formatter.use cached.cookbook_name, cached.version, path
 
         true
       end

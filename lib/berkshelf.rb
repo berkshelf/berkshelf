@@ -107,6 +107,33 @@ module Berkshelf
       end
     end
 
+    # Get the appropriate Formatter object based on the formatter
+    # classes that have been registered.
+    #
+    # @return [~Formatter]
+    def formatter
+      @formatter ||= (formatters.has_key?(@_format) ? formatters[@_format] : Formatters::HumanReadable).new
+    end
+
+    # Specify a formatter identifier
+    #
+    # @param [String] format
+    #   which formatter to use
+    #
+    # @example Berkshelf.set_format "json"
+    def set_format(format)
+      @_format = format
+      @formatter = nil
+    end
+
+    # Access the formatters map that links string symbols to Formatter
+    # implementations
+    #
+    # @return [Hash]
+    def formatters
+      @formatters ||= {}
+    end
+
     private
 
       def null_stream
@@ -119,3 +146,5 @@ module Berkshelf
       end
   end
 end
+
+require 'berkshelf/formatters'

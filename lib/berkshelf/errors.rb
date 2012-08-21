@@ -12,6 +12,8 @@ module Berkshelf
   end
 
   class InternalError < BerkshelfError; status_code(99); end
+  class MethodNotImplmentedError < ::Berkshelf::InternalError ; end
+  
   class BerksfileNotFound < BerkshelfError; status_code(100); end
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DownloadFailure < BerkshelfError; status_code(102); end
@@ -60,5 +62,15 @@ module Berkshelf
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
   class InvalidChefAPILocation < BerkshelfError; status_code(112); end
-  class BerksfileReadError < BerkshelfError; status_code(113); end
+  class BerksfileReadError < BerkshelfError
+    def initialize(original_error)
+      @original_error = original_error
+    end
+
+    status_code(113)
+
+    def status_code
+      @original_error ? @original_error.status_code : 113
+    end
+  end
 end
