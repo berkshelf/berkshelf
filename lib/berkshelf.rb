@@ -112,10 +112,18 @@ module Berkshelf
       end
     end
 
+    # Get the appropriate Formatter object
+    #
+    # @return [~Formatter]
     def formatter
       @formatter ||= (@formatter_class || @_format == "json" ? Formatters::JSON : Formatters::HumanReadable).new
     end
 
+    # Specify a formatter identifier
+    #
+    # @param [String] which formatter to use
+    #
+    # @example Berkshelf.set_format "json"
     def set_format(format)
       @_format = format
       @formatter = nil
