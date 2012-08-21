@@ -59,7 +59,7 @@ describe Berkshelf do
         end
 
         class CustomFormatter
-          include Berkshelf::Formatters::Formatter
+          include Berkshelf::Formatters::AbstractFormatter
           Berkshelf.formatters["custom"] = self
         end
 
