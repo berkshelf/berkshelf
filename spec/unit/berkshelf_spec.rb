@@ -58,10 +58,13 @@ describe Berkshelf do
           Berkshelf.instance_eval { @formatter = nil }
         end
 
-        class CustomFormatter ; include Berkshelf::Formatters::Formatter ; end
+        class CustomFormatter
+          include Berkshelf::Formatters::Formatter
+          Berkshelf.formatters["custom"] = self
+        end
 
         before do
-          Berkshelf.formatter_class = CustomFormatter
+          Berkshelf.set_format "custom"
         end
 
         it "should be the custom class" do

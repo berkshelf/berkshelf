@@ -5,6 +5,8 @@ module Berkshelf
     class HumanReadable
       include Formatter
 
+      Berkshelf.formatters["human"] = self
+
       def install(cookbook, version, location)
         Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location}"
       end

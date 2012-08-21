@@ -12,10 +12,6 @@ require 'berkshelf/version'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 
-# require the formatters
-Dir[File.join(File.dirname(__FILE__), 'berkshelf', 'formatters', '*.rb')].each {|f| require f}
-
-
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
 module Berkshelf
@@ -46,7 +42,6 @@ module Berkshelf
     attr_accessor :downloader
 
     attr_writer :config_path
-    attr_writer :formatter_class
 
     def root
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
@@ -112,11 +107,12 @@ module Berkshelf
       end
     end
 
-    # Get the appropriate Formatter object
+    # Get the appropriate Formatter object based on the formatter
+    # classes that have been registered.
     #
     # @return [~Formatter]
     def formatter
-      @formatter ||= (@formatter_class || @_format == "json" ? Formatters::JSON : Formatters::HumanReadable).new
+      @formatter ||= (formatters.has_key?(@_format) ? formatters[@_format] : Formatters::HumanReadable).new
     end
 
     # Specify a formatter identifier
@@ -127,6 +123,14 @@ module Berkshelf
     def set_format(format)
       @_format = format
       @formatter = nil
+    end
+
+    # Access the formatters map that links string symbols to Formatter
+    # implementations
+    #
+    # @return [Hash]
+    def formatters
+      @formatters ||= {}
     end
 
     private
@@ -141,3 +145,8 @@ module Berkshelf
       end
   end
 end
+
+# require the formatters
+Dir[File.join(File.dirname(__FILE__), 'berkshelf', 'formatters', '*.rb')].each {|f| require f}
+
+

@@ -5,6 +5,8 @@ module Berkshelf
     class JSON
       include Formatter
 
+      Berkshelf.formatters["json"] = self
+
       def initialize
         @output = {cookbooks: [], errors: [], messages: []}
         @cookbooks = {}
