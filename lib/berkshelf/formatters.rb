@@ -2,6 +2,10 @@ module Berkshelf
   module Formatters
     class MethodNotImplmentedError < ::Berkshelf::InternalError ; end
 
+    # @abstract Include and override {#install} {#use} {#upload} 
+    #   {#shims_written} {#msg} {#error} to implement.
+    #
+    #   Implement {#cleanup_hook} to run any steps required to run after the task is finished
     module AbstractFormatter
       def cleanup_hook
         # run after the task is finished
@@ -11,7 +15,7 @@ module Berkshelf
         raise MethodNotImplmentedError, "#install must be implemented on #{self.class}"
       end
 
-      def use(cookbook, version, path=nil)
+      def use(cookbook, version, path = nil)
         raise MethodNotImplmentedError, "#install must be implemented on #{self.class}"
       end
 
