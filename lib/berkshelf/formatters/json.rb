@@ -6,38 +6,48 @@ module Berkshelf
       include Formatter
 
       def initialize
-        @output = {}
+        @output = {cookbooks: [], errors: [], messages: []}
+        @cookbooks = {}
         super
       end
 
       def cleanup_hook
+        @cookbooks.each do |name, details|
+          details[:name] = name
+          @output[:cookbooks] << details
+        end
         print @output.to_json
       end
 
       def install(cookbook, version, location)
-        @output['cookbooks'] ||= []
-        @output['cookbooks'] << {name: cookbook, version: version, location: location}
+        @cookbooks[cookbook] ||= {}
+        @cookbooks[cookbook][:version] = version
+        @cookbooks[cookbook][:location] = location
       end
 
-      # def use(cookbook, version, path=nil)
-      #   Berkshelf.ui.info "Using #{cookbook} (#{version})#{' at '+path if path}"
-      # end
+      def use(cookbook, version, path=nil)
+        @cookbooks[cookbook] ||= {}
+        @cookbooks[cookbook][:version] = version
+        @cookbooks[cookbook][:location] = path if path
+      end
 
-      # def upload(cookbook, version, chef_server_url)
-      #   Berkshelf.ui.info "Uploading #{cookbook} (#{version}) to: '#{chef_server_url}'"
-      # end
+      def upload(cookbook, version, chef_server_url)
+        @cookbooks[cookbook] ||= {}
+        @cookbooks[cookbook][:version] = version
+        @cookbooks[cookbook][:uploaded_to] = chef_server_url
+      end
 
-      # def shims_written(directory)
-      #   Berkshelf.ui.info "Shims written to: '#{directory}'"
-      # end
+      def shims_written(directory)
+        @output[:shims_dir] = directory
+      end
 
-      # def msg(message)
-      #   Berkshelf.ui.info message
-      # end
+      def msg(message)
+        @output[:messages] << message
+      end
 
-      # def error(message)
-      #   Berkshelf.ui.error message
-      # end
+      def error(message)
+        @output[:errors] << message
+      end
     end
   end
 end
