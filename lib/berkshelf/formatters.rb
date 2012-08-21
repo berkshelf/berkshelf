@@ -1,7 +1,5 @@
 module Berkshelf
   module Formatters
-    class MethodNotImplmentedError < ::Berkshelf::InternalError ; end
-
     # @abstract Include and override {#install} {#use} {#upload} 
     #   {#shims_written} {#msg} {#error} to implement.
     #

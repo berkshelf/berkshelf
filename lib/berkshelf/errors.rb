@@ -12,6 +12,8 @@ module Berkshelf
   end
 
   class InternalError < BerkshelfError; status_code(99); end
+  class MethodNotImplmentedError < ::Berkshelf::InternalError ; end
+  
   class BerksfileNotFound < BerkshelfError; status_code(100); end
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DownloadFailure < BerkshelfError; status_code(102); end
