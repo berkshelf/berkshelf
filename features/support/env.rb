@@ -53,6 +53,7 @@ Spork.prefork do
     app_root_path.join('spec/fixtures')
   end
 
+  # Set the output json_spec will parse for testing JSON responses
   def last_json
     all_output
   end

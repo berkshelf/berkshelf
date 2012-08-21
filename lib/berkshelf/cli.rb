@@ -50,7 +50,7 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "install", "Install the Cookbooks specified by a Berksfile or a Berskfile.lock."
+    desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock."
     def install
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
@@ -153,7 +153,7 @@ module Berkshelf
 
     def self.dispatch(meth, given_args, given_opts, config)
       super
-      Berkshelf.formatter.cleanup_hook
+      Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
     end
 
     private
