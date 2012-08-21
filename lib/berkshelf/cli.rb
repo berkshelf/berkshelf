@@ -153,7 +153,7 @@ module Berkshelf
 
     def self.dispatch(meth, given_args, given_opts, config)
       super
-      Berkshelf.formatter.cleanup_hook
+      Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
     end
 
     private
