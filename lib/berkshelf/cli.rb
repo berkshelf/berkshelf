@@ -59,6 +59,10 @@ module Berkshelf
       banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock."
     def install
+      unless options[:shims].nil?
+        options[:shims] = File.expand_path(options[:shims])
+      end
+
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
     end

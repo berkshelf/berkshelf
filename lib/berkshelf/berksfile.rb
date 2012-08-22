@@ -182,6 +182,7 @@ module Berkshelf
     # @param [Pathname, String] path
     # @param [Array<Berkshelf::CachedCookbook>] cached_cookbooks
     def write_shims(path, cached_cookbooks)
+      path        = File.expand_path(path)
       actual_path = nil
 
       if descendant_directory?(path, Dir.pwd)

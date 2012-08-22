@@ -162,6 +162,22 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
+  Scenario: running install command with the --shims flag and a relative path
+    Given I write to "Berksfile" with:
+      """
+      cookbook "mysql", "1.2.4"
+      """
+    When I run the install command with flags:
+      | --shims relativepath |
+    Then the following directories should exist:
+      | relativepath       |
+      | relativepath/mysql |
+    And the output should contain:
+      """
+      Shims written to: 
+      """
+    And the exit status should be 0
+
   Scenario: running install with --shims when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"
     And the cookbook "sparkle_motion" has the file "Berksfile" with:
