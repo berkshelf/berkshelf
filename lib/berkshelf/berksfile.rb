@@ -29,9 +29,8 @@ module Berkshelf
       end
     end
 
-    # The filepath to the given Berksfile
-    #
     # @return [String]
+    #   The filepath to the given Berksfile
     attr_reader :filepath
     
     # @return [Berkshelf::Downloader]
