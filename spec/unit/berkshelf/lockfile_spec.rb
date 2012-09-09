@@ -13,7 +13,7 @@ describe Berkshelf::Lockfile do
     end
 
     it "should be able to write a Berksfile.lock from a list of cookbooks" do
-      resolver = Berkshelf::Resolver.new(Berkshelf.downloader, Berkshelf::CookbookSource.new('nginx', '= 0.101.0'))
+      resolver = Berkshelf::Resolver.new(Berkshelf.downloader, sources: Berkshelf::CookbookSource.new('nginx', constraint: '= 0.101.0'))
       resolver.resolve
 
       Berkshelf::Lockfile.new(resolver.sources).write

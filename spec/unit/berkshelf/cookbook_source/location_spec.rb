@@ -142,10 +142,10 @@ module Berkshelf
     end
 
     describe "#download" do
-      it "raises a NotImplementedError if not overridden" do
+      it "raises a AbstractFunction if not defined" do
         lambda {
           subject.download(double('destination'))
-        }.should raise_error(NotImplementedError)
+        }.should raise_error(AbstractFunction)
       end
     end
 

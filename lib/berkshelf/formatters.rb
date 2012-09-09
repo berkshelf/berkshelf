@@ -10,27 +10,27 @@ module Berkshelf
       end
 
       def install(cookbook, version, location)
-        raise MethodNotImplmentedError, "#install must be implemented on #{self.class}"
+        raise AbstractFunction, "#install must be implemented on #{self.class}"
       end
 
       def use(cookbook, version, path = nil)
-        raise MethodNotImplmentedError, "#install must be implemented on #{self.class}"
+        raise AbstractFunction, "#install must be implemented on #{self.class}"
       end
 
       def upload(cookbook, version, chef_server_url)
-        raise MethodNotImplmentedError, "#upload must be implemented on #{self.class}"
+        raise AbstractFunction, "#upload must be implemented on #{self.class}"
       end
 
       def shims_written(directory)
-        raise MethodNotImplmentedError, "#shims_written must be implemented on #{self.class}"
+        raise AbstractFunction, "#shims_written must be implemented on #{self.class}"
       end
 
       def msg(message)
-        raise MethodNotImplmentedError, "#msg must be implemented on #{self.class}"
+        raise AbstractFunction, "#msg must be implemented on #{self.class}"
       end
 
       def error(message)
-        raise MethodNotImplmentedError, "#error must be implemented on #{self.class}"
+        raise AbstractFunction, "#error must be implemented on #{self.class}"
       end
     end
   end

@@ -2,7 +2,7 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
     class << self
-      @@valid_options = [:group, :locked_version]
+      @@valid_options = [:constraint, :locations, :group, :locked_version]
       @@location_keys = Hash.new
 
       # Returns an array of valid options to pass to the initializer
@@ -48,6 +48,17 @@ module Berkshelf
 
         @@location_keys
       end
+
+      def validate_options(options)
+        invalid_options = (options.keys - valid_options)
+
+        unless invalid_options.empty?
+          invalid_options.collect! { |opt| "'#{opt}'" }
+          raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
+        end
+
+        true
+      end
     end
 
     extend Forwardable
@@ -62,69 +73,46 @@ module Berkshelf
     require 'berkshelf/cookbook_source/chef_api_location'
 
     attr_reader :name
-    alias_method :to_s, :name
-
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
     attr_accessor :cached_cookbook
 
-    def_delegator :@location, :downloaded?
-
-    # @overload initialize(name, version_constraint, options = {})
-    #   @param [#to_s] name
-    #   @param [#to_s] version_constraint
-    #   @param [Hash] options
+    #  @param [String] name
+    #  @param [Hash] options
     #
-    #   @option options [String] :git
-    #     the Git URL to clone
-    #   @option options [String] :site
-    #     a URL pointing to a community API endpoint
-    #   @option options [String] :path
-    #     a filepath to the cookbook on your local disk
-    #   @option options [Symbol, Array] :group
-    #     the group or groups that the cookbook belongs to
-    #   @option options [String] :ref
-    #     the commit hash or an alias to a commit hash to clone
-    #   @option options [String] :branch
-    #     same as ref
-    #   @option options [String] :tag
-    #     same as tag
-    #   @option options [String] :locked_version
-    # @overload initialize(name, options = {})
-    #   @param [#to_s] name
-    #   @param [Hash] options
-    #
-    #   @option options [String] :git
-    #     the Git URL to clone
-    #   @option options [String] :site
-    #     a URL pointing to a community API endpoint
-    #   @option options [String] :path
-    #     a filepath to the cookbook on your local disk
-    #   @option options [Symbol, Array] :group
-    #     the group or groups that the cookbook belongs to
-    #   @option options [String] :ref
-    #     the commit hash or an alias to a commit hash to clone
-    #   @option options [String] :branch
-    #     same as ref
-    #   @option options [String] :tag
-    #     same as tag
-    #   @option options [String] :locked_version
-    def initialize(*args)
-      options = args.last.is_a?(Hash) ? args.pop : {}
-      name, constraint = args
-
+    #  @option options [String, Solve::Constraint] constraint
+    #    version constraint to resolve for this source
+    #  @option options [String] :git
+    #    the Git URL to clone
+    #  @option options [String] :site
+    #    a URL pointing to a community API endpoint
+    #  @option options [String] :path
+    #    a filepath to the cookbook on your local disk
+    #  @option options [Symbol, Array] :group
+    #    the group or groups that the cookbook belongs to
+    #  @option options [String] :ref
+    #    the commit hash or an alias to a commit hash to clone
+    #  @option options [String] :branch
+    #    same as ref
+    #  @option options [String] :tag
+    #    same as tag
+    #  @option options [String] :locked_version
+    def initialize(name, options = {})
       @name = name
-      @version_constraint = Solve::Constraint.new(constraint || ">= 0.0.0")
+      @version_constraint = Solve::Constraint.new(options[:constraint] || ">= 0.0.0")
       @groups = []
       @cached_cookbook = nil
+      @location = nil
 
-      validate_options(options)
+      self.class.validate_options(options)
 
-      @location = Location.init(name, version_constraint, options)
+      unless (options.keys & self.class.location_keys.keys).empty?
+        @location = Location.init(name, version_constraint, options)
+      end
 
       if @location.is_a?(PathLocation)
-        @cached_cookbook = CachedCookbook.from_path(@location.path)
+        @cached_cookbook = CachedCookbook.from_path(location.path)
       end
       
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
@@ -141,22 +129,12 @@ module Berkshelf
       end
     end
 
-    # @param [String] destination
-    #   destination to download to
+    # Returns true if the cookbook source has already been downloaded. A cookbook
+    # source is downloaded when a cached cookbooked is present.
     #
-    # @return [Array]
-    #   An array containing the status at index 0 and local path or error message in index 1
-    #
-    #   Example:
-    #     [ :ok, "/tmp/nginx" ]
-    #     [ :error, "Cookbook 'sparkle_motion' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks" ]
-    def download(destination)
-      self.cached_cookbook = location.download(destination)
-
-      [ :ok, self.cached_cookbook ]
-    rescue CookbookNotFound => e
-      self.cached_cookbook = nil
-      [ :error, e.message ]
+    # @return [Boolean]
+    def downloaded?
+      !self.cached_cookbook.nil?
     end
 
     def has_group?(group)
@@ -167,21 +145,10 @@ module Berkshelf
       @locked_version || cached_cookbook.version
     end
 
-    private
-
-      def set_local_path(path)
-        @local_path = path
-      end
-
-      def validate_options(options)
-        invalid_options = options.keys - self.class.valid_options
-
-        unless invalid_options.empty?
-          invalid_options.collect! { |opt| "'#{opt}'" }
-          raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
-        end
-
-        true
-      end
+    def to_s
+      msg = "#{self.name} (#{self.version_constraint}) groups: #{self.groups}"
+      msg << " location: #{self.location}" if self.location
+      msg
+    end
   end
 end

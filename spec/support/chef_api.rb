@@ -14,7 +14,7 @@ module Berkshelf
 
       def upload_cookbook(path)
         cached = CachedCookbook.from_store_path(path)
-        uploader.upload!(cached)
+        uploader.upload(cached)
       end
 
       # Remove all versions of all cookbooks from the Chef Server defined in your

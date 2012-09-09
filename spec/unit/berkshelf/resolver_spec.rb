@@ -39,13 +39,13 @@ module Berkshelf
         let(:downloader) { Berkshelf.downloader }
 
         it "adds the specified sources to the sources hash" do
-          resolver = subject.new(downloader, source)
+          resolver = subject.new(downloader, sources: source)
 
           resolver.should have_source(source.name)
         end
 
         it "adds the dependencies of the source as sources" do
-          resolver = subject.new(downloader, source)
+          resolver = subject.new(downloader, sources: source)
           
           resolver.should have_source("nginx")
           resolver.should have_source("artifact")
@@ -54,7 +54,7 @@ module Berkshelf
         context "given an array of sources" do
           it "adds each source to the sources hash" do
             sources = [source]
-            resolver = subject.new(downloader, sources)
+            resolver = subject.new(downloader, sources: sources)
 
             resolver.should have_source(sources[0].name)
           end

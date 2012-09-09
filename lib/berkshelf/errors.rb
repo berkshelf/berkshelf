@@ -12,11 +12,15 @@ module Berkshelf
   end
 
   class InternalError < BerkshelfError; status_code(99); end
-  class MethodNotImplmentedError < ::Berkshelf::InternalError ; end
-  
+  class AbstractFunction < InternalError
+    def to_s
+      "Function must be implemented on includer"
+    end
+  end
+
   class BerksfileNotFound < BerkshelfError; status_code(100); end
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
-  class DownloadFailure < BerkshelfError; status_code(102); end
+  class DuplicateLocationDefined < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError; status_code(103); end
   class GitError < BerkshelfError
     status_code(104)

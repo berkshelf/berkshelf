@@ -3,55 +3,53 @@ module Berkshelf
   class Downloader
     extend Forwardable
 
+    DEFAULT_LOCATION = {
+      type: :site,
+      value: :opscode,
+      options: Hash.new
+    }.freeze
+
+    # @return [String]
+    #   a filepath to download cookbook sources to
     attr_reader :cookbook_store
-    attr_reader :queue
+    
+    # @return [Array<Hash>]
+    #   an Array of Hashes representing each default location that can be used to attempt
+    #   to download cookbook sources which do not have an explicit location
+    attr_reader :locations
 
     def_delegators :@cookbook_store, :storage_path
 
-    def initialize(cookbook_store)
+    # @option options [Array<Hash>] locations
+    def initialize(cookbook_store, options = {})
       @cookbook_store = cookbook_store
-      @queue = []
+      @locations = options[:locations] || Array.new
     end
 
-    # Add a CookbookSource to the downloader's queue
+    # Create a location hash and add it to the end of the array of locations.
     #
-    # @param [Berkshelf::CookbookSource] source
-    # 
-    # @return [Array<Berkshelf::CookbookSource>]
-    #   the queue - an array of Berkshelf::CookbookSources
-    def enqueue(source)
-      unless validate_source(source)
-        raise ArgumentError, "Invalid CookbookSource: can only enqueue valid instances of CookbookSource."
+    # subject.add_location(:chef_api, "http://chef:8080", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem") =>
+    #   [ { type: :chef_api, value: "http://chef:8080/", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem" } ]
+    #
+    # @param [Symbol] type
+    # @param [String, Symbol] value
+    # @param [Hash] options
+    #
+    # @return [Hash]
+    def add_location(type, value, options = {})
+      if has_location?(type, value)
+        raise DuplicateLocationDefined, "A default location of type: #{type} and value: #{value} is already defined"
       end
-
-      @queue << source
-    end
-
-    # Remove a CookbookSource from the downloader's queue
-    #
-    # @param [Berkshelf::CookbookSource] source
-    #
-    # @return [Berkshelf::CookbookSource]
-    #   the CookbookSource removed from the queue
-    def dequeue(source)
-      @queue.delete(source)
-    end
-
-    # Download each CookbookSource in the queue. Upon successful download
-    # of a CookbookSource it is removed from the queue. If a CookbookSource
-    # fails to download it remains in the queue.
-    #
-    # @return [TXResultSet]
-    def download_all
-      results = TXResultSet.new
-
-      queue.each do |source|
-        results.add_result download(source)
-      end
-
-      results.success.each { |result| dequeue(result.source) }
       
-      results
+      locations.push(type: type, value: value, options: options)
+    end
+
+    # Checks the list of default locations if a location of the given type and value has already
+    # been added and returns true or false.
+    #
+    # @return [Boolean]
+    def has_location?(type, value)
+      !locations.select { |loc| loc[:type] == type && loc[:value] == value }.empty?
     end
 
     # Downloads the given CookbookSource
@@ -59,24 +57,22 @@ module Berkshelf
     # @param [CookbookSource] source
     #   the source to download
     #
-    # @return [TXResult]
+    # @return [Array]
+    #   an array containing the downloaded CachedCookbook and the Location used to download the cookbook
     def download(source)
-      status, message = source.download(storage_path)
-      TXResult.new(status, message, source)
-    end
+      cached_cookbook, location = if source.location
+        [ source.location.download(storage_path), source.location ]
+      else
+        # JW TODO: use default sources to download
+        location = CookbookSource::Location.init(source.name, source.version_constraint)
+        cached_cookbook = location.download(storage_path)
 
-    # Downloads the given CookbookSource. Raises a DownloadFailure error
-    # if the download was not successful.
-    #
-    # @param [CookbookSource] source
-    #   the source to download
-    #
-    # @return [TXResult]
-    def download!(source)
-      result = download(source)
-      raise DownloadFailure, result.message if result.failed?
-      
-      result
+        [ cached_cookbook, location ]
+      end
+
+      source.cached_cookbook = cached_cookbook
+
+      [ cached_cookbook, location ]
     end
 
     private
