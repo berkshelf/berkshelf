@@ -65,7 +65,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
-  @wip
+  @no_run
   Scenario: installing a Berksfile that contains a path location which contains a broken symlink
     Given a Berksfile with path location sources to fixtures:
       | example_cookbook_broken_link | example_cookbook_broken_link |
@@ -328,61 +328,3 @@ Feature: install cookbooks from a Berksfile
       Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name', 'client_key'.
       """
     And the CLI should exit with the status code for error "InvalidChefAPILocation"
-
-  @wip
-  Scenario: with a chef_api and site default location when the chef_api appears first and the sources do not have a location
-    Given I write to "Berksfile" with:
-      """
-      chef_api :knife
-      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      cookbook "artifact", "= 0.10.0"
-      """
-    And the Chef server has cookbooks:
-      | artifact | 0.10.0 |
-    When I run the install command
-    Then the output should contain:
-      """
-      Installing artifact (0.10.0) from chef_api:
-      """
-    And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
-    And the exit status should be 0
-
-  @wip
-  Scenario: with a chef_api and site default location when the chef_api appears first and the chef_api does not have the source
-    Given I write to "Berksfile" with:
-      """
-      chef_api :knife
-      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      cookbook "artifact", "= 0.10.0"
-      """
-    And the Chef server does not have the cookbooks:
-      | artifact | 0.10.0 |
-    When I run the install command
-    Then the output should contain:
-      """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      """
-    And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
-    And the exit status should be 0
-
-  @wip
-  Scenario: with a chef_api and site default location when the site appears first and the sources do not have a location
-    Given I write to "Berksfile" with:
-      """
-      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      chef_api :knife
-
-      cookbook "artifact", "= 0.10.0"
-      """
-    And the Chef server has cookbooks:
-      | artifact | 0.10.0 |
-    When I run the install command
-    Then the output should contain:
-      """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      """
-    And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
-    And the exit status should be 0
