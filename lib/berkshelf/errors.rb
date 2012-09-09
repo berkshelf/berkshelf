@@ -20,7 +20,7 @@ module Berkshelf
 
   class BerksfileNotFound < BerkshelfError; status_code(100); end
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
-  class DownloadFailure < BerkshelfError; status_code(102); end
+  class DuplicateLocationDefined < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError; status_code(103); end
   class GitError < BerkshelfError
     status_code(104)
@@ -77,6 +77,4 @@ module Berkshelf
       @original_error ? @original_error.status_code : 113
     end
   end
-
-  class DuplicateLocationDefined < BerkshelfError; status_code(114); end
 end
