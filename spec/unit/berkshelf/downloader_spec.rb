@@ -63,11 +63,27 @@ module Berkshelf
       end
 
       context "when the source does not have a location" do
+        before(:each) { source.stub(:location).and_return(nil) }
+
         context "and there are no default locations set" do
+          before(:each) { subject.stub(:locations).and_return(Array.new) }
+
           it "creates a default location with the given source and sends it 'download'" do
-            source.stub(:location).and_return(nil)
-            subject.stub(:locations).and_return(Array.new)
-            CookbookSource::Location.should_receive(:init).with(source.name, source.version_constraint).and_return(location)
+            CookbookSource::Location.should_receive(:init).with(source.name, source.version_constraint, site: :opscode).and_return(location)
+            location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
+            source.should_receive(:cached_cookbook=).with(cached_cookbook)
+
+            subject.download(source)
+          end
+        end
+
+        context "and there is at least one default location set" do
+          before(:each) do
+            subject.stub(:locations).and_return([{type: :chef_api, value: :knife, options: Hash.new}])
+          end
+
+          it "sends the 'download' message to the default location" do
+            CookbookSource::Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :knife).and_return(location)
             location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
             source.should_receive(:cached_cookbook=).with(cached_cookbook)
 

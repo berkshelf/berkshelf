@@ -38,7 +38,7 @@ module Berkshelf
     # @return [Hash]
     def add_location(type, value, options = {})
       if has_location?(type, value)
-        raise DuplicateLocationDefined, "A default location of type: #{type} and value: #{value} is already defined"
+        raise DuplicateLocationDefined, "A default '#{type}' location with the value '#{value}' is already defined"
       end
       
       locations.push(type: type, value: value, options: options)
@@ -63,9 +63,30 @@ module Berkshelf
       cached_cookbook, location = if source.location
         [ source.location.download(storage_path), source.location ]
       else
-        # JW TODO: use default sources to download
-        location = CookbookSource::Location.init(source.name, source.version_constraint)
-        cached_cookbook = location.download(storage_path)
+        cached_cookbook = nil
+        location = nil
+
+        default_locations = locations.dup
+        default_locations.push(DEFAULT_LOCATION)
+
+        default_locations.each do |loc|
+          location = CookbookSource::Location.init(
+            source.name,
+            source.version_constraint,
+            loc[:options].merge(loc[:type] => loc[:value])
+          )
+          begin
+            cached_cookbook = location.download(storage_path)
+            break
+          rescue
+            cached_cookbook, location = nil
+            next
+          end
+        end
+
+        if cached_cookbook.nil?
+          raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
+        end
 
         [ cached_cookbook, location ]
       end
