@@ -232,6 +232,8 @@ module Berkshelf
     #
     # @param [String] content
     #
+    # @raise [BerksfileReadError] if Berksfile contains bad content
+    #
     # @return [Berksfile]
     def load(content)
       begin
