@@ -83,6 +83,12 @@ EOF
           end
         end
 
+        if options[:recommendations]
+          options[:recommendations].each do |name, constraint|
+            metadata << "recommends '#{name}', '#{constraint}'\n"
+          end
+        end
+
         File.write(cookbook_path.join("metadata.rb"), metadata)
         cookbook_path
       end
