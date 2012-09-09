@@ -7,16 +7,11 @@ Feature: Berksfile.lock
   Scenario: Writing the Berksfile.lock
     Given I write to "Berksfile" with:
       """
-      cookbook 'ntp'
-      cookbook 'mysql', git: 'https://github.com/opscode-cookbooks/mysql.git', :ref => '190c0c2267785b7b9b303369b8a64ed04364d5f9'
+      cookbook 'ntp', '1.1.8'
       """
     When I run the install command
     Then a file named "Berksfile.lock" should exist in the current directory
     And the file "Berksfile.lock" should contain in the current directory:
       """
       cookbook 'ntp', :locked_version => '1.1.8'
-      cookbook 'mysql', :git => 'https://github.com/opscode-cookbooks/mysql.git', :ref => '190c0c2267785b7b9b303369b8a64ed04364d5f9'
-      cookbook 'openssl', :locked_version => '1.0.0'
-      cookbook 'windows', :locked_version => '1.3.2'
-      cookbook 'chef_handler', :locked_version => '1.0.6'
       """
