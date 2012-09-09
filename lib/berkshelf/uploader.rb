@@ -41,15 +41,8 @@ module Berkshelf
     #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be
     #   overwritten
     #
-    # @return [TXResult]
+    # @return [Boolean]
     def upload(cookbook, options = {})
-      upload!(cookbook, options)
-    rescue BerkshelfError => e
-      TXResult.new(:error, e.message)
-    end
-
-    # @see #upload
-    def upload!(cookbook, options = {})
       cookbook.validate!
 
       checksums = cookbook.checksums.dup
@@ -58,7 +51,7 @@ module Berkshelf
       commit_sandbox(new_sandbox)
       save_cookbook(cookbook, options)
 
-      TXResult.new(:ok, "#{cookbook.cookbook_name} (#{cookbook.version}) uploaded to: '#{server_url}'")
+      true
     end
 
     private

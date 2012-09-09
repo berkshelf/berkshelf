@@ -11,8 +11,8 @@ module Berkshelf
         context "given no location key (i.e. :git, :path, :site)" do
           let(:source) { subject.new(cookbook_name) }
 
-          it "uses a default SiteLocation pointing to the opscode community api" do
-            source.location.api_uri.should eql(subject::Location::OPSCODE_COMMUNITY_API)
+          it "sets a nil value for location" do
+            source.location.should be_nil
           end
         end
 
@@ -211,43 +211,33 @@ module Berkshelf
       end
     end
 
-    describe "#download" do
-      context "when download is successful" do
-        it "sets a CachedCookbook to the cached_cookbook attr" do
-          subject.download(tmp_path)
+    describe "#downloaded?" do
+      it "returns true if self.cached_cookbook is not nil" do
+        subject.stub(:cached_cookbook) { double('cb') }
 
-          subject.cached_cookbook.should be_a(Berkshelf::CachedCookbook)
-        end
-
-        it "returns an array containing the symbol :ok and the local_path" do
-          result = subject.download(tmp_path)
-
-          result.should be_a(Array)
-          result[0].should eql(:ok)
-          result[1].should eql(subject.cached_cookbook)
-        end
+        subject.downloaded?.should be_true
       end
 
-      context "when the download fails" do
-        let(:bad_cb_name) { "NOWAYTHISEXISTS" }
-        subject { CookbookSource.new(bad_cb_name) }
+      it "returns false if self.cached_cookbook is nil" do
+        subject.stub(:cached_cookbook) { nil }
 
-        it "returns an array containing the symbol :error and the error message" do
-          result = subject.download(tmp_path)
-
-          result.should be_a(Array)
-          result[0].should eql(:error)
-          result[1].should eql("Cookbook '#{bad_cb_name}' not found at site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
-        end
+        subject.downloaded?.should be_false
       end
     end
 
-    describe "#downloaded?" do
-      subject{ CookbookSource.new("nginx", constraint: ">= 1.0.1") }
+    describe "#to_s" do
+      it "contains the name, constraint, and groups" do
+        source = CookbookSource.new("artifact", constraint: "= 0.10.0")
+        
+        source.to_s.should eql("artifact (= 0.10.0) groups: [:default]")
+      end
 
-      it "delegates the message ':downloaded?' to the location" do
-        subject.location.should_receive(:downloaded?)
-        subject.downloaded?
+      context "given a CookbookSource with an explicit location" do
+        it "contains the name, constraint, groups, and location" do
+          source = CookbookSource.new("artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
+
+          source.to_s.should eql("artifact (= 0.10.0) groups: [:default] location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
+        end
       end
     end
   end

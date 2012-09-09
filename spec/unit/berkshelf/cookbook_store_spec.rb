@@ -87,8 +87,8 @@ module Berkshelf
 
     describe "#cookbooks" do
       before(:each) do
-        CookbookSource.new("nginx", constraint: "= 0.101.2").download(subject.storage_path)
-        CookbookSource.new("mysql", constraint: "= 1.2.6").download(subject.storage_path)
+        generate_cookbook(subject.storage_path, "nginx", "0.101.2")
+        generate_cookbook(subject.storage_path, "mysql", "1.2.6")
       end
 
       it "returns a list of CachedCookbooks" do
@@ -97,7 +97,7 @@ module Berkshelf
         end
       end
 
-      it "return an instance of CachedCookbook for every downloaded cookbook" do
+      it "contains a CachedCookbook for every cookbook in the storage path" do
         subject.cookbooks.should have(2).items
       end
 

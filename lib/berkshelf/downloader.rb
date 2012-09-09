@@ -9,15 +9,13 @@ module Berkshelf
       options: Hash.new
     }.freeze
 
-    # a filepath to download cookbook sources to
-    #
     # @return [String]
+    #   a filepath to download cookbook sources to
     attr_reader :cookbook_store
-    attr_reader :queue
-    # an Array of Hashes representing each default location that can be used to attempt
-    # to download cookbook sources which do not have an explicit location
-    #
+    
     # @return [Array<Hash>]
+    #   an Array of Hashes representing each default location that can be used to attempt
+    #   to download cookbook sources which do not have an explicit location
     attr_reader :locations
 
     def_delegators :@cookbook_store, :storage_path
@@ -25,7 +23,6 @@ module Berkshelf
     # @option options [Array<Hash>] locations
     def initialize(cookbook_store, options = {})
       @cookbook_store = cookbook_store
-      @queue = Array.new
       @locations = options[:locations] || Array.new
     end
 
@@ -55,70 +52,22 @@ module Berkshelf
       !locations.select { |loc| loc[:type] == type && loc[:value] == value }.empty?
     end
 
-    # Add a CookbookSource to the downloader's queue
-    #
-    # @param [Berkshelf::CookbookSource] source
-    # 
-    # @return [Array<Berkshelf::CookbookSource>]
-    #   the queue - an array of Berkshelf::CookbookSources
-    def enqueue(source)
-      unless validate_source(source)
-        raise ArgumentError, "Invalid CookbookSource: can only enqueue valid instances of CookbookSource."
-      end
-
-      @queue << source
-    end
-
-    # Remove a CookbookSource from the downloader's queue
-    #
-    # @param [Berkshelf::CookbookSource] source
-    #
-    # @return [Berkshelf::CookbookSource]
-    #   the CookbookSource removed from the queue
-    def dequeue(source)
-      @queue.delete(source)
-    end
-
-    # Download each CookbookSource in the queue. Upon successful download
-    # of a CookbookSource it is removed from the queue. If a CookbookSource
-    # fails to download it remains in the queue.
-    #
-    # @return [TXResultSet]
-    def download_all
-      results = TXResultSet.new
-
-      queue.each do |source|
-        results.add_result download(source)
-      end
-
-      results.success.each { |result| dequeue(result.source) }
-      
-      results
-    end
-
     # Downloads the given CookbookSource
     #
     # @param [CookbookSource] source
     #   the source to download
     #
-    # @return [TXResult]
+    # @return [Boolean]
     def download(source)
-      status, message = source.download(storage_path)
-      TXResult.new(status, message, source)
-    end
+      source.cached_cookbook = if source.location
+        source.location.download(storage_path)
+      else
+        # JW TODO: use default sources to download
+        location = CookbookSource::Location.init(source.name, source.version_constraint)
+        location.download(storage_path)
+      end
 
-    # Downloads the given CookbookSource. Raises a DownloadFailure error
-    # if the download was not successful.
-    #
-    # @param [CookbookSource] source
-    #   the source to download
-    #
-    # @return [TXResult]
-    def download!(source)
-      result = download(source)
-      raise DownloadFailure, result.message if result.failed?
-      
-      result
+      true
     end
 
     private

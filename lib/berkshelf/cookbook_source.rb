@@ -48,6 +48,17 @@ module Berkshelf
 
         @@location_keys
       end
+
+      def validate_options(options)
+        invalid_options = (options.keys - valid_options)
+
+        unless invalid_options.empty?
+          invalid_options.collect! { |opt| "'#{opt}'" }
+          raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
+        end
+
+        true
+      end
     end
 
     extend Forwardable
@@ -65,10 +76,7 @@ module Berkshelf
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
-    attr_reader :locations
     attr_accessor :cached_cookbook
-
-    def_delegator :@location, :downloaded?
 
     #  @param [String] name
     #  @param [Hash] options
@@ -94,21 +102,17 @@ module Berkshelf
       @name = name
       @version_constraint = Solve::Constraint.new(options[:constraint] || ">= 0.0.0")
       @groups = []
-      @locations = []
       @cached_cookbook = nil
+      @location = nil
 
-      validate_options(options)
+      self.class.validate_options(options)
 
-      @location = Location.init(name, version_constraint, options)
+      unless (options.keys & self.class.location_keys.keys).empty?
+        @location = Location.init(name, version_constraint, options)
+      end
 
       if @location.is_a?(PathLocation)
         @cached_cookbook = CachedCookbook.from_path(location.path)
-      end
-
-      @locations.push(location)
-
-      Array(options[:locations]).each do |location|
-        add_location(location[:type], location[:value], location[:options])
       end
       
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
@@ -125,22 +129,12 @@ module Berkshelf
       end
     end
 
-    # @param [String] destination
-    #   destination to download to
+    # Returns true if the cookbook source has already been downloaded. A cookbook
+    # source is downloaded when a cached cookbooked is present.
     #
-    # @return [Array]
-    #   An array containing the status at index 0 and local path or error message in index 1
-    #
-    #   Example:
-    #     [ :ok, "/tmp/nginx" ]
-    #     [ :error, "Cookbook 'sparkle_motion' not found at site: http://cookbooks.opscode.com/api/v1/cookbooks" ]
-    def download(destination)
-      self.cached_cookbook = location.download(destination)
-
-      [ :ok, self.cached_cookbook ]
-    rescue CookbookNotFound => e
-      self.cached_cookbook = nil
-      [ :error, e.message ]
+    # @return [Boolean]
+    def downloaded?
+      !self.cached_cookbook.nil?
     end
 
     def has_group?(group)
@@ -152,29 +146,9 @@ module Berkshelf
     end
 
     def to_s
-      "#{self.name} (#{self.version_constraint}) groups: #{self.groups} locations: #{self.locations}"
+      msg = "#{self.name} (#{self.version_constraint}) groups: #{self.groups}"
+      msg << " location: #{self.location}" if self.location
+      msg
     end
-
-    private
-
-      def add_location(type, value, options = {})
-        options[type] = value
-        @locations.push(Location.init(name, version_constraint, options))
-      end
-
-      def set_local_path(path)
-        @local_path = path
-      end
-
-      def validate_options(options)
-        invalid_options = options.keys - self.class.valid_options
-
-        unless invalid_options.empty?
-          invalid_options.collect! { |opt| "'#{opt}'" }
-          raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
-        end
-
-        true
-      end
   end
 end

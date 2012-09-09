@@ -122,7 +122,7 @@ module Berkshelf
       #
       # @return [Boolean]
       def install_source(source)
-        downloader.download!(source)
+        downloader.download(source)
         Berkshelf.formatter.install source.name, source.cached_cookbook.version, source.location
       end
 

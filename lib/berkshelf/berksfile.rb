@@ -33,6 +33,7 @@ module Berkshelf
     #
     # @return [String]
     attr_reader :filepath
+    
     # @return [Berkshelf::Downloader]
     attr_reader :downloader
 
@@ -175,7 +176,7 @@ module Berkshelf
 
       solution.each do |cb|
         Berkshelf.formatter.upload cb.cookbook_name, cb.version, chef_server_url
-        uploader.upload!(cb, options)
+        uploader.upload(cb, options)
       end
     end
 
