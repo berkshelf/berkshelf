@@ -202,74 +202,78 @@ EOF
       end
     end
 
-    describe "Included by DSL" do
-      describe "#site" do
-        it "adds a hash with a type, value, and options key to the end of the array of locations" do
-          subject.site(:opscode)
-          
-          subject.locations.last.should have_key(:type)
-          subject.locations.last.should have_key(:value)
-          subject.locations.last.should have_key(:options)
-        end
+    describe "#add_source" do
+      let(:name) { "cookbook_one" }
+      let(:constraint) { "= 1.2.0" }
+      let(:location) { { site: "http://site" } }
 
-        it "adds a site location to the end of the array of locations" do
-          subject.site(:opscode)
-
-          subject.locations.last[:type].should eql(:site)
-        end
-
-        it "adds a location with the given value as the value key to the end of the array of locations" do
-          subject.site(:opscode)
-
-          subject.locations.last[:value].should eql(:opscode)
-        end
-
-        context "adding multiple locations" do
-          it "adds locations in the order they are added" do
-            subject.site(:opscode)
-            subject.site("http://opscode/v1")
-
-            subject.locations[0][:value].should eql(:opscode)
-            subject.locations[1][:value].should eql("http://opscode/v1")
-          end
-        end
+      before(:each) do
+        subject.add_source(name, constraint, location)
       end
 
-      describe "#chef_api" do
-        it "adds a hash with a type, value, and options key to the end of the array of locations" do
-          subject.chef_api(:knife)
-          
-          subject.locations.last.should have_key(:type)
-          subject.locations.last.should have_key(:value)
-          subject.locations.last.should have_key(:options)
-        end
+      it "adds new cookbook source to the list of sources" do
+        subject.sources.should have(1).source
+      end
 
-        it "adds a chef_api location to the end of the array of locations" do
-          subject.chef_api(:knife)
+      it "adds a cookbook source with a 'name' of the given name" do
+        subject.sources.first.name.should eql(name)
+      end
 
-          subject.locations.last[:type].should eql(:chef_api)
-        end
+      it "adds a cookbook source with a 'version_constraint' of the given constraint" do
+        subject.sources.first.version_constraint.to_s.should eql(constraint)
+      end
 
-        it "adds a location with the given value as the value key to the end of the array of locations" do
-          subject.chef_api(:knife)
+      it "raises DuplicateSourceDefined if multiple sources of the same name are found" do
+        lambda {
+          subject.add_source(name)
+        }.should raise_error(DuplicateSourceDefined)
+      end
+    end
 
-          subject.locations.last[:value].should eql(:knife)
-        end
+    describe "#add_location" do
+      let(:type) { :site }
+      let(:value) { double('value') }
+      let(:options) { double('options') }
 
-        it "adds a location with the given options as the options key to the end of the array of locations" do
-          subject.chef_api("http://chef:8080/", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem")
+      it "adds a hash to the end of the array of locations" do
+        subject.add_location(type, value, options)
 
-          subject.locations.last[:options].should eql(node_name: "reset", client_key: "/Users/reset/.chef/reset.pem")
-        end
+        subject.locations.should have(1).item
+      end
 
-        context "adding multiple locations" do
-          it "adds locations in the order they are added" do
-            subject.chef_api(:knife)
-            subject.chef_api("http://chef:8080/")
+      it "adds a hash with a type, value, and options key" do
+        subject.add_location(type, value, options)
 
-            subject.locations[0][:value].should eql(:knife)
-            subject.locations[1][:value].should eql("http://chef:8080/")
-          end
+        subject.locations.last.should have_key(:type)
+        subject.locations.last.should have_key(:value)
+        subject.locations.last.should have_key(:options)
+      end
+
+      it "sets the value of the given 'value' to the value of the key 'value'" do
+        subject.add_location(type, value, options)
+
+        subject.locations.last[:value].should eql(value)
+      end
+
+      it "sets the value of the given 'type' to the value of the key 'type'" do
+        subject.add_location(type, value, options)
+
+        subject.locations.last[:type].should eql(type)
+      end
+
+      it "sets the value of the given 'options' to the value of the key 'options'" do
+        subject.add_location(type, value, options)
+
+        subject.locations.last[:options].should eql(options)
+      end
+
+      context "adding multiple locations" do
+        it "adds locations in the order they are added" do
+          subject.site(:opscode)
+          subject.site("http://opscode/v1")
+
+          subject.locations[0][:value].should eql(:opscode)
+          subject.locations[1][:value].should eql("http://opscode/v1")
         end
       end
     end
