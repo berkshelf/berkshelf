@@ -1,7 +1,40 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe Downloader do 
+  describe Downloader do
+    describe "ClassMethods" do
+      subject { Downloader }
+
+      describe "::initialize" do
+        # let(:cookbook_store) { double("cookbook_store") }
+
+        # context "given no option for :locations" do
+        #   it "adds the default Opscode Community Site to the array of locations" do
+        #     downloader = subject.new(cookbook_store)
+
+        #     downloader.locations.should have(1).item
+        #     downloader.locations[0][:type].should eql(:site)
+        #     downloader.locations[0][:value].should eql(:opscode)
+        #   end
+        # end
+
+        # context "given a value for :locations" do
+        #   it "does not contain the default location" do
+        #     downloader = subject.new(cookbook_store, locations: [{ type: :path, value: "/Users/reset/cookbooks/nginx", options: Hash.new }])
+
+        #     downloader.locations.should have(1).item
+        #   end
+
+        #   it "adds the value for locations to the array of locations" do
+        #     downloader = subject.new(cookbook_store, locations: [{ type: :path, value: "/Users/reset/cookbooks/nginx", options: Hash.new }])
+
+        #     downloader.locations[0][:type].should eql(:path)
+        #     downloader.locations[0][:value].should eql("/Users/reset/cookbooks/nginx")
+        #   end
+        # end
+      end
+    end
+
     subject { Downloader.new(CookbookStore.new(tmp_path)) }
 
     describe "#download" do
@@ -10,12 +43,22 @@ module Berkshelf
       let(:cached_cookbook) { double('cached') }
 
       context "when the source has a location" do
-        it "sends 'download' to the source's location and sets the source's cached_cookbook to the result" do
+        before(:each) do
           source.stub(:location).and_return(location)
           location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
           source.should_receive(:cached_cookbook=).with(cached_cookbook)
-          
+        end
+
+        it "sends 'download' to the source's location and sets the source's cached_cookbook to the result" do          
           subject.download(source).should be_true
+        end
+
+        it "returns an Array containing the cached_cookbook and location used to download" do
+          result = subject.download(source)
+
+          result.should be_a(Array)
+          result[0].should eql(cached_cookbook)
+          result[1].should eql(location)
         end
       end
 
@@ -28,7 +71,7 @@ module Berkshelf
             location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
             source.should_receive(:cached_cookbook=).with(cached_cookbook)
 
-            subject.download(source).should be_true
+            subject.download(source)
           end
         end
       end

@@ -57,17 +57,22 @@ module Berkshelf
     # @param [CookbookSource] source
     #   the source to download
     #
-    # @return [Boolean]
+    # @return [Array]
+    #   an array containing the downloaded CachedCookbook and the Location used to download the cookbook
     def download(source)
-      source.cached_cookbook = if source.location
-        source.location.download(storage_path)
+      cached_cookbook, location = if source.location
+        [ source.location.download(storage_path), source.location ]
       else
         # JW TODO: use default sources to download
         location = CookbookSource::Location.init(source.name, source.version_constraint)
-        location.download(storage_path)
+        cached_cookbook = location.download(storage_path)
+
+        [ cached_cookbook, location ]
       end
 
-      true
+      source.cached_cookbook = cached_cookbook
+
+      [ cached_cookbook, location ]
     end
 
     private
