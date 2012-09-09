@@ -94,7 +94,6 @@ module Berkshelf
     attr_reader :manifest
 
     def_delegator :@metadata, :version
-    def_delegator :@metadata, :dependencies
 
     def initialize(name, path, metadata)
       @cookbook_name = name
@@ -123,6 +122,11 @@ module Berkshelf
     #     "nginx-0.101.2"
     def name
       "#{cookbook_name}-#{version}"
+    end
+
+    # @return [Hash]
+    def dependencies
+      metadata.recommendations.merge(metadata.dependencies)
     end
 
     # @return [Hash]

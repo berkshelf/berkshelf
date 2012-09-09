@@ -460,5 +460,24 @@ module Berkshelf
         parse_json(@json)['json_class'].should eql("Chef::CookbookVersion")
       end
     end
+
+    describe "#dependencies" do
+      let(:dependencies) { { "mysql" => "= 1.2.0", "ntp" => ">= 0.0.0" } }
+      let(:recommendations) { { "database" => ">= 0.0.0" } }
+
+      let(:cb_path) do
+        generate_cookbook(Berkshelf.cookbook_store.to_s, "sparkle", "0.1.0", dependencies: dependencies, recommendations: recommendations)
+      end
+
+      subject { CachedCookbook.from_store_path(cb_path) }
+
+      it "contains depends from the cookbook metadata" do
+        subject.dependencies.should include(dependencies)
+      end
+
+      it "contains recommendations from the cookbook metadata" do
+        subject.dependencies.should include(recommendations)
+      end
+    end
   end
 end
