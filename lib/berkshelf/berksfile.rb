@@ -140,7 +140,7 @@ module Berkshelf
     #   part of the dependency solution. Each shim is a hard link on disk.
     def install(options = {})
       resolver = Resolver.new(
-        Berkshelf.downloader,
+        self.downloader,
         sources: sources(exclude: options[:without])
       )
 
@@ -188,7 +188,7 @@ module Berkshelf
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
       Resolver.new(
-        Berkshelf.downloader,
+        self.downloader,
         sources: sources(exclude: options[:without])
       ).resolve
     end

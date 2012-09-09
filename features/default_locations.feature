@@ -4,12 +4,12 @@ Feature: Berksfile default locations
   So I can set the precedence of where cookbook sources are downloaded from or define an alternate location for all 
   cookbook sources to attempt to retrieve from
 
-  @wip
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
       chef_api :knife
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+
       cookbook "artifact", "= 0.10.0"
       """
     And the Chef server has cookbooks:
@@ -23,12 +23,12 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
-  @wip
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is not satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
       chef_api :knife
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+
       cookbook "artifact", "= 0.10.0"
       """
     And the Chef server does not have the cookbooks:
@@ -42,7 +42,6 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
-  @wip
   Scenario: with a default site(1) and chef_api(2) location with a cookbook source that is satisfied by the site(1) location
     Given I write to "Berksfile" with:
       """
@@ -62,7 +61,6 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
-  @wip
   Scenario: with a default chef_api(1) location and a cookbook source that is satisfied by the chef_api(1) location but has an explicit location set
     Given I write to "Berksfile" with:
       """
@@ -80,3 +78,47 @@ Feature: Berksfile default locations
     And the cookbook store should have the cookbooks:
       | artifact | 0.10.0 |
     And the exit status should be 0
+
+  Scenario: with a defualt chef_api(1) location and a cookbook source that is not satisfied by it but is satisfied by the Opscode community site
+    Given I write to "Berksfile" with:
+      """
+      chef_api :knife
+
+      cookbook 'artifact', '= 0.10.0'
+      """
+    And the Chef server does not have the cookbooks:
+      | artifact | 0.10.0 |
+    When I run the install command
+    Then the output should contain:
+      """
+      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      """
+    And the cookbook store should have the cookbooks:
+      | artifact | 0.10.0 |
+    And the exit status should be 0
+
+  Scenario: with two duplicate locations definitions
+    Given I write to "Berksfile" with:
+      """
+      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+
+      cookbook 'artifact', '= 0.10.0'
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      A default 'site' location with the value 'http://cookbooks.opscode.com/api/v1/cookbooks' is already defined
+      """
+    And the CLI should exit with the status code for error "DuplicateLocationDefined"
+
+  Scenario: with two locations of the same type but different values
+    Given I write to "Berksfile" with:
+      """
+      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      site 'http://cookbooks.opscode.com/api/v2/cookbooks'
+
+      cookbook 'artifact', '= 0.10.0'
+      """
+    When I run the install command
+    Then the exit status should be 0

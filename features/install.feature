@@ -142,7 +142,7 @@ Feature: install cookbooks from a Berksfile
     And I run the install command
     Then the output should contain:
       """
-      Cookbook 'doesntexist' not found at site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Cookbook 'doesntexist' not found in any of the default locations
       """
     And the CLI should exit with the status code for error "CookbookNotFound"
 
