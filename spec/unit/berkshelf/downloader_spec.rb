@@ -2,39 +2,6 @@ require 'spec_helper'
 
 module Berkshelf
   describe Downloader do
-    describe "ClassMethods" do
-      subject { Downloader }
-
-      describe "::initialize" do
-        let(:cookbook_store) { double("cookbook_store") }
-
-        context "given no option for :locations" do
-          it "adds the default Opscode Community Site to the array of locations" do
-            downloader = subject.new(cookbook_store)
-
-            downloader.locations.should have(1).item
-            downloader.locations[0][:type].should eql(:site)
-            downloader.locations[0][:value].should eql(:opscode)
-          end
-        end
-
-        context "given a value for :locations" do
-          it "does not contain the default location" do
-            downloader = subject.new(cookbook_store, locations: [{ type: :path, value: "/Users/reset/cookbooks/nginx", options: Hash.new }])
-
-            downloader.locations.should have(1).item
-          end
-
-          it "adds the value for locations to the array of locations" do
-            downloader = subject.new(cookbook_store, locations: [{ type: :path, value: "/Users/reset/cookbooks/nginx", options: Hash.new }])
-
-            downloader.locations[0][:type].should eql(:path)
-            downloader.locations[0][:value].should eql("/Users/reset/cookbooks/nginx")
-          end
-        end
-      end
-    end
-
     subject { Downloader.new(CookbookStore.new(tmp_path)) }
     let(:source) { CookbookSource.new("sparkle_motion") }
 
@@ -120,7 +87,7 @@ module Berkshelf
       it "adds a hash to the end of the array of locations" do
         subject.add_location(type, value, options)
 
-        subject.locations.should have(2).item
+        subject.locations.should have(1).item
       end
 
       it "adds a hash with a type, value, and options key" do
@@ -149,6 +116,14 @@ module Berkshelf
         subject.locations.last[:options].should eql(options)
       end
 
+      it "raises a DuplicateLocationDefined error if a location of the given type and value was already added" do
+        subject.add_location(type, value, options)
+
+        lambda {
+          subject.add_location(type, value, options)
+        }.should raise_error(DuplicateLocationDefined)
+      end
+
       context "adding multiple locations" do
         let(:type_2) { :site }
         let(:value_2) { double('value_2') }
@@ -158,9 +133,24 @@ module Berkshelf
           subject.add_location(type, value, options)
           subject.add_location(type_2, value_2, options_2)
 
-          subject.locations[1][:value].should eql(value)
-          subject.locations[2][:value].should eql(value_2)
+          subject.locations[0][:value].should eql(value)
+          subject.locations[1][:value].should eql(value_2)
         end
+      end
+    end
+
+    describe "#has_location?" do
+      let(:type) { :site }
+      let(:value) { double('value') }
+
+      it "returns true if a source of the given type and value was already added" do
+        subject.stub(:locations) { [ { type: type, value: value, options: Hash.new } ] }
+
+        subject.has_location?(type, value).should be_true
+      end
+
+      it "returns false if a source of the given type and value was not added" do
+        subject.has_location?(type, value).should be_false
       end
     end
   end

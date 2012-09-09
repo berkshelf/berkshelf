@@ -77,4 +77,6 @@ module Berkshelf
       @original_error ? @original_error.status_code : 113
     end
   end
+
+  class DuplicateLocationDefined < BerkshelfError; status_code(114); end
 end

@@ -3,13 +3,11 @@ module Berkshelf
   class Downloader
     extend Forwardable
 
-    DEFAULT_LOCATIONS = [
-      {
-        type: :site,
-        value: :opscode,
-        options: Hash.new
-      }
-    ].freeze
+    DEFAULT_LOCATION = {
+      type: :site,
+      value: :opscode,
+      options: Hash.new
+    }.freeze
 
     # a filepath to download cookbook sources to
     #
@@ -28,7 +26,7 @@ module Berkshelf
     def initialize(cookbook_store, options = {})
       @cookbook_store = cookbook_store
       @queue = Array.new
-      @locations = options[:locations] || DEFAULT_LOCATIONS.dup
+      @locations = options[:locations] || Array.new
     end
 
     # Create a location hash and add it to the end of the array of locations.
@@ -42,7 +40,19 @@ module Berkshelf
     #
     # @return [Hash]
     def add_location(type, value, options = {})
+      if has_location?(type, value)
+        raise DuplicateLocationDefined, "A default location of type: #{type} and value: #{value} is already defined"
+      end
+      
       locations.push(type: type, value: value, options: options)
+    end
+
+    # Checks the list of default locations if a location of the given type and value has already
+    # been added and returns true or false.
+    #
+    # @return [Boolean]
+    def has_location?(type, value)
+      !locations.select { |loc| loc[:type] == type && loc[:value] == value }.empty?
     end
 
     # Add a CookbookSource to the downloader's queue
