@@ -3,6 +3,8 @@ require 'fileutils'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookStore
+    # @return [String]
+    #   filepath to where cookbooks are stored
     attr_reader :storage_path
 
     # Create a new instance of CookbookStore with the given

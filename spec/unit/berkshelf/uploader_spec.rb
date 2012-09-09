@@ -20,16 +20,18 @@ module Berkshelf
           subject.should_receive(:save_cookbook)
         end
 
-        it "returns a successful TXResult" do
-          subject.upload(cookbook).should be_success
+        it "returns true" do
+          subject.upload(cookbook).should be_true
         end
       end
 
       context "when cookbook is not valid" do
         before(:each) { cookbook.should_receive(:validate!).and_raise(CookbookSyntaxError) }
 
-        it "returns a failed TXResult" do
-          subject.upload(cookbook).should be_failed
+        it "raises a CookbookSyntaxError error" do
+          lambda {
+            subject.upload(cookbook)
+          }.should raise_error(CookbookSyntaxError)
         end
       end
     end

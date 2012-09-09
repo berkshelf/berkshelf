@@ -6,8 +6,10 @@ module Berkshelf
     attr_reader :graph
 
     # @param [Downloader] downloader
-    # @param [Array<CookbookSource>, CookbookSource] sources
-    def initialize(downloader, sources = Array.new)
+    # @param [Hash] options
+    #
+    # @option options [Array<CookbookSource>, CookbookSource] sources
+    def initialize(downloader, options = {})
       @downloader = downloader
       @graph = Solve::Graph.new
       @sources = Hash.new
@@ -16,11 +18,11 @@ module Berkshelf
       # not, then one of the dependencies of a source that is added
       # may take precedence over an explicitly set source that appears
       # later in the iterator.
-      Array(sources).each do |source|
+      Array(options[:sources]).each do |source|
         add_source(source, false)
       end
 
-      Array(sources).each do |source|
+      Array(options[:sources]).each do |source|
         add_source_dependencies(source)
       end
     end
@@ -41,7 +43,7 @@ module Berkshelf
         raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
       end
 
-      set_source(source)
+      @sources[source.name] = source
       use_source(source) || install_source(source)
 
       graph.artifacts(source.name, source.cached_cookbook.version)
@@ -66,7 +68,7 @@ module Berkshelf
       source.cached_cookbook.dependencies.each do |name, constraint|
         next if has_source?(name)
 
-        add_source(CookbookSource.new(name, constraint))
+        add_source(CookbookSource.new(name, constraint: constraint))
       end
     end
 
@@ -116,17 +118,12 @@ module Berkshelf
 
       attr_reader :downloader
 
-      # @param [CookbookSource] source
-      def set_source(source)
-        @sources[source.name] = source
-      end
-
       # @param [Berkshelf::CookbookSource] source
       #
       # @return [Boolean]
       def install_source(source)
-        downloader.download!(source)
-        Berkshelf.formatter.install source.name, source.cached_cookbook.version, source.location
+        cached_cookbook, location = downloader.download(source)
+        Berkshelf.formatter.install source.name, cached_cookbook.version, location
       end
 
       # Use the given source to create a constraint solution if the source has been downloaded or can

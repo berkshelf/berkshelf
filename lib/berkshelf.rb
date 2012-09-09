@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'pathname'
 require 'zlib'
 require 'archive/tar/minitar'
@@ -30,8 +31,6 @@ module Berkshelf
   autoload :CookbookSource, 'berkshelf/cookbook_source'
   autoload :CookbookStore, 'berkshelf/cookbook_store'
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
-  autoload :TXResult, 'berkshelf/tx_result'
-  autoload :TXResultSet, 'berkshelf/tx_result_set'
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Uploader, 'berkshelf/uploader'
   autoload :Resolver, 'berkshelf/resolver'

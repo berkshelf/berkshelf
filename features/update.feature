@@ -6,7 +6,7 @@ Feature: update
   Scenario: knife berkshelf update
     Given I write to "Berksfile" with:
       """
-      cookbook "mysql"
+      cookbook "mysql", "1.3.0"
       """
     Given I write to "Berksfile.lock" with:
       """
@@ -18,6 +18,5 @@ Feature: update
       """
       cookbook 'mysql', :locked_version => '1.3.0'
       cookbook 'openssl', :locked_version => '1.0.0'
-      cookbook 'windows', :locked_version => '1.3.2'
-      cookbook 'chef_handler', :locked_version => '1.0.6'
+      cookbook 'build-essential', :locked_version => '1.1.0'
       """

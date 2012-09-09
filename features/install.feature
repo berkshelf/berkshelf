@@ -65,7 +65,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
-  @wip
+  @no_run
   Scenario: installing a Berksfile that contains a path location which contains a broken symlink
     Given a Berksfile with path location sources to fixtures:
       | example_cookbook_broken_link | example_cookbook_broken_link |
@@ -144,7 +144,7 @@ Feature: install cookbooks from a Berksfile
       """
       Cookbook 'doesntexist' not found at site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
-    And the CLI should exit with the status code for error "DownloadFailure"
+    And the CLI should exit with the status code for error "CookbookNotFound"
 
   Scenario: running install command with the --shims flag to create a directory of shims
     Given I write to "Berksfile" with:
@@ -270,7 +270,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "artifact", chef_api: :knife
       """
     And the Chef server has cookbooks:
-      | artifact | 0.10.0 |
+      | artifact | 0.10.2 |
     When I run the install command
     Then the output should contain:
       """
