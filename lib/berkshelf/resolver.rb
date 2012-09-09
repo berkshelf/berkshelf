@@ -3,27 +3,16 @@ module Berkshelf
   class Resolver
     extend Forwardable
 
-    DEFAULT_LOCATIONS = [
-      {
-        type: :site,
-        value: :opscode,
-        options: Hash.new
-      }
-    ].freeze
-
     attr_reader :graph
-    attr_reader :locations
 
     # @param [Downloader] downloader
     # @param [Hash] options
     #
     # @option options [Array<CookbookSource>, CookbookSource] sources
-    # @option options [Array<Hash>] locations
     def initialize(downloader, options = {})
       @downloader = downloader
       @graph = Solve::Graph.new
       @sources = Hash.new
-      @locations = options[:locations] || DEFAULT_LOCATIONS
 
       # Dependencies need to be added AFTER the sources. If they are
       # not, then one of the dependencies of a source that is added
@@ -54,7 +43,7 @@ module Berkshelf
         raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
       end
 
-      set_source(source)
+      @sources[source.name] = source
       use_source(source) || install_source(source)
 
       graph.artifacts(source.name, source.cached_cookbook.version)
@@ -79,7 +68,7 @@ module Berkshelf
       source.cached_cookbook.dependencies.each do |name, constraint|
         next if has_source?(name)
 
-        add_source(CookbookSource.new(name, constraint: constraint, locations: locations))
+        add_source(CookbookSource.new(name, constraint: constraint))
       end
     end
 
@@ -128,11 +117,6 @@ module Berkshelf
     private
 
       attr_reader :downloader
-
-      # @param [CookbookSource] source
-      def set_source(source)
-        @sources[source.name] = source
-      end
 
       # @param [Berkshelf::CookbookSource] source
       #

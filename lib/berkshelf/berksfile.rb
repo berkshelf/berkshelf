@@ -1,6 +1,7 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Berksfile
+    extend Forwardable
     include DSL
 
     class << self
@@ -28,13 +29,20 @@ module Berkshelf
       end
     end
 
+    # The filepath to the given Berksfile
+    #
+    # @return [String]
     attr_reader :filepath
-    attr_reader :locations
+    # @return [Berkshelf::Downloader]
+    attr_reader :downloader
+
+    def_delegator :downloader, :add_location
+    def_delegator :downloader, :locations
 
     def initialize(path)
       @filepath = path
       @sources = Hash.new
-      @locations = Array.new
+      @downloader = Downloader.new(Berkshelf.cookbook_store)
     end
 
     # Add a source of the given name and constraint to the array of sources.
@@ -57,20 +65,6 @@ module Berkshelf
       options[:constraint] = constraint
 
       @sources[name] = CookbookSource.new(name, options)
-    end
-
-    # Create a location hash and add it to the end of the array of locations.
-    #
-    # subject.add_location(:chef_api, "http://chef:8080", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem") =>
-    #   [ { type: :chef_api, value: "http://chef:8080/", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem" } ]
-    #
-    # @param [Symbol] type
-    # @param [String, Symbol] value
-    # @param [Hash] options
-    #
-    # @return [Hash]
-    def add_location(type, value, options = {})
-      locations.push(type: type, value: value, options: options)
     end
 
     # @param [#to_s] source
@@ -147,8 +141,7 @@ module Berkshelf
     def install(options = {})
       resolver = Resolver.new(
         Berkshelf.downloader,
-        sources: sources(exclude: options[:without]),
-        locations: locations
+        sources: sources(exclude: options[:without])
       )
 
       solution = resolver.resolve
@@ -196,8 +189,7 @@ module Berkshelf
     def resolve(options = {})
       Resolver.new(
         Berkshelf.downloader,
-        sources: sources(exclude: options[:without]),
-        locations: locations
+        sources: sources(exclude: options[:without])
       ).resolve
     end
 

@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'pathname'
 require 'zlib'
 require 'archive/tar/minitar'

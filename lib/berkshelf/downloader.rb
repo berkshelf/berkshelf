@@ -3,14 +3,46 @@ module Berkshelf
   class Downloader
     extend Forwardable
 
+    DEFAULT_LOCATIONS = [
+      {
+        type: :site,
+        value: :opscode,
+        options: Hash.new
+      }
+    ].freeze
+
+    # a filepath to download cookbook sources to
+    #
+    # @return [String]
     attr_reader :cookbook_store
     attr_reader :queue
+    # an Array of Hashes representing each default location that can be used to attempt
+    # to download cookbook sources which do not have an explicit location
+    #
+    # @return [Array<Hash>]
+    attr_reader :locations
 
     def_delegators :@cookbook_store, :storage_path
 
-    def initialize(cookbook_store)
+    # @option options [Array<Hash>] locations
+    def initialize(cookbook_store, options = {})
       @cookbook_store = cookbook_store
-      @queue = []
+      @queue = Array.new
+      @locations = options[:locations] || DEFAULT_LOCATIONS.dup
+    end
+
+    # Create a location hash and add it to the end of the array of locations.
+    #
+    # subject.add_location(:chef_api, "http://chef:8080", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem") =>
+    #   [ { type: :chef_api, value: "http://chef:8080/", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem" } ]
+    #
+    # @param [Symbol] type
+    # @param [String, Symbol] value
+    # @param [Hash] options
+    #
+    # @return [Hash]
+    def add_location(type, value, options = {})
+      locations.push(type: type, value: value, options: options)
     end
 
     # Add a CookbookSource to the downloader's queue

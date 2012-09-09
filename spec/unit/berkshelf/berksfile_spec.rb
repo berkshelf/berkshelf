@@ -235,46 +235,10 @@ EOF
       let(:value) { double('value') }
       let(:options) { double('options') }
 
-      it "adds a hash to the end of the array of locations" do
+      it "delegates 'add_location' to the downloader" do
+        subject.downloader.should_receive(:add_location).with(type, value, options)
+        
         subject.add_location(type, value, options)
-
-        subject.locations.should have(1).item
-      end
-
-      it "adds a hash with a type, value, and options key" do
-        subject.add_location(type, value, options)
-
-        subject.locations.last.should have_key(:type)
-        subject.locations.last.should have_key(:value)
-        subject.locations.last.should have_key(:options)
-      end
-
-      it "sets the value of the given 'value' to the value of the key 'value'" do
-        subject.add_location(type, value, options)
-
-        subject.locations.last[:value].should eql(value)
-      end
-
-      it "sets the value of the given 'type' to the value of the key 'type'" do
-        subject.add_location(type, value, options)
-
-        subject.locations.last[:type].should eql(type)
-      end
-
-      it "sets the value of the given 'options' to the value of the key 'options'" do
-        subject.add_location(type, value, options)
-
-        subject.locations.last[:options].should eql(options)
-      end
-
-      context "adding multiple locations" do
-        it "adds locations in the order they are added" do
-          subject.site(:opscode)
-          subject.site("http://opscode/v1")
-
-          subject.locations[0][:value].should eql(:opscode)
-          subject.locations[1][:value].should eql("http://opscode/v1")
-        end
       end
     end
   end
