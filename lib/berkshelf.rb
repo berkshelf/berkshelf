@@ -37,10 +37,9 @@ module Berkshelf
 
   class << self
     attr_accessor :ui
-    attr_accessor :cookbook_store
-    attr_accessor :downloader
-
+    
     attr_writer :config_path
+    attr_writer :cookbook_store
 
     def root
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
@@ -71,10 +70,6 @@ module Berkshelf
 
     def cookbook_store
       @cookbook_store ||= CookbookStore.new(cookbooks_dir)
-    end
-
-    def downloader
-      @downloader ||= Downloader.new(cookbook_store)
     end
 
     def config_path

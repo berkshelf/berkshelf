@@ -36,7 +36,7 @@ module Berkshelf
       subject { Resolver }
 
       describe "::initialize" do
-        let(:downloader) { Berkshelf.downloader }
+        let(:downloader) { Downloader.new(Berkshelf.cookbook_store) }
 
         it "adds the specified sources to the sources hash" do
           resolver = subject.new(downloader, sources: source)
@@ -62,7 +62,8 @@ module Berkshelf
       end
     end
 
-    subject { Resolver.new(Berkshelf.downloader) }
+    let(:downloader) { Downloader.new(Berkshelf.cookbook_store) }
+    subject { Resolver.new(downloader) }
 
     describe "#add_source" do
       let(:package_version) { double('package-version', dependencies: Array.new) }
