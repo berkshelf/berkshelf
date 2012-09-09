@@ -62,8 +62,6 @@ module Berkshelf
     require 'berkshelf/cookbook_source/chef_api_location'
 
     attr_reader :name
-    alias_method :to_s, :name
-
     attr_reader :version_constraint
     attr_reader :groups
     attr_reader :location
@@ -151,6 +149,10 @@ module Berkshelf
 
     def locked_version
       @locked_version || cached_cookbook.version
+    end
+
+    def to_s
+      "#{self.name} (#{self.version_constraint}) groups: #{self.groups} locations: #{self.locations}"
     end
 
     private
