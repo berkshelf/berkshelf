@@ -3,27 +3,32 @@ module Berkshelf
   class Downloader
     extend Forwardable
 
-    DEFAULT_LOCATION = {
-      type: :site,
-      value: :opscode,
-      options: Hash.new
-    }.freeze
+    DEFAULT_LOCATIONS = [
+      {
+        type: :site,
+        value: CookbookSource::Location::OPSCODE_COMMUNITY_API,
+        options: Hash.new
+      }
+    ]
 
     # @return [String]
     #   a filepath to download cookbook sources to
     attr_reader :cookbook_store
-    
-    # @return [Array<Hash>]
-    #   an Array of Hashes representing each default location that can be used to attempt
-    #   to download cookbook sources which do not have an explicit location
-    attr_reader :locations
 
     def_delegators :@cookbook_store, :storage_path
 
     # @option options [Array<Hash>] locations
     def initialize(cookbook_store, options = {})
       @cookbook_store = cookbook_store
-      @locations = options[:locations] || Array.new
+      @locations = options.fetch(:locations, Array.new)
+    end
+
+    # @return [Array<Hash>]
+    #   an Array of Hashes representing each default location that can be used to attempt
+    #   to download cookbook sources which do not have an explicit location. An array of default locations will
+    #   be used if no locations are explicitly added by the {#add_location} function.
+    def locations
+      @locations.empty? ? DEFAULT_LOCATIONS : @locations
     end
 
     # Create a location hash and add it to the end of the array of locations.
@@ -41,7 +46,7 @@ module Berkshelf
         raise DuplicateLocationDefined, "A default '#{type}' location with the value '#{value}' is already defined"
       end
       
-      locations.push(type: type, value: value, options: options)
+      @locations.push(type: type, value: value, options: options)
     end
 
     # Checks the list of default locations if a location of the given type and value has already
@@ -49,10 +54,11 @@ module Berkshelf
     #
     # @return [Boolean]
     def has_location?(type, value)
-      !locations.select { |loc| loc[:type] == type && loc[:value] == value }.empty?
+      !@locations.select { |loc| loc[:type] == type && loc[:value] == value }.empty?
     end
 
-    # Downloads the given CookbookSource
+    # Downloads the given CookbookSource. If the given source does not contain a value for {CookbookSource#location}
+    # the default locations of this downloader will be used to attempt to retrieve the source.
     #
     # @param [CookbookSource] source
     #   the source to download
@@ -66,10 +72,7 @@ module Berkshelf
         cached_cookbook = nil
         location = nil
 
-        default_locations = locations.dup
-        default_locations.push(DEFAULT_LOCATION)
-
-        default_locations.each do |loc|
+        locations.each do |loc|
           location = CookbookSource::Location.init(
             source.name,
             source.version_constraint,
