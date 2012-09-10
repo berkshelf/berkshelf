@@ -21,7 +21,6 @@ module Berkshelf
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   autoload :Cli, 'berkshelf/cli'
-  autoload :DSL, 'berkshelf/dsl'
   autoload :Git, 'berkshelf/git'
   autoload :Berksfile, 'berkshelf/berksfile'
   autoload :Lockfile, 'berkshelf/lockfile'
