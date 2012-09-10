@@ -50,6 +50,30 @@ module Berkshelf
       @downloader = Downloader.new(Berkshelf.cookbook_store)
     end
 
+    # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recurisvely retrieved
+    # and resolved.
+    #
+    # @example a cookbook source that will be retrieved from one of the default locations
+    #   cookbook 'artifact'
+    #
+    # @example a cookbook source that will be retrieved from a path on disk
+    #   cookbook 'artifact', path: '/Users/reset/code/artifact'
+    #
+    # @example a cookbook source that will be retrieved from a remote community site
+    #   cookbook 'artifact', site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+    #
+    # @example a cookbook source that will be retrieved from the latest API of the Opscode Community Site
+    #   cookbook 'artifact', site: :opscode
+    #
+    # @example a cookbook source that will be retrieved from a Git server
+    #   cookbook 'artifact', git: 'git://github.com/RiotGames/artifact-cookbook.git'
+    #
+    # @example a cookbook source that will be retrieved from a Chef API (Chef Server)
+    #   cookbook 'artifact', chef_api: 'https://api.opscode.com/organizations/vialstudios', node_name: 'reset', client_key: '/Users/reset/.chef/knife.rb'
+    #
+    # @example a cookbook source that will be retrieved from a Chef API using your Knife config
+    #   cookbook 'artifact', chef_api: :knife
+    #
     # @overload cookbook(name, version_constraint, options = {})
     #   @param [#to_s] name
     #   @param [#to_s] version_constraint
@@ -106,12 +130,17 @@ module Berkshelf
       add_source(name, constraint, options)
     end
 
+
     def group(*args)
       @@active_group = args
       yield
       @@active_group = nil
     end
 
+    # Use a Cookbook metadata file to determine additional cookbook sources to retrieve. All
+    # sources found in the metadata will use the default locations set in the Berksfile (if any are set)
+    # or the default locations defined by Berkshelf.
+    #
     # @param [Hash] options
     #
     # @option options [String] :path
@@ -139,6 +168,17 @@ module Berkshelf
       add_source(name, constraint, path: File.dirname(metadata_file))
     end
 
+    # Add a 'Site' default location which will be used to resolve cookbook sources that do not
+    # contain an explicit location.
+    #
+    # @note
+    #   specifying the symbol :opscode as the value of the site default location is an alias for the
+    #   latest API of the Opscode Community Site.
+    #
+    # @example
+    #   site :opscode
+    #   site "http://cookbooks.opscode.com/api/v1/cookbooks"
+    #
     # @param [String, Symbol] value
     #
     # @return [Hash]
@@ -146,7 +186,19 @@ module Berkshelf
       add_location(:site, value)
     end
 
-    # Add a new Default location to the includer 
+    # Add a 'Chef API' default location which will be used to resolve cookbook sources that do not
+    # contain an explicit location.
+    #
+    # @note
+    #   specifying the symbol :knife as the value of the chef_api default location will attempt to use the
+    #   contents of your user's Knife.rb to find the Chef API to interact with.
+    #
+    # @example using the symbol :knife to add a Chef API default location
+    #   chef_api :knife
+    #
+    # @example using a URL, node_name, and client_key to add a Chef API default location
+    #   chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "reset", client_key: "/Users/reset/.chef/knife.rb"
+    #
     # @param [String, Symbol] value
     # @param [Hash] options
     #
