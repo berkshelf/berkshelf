@@ -6,32 +6,37 @@ module Berkshelf
       subject { Downloader }
 
       describe "::initialize" do
-        # let(:cookbook_store) { double("cookbook_store") }
+        context "when no value for locations is given" do
+          it "sets the @locations instance variable to a blank array" do
+            downloader = subject.new(double('store'))
 
-        # context "given no option for :locations" do
-        #   it "adds the default Opscode Community Site to the array of locations" do
-        #     downloader = subject.new(cookbook_store)
+            downloader.instance_variable_get(:@locations).should be_a(Array)
+            downloader.instance_variable_get(:@locations).should have(0).items
+          end
+        end
 
-        #     downloader.locations.should have(1).item
-        #     downloader.locations[0][:type].should eql(:site)
-        #     downloader.locations[0][:value].should eql(:opscode)
-        #   end
-        # end
+        context "when an explicit value of locations is given" do
+          let(:locations) do
+            [
+              {
+                type: :chef_api,
+                value: double('capi'),
+                options: double('capi_opts')
+              },
+              {
+                type: :chef_api,
+                value: double('capi2'),
+                options: double('capi_opts2')
+              }
+            ]
+          end
 
-        # context "given a value for :locations" do
-        #   it "does not contain the default location" do
-        #     downloader = subject.new(cookbook_store, locations: [{ type: :path, value: "/Users/reset/cookbooks/nginx", options: Hash.new }])
+          it "sets the @locations instance variable to the given locations" do
+            downloader = subject.new(double('store'), locations: locations)
 
-        #     downloader.locations.should have(1).item
-        #   end
-
-        #   it "adds the value for locations to the array of locations" do
-        #     downloader = subject.new(cookbook_store, locations: [{ type: :path, value: "/Users/reset/cookbooks/nginx", options: Hash.new }])
-
-        #     downloader.locations[0][:type].should eql(:path)
-        #     downloader.locations[0][:value].should eql("/Users/reset/cookbooks/nginx")
-        #   end
-        # end
+            downloader.instance_variable_get(:@locations).should eql(locations)
+          end
+        end
       end
     end
 
@@ -63,32 +68,64 @@ module Berkshelf
       end
 
       context "when the source does not have a location" do
-        before(:each) { source.stub(:location).and_return(nil) }
-
-        context "and there are no default locations set" do
-          before(:each) { subject.stub(:locations).and_return(Array.new) }
-
-          it "creates a default location with the given source and sends it 'download'" do
-            CookbookSource::Location.should_receive(:init).with(source.name, source.version_constraint, site: :opscode).and_return(location)
-            location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
-            source.should_receive(:cached_cookbook=).with(cached_cookbook)
-
-            subject.download(source)
-          end
+        before(:each) do
+          source.stub(:location).and_return(nil)
+          subject.stub(:locations).and_return([{type: :chef_api, value: :knife, options: Hash.new}])
         end
 
-        context "and there is at least one default location set" do
-          before(:each) do
-            subject.stub(:locations).and_return([{type: :chef_api, value: :knife, options: Hash.new}])
-          end
+        it "sends the 'download' message to the default location" do
+          CookbookSource::Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :knife).and_return(location)
+          location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
+          source.should_receive(:cached_cookbook=).with(cached_cookbook)
 
-          it "sends the 'download' message to the default location" do
-            CookbookSource::Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :knife).and_return(location)
-            location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
-            source.should_receive(:cached_cookbook=).with(cached_cookbook)
+          subject.download(source)
+        end
+      end
+    end
 
-            subject.download(source)
-          end
+    describe "#locations" do
+      let(:type) { :site }
+      let(:value) { double('value') }
+      let(:options) { double('options') }
+
+      it "returns an array of Hashes representing locations" do
+        subject.add_location(type, value, options)
+
+        subject.locations.each { |l| l.should be_a(Hash) }
+      end
+
+      context "when no locations are explicitly added" do
+        subject { Downloader.new(double('store')) }
+
+        it "returns an array of default locations" do
+          subject.locations.should eql(Downloader::DEFAULT_LOCATIONS)
+        end
+      end
+
+      context "when locations are explicitly added" do
+        let(:locations) do
+          [
+            {
+              type: :chef_api,
+              value: double('capi'),
+              options: double('capi_opts')
+            },
+            {
+              type: :chef_api,
+              value: double('capi2'),
+              options: double('capi_opts2')
+            }
+          ]
+        end
+
+        subject { Downloader.new(double('store'), locations: locations) }
+
+        it "contains only the locations passed to the initializer" do
+          subject.locations.should eql(locations)
+        end
+
+        it "does not include the array of default locations" do
+          subject.locations.should_not include(Downloader::DEFAULT_LOCATIONS)
         end
       end
     end
@@ -147,6 +184,8 @@ module Berkshelf
           subject.add_location(type, value, options)
           subject.add_location(type_2, value_2, options_2)
 
+          subject.locations.should have(2).items
+
           subject.locations[0][:value].should eql(value)
           subject.locations[1][:value].should eql(value_2)
         end
@@ -158,7 +197,7 @@ module Berkshelf
       let(:value) { double('value') }
 
       it "returns true if a source of the given type and value was already added" do
-        subject.stub(:locations) { [ { type: type, value: value, options: Hash.new } ] }
+        subject.add_location(type, value)
 
         subject.has_location?(type, value).should be_true
       end

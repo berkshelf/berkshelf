@@ -79,7 +79,7 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
-  Scenario: with a defualt chef_api(1) location and a cookbook source that is not satisfied by it but is satisfied by the Opscode community site
+  Scenario: with a defualt chef_api(1) location and a cookbook source that is not satisfied by it
     Given I write to "Berksfile" with:
       """
       chef_api :knife
@@ -91,11 +91,9 @@ Feature: Berksfile default locations
     When I run the install command
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Cookbook 'artifact' not found in any of the default locations
       """
-    And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
-    And the exit status should be 0
+    And the CLI should exit with the status code for error "CookbookNotFound"
 
   Scenario: with two duplicate locations definitions
     Given I write to "Berksfile" with:
