@@ -50,6 +50,7 @@ module Berkshelf
             contains "description      \"Installs/Configures sparkle_motion\""
           end
           file "Berksfile" do
+            contains "site :opscode"
             contains "metadata"
           end
           file "Gemfile"
