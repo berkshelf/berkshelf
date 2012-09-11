@@ -63,15 +63,6 @@ module Berkshelf
 
     extend Forwardable
 
-    # JW TODO: Move locations out of CookbookSource namespace.
-    #   Move all locations into berkshelf/locations/*
-    #   Autorequire all items in berkshelf/locations/
-    require 'berkshelf/cookbook_source/location'
-    require 'berkshelf/cookbook_source/site_location'
-    require 'berkshelf/cookbook_source/git_location'
-    require 'berkshelf/cookbook_source/path_location'
-    require 'berkshelf/cookbook_source/chef_api_location'
-
     attr_reader :name
     attr_reader :version_constraint
     attr_reader :groups

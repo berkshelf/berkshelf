@@ -74,7 +74,7 @@ module Berkshelf
         end
 
         it "sends the 'download' message to the default location" do
-          CookbookSource::Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :knife).and_return(location)
+          Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :knife).and_return(location)
           location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
           source.should_receive(:cached_cookbook=).with(cached_cookbook)
 

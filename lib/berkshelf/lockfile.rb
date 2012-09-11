@@ -28,9 +28,9 @@ module Berkshelf
       def get_source_definition(source)
         definition = "cookbook '#{source.name}'"
 
-        if source.location.is_a?(CookbookSource::GitLocation)
+        if source.location.is_a?(GitLocation)
           definition += ", :git => '#{source.location.uri}', :ref => '#{source.location.branch || 'HEAD'}'"
-        elsif source.location.is_a?(CookbookSource::PathLocation)
+        elsif source.location.is_a?(PathLocation)
           definition += ", :path => '#{source.location.path}'"
         else
           definition += ", :locked_version => '#{source.locked_version}'"

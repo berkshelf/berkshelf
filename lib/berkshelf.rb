@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'uri'
 require 'pathname'
 require 'zlib'
 require 'archive/tar/minitar'
@@ -33,6 +34,8 @@ module Berkshelf
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Uploader, 'berkshelf/uploader'
   autoload :Resolver, 'berkshelf/resolver'
+
+  require 'berkshelf/location'
 
   class << self
     attr_accessor :ui

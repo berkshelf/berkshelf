@@ -145,7 +145,7 @@ module Berkshelf
           cached = source.cached_cookbook
           source.location.validate_cached(cached)
         else
-          if source.location.is_a?(CookbookSource::GitLocation)
+          if source.location.is_a?(GitLocation)
             return false
           end
 
@@ -155,7 +155,7 @@ module Berkshelf
           get_source(source).cached_cookbook = cached
         end
 
-        path = source.location.is_a?(CookbookSource::PathLocation) ? "#{source.location}" : nil
+        path = source.location.is_a?(PathLocation) ? "#{source.location}" : nil
         Berkshelf.formatter.use cached.cookbook_name, cached.version, path
 
         true

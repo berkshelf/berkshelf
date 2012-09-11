@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe CookbookSource::ChefAPILocation do
+  describe ChefAPILocation do
     let(:test_chef_api) { "https://chefserver:8081" }
 
     describe "ClassMethods" do
-      subject { CookbookSource::ChefAPILocation }
+      subject { ChefAPILocation }
       let(:valid_uri) { test_chef_api }
       let(:invalid_uri) { "notauri" }
       let(:constraint) { double('constraint') }
@@ -110,7 +110,7 @@ module Berkshelf
     end
 
     subject do
-      loc = CookbookSource::ChefAPILocation.new("nginx",
+      loc = ChefAPILocation.new("nginx",
         double('constraint', satisfies?: true),
         chef_api: :knife
       )
@@ -229,7 +229,7 @@ module Berkshelf
 
     describe "#to_s" do
       subject do
-        CookbookSource::ChefAPILocation.new('nginx',
+        ChefAPILocation.new('nginx',
           double('constraint'),
           chef_api: :knife
         )

@@ -1,9 +1,9 @@
 module Berkshelf
-  describe CookbookSource::Location do
+  describe Location do
     describe "ClassMethods Module" do
       subject do
         Class.new do
-          include CookbookSource::Location
+          include Location
         end
       end
 
@@ -88,7 +88,7 @@ module Berkshelf
     end
 
     describe "ModuleFunctions" do
-      subject { CookbookSource::Location }
+      subject { Location }
 
       describe "::init" do
         let(:name) { "artifact" }
@@ -97,25 +97,25 @@ module Berkshelf
         it "returns an instance of SiteLocation given a site: option key" do
           result = subject.init(name, constraint, site: "http://site/value")
 
-          result.should be_a(CookbookSource::SiteLocation)
+          result.should be_a(SiteLocation)
         end
 
         it "returns an instance of PathLocation given a path: option key" do
           result = subject.init(name, constraint, path: "/Users/reset/code")
 
-          result.should be_a(CookbookSource::PathLocation)
+          result.should be_a(PathLocation)
         end
 
         it "returns an instance of GitLocation given a git: option key" do
           result = subject.init(name, constraint, git: "git://github.com/something.git")
 
-          result.should be_a(CookbookSource::GitLocation)
+          result.should be_a(GitLocation)
         end
 
         it "returns an instance of SiteLocation when no option key is given that matches a registered location_key" do
           result = subject.init(name, constraint)
 
-          result.should be_a(CookbookSource::SiteLocation)
+          result.should be_a(SiteLocation)
         end
 
         context "given two location_keys" do
@@ -133,7 +133,7 @@ module Berkshelf
 
     subject do
       Class.new do
-        include CookbookSource::Location
+        include Location
       end.new(name, constraint)
     end
 

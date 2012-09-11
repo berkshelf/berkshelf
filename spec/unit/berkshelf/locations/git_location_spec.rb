@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe CookbookSource::GitLocation do
+  describe GitLocation do
     let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
     
     describe "ClassMethods" do
-      subject { CookbookSource::GitLocation }
+      subject { GitLocation }
 
       describe "::initialize" do
         it "raises InvalidGitURI if given an invalid Git URI for options[:git]" do
@@ -16,7 +16,7 @@ module Berkshelf
       end
     end
 
-    subject { CookbookSource::GitLocation.new("artifact", complacent_constraint, git: "git://github.com/RiotGames/artifact-cookbook.git") }
+    subject { GitLocation.new("artifact", complacent_constraint, git: "git://github.com/RiotGames/artifact-cookbook.git") }
 
     describe "#download" do
       it "returns an instance of Berkshelf::CachedCookbook" do
@@ -40,7 +40,7 @@ module Berkshelf
       end
 
       context "given no ref/branch/tag options is given" do
-        subject { CookbookSource::GitLocation.new("nginx", complacent_constraint, git: "git://github.com/opscode-cookbooks/nginx.git") }
+        subject { GitLocation.new("nginx", complacent_constraint, git: "git://github.com/opscode-cookbooks/nginx.git") }
 
         it "sets the branch attribute to the HEAD revision of the cloned repo" do
           subject.download(tmp_path)
@@ -50,7 +50,7 @@ module Berkshelf
       end
 
       context "given a git repo that does not exist" do
-        subject { CookbookSource::GitLocation.new("doesnot_exist", complacent_constraint, git: "git://github.com/RiotGames/thisrepo_does_not_exist.git") }
+        subject { GitLocation.new("doesnot_exist", complacent_constraint, git: "git://github.com/RiotGames/thisrepo_does_not_exist.git") }
 
         it "raises a GitError" do
           lambda {
@@ -60,7 +60,7 @@ module Berkshelf
       end
 
       context "given a git repo that does not contain a cookbook" do
-        subject { CookbookSource::GitLocation.new("doesnot_exist", complacent_constraint, git: "git://github.com/RiotGames/berkshelf.git") }
+        subject { GitLocation.new("doesnot_exist", complacent_constraint, git: "git://github.com/RiotGames/berkshelf.git") }
 
         it "raises a CookbookNotFound error" do
           lambda {
@@ -71,7 +71,7 @@ module Berkshelf
 
       context "given the content at the Git repo does not satisfy the version constraint" do
         subject do
-          CookbookSource::GitLocation.new("nginx",
+          GitLocation.new("nginx",
             double('constraint', satisfies?: false),
             git: "git://github.com/opscode-cookbooks/nginx.git"
           )
@@ -86,7 +86,7 @@ module Berkshelf
 
       context "given a value for ref that is a tag or branch and not a commit hash" do
         subject do
-          CookbookSource::GitLocation.new("artifact", 
+          GitLocation.new("artifact", 
             complacent_constraint,
             git: "git://github.com/RiotGames/artifact-cookbook.git",
             ref: "0.9.8"

@@ -6,7 +6,7 @@ module Berkshelf
     DEFAULT_LOCATIONS = [
       {
         type: :site,
-        value: CookbookSource::Location::OPSCODE_COMMUNITY_API,
+        value: Location::OPSCODE_COMMUNITY_API,
         options: Hash.new
       }
     ]
@@ -73,7 +73,7 @@ module Berkshelf
         location = nil
 
         locations.each do |loc|
-          location = CookbookSource::Location.init(
+          location = Location.init(
             source.name,
             source.version_constraint,
             loc[:options].merge(loc[:type] => loc[:value])

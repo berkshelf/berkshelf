@@ -37,7 +37,7 @@ module Berkshelf
           let(:source) { subject.new(cookbook_name, git: url) }
 
           it "initializes a GitLocation for location" do
-            source.location.should be_a(subject::GitLocation)
+            source.location.should be_a(GitLocation)
           end
 
           it "points to the given Git URL" do
@@ -50,7 +50,7 @@ module Berkshelf
             let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
 
             it "initializes a PathLocation for location" do
-              subject.new(cookbook_name, path: path).location.should be_a(subject::PathLocation)
+              subject.new(cookbook_name, path: path).location.should be_a(PathLocation)
             end
 
             it "points to the specified path" do
@@ -141,7 +141,7 @@ module Berkshelf
           let(:source) { subject.new(cookbook_name, site: url) }
 
           it "initializes a SiteLocation for location" do
-            source.location.should be_a(subject::SiteLocation)
+            source.location.should be_a(SiteLocation)
           end
 
           it "points to the specified URI" do

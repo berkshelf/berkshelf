@@ -1,23 +1,23 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe CookbookSource::SiteLocation do
+  describe SiteLocation do
     describe "ClassMethods" do
-      subject { CookbookSource::SiteLocation }
+      subject { SiteLocation }
 
       describe "::initialize" do
         context "given the symbol :opscode for the value of URI" do
           it "creates a SiteLocation with a URI equal to the default Opscode Community Site API" do
             result = subject.new("nginx", double('constraint'), site: :opscode)
 
-            result.api_uri.should eql(CookbookSource::Location::OPSCODE_COMMUNITY_API)
+            result.api_uri.should eql(Location::OPSCODE_COMMUNITY_API)
           end
         end
       end
     end
 
     let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
-    subject { CookbookSource::SiteLocation.new("nginx", complacent_constraint) }
+    subject { SiteLocation.new("nginx", complacent_constraint) }
 
     describe "#download" do
       before(:each) do
@@ -58,7 +58,7 @@ module Berkshelf
 
       context "given an explicit :site location key" do
         subject do
-          CookbookSource::SiteLocation.new("nginx",
+          SiteLocation.new("nginx",
             complacent_constraint,
             site: "http://cookbooks.opscode.com/api/v1/cookbooks"
           )
