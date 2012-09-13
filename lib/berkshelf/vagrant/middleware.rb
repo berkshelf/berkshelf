@@ -16,9 +16,8 @@ module Berkshelf
       def call(env)
         if Berkshelf::Vagrant.chef_solo?(env)
           configure_cookbooks_path(env)
-          install(env)
           clean_shelf!
-          copy(env)
+          install(env)
         end
 
         @app.call(env)
@@ -32,15 +31,7 @@ module Berkshelf
 
         def install(env)
           Berkshelf::Vagrant.info("installing cookbooks", env)
-          berksfile.install
-        end
-
-        def copy(env)
-          Berkshelf::Vagrant.info("copying cookbooks to Vagrant's shelf", env)
-          FileUtils.mkdir_p(self.shelf)
-          berksfile.cached_cookbooks.each do |cb|
-            FileUtils.cp_r(cb.path, File.join(self.shelf, cb.cookbook_name))
-          end
+          berksfile.install(path: self.shelf)
         end
 
         def configure_cookbooks_path(env)
