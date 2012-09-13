@@ -43,20 +43,3 @@ Feature: --format json
     And the JSON should have "cookbooks/0/uploaded_to"
     And the Chef server should have the cookbooks:
       | example_cookbook | 0.5.0 |
-
-  Scenario: JSON output when running install command with the --shims flag
-    Given I write to "Berksfile" with:
-      """
-      cookbook "mysql", "1.2.4"
-      """
-    When I run the install command with flags:
-      | --shims |
-      | --format json|
-    Then the following directories should exist:
-      | cookbooks       |
-      | cookbooks/mysql |
-    And the output should be JSON
-    And the JSON should have "shims_dir"
-
-
-

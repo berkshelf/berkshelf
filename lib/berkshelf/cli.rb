@@ -40,12 +40,6 @@ module Berkshelf
       aliases: "-F",
       banner: "FORMAT"
 
-    method_option :shims,
-      type: :string,
-      default: nil,
-      lazy_default: File.join(Dir.pwd, "cookbooks"),
-      desc: "Create a directory of shims pointing to Cookbook Versions.",
-      banner: "PATH"
     method_option :without,
       type: :array,
       default: Array.new,
@@ -59,10 +53,6 @@ module Berkshelf
       banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock."
     def install
-      unless options[:shims].nil?
-        options[:shims] = File.expand_path(options[:shims])
-      end
-
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
     end
