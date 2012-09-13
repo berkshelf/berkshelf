@@ -1,6 +1,7 @@
 require 'forwardable'
 require 'uri'
 require 'pathname'
+require 'tmpdir'
 require 'zlib'
 require 'archive/tar/minitar'
 require 'solve'
@@ -64,6 +65,15 @@ module Berkshelf
 
     def tmp_dir
       File.join(berkshelf_path, "tmp")
+    end
+
+    # Creates a temporary directory within the Berkshelf path
+    #
+    # @return [String]
+    #   path to the created temporary directory
+    def mktmpdir
+      FileUtils.mkdir_p(File.join(berkshelf_path, "tmp"))
+      Dir.mktmpdir(nil, File.join(berkshelf_path, "tmp"))
     end
 
     def cookbooks_dir

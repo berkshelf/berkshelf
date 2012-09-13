@@ -61,8 +61,9 @@ EOF
       describe "::vendor" do
         it "returns the expanded filepath of the vendor directory" do
           cached_cookbooks = Array.new
+          tmpdir = Dir.mktmpdir(nil, tmp_path)
           
-          subject.vendor(cached_cookbooks, "spec/unit").should eql(File.join(Berkshelf.root, "spec/unit"))
+          subject.vendor(cached_cookbooks, tmpdir).should eql(tmpdir)
         end
       end
     end

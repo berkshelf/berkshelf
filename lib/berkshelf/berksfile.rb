@@ -43,11 +43,14 @@ module Berkshelf
       #   expanded filepath to the vendor directory
       def vendor(cookbooks, path)
         path = File.expand_path(path)
-
         FileUtils.mkdir_p(path)
+        
+        scratch = Berkshelf.mktmpdir
         cookbooks.each do |cb|
-          FileUtils.cp_r(cb.path, File.join(path, cb.cookbook_name))
+          FileUtils.cp_r(cb.path, File.join(scratch, cb.cookbook_name))
         end
+
+        File.rename(scratch, path)
 
         path
       end
