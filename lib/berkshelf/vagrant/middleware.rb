@@ -16,7 +16,6 @@ module Berkshelf
       def call(env)
         if Berkshelf::Vagrant.chef_solo?(env)
           configure_cookbooks_path(env)
-          clean_shelf!
           install(env)
         end
 
@@ -24,10 +23,6 @@ module Berkshelf
       end
 
       private
-
-        def clean_shelf!
-          FileUtils.rm_rf(shelf)
-        end
 
         def install(env)
           Berkshelf::Vagrant.info("installing cookbooks", env)
