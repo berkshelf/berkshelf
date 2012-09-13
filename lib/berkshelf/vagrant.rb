@@ -5,6 +5,7 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   # @author Andrew Garson <andrew.garson@gmail.com>
   module Vagrant
+    autoload :Config, 'berkshelf/vagrant/config'
     autoload :Middleware, 'berkshelf/vagrant/middleware'
 
     class << self
@@ -39,6 +40,10 @@ module Berkshelf
     end
   end
 end
+
+Vagrant.config_keys.register(:berkshelf) {
+  Berkshelf::Vagrant::Config
+}
 
 berks = Vagrant::Action::Builder.new {
   use Berkshelf::Vagrant::Middleware

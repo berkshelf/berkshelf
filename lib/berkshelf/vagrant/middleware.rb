@@ -4,12 +4,13 @@ module Berkshelf
     # @author Andrew Garson <andrew.garson@gmail.com>
     class Middleware
       attr_reader :shelf
+      attr_reader :berksfile
 
       def initialize(app, env)
         @app = app
-        ::Berkshelf.config_path = "~/.chef/riot.rb"
-        @berksfile = Berksfile.from_file("Berksfile")
-        @shelf = Berkshelf::Vagrant.shelf_for(env)
+        Berkshelf.config_path = env[:global_config].berkshelf.config_path
+        @berksfile            = Berksfile.from_file(env[:global_config].berkshelf.berksfile_path)
+        @shelf                = Berkshelf::Vagrant.shelf_for(env)
       end
 
       def call(env)
@@ -24,8 +25,6 @@ module Berkshelf
       end
 
       private
-
-        attr_reader :berksfile
 
         def clean_shelf!
           FileUtils.rm_rf(shelf)
