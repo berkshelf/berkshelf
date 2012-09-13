@@ -327,3 +327,9 @@ This will still perform an install on your Berksfile, but it will skip a Lockfil
 Prepares a local path to have its Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
 
     $ berks init nginx-cookbook
+
+### Cookbook
+
+Creates a new cookbook with a number of helpful supporting tools to help you iterate quickly and develop reliable cookbooks.
+
+    $ berks cookbook my_face
