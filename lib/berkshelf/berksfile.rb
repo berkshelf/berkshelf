@@ -41,6 +41,9 @@ module Berkshelf
     # @return [Berkshelf::Downloader]
     attr_reader :downloader
 
+    # @return [Array<Berkshelf::CachedCookbook>]
+    attr_reader :cached_cookbooks
+
     def_delegator :downloader, :add_location
     def_delegator :downloader, :locations
 
@@ -48,6 +51,7 @@ module Berkshelf
       @filepath = path
       @sources = Hash.new
       @downloader = Downloader.new(Berkshelf.cookbook_store)
+      @cached_cookbooks = nil
     end
 
     # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recurisvely retrieved
@@ -300,18 +304,22 @@ module Berkshelf
     # @option options [String, Pathname] :shims
     #   Path to a directory of shims each pointing to a Cookbook Version that is
     #   part of the dependency solution. Each shim is a hard link on disk.
+    #
+    # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
       resolver = Resolver.new(
         self.downloader,
         sources: sources(exclude: options[:without])
       )
 
-      solution = resolver.resolve
+      @cached_cookbooks = resolver.resolve
       if options[:shims]
-        write_shims(options[:shims], solution)
+        write_shims(options[:shims], self.cached_cookbooks)
         Berkshelf.formatter.shims_written options[:shims]
       end
       write_lockfile(resolver.sources) unless lockfile_present?
+
+      self.cached_cookbooks
     end
 
     # @param [String] chef_server_url
