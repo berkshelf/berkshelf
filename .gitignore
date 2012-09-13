@@ -8,6 +8,7 @@ _yardoc
 /coverage
 /doc/
 /pkg
+/spec
 /spec/reports
 /Berksfile*
 tmp
