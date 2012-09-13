@@ -30,6 +30,30 @@ module Berkshelf
 
         sources.select { |source| (excluded & source.groups).empty? }
       end
+
+      # Copy all cached_cookbooks to the given directory. Each cookbook will be contained in
+      # a directory named after the name of the cookbook.
+      #
+      # @param [Array<CachedCookbook>] cookbooks
+      #   an array of CachedCookbooks to be copied to a vendor directory
+      # @param [String] path
+      #   filepath to vendor cookbooks to
+      #
+      # @return [String]
+      #   expanded filepath to the vendor directory
+      def vendor(cookbooks, path)
+        path = File.expand_path(path)
+        FileUtils.mkdir_p(path)
+        
+        scratch = Berkshelf.mktmpdir
+        cookbooks.each do |cb|
+          FileUtils.cp_r(cb.path, File.join(scratch, cb.cookbook_name))
+        end
+
+        File.rename(scratch, path)
+
+        path
+      end
     end
 
     @@active_group = nil
@@ -133,7 +157,6 @@ module Berkshelf
 
       add_source(name, constraint, options)
     end
-
 
     def group(*args)
       @@active_group = args
@@ -301,6 +324,9 @@ module Berkshelf
     # @option options [Symbol, Array] :without 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
     #   group to not be installed
+    # @option options [String] :path
+    #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
+    #   is a technique for packaging all cookbooks resolved by a Berksfile.
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
@@ -311,6 +337,10 @@ module Berkshelf
 
       @cached_cookbooks = resolver.resolve
       write_lockfile(resolver.sources) unless lockfile_present?
+
+      if options[:path]
+        self.class.vendor(@cached_cookbooks, options[:path])
+      end
 
       self.cached_cookbooks
     end

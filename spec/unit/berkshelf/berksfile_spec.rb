@@ -14,7 +14,7 @@ EOF
     describe "ClassMethods" do
       subject { Berksfile }
 
-      describe "#from_file" do
+      describe "::from_file" do
         let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
 
         it "reads a Berksfile and returns an instance Berksfile" do
@@ -32,7 +32,7 @@ EOF
         end
       end
 
-      describe "#filter_sources" do
+      describe "::filter_sources" do
         context "given one of the sources is a member of one of the excluded groups" do
           let(:excluded_groups) { [:nautilus, :skarner] }
           let(:source_one) { double('source_one') }
@@ -55,6 +55,15 @@ EOF
 
             result.should include(source_two)
           end
+        end
+      end
+
+      describe "::vendor" do
+        it "returns the expanded filepath of the vendor directory" do
+          cached_cookbooks = Array.new
+          tmpdir = Dir.mktmpdir(nil, tmp_path)
+          
+          subject.vendor(cached_cookbooks, tmpdir).should eql(tmpdir)
         end
       end
     end
@@ -275,6 +284,17 @@ EOF
           subject.should_not_receive(:write_lockfile)
 
           subject.install
+        end
+      end
+
+      context "when a value for :path is given" do
+        before(:each) { resolver.should_receive(:resolve) }
+
+        it "sends the message 'vendor' to Berksfile with the value for :path" do
+          path = double('path')
+          subject.class.should_receive(:vendor).with(subject.cached_cookbooks, path)
+
+          subject.install(path: path)
         end
       end
     end
