@@ -50,6 +50,7 @@ module Berkshelf
           FileUtils.cp_r(cb.path, File.join(scratch, cb.cookbook_name))
         end
 
+        FileUtils.rm_rf(path)
         File.rename(scratch, path)
 
         path
