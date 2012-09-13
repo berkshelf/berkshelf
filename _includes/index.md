@@ -179,7 +179,7 @@ The Knife config used is located at `~/.chef/knife.rb` or the value of `ENV["CHE
 
 You can also explicitly define the `chef_server_url`, `node_name`, and `client_key` to use:
 
-    cookbook "artifact", chef_api: "http://cookbooks.opscode.com/api/v1/cookbooks", node_name: "reset", client_key: "/Users/reset/.chef/knife.rb"
+    cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem"
 
 ##### Site Location
 
@@ -214,6 +214,41 @@ An optional `branch` key can be specified whose value is a tag, branch, or ref t
 Given the previous example, the cookbook found at tag `1.0.1` of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
 ### Default Locations
+
+Any source that does not explicit define a location will attempted to be retrieved at the latest Opscode community API. Any source not explicitly defined in the Berksfile but found in the `metadata.rb` of the current cookbook or a dependency will also attempt to use this default location.
+
+Additional site locations can be specified with the `site` keyword in the Berksfile
+
+    site "http://cookbooks.opscode.com/api/v1/cookbooks"
+
+This same entry could also have been written
+
+    site :opscode
+
+A Chef API default location can also be specified to attempt to retrieve your cookbook and it's dependencies from
+
+    chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem"
+
+Provided my Knife config contains these credentials - this could have been simplified by using the `:knife` symbol
+
+    chef_api :knife
+
+> Specifying a Chef API default location is particularly useful if you have cookbooks that are 
+> private to your organization that are not shared on the Opscode community site.
+>
+> It is highly recommended that you upload your cookbooks to your organizations Chef Server
+> and then set a chef_api default location at the top of every application cookbook's Berksfile
+
+#### Multiple default locations
+
+A combination of default locations can be specified in case a location is unavailable or does not contain the desired cookbook or version
+
+    chef_api :knife
+    site :opscode
+
+    cookbook "artifact", "= 0.10.0"
+
+The order in which the default locations keywords appear in the Berksfile is the order in which sources will be tried. In the above example Berkshelf would first try a Chef API using my Knife configuration to find the "artifact" cookbook. If the Chef API didn't contain the "artifact" cookbook, or version 0.10.0 of the cookbook, it will try the Opscode community site.
 
 ### Groups
 
