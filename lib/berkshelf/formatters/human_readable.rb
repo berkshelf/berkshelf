@@ -17,10 +17,6 @@ module Berkshelf
         Berkshelf.ui.info "Uploading #{cookbook} (#{version}) to: '#{chef_server_url}'"
       end
 
-      def shims_written(directory)
-        Berkshelf.ui.info "Shims written to: '#{directory}'"
-      end
-
       def msg(message)
         Berkshelf.ui.info message
       end

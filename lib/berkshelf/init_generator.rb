@@ -73,7 +73,7 @@ module Berkshelf
 
       if options[:vagrant]
         template "Vagrantfile.erb", target.join("Vagrantfile")
-        ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile"), shims: target.join("cookbooks")).invoke(:install)
+        ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile")).invoke(:install)
       end
     end
 

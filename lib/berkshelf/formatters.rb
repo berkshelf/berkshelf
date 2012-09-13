@@ -1,7 +1,7 @@
 module Berkshelf
   module Formatters
     # @abstract Include and override {#install} {#use} {#upload} 
-    #   {#shims_written} {#msg} {#error} to implement.
+    #   {#msg} {#error} to implement.
     #
     #   Implement {#cleanup_hook} to run any steps required to run after the task is finished
     module AbstractFormatter
@@ -19,10 +19,6 @@ module Berkshelf
 
       def upload(cookbook, version, chef_server_url)
         raise AbstractFunction, "#upload must be implemented on #{self.class}"
-      end
-
-      def shims_written(directory)
-        raise AbstractFunction, "#shims_written must be implemented on #{self.class}"
       end
 
       def msg(message)

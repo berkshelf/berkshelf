@@ -61,12 +61,12 @@ module Berkshelf
       specify do
         target.should have_structure {
           file "Vagrantfile" do
+            contains "require 'berkshelf/vagrant'"
             contains "recipe[some_cookbook::default]"
           end
           file "Gemfile" do
             contains "gem 'vagrant'"
           end
-          directory "cookbooks"
         }
       end
     end

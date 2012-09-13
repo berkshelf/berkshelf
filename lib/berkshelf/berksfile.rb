@@ -301,9 +301,6 @@ module Berkshelf
     # @option options [Symbol, Array] :without 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
     #   group to not be installed
-    # @option options [String, Pathname] :shims
-    #   Path to a directory of shims each pointing to a Cookbook Version that is
-    #   part of the dependency solution. Each shim is a hard link on disk.
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
@@ -313,10 +310,6 @@ module Berkshelf
       )
 
       @cached_cookbooks = resolver.resolve
-      if options[:shims]
-        write_shims(options[:shims], self.cached_cookbooks)
-        Berkshelf.formatter.shims_written options[:shims]
-      end
       write_lockfile(resolver.sources) unless lockfile_present?
 
       self.cached_cookbooks
@@ -361,40 +354,6 @@ module Berkshelf
         self.downloader,
         sources: sources(exclude: options[:without])
       ).resolve
-    end
-
-    # Write a collection of hard links to the given path representing the given
-    # CachedCookbooks. Useful for getting Cookbooks in a single location for 
-    # consumption by Vagrant, or another tool that expect this structure.
-    #
-    # @example 
-    #   Given the path: '/Users/reset/code/pvpnet/cookbooks'
-    #   And a CachedCookbook: 'nginx' verison '0.100.5' at '/Users/reset/.berkshelf/nginx-0.100.5'
-    #
-    #   A hardlink will be created at: '/Users/reset/code/pvpnet/cookbooks/nginx'
-    #
-    # @param [Pathname, String] path
-    # @param [Array<Berkshelf::CachedCookbook>] cached_cookbooks
-    def write_shims(path, cached_cookbooks)
-      path        = File.expand_path(path)
-      actual_path = nil
-
-      if descendant_directory?(path, Dir.pwd)
-        actual_path = path
-        FileUtils.rm_rf(actual_path)
-        path = File.join(Berkshelf.tmp_dir, "shims")
-      end
-
-      FileUtils.mkdir_p(path)
-      cached_cookbooks.each do |cached_cookbook|
-        destination = File.expand_path(File.join(path, cached_cookbook.cookbook_name))
-        FileUtils.rm_rf(destination)
-        FileUtils.ln_r(cached_cookbook.path, destination, force: true)
-      end
-
-      if actual_path
-        FileUtils.mv(path, actual_path)
-      end
     end
 
     # Reload this instance of Berksfile with the given content. The content
