@@ -65,21 +65,6 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
-  @no_run
-  Scenario: installing a Berksfile that contains a path location which contains a broken symlink
-    Given a Berksfile with path location sources to fixtures:
-      | example_cookbook_broken_link | example_cookbook_broken_link |
-    When I run the install command with flags:
-      | --shims |
-    Then the following directories should exist:
-      | cookbooks                  |
-      | cookbooks/example_cookbook |
-    And the output should contain:
-      """
-      Shims written to: 
-      """
-    And the exit status should be 0
-
   Scenario: installing a Berksfile that contains a Git location
     Given I write to "Berksfile" with:
       """
@@ -145,61 +130,6 @@ Feature: install cookbooks from a Berksfile
       Cookbook 'doesntexist' not found in any of the default locations
       """
     And the CLI should exit with the status code for error "CookbookNotFound"
-
-  Scenario: running install command with the --shims flag to create a directory of shims
-    Given I write to "Berksfile" with:
-      """
-      cookbook "mysql", "1.2.4"
-      """
-    When I run the install command with flags:
-      | --shims |
-    Then the following directories should exist:
-      | cookbooks       |
-      | cookbooks/mysql |
-    And the output should contain:
-      """
-      Shims written to: 
-      """
-    And the exit status should be 0
-
-  Scenario: running install command with the --shims flag and a relative path
-    Given I write to "Berksfile" with:
-      """
-      cookbook "mysql", "1.2.4"
-      """
-    When I run the install command with flags:
-      | --shims relativepath |
-    Then the following directories should exist:
-      | relativepath       |
-      | relativepath/mysql |
-    And the output should contain:
-      """
-      Shims written to: 
-      """
-    And the exit status should be 0
-
-  Scenario: running install with --shims when current project is a cookbook and the 'metadata' is specified
-    Given a cookbook named "sparkle_motion"
-    And the cookbook "sparkle_motion" has the file "Berksfile" with:
-      """
-      metadata
-      """
-    When I cd to "sparkle_motion"
-    And I run the install command with flags:
-      | --shims |
-    Then the following directories should exist:
-      | cookbooks                |
-      | cookbooks/sparkle_motion |
-    And the output should contain:
-      """
-      Shims written to: 
-      """
-    And the output should contain:
-      """
-      Using sparkle_motion (0.0.0) at path:
-      """
-    And the exit status should be 0
-
 
   Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
     Given I write to "Berksfile" with:

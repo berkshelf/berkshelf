@@ -37,10 +37,6 @@ module Berkshelf
         @cookbooks[cookbook][:uploaded_to] = chef_server_url
       end
 
-      def shims_written(directory)
-        @output[:shims_dir] = directory
-      end
-
       def msg(message)
         @output[:messages] << message
       end
