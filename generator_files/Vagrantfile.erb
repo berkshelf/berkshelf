@@ -47,9 +47,7 @@ Vagrant::Config.run do |config|
   config.ssh.max_tries = 40
   config.ssh.timeout   = 120
 
-  config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = ["cookbooks"]
-    
+  config.vm.provision :chef_solo do |chef|    
     chef.json = {
       :mysql => {
         :server_root_password => 'rootpass',
