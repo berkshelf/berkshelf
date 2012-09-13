@@ -3,21 +3,20 @@ module Berkshelf
     # @author Jamie Winsor <jamie@vialstudios.com>
     # @author Andrew Garson <andrew.garson@gmail.com>
     class Middleware
+      attr_reader :shelf
+
       def initialize(app, env)
         @app = app
         ::Berkshelf.config_path = "~/.chef/riot.rb"
         @berksfile = Berksfile.from_file("Berksfile")
-        @vberks_path = File.join(File.expand_path("~/.berkshelf/vagrant"), env[:global_config].vm.host_name)
+        @shelf = Berkshelf::Vagrant.shelf_for(env)
       end
 
       def call(env)
         if Berkshelf::Vagrant.chef_solo?(env)
           configure_cookbooks_path(env)
-
-          env[:ui].info("[Berkshelf] installing cookbooks")
           install(env)
-
-          env[:ui].info("[Berkshelf] copying cookbooks to Vagrant's berkshelf")
+          clean_shelf!
           copy(env)
         end
 
@@ -27,22 +26,27 @@ module Berkshelf
       private
 
         attr_reader :berksfile
-        attr_reader :vberks_path
+
+        def clean_shelf!
+          FileUtils.rm_rf(shelf)
+        end
 
         def install(env)
+          Berkshelf::Vagrant.info("installing cookbooks", env)
           berksfile.install
         end
 
         def copy(env)
-          FileUtils.mkdir_p(vberks_path)
+          Berkshelf::Vagrant.info("copying cookbooks to Vagrant's shelf", env)
+          FileUtils.mkdir_p(self.shelf)
           berksfile.cached_cookbooks.each do |cb|
-            FileUtils.cp_r(cb.path, File.join(vberks_path, cb.cookbook_name))
+            FileUtils.cp_r(cb.path, File.join(self.shelf, cb.cookbook_name))
           end
         end
 
         def configure_cookbooks_path(env)
           Berkshelf::Vagrant.provisioners(:chef_solo, env).each do |provisioner|
-            provisioner.config.cookbooks_path.unshift(vberks_path)
+            provisioner.config.cookbooks_path.unshift(self.shelf)
           end
         end
     end

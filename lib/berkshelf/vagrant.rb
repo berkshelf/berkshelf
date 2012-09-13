@@ -8,6 +8,17 @@ module Berkshelf
     autoload :Middleware, 'berkshelf/vagrant/middleware'
 
     class << self
+      # @param [Vagrant::Action::Environment] env
+      def shelf_for(env)
+        File.join(Berkshelf.berkshelf_path, "vagrant", env[:global_config].vm.host_name)
+      end
+
+      # @param [String] msg
+      # @param [Vagrant::Action::Environment] env
+      def info(msg, env)
+        env[:ui].info("[Berkshelf] #{msg}")
+      end
+
       # @param [Symbol] shortcut
       # @param [Vagrant::Action::Environment] env
       #
