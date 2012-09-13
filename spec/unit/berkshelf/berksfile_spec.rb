@@ -233,6 +233,26 @@ EOF
           resolver.should_receive(:sources).and_return([])
         end
 
+        let(:cached_cookbooks) do
+          [
+            double('cached_one'),
+            double('cached_two')
+          ]
+        end
+
+        it "returns the result from sending the message resolve to resolver" do
+          resolver.should_receive(:resolve).and_return(cached_cookbooks)
+
+          subject.install.should eql(cached_cookbooks)
+        end
+
+        it "sets a value for self.cached_cookbooks equivalent to the return value" do
+          resolver.should_receive(:resolve).and_return(cached_cookbooks)
+          subject.install
+
+          subject.cached_cookbooks.should eql(cached_cookbooks)
+        end
+
         it "creates a new resolver and finds a solution by calling resolve on the resolver" do
           resolver.should_receive(:resolve)
 
