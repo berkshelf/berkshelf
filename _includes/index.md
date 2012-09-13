@@ -6,6 +6,8 @@ If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a br
 
 Specify your dependencies in a Berksfile in your application or cookbook's root
 
+    site :opscode
+
     cookbook 'mysql'
     cookbook 'nginx', '~> 0.101.5'
 
@@ -42,6 +44,14 @@ These cookbooks will be located at:
     ~/.berkshelf/cookbooks/mysql-1.2.4
 
 By default Chef interprets the name of a cookbook by the directory name. Some Chef internals weigh the name of the directory more heavily than if a cookbook developer were to explicitly set the `name` attribute in their metadata. Because the directory structure contains the cookbook's version number, do not treat The Berkshelf as just another entry in your `Chef::Config#cookbooks_path`.
+
+### Vendoring Cookbooks
+
+You can easily install your Cookbooks and their dependencies to a location other than The Berkshelf. A good case for this is when you want to "vendor" your cookbooks to be packaged and distributed.
+
+    $ berks install --path vendor/cookbooks
+
+This will install your Cookbooks to the `vendor/cookbooks` directory relative to where you ran the command from. Inside the vendored cookbooks directory you will find a directory named after the cookbook it contains.
 
 ## Vagrant with Berkshelf 
 
