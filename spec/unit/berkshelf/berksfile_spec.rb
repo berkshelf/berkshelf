@@ -32,32 +32,6 @@ EOF
         end
       end
 
-      describe "::filter_sources" do
-        context "given one of the sources is a member of one of the excluded groups" do
-          let(:excluded_groups) { [:nautilus, :skarner] }
-          let(:source_one) { double('source_one') }
-          let(:source_two) { double('source_two') }
-
-          before(:each) do
-            source_one.stub(:groups) { [:nautilus] }
-            source_two.stub(:groups) { [:riven] }
-            @sources = [source_one, source_two]
-          end
-
-          it "returns an array without sources that were members of the excluded groups" do
-            result = subject.filter_sources(@sources, excluded_groups)
-
-            result.should_not include(source_one)
-          end
-
-          it "does not remove sources that were not a member of the excluded groups" do
-            result = subject.filter_sources(@sources, excluded_groups)
-
-            result.should include(source_two)
-          end
-        end
-      end
-
       describe "::vendor" do
         it "returns the expanded filepath of the vendor directory" do
           cached_cookbooks = Array.new
@@ -183,6 +157,13 @@ EOF
     end
 
     describe "#sources" do
+      let(:groups) do
+        [
+          :nautilus,
+          :skarner
+        ]
+      end
+
       it "returns all CookbookSources added to the instance of Berksfile" do
         subject.add_source(source_one.name)
         subject.add_source(source_two.name)
@@ -192,11 +173,43 @@ EOF
         subject.should have_source(source_two.name)
       end
 
-      context "given the option :exclude" do
-        it "filters the sources before returning them" do
-          subject.class.should_receive(:filter_sources).with(subject.sources, :nautilus)
+      context "given the option :except" do
+        before(:each) do
+          source_one.stub(:groups) { [:default, :skarner] }
+          source_two.stub(:groups) { [:default, :nautilus] }
+        end
 
-          subject.sources(exclude: :nautilus)
+        it "returns all of the sources except the ones in the given groups" do
+          subject.add_source(source_one.name, nil, group: [:default, :skarner])
+          subject.add_source(source_two.name, nil, group: [:default, :nautilus])
+          filtered = subject.sources(except: :nautilus)
+
+          filtered.should have(1).item
+          filtered.first.name.should eql(source_one.name)
+        end
+      end
+
+      context "given the option :only" do
+        before(:each) do
+          source_one.stub(:groups) { [:default, :skarner] }
+          source_two.stub(:groups) { [:default, :nautilus] }
+        end
+
+        it "returns only the sources in the givne groups" do
+          subject.add_source(source_one.name, nil, group: [:default, :skarner])
+          subject.add_source(source_two.name, nil, group: [:default, :nautilus])
+          filtered = subject.sources(only: :nautilus)
+
+          filtered.should have(1).item
+          filtered.first.name.should eql(source_two.name)
+        end
+      end
+
+      context "when a value for :only and :except is given" do
+        it "raises an ArgumentError" do
+          lambda {
+            subject.sources(only: [], except: [])
+          }.should raise_error(Berkshelf::ArgumentError, "Cannot specify both :except and :only")
         end
       end
     end
@@ -295,6 +308,29 @@ EOF
           subject.class.should_receive(:vendor).with(subject.cached_cookbooks, path)
 
           subject.install(path: path)
+        end
+      end
+
+      context "when a value for :except is given" do
+        before(:each) { resolver.should_receive(:resolve) }
+
+        it "filters the sources and gives the results to the Resolver initializer" do
+          filtered = double('sources')
+          subject.should_receive(:sources).with(except: [:skip_me]).and_return(filtered)
+          Resolver.should_receive(:new).with(anything, sources: filtered)
+
+          subject.install(except: [:skip_me])
+        end
+      end
+
+      context "when a value for :only is given" do
+        before(:each) { resolver.should_receive(:resolve) }
+
+        it "filters the sources and gives the results to the Resolver initializer" do
+          filtered = double('sources')
+          subject.should_receive(:sources).with(only: [:skip_me]).and_return(filtered)
+
+          subject.install(only: [:skip_me])
         end
       end
     end

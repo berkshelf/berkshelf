@@ -12,6 +12,7 @@ module Berkshelf
   end
 
   class InternalError < BerkshelfError; status_code(99); end
+  class ArgumentError < InternalError; end
   class AbstractFunction < InternalError
     def to_s
       "Function must be implemented on includer"

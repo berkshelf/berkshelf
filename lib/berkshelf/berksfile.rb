@@ -16,21 +16,6 @@ module Berkshelf
         raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
       end
 
-      # @param [Array] sources
-      #   an array of sources to filter
-      # @param [Array, Symbol] excluded
-      #   an array of symbols or a symbol representing the group or group(s)
-      #   to exclude
-      #
-      # @return [Array<Berkshelf::CookbookSource>]
-      #   an array of sources that are not members of the excluded group(s)
-      def filter_sources(sources, excluded)
-        excluded = Array(excluded)
-        excluded.collect!(&:to_sym)
-
-        sources.select { |source| (excluded & source.groups).empty? }
-      end
-
       # Copy all cached_cookbooks to the given directory. Each cookbook will be contained in
       # a directory named after the name of the cookbook.
       #
@@ -273,16 +258,28 @@ module Berkshelf
       @sources.has_key?(source.to_s)
     end
 
-    # @option options [Symbol, Array] :exclude 
+    # @option options [Symbol, Array] :except 
     #   Group(s) to exclude to exclude from the returned Array of sources
     #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
+    #
+    # @raise [Berkshelf::ArgumentError] if a value for both :except and :only is provided
     #
     # @return [Array<Berkshelf::CookbookSource>]
     def sources(options = {})
       l_sources = @sources.collect { |name, source| source }.flatten
 
-      if options[:exclude]
-        self.class.filter_sources(l_sources, options[:exclude])
+      case
+      when options.has_key?(:except) && options.has_key?(:only)
+        raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
+      when options.has_key?(:except)
+        groups = Array(options[:except]).collect(&:to_sym)
+        sources.select { |source| (groups & source.groups).empty? }
+      when options.has_key?(:only)
+        groups = Array(options[:only]).collect(&:to_sym)
+        sources.select { |source| !(groups & source.groups).empty? }
       else
         l_sources
       end
@@ -322,9 +319,12 @@ module Berkshelf
     end
     alias_method :get_source, :[]
 
-    # @option options [Symbol, Array] :without 
+    # @option options [Symbol, Array] :except 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
     #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
     # @option options [String] :path
     #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
     #   is a technique for packaging all cookbooks resolved by a Berksfile.
@@ -333,7 +333,7 @@ module Berkshelf
     def install(options = {})
       resolver = Resolver.new(
         self.downloader,
-        sources: sources(exclude: options[:without])
+        sources: sources(options)
       )
 
       @cached_cookbooks = resolver.resolve
