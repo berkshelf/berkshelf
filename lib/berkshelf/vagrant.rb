@@ -5,8 +5,12 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   # @author Andrew Garson <andrew.garson@gmail.com>
   module Vagrant
+    module Action
+      autoload :Install, 'berkshelf/vagrant/action/install'
+      autoload :Clean, 'berkshelf/vagrant/action/clean'
+    end
+
     autoload :Config, 'berkshelf/vagrant/config'
-    autoload :Middleware, 'berkshelf/vagrant/middleware'
 
     class << self
       # @param [Vagrant::Action::Environment] env
@@ -45,9 +49,13 @@ Vagrant.config_keys.register(:berkshelf) {
   Berkshelf::Vagrant::Config
 }
 
-berks = Vagrant::Action::Builder.new {
-  use Berkshelf::Vagrant::Middleware
+install = Vagrant::Action::Builder.new {
+  use Berkshelf::Vagrant::Action::Install
+}
+clean = Vagrant::Action::Builder.new {
+  use Berkshelf::Vagrant::Action::Clean
 }
 
-Vagrant.actions[:provision].insert(Vagrant::Action::VM::Provision, berks)
-Vagrant.actions[:start].insert(Vagrant::Action::VM::Provision, berks)
+Vagrant.actions[:provision].insert(Vagrant::Action::VM::Provision, install)
+Vagrant.actions[:start].insert(Vagrant::Action::VM::Provision, install)
+Vagrant.actions[:destroy].insert(Vagrant::Action::VM::CleanMachineFolder, clean)
