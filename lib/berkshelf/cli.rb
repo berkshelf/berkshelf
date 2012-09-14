@@ -72,11 +72,14 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    method_option :without,
+    method_option :except,
       type: :array,
-      default: Array.new,
       desc: "Exclude cookbooks that are in these groups.",
-      aliases: "-w"
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
     desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions."
     def update
       Lockfile.remove!
@@ -89,11 +92,14 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    method_option :without,
+    method_option :except,
       type: :array,
-      default: Array.new,
       desc: "Exclude cookbooks that are in these groups.",
-      aliases: "-w"
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
     method_option :freeze,
       type: :boolean,
       default: false,
