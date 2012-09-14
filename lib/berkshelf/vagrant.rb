@@ -7,6 +7,7 @@ module Berkshelf
   module Vagrant
     module Action
       autoload :Install, 'berkshelf/vagrant/action/install'
+      autoload :Upload, 'berkshelf/vagrant/action/upload'
       autoload :Clean, 'berkshelf/vagrant/action/clean'
     end
 
@@ -25,21 +26,31 @@ module Berkshelf
       end
 
       # @param [Symbol] shortcut
-      # @param [Vagrant::Action::Environment] env
+      # @param [Vagrant::Config::Top] config
       #
       # @return [Array]
-      def provisioners(shortcut, env)
-        env[:global_config].vm.provisioners.select { |prov| prov.shortcut == shortcut }
+      def provisioners(shortcut, config)
+        config.vm.provisioners.select { |prov| prov.shortcut == shortcut }
       end
 
-      # Determine if the given instance of Vagrant::Environment contains at least one
+      # Determine if the given instance of Vagrant::Config::Top contains a
       # chef_solo provisioner
       #
-      # @param [Vagrant::Action::Environment] env
+      # @param [Vagrant::Config::Top] config
       #
       # @return [Boolean]
-      def chef_solo?(env)
-        !provisioners(:chef_solo, env).empty?
+      def chef_solo?(config)
+        !provisioners(:chef_solo, config).empty?
+      end
+
+      # Determine if the given instance of Vagrant::Config::Top contains a
+      # chef_client provisioner
+      #
+      # @param [Vagrant::Config::Top] config
+      #
+      # @return [Boolean]
+      def chef_client?(config)
+        !provisioners(:chef_client, config).empty?
       end
     end
   end
@@ -52,10 +63,15 @@ Vagrant.config_keys.register(:berkshelf) {
 install = Vagrant::Action::Builder.new {
   use Berkshelf::Vagrant::Action::Install
 }
+upload = Vagrant::Action::Builder.new {
+  use Berkshelf::Vagrant::Action::Upload
+}
 clean = Vagrant::Action::Builder.new {
   use Berkshelf::Vagrant::Action::Clean
 }
 
 Vagrant.actions[:provision].insert(Vagrant::Action::VM::Provision, install)
+Vagrant.actions[:provision].insert(Vagrant::Action::VM::Provision, upload)
 Vagrant.actions[:start].insert(Vagrant::Action::VM::Provision, install)
+Vagrant.actions[:start].insert(Vagrant::Action::VM::Provision, upload)
 Vagrant.actions[:destroy].insert(Vagrant::Action::VM::CleanMachineFolder, clean)
