@@ -1,4 +1,5 @@
 require 'thor'
+require 'thor/monkies'
 require 'berkshelf'
 
 module Berkshelf
@@ -40,11 +41,14 @@ module Berkshelf
       aliases: "-F",
       banner: "FORMAT"
 
-    method_option :without,
+    method_option :except,
       type: :array,
-      default: Array.new,
       desc: "Exclude cookbooks that are in these groups.",
-      aliases: "-w"
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
     method_option :berksfile,
       type: :string,
       default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
