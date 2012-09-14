@@ -13,7 +13,7 @@ module Berkshelf
         def call(env)
           if Berkshelf::Vagrant.chef_solo?(env[:global_config])
             Berkshelf::Vagrant.info("cleaning Vagrant's shelf", env)
-            FileUtils.rm_r(self.shelf)
+            FileUtils.remove_dir(self.shelf, fore: true)
           end
 
           @app.call(env)
