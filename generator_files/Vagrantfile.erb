@@ -1,19 +1,27 @@
 require 'berkshelf/vagrant'
 
 Vagrant::Config.run do |config|
+  # All Vagrant configuration is done here. The most common configuration
+  # options are documented and commented below. For a complete reference,
+  # please see the online documentation at vagrantup.com.
+
   # The path to the Berksfile to use with Vagrant Berkshelf
-  config.berkshelf.berksfile_path = "./Berksfile"
+  # config.berkshelf.berksfile_path = "./Berksfile"
 
   # The path to the Knife config to use with Vagrant Berkshelf
-  config.berkshelf.config_path = "~/.chef/knife.rb"
+  # config.berkshelf.config_path = "~/.chef/knife.rb"
+
+  # A client name (node_name) to use with the Chef Client provisioner to upload
+  # cookbooks installed by Berkshelf.
+  # config.berkshelf.node_name = "reset"
+
+  # A path to a client key on disk to use with the Chef Client provisioner to
+  # upload cookbooks installed by Berkshelf.
+  # config.berkshelf.client_key = "~/.chef/reset.pem"
 
   # An array of symbols representing groups of cookbook described in the Vagrantfile
   # to skip installing and copying to Vagrant's shelf.
   config.berkshelf.without = []
-
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
 
   config.vm.host_name = "<%= cookbook_name %>-berkshelf"
 
