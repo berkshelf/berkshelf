@@ -208,7 +208,7 @@ EOF
       context "when a value for :only and :except is given" do
         it "raises an ArgumentError" do
           lambda {
-            subject.sources(only: [], except: [])
+            subject.sources(only: [:default], except: [:other])
           }.should raise_error(Berkshelf::ArgumentError, "Cannot specify both :except and :only")
         end
       end
