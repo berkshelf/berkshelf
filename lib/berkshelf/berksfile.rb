@@ -352,9 +352,12 @@ module Berkshelf
     #
     #     "https://api.opscode.com/organizations/vialstudios"
     #
-    # @option options [Symbol, Array] :without 
+    # @option options [Symbol, Array] :except 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
     #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
     # @option options [String] :node_name
     #   the name of the client used to sign REST requests to the Chef Server
     # @option options [String] :client_key
@@ -376,15 +379,18 @@ module Berkshelf
 
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
     #
-    # @option options [Symbol, Array] :without 
+    # @option options [Symbol, Array] :except 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
-    #   group to not be resolved
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
     #
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
       Resolver.new(
         self.downloader,
-        sources: sources(exclude: options[:without])
+        sources: sources(options)
       ).resolve
     end
 
