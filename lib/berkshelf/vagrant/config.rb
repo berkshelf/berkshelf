@@ -12,19 +12,30 @@ module Berkshelf
       attr_reader :berksfile_path
 
       # @return [String]
+      #   A path to a client key on disk to use with the Chef Client provisioner to
+      #   upload cookbooks installed by Berkshelf.
       attr_reader :client_key
 
-      # @return [Array<Symbol>]
-      #   groups to skip installing and copying in the Vagrantfile
-      attr_accessor :without
-
       # @return [String]
+      #   A client name (node_name) to use with the Chef Client provisioner to upload
+      #   cookbooks installed by Berkshelf.
       attr_accessor :node_name
+
+      # @return [Array<Symbol>]
+      #   cookbooks in all other groups except for these will be installed
+      #   and copied to Vagrant's shelf
+      attr_accessor :except
+
+      # @return [Array<Symbol>]
+      #   only cookbooks in these groups will be installed and copied to
+      #   Vagrant's shelf
+      attr_accessor :only
 
       def initialize
         @config_path = Berkshelf::DEFAULT_CONFIG
         @berksfile_path = File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
-        @without = Array.new
+        @only = Array.new
+        @except = Array.new
       end
 
       def config_path=(value)
@@ -40,6 +51,10 @@ module Berkshelf
       end
 
       def validate(env, errors)
+        if !except.empty? && !only.empty?
+          errors.add("A value for berkshelf.empty and berkshelf.only cannot both be defined.")
+        end
+
         if Berkshelf::Vagrant.chef_client?(env.config.global)
           if node_name.nil?
             errors.add("A value for berkshelf.node_name is required when using the chef_client provisioner.")
