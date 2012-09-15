@@ -271,15 +271,16 @@ module Berkshelf
     def sources(options = {})
       l_sources = @sources.collect { |name, source| source }.flatten
 
+      except = Array(options.fetch(:except, nil)).collect(&:to_sym)
+      only   = Array(options.fetch(:only, nil)).collect(&:to_sym)
+
       case
-      when options.has_key?(:except) && options.has_key?(:only)
+      when !except.empty? && !only.empty?
         raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
-      when options.has_key?(:except)
-        groups = Array(options[:except]).collect(&:to_sym)
-        sources.select { |source| (groups & source.groups).empty? }
-      when options.has_key?(:only)
-        groups = Array(options[:only]).collect(&:to_sym)
-        sources.select { |source| !(groups & source.groups).empty? }
+      when !except.empty?
+        l_sources.select { |source| (except & source.groups).empty? }
+      when !only.empty?
+        l_sources.select { |source| !(only & source.groups).empty? }
       else
         l_sources
       end
