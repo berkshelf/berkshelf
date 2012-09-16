@@ -16,7 +16,8 @@ module Berkshelf
           details[:name] = name
           @output[:cookbooks] << details
         end
-        print @output.to_json
+        
+        print MultiJson.dump(@output)
       end
 
       def install(cookbook, version, location)

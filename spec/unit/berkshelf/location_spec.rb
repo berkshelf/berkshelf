@@ -7,7 +7,7 @@ module Berkshelf
         end
       end
 
-      describe "::location_key" do
+      describe "::set_location_key" do
         before(:each) do
           @original = CookbookSource.class_variable_get :@@location_keys
           CookbookSource.class_variable_set :@@location_keys, {}
@@ -18,7 +18,7 @@ module Berkshelf
         end
 
         it "adds the given location key with the includer's Class to CookbookSource.location_keys" do
-          subject.location_key(:reset)
+          subject.set_location_key(:reset)
 
           CookbookSource.location_keys.should have(1).item
           CookbookSource.location_keys.should include(:reset)

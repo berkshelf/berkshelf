@@ -3,7 +3,7 @@ module Berkshelf
   class PathLocation
     include Location
 
-    location_key :path
+    set_location_key :path
 
     attr_accessor :path
 

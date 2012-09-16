@@ -3,7 +3,7 @@ module Berkshelf
   class GitLocation
     include Location
 
-    location_key :git
+    set_location_key :git
     valid_options :ref, :branch, :tag
 
     attr_accessor :uri

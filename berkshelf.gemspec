@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'thor',    '~> 0.16.0'
   s.add_runtime_dependency 'vagrant', '~> 1.0.3'
   s.add_runtime_dependency 'activesupport'
+  s.add_runtime_dependency 'multi_json'
 
   s.add_development_dependency 'redcarpet'
   s.add_development_dependency 'cucumber'

@@ -5,7 +5,7 @@ module Berkshelf
   class SiteLocation
     include Location
 
-    location_key :site
+    set_location_key :site
 
     attr_reader :api_uri
     attr_accessor :version_constraint

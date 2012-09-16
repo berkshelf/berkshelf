@@ -7,7 +7,7 @@ module Berkshelf
       # Register the location key for the including source location with CookbookSource
       #
       # @param [Symbol] key
-      def location_key(key)
+      def set_location_key(key)
         CookbookSource.add_location_key(key, self)
       end
 
