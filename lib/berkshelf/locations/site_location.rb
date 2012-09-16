@@ -1,3 +1,5 @@
+require 'chef/rest'
+
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class SiteLocation
