@@ -36,7 +36,7 @@ module Berkshelf
     end
 
     def to_s
-      "path: '#{path}'"
+      "#{self.class.location_key}: '#{path}'"
     end
   end
 end

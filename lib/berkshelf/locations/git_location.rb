@@ -69,7 +69,7 @@ module Berkshelf
     end
 
     def to_s
-      s = "git: '#{uri}'"
+      s = "#{self.class.location_key}: '#{uri}'"
       s << " with branch: '#{branch}'" if branch
       s
     end

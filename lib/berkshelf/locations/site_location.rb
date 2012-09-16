@@ -117,7 +117,7 @@ module Berkshelf
     end
 
     def to_s
-      "site: '#{api_uri}'"
+      "#{self.class.location_key}: '#{api_uri}'"
     end
 
     private

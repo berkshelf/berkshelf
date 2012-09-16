@@ -26,6 +26,23 @@ module Berkshelf
         end
       end
 
+      describe "::location_key" do
+        before(:each) do
+          @original = CookbookSource.class_variable_get :@@location_keys
+          CookbookSource.class_variable_set :@@location_keys, {}
+        end
+
+        after(:each) do
+          CookbookSource.class_variable_set :@@location_keys, @original
+        end
+
+        it "returns the class' registered location key" do
+          subject.set_location_key(:reset)
+
+          subject.location_key.should eql(:reset)
+        end
+      end
+
       describe "::set_valid_options" do
         before(:each) do
           @original = CookbookSource.class_variable_get :@@valid_options

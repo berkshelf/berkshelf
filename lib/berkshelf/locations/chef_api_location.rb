@@ -189,7 +189,7 @@ module Berkshelf
     end
 
     def to_s
-      "chef_api: '#{uri}'"
+      "#{self.class.location_key}: '#{uri}'"
     end
 
     private
