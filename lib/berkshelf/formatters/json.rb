@@ -23,7 +23,7 @@ module Berkshelf
       def install(cookbook, version, location)
         @cookbooks[cookbook] ||= {}
         @cookbooks[cookbook][:version] = version
-        @cookbooks[cookbook][:location] = location
+        @cookbooks[cookbook][:location] = location.to_s
       end
 
       def use(cookbook, version, path=nil)
