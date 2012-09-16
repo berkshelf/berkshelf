@@ -4,7 +4,7 @@ module Berkshelf
     include Location
 
     set_location_key :git
-    valid_options :ref, :branch, :tag
+    set_valid_options :ref, :branch, :tag
 
     attr_accessor :uri
     attr_accessor :branch

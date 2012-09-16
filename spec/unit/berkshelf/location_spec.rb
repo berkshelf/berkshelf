@@ -26,7 +26,7 @@ module Berkshelf
         end
       end
 
-      describe "::valid_options" do
+      describe "::set_valid_options" do
         before(:each) do
           @original = CookbookSource.class_variable_get :@@valid_options
           CookbookSource.class_variable_set :@@valid_options, []
@@ -37,14 +37,14 @@ module Berkshelf
         end
 
         it "adds the given symbol to the list of valid options on CookbookSource" do
-          subject.valid_options(:mundo)
+          subject.set_valid_options(:mundo)
 
           CookbookSource.valid_options.should have(1).item
           CookbookSource.valid_options.should include(:mundo)
         end
 
         it "adds parameters to the list of valid options on the CookbookSource" do
-          subject.valid_options(:riot, :arenanet)
+          subject.set_valid_options(:riot, :arenanet)
 
           CookbookSource.valid_options.should have(2).items
           CookbookSource.valid_options.should include(:riot)

@@ -75,7 +75,7 @@ module Berkshelf
     include Location
 
     set_location_key :chef_api
-    valid_options :node_name, :client_key
+    set_valid_options :node_name, :client_key
 
     attr_reader :uri
     attr_reader :node_name
