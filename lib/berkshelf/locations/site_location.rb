@@ -1,9 +1,11 @@
+require 'chef/rest'
+
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class SiteLocation
     include Location
 
-    location_key :site
+    set_location_key :site
 
     attr_reader :api_uri
     attr_accessor :version_constraint
@@ -115,7 +117,7 @@ module Berkshelf
     end
 
     def to_s
-      "site: '#{api_uri}'"
+      "#{self.class.location_key}: '#{api_uri}'"
     end
 
     private

@@ -4,17 +4,23 @@ module Berkshelf
     OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
     
     module ClassMethods
+      # Returns the location identifier key for the class
+      #
+      # @return [Symbol]
+      attr_reader :location_key
+
       # Register the location key for the including source location with CookbookSource
       #
       # @param [Symbol] key
-      def location_key(key)
+      def set_location_key(key)
         CookbookSource.add_location_key(key, self)
+        @location_key = key
       end
 
       # Register a valid option or multiple options with the CookbookSource class
       #
       # @param [Symbol] opts
-      def valid_options(*opts)
+      def set_valid_options(*opts)
         Array(opts).each do |opt|
           CookbookSource.add_valid_option(opt)
         end

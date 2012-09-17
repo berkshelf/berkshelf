@@ -112,7 +112,13 @@ module Berkshelf
     def upload
       Berkshelf.load_config 
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.upload(Chef::Config[:chef_server_url], options)
+
+      berksfile.upload(
+        server_url: Chef::Config[:chef_server_url],
+        client_name: Chef::Config[:node_name],
+        client_key: Chef::Config[:client_key],
+        organization: ChefAPILocation.extract_organization(Chef::Config[:chef_server_url])
+      )
     end
 
     desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf."
