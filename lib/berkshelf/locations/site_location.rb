@@ -26,7 +26,7 @@ module Berkshelf
     #   a URL pointing to a community API endpoint. Alternatively the symbol :opscode can
     #   be provided to initialize a SiteLocation pointing to the Opscode Community Site.
     def initialize(name, version_constraint, options = {})
-      @name = name
+      @name               = name
       @version_constraint = version_constraint
 
       @api_uri = if options[:site].nil? || options[:site] == :opscode

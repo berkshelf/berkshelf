@@ -149,8 +149,8 @@ module Berkshelf
       end
     end
 
-    describe "#validate_cached" do
-      let(:cached) { double('cached-cb', version: "0.1.0") }
+    describe "#validate_cached", focus: true do
+      let(:cached) { double('cached-cb', cookbook_name: name, version: "0.1.0") }
 
       it "raises a ConstraintNotSatisfied error if the version constraint does not satisfy the cached version" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(false)
@@ -160,10 +160,30 @@ module Berkshelf
         }.should raise_error(ConstraintNotSatisfied)
       end
 
-      it "returns true if the version constraint satisfies the cached version" do
+      it "returns true if cached_cookbooks satisfies the version constraint" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
         
         subject.validate_cached(cached).should be_true
+      end
+
+      context "when the cached_cookbooks satisfies the version constraint" do
+        before(:each) do
+          constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
+        end
+
+        it "returns true if the name of the cached_cookbook matches the name of the location" do
+          cached.stub(:name) { name }
+
+          subject.validate_cached(cached).should be_true
+        end
+
+        it "raises an AmbiguousCookbookName error if the cached_cookbook's name does not match the location's" do
+          cached.stub(:cookbook_name) { "artifact" }
+
+          lambda {
+            subject.validate_cached(cached)
+          }.should raise_error(AmbiguousCookbookName)
+        end
       end
     end
   end

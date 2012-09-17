@@ -125,9 +125,9 @@ module Berkshelf
     # @param [Solve::Constraint] version_constraint
     # @param [Hash] options
     def initialize(name, version_constraint, options = {})
-      @name = name
+      @name               = name
       @version_constraint = version_constraint
-      @downloaded_status = false
+      @downloaded_status  = false
     end
 
     # @param [#to_s] destination
@@ -142,17 +142,23 @@ module Berkshelf
       @downloaded_status
     end
 
-    # Ensures that the given CachedCookbook satisfies the constraint
+    # Ensure the retrieved CachedCookbook is valid
     #
     # @param [CachedCookbook] cached_cookbook
     #
     # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
     #   this instance of Location.
     #
+    # @raise [AmbiguousCookbookName] if the CachedCookbook's name does not match the locations's name attribute
+    #
     # @return [Boolean]
     def validate_cached(cached_cookbook)
       unless version_constraint.satisfies?(cached_cookbook.version)
-        raise ConstraintNotSatisfied, "A cookbook satisfying '#{name}' (#{version_constraint}) not found at #{self}"
+        raise ConstraintNotSatisfied, "A cookbook satisfying '#{self.name}' (#{self.version_constraint}) not found at #{self}"
+      end
+
+      unless self.name == cached_cookbook.cookbook_name
+        raise AmbiguousCookbookName, "Expected a cookbook at #{self} to be named '#{self.name}'. Did you set the 'name' attribute in your Cookbooks metadata? If you didn't, the name of the directory will be used as the name of your Cookbook (awful, right?)."
       end
 
       true
