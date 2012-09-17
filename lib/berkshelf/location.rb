@@ -164,6 +164,16 @@ module Berkshelf
       true
     end
 
+    def to_hash
+      {
+        type: self.class.location_key
+      }
+    end
+
+    def to_json
+      MultiJson.dump(self.to_hash, pretty: true)
+    end
+
     private
 
       def set_downloaded_status(state)

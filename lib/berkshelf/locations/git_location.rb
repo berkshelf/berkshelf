@@ -61,6 +61,13 @@ module Berkshelf
       cached
     end
 
+    def to_hash
+      super.tap do |h|
+        h[:value]  = self.uri
+        h[:branch] = self.branch if branch
+      end
+    end
+
     def to_s
       s = "git: '#{uri}'"
       s << " with branch: '#{branch}'" if branch

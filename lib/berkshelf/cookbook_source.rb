@@ -69,6 +69,8 @@ module Berkshelf
     attr_reader :location
     attr_accessor :cached_cookbook
 
+    def_delegator :cached_cookbook, :version, :locked_version
+
     #  @param [String] name
     #  @param [Hash] options
     #
@@ -132,14 +134,22 @@ module Berkshelf
       groups.include?(group.to_sym)
     end
 
-    def locked_version
-      @locked_version || cached_cookbook.version
-    end
-
     def to_s
       msg = "#{self.name} (#{self.version_constraint}) groups: #{self.groups}"
       msg << " location: #{self.location}" if self.location
       msg
+    end
+
+    def to_hash
+      {}.tap do |h|
+        h[:name]           = self.name
+        h[:locked_version] = self.locked_version
+        h[:location]       = self.location.to_hash if self.location
+      end
+    end
+
+    def to_json
+      MultiJson.dump(self.to_hash, pretty: true)
     end
   end
 end
