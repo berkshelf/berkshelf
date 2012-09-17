@@ -25,10 +25,10 @@ module Berkshelf
     # @option options [String] :tag
     #   same as tag
     def initialize(name, version_constraint, options = {})
-      @name = name
+      @name               = name
       @version_constraint = version_constraint
-      @uri = options[:git]
-      @branch = options[:branch] || options[:ref] || options[:tag]
+      @uri                = options[:git]
+      @branch             = options[:branch] || options[:ref] || options[:tag]
 
       Git.validate_uri!(@uri)
     end

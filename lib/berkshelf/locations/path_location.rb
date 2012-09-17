@@ -14,9 +14,9 @@ module Berkshelf
     # @option options [String] :path
     #   a filepath to the cookbook on your local disk
     def initialize(name, version_constraint, options = {})
-      @name = name
+      @name               = name
       @version_constraint = version_constraint
-      @path = File.expand_path(options[:path])
+      @path               = File.expand_path(options[:path])
       set_downloaded_status(true)
     end
 

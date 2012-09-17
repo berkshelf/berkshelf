@@ -82,9 +82,9 @@ module Berkshelf
     #   the filepath to the authentication key for the client
     #   Default: Chef::Config[:client_key]
     def initialize(name, version_constraint, options = {})
-      @name = name
+      @name               = name
       @version_constraint = version_constraint
-      @downloaded_status = false
+      @downloaded_status  = false
 
       validate_options!(options)
 
