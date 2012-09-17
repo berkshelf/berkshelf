@@ -56,12 +56,26 @@ module Berkshelf
 
         true
       end
+
+      # Retrieves the organization of a Chef API URI. If the URI does not contain an
+      # organization then nil will be returned.
+      #
+      # @param [String] uri
+      #
+      # @raise [InvalidChefAPILocation]
+      #
+      # @return [String, nil]
+      def extract_organization(uri)
+        validate_uri!(uri)
+
+        URI(uri).path.split('organizations/')[1]
+      end
     end
 
     include Location
 
-    location_key :chef_api
-    valid_options :node_name, :client_key
+    set_location_key :chef_api
+    set_valid_options :node_name, :client_key
 
     attr_reader :uri
     attr_reader :node_name
@@ -175,7 +189,7 @@ module Berkshelf
     end
 
     def to_s
-      "chef_api: '#{uri}'"
+      "#{self.class.location_key}: '#{uri}'"
     end
 
     private

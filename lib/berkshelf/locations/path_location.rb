@@ -3,7 +3,7 @@ module Berkshelf
   class PathLocation
     include Location
 
-    location_key :path
+    set_location_key :path
 
     attr_accessor :path
 
@@ -36,7 +36,7 @@ module Berkshelf
     end
 
     def to_s
-      "path: '#{path}'"
+      "#{self.class.location_key}: '#{path}'"
     end
   end
 end

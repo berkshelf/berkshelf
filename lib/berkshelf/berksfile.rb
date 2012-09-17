@@ -347,32 +347,32 @@ module Berkshelf
       self.cached_cookbooks
     end
 
-    # @param [String] chef_server_url
-    #   the full URL to the Chef Server to upload to
-    #
-    #     "https://api.opscode.com/organizations/vialstudios"
-    #
+    # @option options [String] :server_url
+    #   URL to the Chef API
+    # @option options [String] :client_name
+    #   name of the client used to authenticate with the Chef API
+    # @option options [String] :client_key
+    #   filepath to the client's private key used to authenticate with
+    #   the Chef API
+    # @option options [String] :organization
+    #   the Organization to connect to. This is only used if you are connecting to
+    #   private Chef or hosted Chef
+    # @option options [Boolean] :force Upload the Cookbook even if the version 
+    #   already exists and is frozen on the target Chef Server
+    # @option options [Boolean] :freeze Freeze the uploaded Cookbook on the Chef 
+    #   Server so that it cannot be overwritten
     # @option options [Symbol, Array] :except 
     #   Group(s) to exclude which will cause any sources marked as a member of the 
     #   group to not be installed
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
     #   group to be installed and all others to be ignored
-    # @option options [String] :node_name
-    #   the name of the client used to sign REST requests to the Chef Server
-    # @option options [String] :client_key
-    #   the filepath location for the client's key used to sign REST requests
-    #   to the Chef Server
-    # @option options [Boolean] :force Upload the Cookbook even if the version 
-    #   already exists and is frozen on the target Chef Server
-    # @option options [Boolean] :freeze Freeze the uploaded Cookbook on the Chef 
-    #   Server so that it cannot be overwritten
-    def upload(chef_server_url, options = {})
-      uploader = Uploader.new(chef_server_url, options)
+    def upload(options = {})
+      uploader = Uploader.new(options)
       solution = resolve(options)
 
       solution.each do |cb|
-        Berkshelf.formatter.upload cb.cookbook_name, cb.version, chef_server_url
+        Berkshelf.formatter.upload cb.cookbook_name, cb.version, options[:server_url]
         uploader.upload(cb, options)
       end
     end

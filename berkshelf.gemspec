@@ -16,12 +16,14 @@ Gem::Specification.new do |s|
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
 
+  s.add_runtime_dependency 'ridley',  '>= 0.0.3'
   s.add_runtime_dependency 'solve',   '~> 0.2.1'
   s.add_runtime_dependency 'chef',    '~> 10.12.0'
   s.add_runtime_dependency 'minitar'
   s.add_runtime_dependency 'thor',    '~> 0.16.0'
   s.add_runtime_dependency 'vagrant', '~> 1.0.3'
   s.add_runtime_dependency 'activesupport'
+  s.add_runtime_dependency 'multi_json'
 
   s.add_development_dependency 'redcarpet'
   s.add_development_dependency 'cucumber'

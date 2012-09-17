@@ -197,7 +197,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a cookbook definition containing a chef_api source location
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", chef_api: :knife
+      cookbook "artifact", "= 0.10.2", chef_api: :knife
       """
     And the Chef server has cookbooks:
       | artifact | 0.10.2 |

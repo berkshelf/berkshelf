@@ -1,26 +1,48 @@
 module Berkshelf
   module Formatters
+    # @author Michael Ivey <ivey@gweezlebur.com>
     class HumanReadable
       include AbstractFormatter
 
       Berkshelf.formatters["human"] = self
 
+      # Output a Cookbook installation message using {Berkshelf.ui}
+      #
+      # @param [String] cookbook
+      # @param [String] version
+      # @param [~Location] location
       def install(cookbook, version, location)
         Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location}"
       end
 
-      def use(cookbook, version, path=nil)
+      # Output a Cookbook use message using {Berkshelf.ui}
+      #
+      # @param [String] cookbook
+      # @param [String] version
+      # @param [String] path
+      def use(cookbook, version, path = nil)
         Berkshelf.ui.info "Using #{cookbook} (#{version})#{' at '+path if path}"
       end
 
-      def upload(cookbook, version, chef_server_url)
-        Berkshelf.ui.info "Uploading #{cookbook} (#{version}) to: '#{chef_server_url}'"
+      # Output a Cookbook upload message using {Berkshelf.ui}
+      #
+      # @param [String] cookbook
+      # @param [String] version
+      # @param [String] chef_api_url
+      def upload(cookbook, version, chef_api_url)
+        Berkshelf.ui.info "Uploading #{cookbook} (#{version}) to: '#{chef_api_url}'"
       end
 
+      # Output a generic message using {Berkshelf.ui}
+      #
+      # @param [String] message
       def msg(message)
         Berkshelf.ui.info message
       end
 
+      # Output an error message using {Berkshelf.ui}
+      #
+      # @param [String] message
       def error(message)
         Berkshelf.ui.error message
       end

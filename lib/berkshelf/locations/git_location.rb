@@ -3,8 +3,8 @@ module Berkshelf
   class GitLocation
     include Location
 
-    location_key :git
-    valid_options :ref, :branch, :tag
+    set_location_key :git
+    set_valid_options :ref, :branch, :tag
 
     attr_accessor :uri
     attr_accessor :branch
@@ -69,7 +69,7 @@ module Berkshelf
     end
 
     def to_s
-      s = "git: '#{uri}'"
+      s = "#{self.class.location_key}: '#{uri}'"
       s << " with branch: '#{branch}'" if branch
       s
     end
