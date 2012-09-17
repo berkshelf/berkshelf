@@ -170,6 +170,10 @@ module Berkshelf
       [ version, versions[version] ]
     end
 
+    def to_hash
+      super.merge(value: self.uri)
+    end
+
     def to_s
       "chef_api: '#{uri}'"
     end

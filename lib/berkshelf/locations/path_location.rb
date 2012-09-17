@@ -31,6 +31,10 @@ module Berkshelf
       cached
     end
 
+    def to_hash
+      super.merge(value: self.path)
+    end
+
     def to_s
       "path: '#{path}'"
     end
