@@ -1,5 +1,7 @@
 module Berkshelf
   module Formatters
+    # @author Michael Ivey <ivey@gweezlebur.com>
+    #
     # @abstract Include and override {#install} {#use} {#upload} 
     #   {#msg} {#error} to implement.
     #
