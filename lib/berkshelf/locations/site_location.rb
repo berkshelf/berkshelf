@@ -110,6 +110,10 @@ module Berkshelf
       end
     end
 
+    def to_hash
+      super.merge(value: self.api_uri)
+    end
+
     def to_s
       "site: '#{api_uri}'"
     end

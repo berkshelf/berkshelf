@@ -149,7 +149,7 @@ module Berkshelf
       end
     end
 
-    describe "#validate_cached", focus: true do
+    describe "#validate_cached" do
       let(:cached) { double('cached-cb', cookbook_name: name, version: "0.1.0") }
 
       it "raises a ConstraintNotSatisfied error if the version constraint does not satisfy the cached version" do
