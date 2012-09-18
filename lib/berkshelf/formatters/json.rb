@@ -4,7 +4,7 @@ module Berkshelf
     class JSON
       include AbstractFormatter
 
-      Berkshelf.formatters["json"] = self
+      register_formatter :json
 
       def initialize
         @output = {

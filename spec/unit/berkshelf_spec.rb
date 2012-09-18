@@ -60,11 +60,11 @@ describe Berkshelf do
 
         class CustomFormatter
           include Berkshelf::Formatters::AbstractFormatter
-          Berkshelf.formatters["custom"] = self
+          register_formatter :custom
         end
 
         before do
-          Berkshelf.set_format "custom"
+          Berkshelf.set_format :custom
         end
 
         it "should be the custom class" do
