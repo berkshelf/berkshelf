@@ -4,7 +4,7 @@ module Berkshelf
     class Vagrant
       include AbstractFormatter
 
-      Berkshelf.formatters["vagrant"] = self
+      register_formatter :vagrant
 
       def initialize
         @ui = ::Vagrant::UI::Colored.new("Berkshelf")
