@@ -12,9 +12,9 @@ module Berkshelf
           @app                  = app
           @shelf                = Berkshelf::Vagrant.shelf_for(env)
           @config               = env[:global_config].berkshelf
-          @berksfile            = Berksfile.from_file(@config.berksfile_path)
-
           Berkshelf.config_path = @config.config_path
+          Berkshelf.load_config
+          @berksfile            = Berksfile.from_file(@config.berksfile_path)
         end
 
         def call(env)
@@ -29,7 +29,7 @@ module Berkshelf
         private
 
           def install(env)
-            Berkshelf::Vagrant.info("installing cookbooks", env)
+            Berkshelf.formatter.msg "installing cookbooks..."
             opts = {
               path: self.shelf
             }.merge(self.config.to_hash).symbolize_keys!
