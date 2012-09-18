@@ -30,6 +30,10 @@ module Berkshelf
       def error(message)
         raise AbstractFunction, "#error must be implemented on #{self.class}"
       end
+
+      private
+
+        attr_reader :args
     end
   end
 end

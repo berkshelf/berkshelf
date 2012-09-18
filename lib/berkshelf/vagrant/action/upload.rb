@@ -26,7 +26,7 @@ module Berkshelf
 
           def upload(env)
             Berkshelf::Vagrant.provisioners(:chef_client, env[:global_config]).each do |provisioner|
-              Berkshelf::Vagrant.info("uploading cookbooks to '#{provisioner.config.chef_server_url}'", env)
+              Berkshelf.formatter.msg "uploading cookbooks to '#{provisioner.config.chef_server_url}'"
               berksfile.upload(
                 provisioner.config.chef_server_url,
                 node_name: self.node_name,
