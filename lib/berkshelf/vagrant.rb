@@ -9,7 +9,7 @@ module Berkshelf
       autoload :Install, 'berkshelf/vagrant/action/install'
       autoload :Upload, 'berkshelf/vagrant/action/upload'
       autoload :Clean, 'berkshelf/vagrant/action/clean'
-      autoload :SetFormatter, 'berkshelf/vagrant/action/set_formatter'
+      autoload :SetUI, 'berkshelf/vagrant/action/set_ui'
     end
 
     autoload :Config, 'berkshelf/vagrant/config'
@@ -56,17 +56,17 @@ Vagrant.config_keys.register(:berkshelf) {
 }
 
 install = Vagrant::Action::Builder.new {
-  use Berkshelf::Vagrant::Action::SetFormatter
+  use Berkshelf::Vagrant::Action::SetUI
   use Berkshelf::Vagrant::Action::Install
 }
 
 upload = Vagrant::Action::Builder.new {
-  use Berkshelf::Vagrant::Action::SetFormatter
+  use Berkshelf::Vagrant::Action::SetUI
   use Berkshelf::Vagrant::Action::Upload
 }
 
 clean = Vagrant::Action::Builder.new {
-  use Berkshelf::Vagrant::Action::SetFormatter
+  use Berkshelf::Vagrant::Action::SetUI
   use Berkshelf::Vagrant::Action::Clean
 }
 
