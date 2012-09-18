@@ -37,6 +37,7 @@ module Berkshelf
       banner: "PATH"
     class_option :format,
       type: :string,
+      default: "human",
       desc: "Output format to use.",
       aliases: "-F",
       banner: "FORMAT"

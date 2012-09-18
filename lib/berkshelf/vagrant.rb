@@ -9,6 +9,7 @@ module Berkshelf
       autoload :Install, 'berkshelf/vagrant/action/install'
       autoload :Upload, 'berkshelf/vagrant/action/upload'
       autoload :Clean, 'berkshelf/vagrant/action/clean'
+      autoload :SetUI, 'berkshelf/vagrant/action/set_ui'
     end
 
     autoload :Config, 'berkshelf/vagrant/config'
@@ -17,12 +18,6 @@ module Berkshelf
       # @param [Vagrant::Action::Environment] env
       def shelf_for(env)
         File.join(Berkshelf.berkshelf_path, "vagrant", env[:global_config].vm.host_name)
-      end
-
-      # @param [String] msg
-      # @param [Vagrant::Action::Environment] env
-      def info(msg, env)
-        env[:ui].info("[Berkshelf] #{msg}")
       end
 
       # @param [Symbol] shortcut
@@ -61,12 +56,17 @@ Vagrant.config_keys.register(:berkshelf) {
 }
 
 install = Vagrant::Action::Builder.new {
+  use Berkshelf::Vagrant::Action::SetUI
   use Berkshelf::Vagrant::Action::Install
 }
+
 upload = Vagrant::Action::Builder.new {
+  use Berkshelf::Vagrant::Action::SetUI
   use Berkshelf::Vagrant::Action::Upload
 }
+
 clean = Vagrant::Action::Builder.new {
+  use Berkshelf::Vagrant::Action::SetUI
   use Berkshelf::Vagrant::Action::Clean
 }
 

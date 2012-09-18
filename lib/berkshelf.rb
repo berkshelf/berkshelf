@@ -119,26 +119,17 @@ module Berkshelf
     #
     # @return [~Formatter]
     def formatter
-      @formatter ||= (formatters.has_key?(@_format) ? formatters[@_format] : Formatters::HumanReadable).new
+      @formatter ||= Formatters::HumanReadable.new
     end
 
     # Specify a formatter identifier
     #
-    # @param [String] format
+    # @param [#to_sym] format
     #   which formatter to use
     #
     # @example Berkshelf.set_format "json"
-    def set_format(format)
-      @_format = format
-      @formatter = nil
-    end
-
-    # Access the formatters map that links string symbols to Formatter
-    # implementations
-    #
-    # @return [Hash]
-    def formatters
-      @formatters ||= {}
+    def set_format(format_id)
+      @formatter = Formatters[format_id].new
     end
 
     private
