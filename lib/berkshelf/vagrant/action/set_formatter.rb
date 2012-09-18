@@ -10,7 +10,7 @@ module Berkshelf
         end
 
         def call(env)
-          Berkshelf.set_format "vagrant"
+          Berkshelf.set_format :vagrant
           @app.call(env)
         end
       end
