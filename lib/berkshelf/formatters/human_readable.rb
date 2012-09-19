@@ -4,7 +4,7 @@ module Berkshelf
     class HumanReadable
       include AbstractFormatter
 
-      Berkshelf.formatters["human"] = self
+      register_formatter :human
 
       # Output a Cookbook installation message using {Berkshelf.ui}
       #
