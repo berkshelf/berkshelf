@@ -163,9 +163,10 @@ module Berkshelf
         raise ConstraintNotSatisfied, "A cookbook satisfying '#{self.name}' (#{self.version_constraint}) not found at #{self}"
       end
 
-      unless self.name == cached_cookbook.cookbook_name
-        raise AmbiguousCookbookName, "Expected a cookbook at #{self} to be named '#{self.name}'. Did you set the 'name' attribute in your Cookbooks metadata? If you didn't, the name of the directory will be used as the name of your Cookbook (awful, right?)."
-      end
+      # JW TODO: Safe to uncomment when when Opscode makes the 'name' a required attribute in Cookbook metadata
+      # unless self.name == cached_cookbook.cookbook_name
+      #   raise AmbiguousCookbookName, "Expected a cookbook at #{self} to be named '#{self.name}'. Did you set the 'name' attribute in your Cookbooks metadata? If you didn't, the name of the directory will be used as the name of your Cookbook (awful, right?)."
+      # end
 
       true
     end
