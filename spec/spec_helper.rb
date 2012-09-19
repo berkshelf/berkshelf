@@ -46,6 +46,11 @@ Spork.prefork do
     config.before(:each) do
       clean_tmp_path
       Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
+      Berkshelf.ui.mute!
+    end
+
+    config.after(:each) do
+      Berkshelf.ui.unmute!
     end
   end
 

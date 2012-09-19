@@ -1,8 +1,8 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class InitGenerator < BaseGenerator
-    def initialize(*)
-      super
+    def initialize(*args)
+      super(*args)
       if @options[:cookbook_name]
         @cookbook_name = @options[:cookbook_name]
       end
@@ -54,7 +54,7 @@ module Berkshelf
         template "gitignore.erb", target.join(".gitignore")
         unless File.exists?(target.join(".git"))
           inside target do
-            run "git init"
+            run "git init", capture: true
           end
         end
       end
