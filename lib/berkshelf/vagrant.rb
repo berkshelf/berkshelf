@@ -13,6 +13,7 @@ module Berkshelf
     end
 
     autoload :Config, 'berkshelf/vagrant/config'
+    autoload :Middleware, 'berkshelf/vagrant/middleware'
 
     class << self
       # @param [Vagrant::Action::Environment] env
@@ -47,31 +48,18 @@ module Berkshelf
       def chef_client?(config)
         !provisioners(:chef_client, config).empty?
       end
+
+      # Initialize the Berkshelf Vagrant middleware stack
+      def init!
+        ::Vagrant.config_keys.register(:berkshelf) { Berkshelf::Vagrant::Config }
+        ::Vagrant.actions[:provision].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.install)
+        ::Vagrant.actions[:provision].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.upload)
+        ::Vagrant.actions[:start].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.install)
+        ::Vagrant.actions[:start].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.upload)
+        ::Vagrant.actions[:destroy].insert(::Vagrant::Action::VM::CleanMachineFolder, Berkshelf::Vagrant::Middleware.clean)
+      end
     end
   end
 end
 
-Vagrant.config_keys.register(:berkshelf) {
-  Berkshelf::Vagrant::Config
-}
-
-install = Vagrant::Action::Builder.new {
-  use Berkshelf::Vagrant::Action::SetUI
-  use Berkshelf::Vagrant::Action::Install
-}
-
-upload = Vagrant::Action::Builder.new {
-  use Berkshelf::Vagrant::Action::SetUI
-  use Berkshelf::Vagrant::Action::Upload
-}
-
-clean = Vagrant::Action::Builder.new {
-  use Berkshelf::Vagrant::Action::SetUI
-  use Berkshelf::Vagrant::Action::Clean
-}
-
-Vagrant.actions[:provision].insert(Vagrant::Action::VM::Provision, install)
-Vagrant.actions[:provision].insert(Vagrant::Action::VM::Provision, upload)
-Vagrant.actions[:start].insert(Vagrant::Action::VM::Provision, install)
-Vagrant.actions[:start].insert(Vagrant::Action::VM::Provision, upload)
-Vagrant.actions[:destroy].insert(Vagrant::Action::VM::CleanMachineFolder, clean)
+Berkshelf::Vagrant.init!
