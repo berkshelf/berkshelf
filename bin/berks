@@ -5,6 +5,6 @@ require 'berkshelf'
 begin
   Berkshelf::Cli.start
 rescue Berkshelf::BerkshelfError => e
-  Berkshelf.ui.fatal e
+  Berkshelf.ui.error e
   exit e.status_code
 end

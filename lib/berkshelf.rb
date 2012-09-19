@@ -23,6 +23,7 @@ module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
+  autoload :UI, 'berkshelf/ui'
   autoload :Cli, 'berkshelf/cli'
   autoload :Git, 'berkshelf/git'
   autoload :Berksfile, 'berkshelf/berksfile'
@@ -45,12 +46,14 @@ module Berkshelf
     attr_writer :config_path
     attr_writer :cookbook_store
 
+    # @return [Pathname]
     def root
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
 
+    # @return [Berkshelf::UI]
     def ui
-      @ui ||= Chef::Knife::UI.new(null_stream, null_stream, STDIN, {})
+      @ui ||= Berkshelf::UI.new
     end
 
     # Returns the filepath to the location Berskhelf will use for
@@ -64,6 +67,7 @@ module Berkshelf
       ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
 
+    # @return [String]
     def tmp_dir
       File.join(berkshelf_path, "tmp")
     end
@@ -81,10 +85,12 @@ module Berkshelf
       File.join(berkshelf_path, "cookbooks")
     end
 
+    # @return [Berkshelf::CookbookStore]
     def cookbook_store
       @cookbook_store ||= CookbookStore.new(cookbooks_dir)
     end
 
+    # @return [String]
     def config_path
       @config_path ||= DEFAULT_CONFIG
     end
@@ -122,12 +128,14 @@ module Berkshelf
       @formatter ||= Formatters::HumanReadable.new
     end
 
-    # Specify a formatter identifier
+    # Specify the format for output
     #
-    # @param [#to_sym] format
-    #   which formatter to use
+    # @param [#to_sym] format_id
+    #   the ID of the registered formatter to use
     #
-    # @example Berkshelf.set_format "json"
+    # @example Berkshelf.set_format :json
+    #
+    # @return [~Formatter]
     def set_format(format_id)
       @formatter = Formatters[format_id].new
     end

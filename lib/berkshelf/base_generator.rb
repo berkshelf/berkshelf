@@ -11,6 +11,11 @@ module Berkshelf
     
     include Thor::Actions
 
+    def initialize(*args)
+      super(*args)
+      self.shell = Berkshelf.ui
+    end
+
     private
 
       def target
