@@ -12,12 +12,11 @@ module Berkshelf
       end
     end
     
-    def initialize(*)
-      super
-      # JW TODO: Replace Chef::Knife::UI with our own UI class
-      ::Berkshelf.ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
-      ::Berkshelf.config_path = @options[:config]
-      ::Berkshelf.set_format @options[:format]
+    def initialize(*args)
+      super(*args)
+      self.shell = Berkshelf.ui
+      Berkshelf.config_path = @options[:config]
+      Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
 

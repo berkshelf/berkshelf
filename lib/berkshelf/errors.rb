@@ -75,7 +75,7 @@ module Berkshelf
     status_code(113)
 
     def status_code
-      @original_error ? @original_error.status_code : 113
+      @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
     end
   end
 
