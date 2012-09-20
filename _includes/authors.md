@@ -1,5 +1,6 @@
-* Josiah Kiehl (<josiah@skirmisher.net>)
 * Jamie Winsor (<jamie@vialstudios.com>)
+* Josiah Kiehl (<josiah@skirmisher.net>)
 * Michael Ivey (<ivey@gweezlebur.com>)
 * Erik Hollensbe (<erik@hollensbe.org>)
+* Thanks to [All our contributors](https://github.com/RiotGames/berkshelf/graphs/contributors)
 * Special [Cake Thanks](./cakethanks.html) to [@RiotSorrmi](https://twitter.com/RiotSorrmi)
