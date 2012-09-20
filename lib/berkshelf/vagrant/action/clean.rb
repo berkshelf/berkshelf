@@ -11,7 +11,7 @@ module Berkshelf
         end
 
         def call(env)
-          if Berkshelf::Vagrant.chef_solo?(env[:global_config])
+          if Berkshelf::Vagrant.chef_solo?(env[:global_config]) && self.shelf
             Berkshelf.formatter.msg "cleaning Vagrant's shelf"
             FileUtils.remove_dir(self.shelf, fore: true)
           end
