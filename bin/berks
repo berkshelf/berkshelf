@@ -7,4 +7,7 @@ begin
 rescue Berkshelf::BerkshelfError => e
   Berkshelf.ui.error e
   exit e.status_code
+rescue Ridley::Errors::RidleyError => e
+  Berkshelf.ui.error "#{e.class} #{e}"
+  exit 47
 end
