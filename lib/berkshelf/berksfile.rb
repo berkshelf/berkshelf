@@ -367,6 +367,17 @@ module Berkshelf
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
     #   group to be installed and all others to be ignored
+    # @option options [Integer] :thread_count
+    # @option options [Hash] :params
+    #   URI query unencoded key/value pairs
+    # @option options [Hash] :headers
+    #   unencoded HTTP header key/value pairs
+    # @option options [Hash] :request
+    #   request options
+    # @option options [Hash] :ssl
+    #   SSL options
+    # @option options [URI, String, Hash] :proxy
+    #   URI, String, or Hash of HTTP proxy options
     def upload(options = {})
       uploader = Uploader.new(options)
       solution = resolve(options)

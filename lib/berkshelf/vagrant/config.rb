@@ -60,6 +60,13 @@ module Berkshelf
       end
       attr_writer :only
 
+      # @return [Boolean]
+      #   should connections to a Chef API use SSL verification
+      def ssl_verify
+        @ssl_verify ||= true
+      end
+      attr_writer :ssl_verify
+
       def validate(env, errors)
         if !except.empty? && !only.empty?
           errors.add("A value for berkshelf.empty and berkshelf.only cannot both be defined.")
