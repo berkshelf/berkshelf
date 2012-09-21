@@ -106,6 +106,10 @@ module Berkshelf
       type: :boolean,
       default: false,
       desc: "Upload all cookbooks even if a frozen one exists on the target Chef Server"
+    option :ssl_verify,
+      type: :boolean,
+      default: true,
+      desc: "Disable/Enable SSL verification when uploading cookbooks"
     desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server."
     def upload
       Berkshelf.load_config 
@@ -115,7 +119,10 @@ module Berkshelf
         server_url: Chef::Config[:chef_server_url],
         client_name: Chef::Config[:node_name],
         client_key: Chef::Config[:client_key],
-        organization: ChefAPILocation.extract_organization(Chef::Config[:chef_server_url])
+        organization: ChefAPILocation.extract_organization(Chef::Config[:chef_server_url]),
+        ssl: {
+          verify: options[:ssl_verify]
+        }
       )
     end
 
