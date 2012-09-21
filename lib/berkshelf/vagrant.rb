@@ -10,6 +10,7 @@ module Berkshelf
       autoload :Upload, 'berkshelf/vagrant/action/upload'
       autoload :Clean, 'berkshelf/vagrant/action/clean'
       autoload :SetUI, 'berkshelf/vagrant/action/set_ui'
+      autoload :Validate, 'berkshelf/vagrant/action/validate'
     end
 
     autoload :Config, 'berkshelf/vagrant/config'
@@ -56,10 +57,13 @@ module Berkshelf
       # Initialize the Berkshelf Vagrant middleware stack
       def init!
         ::Vagrant.config_keys.register(:berkshelf) { Berkshelf::Vagrant::Config }
-        ::Vagrant.actions[:provision].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.install)
-        ::Vagrant.actions[:provision].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.upload)
-        ::Vagrant.actions[:start].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.install)
-        ::Vagrant.actions[:start].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.upload)
+
+        [ :provision, :start ].each do |action|
+          ::Vagrant.actions[action].insert(::Vagrant::Action::General::Validate, Berkshelf::Vagrant::Action::Validate)
+          ::Vagrant.actions[action].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.install)
+          ::Vagrant.actions[action].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.upload)
+        end
+
         ::Vagrant.actions[:destroy].insert(::Vagrant::Action::VM::CleanMachineFolder, Berkshelf::Vagrant::Middleware.clean)
       end
     end

@@ -28,8 +28,8 @@ module Berkshelf
             Berkshelf::Vagrant.provisioners(:chef_client, env[:global_config]).each do |provisioner|
               Berkshelf.formatter.msg "uploading cookbooks to '#{provisioner.config.chef_server_url}'"
               berksfile.upload(
-                provisioner.config.chef_server_url,
-                node_name: self.node_name,
+                server_url: provisioner.config.chef_server_url,
+                client_name: self.node_name,
                 client_key: self.client_key
               )
             end

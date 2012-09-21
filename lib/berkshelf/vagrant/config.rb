@@ -2,19 +2,42 @@ module Berkshelf
   module Vagrant
     # @author Jamie Winsor <jamie@vialstudios.com>
     # @author Andrew Garson <andrew.garson@gmail.com>
+    #
+    # @note according to <http://vagrantup.com/v1/docs/extending/configuration.html> instance
+    #   variables should not be instantiated with default values in the initializer of a Config file.
+    #   Instead explicit getters which set and return the default value should be used.
     class Config < ::Vagrant::Config::Base
-      # return [String]
+      # @return [String]
       #   path to a knife configuration file
-      attr_reader :config_path
+      def config_path
+        @config_path ||= Berkshelf::DEFAULT_CONFIG
+      end
+
+      # @param [String]
+      def config_path=(value)
+        @config_path = File.expand_path(value)
+      end
 
       # @return [String]
       #   path to the Berksfile to use with Vagrant
-      attr_reader :berksfile_path
+      def berksfile_path
+        @berksfile_path ||= File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
+      end
+
+      # @param [String]
+      def berksfile_path=(value)
+        @berksfile_path = File.expand_path(value)
+      end
 
       # @return [String]
       #   A path to a client key on disk to use with the Chef Client provisioner to
       #   upload cookbooks installed by Berkshelf.
       attr_reader :client_key
+
+      # @param [String]
+      def client_key=(value)
+        @client_key = File.expand_path(value)
+      end
 
       # @return [String]
       #   A client name (node_name) to use with the Chef Client provisioner to upload
@@ -24,31 +47,18 @@ module Berkshelf
       # @return [Array<Symbol>]
       #   cookbooks in all other groups except for these will be installed
       #   and copied to Vagrant's shelf
-      attr_accessor :except
+      def except
+        @except ||= Array.new
+      end
+      attr_writer :except
 
       # @return [Array<Symbol>]
       #   only cookbooks in these groups will be installed and copied to
       #   Vagrant's shelf
-      attr_accessor :only
-
-      def initialize
-        @config_path = Berkshelf::DEFAULT_CONFIG
-        @berksfile_path = File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
-        @only = Array.new
-        @except = Array.new
+      def only
+        @only ||= Array.new
       end
-
-      def config_path=(value)
-        @config_path = File.expand_path(value)
-      end
-
-      def berksfile_path=(value)
-        @berksfile_path = File.expand_path(value)
-      end
-
-      def client_key=(value)
-        @client_key = File.expand_path(value)
-      end
+      attr_writer :only
 
       def validate(env, errors)
         if !except.empty? && !only.empty?
