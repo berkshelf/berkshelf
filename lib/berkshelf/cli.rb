@@ -1,5 +1,3 @@
-require 'thor'
-require 'thor/monkies'
 require 'berkshelf'
 
 module Berkshelf

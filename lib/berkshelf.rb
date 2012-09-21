@@ -6,6 +6,7 @@ require 'zlib'
 require 'archive/tar/minitar'
 require 'solve'
 require 'ridley'
+require 'thor'
 require 'chef/knife'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
@@ -15,6 +16,7 @@ require 'active_support/core_ext'
 require 'berkshelf/version'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
+require 'thor/monkies'
 
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
