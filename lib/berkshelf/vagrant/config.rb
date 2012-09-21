@@ -13,7 +13,7 @@ module Berkshelf
         @config_path ||= Berkshelf::DEFAULT_CONFIG
       end
 
-      # @param [String]
+      # @param [String] value
       def config_path=(value)
         @config_path = File.expand_path(value)
       end
@@ -24,7 +24,7 @@ module Berkshelf
         @berksfile_path ||= File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
       end
 
-      # @param [String]
+      # @param [String] value
       def berksfile_path=(value)
         @berksfile_path = File.expand_path(value)
       end
@@ -34,7 +34,7 @@ module Berkshelf
       #   upload cookbooks installed by Berkshelf.
       attr_reader :client_key
 
-      # @param [String]
+      # @param [String] value
       def client_key=(value)
         @client_key = File.expand_path(value)
       end

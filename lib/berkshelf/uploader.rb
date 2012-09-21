@@ -17,6 +17,17 @@ module Berkshelf
     # @option options [String] :organization
     #   the Organization to connect to. This is only used if you are connecting to
     #   private Chef or hosted Chef
+    # @option options [Integer] :thread_count
+    # @option options [Hash] :params
+    #   URI query unencoded key/value pairs
+    # @option options [Hash] :headers
+    #   unencoded HTTP header key/value pairs
+    # @option options [Hash] :request
+    #   request options
+    # @option options [Hash] :ssl
+    #   SSL options
+    # @option options [URI, String, Hash] :proxy
+    #   URI, String, or Hash of HTTP proxy options
     def initialize(options = {})
       @conn = Ridley.connection(options)
     end
