@@ -1,5 +1,5 @@
 module Berkshelf
-  class UI < ::Thor::Shell::Color
+  class UI < ::Thor::Shell::Basic
     # Mute the output of this instance of UI until {#unmute!} is called
     def mute!
       @mute = true
@@ -10,10 +10,10 @@ module Berkshelf
       @mute = false
     end
 
-    def say(message, color = nil, force_new_line = (message.to_s !~ /( |\t)$/))
+    def say(message = "", color = nil, force_new_line = nil)
       return if quiet?
 
-      super(message, color, force_new_line)
+      super(message, color)
     end
     alias_method :info, :say
 

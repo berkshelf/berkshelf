@@ -1,6 +1,8 @@
 require 'berkshelf'
 
 module Berkshelf
+  Thor::Base.shell = Berkshelf::UI
+
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Cli < Thor
     class << self
@@ -12,7 +14,6 @@ module Berkshelf
     
     def initialize(*args)
       super(*args)
-      self.shell = Berkshelf.ui
       Berkshelf.config_path = @options[:config]
       Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
