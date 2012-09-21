@@ -12,13 +12,12 @@ module Berkshelf
           @app = app
           @node_name  = env[:global_config].berkshelf.node_name
           @client_key = env[:global_config].berkshelf.client_key
-          @ssl_verify = env[:global_config].berkshelf.client_key
+          @ssl_verify = env[:global_config].berkshelf.ssl_verify
           @berksfile  = Berksfile.from_file(env[:global_config].berkshelf.berksfile_path)
         end
 
         def call(env)
           if Berkshelf::Vagrant.chef_client?(env[:global_config])
-            p env[:global_config].berkshelf
             upload(env)
           end
 
