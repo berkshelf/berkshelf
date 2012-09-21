@@ -6,16 +6,19 @@ module Berkshelf
         attr_reader :berksfile
         attr_reader :node_name
         attr_reader :client_key
+        attr_reader :ssl_verify
 
         def initialize(app, env)
           @app = app
           @node_name  = env[:global_config].berkshelf.node_name
           @client_key = env[:global_config].berkshelf.client_key
+          @ssl_verify = env[:global_config].berkshelf.client_key
           @berksfile  = Berksfile.from_file(env[:global_config].berkshelf.berksfile_path)
         end
 
         def call(env)
           if Berkshelf::Vagrant.chef_client?(env[:global_config])
+            p env[:global_config].berkshelf
             upload(env)
           end
 
@@ -30,7 +33,10 @@ module Berkshelf
               berksfile.upload(
                 server_url: provisioner.config.chef_server_url,
                 client_name: self.node_name,
-                client_key: self.client_key
+                client_key: self.client_key,
+                ssl: {
+                  verify: self.ssl_verify
+                }
               )
             end
           end
