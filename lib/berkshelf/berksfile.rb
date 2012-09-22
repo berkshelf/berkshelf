@@ -379,6 +379,7 @@ module Berkshelf
     # @option options [URI, String, Hash] :proxy
     #   URI, String, or Hash of HTTP proxy options
     def upload(options = {})
+      options[:organization] ||= ChefAPILocation.extract_organization(Chef::Config[:chef_server_url])
       uploader = Uploader.new(options)
       solution = resolve(options)
 

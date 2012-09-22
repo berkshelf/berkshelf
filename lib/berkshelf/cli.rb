@@ -120,7 +120,6 @@ module Berkshelf
         server_url: Chef::Config[:chef_server_url],
         client_name: Chef::Config[:node_name],
         client_key: Chef::Config[:client_key],
-        organization: ChefAPILocation.extract_organization(Chef::Config[:chef_server_url]),
         ssl: {
           verify: options[:ssl_verify]
         }
