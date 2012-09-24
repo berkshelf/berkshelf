@@ -83,11 +83,13 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def resolve
-      graph.artifacts.each do |artifact|
-        graph.demands(artifact.name)
+      demands = [].tap do |l_demands|
+        graph.artifacts.each do |artifact|
+          l_demands << [ artifact.name, artifact.version ]
+        end
       end
 
-      solution = Solve.it!(graph)
+      solution = Solve.it!(graph, demands)
 
       [].tap do |cached_cookbooks|
         solution.each do |name, version|

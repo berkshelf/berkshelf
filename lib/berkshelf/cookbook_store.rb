@@ -74,12 +74,11 @@ module Berkshelf
     def satisfy(name, constraint)
       graph = Solve::Graph.new
       cookbooks(name).each { |cookbook| graph.artifacts(name, cookbook.version) }
-      graph.demands(name, constraint)
 
-      name, version = Solve.it!(graph).first
+      name, version = Solve.it!(graph, [[name, constraint]]).first
       
       cookbook(name, version)
-    rescue Solve::NoSolutionError
+    rescue Solve::Errors::NoSolutionError
       nil
     end
 

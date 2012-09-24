@@ -49,21 +49,11 @@ module Berkshelf
       #
       # @return [Array, nil]
       def solve_for_constraint(constraint, versions)
-        graph = Solve::Graph.new
-        name = "none"
-
-        versions.each do |version, uri|
-          graph.artifacts(name, version)
-        end
-
-        graph.demands(name, constraint)
-        result = Solve.it(graph)
-
-        return nil if result.nil?
-
-        version = result[name]
+        version = Solve::Solver.satisfy_best(constraint, versions.keys).to_s
 
         [ version, versions[version] ]
+      rescue Solve::Errors::NoSolutionError
+        nil
       end
     end
 
