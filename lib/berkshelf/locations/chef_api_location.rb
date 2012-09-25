@@ -177,9 +177,8 @@ module Berkshelf
       versions.each do |version, url|
         graph.artifacts(name, version)
       end
-      graph.demands(name, ">= 0.0.0")
 
-      version = Solve.it!(graph)[name]
+      version = Solve.it!(graph, [name])[name]
 
       [ version, versions[version] ]
     end

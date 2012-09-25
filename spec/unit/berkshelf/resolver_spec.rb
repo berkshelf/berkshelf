@@ -110,7 +110,7 @@ module Berkshelf
         it "returns the source of the same name" do
           subject.get_source(source.name).should eql(source)
         end
-      end       
+      end
     end
 
     describe "#has_source?" do
@@ -118,26 +118,6 @@ module Berkshelf
 
       it "returns the source of the given name" do
         subject.has_source?(source.name).should be_true
-      end
-    end
-
-    describe "#resolve" do
-      before(:each) do
-        subject.add_source(source)
-        subject.add_source(source_two)
-        @solution = subject.resolve
-      end
-      
-      it "returns an array of the CachedCookbooks which make up the solution" do
-        @solution.should include(source.cached_cookbook)
-        @solution.should include(source_two.cached_cookbook)
-      end
-      
-      it "resolves the given mysql source" do
-        @solution[0].cookbook_name.should eql("mysql")
-        @solution[0].version.should eql("1.2.4")
-        @solution[1].cookbook_name.should eql("nginx")
-        @solution[1].version.should eql("0.101.2")
       end
     end
   end
