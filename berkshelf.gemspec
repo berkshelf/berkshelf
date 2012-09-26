@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'ridley',  '>= 0.0.5'
   s.add_runtime_dependency 'solve',   '>= 0.3.0'
-  s.add_runtime_dependency 'chef',    '~> 10.12.0'
+  s.add_runtime_dependency 'chef',    '~> 10.12'
   s.add_runtime_dependency 'minitar'
   s.add_runtime_dependency 'thor',    '~> 0.16.0'
   s.add_runtime_dependency 'vagrant', '~> 1.0.5'
