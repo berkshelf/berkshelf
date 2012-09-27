@@ -37,7 +37,7 @@ module Berkshelf
           end
 
           def configure_cookbooks_path(env)
-            Berkshelf::Vagrant.provisioners(:chef_solo, env[:global_config]).each do |provisioner|
+            Berkshelf::Vagrant.provisioners(:chef_solo, env[:vm].config).each do |provisioner|
               provisioner.config.cookbooks_path.unshift(self.shelf)
             end
           end
