@@ -19,11 +19,10 @@ module Berkshelf
     class << self
       # @param [Vagrant::Action::Environment] env
       def shelf_for(env)
-        unless env[:global_config].vm.host_name
-          return nil
-        end
+        name = env[:vm].config.vm.name
+        return nil unless name
 
-        File.join(Berkshelf.berkshelf_path, "vagrant", env[:global_config].vm.host_name)
+        File.join(Berkshelf.berkshelf_path, "vagrant", name)
       end
 
       # @param [Symbol] shortcut
