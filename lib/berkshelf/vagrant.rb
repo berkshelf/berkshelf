@@ -22,7 +22,7 @@ module Berkshelf
         name = env[:vm].config.vm.name
         return nil unless name
 
-        File.join(Berkshelf.berkshelf_path, "vagrant", name)
+        File.join(Berkshelf.berkshelf_path, "vagrant", name.to_s)
       end
 
       # @param [Symbol] shortcut
