@@ -11,7 +11,7 @@ module Berkshelf
         def initialize(app, env)
           @app                  = app
           @shelf                = Berkshelf::Vagrant.shelf_for(env)
-          @config               = env[:global_config].berkshelf
+          @config               = env[:vm].config.berkshelf
           Berkshelf.config_path = @config.config_path
           Berkshelf.load_config
           @berksfile            = Berksfile.from_file(@config.berksfile_path)
