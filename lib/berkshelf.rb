@@ -1,5 +1,6 @@
 require 'forwardable'
 require 'uri'
+require 'fileutils'
 require 'pathname'
 require 'tmpdir'
 require 'zlib'
