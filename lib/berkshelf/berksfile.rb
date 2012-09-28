@@ -32,7 +32,9 @@ module Berkshelf
         
         scratch = Berkshelf.mktmpdir
         cookbooks.each do |cb|
-          FileUtils.cp_r(cb.path, File.join(scratch, cb.cookbook_name))
+          dest = File.join(scratch, cb.cookbook_name, "/")
+          FileUtils.mkdir_p(dest)
+          FileUtils.cp_r(Dir.glob("#{cb.path}/*"), dest)
         end
 
         FileUtils.remove_dir(path, force: true)
