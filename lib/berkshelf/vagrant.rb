@@ -18,12 +18,12 @@ module Berkshelf
 
     class << self
       # @param [Vagrant::Action::Environment] env
+      #
+      # @return [String, nil]
       def shelf_for(env)
-        unless env[:global_config].vm.host_name
-          return nil
-        end
+        return nil if env[:vm].uuid.nil?
 
-        File.join(Berkshelf.berkshelf_path, "vagrant", env[:global_config].vm.host_name)
+        File.join(Berkshelf.berkshelf_path, "vagrant", env[:vm].uuid)
       end
 
       # @param [Symbol] shortcut
@@ -64,7 +64,7 @@ module Berkshelf
           ::Vagrant.actions[action].insert(::Vagrant::Action::VM::Provision, Berkshelf::Vagrant::Middleware.upload)
         end
 
-        ::Vagrant.actions[:destroy].insert(::Vagrant::Action::VM::CleanMachineFolder, Berkshelf::Vagrant::Middleware.clean)
+        ::Vagrant.actions[:destroy].insert(::Vagrant::Action::VM::ProvisionerCleanup, Berkshelf::Vagrant::Middleware.clean)
       end
     end
   end
