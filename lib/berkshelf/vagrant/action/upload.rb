@@ -10,14 +10,14 @@ module Berkshelf
 
         def initialize(app, env)
           @app = app
-          @node_name  = env[:global_config].berkshelf.node_name
-          @client_key = env[:global_config].berkshelf.client_key
-          @ssl_verify = env[:global_config].berkshelf.ssl_verify
-          @berksfile  = Berksfile.from_file(env[:global_config].berkshelf.berksfile_path)
+          @node_name  = env[:vm].config.berkshelf.node_name
+          @client_key = env[:vm].config.berkshelf.client_key
+          @ssl_verify = env[:vm].config.berkshelf.ssl_verify
+          @berksfile  = Berksfile.from_file(env[:vm].config.berkshelf.berksfile_path)
         end
 
         def call(env)
-          if Berkshelf::Vagrant.chef_client?(env[:global_config])
+          if Berkshelf::Vagrant.chef_client?(env[:vm].config)
             upload(env)
           end
 
@@ -27,7 +27,7 @@ module Berkshelf
         private
 
           def upload(env)
-            Berkshelf::Vagrant.provisioners(:chef_client, env[:global_config]).each do |provisioner|
+            Berkshelf::Vagrant.provisioners(:chef_client, env[:vm].config).each do |provisioner|
               Berkshelf.formatter.msg "uploading cookbooks to '#{provisioner.config.chef_server_url}'"
               berksfile.upload(
                 server_url: provisioner.config.chef_server_url,
