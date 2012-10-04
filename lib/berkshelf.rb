@@ -12,6 +12,7 @@ require 'chef/platform'
 require 'chef/cookbook/metadata'
 require 'chef/cookbook_version'
 require 'active_support/core_ext'
+require 'rbconfig'
 
 require 'berkshelf/version'
 require 'berkshelf/core_ext'
@@ -140,6 +141,13 @@ module Berkshelf
     # @return [~Formatter]
     def set_format(format_id)
       @formatter = Formatters[format_id].new
+    end
+
+    # Are we running on Windows?
+    #
+    # return [Boolean]
+    def windows?
+      RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
     end
 
     private

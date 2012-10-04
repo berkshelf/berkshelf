@@ -85,6 +85,10 @@ module Berkshelf
           raise GitNotFound
         end
 
+        if Berkshelf.windows?
+          git_path.gsub!(File::SEPARATOR, File::ALT_SEPARATOR)
+        end
+
         return git_path
       end
 
