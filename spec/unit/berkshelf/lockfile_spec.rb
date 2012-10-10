@@ -21,7 +21,7 @@ module Berkshelf
 
         Lockfile.new(resolver.sources).write
 
-        File.read('Berksfile.lock').split(/\r?\n/).sort.should =~ [
+        File.read('Berksfile.lock').split(/\r?\n/).should =~ [
           "cookbook 'bluepill', :locked_version => '1.1.0'",
           "cookbook 'build-essential', :locked_version => '1.1.0'",
           "cookbook 'nginx', :locked_version => '0.101.0'",
