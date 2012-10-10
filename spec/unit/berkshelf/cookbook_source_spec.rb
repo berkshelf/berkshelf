@@ -190,24 +190,24 @@ module Berkshelf
     describe '#add_group' do
       it "should store strings as symbols" do
         subject.add_group "foo"
-        subject.groups.should == [:default, :foo]
+        subject.groups.should =~ [:default, :foo]
       end
 
       it "should not store duplicate groups" do
         subject.add_group "bar"
         subject.add_group "bar"
         subject.add_group :bar
-        subject.groups.should == [:default, :bar]
+        subject.groups.should =~ [:default, :bar]
       end
 
       it "should add multiple groups" do
         subject.add_group "baz", "quux"
-        subject.groups.should == [:default, :baz, :quux]
+        subject.groups.should =~ [:default, :baz, :quux]
       end
 
       it "should handle multiple groups as an array" do
         subject.add_group ["baz", "quux"]
-        subject.groups.should == [:default, :baz, :quux]
+        subject.groups.should =~ [:default, :baz, :quux]
       end
     end
 
