@@ -7,6 +7,7 @@ require 'active_support/core_ext'
 require 'archive/tar/minitar'
 require 'forwardable'
 require 'pathname'
+require 'rbconfig'
 require 'ridley'
 require 'solve'
 require 'thor'
@@ -141,6 +142,13 @@ module Berkshelf
     # @return [~Formatter]
     def set_format(format_id)
       @formatter = Formatters[format_id].new
+    end
+
+    # Are we running on Windows?
+    #
+    # return [Boolean]
+    def windows?
+      RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
     end
 
     private
