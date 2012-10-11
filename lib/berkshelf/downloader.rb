@@ -58,14 +58,14 @@ module Berkshelf
       @locations.select { |loc| loc[:type] == type && loc[:value] == value }.any?
     end
 
-    # Downloads the given CookbookSource. If the given source does not contain a value for {CookbookSource#location}
-    # the default locations of this downloader will be used to attempt to retrieve the source.
+    # Downloads the given CookbookSource.
     #
     # @param [CookbookSource] source
     #   the source to download
     #
     # @return [Array]
-    #   an array containing the downloaded CachedCookbook and the Location used to download the cookbook
+    #   an array containing the downloaded CachedCookbook and the Location used
+    #   to download the cookbook
     def download(source)
       cached_cookbook, location = if source.location
         [source.location.download(storage_path), source.location]
@@ -80,6 +80,16 @@ module Berkshelf
 
     private
 
+    # Searches locations for a CookbookSource. If the source does not contain a
+    # value for {CookbookSource#location}, the default locations of this
+    # downloader will be used to attempt to retrieve the source.
+    #
+    # @param [CookbookSource] source
+    #   the source to download
+    #
+    # @return [Array]
+    #   an array containing the downloaded CachedCookbook and the Location used
+    #   to download the cookbook
     def search_locations(source)
       cached_cookbook = nil
       location = nil
@@ -106,6 +116,12 @@ module Berkshelf
       [ cached_cookbook, location ]
     end
 
+
+    # Validates that a source is an instance of CookbookSource
+    #
+    # @param [CookbookSource] source
+    #
+    # @return [Boolean]
     def validate_source(source)
       source.is_a?(Berkshelf::CookbookSource)
     end
