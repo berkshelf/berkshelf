@@ -43,9 +43,10 @@ module Berkshelf
     # @return [Hash]
     def add_location(type, value, options = {})
       if has_location?(type, value)
-        raise DuplicateLocationDefined, "A default '#{type}' location with the value '#{value}' is already defined"
+        raise DuplicateLocationDefined,
+          "A default '#{type}' location with the value '#{value}' is already defined"
       end
-      
+
       @locations.push(type: type, value: value, options: options)
     end
 
