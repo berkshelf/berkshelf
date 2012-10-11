@@ -68,42 +68,46 @@ module Berkshelf
     #   an array containing the downloaded CachedCookbook and the Location used to download the cookbook
     def download(source)
       cached_cookbook, location = if source.location
-        [ source.location.download(storage_path), source.location ]
+        [source.location.download(storage_path), source.location]
       else
-        cached_cookbook = nil
-        location = nil
-
-        locations.each do |loc|
-          location = Location.init(
-            source.name,
-            source.version_constraint,
-            loc[:options].merge(loc[:type] => loc[:value])
-          )
-          begin
-            cached_cookbook = location.download(storage_path)
-            break
-          rescue
-            cached_cookbook, location = nil
-            next
-          end
-        end
-
-        if cached_cookbook.nil?
-          raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
-        end
-
-        [ cached_cookbook, location ]
+        search_locations(source)
       end
 
       source.cached_cookbook = cached_cookbook
 
-      [ cached_cookbook, location ]
+      [cached_cookbook, location]
     end
 
     private
 
-      def validate_source(source)
-        source.is_a?(Berkshelf::CookbookSource)
+    def search_locations(source)
+      cached_cookbook = nil
+      location = nil
+
+      locations.each do |loc|
+        location = Location.init(
+          source.name,
+          source.version_constraint,
+          loc[:options].merge(loc[:type] => loc[:value])
+        )
+        begin
+          cached_cookbook = location.download(storage_path)
+          break
+        rescue
+          cached_cookbook, location = nil
+          next
+        end
       end
+
+      if cached_cookbook.nil?
+        raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
+      end
+
+      [ cached_cookbook, location ]
+    end
+
+    def validate_source(source)
+      source.is_a?(Berkshelf::CookbookSource)
+    end
   end
 end
