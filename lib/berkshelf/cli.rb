@@ -173,6 +173,18 @@ module Berkshelf
       type: :string,
       desc: "Email address of cookbook maintainer",
       aliases: "-e"
+    method_option :vagrant_vm_box,
+      type: :string,
+      default: "Berkshelf-CentOS-6.3-x86_64-minimal",
+      desc: "Name of the Vagrant box to use"
+    method_option :vagrant_vm_box_url,
+      type: :string,
+      default: "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box",
+      desc: "Url to retrieve the Vagrant box if it does not already exist"
+    method_option :vagrant_vm_host_name,
+      type: :string,
+      desc: "Host name for the Vagrant box"
+
     desc "cookbook NAME", "Create a skeleton for a new cookbook"
     def cookbook(name)
       ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all

@@ -195,6 +195,16 @@ Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name,
   }
 end
 
+Then /^the resulting "(.+)" Vagrantfile should contain:$/ do |cookbook_name, content|
+  Pathname.new(current_dir).join(cookbook_name).should have_structure {
+    file "Vagrantfile" do
+      content.respond_to?(:raw) ?
+        content.raw.flatten.each { |string| contains string } :
+        contains(content)
+    end
+  }
+end
+
 Then /^the directory "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, true)
 end

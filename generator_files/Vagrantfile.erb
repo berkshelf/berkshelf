@@ -27,11 +27,11 @@ Vagrant::Config.run do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-  config.vm.host_name = "<%= cookbook_name %>-berkshelf"
+  config.vm.host_name = "<%= options[:vagrant_vm_host_name] or "#{cookbook_name}-berkshelf" %>"
 
   # CentOS 6.3
-  config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal"
-  config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box"
+  config.vm.box = "<%= options[:vagrant_vm_box] %>"
+  config.vm.box_url = "<%= options[:vagrant_vm_box_url] %>"
 
   # Boot with a GUI so you can see the screen. (Default is headless)
   # config.vm.boot_mode = :gui
