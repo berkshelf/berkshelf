@@ -198,7 +198,9 @@ end
 Then /^the resulting "(.+)" Vagrantfile should contain:$/ do |cookbook_name, content|
   Pathname.new(current_dir).join(cookbook_name).should have_structure {
     file "Vagrantfile" do
-      contains content
+      content.respond_to?(:raw) ?
+        content.raw.flatten.each { |string| contains string } :
+        contains(content)
     end
   }
 end
