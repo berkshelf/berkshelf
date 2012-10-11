@@ -28,7 +28,7 @@ module Berkshelf
     #   to download cookbook sources which do not have an explicit location. An array of default locations will
     #   be used if no locations are explicitly added by the {#add_location} function.
     def locations
-      @locations.empty? ? DEFAULT_LOCATIONS : @locations
+      @locations.any? ? @locations : DEFAULT_LOCATIONS
     end
 
     # Create a location hash and add it to the end of the array of locations.
@@ -54,7 +54,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def has_location?(type, value)
-      !@locations.select { |loc| loc[:type] == type && loc[:value] == value }.empty?
+      @locations.select { |loc| loc[:type] == type && loc[:value] == value }.any?
     end
 
     # Downloads the given CookbookSource. If the given source does not contain a value for {CookbookSource#location}
