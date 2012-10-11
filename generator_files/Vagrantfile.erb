@@ -27,7 +27,7 @@ Vagrant::Config.run do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-  config.vm.host_name = "<%= cookbook_name %>-berkshelf"
+  config.vm.host_name = "<%= options[:vagrant_vm_host_name] or "#{cookbook_name}-berkshelf" %>"
 
   # CentOS 6.3
   config.vm.box = "<%= options[:vagrant_vm_box] %>"

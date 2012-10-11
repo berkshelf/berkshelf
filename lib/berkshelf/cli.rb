@@ -181,6 +181,9 @@ module Berkshelf
       type: :string,
       default: "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box",
       desc: "Url to retrieve the Vagrant box if it does not already exist"
+    method_option :vagrant_vm_host_name,
+      type: :string,
+      desc: "Host name for the Vagrant box"
 
     desc "cookbook NAME", "Create a skeleton for a new cookbook"
     def cookbook(name)

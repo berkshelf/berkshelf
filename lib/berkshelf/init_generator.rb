@@ -43,6 +43,9 @@ module Berkshelf
     class_option :cookbook_name,
       type: :string
 
+    class_option :vagrant_vm_host_name,
+      type: :string
+
     class_option :vagrant_vm_box,
       type: :string,
       default: "Berkshelf-CentOS-6.3-x86_64-minimal"

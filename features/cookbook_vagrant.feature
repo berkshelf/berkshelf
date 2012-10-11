@@ -7,6 +7,10 @@ Feature: cookbook command w/ Vagrant
     When I run the cookbook command to create "sparkle_motion" with options:
       | --vagrant |
     Then I should have a new cookbook skeleton "sparkle_motion" with Vagrant support
+    And the resulting "sparkle_motion" Vagrantfile should contain:
+      """
+      config.vm.host_name = "sparkle_motion-berkshelf"
+      """
     And the exit status should be 0
 
   Scenario: creating a new cookbook skeleton with a different Vagrant box name
@@ -26,3 +30,13 @@ Feature: cookbook command w/ Vagrant
       config.vm.box_url = "http://files.vagrantup.com/lucid32.box"
       """
     And the exit status should be 0
+
+  Scenario: creating a new cookbook skeleton with a different Vagrant host name
+    When I run the cookbook command to create "sparkle_motion" with options:
+      | --vagrant --vagrant-vm-host-name sparkle_motion |
+    Then the resulting "sparkle_motion" Vagrantfile should contain:
+      """
+      config.vm.host_name = "sparkle_motion"
+      """
+    And the exit status should be 0
+
