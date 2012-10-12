@@ -16,8 +16,7 @@ tmp
 \#*
 .DS_Store
 /spec/knife.rb
-/spec/validator.pem
-/spec/berkshelf.pem
+/spec/*.pem
 /spec/fixtures/vcr_cassettes
 /features/config.yml
 *.sw[op]
