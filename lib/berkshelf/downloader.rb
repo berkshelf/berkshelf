@@ -68,7 +68,13 @@ module Berkshelf
     #   to download the cookbook
     def download(source)
       cached_cookbook, location = if source.location
-        [source.location.download(storage_path), source.location]
+        begin
+          [source.location.download(storage_path), source.location]
+        rescue
+          Berkshelf.formatter.error "Failed to download #{source.name} from #{source.location}"
+
+          raise
+        end
       else
         search_locations(source)
       end
