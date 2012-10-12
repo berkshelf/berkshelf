@@ -258,3 +258,18 @@ Feature: install cookbooks from a Berksfile
       Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name', 'client_key'.
       """
     And the CLI should exit with the status code for error "InvalidChefAPILocation"
+
+  Scenario: with a git error during download
+    Given I write to "Berksfile" with:
+      """
+      cookbook "ohai"
+      cookbook "doesntexist", git: "git://github.com/asdjhfkljashflkjashfakljsf"
+      """
+    When I run the install command
+    Then the output should contain:
+      """
+      Installing ohai (1.1.2) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Failed to download doesntexist from git: 'git://github.com/asdjhfkljashflkjashfakljsf'
+      An error occured during Git execution:
+      """
+      And the CLI should exit with the status code for error "GitError"
