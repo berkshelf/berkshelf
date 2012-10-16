@@ -18,6 +18,16 @@ Given /^I do not have a Berksfile\.lock$/ do
   in_current_dir { FileUtils.rm_f(Berkshelf::Lockfile::DEFAULT_FILENAME) }
 end
 
+Given /^I have a Berkshelf config file containing:$/ do |contents|
+  write_file File.expand_path("~/.berkshelf/config.json"), contents
+end
+
+Given /^I do not have a Berkshelf config file$/ do
+  file = File.expand_path "~/.berkshelf/config.json"
+
+  remove_file file if File.exists? file
+end
+
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
   write_file(File.join(cookbook_name, file_name), content)
 end

@@ -41,3 +41,25 @@ Feature: cookbook command w/ Vagrant
       """
     And the exit status should be 0
 
+  Scenario: creating a new cookbook using a Berkshelf config
+    Given I have a Berkshelf config file containing:
+    """
+    {
+      "vagrant_vm_network_hostonly": "12.34.56.78",
+      "vagrant_vm_network_bridged": true,
+      "vagrant_vm_forward_port": { "12345": "54321" }
+    }
+    """
+    When I run the cookbook command to create "sparkle_motion" with options:
+      | --vagrant |
+    Then the resulting "sparkle_motion" Vagrantfile should contain:
+      | config.vm.network :hostonly, "12.34.56.78" |
+      | config.vm.network :bridged |
+      | config.vm.forward_port 12345, 54321 |
+    And the exit status should be 0
+
+  Scenario: creating a new cookbook when no Berkshelf config exists
+    Given I do not have a Berkshelf config file
+    When I run the cookbook command to create "sparkle_motion" with options:
+      | --vagrant |
+    Then the exit status should be 0

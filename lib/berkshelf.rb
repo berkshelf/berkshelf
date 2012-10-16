@@ -5,6 +5,7 @@ require 'chef/platform'
 
 require 'active_support/core_ext'
 require 'archive/tar/minitar'
+require 'chozo'
 require 'forwardable'
 require 'pathname'
 require 'ridley'
@@ -40,6 +41,7 @@ module Berkshelf
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Uploader, 'berkshelf/uploader'
   autoload :Resolver, 'berkshelf/resolver'
+  autoload :VagrantConfig, 'berkshelf/vagrant_config'
 
   require 'berkshelf/location'
 
