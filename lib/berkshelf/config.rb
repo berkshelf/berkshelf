@@ -6,7 +6,7 @@ module Berkshelf
 
     attribute :vagrant_vm_network_hostonly
     attribute :vagrant_vm_network_bridged
-    attribute :vagrant_vm_forward_port
+    attribute :vagrant_vm_forward_port, default: Hash.new
 
     class << self
       def file
@@ -20,12 +20,6 @@ module Berkshelf
           new
         end
       end
-    end
-
-    def initialize(*args)
-      super
-
-      @vagrant_vm_forward_port ||= {}
     end
   end
 end
