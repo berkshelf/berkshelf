@@ -14,9 +14,9 @@ module Berkshelf
       end
 
       def instance
-        @instance ||= begin
+        @instance ||= if File.exists? file
           from_file file
-        rescue Chozo::Errors::ConfigNotFound
+        else
           new
         end
       end
