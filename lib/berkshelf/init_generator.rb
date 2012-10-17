@@ -56,15 +56,15 @@ module Berkshelf
 
     class_option :vagrant_vm_forward_port,
       type: :hash,
-      default: VagrantConfig.instance.vagrant_vm_forward_port
+      default: Config.instance.vagrant_vm_forward_port
 
     class_option :vagrant_vm_network_bridged,
       type: :boolean,
-      default: VagrantConfig.instance.vagrant_vm_network_bridged
+      default: Config.instance.vagrant_vm_network_bridged
 
     class_option :vagrant_vm_network_hostonly,
       type: :string,
-      default: VagrantConfig.instance.vagrant_vm_network_hostonly
+      default: Config.instance.vagrant_vm_network_hostonly
 
     def generate
       template "Berksfile.erb", target.join("Berksfile")

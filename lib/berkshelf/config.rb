@@ -1,5 +1,5 @@
 module Berkshelf
-  class VagrantConfig
+  class Config
     DEFAULT_PATH = "~/.berkshelf/config.json"
 
     include Chozo::Config::JSON
@@ -8,15 +8,17 @@ module Berkshelf
     attribute :vagrant_vm_network_bridged
     attribute :vagrant_vm_forward_port
 
-    def self.file
-      File.expand_path DEFAULT_PATH
-    end
+    class << self
+      def file
+        File.expand_path DEFAULT_PATH
+      end
 
-    def self.instance
-      @instance ||= begin
-        VagrantConfig.from_file file
-      rescue Chozo::Errors::ConfigNotFound
-        VagrantConfig.new
+      def instance
+        @instance ||= begin
+          from_file file
+        rescue Chozo::Errors::ConfigNotFound
+          new
+        end
       end
     end
 

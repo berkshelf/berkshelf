@@ -41,7 +41,7 @@ module Berkshelf
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Uploader, 'berkshelf/uploader'
   autoload :Resolver, 'berkshelf/resolver'
-  autoload :VagrantConfig, 'berkshelf/vagrant_config'
+  autoload :Config, 'berkshelf/config'
 
   require 'berkshelf/location'
 

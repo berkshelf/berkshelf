@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::VagrantConfig do
+describe Berkshelf::Config do
   its(:vagrant_vm_forward_port) {
     should be_a Hash
     should be_empty
