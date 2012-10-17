@@ -1,25 +1,37 @@
 module Berkshelf
-  class Config
+  class Config < Hashie::Mash
     DEFAULT_PATH = "~/.berkshelf/config.json"
-
-    include Chozo::Config::JSON
-
-    attribute :vagrant_vm_network_hostonly
-    attribute :vagrant_vm_network_bridged
-    attribute :vagrant_vm_forward_port, default: Hash.new
 
     class << self
       def file
-        File.expand_path DEFAULT_PATH
+        File.read path if File.exists? path
+      end
+
+      def from_json(json)
+        hash = JSON.parse(json).to_hash
+
+        new.tap do |config|
+          hash.each do |key, value|
+            config[key] = value
+          end
+        end
       end
 
       def instance
-        @instance ||= if File.exists? file
-          from_file file
+        @instance ||= if file
+          from_json file
         else
           new
         end
       end
+
+      def path
+        File.expand_path DEFAULT_PATH
+      end
+    end
+
+    def [](key)
+      super or self.class.new
     end
   end
 end
