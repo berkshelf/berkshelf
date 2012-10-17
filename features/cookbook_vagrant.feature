@@ -1,4 +1,3 @@
-@focus
 Feature: cookbook command w/ Vagrant
   As a Cookbook author
   I want a way to quickly generate a Cookbook skeleton that includes Vagrant support
