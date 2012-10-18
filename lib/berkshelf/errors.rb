@@ -84,8 +84,20 @@ module Berkshelf
   class InvalidConfiguration < BerkshelfError
     status_code(115)
 
+    def initialize(errors)
+      @errors = errors
+    end
+
     def to_s
-      "Invalid configuration"
+      strings = ["Invalid configuration:"]
+
+      @errors.messages.each do |key, errors|
+        errors.each do |error|
+          strings << "  #{key} #{error}"
+        end
+      end
+
+      strings.join "\n"
     end
   end
 end
