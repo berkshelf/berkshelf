@@ -1,4 +1,5 @@
 module Berkshelf
+  # @author Justin Campbell <justin@justincampbell.me>
   class ConfigValidator < ActiveModel::Validator
     DEFAULT_STRUCTURE = {
       vagrant: {
@@ -12,6 +13,19 @@ module Berkshelf
       }
     }
 
+    # Recursively validate the structure of a hash with another hash. If
+    # invalid, the actual_hash will have errors added to it.
+    #
+    # @param [Hash] actual_hash
+    #   The hash to validate
+    #
+    # @param [Hash] expected_hash
+    #   The expected structure of actual_hash
+    #
+    # @param [Config] config
+    #   The config object to add errors to. This is only used recursively.
+    #
+    # @return [Boolean]
     def assert_in_structure(actual_hash, expected_hash, config = nil)
       config ||= actual_hash
 
@@ -37,10 +51,16 @@ module Berkshelf
       true
     end
 
+    # @see DEFAULT_STRUCTURE
+    # @return [Hash]
     def structure
       @structure ||= DEFAULT_STRUCTURE
     end
 
+    # @param [Config] config
+    #   The config to validate
+    #
+    # @return [Boolean]
     def validate(config)
       assert_in_structure config, structure
     end
