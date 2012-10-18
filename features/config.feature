@@ -51,14 +51,12 @@ Feature: cookbook creation with a config file
     Given I have a Berkshelf config file containing:
     """
     {
-      "vagrantz": {
-        "vmz": null
-      },
-      "wat": "wat"
+      "wat": null
     }
     """
     When I run the cookbook command to create "sparkle_motion"
     Then the output should contain "Invalid configuration"
+    And the output should contain "wat is not a valid key"
     And the CLI should exit with the status code for error "InvalidConfiguration"
 
   Scenario: creating a new cookbook when no Berkshelf config exists
