@@ -24,6 +24,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'vagrant', '~> 1.0.5'
   s.add_runtime_dependency 'activesupport'
   s.add_runtime_dependency 'multi_json'
+  s.add_runtime_dependency 'hashie'
+  s.add_runtime_dependency 'activemodel'
 
   s.add_development_dependency 'redcarpet'
   s.add_development_dependency 'cucumber'

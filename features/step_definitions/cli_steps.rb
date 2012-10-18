@@ -59,7 +59,7 @@ When /^I run the upload command with flags:$/ do |flags|
 end
 
 When /^I run the cookbook command to create "(.*?)"$/ do |name|
-  run_simple(unescape("berks cookbook #{name}"))
+  run_simple(unescape("berks cookbook #{name}"), false)
 end
 
 When /^I run the cookbook command to create "(.*?)" with options:$/ do |name, options|

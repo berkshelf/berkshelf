@@ -11,7 +11,6 @@ Feature: cookbook command w/ Vagrant
       | config.vm.host_name = "sparkle_motion-berkshelf" |
       | config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal" |
       | config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box" |
-
     And the exit status should be 0
 
   Scenario: creating a new cookbook skeleton with a different Vagrant box name
