@@ -2,6 +2,9 @@ module Berkshelf
   class Config < Hashie::Mash
     DEFAULT_PATH = "~/.berkshelf/config.json"
 
+    include ActiveModel::Validations
+    validates_with ConfigValidator
+
     class << self
       def file
         File.read path if File.exists? path

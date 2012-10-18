@@ -80,4 +80,12 @@ module Berkshelf
   end
 
   class AmbiguousCookbookName < BerkshelfError; status_code(114); end
+
+  class InvalidConfiguration < BerkshelfError
+    status_code(115)
+
+    def to_s
+      "Invalid configuration"
+    end
+  end
 end

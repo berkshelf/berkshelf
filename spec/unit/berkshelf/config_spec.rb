@@ -6,6 +6,8 @@ describe Berkshelf::Config do
   let(:config) { klass.new }
   let(:klass) { described_class }
 
+  it { should be_valid }
+
   its(:present?) { should be_false }
 
   it "set and gets hash keys" do
@@ -59,16 +61,19 @@ describe Berkshelf::Config do
       config[:b][:c].should == 2
     end
 
-    it "does not raise and error for nested hash keys that have not been set" do
+    it "does not raise an error for nested hash keys that have not been set" do
       config[:d][:e]
     end
 
     it "has indifferent access" do
-      config[:a] = 1
-      config['b'] = 2
-
       config['a'].should == 1
-      config[:b].should == 2
+      config[:a].should == 1
+    end
+
+    context "with an invalid configuration" do
+      let(:json) { '{ "wat": 1 }' }
+
+      it { should_not be_valid }
     end
   end
 

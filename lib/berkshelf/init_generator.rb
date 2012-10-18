@@ -59,6 +59,8 @@ module Berkshelf
       default: Config.instance
 
     def generate
+      validate_configuration
+
       template "Berksfile.erb", target.join("Berksfile")
 
       if options[:chefignore]
@@ -102,6 +104,12 @@ module Berkshelf
           metadata.name.empty? ? File.basename(target) : metadata.name
         rescue IOError
           File.basename(target)
+        end
+      end
+
+      def validate_configuration
+        unless Config.instance.valid?
+          raise InvalidConfiguration.new Config.instance.errors
         end
       end
   end

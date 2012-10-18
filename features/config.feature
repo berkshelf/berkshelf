@@ -1,4 +1,3 @@
-@focus
 Feature: cookbook creation with a config file
   As a Cookbook author  
   I want to quickly generate a cookbook with my own customizations
@@ -47,6 +46,20 @@ Feature: cookbook creation with a config file
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.forward_port 12345, 54321 |
     And the exit status should be 0
+
+  Scenario: creating a new cookbook using an invalid Berkshelf config
+    Given I have a Berkshelf config file containing:
+    """
+    {
+      "vagrantz": {
+        "vmz": null
+      },
+      "wat": "wat"
+    }
+    """
+    When I run the cookbook command to create "sparkle_motion"
+    Then the output should contain "Invalid configuration"
+    And the CLI should exit with the status code for error "InvalidConfiguration"
 
   Scenario: creating a new cookbook when no Berkshelf config exists
     Given I do not have a Berkshelf config file
