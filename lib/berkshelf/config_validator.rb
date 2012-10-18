@@ -12,17 +12,25 @@ module Berkshelf
       }
     }
 
-    def assert_in_structure(actual_hash, expected_hash)
+    def assert_in_structure(actual_hash, expected_hash, config = nil)
+      config ||= actual_hash
+
       actual_hash.keys.each do |key|
-        return unless expected_hash.keys.include? key.to_sym
+        unless expected_hash.keys.include? key.to_sym
+          config.errors.add key, "is not a valid key"
+          return
+        end
 
         actual = actual_hash[key]
         expected = expected_hash[key.to_sym]
 
         if actual.is_a?(Hash) && expected.is_a?(Hash)
-          return unless assert_in_structure actual, expected
+          return unless assert_in_structure actual, expected, config
         else
-          return unless actual.is_a? expected
+          unless actual.is_a? expected
+            config.errors.add key, "should be an instance of #{expected}"
+            return
+          end
         end
       end
 
