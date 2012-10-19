@@ -54,7 +54,13 @@ module Berkshelf
       type: :string,
       default: "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box"
 
+    class_option :berkshelf_config,
+      type: :hash,
+      default: Config.instance
+
     def generate
+      validate_configuration
+
       template "Berksfile.erb", target.join("Berksfile")
 
       if options[:chefignore]
@@ -98,6 +104,12 @@ module Berkshelf
           metadata.name.empty? ? File.basename(target) : metadata.name
         rescue IOError
           File.basename(target)
+        end
+      end
+
+      def validate_configuration
+        unless Config.instance.valid?
+          raise InvalidConfiguration.new Config.instance.errors
         end
       end
   end

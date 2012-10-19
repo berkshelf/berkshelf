@@ -4,8 +4,10 @@ require 'chef/knife'
 require 'chef/platform'
 
 require 'active_support/core_ext'
+require 'active_model'
 require 'archive/tar/minitar'
 require 'forwardable'
+require 'hashie'
 require 'pathname'
 require 'ridley'
 require 'solve'
@@ -40,6 +42,8 @@ module Berkshelf
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Uploader, 'berkshelf/uploader'
   autoload :Resolver, 'berkshelf/resolver'
+  autoload :Config, 'berkshelf/config'
+  autoload :ConfigValidator, 'berkshelf/config_validator'
 
   require 'berkshelf/location'
 
