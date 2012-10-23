@@ -9,9 +9,12 @@ Feature: cookbook creation with a config file
     {
       "vagrant": {
         "vm": {
+          "box": "my_box",
+          "box_url": "http://files.vagrantup.com/lucid64.box",
           "forward_port": {
             "12345": "54321"
           },
+          "host_name": "my_host",
           "network": {
             "bridged": true,
             "hostonly": "12.34.56.78"
@@ -23,9 +26,12 @@ Feature: cookbook creation with a config file
     When I run the cookbook command to create "sparkle_motion" with options:
       | --vagrant |
     Then the resulting "sparkle_motion" Vagrantfile should contain:
+      | config.vm.box = "my_box" |
+      | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
+      | config.vm.forward_port 12345, 54321 |
+      | config.vm.host_name = "my_host" |
       | config.vm.network :hostonly, "12.34.56.78" |
       | config.vm.network :bridged |
-      | config.vm.forward_port 12345, 54321 |
     And the exit status should be 0
 
   Scenario: creating a new cookbook using a partial Berkshelf config

@@ -4,7 +4,10 @@ module Berkshelf
     DEFAULT_STRUCTURE = {
       vagrant: {
         vm: {
+          box: String,
+          box_url: String,
           forward_port: Hash,
+          host_name: String,
           network: {
             bridged: Object,
             hostonly: String
