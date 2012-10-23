@@ -73,6 +73,15 @@ Vagrant::Config.run do |config|
   config.ssh.max_tries = 40
   config.ssh.timeout   = 120
 
+<% if options[:berkshelf_config][:vagrant][:vm][:provision] == "chef_client" -%>
+  config.vm.provision :chef_client do |chef|
+    chef.chef_server_url = "<%= options[:berkshelf_config][:vagrant][:chef][:chef_server_url] %>"
+    chef.validation_client_name = "<%= options[:berkshelf_config][:vagrant][:chef][:validation_client_name] %>"
+    chef.validation_key_path = "<%= options[:berkshelf_config][:vagrant][:chef][:validation_key_path] %>"
+
+    chef.run_list = [<%= options[:berkshelf_config][:vagrant][:chef][:run_list].map(&:inspect).join(", ")%>]
+  end
+<% else -%>
   config.vm.provision :chef_solo do |chef|    
     chef.json = {
       :mysql => {
@@ -86,14 +95,5 @@ Vagrant::Config.run do |config|
       "recipe[<%= cookbook_name %>::default]"
     ]
   end
-
-  # config.vm.provision :chef_client do |chef|
-  #   chef.chef_server_url = 'https://api.opscode.com/organizations/vialstudios'
-  #   chef.validation_client_name = 'vialstudios-validator'
-  #   chef.validation_key_path = '/Users/reset/.chef/vialstudios-validator.pem'
-  #
-  #   chef.run_list = [
-  #     "recipe[<%= cookbook_name %>::default]"
-  #   ]
-  # end
+<% end -%>
 end

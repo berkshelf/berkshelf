@@ -70,3 +70,30 @@ Feature: cookbook creation with a config file
     When I run the cookbook command to create "sparkle_motion" with options:
       | --vagrant |
     Then the exit status should be 0
+
+  Scenario: creating a new cookbook with a chef client config
+    Given I have a Berkshelf config file containing:
+    """
+    {
+      "vagrant": {
+        "chef": {
+          "chef_server_url": "localhost:4000",
+          "run_list": ["recipe[test]", "recipe[test2]"],
+          "validation_client_name": "my_client-validator",
+          "validation_key_path": "/a/b/c/my_client-validator.pem"
+        },
+        "vm": {
+          "provision": "chef_client"
+        }
+      }
+    }
+    """
+    When I run the cookbook command to create "sparkle_motion" with options:
+      | --vagrant |
+    Then the resulting "sparkle_motion" Vagrantfile should contain:
+      | config.vm.provision :chef_client |
+      | chef.chef_server_url = "localhost:4000" |
+      | chef.validation_client_name = "my_client-validator" |
+      | chef.validation_key_path = "/a/b/c/my_client-validator.pem" |
+      | chef.run_list = ["recipe[test]", "recipe[test2]"] |
+    Then the exit status should be 0

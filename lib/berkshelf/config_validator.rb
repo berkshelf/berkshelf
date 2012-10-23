@@ -3,6 +3,12 @@ module Berkshelf
   class ConfigValidator < ActiveModel::Validator
     DEFAULT_STRUCTURE = {
       vagrant: {
+        chef: {
+          chef_server_url: String,
+          run_list: Array,
+          validation_client_name: String,
+          validation_key_path: String
+        },
         vm: {
           box: String,
           box_url: String,
@@ -11,7 +17,8 @@ module Berkshelf
           network: {
             bridged: Object,
             hostonly: String
-          }
+          },
+          provision: String
         }
       }
     }
