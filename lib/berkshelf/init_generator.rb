@@ -20,11 +20,11 @@ module Berkshelf
       type: :boolean,
       default: false
 
-    class_option :vagrant,
+    class_option :skip_vagrant,
       type: :boolean,
       default: false
 
-    class_option :git,
+    class_option :skip_git,
       type: :boolean,
       default: false
 
@@ -56,8 +56,10 @@ module Berkshelf
         copy_file "chefignore", target.join("chefignore")
       end
 
-      if options[:git] || options[:scmversion]
+      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
+      unless options[:skip_git]
         template "gitignore.erb", target.join(".gitignore")
+
         unless File.exists?(target.join(".git"))
           inside target do
             run "git init", capture: true
@@ -77,7 +79,8 @@ module Berkshelf
         template "Gemfile.erb", target.join("Gemfile")
       end
 
-      if options[:vagrant]
+      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
+      unless options[:skip_vagrant]
         template "Vagrantfile.erb", target.join("Vagrantfile")
         ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile")).invoke(:install)
       end
