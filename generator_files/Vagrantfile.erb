@@ -79,7 +79,9 @@ Vagrant::Config.run do |config|
     chef.validation_client_name = "<%= options[:berkshelf_config][:vagrant][:chef][:validation_client_name] %>"
     chef.validation_key_path = "<%= options[:berkshelf_config][:vagrant][:chef][:validation_key_path] %>"
 
-    chef.run_list = [<%= options[:berkshelf_config][:vagrant][:chef][:run_list].map(&:inspect).join(", ")%>]
+    chef.run_list = [
+      "recipe[<%= cookbook_name %>::default]"
+    ]
   end
 <% else -%>
   config.vm.provision :chef_solo do |chef|    

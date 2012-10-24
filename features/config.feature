@@ -95,5 +95,4 @@ Feature: cookbook creation with a config file
       | chef.chef_server_url = "localhost:4000" |
       | chef.validation_client_name = "my_client-validator" |
       | chef.validation_key_path = "/a/b/c/my_client-validator.pem" |
-      | chef.run_list = ["recipe[test]", "recipe[test2]"] |
     Then the exit status should be 0
