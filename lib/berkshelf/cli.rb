@@ -27,6 +27,11 @@ module Berkshelf
     map 'ver'       => :version
     map 'book'      => :cookbook
 
+    desc "config", "Generate a default Berkshelf configuration file"
+    def config
+      ConfigGenerator.new.invoke_all
+    end
+
     class_option :config,
       type: :string,
       default: Berkshelf::DEFAULT_CONFIG,
