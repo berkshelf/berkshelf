@@ -38,8 +38,9 @@ class Default < Thor
 
   desc "ci", "Run all test suites"
   def ci
-    invoke :spec
-    invoke :cucumber
+    ENV['CI'] = 'true'
+    exec "rspec --tag ~chef_server --tag ~focus spec &&
+          cucumber --format progress --tags ~@chef_server"
   end
 
   class VCR < Thor
