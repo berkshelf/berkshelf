@@ -9,11 +9,11 @@ module Berkshelf
       type: :string,
       required: true
 
-    class_option :vagrant,
+    class_option :skip_vagrant,
       type: :boolean,
       default: false
 
-    class_option :git,
+    class_option :skip_git,
       type: :boolean,
       default: false
 

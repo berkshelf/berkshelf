@@ -95,40 +95,21 @@ Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
     directory "templates" do
       directory "default"
     end
-    file "README.md"
-    file "metadata.rb"
+    file ".gitignore"
+    file "chefignore"
     file "Berksfile" do
       contains "metadata"
     end
-    file "chefignore"
-    file "Berksfile"
     file "Gemfile" do
       contains "gem 'berkshelf'"
-    end
-  }
-end
-
-Then /^I should have a new cookbook skeleton "(.*?)" with Vagrant support$/ do |name|
-  steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
-
-  cb_path = Pathname.new(current_dir).join(name)
-  cb_path.should have_structure {
-    file "Gemfile" do
       contains "gem 'vagrant'"
     end
+    file "metadata.rb"
+    file "README.md"
     file "Vagrantfile" do
       contains "require 'berkshelf/vagrant'"
       contains "recipe[#{name}::default]"
     end
-  }
-end
-
-Then /^I should have a new cookbook skeleton "(.*?)" with Git support$/ do |name|
-  steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
-
-  cb_path = Pathname.new(current_dir).join(name)
-  cb_path.should have_structure {
-    file ".gitignore"
   }
 end
 
@@ -185,6 +166,21 @@ Then /^I should have a new cookbook skeleton "(.*?)" without Bundler support$/ d
     file "chefignore"
     file "Berksfile"
     no_file "Gemfile"
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" without Git support$/ do |name|
+  Pathname.new(current_dir).join(name).should have_structure {
+    no_file ".gitignore"
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" without Vagrant support$/ do |name|
+  Pathname.new(current_dir).join(name).should have_structure {
+    file "Gemfile" do
+      does_not_contain "gem 'vagrant'"
+    end
+    no_file "Vagrantfile"
   }
 end
 
