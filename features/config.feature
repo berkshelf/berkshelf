@@ -3,6 +3,16 @@ Feature: cookbook creation with a config file
   I want to quickly generate a cookbook with my own customizations
   So that I don't have to spend time modifying the default generated output each time
 
+  Scenario: creating a new cookbook when no Berkshelf config exists
+    Given I do not have a Berkshelf config file
+    When I run the cookbook command to create "sparkle_motion" with options:
+      | --vagrant |
+    Then the resulting "sparkle_motion" Vagrantfile should contain:
+      | config.vm.host_name = "sparkle_motion-berkshelf" |
+      | config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal" |
+      | config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box" |
+    And the exit status should be 0
+
   Scenario: creating a new cookbook using a Berkshelf config
     Given I have a Berkshelf config file containing:
     """
@@ -64,12 +74,6 @@ Feature: cookbook creation with a config file
     Then the output should contain "Invalid configuration"
     And the output should contain "wat is not a valid key"
     And the CLI should exit with the status code for error "InvalidConfiguration"
-
-  Scenario: creating a new cookbook when no Berkshelf config exists
-    Given I do not have a Berkshelf config file
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --vagrant |
-    Then the exit status should be 0
 
   Scenario: creating a new cookbook with a chef client config
     Given I have a Berkshelf config file containing:

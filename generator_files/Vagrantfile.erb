@@ -27,18 +27,23 @@ Vagrant::Config.run do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-  config.vm.host_name = "<%= options[:vagrant_vm_host_name] or options[:berkshelf_config][:vagrant][:vm][:host_name] or "#{cookbook_name}-berkshelf" %>"
+<% if options[:berkshelf_config][:vagrant][:vm][:box].present? -%>
+  config.vm.host_name = "<%= options[:berkshelf_config][:vagrant][:vm][:host_name] %>"
+<% else -%>
+  config.vm.host_name = "<%= "#{cookbook_name}-berkshelf" %>"
+<% end -%>
+
 
   # CentOS 6.3
 <% if options[:berkshelf_config][:vagrant][:vm][:box].present? -%>
   config.vm.box = "<%= options[:berkshelf_config][:vagrant][:vm][:box] %>"
 <% else %>
-  config.vm.box = "<%= options[:vagrant_vm_box] %>"
+  config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal"
 <% end -%>
 <% if options[:berkshelf_config][:vagrant][:vm][:box_url].present? -%>
   config.vm.box_url = "<%= options[:berkshelf_config][:vagrant][:vm][:box_url] %>"
 <% else %>
-  config.vm.box_url = "<%= options[:vagrant_vm_box_url] %>"
+  config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box"
 <% end -%>
 
   # Boot with a GUI so you can see the screen. (Default is headless)
