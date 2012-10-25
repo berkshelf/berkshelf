@@ -78,7 +78,6 @@ Feature: cookbook creation with a config file
       "vagrant": {
         "chef": {
           "chef_server_url": "localhost:4000",
-          "run_list": ["recipe[test]", "recipe[test2]"],
           "validation_client_name": "my_client-validator",
           "validation_key_path": "/a/b/c/my_client-validator.pem"
         },

@@ -2,7 +2,6 @@
   "vagrant": {
     "chef": {
       "chef_server_url": "https://api.opscode.com/organizations/ORGNAME",
-        "run_list": ["recipe[foo]", "recipe[bar]"],
         "validation_client_name": "ORGNAME-validator",
         "validation_key_path": "~/validation.pem"
     },

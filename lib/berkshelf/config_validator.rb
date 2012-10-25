@@ -5,7 +5,6 @@ module Berkshelf
       vagrant: {
         chef: {
           chef_server_url: String,
-          run_list: Array,
           validation_client_name: String,
           validation_key_path: String
         },
