@@ -169,6 +169,21 @@ Then /^I should have a new cookbook skeleton "(.*?)" without Bundler support$/ d
   }
 end
 
+Then /^I should have a new cookbook skeleton "(.*?)" without Git support$/ do |name|
+  Pathname.new(current_dir).join(name).should have_structure {
+    no_file ".gitignore"
+  }
+end
+
+Then /^I should have a new cookbook skeleton "(.*?)" without Vagrant support$/ do |name|
+  Pathname.new(current_dir).join(name).should have_structure {
+    file "Gemfile" do
+      does_not_contain "gem 'vagrant'"
+    end
+    no_file "Vagrantfile"
+  }
+end
+
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, true)
 end
