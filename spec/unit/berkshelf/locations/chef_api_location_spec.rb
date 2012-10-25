@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe ChefAPILocation do
+  describe ChefAPILocation, :chef_server do
     let(:test_chef_api) { "https://chefserver:8081" }
 
     describe "ClassMethods" do

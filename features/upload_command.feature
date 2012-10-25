@@ -3,7 +3,7 @@ Feature: upload command
   I need a way to upload cookbooks to a Chef server that I have installed into my Bookshelf
   So they are available to Chef clients
 
-  @no_run @slow_process
+  @no_run @chef_server
   Scenario: running the upload command when the Sources in the Berksfile are already installed
     Given I write to "Berksfile" with:
       """
@@ -23,7 +23,7 @@ Feature: upload command
       | openssl | 1.0.0 |
     And the exit status should be 0
 
-  @slow_process
+  @chef_server
   Scenario: running the upload command when the Sources in the Berksfile have not been installed
     Given I write to "Berksfile" with:
       """
@@ -42,7 +42,7 @@ Feature: upload command
       | openssl | 1.0.0 |
     And the exit status should be 0
 
-  @slow_process
+  @chef_server
   Scenario: running the upload command with a Berksfile containing a source that has a path location
     Given a Berksfile with path location sources to fixtures:
       | example_cookbook | example_cookbook-0.5.0 |
@@ -55,7 +55,7 @@ Feature: upload command
       | example_cookbook | 0.5.0 |
     And the exit status should be 0
 
-  @slow_process
+  @chef_server
   Scenario: running the upload command with a Berksfile containing a source that has a Git location
     Given I write to "Berksfile" with:
       """

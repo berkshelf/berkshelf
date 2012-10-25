@@ -29,7 +29,7 @@ Feature: --format json
     And the JSON at "cookbooks/0/version" should be "1.2.4"
     And the JSON should not have "cookbooks/0/location"
 
-  @slow_process
+  @chef_server
   Scenario: JSON output when running the upload command
     Given a Berksfile with path location sources to fixtures:
       | example_cookbook | example_cookbook-0.5.0 |
