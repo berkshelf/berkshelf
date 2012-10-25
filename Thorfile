@@ -36,6 +36,12 @@ class Default < Thor
     exec "cucumber --color --format progress --tags ~@no_run"
   end
 
+  desc "ci", "Run all test suites"
+  def ci
+    invoke :spec
+    invoke :cucumber
+  end
+
   class VCR < Thor
     namespace :vcr
 
