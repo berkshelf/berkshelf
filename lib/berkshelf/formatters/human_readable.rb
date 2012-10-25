@@ -46,6 +46,13 @@ module Berkshelf
       def error(message)
         Berkshelf.ui.error message
       end
+
+      # Output a deprecation warning
+      #
+      # @param [String] message
+      def deprecation(message)
+        Berkshelf.ui.info "DEPRECATED: #{message}"
+      end
     end
   end
 end

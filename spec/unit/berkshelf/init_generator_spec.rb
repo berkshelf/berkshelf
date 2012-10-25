@@ -14,9 +14,15 @@ module Berkshelf
 
       specify do
         target.should have_structure {
+          file ".gitignore"
           file "Berksfile"
           file "Gemfile" do
             contains "gem 'berkshelf'"
+            contains "gem 'vagrant'"
+          end
+          file "Vagrantfile" do
+            contains "require 'berkshelf/vagrant'"
+            contains "recipe[some_cookbook::default]"
           end
           no_file "chefignore"
         }
@@ -48,38 +54,6 @@ module Berkshelf
           file "Berksfile" do
             contains "metadata"
           end
-        }
-      end
-    end
-
-    context "with the vagrant option true" do
-      before do
-        generator = subject.new([target], vagrant: true)
-        quietly { generator.invoke_all }
-      end
-
-      specify do
-        target.should have_structure {
-          file "Vagrantfile" do
-            contains "require 'berkshelf/vagrant'"
-            contains "recipe[some_cookbook::default]"
-          end
-          file "Gemfile" do
-            contains "gem 'vagrant'"
-          end
-        }
-      end
-    end
-
-    context "with the git option true" do
-      before do
-        generator = subject.new([target], git: true)
-        capture(:stdout) { generator.invoke_all }
-      end
-
-      specify do
-        target.should have_structure {
-          file ".gitignore"
         }
       end
     end
@@ -146,6 +120,32 @@ module Berkshelf
         generator = subject.new([target])
 
         generator.send(:cookbook_name).should eql("some_cookbook")
+      end
+    end
+
+    context "when skipping git" do
+      before do
+        generator = subject.new([target], skip_git: true)
+        capture(:stdout) { generator.invoke_all }
+      end
+
+      it "should not have a .git directory" do
+        target.should_not have_structure {
+          directory ".git"
+        }
+      end
+    end
+
+    context "when skipping vagrant" do
+      before do
+        generator = subject.new([target], skip_vagrant: true)
+        capture(:stdout) { generator.invoke_all }
+      end
+
+      it "should not have a Vagrantfile" do
+        target.should have_structure {
+          no_file "Vagrantfile"
+        }
       end
     end
   end

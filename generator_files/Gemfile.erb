@@ -7,6 +7,6 @@ gem 'thor-foodcritic'
 <% if options[:scmversion] -%>
 gem 'thor-scmversion'
 <% end -%>
-<% if options[:vagrant] -%>
+<% unless options[:skip_vagrant] -%>
 gem 'vagrant', '~> 1.0.5'
 <% end -%>

@@ -6,6 +6,7 @@ module Berkshelf
       class File
         def initialize(name, &block)
           @contents = []
+          @negative_contents = []
           @name = name
 
           if block_given?
@@ -15,6 +16,10 @@ module Berkshelf
 
         def contains(text)
           @contents << text
+        end
+
+        def does_not_contain(text)
+          @negative_contents << text
         end
 
         def matches?(root)
@@ -27,6 +32,12 @@ module Berkshelf
           @contents.each do |string|
             unless contents.include?(string)
               throw :failure, [root.join(@name), string, contents]
+            end
+          end
+
+          @negative_contents.each do |string|
+            if contents.include?(string)
+              throw :failure, [:not, root.join(@name), string, contents]
             end
           end
         end
@@ -82,7 +93,11 @@ module Berkshelf
       class Root < Directory
         def failure_message
           if @failure.is_a?(Array) && @failure[0] == :not
-            "Structure should not have had #{@failure[1]}, but it did"
+            if @failure[2]
+              "File #{@failure[1]} should not have contained \"#{@failure[2]}\""
+            else
+              "Structure should not have had #{@failure[1]}, but it did"
+            end
           elsif @failure.is_a?(Array)
             "Structure should have #{@failure[0]} with #{@failure[1]}. It had:\n#{@failure[2]}"
           else
