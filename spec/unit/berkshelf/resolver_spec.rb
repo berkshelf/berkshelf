@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe Resolver do
+  describe Resolver, :chef_server do
     let(:source) do
       double('source',
         name: 'mysql',

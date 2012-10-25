@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe Uploader do
+  describe Uploader, :chef_server do
     subject { Uploader.new(server_url: Chef::Config[:chef_server_url], client_key: Chef::Config[:client_key], client_name: Chef::Config[:node_name]) }
 
     describe "#upload" do

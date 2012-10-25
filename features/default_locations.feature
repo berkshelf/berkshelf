@@ -4,6 +4,7 @@ Feature: Berksfile default locations
   So I can set the precedence of where cookbook sources are downloaded from or define an alternate location for all 
   cookbook sources to attempt to retrieve from
 
+  @chef_server
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
@@ -23,6 +24,7 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
+  @chef_server
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is not satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
@@ -42,6 +44,7 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
+  @chef_server
   Scenario: with a default site(1) and chef_api(2) location with a cookbook source that is satisfied by the site(1) location
     Given I write to "Berksfile" with:
       """
@@ -61,6 +64,7 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
+  @chef_server
   Scenario: with a default chef_api(1) location and a cookbook source that is satisfied by the chef_api(1) location but has an explicit location set
     Given I write to "Berksfile" with:
       """
@@ -79,6 +83,7 @@ Feature: Berksfile default locations
       | artifact | 0.10.0 |
     And the exit status should be 0
 
+  @chef_server
   Scenario: with a defualt chef_api(1) location and a cookbook source that is not satisfied by it
     Given I write to "Berksfile" with:
       """
