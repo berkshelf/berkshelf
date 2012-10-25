@@ -150,6 +150,12 @@ module Berkshelf
       Berkshelf.formatter.msg license
     end
 
+    method_option :skip_vagrant,
+      type: :boolean,
+      desc: "Skip Vagrant"
+    method_option :skip_git,
+      type: :boolean,
+      desc: "Skip Git"
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"

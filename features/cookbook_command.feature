@@ -8,18 +8,6 @@ Feature: cookbook command
     Then I should have a new cookbook skeleton "sparkle_motion"
     And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton with Vagrant support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --vagrant |
-    Then I should have a new cookbook skeleton "sparkle_motion" with Vagrant support
-    And the exit status should be 0
-
-  Scenario: creating a new cookbook skeleton with Git support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --git |
-    Then I should have a new cookbook skeleton "sparkle_motion" with Git support
-    And the exit status should be 0
-
   Scenario: creating a new cookbook skeleton with Foodcritic support
     When I run the cookbook command to create "sparkle_motion" with options:
       | --foodcritic |

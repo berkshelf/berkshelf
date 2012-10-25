@@ -5,8 +5,7 @@ Feature: cookbook creation with a config file
 
   Scenario: creating a new cookbook when no Berkshelf config exists
     Given I do not have a Berkshelf config file
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --vagrant |
+    When I run the cookbook command to create "sparkle_motion"
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.host_name = "sparkle_motion-berkshelf" |
       | config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal" |
@@ -33,8 +32,7 @@ Feature: cookbook creation with a config file
       }
     }
     """
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --vagrant |
+    When I run the cookbook command to create "sparkle_motion"
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
@@ -57,8 +55,7 @@ Feature: cookbook creation with a config file
       }
     }
     """
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --vagrant |
+    When I run the cookbook command to create "sparkle_motion"
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.forward_port 12345, 54321 |
     And the exit status should be 0
@@ -91,8 +88,7 @@ Feature: cookbook creation with a config file
       }
     }
     """
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --vagrant |
+    When I run the cookbook command to create "sparkle_motion"
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.provision :chef_client |
       | chef.chef_server_url = "localhost:4000" |
