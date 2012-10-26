@@ -194,6 +194,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the CLI should exit with the status code for error "InternalError"
 
+  @chef_server
   Scenario: with a cookbook definition containing a chef_api source location
     Given I write to "Berksfile" with:
       """

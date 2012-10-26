@@ -36,6 +36,13 @@ class Default < Thor
     exec "cucumber --color --format progress --tags ~@no_run"
   end
 
+  desc "ci", "Run all test suites"
+  def ci
+    ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
+    exec "rspec --tag ~chef_server --tag ~focus spec &&
+          cucumber --format progress --tags ~@chef_server"
+  end
+
   class VCR < Thor
     namespace :vcr
 

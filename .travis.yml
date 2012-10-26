@@ -1,0 +1,7 @@
+rvm:
+  - 1.9.2
+  - 1.9.3
+matrix:
+  allow_failures:
+    - rvm: 1.9.2
+script: 'bundle exec thor ci'

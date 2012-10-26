@@ -9,7 +9,7 @@ module Berkshelf
             Chef::Config.from_file(path)
             ENV["CHEF_CONFIG"] = path
           else
-            raise "Cannot continue; '#{path}' must exist and have testing credentials."
+            raise "Cannot continue; '#{path}' must exist and have testing credentials." unless ENV['CI']
           end
         end
       end
