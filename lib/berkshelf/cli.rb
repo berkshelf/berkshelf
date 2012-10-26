@@ -187,6 +187,9 @@ module Berkshelf
 
     desc "cookbook NAME", "Create a skeleton for a new cookbook"
     def cookbook(name)
+      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
+      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
+
       ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
     end
 
