@@ -16,7 +16,9 @@ module Berkshelf
       #   @return [String]
       #     the output of the execution of the Git command
       def git(*command)
-        cmd = Mixlib::ShellOut.new(git_cmd, *command)
+        command.unshift(git_cmd)
+        command_str = command.map { |p| quote_cmd_arg(p) }.join(' ')
+        cmd = Mixlib::ShellOut.new(command_str)
         cmd.run_command
 
         unless cmd.exitstatus == 0
@@ -134,6 +136,15 @@ module Berkshelf
         def git_cmd
           @git_cmd ||= find_git
         end
+
+        HAS_QUOTE_RE = %r{\"}
+        HAS_SPACE_RE = %r{\s}
+        def quote_cmd_arg(arg)
+          return arg if HAS_QUOTE_RE.match(arg)
+          return arg unless HAS_SPACE_RE.match(arg)
+          "\"#{arg}\""
+        end
+        
     end
   end
 end
