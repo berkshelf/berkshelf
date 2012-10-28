@@ -130,7 +130,7 @@ module Berkshelf
       scratch = download_files(cookbook.manifest)
 
       cb_path = File.join(destination, "#{name}-#{version}")
-      FileUtils.mv(scratch, cb_path, force: true)
+      move_file(scratch, cb_path)
 
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)

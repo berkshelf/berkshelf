@@ -53,7 +53,8 @@ module Berkshelf
       cb_path = File.join(destination, "#{name}-#{version}")
 
       self.class.unpack(downloaded_tf.path, dir)
-      FileUtils.mv(File.join(dir, name), cb_path, force: true)
+      
+      move_file(File.join(dir, name), cb_path)
 
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
