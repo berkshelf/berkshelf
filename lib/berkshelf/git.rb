@@ -4,8 +4,10 @@ require 'mixlib/shellout'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Git
-    GIT_REGEXP = URI.regexp(%w{ https git })
-    SSH_REGEXP = /(.+)@(.+):(.+)\.git/
+    GIT_REGEXP = URI.regexp(%w{ https git }).freeze
+    SSH_REGEXP = /(.+)@(.+):(.+)\.git/.freeze
+    HAS_QUOTE_RE = %r{\"}.freeze
+    HAS_SPACE_RE = %r{\s}.freeze
 
     class << self
       # @overload git(commands)
@@ -137,14 +139,11 @@ module Berkshelf
           @git_cmd ||= find_git
         end
 
-        HAS_QUOTE_RE = %r{\"}
-        HAS_SPACE_RE = %r{\s}
         def quote_cmd_arg(arg)
           return arg if HAS_QUOTE_RE.match(arg)
           return arg unless HAS_SPACE_RE.match(arg)
           "\"#{arg}\""
         end
-        
     end
   end
 end
