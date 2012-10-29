@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
 
+  s.add_runtime_dependency 'chozo', '>= 0.1.0'
   s.add_runtime_dependency 'ridley',  '>= 0.0.5'
   s.add_runtime_dependency 'solve',   '>= 0.4.0.rc1'
   s.add_runtime_dependency 'chef',    '~> 10.12'
