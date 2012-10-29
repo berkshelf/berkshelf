@@ -3,6 +3,7 @@ require 'chef/cookbook_version'
 require 'chef/knife'
 require 'chef/platform'
 
+require 'chozo/core_ext'
 require 'active_support/core_ext'
 require 'active_model'
 require 'archive/tar/minitar'
