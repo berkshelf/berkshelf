@@ -44,9 +44,11 @@ server, so be sure to configure a server safe for this task.
 See [here](https://github.com/tdegrunt/vagrant-chef-server-bootstrap) for a
 quick way to get a testing chef server up.
 
-# Authors and Contributors
+# Authors
 
-* Josiah Kiehl (<josiah@skirmisher.net>)
 * Jamie Winsor (<jamie@vialstudios.com>)
-* Erik Hollensbe (<erik@hollensbe.org>)
+* Josiah Kiehl (<josiah@skirmisher.net>)
 * Michael Ivey (<ivey@gweezlebur.com>)
+# Justin Campbell (<justin@justincampbell.me>)
+
+Thank you to all of our [Contributors](https://github.com/RiotGames/berkshelf/graphs/contributors), testers, and users.

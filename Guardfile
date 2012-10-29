@@ -1,5 +1,4 @@
 notification :off
-interactor :coolline
 
 guard 'spork' do
   watch('Gemfile')
