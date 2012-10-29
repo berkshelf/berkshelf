@@ -131,8 +131,32 @@ module Berkshelf
       )
     end
 
+    method_option :foodcritic,
+      type: :boolean,
+      desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+    method_option :scmversion,
+      type: :boolean,
+      desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"
+    method_option :no_bundler,
+      type: :boolean,
+      desc: "Skips generation of a Gemfile and other Bundler specific support"
+    method_option :vagrant,
+      type: :boolean,
+      hide: true
+    method_option :skip_vagrant,
+      type: :boolean,
+      desc: "Skips adding a Vagrantfile and adding supporting gems to the Gemfile"
+    method_option :git,
+      type: :boolean,
+      hide: true
+    method_option :skip_git,
+      type: :boolean,
+      desc: "Skips adding a .gitignore and running git init in the cookbook directory"
     desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf."
     def init(path = Dir.pwd)
+      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
+      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
+
       if File.chef_cookbook?(path)
         options[:chefignore] = true
         options[:metadata_entry] = true
@@ -184,7 +208,6 @@ module Berkshelf
     method_option :skip_git,
       type: :boolean,
       desc: "Skips adding a .gitignore and running git init in the cookbook directory"
-
     desc "cookbook NAME", "Create a skeleton for a new cookbook"
     def cookbook(name)
       Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
