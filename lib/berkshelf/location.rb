@@ -171,21 +171,6 @@ module Berkshelf
       MultiJson.dump(self.to_hash, pretty: true)
     end
 
-    # Fixes #140, which might be caused by this http://www.ruby-forum.com/topic/1044813
-    #
-    # When trying to move a file from src to dest using FileUtils.mv(src, dest),
-    # if we encounter Errno::EACCES, which seems to happen occasionally on Windows systems, 
-    # try to copy/delete the file instead of moving it.
-    # 
-    def move_file(src, dest)
-      begin
-        FileUtils.mv(src, dest, force: false)
-      rescue Errno::EACCES
-        FileUtils.cp_r(src, dest)
-        FileUtils.rm_rf(src)
-      end
-    end
-
     private
 
       def set_downloaded_status(state)
