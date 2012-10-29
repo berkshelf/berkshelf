@@ -8,13 +8,6 @@ require 'berkshelf'
 require 'thor/rake_compat'
 
 class Default < Thor
-  desc "ci", "Run all test suites"
-  def ci
-    ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
-    exec "rspec --tag ~chef_server --tag ~focus spec &&
-          cucumber --format progress --tags ~@chef_server"
-  end
-
   class Gem < Thor
     include Thor::RakeCompat
     Bundler::GemHelper.install_tasks
@@ -47,6 +40,13 @@ class Default < Thor
     def all
       invoke(:unit)
       invoke(:acceptance)
+    end
+
+    desc "ci", "Run all possible tests on Travis-CI"
+    def ci
+      ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
+      run "rspec --tag ~chef_server --tag ~focus --color --format=documentation spec"
+      run "cucumber --format pretty --tags ~@chef_server"
     end
 
     desc "unit", "Run unit tests"
