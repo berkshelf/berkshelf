@@ -56,7 +56,6 @@ module Berkshelf
         copy_file "chefignore", target.join("chefignore")
       end
 
-      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
       unless options[:skip_git]
         template "gitignore.erb", target.join(".gitignore")
 
@@ -79,7 +78,6 @@ module Berkshelf
         template "Gemfile.erb", target.join("Gemfile")
       end
 
-      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
       unless options[:skip_vagrant]
         template "Vagrantfile.erb", target.join("Vagrantfile")
         ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile")).invoke(:install)

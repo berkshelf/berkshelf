@@ -172,15 +172,24 @@ module Berkshelf
     method_option :no_bundler,
       type: :boolean,
       desc: "Skips generation of a Gemfile and other Bundler specific support"
+    method_option :vagrant,
+      type: :boolean,
+      hide: true
     method_option :skip_vagrant,
       type: :boolean,
       desc: "Skips adding a Vagrantfile and adding supporting gems to the Gemfile"
+    method_option :git,
+      type: :boolean,
+      hide: true
     method_option :skip_git,
       type: :boolean,
       desc: "Skips adding a .gitignore and running git init in the cookbook directory"
 
     desc "cookbook NAME", "Create a skeleton for a new cookbook"
     def cookbook(name)
+      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
+      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
+
       ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
     end
 
