@@ -4,4 +4,4 @@ rvm:
 matrix:
   allow_failures:
     - rvm: 1.9.2
-script: 'bundle exec thor ci'
+script: 'bundle exec thor spec:ci'
