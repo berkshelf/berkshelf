@@ -34,7 +34,10 @@ module Berkshelf
         cookbooks.each do |cb|
           dest = File.join(scratch, cb.cookbook_name, "/")
           FileUtils.mkdir_p(dest)
-          FileUtils.cp_r(Dir.glob(File.join(cb.path, "*")), dest)
+
+          # Dir.glob does not support backslash as a File separator
+          src = cb.path.to_s.gsub('\\', '/')
+          FileUtils.cp_r(Dir.glob(File.join(src, "*")), dest)
         end
 
         FileUtils.remove_dir(path, force: true)
