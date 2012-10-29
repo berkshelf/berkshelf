@@ -8,34 +8,6 @@ require 'berkshelf'
 require 'thor/rake_compat'
 
 class Default < Thor
-  include Thor::RakeCompat
-  Bundler::GemHelper.install_tasks
-
-  desc "build", "Build berkshelf-#{Berkshelf::VERSION}.gem into the pkg directory"
-  def build
-    Rake::Task["build"].execute
-  end
-
-  desc "install", "Build and install berkshelf-#{Berkshelf::VERSION}.gem into system gems"
-  def install
-    Rake::Task["install"].execute
-  end
-
-  desc "release", "Create tag v#{Berkshelf::VERSION} and build and push berkshelf-#{Berkshelf::VERSION}.gem to Rubygems"
-  def release
-    Rake::Task["release"].execute
-  end
-
-  desc "spec", "Run RSpec code examples"
-  def spec
-    exec "rspec --color --format=documentation spec"
-  end
-
-  desc "cucumber", "Run Cucumber features"
-  def cucumber
-    exec "cucumber --color --format progress --tags ~@no_run"
-  end
-
   desc "ci", "Run all test suites"
   def ci
     ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
@@ -43,8 +15,54 @@ class Default < Thor
           cucumber --format progress --tags ~@chef_server"
   end
 
+  class Gem < Thor
+    include Thor::RakeCompat
+    Bundler::GemHelper.install_tasks
+
+    namespace :gem
+
+    desc "build", "Build berkshelf-#{Berkshelf::VERSION}.gem into the pkg directory"
+    def build
+      Rake::Task["build"].execute
+    end
+
+    desc "release", "Create tag v#{Berkshelf::VERSION} and build and push berkshelf-#{Berkshelf::VERSION}.gem to Rubygems"
+    def release
+      Rake::Task["release"].execute
+    end
+
+    desc "install", "Build and install berkshelf-#{Berkshelf::VERSION}.gem into system gems"
+    def install
+      Rake::Task["install"].execute
+    end
+  end
+
+  class Spec < Thor
+    include Thor::Actions
+
+    namespace :spec
+    default_task :all
+
+    desc "all", "Run all tests"
+    def all
+      invoke(:unit)
+      invoke(:acceptance)
+    end
+
+    desc "unit", "Run unit tests"
+    def unit
+      run "rspec --color --format=documentation spec"
+    end
+
+    desc "acceptance", "Run acceptance tests"
+    def acceptance
+      run "cucumber --color --format pretty --tags ~@no_run"
+    end
+  end
+
   class VCR < Thor
     namespace :vcr
+    default_task :clean
 
     desc "clean", "clean VCR cassettes"
     def clean
