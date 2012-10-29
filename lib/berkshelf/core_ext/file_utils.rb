@@ -27,7 +27,7 @@ module FileUtils
     # @param [Hash] options
     #   @see {FileUtils::mv}
     def safe_mv(src, dest, options = {})
-      FileUtils.mv(src, dest, options)
+      FileUtils.old_mv(src, dest, options)
     rescue Errno::EACCES
       FileUtils.cp_r(src, dest)
       FileUtils.rm_rf(src)
