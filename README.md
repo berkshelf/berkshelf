@@ -49,6 +49,6 @@ quick way to get a testing chef server up.
 * Jamie Winsor (<jamie@vialstudios.com>)
 * Josiah Kiehl (<josiah@skirmisher.net>)
 * Michael Ivey (<ivey@gweezlebur.com>)
-# Justin Campbell (<justin@justincampbell.me>)
+* Justin Campbell (<justin@justincampbell.me>)
 
 Thank you to all of our [Contributors](https://github.com/RiotGames/berkshelf/graphs/contributors), testers, and users.
