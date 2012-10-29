@@ -5,7 +5,6 @@ require 'vcr'
 
 Spork.prefork do
   require 'rspec'
-  require 'simplecov'
   require 'pp'
   require 'json_spec'
   require 'webmock/rspec'
@@ -52,10 +51,6 @@ Spork.prefork do
     config.after(:each) do
       Berkshelf.ui.unmute!
     end
-  end
-
-  SimpleCov.start do
-    add_filter 'spec/'
   end
 
   def capture(stream)

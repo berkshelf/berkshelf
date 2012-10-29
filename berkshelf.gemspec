@@ -1,5 +1,4 @@
 # -*- encoding: utf-8; mode: ruby -*-
-
 require File.expand_path('../lib/berkshelf/version', __FILE__)
 
 Gem::Specification.new do |s|
@@ -38,23 +37,4 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'multi_json'
   s.add_runtime_dependency 'hashie'
   s.add_runtime_dependency 'activemodel'
-
-  s.add_development_dependency 'redcarpet'
-  s.add_development_dependency 'cucumber'
-  s.add_development_dependency 'vcr'
-  s.add_development_dependency 'webmock'
-  s.add_development_dependency 'aruba'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'json_spec'
-  s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'fuubar'
-  s.add_development_dependency 'spork'
-  s.add_development_dependency 'yard'
-  s.add_development_dependency 'guard'
-  s.add_development_dependency 'guard-rspec'
-  s.add_development_dependency 'guard-cucumber'
-  s.add_development_dependency 'guard-spork'
-  s.add_development_dependency 'guard-yard'
-  s.add_development_dependency 'coolline'
-  s.add_development_dependency 'rb-fsevent', '~> 0.9.1'
 end
