@@ -19,13 +19,11 @@ Given /^I do not have a Berksfile\.lock$/ do
 end
 
 Given /^I have a Berkshelf config file containing:$/ do |contents|
-  write_file File.expand_path("~/.berkshelf/config.json"), contents
+  Berkshelf::Config.new.from_json(contents).save
 end
 
 Given /^I do not have a Berkshelf config file$/ do
-  file = File.expand_path "~/.berkshelf/config.json"
-
-  remove_file file if File.exists? file
+  remove_file Berkshelf::Config.path if File.exists? Berkshelf::Config.path
 end
 
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|

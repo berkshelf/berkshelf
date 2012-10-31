@@ -91,7 +91,7 @@ module Berkshelf
     def to_s
       strings = ["Invalid configuration:"]
 
-      @errors.messages.each do |key, errors|
+      @errors.each do |key, errors|
         errors.each do |error|
           strings << "  #{key} #{error}"
         end
