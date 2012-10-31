@@ -44,7 +44,6 @@ module Berkshelf
   autoload :Uploader, 'berkshelf/uploader'
   autoload :Resolver, 'berkshelf/resolver'
   autoload :Config, 'berkshelf/config'
-  autoload :ConfigGenerator, 'berkshelf/config_generator'
   autoload :ConfigValidator, 'berkshelf/config_validator'
 
   require 'berkshelf/location'
