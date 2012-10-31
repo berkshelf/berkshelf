@@ -4,7 +4,7 @@ module Berkshelf
   # @author Justin Campbell <justin@justincampbell.me>
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Config < Chozo::Config::JSON
-    DEFAULT_PATH = "~/.berkshelf/config.json".freeze
+    FILENAME = "config.json".freeze
 
     class << self
       # @return [String, nil]
@@ -24,7 +24,7 @@ module Berkshelf
 
       # @return [String]
       def path
-        File.expand_path(ENV["BERKS_CONFIG"] || DEFAULT_PATH)
+        File.join(Berkshelf.berkshelf_path, FILENAME)
       end
     end
 
@@ -36,10 +36,12 @@ module Berkshelf
       type: String
     attribute 'vagrant.vm.box',
       type: String,
-      default: 'Berkshelf-CentOS-6.3-x86_64-minimal'
+      default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
+      required: true
     attribute 'vagrant.vm.box_url',
       type: String,
-      default: 'https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box'
+      default: 'https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box',
+      required: true
     attribute 'vagrant.vm.forward_port',
       type: Hash
     attribute 'vagrant.vm.network.bridged',
