@@ -27,11 +27,6 @@ module Berkshelf
     map 'ver'       => :version
     map 'book'      => :cookbook
 
-    desc "config", "Generate a default Berkshelf configuration file"
-    def config
-      ConfigGenerator.new.invoke_all
-    end
-
     class_option :config,
       type: :string,
       default: Berkshelf::DEFAULT_CONFIG,
@@ -44,6 +39,11 @@ module Berkshelf
       desc: "Output format to use.",
       aliases: "-F",
       banner: "FORMAT"
+
+    desc "config", "Generate a default Berkshelf configuration file"
+    def config
+      Berkshelf::Config.new(Config.path).save
+    end
 
     method_option :except,
       type: :array,

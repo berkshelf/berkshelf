@@ -1,29 +1,16 @@
+require 'chozo/config'
+
 module Berkshelf
   # @author Justin Campbell <justin@justincampbell.me>
-  class Config < Hashie::Mash
-    DEFAULT_PATH = "~/.berkshelf/config.json"
-
-    include ActiveModel::Validations
-    validates_with ConfigValidator
+  # @author Jamie Winsor <jamie@vialstudios.com>
+  class Config < Chozo::Config::JSON
+    DEFAULT_PATH = "~/.berkshelf/config.json".freeze
 
     class << self
       # @return [String, nil]
       #   the contents of the file
       def file
-        File.read path if File.exists? path
-      end
-
-      # @param [#to_s] json
-      #
-      # @return [Config]
-      def from_json(json)
-        hash = JSON.parse(json).to_hash
-
-        new.tap do |config|
-          hash.each do |key, value|
-            config[key] = value
-          end
-        end
+        File.read(path) if File.exists?(path)
       end
 
       # @return [Config]
@@ -37,15 +24,32 @@ module Berkshelf
 
       # @return [String]
       def path
-        File.expand_path DEFAULT_PATH
+        File.expand_path(ENV["BERKS_CONFIG"] || DEFAULT_PATH)
       end
     end
 
-    # @param [String, Symbol] key
-    #
-    # @return [Config, Object]
-    def [](key)
-      super or self.class.new
-    end
+    attribute 'vagrant.chef.chef_server_url',
+      type: String
+    attribute 'vagrant.chef.validation_client_name',
+      type: String
+    attribute 'vagrant.chef.validation_key_path',
+      type: String
+    attribute 'vagrant.vm.box',
+      type: String,
+      default: 'Berkshelf-CentOS-6.3-x86_64-minimal'
+    attribute 'vagrant.vm.box_url',
+      type: String,
+      default: 'https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box'
+    attribute 'vagrant.vm.forward_port',
+      type: Hash
+    attribute 'vagrant.vm.network.bridged',
+      type: Boolean,
+      default: true
+    attribute 'vagrant.vm.network.hostonly',
+      type: String,
+      default: '33.33.33.10'
+    attribute 'vagrant.vm.provision',
+      type: String,
+      default: 'chef_solo'
   end
 end
