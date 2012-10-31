@@ -28,6 +28,10 @@ module Berkshelf
       end
     end
 
+    def initialize(path = self.class.path, options = {})
+      super(path, options)
+    end
+
     attribute 'vagrant.chef.chef_server_url',
       type: String
     attribute 'vagrant.chef.validation_client_name',
