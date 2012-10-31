@@ -213,6 +213,10 @@ module Berkshelf
       Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
       Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
 
+      unless Config.instance.valid?
+        raise InvalidConfiguration.new(Config.instance.errors)
+      end
+
       ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
     end
 

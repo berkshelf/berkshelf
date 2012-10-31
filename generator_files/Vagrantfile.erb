@@ -27,12 +27,7 @@ Vagrant::Config.run do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-<% if options[:berkshelf_config][:vagrant][:vm][:box].present? -%>
-  config.vm.host_name = "<%= options[:berkshelf_config][:vagrant][:vm][:host_name] %>"
-<% else -%>
   config.vm.host_name = "<%= "#{cookbook_name}-berkshelf" %>"
-<% end -%>
-
 
   # CentOS 6.3
 <% if options[:berkshelf_config][:vagrant][:vm][:box].present? -%>
@@ -61,14 +56,14 @@ Vagrant::Config.run do |config|
   # Assign this VM to a bridged network, allowing you to connect directly to a
   # network using the host's network device. This makes the VM appear as another
   # physical device on your network.
-  <% unless options[:berkshelf_config][:vagrant][:vm][:network][:bridged].present? %># <% end %>config.vm.network :bridged
+  <% unless options[:berkshelf_config][:vagrant][:vm][:network][:bridged].present? %># <% end -%>config.vm.network :bridged
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
   # config.vm.forward_port 80, 8080
 <% options[:berkshelf_config][:vagrant][:vm][:forward_port].each do |guest, host| %>
   config.vm.forward_port <%= guest %>, <%= host %>
-<% end if options[:berkshelf_config][:vagrant][:vm][:forward_port].present? %>
+<% end if options[:berkshelf_config][:vagrant][:vm][:forward_port].present? -%>
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
