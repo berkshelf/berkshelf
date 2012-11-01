@@ -8,17 +8,6 @@ Vagrant::Config.run do |config|
   # The path to the Berksfile to use with Vagrant Berkshelf
   # config.berkshelf.berksfile_path = "./Berksfile"
 
-  # The path to the Knife config to use with Vagrant Berkshelf
-  # config.berkshelf.config_path = "~/.chef/knife.rb"
-
-  # A client name (node_name) to use with the Chef Client provisioner to upload
-  # cookbooks installed by Berkshelf.
-  # config.berkshelf.node_name = "reset"
-
-  # A path to a client key on disk to use with the Chef Client provisioner to
-  # upload cookbooks installed by Berkshelf.
-  # config.berkshelf.client_key = "~/.chef/reset.pem"
-
   # An array of symbols representing groups of cookbook described in the Vagrantfile
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.only = []
@@ -71,9 +60,9 @@ Vagrant::Config.run do |config|
 
 <% if options[:berkshelf_config].vagrant.vm.provision == "chef_client" -%>
   config.vm.provision :chef_client do |chef|
-    chef.chef_server_url = "<%= options[:berkshelf_config].vagrant.chef.chef_server_url %>"
-    chef.validation_client_name = "<%= options[:berkshelf_config].vagrant.chef.validation_client_name %>"
-    chef.validation_key_path = "<%= options[:berkshelf_config].vagrant.chef.validation_key_path %>"
+    chef.chef_server_url = "<%= options[:berkshelf_config].chef.chef_server_url %>"
+    chef.validation_client_name = "<%= options[:berkshelf_config].chef.validation_client_name %>"
+    chef.validation_key_path = "<%= options[:berkshelf_config].chef.validation_key_path %>"
 
     chef.run_list = [
       "recipe[<%= cookbook_name %>::default]"

@@ -56,15 +56,21 @@ module Berkshelf
       super(path, options)
     end
 
-    attribute 'vagrant.chef.chef_server_url',
+    attribute 'chef.chef_server_url',
       type: String,
       default: chef_config[:chef_server_url]
-    attribute 'vagrant.chef.validation_client_name',
+    attribute 'chef.validation_client_name',
       type: String,
       default: chef_config[:validation_client_name]
-    attribute 'vagrant.chef.validation_key_path',
+    attribute 'chef.validation_key_path',
       type: String,
       default: chef_config[:validation_key]
+    attribute 'chef.client_key',
+      type: String,
+      default: chef_config[:client_key]
+    attribute 'chef.node_name',
+      type: String,
+      default: chef_config[:node_name]
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
@@ -85,5 +91,8 @@ module Berkshelf
     attribute 'vagrant.vm.provision',
       type: String,
       default: 'chef_solo'
+    attribute 'ssl.verify',
+      type: Boolean,
+      default: true
   end
 end

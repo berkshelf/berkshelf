@@ -17,11 +17,11 @@ Feature: configure command
       """
     And the exit status should be 0
     And a Berkshelf config file should exist and contain:
-      | vagrant.chef.chef_server_url        | https://api.opscode.com/organizations/vialstudios |
-      | vagrant.chef.validation_client_name | reset                                             |
-      | vagrant.chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
-      | vagrant.vm.box                      | Berkshelf-minimal                                 |
-      | vagrant.vm.box_url                  | https://dl.dropbox.com/Berkshelf.box              |
+      | chef.chef_server_url        | https://api.opscode.com/organizations/vialstudios |
+      | chef.validation_client_name | reset                                             |
+      | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
+      | vagrant.vm.box              | Berkshelf-minimal                                 |
+      | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
 
   Scenario: generating a config with default values
     Given I do not have a Berkshelf config file
@@ -37,11 +37,11 @@ Feature: configure command
       """
     And the exit status should be 0
     And a Berkshelf config file should exist and contain:
-      | vagrant.chef.chef_server_url        | http://localhost:4000               |
-      | vagrant.chef.validation_client_name | chef-validator                      |
-      | vagrant.chef.validation_key_path    | /etc/chef/validation.pem            |
-      | vagrant.vm.box                      | Berkshelf-CentOS-6.3-x86_64-minimal |
-      | vagrant.vm.box_url                  | https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box |
+      | chef.chef_server_url        | http://localhost:4000               |
+      | chef.validation_client_name | chef-validator                      |
+      | chef.validation_key_path    | /etc/chef/validation.pem            |
+      | vagrant.vm.box              | Berkshelf-CentOS-6.3-x86_64-minimal |
+      | vagrant.vm.box_url          | https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box |
 
   Scenario: attempting to generate a new config when one already exists
     Given I have a default Berkshelf config file

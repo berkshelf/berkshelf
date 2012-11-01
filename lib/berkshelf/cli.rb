@@ -55,9 +55,9 @@ module Berkshelf
       @config = Berkshelf::Config.new(path)
 
       [
-        "vagrant.chef.chef_server_url",
-        "vagrant.chef.validation_client_name",
-        "vagrant.chef.validation_key_path",
+        "chef.chef_server_url",
+        "chef.validation_client_name",
+        "chef.validation_key_path",
         "vagrant.vm.box",
         "vagrant.vm.box_url",
       ].each do |attribute|
