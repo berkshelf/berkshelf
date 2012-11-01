@@ -44,7 +44,7 @@ module Berkshelf
       type: :boolean,
       default: false,
       desc: "create a new configuration file even if one already exists."
-    desc "configure", "create a new configuration file based on a set of interactive questions"
+    desc "configure", "Create a new configuration file to customize Berkshelf's behavior"
     def configure(path = Berkshelf::Config.path)
       path = File.expand_path(path)
 
@@ -102,7 +102,7 @@ module Berkshelf
       desc: "Path to install cookbooks to (i.e. vendor/cookbooks).",
       aliases: "-p",
       banner: "PATH"
-    desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock."
+    desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock"
     def install
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
@@ -122,7 +122,7 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
-    desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions."
+    desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
     def update
       Lockfile.remove!
       invoke :install
@@ -154,7 +154,7 @@ module Berkshelf
       type: :boolean,
       default: true,
       desc: "Disable/Enable SSL verification when uploading cookbooks"
-    desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server."
+    desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
     def upload
       Berkshelf.load_config 
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
@@ -190,7 +190,7 @@ module Berkshelf
     method_option :skip_git,
       type: :boolean,
       desc: "Skips adding a .gitignore and running git init in the cookbook directory"
-    desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf."
+    desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf"
     def init(path = Dir.pwd)
       Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
       Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
