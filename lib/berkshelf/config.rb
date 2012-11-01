@@ -26,21 +26,45 @@ module Berkshelf
       def path
         File.join(Berkshelf.berkshelf_path, FILENAME)
       end
+
+      # @return [String]
+      def chef_config_path
+        @chef_config_path ||= File.expand_path(ENV["BERKSHELF_CHEF_CONFIG"] || "~/.chef/knife.rb")
+      end
+
+      # @param [String] value
+      def chef_config_path=(value)
+        @chef_config = nil
+        @chef_config_path = value
+      end
+
+      # @return [Chef::Config]
+      def chef_config
+        @chef_config ||= begin
+          Chef::Config.from_file(File.expand_path(chef_config_path))
+          Chef::Config
+        rescue
+          Chef::Config
+        end
+      end
     end
 
+    # @param [String] path
+    # @param [Hash] options
+    #   @see {Chozo::Config::JSON}
     def initialize(path = self.class.path, options = {})
       super(path, options)
     end
 
     attribute 'vagrant.chef.chef_server_url',
       type: String,
-      default: Chef::Config[:chef_server_url]
+      default: chef_config[:chef_server_url]
     attribute 'vagrant.chef.validation_client_name',
       type: String,
-      default: Chef::Config[:validation_client_name]
+      default: chef_config[:validation_client_name]
     attribute 'vagrant.chef.validation_key_path',
       type: String,
-      default: Chef::Config[:validation_key]
+      default: chef_config[:validation_key]
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
