@@ -40,11 +40,6 @@ module Berkshelf
       aliases: "-F",
       banner: "FORMAT"
 
-    desc "config", "Generate a default Berkshelf configuration file"
-    def config
-      Berkshelf::Config.new(Config.path).save
-    end
-
     method_option :force,
       type: :boolean,
       default: false,

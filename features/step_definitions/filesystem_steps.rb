@@ -236,9 +236,3 @@ end
 Then /^the current directory should not have the following files:$/ do |files|
   check_file_presence(files.raw.map{|file_row| file_row[0]}, false)
 end
-
-Then /^I should have a Berkshelf config file$/ do
-  Pathname.new(ENV['HOME']).join(".berkshelf").should have_structure {
-    file "config.json"
-  }
-end
