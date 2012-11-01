@@ -6,28 +6,7 @@ describe Berkshelf::Config do
   let(:config) { klass.new }
   let(:klass) { described_class }
 
-  it { should be_valid }
-
-  its(:present?) { should be_false }
-
-  it "set and gets hash keys" do
-    config[:a] = 1
-    config[:a].should == 1
-  end
-
-  it "does not raise an error for nested hash keys that have not been set" do
-    config[:d][:e]
-  end
-
-  it "has indifferent access" do
-    config[:a] = 1
-    config['b'] = 2
-
-    config['a'].should == 1
-    config[:b].should == 2
-  end
-
-  describe ".file" do
+  describe "::file" do
     subject { klass.file }
 
     context "when the file does not exist" do
@@ -39,53 +18,21 @@ describe Berkshelf::Config do
     end
   end
 
-  describe ".from_json" do
-    subject(:config) { klass.from_json json }
-
-    let(:json) {
-      <<-JSON
-        {
-          "a": 1,
-          "b": {
-            "c": 2
-          }
-        }
-      JSON
-    }
-
-    it "has data" do
-      config[:a].should == 1
-    end
-
-    it "has nested data" do
-      config[:b][:c].should == 2
-    end
-
-    it "does not raise an error for nested hash keys that have not been set" do
-      config[:d][:e]
-    end
-
-    it "has indifferent access" do
-      config['a'].should == 1
-      config[:a].should == 1
-    end
-
-    context "with an invalid configuration" do
-      let(:json) { '{ "wat": 1 }' }
-
-      it { should_not be_valid }
-    end
-  end
-
-  describe ".instance" do
+  describe "::instance" do
     subject { klass.instance }
 
     it { should be_a klass }
   end
 
-  describe ".path" do
+  describe "::path" do
     subject { klass.path }
 
     it { should be_a String }
+
+    it "points to a location within ENV['BERKSHELF_PATH']" do
+      ENV.stub(:[]).with('BERKSHELF_PATH').and_return('/tmp')
+
+      subject.should eql("/tmp/config.json")
+    end
   end
 end

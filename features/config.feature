@@ -7,7 +7,6 @@ Feature: cookbook creation with a config file
     Given I do not have a Berkshelf config file
     When I run the cookbook command to create "sparkle_motion"
     Then the resulting "sparkle_motion" Vagrantfile should contain:
-      | config.vm.host_name = "sparkle_motion-berkshelf" |
       | config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal" |
       | config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box" |
     And the exit status should be 0
@@ -23,7 +22,6 @@ Feature: cookbook creation with a config file
           "forward_port": {
             "12345": "54321"
           },
-          "host_name": "my_host",
           "network": {
             "bridged": true,
             "hostonly": "12.34.56.78"
@@ -37,7 +35,6 @@ Feature: cookbook creation with a config file
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
       | config.vm.forward_port 12345, 54321 |
-      | config.vm.host_name = "my_host" |
       | config.vm.network :hostonly, "12.34.56.78" |
       | config.vm.network :bridged |
     And the exit status should be 0
@@ -64,12 +61,15 @@ Feature: cookbook creation with a config file
     Given I have a Berkshelf config file containing:
     """
     {
-      "wat": null
+      "vagrant": null
     }
     """
     When I run the cookbook command to create "sparkle_motion"
     Then the output should contain "Invalid configuration"
-    And the output should contain "wat is not a valid key"
+    And the output should contain "vagrant.vm.box Expected attribute: 'vagrant.vm.box' to be a type of: 'String'"
+    And the output should contain "vagrant.vm.box A value is required for attribute: 'vagrant.vm.box'"
+    And the output should contain "vagrant.vm.box_url Expected attribute: 'vagrant.vm.box_url' to be a type of: 'String'"
+    And the output should contain "vagrant.vm.box_url A value is required for attribute: 'vagrant.vm.box_url'"
     And the CLI should exit with the status code for error "InvalidConfiguration"
 
   Scenario: creating a new cookbook with a chef client config
