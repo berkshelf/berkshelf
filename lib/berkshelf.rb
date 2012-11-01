@@ -5,7 +5,6 @@ require 'chef/platform'
 
 require 'chozo/core_ext'
 require 'active_support/core_ext'
-require 'active_model'
 require 'archive/tar/minitar'
 require 'forwardable'
 require 'hashie'
