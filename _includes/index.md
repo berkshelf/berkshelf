@@ -55,6 +55,64 @@ You can easily install your Cookbooks and their dependencies to a location other
 
 This will install your Cookbooks to the `vendor/cookbooks` directory relative to where you ran the command from. Inside the vendored cookbooks directory you will find a directory named after the cookbook it contains.
 
+## Configuring Berkshelf
+
+Berkshelf will run with a default configuration unless you explicitly generate one. The configuration will attempt to populate itself with values found in your Knife configuration (if you have one) and fill in the rest with other sensible defaults. 
+
+You can configure Berkshelf to your liking with the `configure` command
+
+    $ berks configure
+
+Answer each question prompt with a value or just press enter to accept the default value.
+
+    Config written to: '/Users/reset/.berkshelf/config.json'
+
+You will only be prompted to fill in the most travelled configuration options. Looking in the generated configuration will give you some insight to some other configurable values.
+
+    {
+      "chef": {
+        "chef_server_url": "https://api.opscode.com/organizations/vialstudios",
+        "validation_client_name": "chef-validator",
+        "validation_key_path": "/etc/chef/validation.pem",
+        "client_key": "/Users/reset/.chef/reset.pem",
+        "node_name": "reset"
+      },
+      "vagrant": {
+        "vm": {
+          "box": "Berkshelf-CentOS-6.3-x86_64-minimal",
+          "box_url": "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box",
+          "forward_port": {
+
+          },
+          "network": {
+            "bridged": true,
+            "hostonly": "33.33.33.10"
+          },
+          "provision": "chef_solo"
+        }
+      },
+      "ssl": {
+        "verify": true
+      }
+    }
+
+### Configurable options
+
+* `chef.chef_server_url` - URL to a Chef Server API endpoint. This will automatically be filled in by your Knife configuration if you have one.
+* `chef.node_name` - your Chef API client name. This will automatically be filled in by your Knife configuration if you have one.
+* `chef.client_key` - filepath to your Chef API client key. This will automatically be filled in by your Knife configuration if you have one.
+* `chef.validation_client_name` - your Chef API's validation client name. This will automatically be filled in by your Knife configuration if you have one.
+* `chef.validation_key_path` - filepath to your Chef API's validation key. This will automatically be filled in by your knife configuration if you have one.
+* `vagrant.vm.box` - name of the VirtualBox box to use when provisioning Vagrant virtual machines.
+* `vagrant.vm.box_url` - URL to the VirtualBox box
+* `vagrant.vm.forward_port` - a Hash of ports to forward where the key is the port to forward to on the guest and value is the host port which forwards to the guest on your host.
+* `vagrant.vm.network.bridged` - use a bridged connection to connect to your virtual machine?
+* `vagrant.vm.network.hostonly` - use a hostonly network for your virtual machine?
+* `vagrant.vm.provision` - use the `chef_solo` or `chef_client` provisioner?
+* `ssl.verify` - should we verify all SSL http connections?
+
+> The configuration values are notated in 'dotted path' format. These translate to a nested JSON structure.
+
 ## Vagrant with Berkshelf 
 
 Berkshelf was designed for iterating on cookbooks and applications quickly. [Vagrant](http://vagrantup.com) provides us with a way to spin up a virtual environment and configure it using a built-in Chef provisioner. If you have never used Vagrant before - stop now - read the Vagrant documentation and give it a try. Your cookbook development life is about to become 100% better.
@@ -71,19 +129,15 @@ Berkshelf ships with a Vagrant plugin that integrates the Berkshelf development 
       ...
     end
 
-If you are using Bundler to install Vagrant and Berkshelf, the explicit require can be ommitted: Vagrant will be aware of the Berkshelf plugin when the Vagrant command is run with bundle exec
-
-    $ bundle exec vagrant <command>
-
 When a Vagrant virutal machine is provisioned or "upped" Berkshelf will be invoked and take care of all the necessary steps to get your cookbooks and their dependencies made available to Vagrant.
 
     $ bundle exec vagrant provision
     [default] [Berkshelf] installing cookbooks
     ...
 
-Cookbooks will be made available through a mounted drive when the Chef-Solo provisioner is used. There is no need to explicitly set a value for the Chef-Solo provisioner's `cookbook_path` attribute.
+Cookbooks will be made available through a mounted drive when the Chef-Solo provisioner is used. There is no need to explicitly set a value for the `chef_solo` provisioner's `cookbook_path` attribute.
 
-If the Chef Server provisioner is used, cookbooks will be uploaded to a Chef Server before the provisioning process begins.
+If the `chef_client` provisioner is used, cookbooks will be uploaded to a Chef Server before the provisioning process begins.
 
 #### Setting a Berksfile location
 
