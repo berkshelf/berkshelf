@@ -86,9 +86,9 @@ module Berkshelf
     # @param [Hash] options
     #
     # @option options [String, Symbol] :chef_api
-    #   a URL to a Chef API. Alternatively the symbol :knife can be provided
+    #   a URL to a Chef API. Alternatively the symbol :config can be provided
     #   which will instantiate this location with the values found in your
-    #   knife configuration.
+    #   Berkshelf configuration.
     # @option options [String] :node_name
     #   the name of the client to use to communicate with the Chef API.
     #   Default: Chef::Config[:node_name]
@@ -100,13 +100,18 @@ module Berkshelf
       @version_constraint = version_constraint
       @downloaded_status  = false
 
+      if options[:chef_api] == :knife
+        Berkshelf.formatter.deprecation "specifying 'chef_api :knife' is deprecated. Please use 'chef_api :config'."
+        options[:chef_api] = :config
+      end
+
       validate_options!(options)
 
-      if options[:chef_api] == :knife
+      if options[:chef_api] == :config
         unless Berkshelf::Config.instance.chef.node_name.present? &&
           Berkshelf::Config.instance.chef.client_key.present? &&
           Berkshelf::Config.instance.chef.chef_server_url.present?
-          raise KnifeConfigNotFound, "A Knife config is required when ':knife' is given for the value of a 'chef_api' location."
+          raise ConfigurationError, "A Berkshelf configuration is required with a 'chef.client_key', 'chef.chef_server_Url', and 'chef.node_name' setting to install or upload cookbooks using 'chef_api :config'."
         end
         @node_name  = Berkshelf::Config.instance.chef.node_name
         @client_key = Berkshelf::Config.instance.chef.client_key
@@ -250,7 +255,7 @@ module Berkshelf
       # @raise [InvalidChefAPILocation] if any of the options are missing or their values do not
       #   pass validation
       def validate_options!(options)
-        if options[:chef_api] == :knife
+        if options[:chef_api] == :config
           return true
         end
 

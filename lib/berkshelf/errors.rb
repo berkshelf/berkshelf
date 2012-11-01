@@ -41,7 +41,7 @@ module Berkshelf
   class NoSolution < BerkshelfError; status_code(106); end
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
   class UploadFailure < BerkshelfError; status_code(108); end
-  class KnifeConfigNotFound < BerkshelfError; status_code(109); end
+  class BerksConfigNotFound < BerkshelfError; status_code(109); end
 
   class InvalidGitURI < BerkshelfError
     status_code(110)
@@ -102,4 +102,5 @@ module Berkshelf
   end
 
   class ConfigExists < BerkshelfError; status_code(116); end
+  class ConfigurationError < BerkshelfError; status_code(117); end
 end
