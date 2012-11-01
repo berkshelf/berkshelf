@@ -45,6 +45,28 @@ module Berkshelf
       Berkshelf::Config.new(Config.path).save
     end
 
+    method_option :force,
+      type: :boolean,
+      default: false,
+      desc: "create a new configuration file even if one already exists."
+    desc "configure", "create a new configuration file based on a set of interactive questions"
+    def configure(path = Berkshelf::Config.path)
+      path = File.expand_path(path)
+
+      if File.exist?(path) && !options[:force]
+        raise Berkshelf::ConfigExists, "A configuration file already exists. Re-run with the --force flag if you wish to overwrite it."
+      end
+
+      @config = Berkshelf::Config.new(path)
+      @config.class.attributes.dotted_paths.each do |attribute|
+        input = Berkshelf.ui.ask("Enter #{attribute}: ")
+        @config.set_attribute(attribute, input)
+      end
+      @config.save
+
+      Berkshelf.formatter.msg "Config written to: '#{path}'"
+    end
+
     method_option :except,
       type: :array,
       desc: "Exclude cookbooks that are in these groups.",

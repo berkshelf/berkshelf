@@ -100,4 +100,6 @@ module Berkshelf
       strings.join "\n"
     end
   end
+
+  class ConfigExists < BerkshelfError; status_code(116); end
 end
