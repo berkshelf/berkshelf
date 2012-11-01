@@ -58,10 +58,31 @@ module Berkshelf
       end
 
       @config = Berkshelf::Config.new(path)
-      @config.class.attributes.dotted_paths.each do |attribute|
-        input = Berkshelf.ui.ask("Enter #{attribute}: ")
-        @config.set_attribute(attribute, input)
+
+      [
+        "vagrant.chef.chef_server_url",
+        "vagrant.chef.validation_client_name",
+        "vagrant.chef.validation_key_path",
+        "vagrant.vm.box",
+        "vagrant.vm.box_url",
+      ].each do |attribute|
+        default = @config.get_attribute(attribute)
+
+        message = "Enter value for #{attribute}"
+        message << " (default: '#{default}')" if default
+        message << ": "
+
+        input = Berkshelf.ui.ask(message)
+
+        if input.present?
+          @config.set_attribute(attribute, input)
+        end
       end
+
+      unless @config.valid?
+        raise InvalidConfiguration.new(@config.errors)
+      end
+
       @config.save
 
       Berkshelf.formatter.msg "Config written to: '#{path}'"
