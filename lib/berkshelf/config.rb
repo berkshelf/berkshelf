@@ -33,11 +33,14 @@ module Berkshelf
     end
 
     attribute 'vagrant.chef.chef_server_url',
-      type: String
+      type: String,
+      default: Chef::Config[:chef_server_url]
     attribute 'vagrant.chef.validation_client_name',
-      type: String
+      type: String,
+      default: Chef::Config[:validation_client_name]
     attribute 'vagrant.chef.validation_key_path',
-      type: String
+      type: String,
+      default: Chef::Config[:validation_key]
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',

@@ -18,7 +18,7 @@ Given /^I do not have a Berksfile\.lock$/ do
   in_current_dir { FileUtils.rm_f(Berkshelf::Lockfile::DEFAULT_FILENAME) }
 end
 
-Given /^I have a default Berkshelf config file$/ do |contents|
+Given /^I have a default Berkshelf config file$/ do
   Berkshelf::Config.new.save
 end
 
