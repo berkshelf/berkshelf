@@ -18,6 +18,10 @@ Given /^I do not have a Berksfile\.lock$/ do
   in_current_dir { FileUtils.rm_f(Berkshelf::Lockfile::DEFAULT_FILENAME) }
 end
 
+Given /^I have a default Berkshelf config file$/ do |contents|
+  Berkshelf::Config.new.save
+end
+
 Given /^I have a Berkshelf config file containing:$/ do |contents|
   Berkshelf::Config.new.from_json(contents).save
 end
