@@ -7,24 +7,11 @@ module Berkshelf
     FILENAME = "config.json".freeze
 
     class << self
-      # @return [String, nil]
-      #   the contents of the file
-      def file
-        File.read(path) if File.exists?(path)
-      end
-
-      # @return [Config]
-      def instance
-        @instance ||= if file
-          from_json file
-        else
-          new
-        end
-      end
+      attr_writer :path
 
       # @return [String]
       def path
-        File.join(Berkshelf.berkshelf_path, FILENAME)
+        @config ||= File.join(Berkshelf.berkshelf_path, FILENAME)
       end
 
       # @return [String]
@@ -45,6 +32,21 @@ module Berkshelf
           Chef::Config
         rescue
           Chef::Config
+        end
+      end
+
+      # @return [String, nil]
+      #   the contents of the file
+      def file
+        File.read(path) if File.exists?(path)
+      end
+
+      # @return [Config]
+      def instance
+        @instance ||= if file
+          from_json file
+        else
+          new
         end
       end
     end

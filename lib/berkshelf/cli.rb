@@ -14,7 +14,7 @@ module Berkshelf
     
     def initialize(*args)
       super(*args)
-      Berkshelf.config_path = @options[:config]
+      Berkshelf::Config.path = @options[:config]
       Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
@@ -29,8 +29,8 @@ module Berkshelf
 
     class_option :config,
       type: :string,
-      default: Berkshelf::DEFAULT_CONFIG,
-      desc: "Path to Knife or Chef configuration to use.",
+      default: Berkshelf::Config.path,
+      desc: "Path to Berkshelf configuration to use.",
       aliases: "-c",
       banner: "PATH"
     class_option :format,
@@ -156,15 +156,14 @@ module Berkshelf
       desc: "Disable/Enable SSL verification when uploading cookbooks"
     desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
     def upload
-      Berkshelf.load_config 
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
       berksfile.upload(
-        server_url: Chef::Config[:chef_server_url],
-        client_name: Chef::Config[:node_name],
-        client_key: Chef::Config[:client_key],
+        server_url: Berkshelf::Config.instance.chef.chef_server_url,
+        client_name: Berkshelf::Config.instance.chef.node_name,
+        client_key: Berkshelf::Config.instance.chef.client_key,
         ssl: {
-          verify: options[:ssl_verify]
+          verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify)
         }
       )
     end

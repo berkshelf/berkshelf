@@ -25,7 +25,6 @@ require 'thor/monkies'
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
 module Berkshelf
-  DEFAULT_CONFIG = File.expand_path(ENV["CHEF_CONFIG"] || "~/.chef/knife.rb")
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
@@ -50,7 +49,6 @@ module Berkshelf
   class << self
     attr_accessor :ui
     
-    attr_writer :config_path
     attr_writer :cookbook_store
 
     # @return [Pathname]
@@ -95,21 +93,6 @@ module Berkshelf
     # @return [Berkshelf::CookbookStore]
     def cookbook_store
       @cookbook_store ||= CookbookStore.new(cookbooks_dir)
-    end
-
-    # @return [String]
-    def config_path
-      @config_path ||= DEFAULT_CONFIG
-    end
-
-    # Load the config found at the given path as the Chef::Config. If no path is specified
-    # the value of Berkshelf.chef_config will be used.
-    #
-    # @param [String] path
-    def load_config(path = config_path)
-      Chef::Config.from_file(File.expand_path(path))
-    rescue Errno::ENOENT
-      raise KnifeConfigNotFound, "Attempted to load configuration from: '#{path}' but not found."
     end
 
     # Ascend the directory structure from the given path to find a
