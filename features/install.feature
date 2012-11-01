@@ -198,7 +198,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a cookbook definition containing a chef_api source location
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", "= 0.10.2", chef_api: :knife
+      cookbook "artifact", "= 0.10.2", chef_api: :config
       """
     And the Chef server has cookbooks:
       | artifact | 0.10.2 |
@@ -211,18 +211,18 @@ Feature: install cookbooks from a Berksfile
       | artifact | 0.10.2 |
     And the exit status should be 0
 
-  Scenario: with a chef_api source location specifying :knife when a Knife config is not found at the given path
+  Scenario: with a chef_api source location specifying :config when a Berkshelf config is not found at the given path
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", chef_api: :knife
+      cookbook "artifact", chef_api: :config
       """
     When I run the install command with flags:
-      | -c /tmp/nothere.lol |
+      | -c /tmp/notthere.lol |
     Then the output should contain:
       """
-      A Knife config is required when ':knife' is given for the value of a 'chef_api' location. Attempted to load configuration from: '/tmp/nothere.lol' but not found.
+      You specified a path to a configuration file that did not exist: '/tmp/notthere.lol'
       """
-    And the CLI should exit with the status code for error "KnifeConfigNotFound"
+    And the CLI should exit with the status code for error "BerksConfigNotFound"
 
   Scenario: with a chef_api source location specifying a Chef API URL but missing a node_name option
     Given I write to "Berksfile" with:

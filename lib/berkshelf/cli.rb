@@ -14,7 +14,14 @@ module Berkshelf
     
     def initialize(*args)
       super(*args)
-      Berkshelf::Config.path = @options[:config]
+
+      if @options[:config]
+        unless File.exist?(@options[:config])
+          raise BerksConfigNotFound, "You specified a path to a configuration file that did not exist: '#{@options[:config]}'"
+        end
+        Berkshelf::Config.path = @options[:config]
+      end
+
       Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
@@ -29,7 +36,6 @@ module Berkshelf
 
     class_option :config,
       type: :string,
-      default: Berkshelf::Config.path,
       desc: "Path to Berkshelf configuration to use.",
       aliases: "-c",
       banner: "PATH"
@@ -160,6 +166,18 @@ module Berkshelf
     def upload
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
+      unless Berkshelf::Config.instance.chef.chef_server_url.present?
+        msg = "Could not upload cookbooks: Missing Chef server_url."
+        msg << " Generate or update your Berkshelf configuration that contains a valid Chef Server URL."
+        raise UploadFailure, msg
+      end
+
+      unless Berkshelf::Config.instance.chef.node_name.present?
+        msg = "Could not upload cookbooks: Missing Chef node_name."
+        msg << " Generate or update your Berkshelf configuration that contains a valid Chef node_name."
+        raise UploadFailure, msg
+      end
+
       berksfile.upload(
         server_url: Berkshelf::Config.instance.chef.chef_server_url,
         client_name: Berkshelf::Config.instance.chef.node_name,
@@ -168,6 +186,10 @@ module Berkshelf
           verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify)
         }
       )
+    rescue Ridley::Errors::ClientKeyFileNotFound => e
+      msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
+      msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
+      raise UploadFailure, msg
     end
 
     method_option :foodcritic,
