@@ -77,12 +77,6 @@ module Berkshelf
           it "uses the value of Chef::Config[:client_key] for the client_key attribute" do
             @loc.client_key.should eql(Chef::Config[:client_key])
           end
-
-          it "attempts to load the config file with no arguments" do
-            Berkshelf.should_receive(:load_config).with(no_args)
-
-            subject.new("nginx", constraint, chef_api: :knife)
-          end
         end
       end
 

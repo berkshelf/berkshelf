@@ -26,26 +26,6 @@ describe Berkshelf do
       end
     end
 
-    describe "::config_path" do
-      it "returns a default value if nothing is specified" do
-        subject.config_path.should eql(Berkshelf::DEFAULT_CONFIG)
-      end
-
-      it "returns the value assigned if specified" do
-        subject.config_path = value = "/Users/reset/.chef/knife.rb"
-
-        subject.config_path.should eql(value)
-      end
-    end
-
-    describe "::load_config" do
-      it "loads the path specified by config_path if no parameter given" do
-        Chef::Config.should_receive(:from_file).with(Berkshelf.config_path)
-
-        subject.load_config
-      end
-    end
-
     describe "::formatter" do
       context "with default formatter" do
         it "should be human readable" do
