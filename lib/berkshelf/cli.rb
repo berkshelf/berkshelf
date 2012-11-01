@@ -14,7 +14,14 @@ module Berkshelf
     
     def initialize(*args)
       super(*args)
-      Berkshelf.config_path = @options[:config]
+
+      if @options[:config]
+        unless File.exist?(@options[:config])
+          raise BerksConfigNotFound, "You specified a path to a configuration file that did not exist: '#{@options[:config]}'"
+        end
+        Berkshelf::Config.path = @options[:config]
+      end
+
       Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
@@ -29,8 +36,7 @@ module Berkshelf
 
     class_option :config,
       type: :string,
-      default: Berkshelf::DEFAULT_CONFIG,
-      desc: "Path to Knife or Chef configuration to use.",
+      desc: "Path to Berkshelf configuration to use.",
       aliases: "-c",
       banner: "PATH"
     class_option :format,
@@ -40,9 +46,49 @@ module Berkshelf
       aliases: "-F",
       banner: "FORMAT"
 
-    desc "config", "Generate a default Berkshelf configuration file"
-    def config
-      Berkshelf::Config.new(Config.path).save
+    method_option :force,
+      type: :boolean,
+      default: false,
+      desc: "create a new configuration file even if one already exists."
+    desc "configure", "Create a new configuration file to customize Berkshelf's behavior"
+    def configure(path = Berkshelf::Config.path)
+      path = File.expand_path(path)
+
+      if File.exist?(path) && !options[:force]
+        raise Berkshelf::ConfigExists, "A configuration file already exists. Re-run with the --force flag if you wish to overwrite it."
+      end
+
+      @config = Berkshelf::Config.new(path)
+
+      [
+        "chef.chef_server_url",
+        "chef.node_name",
+        "chef.client_key",
+        "chef.validation_client_name",
+        "chef.validation_key_path",
+        "vagrant.vm.box",
+        "vagrant.vm.box_url",
+      ].each do |attribute|
+        default = @config.get_attribute(attribute)
+
+        message = "Enter value for #{attribute}"
+        message << " (default: '#{default}')" if default
+        message << ": "
+
+        input = Berkshelf.ui.ask(message)
+
+        if input.present?
+          @config.set_attribute(attribute, input)
+        end
+      end
+
+      unless @config.valid?
+        raise InvalidConfiguration.new(@config.errors)
+      end
+
+      @config.save
+
+      Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
 
     method_option :except,
@@ -64,7 +110,7 @@ module Berkshelf
       desc: "Path to install cookbooks to (i.e. vendor/cookbooks).",
       aliases: "-p",
       banner: "PATH"
-    desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock."
+    desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock"
     def install
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
@@ -84,7 +130,7 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
-    desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions."
+    desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
     def update
       Lockfile.remove!
       invoke :install
@@ -116,19 +162,34 @@ module Berkshelf
       type: :boolean,
       default: true,
       desc: "Disable/Enable SSL verification when uploading cookbooks"
-    desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server."
+    desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
     def upload
-      Berkshelf.load_config 
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
+      unless Berkshelf::Config.instance.chef.chef_server_url.present?
+        msg = "Could not upload cookbooks: Missing Chef server_url."
+        msg << " Generate or update your Berkshelf configuration that contains a valid Chef Server URL."
+        raise UploadFailure, msg
+      end
+
+      unless Berkshelf::Config.instance.chef.node_name.present?
+        msg = "Could not upload cookbooks: Missing Chef node_name."
+        msg << " Generate or update your Berkshelf configuration that contains a valid Chef node_name."
+        raise UploadFailure, msg
+      end
+
       berksfile.upload(
-        server_url: Chef::Config[:chef_server_url],
-        client_name: Chef::Config[:node_name],
-        client_key: Chef::Config[:client_key],
+        server_url: Berkshelf::Config.instance.chef.chef_server_url,
+        client_name: Berkshelf::Config.instance.chef.node_name,
+        client_key: Berkshelf::Config.instance.chef.client_key,
         ssl: {
-          verify: options[:ssl_verify]
+          verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify)
         }
       )
+    rescue Ridley::Errors::ClientKeyFileNotFound => e
+      msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
+      msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
+      raise UploadFailure, msg
     end
 
     method_option :foodcritic,
@@ -152,7 +213,7 @@ module Berkshelf
     method_option :skip_git,
       type: :boolean,
       desc: "Skips adding a .gitignore and running git init in the cookbook directory"
-    desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf."
+    desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf"
     def init(path = Dir.pwd)
       Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
       Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]

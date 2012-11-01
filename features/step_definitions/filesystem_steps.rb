@@ -18,6 +18,10 @@ Given /^I do not have a Berksfile\.lock$/ do
   in_current_dir { FileUtils.rm_f(Berkshelf::Lockfile::DEFAULT_FILENAME) }
 end
 
+Given /^I have a default Berkshelf config file$/ do
+  Berkshelf::Config.new.save
+end
+
 Given /^I have a Berkshelf config file containing:$/ do |contents|
   Berkshelf::Config.new.from_json(contents).save
 end
@@ -231,10 +235,4 @@ end
 
 Then /^the current directory should not have the following files:$/ do |files|
   check_file_presence(files.raw.map{|file_row| file_row[0]}, false)
-end
-
-Then /^I should have a Berkshelf config file$/ do
-  Pathname.new(ENV['HOME']).join(".berkshelf").should have_structure {
-    file "config.json"
-  }
 end

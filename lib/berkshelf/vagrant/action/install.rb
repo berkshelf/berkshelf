@@ -4,17 +4,13 @@ module Berkshelf
       # @author Jamie Winsor <jamie@vialstudios.com>
       # @author Andrew Garson <andrew.garson@gmail.com>
       class Install
-        attr_reader :config
         attr_reader :shelf
         attr_reader :berksfile
 
         def initialize(app, env)
-          @app                  = app
-          @shelf                = Berkshelf::Vagrant.shelf_for(env)
-          @config               = env[:vm].config.berkshelf
-          Berkshelf.config_path = @config.config_path
-          Berkshelf.load_config
-          @berksfile            = Berksfile.from_file(@config.berksfile_path)
+          @app       = app
+          @shelf     = Berkshelf::Vagrant.shelf_for(env)
+          @berksfile = Berksfile.from_file(env[:vm].config.berkshelf.berksfile_path)
         end
 
         def call(env)
@@ -32,7 +28,7 @@ module Berkshelf
             Berkshelf.formatter.msg "installing cookbooks..."
             opts = {
               path: self.shelf
-            }.merge(self.config.to_hash).symbolize_keys!
+            }.merge(env[:vm].config.berkshelf.to_hash).symbolize_keys!
             berksfile.install(opts)
           end
 

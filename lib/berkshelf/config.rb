@@ -7,6 +7,34 @@ module Berkshelf
     FILENAME = "config.json".freeze
 
     class << self
+      attr_writer :path
+
+      # @return [String]
+      def path
+        File.join(Berkshelf.berkshelf_path, FILENAME)
+      end
+
+      # @return [String]
+      def chef_config_path
+        @chef_config_path ||= File.expand_path(ENV["BERKSHELF_CHEF_CONFIG"] || "~/.chef/knife.rb")
+      end
+
+      # @param [String] value
+      def chef_config_path=(value)
+        @chef_config = nil
+        @chef_config_path = value
+      end
+
+      # @return [Chef::Config]
+      def chef_config
+        @chef_config ||= begin
+          Chef::Config.from_file(File.expand_path(chef_config_path))
+          Chef::Config
+        rescue
+          Chef::Config
+        end
+      end
+
       # @return [String, nil]
       #   the contents of the file
       def file
@@ -21,23 +49,30 @@ module Berkshelf
           new
         end
       end
-
-      # @return [String]
-      def path
-        File.join(Berkshelf.berkshelf_path, FILENAME)
-      end
     end
 
+    # @param [String] path
+    # @param [Hash] options
+    #   @see {Chozo::Config::JSON}
     def initialize(path = self.class.path, options = {})
       super(path, options)
     end
 
-    attribute 'vagrant.chef.chef_server_url',
-      type: String
-    attribute 'vagrant.chef.validation_client_name',
-      type: String
-    attribute 'vagrant.chef.validation_key_path',
-      type: String
+    attribute 'chef.chef_server_url',
+      type: String,
+      default: chef_config[:chef_server_url]
+    attribute 'chef.validation_client_name',
+      type: String,
+      default: chef_config[:validation_client_name]
+    attribute 'chef.validation_key_path',
+      type: String,
+      default: chef_config[:validation_key]
+    attribute 'chef.client_key',
+      type: String,
+      default: chef_config[:client_key]
+    attribute 'chef.node_name',
+      type: String,
+      default: chef_config[:node_name]
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
@@ -47,7 +82,8 @@ module Berkshelf
       default: 'https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box',
       required: true
     attribute 'vagrant.vm.forward_port',
-      type: Hash
+      type: Hash,
+      default: Hash.new
     attribute 'vagrant.vm.network.bridged',
       type: Boolean,
       default: true
@@ -57,5 +93,8 @@ module Berkshelf
     attribute 'vagrant.vm.provision',
       type: String,
       default: 'chef_solo'
+    attribute 'ssl.verify',
+      type: Boolean,
+      default: true
   end
 end

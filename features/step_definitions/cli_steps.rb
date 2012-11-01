@@ -66,8 +66,8 @@ When /^I run the cookbook command to create "(.*?)" with options:$/ do |name, op
   run_simple(unescape("berks cookbook #{name} #{options.raw.join(" ")}"))
 end
 
-When /^I run the config command$/ do
-  run_simple unescape("berks config")
+When /^I run the "(.*?)" command interactively$/ do |command|
+  run_interactive("berks #{command}")
 end
 
 Then /^the CLI should exit with the status code for error "(.*?)"$/ do |error_constant|
