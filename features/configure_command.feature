@@ -7,6 +7,8 @@ Feature: configure command
     Given I do not have a Berkshelf config file
     When I run the "configure" command interactively
     And I type "https://api.opscode.com/organizations/vialstudios"
+    And I type "node_name"
+    And I type "client_key"
     And I type "reset"
     And I type "/Users/reset/.chef/reset.pem"
     And I type "Berkshelf-minimal"
@@ -19,6 +21,8 @@ Feature: configure command
     And a Berkshelf config file should exist and contain:
       | chef.chef_server_url        | https://api.opscode.com/organizations/vialstudios |
       | chef.validation_client_name | reset                                             |
+      | chef.node_name              | node_name                                         |
+      | chef.client_key             | client_key                                        |
       | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
@@ -26,6 +30,8 @@ Feature: configure command
   Scenario: generating a config with default values
     Given I do not have a Berkshelf config file
     When I run the "configure" command interactively
+    And I type ""
+    And I type ""
     And I type ""
     And I type ""
     And I type ""
@@ -39,6 +45,7 @@ Feature: configure command
     And a Berkshelf config file should exist and contain:
       | chef.chef_server_url        | http://localhost:4000               |
       | chef.validation_client_name | chef-validator                      |
+      | chef.client_key             | /etc/chef/client.pem                |
       | chef.validation_key_path    | /etc/chef/validation.pem            |
       | vagrant.vm.box              | Berkshelf-CentOS-6.3-x86_64-minimal |
       | vagrant.vm.box_url          | https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box |

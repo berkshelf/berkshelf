@@ -56,6 +56,8 @@ module Berkshelf
 
       [
         "chef.chef_server_url",
+        "chef.node_name",
+        "chef.client_key",
         "chef.validation_client_name",
         "chef.validation_key_path",
         "vagrant.vm.box",
