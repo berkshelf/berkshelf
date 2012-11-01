@@ -29,17 +29,8 @@ Vagrant::Config.run do |config|
 
   config.vm.host_name = "<%= "#{cookbook_name}-berkshelf" %>"
 
-  # CentOS 6.3
-<% if options[:berkshelf_config][:vagrant][:vm][:box].present? -%>
-  config.vm.box = "<%= options[:berkshelf_config][:vagrant][:vm][:box] %>"
-<% else %>
-  config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal"
-<% end -%>
-<% if options[:berkshelf_config][:vagrant][:vm][:box_url].present? -%>
-  config.vm.box_url = "<%= options[:berkshelf_config][:vagrant][:vm][:box_url] %>"
-<% else %>
-  config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box"
-<% end -%>
+  config.vm.box = "<%= options[:berkshelf_config].vagrant.vm.box %>"
+  config.vm.box_url = "<%= options[:berkshelf_config].vagrant.vm.box_url %>"
 
   # Boot with a GUI so you can see the screen. (Default is headless)
   # config.vm.boot_mode = :gui
@@ -48,22 +39,27 @@ Vagrant::Config.run do |config|
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
   # network interface) by any external networks.
+<% if options[:berkshelf_config].vagrant.vm.network.hostonly.present? -%>
+  config.vm.network :hostonly, "<%= options[:berkshelf_config].vagrant.vm.network.hostonly %>"
+<% else %>
   # config.vm.network :hostonly, "33.33.33.10"
-<% if options[:berkshelf_config][:vagrant][:vm][:network][:hostonly].present? -%>
-  config.vm.network :hostonly, "<%= options[:berkshelf_config][:vagrant][:vm][:network][:hostonly] %>"
 <% end -%>
 
   # Assign this VM to a bridged network, allowing you to connect directly to a
   # network using the host's network device. This makes the VM appear as another
   # physical device on your network.
-  <% unless options[:berkshelf_config][:vagrant][:vm][:network][:bridged].present? %># <% end -%>config.vm.network :bridged
+<% if options[:berkshelf_config].vagrant.vm.network.bridged -%>
+  config.vm.network :bridged
+<% else %>
+  # config.vm.network :bridged
+<% end -%>
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
   # config.vm.forward_port 80, 8080
-<% options[:berkshelf_config][:vagrant][:vm][:forward_port].each do |guest, host| %>
+<% options[:berkshelf_config].vagrant.vm.forward_port.each do |guest, host| %>
   config.vm.forward_port <%= guest %>, <%= host %>
-<% end if options[:berkshelf_config][:vagrant][:vm][:forward_port].present? -%>
+<% end -%>
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
@@ -73,17 +69,17 @@ Vagrant::Config.run do |config|
   config.ssh.max_tries = 40
   config.ssh.timeout   = 120
 
-<% if options[:berkshelf_config][:vagrant][:vm][:provision] == "chef_client" -%>
+<% if options[:berkshelf_config].vagrant.vm.provision == "chef_client" -%>
   config.vm.provision :chef_client do |chef|
-    chef.chef_server_url = "<%= options[:berkshelf_config][:vagrant][:chef][:chef_server_url] %>"
-    chef.validation_client_name = "<%= options[:berkshelf_config][:vagrant][:chef][:validation_client_name] %>"
-    chef.validation_key_path = "<%= options[:berkshelf_config][:vagrant][:chef][:validation_key_path] %>"
+    chef.chef_server_url = "<%= options[:berkshelf_config].vagrant.chef.chef_server_url %>"
+    chef.validation_client_name = "<%= options[:berkshelf_config].vagrant.chef.validation_client_name %>"
+    chef.validation_key_path = "<%= options[:berkshelf_config].vagrant.chef.validation_key_path %>"
 
     chef.run_list = [
       "recipe[<%= cookbook_name %>::default]"
     ]
   end
-<% else -%>
+<% elsif options[:berkshelf_config].vagrant.vm.provision == "chef_solo" -%>
   config.vm.provision :chef_solo do |chef|    
     chef.json = {
       :mysql => {

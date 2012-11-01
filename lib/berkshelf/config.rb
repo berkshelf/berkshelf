@@ -47,7 +47,8 @@ module Berkshelf
       default: 'https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box',
       required: true
     attribute 'vagrant.vm.forward_port',
-      type: Hash
+      type: Hash,
+      default: Hash.new
     attribute 'vagrant.vm.network.bridged',
       type: Boolean,
       default: true
