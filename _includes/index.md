@@ -6,7 +6,7 @@ If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a br
     Successfully installed berkshelf-1.0.0.rc1
     1 gem installed
 
-Specify your dependencies in a Berksfile in your application or cookbook's root
+Specify your dependencies in a Berksfile in your cookbook's root
 
     site :opscode
 
@@ -24,6 +24,18 @@ Add the Berksfile to your project
 
 > A Berksfile.lock will also be created. Add this to version control if you want to ensure that
 > other developers (or your build server) will use the same versions of all cookbook dependencies.
+
+### Managing an existing Cookbook
+
+If you already have a cookbook and it's not managed by Berkshelf it's easy to get up and running. Just locate your cookbook and initialize it!
+
+    $ berks init ~/code/my_face-cookbook
+
+### Creating a new Cookbook
+
+Want to start a new cookbook for a new application or supporting application?
+
+    $ berks cookbook new_application
 
 ## The Berkshelf
 
