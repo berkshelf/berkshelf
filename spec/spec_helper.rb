@@ -1,12 +1,13 @@
 require 'rubygems'
+
 require 'bundler'
 require 'spork'
 require 'vcr'
 
 Spork.prefork do
-  require 'rspec'
-  require 'pp'
   require 'json_spec'
+  require 'pp'
+  require 'rspec'
   require 'webmock/rspec'
   
   APP_ROOT = File.expand_path('../../', __FILE__)
