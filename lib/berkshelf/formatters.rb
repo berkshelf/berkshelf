@@ -49,7 +49,7 @@ module Berkshelf
 
     # @author Michael Ivey <ivey@gweezlebur.com>
     #
-    # @abstract Include and override {#install} {#use} {#upload} 
+    # @abstract Include and override {#install} {#use} {#upload}
     #   {#msg} {#error} to implement.
     #
     #   Implement {#cleanup_hook} to run any steps required to run after the task is finished

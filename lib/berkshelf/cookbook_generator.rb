@@ -50,7 +50,7 @@ module Berkshelf
       empty_directory target.join("providers")
       empty_directory target.join("recipes")
       empty_directory target.join("resources")
-            
+
       template "default_recipe.erb", target.join("recipes/default.rb")
       template "metadata.rb.erb", target.join("metadata.rb")
       template license_file, target.join("LICENSE")

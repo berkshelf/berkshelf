@@ -1,7 +1,7 @@
 Feature: Berksfile default locations
   As a Berkshelf user
   I want to be able to define default locations in my Berksfile
-  So I can set the precedence of where cookbook sources are downloaded from or define an alternate location for all 
+  So I can set the precedence of where cookbook sources are downloaded from or define an alternate location for all
   cookbook sources to attempt to retrieve from
 
   @chef_server

@@ -45,7 +45,7 @@ module Berkshelf
         uri =~ URI.regexp(['http', 'https'])
       end
 
-      # @raise [InvalidChefAPILocation] if the given object is not a String containing a 
+      # @raise [InvalidChefAPILocation] if the given object is not a String containing a
       #   valid Chef API URI
       #
       # @see validate_uri
@@ -139,7 +139,7 @@ module Berkshelf
 
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
-      
+
       set_downloaded_status(true)
       cached
     end
@@ -148,7 +148,7 @@ module Berkshelf
     # The keys are version strings and the values are URLs to download the cookbook version.
     #
     # @example
-    #   { 
+    #   {
     #     "0.101.2" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2",
     #     "0.101.5" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.5"
     #   }
@@ -210,7 +210,7 @@ module Berkshelf
       def target_version
         if version_constraint
           solution = self.class.solve_for_constraint(version_constraint, versions)
-          
+
           unless solution
             raise NoSolution, "No cookbook version of '#{name}' found at #{self} that would satisfy constraint (#{version_constraint})."
           end
@@ -268,7 +268,7 @@ module Berkshelf
 
         self.class.validate_node_name!(options[:node_name])
         self.class.validate_client_key!(options[:client_key])
-        self.class.validate_uri!(options[:chef_api])          
+        self.class.validate_uri!(options[:chef_api])
       end
   end
 end

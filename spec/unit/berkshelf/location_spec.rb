@@ -72,7 +72,7 @@ module Berkshelf
       describe "::solve_for_constraint" do
         let(:constraint) { "~> 0.101.2" }
         let(:versions) do
-          { 
+          {
             "0.101.2" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
             "0.101.0" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0",
             "0.100.2" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2",
@@ -143,7 +143,7 @@ module Berkshelf
           end
         end
       end
-    end 
+    end
 
     let(:name) { "nginx" }
     let(:constraint) { double('constraint') }
@@ -179,7 +179,7 @@ module Berkshelf
 
       it "returns true if cached_cookbooks satisfies the version constraint" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
-        
+
         subject.validate_cached(cached).should be_true
       end
 

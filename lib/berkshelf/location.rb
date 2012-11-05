@@ -2,7 +2,7 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   module Location
     OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
-    
+
     module ClassMethods
       # Returns the location identifier key for the class
       #
@@ -32,7 +32,7 @@ module Berkshelf
       #
       # @example:
       #   constraint = Solve::Constraint.new("~> 0.101.2")
-      #   versions = { 
+      #   versions = {
       #     "1.0.0" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_0_0",
       #     "2.0.0" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/2_0_0"
       #   }

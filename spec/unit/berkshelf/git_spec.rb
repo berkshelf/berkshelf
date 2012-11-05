@@ -12,7 +12,7 @@ module Berkshelf
 
         it "should raise if it can't find git" do
           ENV.should_receive(:[]).with("PATH").and_return(String.new)
-          
+
           lambda {
             subject.find_git
           }.should raise_error(GitNotFound)

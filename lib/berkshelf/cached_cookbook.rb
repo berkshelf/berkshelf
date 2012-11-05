@@ -135,7 +135,7 @@ module Berkshelf
     #
     #   example:
     #     {
-    #       "da97c94bb6acb2b7900cbf951654fea3" => "/Users/reset/.berkshelf/nginx-0.101.2/README.md"  
+    #       "da97c94bb6acb2b7900cbf951654fea3" => "/Users/reset/.berkshelf/nginx-0.101.2/README.md"
     #     }
     def checksums
       {}.tap do |checksums|

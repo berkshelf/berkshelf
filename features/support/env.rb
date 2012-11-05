@@ -62,6 +62,6 @@ end
 
 Spork.each_run do
   Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
-  
+
   require 'berkshelf'
 end

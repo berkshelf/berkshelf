@@ -16,13 +16,13 @@ module Berkshelf
         def call(env)
           recorder = ::Vagrant::Config::ErrorRecorder.new
           env[:vm].config.berkshelf.validate(env[:vm].env, recorder)
-          
+
           unless recorder.errors.empty?
-            raise ::Vagrant::Errors::ConfigValidationFailed, 
+            raise ::Vagrant::Errors::ConfigValidationFailed,
               messages: ::Vagrant::Util::TemplateRenderer.render("config/validation_failed", errors: { berkshelf: recorder })
           end
 
-          @app.call(env)          
+          @app.call(env)
         end
       end
     end

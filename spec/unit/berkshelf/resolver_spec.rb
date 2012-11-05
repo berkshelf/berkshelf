@@ -7,7 +7,7 @@ module Berkshelf
         name: 'mysql',
         version_constraint: Solve::Constraint.new('= 1.2.4'),
         downloaded?: true,
-        cached_cookbook: double('mysql-cookbook', 
+        cached_cookbook: double('mysql-cookbook',
           name: 'mysql-1.2.4',
           cookbook_name: 'mysql',
           version: '1.2.4',
@@ -22,7 +22,7 @@ module Berkshelf
         name: 'nginx',
         version_constraint: Solve::Constraint.new('= 0.101.2'),
         downloaded?: true,
-        cached_cookbook: double('nginx-cookbook', 
+        cached_cookbook: double('nginx-cookbook',
           name: 'nginx-0.101.2',
           cookbook_name: 'nginx',
           version: '0.101.2',
@@ -46,7 +46,7 @@ module Berkshelf
 
         it "adds the dependencies of the source as sources" do
           resolver = subject.new(downloader, sources: source)
-          
+
           resolver.should have_source("nginx")
           resolver.should have_source("artifact")
         end
@@ -76,13 +76,13 @@ module Berkshelf
 
       it "adds an artifact of the same name of the source to the graph" do
         subject.graph.should_receive(:artifacts).with(source.name, source.cached_cookbook.version)
-        
+
         subject.add_source(source, false)
       end
 
       it "adds the dependencies of the source as packages to the graph" do
         subject.should_receive(:add_source_dependencies).with(source)
-        
+
         subject.add_source(source)
       end
 

@@ -4,6 +4,7 @@ require 'chef/knife'
 require 'chef/platform'
 
 require 'chozo/core_ext'
+
 require 'active_support/core_ext'
 require 'archive/tar/minitar'
 require 'forwardable'
@@ -27,27 +28,27 @@ module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
-  autoload :UI, 'berkshelf/ui'
-  autoload :Cli, 'berkshelf/cli'
-  autoload :Git, 'berkshelf/git'
-  autoload :Berksfile, 'berkshelf/berksfile'
-  autoload :Lockfile, 'berkshelf/lockfile'
   autoload :BaseGenerator, 'berkshelf/base_generator'
-  autoload :InitGenerator, 'berkshelf/init_generator'
+  autoload :Berksfile, 'berkshelf/berksfile'
+  autoload :CachedCookbook, 'berkshelf/cached_cookbook'
+  autoload :Cli, 'berkshelf/cli'
+  autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
   autoload :CookbookStore, 'berkshelf/cookbook_store'
-  autoload :CachedCookbook, 'berkshelf/cached_cookbook'
   autoload :Downloader, 'berkshelf/downloader'
-  autoload :Uploader, 'berkshelf/uploader'
+  autoload :Git, 'berkshelf/git'
+  autoload :InitGenerator, 'berkshelf/init_generator'
+  autoload :Lockfile, 'berkshelf/lockfile'
   autoload :Resolver, 'berkshelf/resolver'
-  autoload :Config, 'berkshelf/config'
+  autoload :UI, 'berkshelf/ui'
+  autoload :Uploader, 'berkshelf/uploader'
 
   require 'berkshelf/location'
 
   class << self
     attr_accessor :ui
-    
+
     attr_writer :cookbook_store
 
     # @return [Pathname]
@@ -65,7 +66,7 @@ module Berkshelf
     # to or uploaded from here. By default this is '~/.berkshelf' but
     # can be overridden by specifying a value for the ENV variable
     # 'BERKSHELF_PATH'.
-    # 
+    #
     # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
@@ -98,8 +99,8 @@ module Berkshelf
     # metadata.rb file of a Chef Cookbook. If no metadata.rb file
     # was found, nil is returned.
     #
-    # @return [Pathname] 
-    #   path to metadata.rb 
+    # @return [Pathname]
+    #   path to metadata.rb
     def find_metadata(path = Dir.pwd)
       path = Pathname.new(path)
       path.ascend do |potential_root|

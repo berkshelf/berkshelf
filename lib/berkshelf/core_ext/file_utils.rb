@@ -16,7 +16,7 @@ module FileUtils
       end
     end
 
-    # If we encounter Errno::EACCES, which seems to happen occasionally on Windows, 
+    # If we encounter Errno::EACCES, which seems to happen occasionally on Windows,
     # try to copy and delete the file instead of moving it.
     #
     # @see https://github.com/RiotGames/berkshelf/issues/140
