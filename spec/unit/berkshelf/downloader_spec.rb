@@ -54,7 +54,7 @@ module Berkshelf
           source.should_receive(:cached_cookbook=).with(cached_cookbook)
         end
 
-        it "sends 'download' to the source's location and sets the source's cached_cookbook to the result" do          
+        it "sends 'download' to the source's location and sets the source's cached_cookbook to the result" do
           subject.download(source).should be_true
         end
 

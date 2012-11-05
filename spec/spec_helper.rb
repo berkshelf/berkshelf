@@ -9,9 +9,9 @@ Spork.prefork do
   require 'pp'
   require 'rspec'
   require 'webmock/rspec'
-  
+
   APP_ROOT = File.expand_path('../../', __FILE__)
-  
+
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
   VCR.configure do |c|
@@ -23,7 +23,7 @@ Spork.prefork do
     config.include Berkshelf::RSpec::FileSystemMatchers
     config.include JsonSpec::Helpers
     config.include Berkshelf::RSpec::ChefAPI
-    
+
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true
     config.filter_run focus: true

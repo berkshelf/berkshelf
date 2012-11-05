@@ -89,7 +89,7 @@ module Berkshelf
       def cookbook_name
         @cookbook_name ||= begin
           metadata = Chef::Cookbook::Metadata.new
-          
+
           metadata.from_file(target.join("metadata.rb").to_s)
           metadata.name.empty? ? File.basename(target) : metadata.name
         rescue IOError

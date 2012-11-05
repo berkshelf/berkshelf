@@ -3,7 +3,7 @@ require 'spec_helper'
 module Berkshelf
   describe Lockfile do
     let(:downloader) { Downloader.new(Berkshelf.cookbook_store) }
-    
+
     describe "without a lockfile in place already" do
       before(:all) do
         @old_dir = Dir.pwd

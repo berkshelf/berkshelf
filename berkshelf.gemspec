@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.require_paths         = ["lib"]
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
-  
+
   s.add_dependency 'activesupport'
   s.add_dependency 'chef', '>= 10.12.0'
   s.add_dependency 'chozo', '>= 0.2.1'

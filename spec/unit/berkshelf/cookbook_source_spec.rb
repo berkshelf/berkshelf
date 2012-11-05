@@ -117,7 +117,7 @@ module Berkshelf
             after(:each) do
               subject.class_variable_set :@@location_keys, @original
             end
-            
+
             it "adds a location key and the associated class to the list of valid locations" do
               subject.add_location_key(:git, subject.class)
 
@@ -129,7 +129,7 @@ module Berkshelf
             it "does not add duplicate location keys to the list of location keys" do
               subject.add_location_key(:git, subject.class)
               subject.add_location_key(:git, subject.class)
-              
+
               subject.location_keys.should have(1).item
               subject.location_keys.should include(:git)
             end
@@ -228,7 +228,7 @@ module Berkshelf
     describe "#to_s" do
       it "contains the name, constraint, and groups" do
         source = CookbookSource.new("artifact", constraint: "= 0.10.0")
-        
+
         source.to_s.should eql("artifact (= 0.10.0) groups: [:default]")
       end
 

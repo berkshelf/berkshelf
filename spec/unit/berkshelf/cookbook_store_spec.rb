@@ -102,7 +102,7 @@ module Berkshelf
       end
 
       context "given a value for the filter parameter" do
-        it "returns only the CachedCookbooks whose name match the filter" do          
+        it "returns only the CachedCookbooks whose name match the filter" do
           subject.cookbooks("mysql").should have(1).item
         end
       end

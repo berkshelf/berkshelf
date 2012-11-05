@@ -48,7 +48,7 @@ module Berkshelf
 
   class << self
     attr_accessor :ui
-    
+
     attr_writer :cookbook_store
 
     # @return [Pathname]
@@ -66,7 +66,7 @@ module Berkshelf
     # to or uploaded from here. By default this is '~/.berkshelf' but
     # can be overridden by specifying a value for the ENV variable
     # 'BERKSHELF_PATH'.
-    # 
+    #
     # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
@@ -99,8 +99,8 @@ module Berkshelf
     # metadata.rb file of a Chef Cookbook. If no metadata.rb file
     # was found, nil is returned.
     #
-    # @return [Pathname] 
-    #   path to metadata.rb 
+    # @return [Pathname]
+    #   path to metadata.rb
     def find_metadata(path = Dir.pwd)
       path = Pathname.new(path)
       path.ascend do |potential_root|

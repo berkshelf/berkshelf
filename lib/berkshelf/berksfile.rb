@@ -29,7 +29,7 @@ module Berkshelf
       def vendor(cookbooks, path)
         path = File.expand_path(path)
         FileUtils.mkdir_p(path)
-        
+
         scratch = Berkshelf.mktmpdir
         cookbooks.each do |cb|
           dest = File.join(scratch, cb.cookbook_name, "/")
@@ -52,7 +52,7 @@ module Berkshelf
     # @return [String]
     #   The path on disk to the file representing this instance of Berksfile
     attr_reader :filepath
-    
+
     # @return [Berkshelf::Downloader]
     attr_reader :downloader
 
@@ -141,7 +141,7 @@ module Berkshelf
       name, constraint = args
 
       options[:group] = Array(options[:group])
-      
+
       if @@active_group
         options[:group] += @@active_group
       end
@@ -263,7 +263,7 @@ module Berkshelf
       @sources.has_key?(source.to_s)
     end
 
-    # @option options [Symbol, Array] :except 
+    # @option options [Symbol, Array] :except
     #   Group(s) to exclude to exclude from the returned Array of sources
     #   group to not be installed
     # @option options [Symbol, Array] :only
@@ -325,8 +325,8 @@ module Berkshelf
     end
     alias_method :get_source, :[]
 
-    # @option options [Symbol, Array] :except 
-    #   Group(s) to exclude which will cause any sources marked as a member of the 
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
     #   group to not be installed
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
@@ -362,12 +362,12 @@ module Berkshelf
     # @option options [String] :organization
     #   the Organization to connect to. This is only used if you are connecting to
     #   private Chef or hosted Chef
-    # @option options [Boolean] :force Upload the Cookbook even if the version 
+    # @option options [Boolean] :force Upload the Cookbook even if the version
     #   already exists and is frozen on the target Chef Server
-    # @option options [Boolean] :freeze Freeze the uploaded Cookbook on the Chef 
+    # @option options [Boolean] :freeze Freeze the uploaded Cookbook on the Chef
     #   Server so that it cannot be overwritten
-    # @option options [Symbol, Array] :except 
-    #   Group(s) to exclude which will cause any sources marked as a member of the 
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
     #   group to not be installed
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
@@ -396,8 +396,8 @@ module Berkshelf
 
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
     #
-    # @option options [Symbol, Array] :except 
-    #   Group(s) to exclude which will cause any sources marked as a member of the 
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
     #   group to not be installed
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the

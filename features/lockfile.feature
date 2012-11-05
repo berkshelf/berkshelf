@@ -1,6 +1,6 @@
 Feature: Berksfile.lock
   As a user
-  I want my versions to be locked even when I don't specify versions in my Berksfile 
+  I want my versions to be locked even when I don't specify versions in my Berksfile
   So when I share my repository, all other developers get the same versions that I did when I installed.
 
   @slow_process

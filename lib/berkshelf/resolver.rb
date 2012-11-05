@@ -47,7 +47,7 @@ module Berkshelf
       use_source(source) || install_source(source)
 
       graph.artifacts(source.name, source.cached_cookbook.version)
-      
+
       if include_dependencies
         add_source_dependencies(source)
       end
@@ -142,7 +142,7 @@ module Berkshelf
       #   CookbookSource.
       #
       # @return [Boolean]
-      def use_source(source)        
+      def use_source(source)
         if source.downloaded?
           cached = source.cached_cookbook
           source.location.validate_cached(cached)
