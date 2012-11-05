@@ -45,7 +45,7 @@ describe Berkshelf::Config do
     describe "::chef_config_path" do
       subject { klass.chef_config_path }
 
-      it { should be_a String }  
+      it { should be_a String }
     end
   end
 end

@@ -31,7 +31,7 @@ and run:
     $ cd berkshelf
     $ bundle install
 
-Bundler will install all gems and their dependencies required for testing and developing. 
+Bundler will install all gems and their dependencies required for testing and developing.
 
 ### Running unit (RSpec) and acceptance (Cucumber) tests
 

@@ -10,7 +10,7 @@ cookbook 'nginx', '< 0.101.2'
 cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
 EOF
     end
-    
+
     describe "ClassMethods" do
       subject { Berksfile }
 
@@ -36,7 +36,7 @@ EOF
         it "returns the expanded filepath of the vendor directory" do
           cached_cookbooks = Array.new
           tmpdir = Dir.mktmpdir(nil, tmp_path)
-          
+
           subject.vendor(cached_cookbooks, tmpdir).should eql(tmpdir)
         end
       end
@@ -93,7 +93,7 @@ EOF
 
       it "sends the add_source message with an array of groups determined by the parameter passed to the group block" do
         subject.should_receive(:add_source).with(name, nil, group: [group])
-        
+
         subject.group group do
           subject.cookbook name
         end
@@ -108,7 +108,7 @@ EOF
 
       it "sends the add_source message with an explicit version constraint and the path to the cookbook" do
         subject.should_receive(:add_source).with("example_cookbook", "= 0.5.0", path: cb_path.to_s)
-        
+
         subject.metadata
       end
     end
@@ -384,7 +384,7 @@ EOF
 
       it "delegates 'add_location' to the downloader" do
         subject.downloader.should_receive(:add_location).with(type, value, options)
-        
+
         subject.add_location(type, value, options)
       end
     end

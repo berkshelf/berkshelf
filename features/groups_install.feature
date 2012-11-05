@@ -9,7 +9,7 @@ Feature: installing groups
       group :notme do
         cookbook "nginx", "= 0.101.2"
       end
-      
+
       cookbook "artifact", "= 0.10.0"
 
       group :takeme do
@@ -30,7 +30,7 @@ Feature: installing groups
       group :notme do
         cookbook "nginx", "= 0.101.2"
       end
-      
+
       cookbook "artifact", "= 0.10.0"
 
       group :takeme do
@@ -51,7 +51,7 @@ Feature: installing groups
       group :notme do
         cookbook "nginx", "= 0.101.2"
       end
-      
+
       cookbook "artifact", "= 0.10.0"
 
       group :takeme do

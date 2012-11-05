@@ -3,7 +3,7 @@ require 'spec_helper'
 module Berkshelf
   describe GitLocation do
     let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
-    
+
     describe "ClassMethods" do
       subject { GitLocation }
 
@@ -86,7 +86,7 @@ module Berkshelf
 
       context "given a value for ref that is a tag or branch and not a commit hash" do
         subject do
-          GitLocation.new("artifact", 
+          GitLocation.new("artifact",
             complacent_constraint,
             git: "git://github.com/RiotGames/artifact-cookbook.git",
             ref: "0.9.8"

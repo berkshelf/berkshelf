@@ -46,7 +46,7 @@ module Berkshelf
             use Berkshelf::Vagrant::Action::Clean
           end
         end
-      end      
+      end
     end
   end
 end

@@ -26,7 +26,7 @@ module Berkshelf
         unless cmd.exitstatus == 0
           raise GitError.new(cmd.stderr)
         end
-        
+
         cmd.stdout.chomp
       end
 
@@ -102,7 +102,7 @@ module Berkshelf
       #   "https://github.com/reset/solve.git"
       # @example Valid SSH protocol URI
       #   "git@github.com:reset/solve.git"
-      # 
+      #
       # @param [String] uri
       #
       # @return [Boolean]

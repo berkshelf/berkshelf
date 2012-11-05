@@ -57,7 +57,7 @@ module Berkshelf
 
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
-      
+
       set_downloaded_status(true)
       cached
     end
@@ -66,7 +66,7 @@ module Berkshelf
     # name of this location.
     #
     # @example
-    #   { 
+    #   {
     #     "0.101.2" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2",
     #     "0.101.0" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0"
     #   }
@@ -142,7 +142,7 @@ module Berkshelf
       def target_version
         if version_constraint
           solution = self.class.solve_for_constraint(version_constraint, versions)
-          
+
           unless solution
             raise NoSolution, "No cookbook version of '#{name}' found at #{self} that would satisfy constraint (#{version_constraint})."
           end

@@ -8,7 +8,7 @@ module Berkshelf
         Berkshelf.root.join("generator_files")
       end
     end
-    
+
     include Thor::Actions
 
     def initialize(*args)

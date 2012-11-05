@@ -107,7 +107,7 @@ module Berkshelf
       if @location.is_a?(PathLocation)
         @cached_cookbook = CachedCookbook.from_path(location.path)
       end
-      
+
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
 
       add_group(options[:group]) if options[:group]

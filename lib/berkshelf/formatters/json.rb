@@ -21,7 +21,7 @@ module Berkshelf
           details[:name] = name
           output[:cookbooks] << details
         end
-        
+
         print MultiJson.dump(output)
       end
 

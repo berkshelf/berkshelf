@@ -1,5 +1,5 @@
 Feature: cookbook command
-  As a Cookbook author  
+  As a Cookbook author
   I want a way to quickly generate a Cookbook skeleton that contains supporting Berkshelf files
   So I can quickly and automatically generate a Cookbook containing Berkshelf supporting files or other common supporting files
 

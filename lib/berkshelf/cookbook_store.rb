@@ -44,7 +44,7 @@ module Berkshelf
       [].tap do |cookbooks|
         storage_path.each_child do |p|
           cached_cookbook = CachedCookbook.from_store_path(p)
-          
+
           next unless cached_cookbook
           next if filter && cached_cookbook.cookbook_name != filter
 
@@ -76,7 +76,7 @@ module Berkshelf
       cookbooks(name).each { |cookbook| graph.artifacts(name, cookbook.version) }
 
       name, version = Solve.it!(graph, [[name, constraint]]).first
-      
+
       cookbook(name, version)
     rescue Solve::Errors::NoSolutionError
       nil

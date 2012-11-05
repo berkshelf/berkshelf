@@ -1,6 +1,6 @@
 class Pathname
-  # Returns true or false if the path of the instantiated 
-  # Pathname or a parent directory contains a Tryhard Pack 
+  # Returns true or false if the path of the instantiated
+  # Pathname or a parent directory contains a Tryhard Pack
   # data directory.
   #
   # @return [Boolean]

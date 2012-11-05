@@ -1,5 +1,5 @@
 Feature: cookbook creation with a config file
-  As a Cookbook author  
+  As a Cookbook author
   I want to quickly generate a cookbook with my own customizations
   So that I don't have to spend time modifying the default generated output each time
 
