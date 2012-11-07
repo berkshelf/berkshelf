@@ -23,7 +23,7 @@ Feature: upload command
       | openssl | 1.0.0 |
     And the exit status should be 0
 
-  @chef_server
+  @chef_server @slow_process
   Scenario: running the upload command when the Sources in the Berksfile have not been installed
     Given I write to "Berksfile" with:
       """

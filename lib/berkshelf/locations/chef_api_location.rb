@@ -130,9 +130,7 @@ module Berkshelf
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
       version, uri = target_version
-      cookbook = rest.get_rest(uri)
-
-      scratch = download_files(cookbook.manifest)
+      scratch = download_files(download_manifest(uri))
 
       cb_path = File.join(destination, "#{name}-#{version}")
       FileUtils.mv(scratch, cb_path)
@@ -199,6 +197,15 @@ module Berkshelf
     private
 
       attr_reader :rest
+
+      # Retrieve a cookbooks manifest from the given URL
+      #
+      # @param [String] uri
+      #
+      # @return [Hash]
+      def download_manifest(uri)
+        Chef::CookbookVersion.json_create(rest.get_rest(uri)).manifest
+      end
 
       # Returns an array containing the version and download URL for the cookbook version that
       # should be downloaded for this location.
