@@ -90,8 +90,8 @@ module Berkshelf
     # @example a cookbook source that will be retrieved from a Chef API (Chef Server)
     #   cookbook 'artifact', chef_api: 'https://api.opscode.com/organizations/vialstudios', node_name: 'reset', client_key: '/Users/reset/.chef/knife.rb'
     #
-    # @example a cookbook source that will be retrieved from a Chef API using your Knife config
-    #   cookbook 'artifact', chef_api: :knife
+    # @example a cookbook source that will be retrieved from a Chef API using your Berkshelf config
+    #   cookbook 'artifact', chef_api: :config
     #
     # @overload cookbook(name, version_constraint, options = {})
     #   @param [#to_s] name
@@ -101,9 +101,9 @@ module Berkshelf
     #   @option options [Symbol, Array] :group
     #     the group or groups that the cookbook belongs to
     #   @option options [String, Symbol] :chef_api
-    #     a URL to a Chef API. Alternatively the symbol :knife can be provided
+    #     a URL to a Chef API. Alternatively the symbol :config can be provided
     #     which will instantiate this location with the values found in your
-    #     knife configuration.
+    #     Berkshelf configuration.
     #   @option options [String] :site
     #     a URL pointing to a community API endpoint
     #   @option options [String] :path
@@ -122,9 +122,9 @@ module Berkshelf
     #   @option options [Symbol, Array] :group
     #     the group or groups that the cookbook belongs to
     #   @option options [String, Symbol] :chef_api
-    #     a URL to a Chef API. Alternatively the symbol :knife can be provided
+    #     a URL to a Chef API. Alternatively the symbol :config can be provided
     #     which will instantiate this location with the values found in your
-    #     knife configuration.
+    #     Berkshelf configuration.
     #   @option options [String] :site
     #     a URL pointing to a community API endpoint
     #   @option options [String] :path
@@ -208,11 +208,11 @@ module Berkshelf
     # contain an explicit location.
     #
     # @note
-    #   specifying the symbol :knife as the value of the chef_api default location will attempt to use the
-    #   contents of your user's Knife.rb to find the Chef API to interact with.
+    #   specifying the symbol :config as the value of the chef_api default location will attempt to use the
+    #   contents of your Berkshelf configuration to find the Chef API to interact with.
     #
-    # @example using the symbol :knife to add a Chef API default location
-    #   chef_api :knife
+    # @example using the symbol :config to add a Chef API default location
+    #   chef_api :config
     #
     # @example using a URL, node_name, and client_key to add a Chef API default location
     #   chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "reset", client_key: "/Users/reset/.chef/knife.rb"

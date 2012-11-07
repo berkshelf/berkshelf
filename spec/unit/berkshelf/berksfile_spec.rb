@@ -147,11 +147,11 @@ EOF
         subject.chef_api(uri, options)
       end
 
-      context "given the symbol :knife" do
-        it "sends an add_location message with the the type :chef_api and the URI :knife" do
-          subject.should_receive(:add_location).with(:chef_api, :knife, {})
+      context "given the symbol :config" do
+        it "sends an add_location message with the the type :chef_api and the URI :config" do
+          subject.should_receive(:add_location).with(:chef_api, :config, {})
 
-          subject.chef_api(:knife)
+          subject.chef_api(:config)
         end
       end
     end

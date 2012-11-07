@@ -8,7 +8,7 @@ Feature: Berksfile default locations
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
-      chef_api :knife
+      chef_api :config
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
 
       cookbook "artifact", "= 0.10.0"
@@ -28,7 +28,7 @@ Feature: Berksfile default locations
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is not satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
-      chef_api :knife
+      chef_api :config
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
 
       cookbook "artifact", "= 0.10.0"
@@ -49,7 +49,7 @@ Feature: Berksfile default locations
     Given I write to "Berksfile" with:
       """
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      chef_api :knife
+      chef_api :config
 
       cookbook "artifact", "= 0.10.0"
       """
@@ -68,7 +68,7 @@ Feature: Berksfile default locations
   Scenario: with a default chef_api(1) location and a cookbook source that is satisfied by the chef_api(1) location but has an explicit location set
     Given I write to "Berksfile" with:
       """
-      chef_api :knife
+      chef_api :config
 
       cookbook 'artifact', '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
@@ -87,7 +87,7 @@ Feature: Berksfile default locations
   Scenario: with a defualt chef_api(1) location and a cookbook source that is not satisfied by it
     Given I write to "Berksfile" with:
       """
-      chef_api :knife
+      chef_api :config
 
       cookbook 'artifact', '= 0.10.0'
       """

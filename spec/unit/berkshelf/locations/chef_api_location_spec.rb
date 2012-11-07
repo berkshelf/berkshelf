@@ -63,8 +63,8 @@ module Berkshelf
           end
         end
 
-        context "given the symbol :knife for the value of chef_api:" do
-          before(:each) { @loc = subject.new("nginx", constraint, chef_api: :knife) }
+        context "given the symbol :config for the value of chef_api:" do
+          before(:each) { @loc = subject.new("nginx", constraint, chef_api: :config) }
 
           it "uses the value of Chef::Config[:chef_server_url] for the uri attribute" do
             @loc.uri.should eql(Chef::Config[:chef_server_url])
@@ -106,7 +106,7 @@ module Berkshelf
     subject do
       loc = ChefAPILocation.new("nginx",
         double('constraint', satisfies?: true),
-        chef_api: :knife
+        chef_api: :config
       )
     end
 
@@ -225,7 +225,7 @@ module Berkshelf
       subject do
         ChefAPILocation.new('nginx',
           double('constraint'),
-          chef_api: :knife
+          chef_api: :config
         )
       end
 

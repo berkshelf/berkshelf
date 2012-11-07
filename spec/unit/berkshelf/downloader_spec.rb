@@ -70,11 +70,11 @@ module Berkshelf
       context "when the source does not have a location" do
         before(:each) do
           source.stub(:location).and_return(nil)
-          subject.stub(:locations).and_return([{type: :chef_api, value: :knife, options: Hash.new}])
+          subject.stub(:locations).and_return([{type: :chef_api, value: :config, options: Hash.new}])
         end
 
         it "sends the 'download' message to the default location" do
-          Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :knife).and_return(location)
+          Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :config).and_return(location)
           location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
           source.should_receive(:cached_cookbook=).with(cached_cookbook)
 
