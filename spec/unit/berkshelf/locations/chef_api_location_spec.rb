@@ -143,11 +143,10 @@ module Berkshelf
 
       context "given a constraint that matches an available cookbook" do
         before(:each) do
-          cookbook_version = double('cookbook-version')
-          cookbook_version.stub(:manifest).and_return({})
+          manifest = Hash.new
           subject.stub(:version_constraint) { Solve::Constraint.new("= 0.99.0") }
-          rest.should_receive(:get_rest).with("https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.99.0").and_return(cookbook_version)
-          subject.should_receive(:download_files).with(cookbook_version.manifest).and_return(
+          subject.should_receive(:download_manifest).with("https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.99.0").and_return(manifest)
+          subject.should_receive(:download_files).with(manifest).and_return(
             generate_cookbook(Dir.mktmpdir, subject.name, "0.99.0")
           )
         end
@@ -169,10 +168,9 @@ module Berkshelf
         end
 
         it "downloads the manifest of the latest cookbook version of the cookbook" do
-          cookbook_version = double('cookbook-version')
-          cookbook_version.stub(:manifest).and_return({})
-          rest.should_receive(:get_rest).with("https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2").and_return(cookbook_version)
-          subject.should_receive(:download_files).with(cookbook_version.manifest).and_return(
+          manifest = Hash.new
+          subject.should_receive(:download_manifest).with("https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2").and_return(manifest)
+          subject.should_receive(:download_files).with(manifest).and_return(
             generate_cookbook(Dir.mktmpdir, subject.name, subject.latest_version[0])
           )
 
