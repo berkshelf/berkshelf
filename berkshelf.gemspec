@@ -28,11 +28,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activesupport'
   s.add_dependency 'chef', '>= 10.12.0'
-  s.add_dependency 'chozo', '>= 0.2.1'
+  s.add_dependency 'ridley', '>= 0.4.1'
+  s.add_dependency 'chozo', '>= 0.2.2'
   s.add_dependency 'hashie'
   s.add_dependency 'minitar'
   s.add_dependency 'multi_json', '>= 1.3.0'
-  s.add_dependency 'ridley', '>= 0.0.5'
   s.add_dependency 'solve', '>= 0.4.0.rc1'
   s.add_dependency 'thor', '~> 0.16.0'
   s.add_dependency 'vagrant', '~> 1.0.5'
