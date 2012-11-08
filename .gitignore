@@ -20,3 +20,4 @@ tmp
 /spec/fixtures/vcr_cassettes
 /features/config.yml
 *.sw[op]
+/.rbenv-version
