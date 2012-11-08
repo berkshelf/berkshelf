@@ -10,7 +10,7 @@ Feature: update
       """
     Given I write to "Berksfile.lock" with:
       """
-      cookbook 'artifact', :locked_version => '0.0.1'
+      cookbook 'artifact', :locked_version => '0.1.0'
       """
     When I run the update command
     Then the file "Berksfile.lock" should contain exactly:

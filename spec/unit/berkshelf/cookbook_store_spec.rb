@@ -61,7 +61,7 @@ module Berkshelf
 
       context "when there is no matching cookbook for the given name and constraint" do
         let(:version) { Solve::Version.new("1.0.0") }
-        let(:constraint) { Solve::Constraint.new("= 0.0.1") }
+        let(:constraint) { Solve::Constraint.new("= 0.1.0") }
 
         before(:each) do
           subject.stub(:cookbooks).and_return([ double('badcache', name: 'none', version: version) ])
