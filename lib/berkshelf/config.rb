@@ -86,7 +86,7 @@ module Berkshelf
       default: Hash.new
     attribute 'vagrant.vm.network.bridged',
       type: Boolean,
-      default: true
+      default: false
     attribute 'vagrant.vm.network.hostonly',
       type: String,
       default: '33.33.33.10'
