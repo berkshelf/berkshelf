@@ -11,7 +11,7 @@ module Berkshelf
 
       # @return [String]
       def path
-        File.join(Berkshelf.berkshelf_path, FILENAME)
+        @path || File.join(Berkshelf.berkshelf_path, FILENAME)
       end
 
       # @return [String]
