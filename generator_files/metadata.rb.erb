@@ -5,8 +5,8 @@ license          "<%= license_name %>"
 description      "Installs/Configures <%= name %>"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 <% if options[:scmversion] -%>
-version          IO.read(File.join(File.dirname(__FILE__), 'VERSION')) rescue "0.0.1"
+version          IO.read(File.join(File.dirname(__FILE__), 'VERSION')) rescue "0.1.0"
 <% else -%>
-version          "0.0.1"
+version          "0.1.0"
 <% end -%>
 

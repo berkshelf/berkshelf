@@ -71,7 +71,7 @@ module Berkshelf
       end
 
       if options[:scmversion]
-        create_file target.join("VERSION"), "0.0.1"
+        create_file target.join("VERSION"), "0.1.0"
       end
 
       unless options[:no_bundler]
