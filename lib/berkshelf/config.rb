@@ -9,7 +9,7 @@ module Berkshelf
     class << self
       # @return [String]
       def path
-        @path ||= File.join(Berkshelf.berkshelf_path, FILENAME)
+        @path || File.join(Berkshelf.berkshelf_path, FILENAME)
       end
 
       # @param [String] new_path
