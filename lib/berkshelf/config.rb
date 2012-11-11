@@ -11,7 +11,6 @@ module Berkshelf
     KNIFE_LOCATIONS = [
       './.chef/knife.rb',
       '~/.chef/knife.rb',
-      '/etc/chef/solr.rb',
       '/etc/chef/solo.rb',
       '/etc/chef/client.rb'
     ].freeze
