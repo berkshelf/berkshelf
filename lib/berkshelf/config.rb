@@ -26,7 +26,7 @@ module Berkshelf
         @path = File.expand_path(new_path)
       end
 
-      # @return [String]
+      # @return [String, nil]
       def chef_config_path
         @chef_config_path ||= begin
           possibles = KNIFE_LOCATIONS.dup
@@ -38,6 +38,7 @@ module Berkshelf
           location = possibles.find do |location|
             File.exists?(File.expand_path(location))
           end
+          location ||= "~/.chef/knife.rb"
 
           File.expand_path(location)
         end
