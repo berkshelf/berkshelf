@@ -66,16 +66,16 @@ module Berkshelf
         context "given the symbol :config for the value of chef_api:" do
           before(:each) { @loc = subject.new("nginx", constraint, chef_api: :config) }
 
-          it "uses the value of Chef::Config[:chef_server_url] for the uri attribute" do
-            @loc.uri.should eql(Chef::Config[:chef_server_url])
+          it "uses the value of Berkshelf::Chef.instance.chef.chef_server_url for the uri attribute" do
+            @loc.uri.should eql(Berkshelf::Config.instance.chef.chef_server_url)
           end
 
-          it "uses the value of Chef::Config[:node_name] for the node_name attribute" do
-            @loc.node_name.should eql(Chef::Config[:node_name])
+          it "uses the value of Berkshelf::Chef.instance.chef.node_name for the node_name attribute" do
+            @loc.node_name.should eql(Berkshelf::Config.instance.chef.node_name)
           end
 
-          it "uses the value of Chef::Config[:client_key] for the client_key attribute" do
-            @loc.client_key.should eql(Chef::Config[:client_key])
+          it "uses the value of Berkshelf::Chef.instance.chef.client_key for the client_key attribute" do
+            @loc.client_key.should eql(Berkshelf::Config.instance.chef.client_key)
           end
         end
       end
@@ -228,7 +228,7 @@ module Berkshelf
       end
 
       it "returns a string containing the location key and the Chef API URI" do
-        subject.to_s.should eql("chef_api: '#{Chef::Config[:chef_server_url]}'")
+        subject.to_s.should eql("chef_api: '#{Berkshelf::Config.instance.chef.chef_server_url}'")
       end
     end
   end
