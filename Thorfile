@@ -38,25 +38,41 @@ class Default < Thor
 
     desc "all", "Run all tests"
     def all
-      invoke(:unit)
-      invoke(:acceptance)
+      unless run_unit && run_acceptance
+        exit 1
+      end
     end
 
     desc "ci", "Run all possible tests on Travis-CI"
     def ci
       ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
-      run "rspec --tag ~chef_server --tag ~focus --color --format=documentation spec"
-      run "cucumber --format pretty --tags ~@chef_server"
+      unless run_unit("--tag ~chef_server") && run_acceptance("--tags ~@chef_server")
+        exit 1
+      end
     end
 
     desc "unit", "Run unit tests"
     def unit
-      run "rspec --color --format=documentation spec"
+      unless run_unit
+        exit 1
+      end
     end
 
     desc "acceptance", "Run acceptance tests"
     def acceptance
-      run "cucumber --color --format pretty --tags ~@no_run"
+      unless run_acceptance
+        exit 1
+      end
+    end
+
+    no_tasks do
+      def run_unit(*flags)
+        run "rspec --color --format=documentation #{flags.join(' ')} spec"
+      end
+
+      def run_acceptance(*flags)
+        run "cucumber --color --format pretty --tags ~@no_run #{flags.join(' ')}"
+      end
     end
   end
 
