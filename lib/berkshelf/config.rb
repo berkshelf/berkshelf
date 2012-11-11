@@ -7,8 +7,6 @@ module Berkshelf
     FILENAME = "config.json".freeze
 
     class << self
-      attr_writer :path
-
       # @return [String]
       def path
         @path ||= File.join(Berkshelf.berkshelf_path, FILENAME)
