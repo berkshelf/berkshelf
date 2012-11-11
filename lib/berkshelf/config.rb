@@ -7,11 +7,14 @@ module Berkshelf
     FILENAME = "config.json".freeze
 
     class << self
-      attr_writer :path
-
       # @return [String]
       def path
-        @path || File.join(Berkshelf.berkshelf_path, FILENAME)
+        @path ||= File.join(Berkshelf.berkshelf_path, FILENAME)
+      end
+
+      # @param [String] new_path
+      def path=(new_path)
+        @path = File.expand_path(new_path)
       end
 
       # @return [String]
