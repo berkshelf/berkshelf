@@ -1,3 +1,4 @@
+require 'yajl'
 require 'chef/cookbook/metadata'
 require 'chef/cookbook_version'
 require 'chef/knife'

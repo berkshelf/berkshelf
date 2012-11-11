@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
 
+  s.add_dependency 'yajl-ruby'
   s.add_dependency 'activesupport'
   s.add_dependency 'chef', '>= 10.12.0'
   s.add_dependency 'ridley', '>= 0.4.1'
