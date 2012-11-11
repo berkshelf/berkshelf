@@ -19,7 +19,21 @@ module Berkshelf
 
       # @return [String]
       def chef_config_path
-        @chef_config_path ||= File.expand_path(ENV["BERKSHELF_CHEF_CONFIG"] || "~/.chef/knife.rb")
+        @chef_config_path ||= begin
+          # List taken from: http://wiki.opscode.com/display/chef/Chef+Configuration+Settings
+          # Listed in order of preferred preference
+          possible_locations = [
+            ENV['BERKSHELF_CHEF_CONFIG'],
+            './.chef/knife.rb',
+            '~/.chef/knife.rb',
+            '/etc/chef/solr.rb',
+            '/etc/chef/solo.rb',
+            '/etc/chef/client.rb'
+          ].compact # compact in case ENV['BERKSHELF_CHEF_CONFIG'] is nil
+
+          location = possible_locations.find{ |location| File.exists?( File.expand_path(location) ) }
+          File.expand_path(location)
+        end
       end
 
       # @param [String] value
