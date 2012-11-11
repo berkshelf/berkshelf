@@ -6,6 +6,16 @@ module Berkshelf
   class Config < Chozo::Config::JSON
     FILENAME = "config.json".freeze
 
+    # List taken from: http://wiki.opscode.com/display/chef/Chef+Configuration+Settings
+    # Listed in order of preferred preference
+    KNIFE_LOCATIONS = [
+      './.chef/knife.rb',
+      '~/.chef/knife.rb',
+      '/etc/chef/solr.rb',
+      '/etc/chef/solo.rb',
+      '/etc/chef/client.rb'
+    ].freeze
+
     class << self
       # @return [String]
       def path
@@ -20,18 +30,16 @@ module Berkshelf
       # @return [String]
       def chef_config_path
         @chef_config_path ||= begin
-          # List taken from: http://wiki.opscode.com/display/chef/Chef+Configuration+Settings
-          # Listed in order of preferred preference
-          possible_locations = [
-            ENV['BERKSHELF_CHEF_CONFIG'],
-            './.chef/knife.rb',
-            '~/.chef/knife.rb',
-            '/etc/chef/solr.rb',
-            '/etc/chef/solo.rb',
-            '/etc/chef/client.rb'
-          ].compact # compact in case ENV['BERKSHELF_CHEF_CONFIG'] is nil
+          possibles = KNIFE_LOCATIONS.dup
 
-          location = possible_locations.find{ |location| File.exists?( File.expand_path(location) ) }
+          unless ENV['BERKSHELF_CHEF_CONFIG'].nil?
+            possibles.unshift(ENV['BERKSHELF_CHEF_CONFIG'])
+          end
+
+          location = possibles.find do |location|
+            File.exists?(File.expand_path(location))
+          end
+
           File.expand_path(location)
         end
       end
