@@ -106,6 +106,7 @@ module Berkshelf
       
       def validate_options
         assert_option_supported(:foodcritic) if options[:foodcritic]
+        assert_option_supported(:scmversion, 'thor-scmversion') if options[:scmversion]
       end
 
       def assert_option_supported(option, gem_name = option.to_s)
