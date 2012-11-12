@@ -57,6 +57,20 @@ module Berkshelf
     end
   end
 
+  class UnknownGitHubProtocol < BerkshelfError
+    status_code(110)
+    attr_reader :protocol
+
+    # @param [String] protocol
+    def initialize(protocol)
+      @protocol = protocol
+    end
+
+    def to_s
+      "'#{self.protocol}' is not a supported Git protocol for the 'github' location key. Please use 'git' instead."
+    end
+  end
+
   class GitNotFound < BerkshelfError
     status_code(110)
 
