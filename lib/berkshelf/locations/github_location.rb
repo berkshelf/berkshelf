@@ -25,6 +25,12 @@ module Berkshelf
       super
     end
 
+    # Returns the appropriate GitHub url given the specified protocol
+    #
+    # @raise [UnknownGitHubProtocol] if the specified protocol is not supported.
+    #
+    # @return [String]
+    #   GitHub url
     def github_url
       case protocol.to_s
       when 'ssh'
