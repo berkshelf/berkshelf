@@ -103,8 +103,7 @@ EOF
           @uploader ||= Berkshelf::Uploader.new(
             server_url: Chef::Config[:chef_server_url],
             client_name: Chef::Config[:node_name],
-            client_key: Chef::Config[:client_key],
-            organization: Berkshelf::ChefAPILocation.extract_organization(Chef::Config[:chef_server_url])
+            client_key: Chef::Config[:client_key]
           )
         end
     end
