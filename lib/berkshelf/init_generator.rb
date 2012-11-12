@@ -129,6 +129,7 @@ module Berkshelf
           rescue Gem::LoadError
             Berkshelf.ui.warn "By default, this cookbook was generated to support #{gem_name}, however, #{gem_name} is not installed."
             Berkshelf.ui.warn "To skip support for #{gem_name}, use --#{option}"
+            Berkshelf.ui.warn "To install #{gem_name}: gem install #{gem_name}"
           end
         end
       end
