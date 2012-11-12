@@ -41,7 +41,7 @@ module Berkshelf
         end
 
         FileUtils.remove_dir(path, force: true)
-        File.rename(scratch, path)
+        FileUtils.mv(scratch, path)
 
         path
       end
