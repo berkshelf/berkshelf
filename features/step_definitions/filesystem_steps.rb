@@ -143,7 +143,7 @@ Then /^I should have a new cookbook skeleton "(.*?)" with SCMVersion support$/ d
   }
 end
 
-Then /^I should have a new cookbook skeleton "(.*?)" without Bundler support$/ do |name|
+Then /^I should have a new cookbook skeleton "(.*?)" with no Bundler support$/ do |name|
   cb_path = Pathname.new(current_dir).join(name)
   cb_path.should have_structure {
     directory "attributes"
@@ -171,13 +171,13 @@ Then /^I should have a new cookbook skeleton "(.*?)" without Bundler support$/ d
   }
 end
 
-Then /^I should have a new cookbook skeleton "(.*?)" without Git support$/ do |name|
+Then /^I should have a new cookbook skeleton "(.*?)" with no Git support$/ do |name|
   Pathname.new(current_dir).join(name).should have_structure {
     no_file ".gitignore"
   }
 end
 
-Then /^I should have a new cookbook skeleton "(.*?)" without Vagrant support$/ do |name|
+Then /^I should have a new cookbook skeleton "(.*?)" with no Vagrant support$/ do |name|
   Pathname.new(current_dir).join(name).should have_structure {
     file "Gemfile" do
       does_not_contain "gem 'vagrant'"
