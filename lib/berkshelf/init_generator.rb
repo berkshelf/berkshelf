@@ -97,7 +97,7 @@ module Berkshelf
           File.basename(target)
         end
       end
-
+  
       def validate_configuration
         unless Config.instance.valid?
           raise InvalidConfiguration.new Config.instance.errors
@@ -105,17 +105,32 @@ module Berkshelf
       end
       
       def validate_options
-        assert_option_supported(:foodcritic) if options[:foodcritic]
-        assert_option_supported(:scmversion, 'thor-scmversion') if options[:scmversion]
+        assert_option_supported(:foodcritic)
+        assert_option_supported(:scmversion, 'thor-scmversion')
+        assert_default_supported(:no_bundler, 'bundler')
+        # Vagrant is a dependency of Berkshelf, so it will always appear available to the Berkshelf process.
       end
-
-      def assert_option_supported(option, gem_name = option.to_s)
-        begin
-          Gem::Specification.find_by_name(gem_name)
-        rescue Gem::LoadError
-          Berkshelf.ui.warn "This cookbook was generated with --#{option}, however, #{gem_name} is not installed."
-          Berkshelf.ui.warn "To make use of --#{option}: gem install #{gem_name}"
+  
+      def assert_option_supported(option, gem_name = option.to_s, affirmative = true)
+        if options[option]
+          begin
+            Gem::Specification.find_by_name(gem_name)
+          rescue Gem::LoadError
+            Berkshelf.ui.warn "This cookbook was generated with --#{option}, however, #{gem_name} is not installed."
+            Berkshelf.ui.warn "To make use of --#{option}: gem install #{gem_name}"
+          end
         end
       end
-    end
+  
+      def assert_default_supported(option, gem_name = option.to_s)
+        unless options[option]
+          begin
+            Gem::Specification.find_by_name(gem_name)
+          rescue Gem::LoadError
+            Berkshelf.ui.warn "By default, this cookbook was generated to support #{gem_name}, however, #{gem_name} is not installed."
+            Berkshelf.ui.warn "To skip support for #{gem_name}, use --#{option}"
+          end
+        end
+      end
   end
+end

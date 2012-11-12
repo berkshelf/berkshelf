@@ -18,7 +18,7 @@ Feature: cookbook command
     When I run the cookbook command to create "sparkle_motion" with options:
       | --foodcritic |
     Then I should have a new cookbook skeleton "sparkle_motion" with Foodcritic support
-    And the output should contain "This cookbook was generated with --foodcritic, however, foodcritic is not installed.\nTo make use of --foodcritic: gem install foodcritic"
+    And the output should contain a warning to suggest supporting the option "foodcritic" by installing "foodcritic"
     And the exit status should be 0
 
   Scenario: creating a new cookbook skeleton with SCMVersion support
@@ -31,13 +31,22 @@ Feature: cookbook command
     When I run the cookbook command to create "sparkle_motion" with options:
       | --scmversion |
     Then I should have a new cookbook skeleton "sparkle_motion" with SCMVersion support
-    And the output should contain "This cookbook was generated with --scmversion, however, thor-scmversion is not installed.\nTo make use of --scmversion: gem install thor-scmversion"
+    And the output should contain a warning to suggest supporting the option "scmversion" by installing "thor-scmversion"
     And the exit status should be 0
 
   Scenario: creating a new cookbook skeleton without Bundler support
     When I run the cookbook command to create "sparkle_motion" with options:
       | --no-bundler |
     Then I should have a new cookbook skeleton "sparkle_motion" without Bundler support
+    And the exit status should be 0
+
+    @pending
+  Scenario: creating a new cookbook skeleton with bundler support without bundler installed
+    Given pending "Bundler is used in tests, so it always appears available. Need to mock out the Gem::Specification.find_by_name, but aruba is out of process testing."
+    # Given the gem "bundler" is not installed
+    When I run the cookbook command to create "sparkle_motion"
+    Then I should have a new cookbook skeleton "sparkle_motion"
+    And the output should contain a warning to suggest supporting the default for "no_bundler" by installing "bundler"
     And the exit status should be 0
 
   Scenario: creating a new cookbook skeleton without Git support
@@ -51,3 +60,4 @@ Feature: cookbook command
       | --skip-vagrant |
     Then I should have a new cookbook skeleton "sparkle_motion" without Vagrant support
     And the exit status should be 0
+
