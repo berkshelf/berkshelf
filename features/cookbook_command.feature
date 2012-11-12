@@ -8,32 +8,35 @@ Feature: cookbook command
     Then I should have a new cookbook skeleton "sparkle_motion"
     And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton with Foodcritic support
+  Scenario Outline: creating a new cookbook skeleton with affirmative options
     When I run the cookbook command to create "sparkle_motion" with options:
-      | --foodcritic |
-    Then I should have a new cookbook skeleton "sparkle_motion" with Foodcritic support
+      | --<option> |
+    Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
     And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton with SCMVersion support
+  Examples:
+    | option       | feature    |
+    | foodcritic   | Foodcritic |
+    | scmversion   | SCMVersion |
+    | no-bundler   | no Bundler |
+    | skip-git     | no Git     |
+    | skip-vagrant | no Vagrant |
+
+  Scenario Outline: creating a new cookbook skeleton with options without the supporting gem installed
     When I run the cookbook command to create "sparkle_motion" with options:
-      | --scmversion |
-    Then I should have a new cookbook skeleton "sparkle_motion" with SCMVersion support
+      | --<option> |
+    Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
+    And the output should contain a warning to suggest supporting the option "<option>" by installing "<gem>"
     And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton without Bundler support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --no-bundler |
-    Then I should have a new cookbook skeleton "sparkle_motion" without Bundler support
-    And the exit status should be 0
+  Examples:
+    | option     | feature    | gem             |
+    | foodcritic | Foodcritic | foodcritic      |
+    | scmversion | SCMVersion | thor-scmversion |
+    # | no-bundler   | no Bundler | bundler         |
 
-  Scenario: creating a new cookbook skeleton without Git support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --skip-git |
-    Then I should have a new cookbook skeleton "sparkle_motion" without Git support
-    And the exit status should be 0
+    @pending
+  Scenario: creating a new cookbook skeleton with bundler support without bundler installed
+    Given pending "Bundler is used in tests, so it always appears available. Need to mock out the Gem::Specification.find_by_name, but aruba is out of process testing."
 
-  Scenario: creating a new cookbook skeleton without Vagrant support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --skip-vagrant |
-    Then I should have a new cookbook skeleton "sparkle_motion" without Vagrant support
-    And the exit status should be 0
+

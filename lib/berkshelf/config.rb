@@ -66,6 +66,9 @@ module Berkshelf
         File.read(path) if File.exists?(path)
       end
 
+      # Instantiate and return or just return the currently instantiated Berkshelf
+      # configuration
+      #
       # @return [Config]
       def instance
         @instance ||= if file
@@ -73,6 +76,14 @@ module Berkshelf
         else
           new
         end
+      end
+
+      # Reload the currently instantiated Berkshelf configuration
+      #
+      # @return [Config]
+      def reload
+        @instance = nil
+        self.instance
       end
     end
 
