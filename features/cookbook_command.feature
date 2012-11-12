@@ -14,6 +14,13 @@ Feature: cookbook command
     Then I should have a new cookbook skeleton "sparkle_motion" with Foodcritic support
     And the exit status should be 0
 
+  Scenario: creating a new cookbook skeleton with Foodcritic support without Foodcritic installed
+    When I run the cookbook command to create "sparkle_motion" with options:
+      | --foodcritic |
+    Then I should have a new cookbook skeleton "sparkle_motion" with Foodcritic support
+    And the output should contain "This cookbook was generated with --foodcritic, however, foodcritic is not installed.\nTo make use of --foodcritic: gem install foodcritic"
+    And the exit status should be 0
+
   Scenario: creating a new cookbook skeleton with SCMVersion support
     When I run the cookbook command to create "sparkle_motion" with options:
       | --scmversion |

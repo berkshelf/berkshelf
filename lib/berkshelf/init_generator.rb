@@ -49,6 +49,7 @@ module Berkshelf
 
     def generate
       validate_configuration
+      validate_options
 
       template "Berksfile.erb", target.join("Berksfile")
 
@@ -102,5 +103,18 @@ module Berkshelf
           raise InvalidConfiguration.new Config.instance.errors
         end
       end
+      
+      def validate_options
+        assert_option_supported(:foodcritic) if options[:foodcritic]
+      end
+
+      def assert_option_supported(option, gem_name = option.to_s)
+        begin
+          Gem::Specification.find_by_name(gem_name)
+        rescue Gem::LoadError
+          Berkshelf.ui.warn "This cookbook was generated with --#{option}, however, #{gem_name} is not installed."
+          Berkshelf.ui.warn "To make use of --#{option}: gem install #{gem_name}"
+        end
+      end
+    end
   end
-end
