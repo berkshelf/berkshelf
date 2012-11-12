@@ -128,8 +128,10 @@ Feature: install cookbooks from a Berksfile
 
     Examples:
       | protocol |
-      | ssh      |
-      | https    |
+      # GitHub over ssh requires push authorization. Nonpushers will
+      # get a test failure here.
+      # | ssh   |
+      | https |
 
   Scenario: installing a Berksfile that contains a Github location and an unsupported protocol
     Given I write to "Berksfile" with:
