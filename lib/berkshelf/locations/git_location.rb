@@ -4,10 +4,11 @@ module Berkshelf
     include Location
 
     set_location_key :git
-    set_valid_options :ref, :branch, :tag
+    set_valid_options :ref, :branch, :tag, :rel
 
     attr_accessor :uri
     attr_accessor :branch
+    attr_accessor :rel
 
     alias_method :ref, :branch
     alias_method :tag, :branch
@@ -29,6 +30,7 @@ module Berkshelf
       @version_constraint = version_constraint
       @uri                = options[:git]
       @branch             = options[:branch] || options[:ref] || options[:tag]
+      @rel                = options[:rel]
 
       Git.validate_uri!(@uri)
     end
@@ -44,7 +46,8 @@ module Berkshelf
         self.branch = ::Berkshelf::Git.rev_parse(tmp_clone)
       end
 
-      unless File.chef_cookbook?(tmp_clone)
+      tmp_path = "#{tmp_clone}/#{rel}"
+      unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
         raise CookbookNotFound, msg
@@ -52,7 +55,7 @@ module Berkshelf
 
       cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(tmp_clone)}")
       FileUtils.rm_rf(cb_path)
-      FileUtils.mv(tmp_clone, cb_path)
+      FileUtils.mv(tmp_path, cb_path)
 
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
