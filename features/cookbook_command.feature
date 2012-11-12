@@ -8,56 +8,35 @@ Feature: cookbook command
     Then I should have a new cookbook skeleton "sparkle_motion"
     And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton with Foodcritic support
+  Scenario Outline: creating a new cookbook skeleton with affirmative options
     When I run the cookbook command to create "sparkle_motion" with options:
-      | --foodcritic |
-    Then I should have a new cookbook skeleton "sparkle_motion" with Foodcritic support
+      | --<option> |
+    Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
     And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton with Foodcritic support without Foodcritic installed
+  Examples:
+    | option       | feature    |
+    | foodcritic   | Foodcritic |
+    | scmversion   | SCMVersion |
+    | no-bundler   | no Bundler |
+    | skip-git     | no Git     |
+    | skip-vagrant | no Vagrant |
+
+  Scenario Outline: creating a new cookbook skeleton with options without the supporting gem installed
     When I run the cookbook command to create "sparkle_motion" with options:
-      | --foodcritic |
-    Then I should have a new cookbook skeleton "sparkle_motion" with Foodcritic support
-    And the output should contain a warning to suggest supporting the option "foodcritic" by installing "foodcritic"
+      | --<option> |
+    Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
+    And the output should contain a warning to suggest supporting the option "<option>" by installing "<gem>"
     And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton with SCMVersion support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --scmversion |
-    Then I should have a new cookbook skeleton "sparkle_motion" with SCMVersion support
-    And the exit status should be 0
-
-  Scenario: creating a new cookbook skeleton with SCMVersion support without thor-scmversion installed
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --scmversion |
-    Then I should have a new cookbook skeleton "sparkle_motion" with SCMVersion support
-    And the output should contain a warning to suggest supporting the option "scmversion" by installing "thor-scmversion"
-    And the exit status should be 0
-
-  Scenario: creating a new cookbook skeleton without Bundler support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --no-bundler |
-    Then I should have a new cookbook skeleton "sparkle_motion" without Bundler support
-    And the exit status should be 0
+  Examples:
+    | option     | feature    | gem             |
+    | foodcritic | Foodcritic | foodcritic      |
+    | scmversion | SCMVersion | thor-scmversion |
+    # | no-bundler   | no Bundler | bundler         |
 
     @pending
   Scenario: creating a new cookbook skeleton with bundler support without bundler installed
     Given pending "Bundler is used in tests, so it always appears available. Need to mock out the Gem::Specification.find_by_name, but aruba is out of process testing."
-    # Given the gem "bundler" is not installed
-    When I run the cookbook command to create "sparkle_motion"
-    Then I should have a new cookbook skeleton "sparkle_motion"
-    And the output should contain a warning to suggest supporting the default for "no_bundler" by installing "bundler"
-    And the exit status should be 0
 
-  Scenario: creating a new cookbook skeleton without Git support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --skip-git |
-    Then I should have a new cookbook skeleton "sparkle_motion" without Git support
-    And the exit status should be 0
-
-  Scenario: creating a new cookbook skeleton without Vagrant support
-    When I run the cookbook command to create "sparkle_motion" with options:
-      | --skip-vagrant |
-    Then I should have a new cookbook skeleton "sparkle_motion" without Vagrant support
-    And the exit status should be 0
 
