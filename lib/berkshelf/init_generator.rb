@@ -1,5 +1,6 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Josiah Kiehl <josiah@skirmisher.net>
   class InitGenerator < BaseGenerator
     def initialize(*args)
       super(*args)
@@ -47,6 +48,7 @@ module Berkshelf
       type: :hash,
       default: Config.instance
 
+    # Generate the cookbook
     def generate
       validate_configuration
       check_option_support
@@ -87,6 +89,10 @@ module Berkshelf
 
     private
 
+      # Read the cookbook name from the metadata.rb
+      #
+      # @return [String]
+      #   name of the cookbook
       def cookbook_name
         @cookbook_name ||= begin
           metadata = Chef::Cookbook::Metadata.new
@@ -97,31 +103,48 @@ module Berkshelf
           File.basename(target)
         end
       end
-  
+
+      # Assert valid configuration
+      #
+      # @raise [InvalidConfiguration] if the configuration is invalid
+      #
+      # @return [nil]
       def validate_configuration
         unless Config.instance.valid?
           raise InvalidConfiguration.new Config.instance.errors
         end
       end
       
+
+      # Check for supporting gems for provided options
+      #
+      # @return [Boolean]
       def check_option_support
-        assert_option_supported(:foodcritic)
-        assert_option_supported(:scmversion, 'thor-scmversion')
+        assert_option_supported(:foodcritic) &&
+        assert_option_supported(:scmversion, 'thor-scmversion') &&
         assert_default_supported(:no_bundler, 'bundler')
-        # Vagrant is a dependency of Berkshelf, so it will always appear available to the Berkshelf process.
+        # Vagrant is a dependency of Berkshelf; it will always appear available to the Berkshelf process.
       end
-  
-      def assert_option_supported(option, gem_name = option.to_s, affirmative = true)
+
+      # Warn if the supporting gem for an option is not installed
+      #
+      # @return [Boolean]
+      def assert_option_supported(option, gem_name = option.to_s)
         if options[option]
           begin
             Gem::Specification.find_by_name(gem_name)
           rescue Gem::LoadError
             Berkshelf.ui.warn "This cookbook was generated with --#{option}, however, #{gem_name} is not installed."
             Berkshelf.ui.warn "To make use of --#{option}: gem install #{gem_name}"
+            return false
           end
         end
+        true
       end
-  
+
+      # Warn if the supporting gem for a default is not installed
+      #
+      # @return [Boolean]  
       def assert_default_supported(option, gem_name = option.to_s)
         unless options[option]
           begin
@@ -130,8 +153,10 @@ module Berkshelf
             Berkshelf.ui.warn "By default, this cookbook was generated to support #{gem_name}, however, #{gem_name} is not installed."
             Berkshelf.ui.warn "To skip support for #{gem_name}, use --#{option}"
             Berkshelf.ui.warn "To install #{gem_name}: gem install #{gem_name}"
+            return false
           end
         end
+        true
       end
   end
 end
