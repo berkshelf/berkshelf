@@ -48,10 +48,11 @@ module Berkshelf
         self.branch = ::Berkshelf::Git.rev_parse(tmp_clone)
       end
 
-      tmp_path = "#{tmp_clone}/#{rel}"
+      tmp_path = rel ? File.join(tmp_clone, rel) : tmp_clone
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
+        msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
 
