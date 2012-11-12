@@ -56,20 +56,6 @@ module Berkshelf
 
         true
       end
-
-      # Retrieves the organization of a Chef API URI. If the URI does not contain an
-      # organization then nil will be returned.
-      #
-      # @param [String] uri
-      #
-      # @raise [InvalidChefAPILocation]
-      #
-      # @return [String, nil]
-      def extract_organization(uri)
-        validate_uri!(uri)
-
-        URI(uri).path.split('organizations/')[1]
-      end
     end
 
     include Location
