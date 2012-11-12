@@ -79,6 +79,20 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
+  Scenario: installing a Berksfile that contains a Git location
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"
+      """
+    When I run the install command
+    Then the cookbook store should have the git cookbooks:
+      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+    And the output should contain:
+      """
+      Installing artifact (0.9.8) from github: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.9.8'
+      """
+    And the exit status should be 0
+
   Scenario: installing a Berksfile that contains an explicit site location
     Given I write to "Berksfile" with:
       """
