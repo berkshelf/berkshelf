@@ -25,6 +25,8 @@ module Berkshelf
     #   same as ref
     # @option options [String] :tag
     #   same as tag
+    # @option options [String] :rel
+    #   the path within the repository to find the cookbook
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
