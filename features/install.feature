@@ -112,7 +112,6 @@ Feature: install cookbooks from a Berksfile
       | , protocol: "git" |
       |                   |
 
-
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I write to "Berksfile" with:
       """
