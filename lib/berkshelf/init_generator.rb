@@ -49,7 +49,7 @@ module Berkshelf
 
     def generate
       validate_configuration
-      validate_options
+      check_option_support
 
       template "Berksfile.erb", target.join("Berksfile")
 
@@ -104,7 +104,7 @@ module Berkshelf
         end
       end
       
-      def validate_options
+      def check_option_support
         assert_option_supported(:foodcritic)
         assert_option_supported(:scmversion, 'thor-scmversion')
         assert_default_supported(:no_bundler, 'bundler')
