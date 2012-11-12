@@ -16,6 +16,8 @@ module Berkshelf
     #
     # @option options [String] :github
     #   the GitHub repo identifier to clone
+    # @option options [String] :protocol
+    #   the protocol with which to communicate with GitHub
     def initialize(name, version_constraint, options = {})
       @repo_identifier = options.delete(:github)
       @protocol = options.delete(:protocol) || DEFAULT_PROTOCOL
