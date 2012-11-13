@@ -13,8 +13,6 @@ module Berkshelf
     alias_method :ref, :branch
     alias_method :tag, :branch
 
-    @@tmpdir = Dir.mktmpdir
-
     # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint
     # @param [Hash] options
@@ -81,13 +79,19 @@ module Berkshelf
     end
 
     private
+      class << self
+        def tmpdir
+          @tmpdir = Dir.mktmpdir unless defined? @tmpdir
+          @tmpdir
+        end
+      end
 
       def git
         @git ||= Berkshelf::Git.new(uri)
       end
 
       def clone
-        tmp_clone = @@tmpdir + '/' + uri.gsub(/[\/:]/,'-')
+        tmp_clone = self.class.tmpdir + '/' + uri.gsub(/[\/:]/,'-')
         ::Berkshelf::Git.clone(uri, tmp_clone) unless File.exists?(tmp_clone)
         tmp_clone
       end
