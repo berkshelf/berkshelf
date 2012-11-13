@@ -269,6 +269,15 @@ An optional `branch` key can be specified whose value is a tag, branch, or ref t
 
 Given the previous example, the cookbook found at tag `1.0.1` of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
+##### GitHub Location
+
+As of version 1.0.0, you may now use GitHub shorthand to specify a location.
+
+    cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"
+
+Given this example, the `artifact` cookbook from the `RiotGames` organization in the `artifact-cookbook` repository with a tag of `0.9.8` will be cloned to The Berkshelf.
+Note: `ref:` is an alias for `branch:` and can be used interchangeably.
+
 ### Default Locations
 
 Any source that does not explicit define a location will attempted to be retrieved at the latest Opscode community API. Any source not explicitly defined in the Berksfile but found in the `metadata.rb` of the current cookbook or a dependency will also attempt to use this default location.
