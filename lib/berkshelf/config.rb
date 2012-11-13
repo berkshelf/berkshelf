@@ -131,7 +131,6 @@ module Berkshelf
       default: 'chef_solo'
     attribute 'ssl.verify',
       type: Boolean,
-      default: true,
-      required: true
+      default: true
   end
 end
