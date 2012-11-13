@@ -41,14 +41,12 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      tmp_clone = Dir.mktmpdir
-      ::Berkshelf::Git.clone(uri, tmp_clone)
-      ::Berkshelf::Git.checkout(tmp_clone, branch) if branch
+      ::Berkshelf::Git.checkout(clone, branch) if branch
       unless branch
-        self.branch = ::Berkshelf::Git.rev_parse(tmp_clone)
+        self.branch = ::Berkshelf::Git.rev_parse(clone)
       end
 
-      tmp_path = rel ? File.join(tmp_clone, rel) : tmp_clone
+      tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
@@ -56,7 +54,7 @@ module Berkshelf
         raise CookbookNotFound, msg
       end
 
-      cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(tmp_clone)}")
+      cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(clone)}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 
@@ -81,9 +79,21 @@ module Berkshelf
     end
 
     private
+      class << self
+        def tmpdir
+          @tmpdir = Dir.mktmpdir unless defined? @tmpdir
+          @tmpdir
+        end
+      end
 
       def git
         @git ||= Berkshelf::Git.new(uri)
+      end
+
+      def clone
+        tmp_clone = self.class.tmpdir + '/' + uri.gsub(/[\/:]/,'-')
+        ::Berkshelf::Git.clone(uri, tmp_clone) unless File.exists?(tmp_clone)
+        tmp_clone
       end
   end
 end
