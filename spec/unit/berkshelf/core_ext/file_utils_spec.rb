@@ -6,16 +6,10 @@ describe FileUtils do
     let(:dest) { double('dest') }
     let(:options) { double('options') }
 
-    it "delegates to #safe_mv if on Windows" do
+    it "replaces mv with cp_r and rm_rf" do
       subject.stub(:windows?) { true }
-      FileUtils.should_receive(:safe_mv).with(src, dest, options)
-
-      FileUtils.mv(src, dest, options)
-    end
-
-    it "delegates to #old_mv if not on Windows" do
-      subject.stub(:windows?) { false }
-      FileUtils.should_receive(:old_mv).with(src, dest, options)
+      FileUtils.should_receive(:cp_r).with(src, dest, options)
+      FileUtils.should_receive(:rm_rf).with(src)
 
       FileUtils.mv(src, dest, options)
     end
