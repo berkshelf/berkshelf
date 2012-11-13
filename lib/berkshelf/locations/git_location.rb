@@ -37,21 +37,20 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      tmp_clone = clone
-      ::Berkshelf::Git.checkout(tmp_clone, branch) if branch
+      ::Berkshelf::Git.checkout(clone, branch) if branch
       unless branch
-        self.branch = ::Berkshelf::Git.rev_parse(tmp_clone)
+        self.branch = ::Berkshelf::Git.rev_parse(clone)
       end
 
-      unless File.chef_cookbook?(tmp_clone)
+      unless File.chef_cookbook?(clone)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
         raise CookbookNotFound, msg
       end
 
-      cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(tmp_clone)}")
+      cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(clone)}")
       FileUtils.rm_rf(cb_path)
-      FileUtils.mv(tmp_clone, cb_path)
+      FileUtils.mv(clone, cb_path)
 
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
