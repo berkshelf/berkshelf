@@ -37,8 +37,7 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      tmp_clone = Dir.mktmpdir
-      ::Berkshelf::Git.clone(uri, tmp_clone)
+      tmp_clone = clone
       ::Berkshelf::Git.checkout(tmp_clone, branch) if branch
       unless branch
         self.branch = ::Berkshelf::Git.rev_parse(tmp_clone)
@@ -78,6 +77,16 @@ module Berkshelf
 
       def git
         @git ||= Berkshelf::Git.new(uri)
+      end
+
+      def tmpdir
+        @@tmpdir ||= Dir.mktmpdir
+      end
+
+      def clone
+        tmp_clone = tmpdir + uri.gsub(/[\/:]/,'-')
+        ::Berkshelf::Git.clone(uri, tmp_clone) unless File.exists?(tmp_clone)
+        tmp_clone
       end
   end
 end
