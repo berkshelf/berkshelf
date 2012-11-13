@@ -1,0 +1,7 @@
+rvm:
+  - 1.9.3
+  - ruby-head
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+script: 'jekyll --no-auto --no-server'
