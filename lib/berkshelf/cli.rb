@@ -183,7 +183,7 @@ module Berkshelf
         client_name: Berkshelf::Config.instance.chef.node_name,
         client_key: Berkshelf::Config.instance.chef.client_key,
         ssl: {
-          verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify)
+          verify: (options[:ssl_verify].nil? ? Berkshelf::Config.instance.ssl.verify : options[:ssl_verify])
         }
       )
     rescue Ridley::Errors::ClientKeyFileNotFound => e
