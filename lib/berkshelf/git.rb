@@ -73,16 +73,8 @@ module Berkshelf
       def find_git
         git_path = nil
         ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
-          potential_path = File.join(path, 'git')
-          if File.executable?(potential_path)
-            git_path = potential_path
-            break
-          end
-          potential_path = File.join(path, 'git.exe')
-          if File.executable?(potential_path)
-            git_path = potential_path
-            break
-          end
+          git_path = detect_git_path(path)
+          break if git_path
         end
 
         unless git_path
@@ -143,6 +135,16 @@ module Berkshelf
           return arg if HAS_QUOTE_RE.match(arg)
           return arg unless HAS_SPACE_RE.match(arg)
           "\"#{arg}\""
+        end
+
+        def detect_git_path(base_dir)
+          %w{ git git.exe git.cmd }.each do |git_cmd|
+            potential_path = File.join(base_dir, git_cmd)
+            if File.executable?(potential_path)
+              return potential_path
+            end
+          end
+          nil
         end
     end
   end
