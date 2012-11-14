@@ -32,7 +32,7 @@ module Berkshelf
     # @return [String]
     #   GitHub url
     def github_url
-      case protocol.to_s
+      case protocol
       when :ssh
         "git@github.com:#{repo_identifier}.git"
       when :https
