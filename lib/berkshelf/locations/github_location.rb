@@ -1,7 +1,7 @@
 module Berkshelf
   # @author Josiah Kiehl <josiah@skirmisher.net>
   class GithubLocation < GitLocation
-    DEFAULT_PROTOCOL = 'git'
+    DEFAULT_PROTOCOL = :git
 
     set_location_key :github
     set_valid_options :protocol
@@ -16,12 +16,12 @@ module Berkshelf
     #
     # @option options [String] :github
     #   the GitHub repo identifier to clone
-    # @option options [String] :protocol
+    # @option options [#to_sym] :protocol
     #   the protocol with which to communicate with GitHub
     def initialize(name, version_constraint, options = {})
       @repo_identifier = options.delete(:github)
-      @protocol = options.delete(:protocol) || DEFAULT_PROTOCOL
-      options[:git] = github_url
+      @protocol        = (options.delete(:protocol) || DEFAULT_PROTOCOL).to_sym
+      options[:git]    = github_url
       super
     end
 
@@ -33,11 +33,11 @@ module Berkshelf
     #   GitHub url
     def github_url
       case protocol.to_s
-      when 'ssh'
+      when :ssh
         "git@github.com:#{repo_identifier}.git"
-      when 'https'
+      when :https
         "https://github.com/#{repo_identifier}.git"
-      when 'git'
+      when :git
         "git://github.com/#{repo_identifier}.git"
       else
         raise UnknownGitHubProtocol.new(protocol)
@@ -46,7 +46,7 @@ module Berkshelf
 
     def to_s
       s = "#{self.class.location_key}: '#{repo_identifier}'"
-      s << " with branch: '#{branch}'"     if branch
+      s << " with branch: '#{branch}'" if branch
       s << " over protocol: '#{protocol}'" unless default_protocol?
       s
     end
@@ -54,7 +54,7 @@ module Berkshelf
     private
 
       def default_protocol?
-        @protocol == DEFAULT_PROTOCOL
+        self.protocol == DEFAULT_PROTOCOL
       end
   end
 end
