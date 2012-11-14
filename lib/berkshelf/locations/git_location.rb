@@ -1,6 +1,17 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class GitLocation
+    class << self
+      # Create a temporary directory for the cloned repository within Berkshelf's
+      # temporary directory
+      #
+      # @return [String]
+      #   the path to the created temporary directory
+      def tmpdir
+        @tmpdir ||= Dir.mktmpdir(Berkshelf.mktmpdir)
+      end
+    end
+
     include Location
 
     set_location_key :git
@@ -79,20 +90,18 @@ module Berkshelf
     end
 
     private
-      class << self
-        def tmpdir
-          @tmpdir = Dir.mktmpdir unless defined? @tmpdir
-          @tmpdir
-        end
-      end
 
       def git
         @git ||= Berkshelf::Git.new(uri)
       end
 
       def clone
-        tmp_clone = self.class.tmpdir + '/' + uri.gsub(/[\/:]/,'-')
-        ::Berkshelf::Git.clone(uri, tmp_clone) unless File.exists?(tmp_clone)
+        tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
+
+        unless File.exists?(tmp_clone)
+          Berkshelf::Git.clone(uri, tmp_clone)
+        end
+
         tmp_clone
       end
   end

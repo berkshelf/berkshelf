@@ -83,8 +83,8 @@ module Berkshelf
     # @return [String]
     #   path to the created temporary directory
     def mktmpdir
-      FileUtils.mkdir_p(File.join(berkshelf_path, "tmp"))
-      Dir.mktmpdir(nil, File.join(berkshelf_path, "tmp"))
+      FileUtils.mkdir_p(tmp_dir)
+      Dir.mktmpdir(nil, tmp_dir)
     end
 
     def cookbooks_dir
