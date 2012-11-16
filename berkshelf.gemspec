@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'yajl-ruby'
   s.add_dependency 'activesupport'
-  s.add_dependency 'chef', '>= 10.12.0'
+  s.add_dependency 'chef', '>= 10.16.2'
   s.add_dependency 'ridley', '>= 0.4.1'
   s.add_dependency 'chozo', '>= 0.2.3'
   s.add_dependency 'hashie'
