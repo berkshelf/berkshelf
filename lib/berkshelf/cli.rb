@@ -228,6 +228,23 @@ module Berkshelf
       ::Berkshelf.formatter.msg "Successfully initialized"
     end
 
+    desc "list", "Show all of the cookbooks in the current Berkshelf"
+    def list
+      Berkshelf.ui.say "Cookbooks included by Berkshelf:"
+      Berkshelf.cookbook_store.cookbooks.sort.each do |cookbook|
+        Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+      end
+    end
+
+    desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
+    def show(name = nil)
+      return list if name.nil?
+
+      cookbook = Berkshelf.cookbook_store.cookbooks(name).last
+      raise CookbookNotFound, "Could not find cookbook '#{name}' in any of the sources" unless cookbook
+      Berkshelf.ui.say(cookbook.path)
+    end
+
     desc "version", "Display version and copyright information"
     def version
       Berkshelf.formatter.msg version_header
