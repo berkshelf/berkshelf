@@ -213,6 +213,10 @@ module Berkshelf
       "#{cookbook_name} (#{version}) '#{path}'"
     end
 
+    def <=>(other_cookbook)
+      [self.cookbook_name, self.version] <=> [other_cookbook.cookbook_name, other_cookbook.version]
+    end
+
     private
 
       attr_reader :files
