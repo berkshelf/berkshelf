@@ -95,22 +95,16 @@ module Berkshelf
     def open(name)
       editor = ENV['EDITOR']
 
-      unless editor
-        Berkshelf.ui.info "To open a cookbook, $EDITOR must be set"
-        return
-      end
+      raise ArgumentError, "To open a cookbook, $EDITOR must be set" unless editor
 
       cookbook = Berkshelf.cookbook_store.cookbooks(name).last
 
-      unless cookbook
-        Berkshelf.ui.info "Cookbook '#{name}' not found"
-        return
-      end
+      raise CookbookNotFound, "Cookbook '#{name}' not found" unless cookbook
 
       command = "#{editor} #{cookbook.path}"
       success = system command
 
-      Berkshelf.ui.info "Could not run `#{command}`" unless success
+      raise CommandUnsuccessful, "Could not run `#{command}`" unless success
     end
 
     method_option :except,
