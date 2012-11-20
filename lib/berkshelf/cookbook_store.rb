@@ -35,9 +35,10 @@ module Berkshelf
     end
 
     # Returns an array of the Cookbooks that have been cached to the
-    # storage_path of this instance of CookbookStore. Passing the filter
-    # option will return only the CachedCookbooks whose name match the
-    # filter.
+    # storage_path of this instance of CookbookStore.
+    #
+    # @param [String] filter
+    #   return only the CachedCookbooks whose name match the given filter
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)

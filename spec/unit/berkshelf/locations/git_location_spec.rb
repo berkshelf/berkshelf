@@ -14,6 +14,12 @@ module Berkshelf
           }.should raise_error(InvalidGitURI)
         end
       end
+
+      describe "::tmpdir" do
+        it "creates a temporary directory within the Berkshelf temporary directory" do
+          subject.tmpdir.should include(Berkshelf.tmp_dir)
+        end
+      end
     end
 
     subject { GitLocation.new("artifact", complacent_constraint, git: "git://github.com/RiotGames/artifact-cookbook.git") }
