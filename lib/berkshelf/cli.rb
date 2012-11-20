@@ -157,12 +157,12 @@ module Berkshelf
     option :force,
       type: :boolean,
       default: false,
-      desc: "Upload all cookbooks even if a frozen one exists on the target Chef Server"
+      desc: "Upload cookbook(s) even if a frozen one exists on the target Chef Server"
     option :ssl_verify,
       type: :boolean,
       default: nil,
       desc: "Disable/Enable SSL verification when uploading cookbooks"
-    desc "upload [COOKBOOKS]", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
+    desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
