@@ -19,3 +19,9 @@ Then /^the Chef server should have the cookbooks:$/ do |cookbooks|
     server_has_cookbook?(name, version).should be_true
   end
 end
+
+Then /^the Chef server should not have the cookbooks:$/ do |cookbooks|
+  cookbooks.raw.each do |name, version|
+    server_has_cookbook?(name, version).should be_false
+  end
+end
