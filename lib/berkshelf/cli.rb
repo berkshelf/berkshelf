@@ -162,7 +162,7 @@ module Berkshelf
       type: :boolean,
       default: nil,
       desc: "Disable/Enable SSL verification when uploading cookbooks"
-    desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
+    desc "upload [COOKBOOKS]", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
