@@ -162,8 +162,8 @@ module Berkshelf
       type: :boolean,
       default: nil,
       desc: "Disable/Enable SSL verification when uploading cookbooks"
-    desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
-    def upload
+    desc "upload [COOKBOOKS]", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
+    def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
       unless Berkshelf::Config.instance.chef.chef_server_url.present?
@@ -184,7 +184,8 @@ module Berkshelf
         client_key: Berkshelf::Config.instance.chef.client_key,
         ssl: {
           verify: (options[:ssl_verify].nil? ? Berkshelf::Config.instance.ssl.verify : options[:ssl_verify])
-        }
+        },
+        cookbooks: cookbook_names
       )
     rescue Ridley::Errors::ClientKeyFileNotFound => e
       msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."

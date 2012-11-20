@@ -12,9 +12,9 @@ Spork.prefork do
   APP_ROOT = File.expand_path('../../../', __FILE__)
 
   ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "berkshelf")
-  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "tmp", "knife.rb")
-  
-  # Workaround for RSA Fingerprint prompt in Travis CI 
+  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "knife.rb")
+
+  # Workaround for RSA Fingerprint prompt in Travis CI
   git_ssh_path = '/tmp/git_ssh.sh'
   unless File.exist? git_ssh_path
     git_ssh = File.new(git_ssh_path, 'w+')

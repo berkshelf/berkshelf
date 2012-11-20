@@ -69,3 +69,70 @@ Feature: upload command
     And the Chef server should have the cookbooks:
       | artifact | 0.9.8 |
     And the exit status should be 0
+
+  @chef_server @slow_process
+  Scenario: Running the upload command for a single cookbook
+    Given I write to "Berksfile" with:
+      """
+      cookbook "build-essential", "1.2.0"
+      cookbook "mysql", "1.2.4"
+      """
+    And I successfully run `berks install`
+    And the Chef server does not have the cookbooks:
+      | mysql           | 1.2.4 |
+      | openssl         | 1.0.0 |
+      | build-essential | 1.2.0 |
+    When I run `berks upload mysql`
+    Then the output should contain "Uploading mysql (1.2.4)"
+    And the output should contain "Uploading openssl (1.0.0)"
+    And the output should not contain "Uploading build-essential (1.2.0)"
+    And the Chef server should have the cookbooks:
+      | mysql | 1.2.4 |
+      | openssl | 1.0.0 |
+    And the Chef server should not have the cookbooks:
+      | build-essential | 1.2.0 |
+    And the exit status should be 0
+
+  @chef_server @slow_process
+  Scenario: Running the upload command with multiple cookbooks
+    Given I write to "Berksfile" with:
+      """
+      cookbook "build-essential"
+      cookbook "chef-client"
+      cookbook "database"
+      cookbook "editor"
+      cookbook "git"
+      cookbook "known_host"
+      cookbook "networking_basic"
+      cookbook "vim"
+      """
+    And I successfully run `berks install`
+    And the Chef server does not have the cookbooks:
+      | build-essential  |
+      | chef-client      |
+      | database         |
+      | editor           |
+      | git              |
+      | known_host       |
+      | networking_basic |
+      | vim              |
+    When I run `berks upload build-essential chef-client database`
+    Then the output should contain "Uploading build-essential"
+    And the output should contain "Uploading chef-client"
+    And the output should contain "Uploading database"
+    And the output should not contain "Uploading editor"
+    And the output should not contain "Uploading git"
+    And the output should not contain "Uploading known_host"
+    And the output should not contain "Uploading networking_basic"
+    And the output should not contain "Uploading vim"
+    And the Chef server should have the cookbooks:
+      | build_essential |
+      | chef-client     |
+      | database        |
+    And the Chef server should not have the cookbooks:
+      | editor           |
+      | git              |
+      | known_host       |
+      | networking_basic |
+      | vim              |
+    And the exit status should be 0

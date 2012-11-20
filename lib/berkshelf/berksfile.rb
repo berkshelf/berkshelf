@@ -269,6 +269,8 @@ module Berkshelf
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
     #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve sources for
     #
     # @raise [Berkshelf::ArgumentError] if a value for both :except and :only is provided
     #
@@ -276,12 +278,18 @@ module Berkshelf
     def sources(options = {})
       l_sources = @sources.collect { |name, source| source }.flatten
 
-      except = Array(options.fetch(:except, nil)).collect(&:to_sym)
-      only   = Array(options.fetch(:only, nil)).collect(&:to_sym)
+      cookbooks = Array(options.fetch(:cookbooks, nil))
+      except    = Array(options.fetch(:except, nil)).collect(&:to_sym)
+      only      = Array(options.fetch(:only, nil)).collect(&:to_sym)
 
       case
       when !except.empty? && !only.empty?
         raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
+      when !cookbooks.empty?
+        if !except.empty? && !only.empty?
+          Berkshelf.ui.warn "Cookbooks were specified, ignoring :except and :only"
+        end
+        l_sources.select { |source| options[:cookbooks].include?(source.name) }
       when !except.empty?
         l_sources.select { |source| (except & source.groups).empty? }
       when !only.empty?
@@ -372,6 +380,8 @@ module Berkshelf
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
     #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve sources for
     # @option options [Integer] :thread_count
     # @option options [Hash] :params
     #   URI query unencoded key/value pairs
@@ -401,6 +411,8 @@ module Berkshelf
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
     #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve sources for
     #
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
