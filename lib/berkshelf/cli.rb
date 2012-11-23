@@ -241,7 +241,7 @@ module Berkshelf
     def list
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      Berkshelf.ui.say "Cookbooks included by Berkshelf:"
+      Berkshelf.ui.say "Cookbooks installed by your Berksfile:"
       Berkshelf.ui.mute { berksfile.resolve }.sort.each do |cookbook|
         Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
       end
@@ -253,7 +253,6 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "list", "Show all of the cookbooks in the current Berkshelf"
     desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
     def show(name = nil)
       return list if name.nil?
