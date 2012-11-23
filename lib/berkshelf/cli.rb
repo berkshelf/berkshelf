@@ -31,6 +31,7 @@ module Berkshelf
     map 'in'        => :install
     map 'up'        => :upload
     map 'ud'        => :update
+    map 'ls'        => :list
     map 'ver'       => :version
     map 'book'      => :cookbook
 
