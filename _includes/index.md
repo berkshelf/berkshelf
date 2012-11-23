@@ -276,7 +276,14 @@ As of version 1.0.0, you may now use GitHub shorthand to specify a location.
     cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"
 
 Given this example, the `artifact` cookbook from the `RiotGames` organization in the `artifact-cookbook` repository with a tag of `0.9.8` will be cloned to The Berkshelf.
+
 Note: `ref:` is an alias for `branch:` and can be used interchangeably.
+
+The `git` protocol will be used if no protocol is explicity set. To access a private repository specify the `ssh` or `https` protocol.
+
+    cookbook "keeping_secrets", github: "RiotGames/keeping_secrets-cookbook", protocol: :ssh
+
+> You will receive a repository not found error if you are referencing a private repository and have not set the protocol to `https` or `ssh`.
 
 ### Default Locations
 
