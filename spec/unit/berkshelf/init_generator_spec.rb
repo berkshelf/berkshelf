@@ -46,7 +46,9 @@ module Berkshelf
     context "with a metadata entry in the Berksfile" do
       before do
         Dir.mkdir target
-        File.write target.join("metadata.rb"), ""
+        File.open(target.join("metadata.rb"), 'w+') do |f|
+          f.write ""
+        end
         generator = subject.new([target], metadata_entry: true)
         capture(:stdout) { generator.invoke_all }
       end

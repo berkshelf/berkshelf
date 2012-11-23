@@ -89,7 +89,10 @@ EOF
           end
         end
 
-        File.write(cookbook_path.join("metadata.rb"), metadata)
+        File.open(cookbook_path.join("metadata.rb"), 'w+') do |f|
+          f.write metadata
+        end
+        
         cookbook_path
       end
 
