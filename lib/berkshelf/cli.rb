@@ -229,19 +229,36 @@ module Berkshelf
       ::Berkshelf.formatter.msg "Successfully initialized"
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     desc "list", "Show all of the cookbooks in the current Berkshelf"
     def list
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+
       Berkshelf.ui.say "Cookbooks included by Berkshelf:"
-      Berkshelf.cookbook_store.cookbooks.sort.each do |cookbook|
+      Berkshelf.ui.mute { berksfile.resolve }.sort.each do |cookbook|
         Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
       end
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    desc "list", "Show all of the cookbooks in the current Berkshelf"
     desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
     def show(name = nil)
       return list if name.nil?
 
-      cookbook = Berkshelf.cookbook_store.cookbooks(name).last
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
+
       raise CookbookNotFound, "Could not find cookbook '#{name}' in any of the sources" unless cookbook
       Berkshelf.ui.say(cookbook.path)
     end
