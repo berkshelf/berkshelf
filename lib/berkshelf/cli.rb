@@ -260,7 +260,7 @@ module Berkshelf
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
 
-      raise CookbookNotFound, "Could not find cookbook '#{name}' in any of the sources" unless cookbook
+      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.ui.say(cookbook.path)
     end
 
