@@ -8,7 +8,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "mysql", "1.2.4"
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the cookbook store should have the cookbooks:
       | mysql   | 1.2.4 |
       | openssl | 1.0.0 |
@@ -26,11 +26,28 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "mysql", "= 1.2.4"
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Using mysql (1.2.4)
       """
+    And the exit status should be 0
+
+  Scenario: installing a Berksfile that has multiple cookbooks in different groups
+    Given the cookbook store has the cookbooks:
+      | build-essential   | 1.1.2 |
+    And I write to "Berksfile" with:
+      """
+      group :a do
+        cookbook "build-essential", "1.1.2"
+      end
+
+      group :b do
+        cookbook "build-essential", "1.1.2"
+      end
+      """
+    When I successfully run `berks install`
+    Then the output should contain "Using build-essential (1.1.2)"
     And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a source with dependencies, all of which already have been installed
@@ -45,7 +62,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "mysql", "~> 1.2.0"
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Using mysql (1.2.4)
@@ -58,7 +75,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a path location
     Given a Berksfile with path location sources to fixtures:
       | example_cookbook | example_cookbook-0.5.0 |
-    When I run the install command
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Using example_cookbook (0.5.0) at path:
@@ -70,7 +87,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.9.8"
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
     And the output should contain:
@@ -84,7 +101,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
     And the output should contain:
@@ -98,7 +115,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"<command postfix>
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
     And the output should contain:
@@ -117,7 +134,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8", protocol: "<protocol>"
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
     And the output should contain:
@@ -138,19 +155,19 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8", protocol: "somethingabsurd"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       'somethingabsurd' is not a supported Git protocol for the 'github' location key. Please use 'git' instead.
       """
-    And the exit status should be 110      
+    And the exit status should be 110
 
   Scenario: installing a Berksfile that contains an explicit site location
     Given I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
       """
-    When I run the install command
+    When I successfully run `berks install`
     Then the cookbook store should have the cookbooks:
       | mysql   | 1.2.4 |
       | openssl | 1.0.0 |
@@ -168,7 +185,7 @@ Feature: install cookbooks from a Berksfile
       metadata
       """
     When I cd to "sparkle_motion"
-    And I run the install command
+    And I successfully run `berks install`
     Then the output should contain:
       """
       Using sparkle_motion (0.0.0) at path:
@@ -178,7 +195,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: running install with no Berksfile or Berksfile.lock
     Given I do not have a Berksfile
     And I do not have a Berksfile.lock
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       No Berksfile or Berksfile.lock found at:
@@ -190,7 +207,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "doesntexist"
       """
-    And I run the install command
+    And I run `berks install`
     Then the output should contain:
       """
       Cookbook 'doesntexist' not found in any of the default locations
@@ -202,23 +219,23 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "nginx", git: "/something/on/disk"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       '/something/on/disk' is not a valid Git URI.
       """
     And the CLI should exit with the status code for error "InvalidGitURI"
 
-  Scenario: installing when there are sources with duplicate names defined
+  Scenario: installing when there are sources with duplicate names defined in the same group
     Given I write to "Berksfile" with:
       """
       cookbook "artifact"
       cookbook "artifact"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
-      Berksfile contains two sources named 'artifact'. Remove one and try again.
+      Berksfile contains multiple sources named 'artifact'. Use only one, or put them in different groups.
       """
     And the CLI should exit with the status code for error "DuplicateSourceDefined"
 
@@ -227,7 +244,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", "= 0.9.8", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.10.0"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       A cookbook satisfying 'artifact' (= 0.9.8) not found at git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
@@ -241,7 +258,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the cookbook store has the cookbooks:
       | artifact | 0.10.0 |
-    When I run the install command
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Installing artifact (0.10.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
@@ -253,7 +270,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", whatisthis: "I don't even know", anotherwat: "isthat"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       Invalid options for Cookbook Source: 'whatisthis', 'anotherwat'.
@@ -268,7 +285,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the Chef server has cookbooks:
       | artifact | 0.10.2 |
-    When I run the install command
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Installing artifact (0.10.2) from chef_api:
@@ -282,7 +299,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", chef_api: :config
       """
-    When I run the install command with flags:
+    When I run `berks install` with flags:
       | -c /tmp/notthere.lol |
     Then the output should contain:
       """
@@ -295,7 +312,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", client_key: "/Users/reset/.chef/knife.rb"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name'.
@@ -307,7 +324,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", node_name: "reset"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'client_key'.
@@ -319,7 +336,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name', 'client_key'.
@@ -332,7 +349,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "ohai"
       cookbook "doesntexist", git: "git://github.com/asdjhfkljashflkjashfakljsf"
       """
-    When I run the install command
+    When I run `berks install`
     Then the output should contain:
       """
       Installing ohai (1.1.2) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'

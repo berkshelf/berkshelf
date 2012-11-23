@@ -239,7 +239,11 @@ module Berkshelf
     # @return [Array<Berkshelf::CookbookSource]
     def add_source(name, constraint = nil, options = {})
       if has_source?(name)
-        raise DuplicateSourceDefined, "Berksfile contains two sources named '#{name}'. Remove one and try again."
+        # Only raise an exception if the source is a true duplicate
+        groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
+        if !(@sources[name].groups & groups).empty?
+          raise DuplicateSourceDefined, "Berksfile contains multiple sources named '#{name}'. Use only one, or put them in different groups."
+        end
       end
 
       options[:constraint] = constraint
