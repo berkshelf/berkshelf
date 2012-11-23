@@ -36,8 +36,8 @@ module Berkshelf
 
     private
 
-      def method_missing(name, *args, &block)
-        original.send(:name, *args, &block)
+      def method_missing(fun, *args, &block)
+        original.send(fun, *args, &block)
       end
   end
 
