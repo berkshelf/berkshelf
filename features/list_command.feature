@@ -3,6 +3,7 @@ Feature: list command
   I want a way to show all my cookbooks and their versions without opening my Berksfile
   So that I can be more productive
 
+  @slow_process
   Scenario: Running the list command
     Given I write to "Berksfile" with:
       """

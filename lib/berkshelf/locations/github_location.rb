@@ -47,7 +47,7 @@ module Berkshelf
     def to_s
       s = "#{self.class.location_key}: '#{repo_identifier}'"
       s << " with branch: '#{branch}'" if branch
-      s << " over protocol: '#{protocol}'" unless default_protocol?
+      s << " over protocol: '#{protocol}'"
       s
     end
 

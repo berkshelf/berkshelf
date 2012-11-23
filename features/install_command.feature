@@ -110,24 +110,19 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
-  Scenario Outline: installing a Berksfile that contains a Github location and the default protocol
+  Scenario: installing a Berksfile that contains a Github location and the default protocol
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"<command postfix>
+      cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
     And the output should contain:
       """
-      Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8'
+      Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8' over protocol: 'git'
       """
     And the exit status should be 0
-
-    Examples:
-      | command postfix   |
-      | , protocol: "git" |
-      |                   |
 
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I write to "Berksfile" with:
@@ -299,7 +294,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "artifact", chef_api: :config
       """
-    When I run `berks install` with flags:
+    When I run the install command with flags:
       | -c /tmp/notthere.lol |
     Then the output should contain:
       """
