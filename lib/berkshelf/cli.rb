@@ -178,7 +178,7 @@ module Berkshelf
         raise UploadFailure, msg
       end
 
-      berksfile.upload(
+      upload_options = {
         server_url: Berkshelf::Config.instance.chef.chef_server_url,
         client_name: Berkshelf::Config.instance.chef.node_name,
         client_key: Berkshelf::Config.instance.chef.client_key,
@@ -186,7 +186,9 @@ module Berkshelf
           verify: (options[:ssl_verify].nil? ? Berkshelf::Config.instance.ssl.verify : options[:ssl_verify])
         },
         cookbooks: cookbook_names
-      )
+      }.merge(options).symbolize_keys
+
+      berksfile.upload(upload_options)
     rescue Ridley::Errors::ClientKeyFileNotFound => e
       msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
       msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."

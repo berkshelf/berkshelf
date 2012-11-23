@@ -136,3 +136,133 @@ Feature: upload command
       | networking_basic |
       | vim              |
     And the exit status should be 0
+
+  @chef_server @slow_process
+  Scenario: Running the upload command with the :only option
+    Given I write to "Berksfile" with:
+      """
+      group :core do
+        cookbook "build-essential"
+        cookbook "chef-client"
+      end
+
+      group :system do
+        cookbook "database"
+        cookbook "editor"
+      end
+      """
+    And I successfully run `berks install`
+    And the Chef server does not have the cookbooks:
+      | build-essential  |
+      | chef-client      |
+      | database         |
+      | editor           |
+    When I run `berks upload --only core`
+    Then the output should contain "Uploading build-essential"
+    And the output should contain "Uploading chef-client"
+    And the output should not contain "Uploading database"
+    And the output should not contain "Uploading editor"
+    And the Chef server should have the cookbooks:
+      | build_essential |
+      | chef-client     |
+    And the Chef server should not have the cookbooks:
+      | database |
+      | editor   |
+    And the exit status should be 0
+
+  @chef_server @slow_process
+  Scenario: Running the upload command with the :only option multiple
+    Given I write to "Berksfile" with:
+      """
+      group :core do
+        cookbook "build-essential"
+        cookbook "chef-client"
+      end
+
+      group :system do
+        cookbook "database"
+        cookbook "editor"
+      end
+      """
+    And I successfully run `berks install`
+    And the Chef server does not have the cookbooks:
+      | build-essential  |
+      | chef-client      |
+      | database         |
+      | editor           |
+    When I run `berks upload --only core system`
+    Then the output should contain "Uploading build-essential"
+    And the output should contain "Uploading chef-client"
+    And the output should contain "Uploading database"
+    And the output should contain "Uploading editor"
+    And the Chef server should have the cookbooks:
+      | build_essential |
+      | chef-client     |
+      | database        |
+      | editor          |
+    And the exit status should be 0
+
+  @chef_server @slow_process
+  Scenario: Running the upload command with the :except option
+    Given I write to "Berksfile" with:
+      """
+      group :core do
+        cookbook "build-essential"
+        cookbook "chef-client"
+      end
+
+      group :system do
+        cookbook "database"
+        cookbook "editor"
+      end
+      """
+    And I successfully run `berks install`
+    And the Chef server does not have the cookbooks:
+      | build-essential  |
+      | chef-client      |
+      | database         |
+      | editor           |
+    When I run `berks upload --except core`
+    Then the output should not contain "Uploading build-essential"
+    And the output should not contain "Uploading chef-client"
+    And the output should contain "Uploading database"
+    And the output should contain "Uploading editor"
+    And the Chef server should not have the cookbooks:
+      | build_essential |
+      | chef-client     |
+    And the Chef server should have the cookbooks:
+      | database |
+      | editor   |
+    And the exit status should be 0
+
+  @chef_server @slow_process
+  Scenario: Running the upload command with the :except option multiple
+    Given I write to "Berksfile" with:
+      """
+      group :core do
+        cookbook "build-essential"
+        cookbook "chef-client"
+      end
+
+      group :system do
+        cookbook "database"
+        cookbook "editor"
+      end
+      """
+    And I successfully run `berks install`
+    And the Chef server does not have the cookbooks:
+      | build-essential  |
+      | chef-client      |
+      | database         |
+      | editor           |
+    When I run `berks upload --except core system`
+    Then the output should not contain "Uploading build-essential"
+    And the output should not contain "Uploading chef-client"
+    And the output should not contain "Uploading database"
+    And the output should not contain "Uploading editor"
+    And the Chef server should not have the cookbooks:
+      | build_essential |
+      | chef-client     |
+      | database        |
+      | editor          |
+    And the exit status should be 0
