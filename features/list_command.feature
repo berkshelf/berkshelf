@@ -15,7 +15,7 @@ Feature: list command
     When I run `berks list`
     Then the output should contain:
       """
-      Cookbooks included by Berkshelf:
+      Cookbooks installed by your Berksfile:
         * build-essential (1.2.0)
         * chef-client (1.2.0)
         * mysql (1.2.4)
