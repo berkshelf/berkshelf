@@ -254,14 +254,18 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
-    def show(name = nil)
-      return list if name.nil?
+    desc "show COOKBOOK", "Display file path to where the given cookbook is installed"
+    def show(cookbook_name)
+      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
+      cookbook = Berkshelf.ui.mute {
+        berksfile.resolve
+      }.find { |cookbook| cookbook.cookbook_name == cookbook_name }
 
-      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
+      unless cookbook
+        raise CookbookNotFound, "Cookbook '#{cookbook_name}' was not installed by your Berksfile"
+      end
+
       Berkshelf.ui.say(cookbook.path)
     end
 
