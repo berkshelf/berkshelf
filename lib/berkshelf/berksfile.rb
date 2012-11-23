@@ -423,6 +423,8 @@ module Berkshelf
     #   SSL options
     # @option options [URI, String, Hash] :proxy
     #   URI, String, or Hash of HTTP proxy options
+    #
+    # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
     def upload(options = {})
       uploader = Uploader.new(options)
       solution = resolve(options)
@@ -431,6 +433,11 @@ module Berkshelf
         Berkshelf.formatter.upload cb.cookbook_name, cb.version, options[:server_url]
         uploader.upload(cb, options)
       end
+
+    rescue Ridley::Errors::ClientKeyFileNotFound => e
+      msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
+      msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
+      raise UploadFailure, msg
     end
 
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.

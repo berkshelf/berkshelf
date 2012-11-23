@@ -195,10 +195,6 @@ module Berkshelf
       }.merge(options).symbolize_keys
 
       berksfile.upload(upload_options)
-    rescue Ridley::Errors::ClientKeyFileNotFound => e
-      msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
-      msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
-      raise UploadFailure, msg
     end
 
     method_option :foodcritic,
@@ -259,18 +255,14 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "show COOKBOOK", "Display file path to where the given cookbook is installed"
-    def show(cookbook_name)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
+    desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
+    def show(name = nil)
+      return list if name.nil?
 
-      cookbook = Berkshelf.ui.mute {
-        berksfile.resolve
-      }.find { |cookbook| cookbook.cookbook_name == cookbook_name }
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
 
-      unless cookbook
-        raise CookbookNotFound, "Cookbook '#{cookbook_name}' was not installed by your Berksfile"
-      end
-
+      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.ui.say(cookbook.path)
     end
 
