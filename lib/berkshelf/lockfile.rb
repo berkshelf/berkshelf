@@ -5,15 +5,20 @@ module Berkshelf
         FileUtils.rm_f DEFAULT_FILENAME
       end
 
+      # @param [Array<CookbookSource>] sources
       def update!(sources)
         contents = File.readlines(DEFAULT_FILENAME)
-        contents.delete_if{ |line| line =~ /cookbook '(#{sources.map(&:name).join('|')})'/ }
+        contents.delete_if do |line|
+          line =~ /cookbook '(#{sources.map(&:name).join('|')})'/
+        end
 
         contents += sources.map { |source| definition(source) }
         File.open(DEFAULT_FILENAME, 'wb') { |f| f.write(contents.join("\n").squeeze("\n")) }
       end
 
-      private
+      # @param [CookbookSource] source
+      #
+      # @return [String]
       def definition(source)
         definition = "cookbook '#{source.name}'"
 
@@ -25,7 +30,7 @@ module Berkshelf
           definition += ", :locked_version => '#{source.locked_version}'"
         end
 
-        return definition
+        definition
       end
     end
 
@@ -38,17 +43,12 @@ module Berkshelf
     end
 
     def write(filename = DEFAULT_FILENAME)
-      content = sources.map { |source| definition(source) }.join("\n")
+      content = sources.map { |source| self.class.definition(source) }.join("\n")
       File.open(filename, "wb") { |f| f.write content }
     end
 
     def remove!
       self.class.remove!
-    end
-
-    private
-    def definition(source)
-      self.class.send(:definition, source)
     end
   end
 end

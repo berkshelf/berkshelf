@@ -379,7 +379,7 @@ module Berkshelf
       )
 
       cookbooks = resolver.resolve
-      sources = resolver.sources
+      sources   = resolver.sources
 
       update_lockfile(sources)
 
