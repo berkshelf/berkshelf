@@ -360,6 +360,32 @@ module Berkshelf
       self.cached_cookbooks
     end
 
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve sources for
+    def update(options = {})
+      resolver = Resolver.new(
+        self.downloader,
+        sources: sources(options)
+      )
+
+      cookbooks = resolver.resolve
+      sources = resolver.sources
+
+      update_lockfile(sources)
+
+      if options[:path]
+        self.class.vendor(cookbooks, options[:path])
+      end
+
+      cookbooks
+    end
+
     # @option options [String] :server_url
     #   URL to the Chef API
     # @option options [String] :client_name
@@ -452,6 +478,10 @@ module Berkshelf
 
       def write_lockfile(sources)
         Berkshelf::Lockfile.new(sources).write
+      end
+
+      def update_lockfile(sources)
+        Berkshelf::Lockfile.update!(sources)
       end
   end
 end
