@@ -20,6 +20,8 @@ module Berkshelf
           end
 
           @app.call(env)
+        rescue BerkshelfError => e
+          raise VagrantWrapperError.new(e)
         end
 
         private
