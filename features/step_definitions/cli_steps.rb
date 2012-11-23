@@ -46,10 +46,6 @@ When /^I run the install command with flags:$/ do |flags|
   run_simple(unescape("berks install #{flags.raw.join(" ")}"), false)
 end
 
-When /^I run the update command$/ do
-  run_simple(unescape("berks update"), true)
-end
-
 When /^I run the upload command$/ do
   run_simple(unescape("berks upload"), true)
 end

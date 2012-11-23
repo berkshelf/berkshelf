@@ -4,28 +4,17 @@ module Berkshelf
       def remove!
         FileUtils.rm_f DEFAULT_FILENAME
       end
-    end
 
-    DEFAULT_FILENAME = "#{Berkshelf::DEFAULT_FILENAME}.lock".freeze
+      def update!(sources)
+        contents = File.readlines(DEFAULT_FILENAME)
+        contents.delete_if{ |line| line =~ /cookbook '(#{sources.map(&:name).join('|')})'/ }
 
-    attr_reader :sources
+        contents += sources.map { |source| definition(source) }
+        File.open(DEFAULT_FILENAME, 'wb') { |f| f.write(contents.join("\n").squeeze("\n")) }
+      end
 
-    def initialize(sources)
-      @sources = Array(sources)
-    end
-
-    def write(filename = DEFAULT_FILENAME)
-      content = sources.map { |source| get_source_definition(source) }.join("\n")
-      File.open(filename, "wb") { |f| f.write content }
-    end
-
-    def remove!
-      self.class.remove!
-    end
-
-    private
-
-      def get_source_definition(source)
+      private
+      def definition(source)
         definition = "cookbook '#{source.name}'"
 
         if source.location.is_a?(GitLocation)
@@ -38,5 +27,28 @@ module Berkshelf
 
         return definition
       end
+    end
+
+    DEFAULT_FILENAME = "#{Berkshelf::DEFAULT_FILENAME}.lock".freeze
+
+    attr_reader :sources
+
+    def initialize(sources)
+      @sources = Array(sources)
+    end
+
+    def write(filename = DEFAULT_FILENAME)
+      content = sources.map { |source| definition(source) }.join("\n")
+      File.open(filename, "wb") { |f| f.write content }
+    end
+
+    def remove!
+      self.class.remove!
+    end
+
+    private
+    def definition(source)
+      self.class.send(:definition, source)
+    end
   end
 end

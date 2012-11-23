@@ -131,10 +131,17 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
-    desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
-    def update
-      Lockfile.remove!
-      invoke :install
+    desc "update [COOKBOOKS]", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
+    def update(*cookbook_names)
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+
+      update_options = {
+        cookbooks: cookbook_names
+      }.merge(options).symbolize_keys
+
+      berksfile.update(update_options)
+      # Lockfile.remove!
+      # invoke :install
     end
 
     method_option :berksfile,
