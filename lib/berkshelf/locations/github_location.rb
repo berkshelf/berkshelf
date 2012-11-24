@@ -1,7 +1,7 @@
 module Berkshelf
   # @author Josiah Kiehl <josiah@skirmisher.net>
   class GithubLocation < GitLocation
-    DEFAULT_PROTOCOL = :git
+    DEFAULT_PROTOCOL = :ssh
 
     set_location_key :github
     set_valid_options :protocol
@@ -11,7 +11,7 @@ module Berkshelf
 
     # Wraps GitLocation allowing the short form GitHub repo identifier
     # to be used in place of the complete repo url.
-    # 
+    #
     # @see GitLocation#initialize for parameter documentation
     #
     # @option options [String] :github
