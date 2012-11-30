@@ -395,6 +395,9 @@ module Berkshelf
       cookbooks
     end
 
+    # Get a list of all the cookbooks which have newer versions found on the community
+    # site versus what your current constraints allow
+    #
     # @option options [Symbol, Array] :except
     #   Group(s) to exclude which will cause any sources marked as a member of the
     #   group to not be installed
@@ -403,7 +406,18 @@ module Berkshelf
     #   group to be installed and all others to be ignored
     # @option cookbooks [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve sources for
+    #
+    # @return [Hash]
+    #   a hash of cached cookbooks and their latest version. An empty hash is returned
+    #   if there are no newer cookbooks for any of your sources
+    # 
+    # @example
+    #   berksfile.outdated => {
+    #     <#CachedCookbook name="artifact"> => "0.11.2"  
+    #   }
     def outdated(options = {})
+      outdated = Hash.new
+
       sources(options).each do |cookbook|
         location = cookbook.location || Location.init(cookbook.name, cookbook.version_constraint)
 
@@ -411,10 +425,12 @@ module Berkshelf
           latest_version = SiteLocation.new(cookbook.name, cookbook.version_constraint).latest_version[0]
 
           unless cookbook.version_constraint.satisfies?(latest_version)
-            Berkshelf.ui.warn "Local cookbook '#{cookbook.name} (#{cookbook.version_constraint})' is outdated (#{latest_version})"
+            outdated[cookbook] = latest_version
           end
         end
       end
+
+      outdated
     end
 
     # @option options [String] :server_url
