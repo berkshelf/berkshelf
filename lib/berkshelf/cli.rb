@@ -197,6 +197,31 @@ module Berkshelf
       berksfile.upload(upload_options)
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    method_option :except,
+      type: :array,
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    desc "outdated [COOKBOOKS]", "Show all outdated cookbooks"
+    def outdated(*cookbook_names)
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+
+      outdated_options = {
+        cookbooks: cookbook_names
+      }.merge(options).symbolize_keys
+
+      berksfile.outdated(outdated_options)
+    end
+
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
