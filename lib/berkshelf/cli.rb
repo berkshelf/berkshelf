@@ -214,12 +214,24 @@ module Berkshelf
     desc "outdated [COOKBOOKS]", "Show all outdated cookbooks (exclusively from the community site)"
     def outdated(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      Berkshelf.formatter.msg "Listing outdated cookbooks with newer versions available..."
+      Berkshelf.formatter.msg "BETA: this feature will only pull differences from the community site and will"
+      Berkshelf.formatter.msg "BETA: ignore all other sources you may have defined"
+      Berkshelf.formatter.msg ""
 
       outdated_options = {
         cookbooks: cookbook_names
       }.merge(options).symbolize_keys
 
-      berksfile.outdated(outdated_options)
+      outdated = berksfile.outdated(outdated_options)
+
+      if outdated.empty?
+        Berkshelf.formatter.msg "All cookbooks up to date"
+      else
+        outdated.each do |cookbook, latest_version|
+          Berkshelf.formatter.msg "Cookbook '#{cookbook.name} (#{cookbook.version_constraint})' is outdated (#{latest_version})"
+        end
+      end
     end
 
     method_option :foodcritic,
