@@ -31,7 +31,6 @@ module Berkshelf
     map 'in'        => :install
     map 'up'        => :upload
     map 'ud'        => :update
-    map 'ls'        => :list
     map 'ver'       => :version
     map 'book'      => :cookbook
 
@@ -94,18 +93,17 @@ module Berkshelf
 
     desc "open NAME", "Opens the source directory of an installed cookbook"
     def open(name)
-      editor = ENV['EDITOR']
-
-      raise ArgumentError, "To open a cookbook, $EDITOR must be set" unless editor
+      editor = editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
+      raise ArgumentError, "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR" unless editor
 
       cookbook = Berkshelf.cookbook_store.cookbooks(name).last
+      raise CookbookNotFound, "Cookbook '#{name}' was not found in any of the sources!" unless cookbook
 
-      raise CookbookNotFound, "Cookbook '#{name}' not found" unless cookbook
-
-      command = "#{editor} #{cookbook.path}"
-      success = system command
-
-      raise CommandUnsuccessful, "Could not run `#{command}`" unless success
+      Dir.chdir(cookbook.path) do
+        command = "#{editor} #{cookbook.path}"
+        success = system command
+        raise CommandUnsuccessful, "Could not run `#{command}`" unless success
+      end
     end
 
     method_option :except,
@@ -147,15 +145,10 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
-    desc "update [COOKBOOKS]", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
-    def update(*cookbook_names)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
-      update_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.update(update_options)
+    desc "update", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
+    def update
+      Lockfile.remove!
+      invoke :install
     end
 
     method_option :berksfile,
@@ -179,13 +172,13 @@ module Berkshelf
     option :force,
       type: :boolean,
       default: false,
-      desc: "Upload cookbook(s) even if a frozen one exists on the target Chef Server"
+      desc: "Upload all cookbooks even if a frozen one exists on the target Chef Server"
     option :ssl_verify,
       type: :boolean,
       default: nil,
       desc: "Disable/Enable SSL verification when uploading cookbooks"
-    desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
-    def upload(*cookbook_names)
+    desc "upload", "Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server"
+    def upload
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
       unless Berkshelf::Config.instance.chef.chef_server_url.present?
@@ -200,17 +193,18 @@ module Berkshelf
         raise UploadFailure, msg
       end
 
-      upload_options = {
+      berksfile.upload(
         server_url: Berkshelf::Config.instance.chef.chef_server_url,
         client_name: Berkshelf::Config.instance.chef.node_name,
         client_key: Berkshelf::Config.instance.chef.client_key,
         ssl: {
           verify: (options[:ssl_verify].nil? ? Berkshelf::Config.instance.ssl.verify : options[:ssl_verify])
-        },
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.upload(upload_options)
+        }
+      )
+    rescue Ridley::Errors::ClientKeyFileNotFound => e
+      msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
+      msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
+      raise UploadFailure, msg
     end
 
     method_option :foodcritic,
@@ -247,39 +241,6 @@ module Berkshelf
       ::Berkshelf::InitGenerator.new([path], options).invoke_all
 
       ::Berkshelf.formatter.msg "Successfully initialized"
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: "Path to a Berksfile to operate off of.",
-      aliases: "-b",
-      banner: "PATH"
-    desc "list", "Show all of the cookbooks in the current Berkshelf"
-    def list
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-
-      Berkshelf.ui.say "Cookbooks installed by your Berksfile:"
-      Berkshelf.ui.mute { berksfile.resolve }.sort.each do |cookbook|
-        Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
-      end
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: "Path to a Berksfile to operate off of.",
-      aliases: "-b",
-      banner: "PATH"
-    desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
-    def show(name = nil)
-      return list if name.nil?
-
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
-
-      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
-      Berkshelf.ui.say(cookbook.path)
     end
 
     desc "version", "Display version and copyright information"

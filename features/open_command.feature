@@ -8,7 +8,7 @@ Feature: open command
     And the cookbook store has the cookbooks:
       | mysql | 1.2.4 |
     When I run `berks open mysql`
-    Then the output should contain "To open a cookbook, $EDITOR must be set"
+    Then the output should contain "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR"
 
   Scenario: Running berks open with an $EDITOR
     Given the environment variable EDITOR is "ls"
@@ -28,5 +28,6 @@ Feature: open command
   Scenario: Running berks open when the cookbook does not exist
     Given the environment variable EDITOR is "ls"
     When I run `berks open mysql`
-    Then the output should contain "Cookbook 'mysql' not found"
+    Then the output should contain "Cookbook 'mysql' was not found in any of the sources!"
     And the CLI should exit with the status code for error "CookbookNotFound"
+
