@@ -197,6 +197,27 @@ module Berkshelf
       berksfile.upload(upload_options)
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    desc "outdated", "Show all outdated cookbooks"
+    def outdated
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+
+      berksfile.sources.each do |cookbook|
+        begin
+          latest_version = SiteLocation.new(cookbook.name, cookbook.version_constraint).latest_version[0]
+
+          unless cookbook.version_constraint.satisfies?(latest_version)
+            Berkshelf.ui.warn "Local cookbook '#{cookbook.name} (#{cookbook.version_constraint})' is outdated (#{latest_version})"
+          end
+        rescue CookbookNotFound; end
+      end
+    end
+
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
