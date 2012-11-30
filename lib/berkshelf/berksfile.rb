@@ -395,6 +395,28 @@ module Berkshelf
       cookbooks
     end
 
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve sources for
+    def outdated(options = {})
+      sources(options).each do |cookbook|
+        location = cookbook.location || Location.init(cookbook.name, cookbook.version_constraint)
+
+        if location.is_a?(SiteLocation)
+          latest_version = SiteLocation.new(cookbook.name, cookbook.version_constraint).latest_version[0]
+
+          unless cookbook.version_constraint.satisfies?(latest_version)
+            Berkshelf.ui.warn "Local cookbook '#{cookbook.name} (#{cookbook.version_constraint})' is outdated (#{latest_version})"
+          end
+        end
+      end
+    end
+
     # @option options [String] :server_url
     #   URL to the Chef API
     # @option options [String] :client_name
