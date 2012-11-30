@@ -203,19 +203,23 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "outdated", "Show all outdated cookbooks"
-    def outdated
+    method_option :except,
+      type: :array,
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    desc "outdated [COOKBOOKS]", "Show all outdated cookbooks"
+    def outdated(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      berksfile.sources.each do |cookbook|
-        begin
-          latest_version = SiteLocation.new(cookbook.name, cookbook.version_constraint).latest_version[0]
+      outdated_options = {
+        cookbooks: cookbook_names
+      }.merge(options).symbolize_keys
 
-          unless cookbook.version_constraint.satisfies?(latest_version)
-            Berkshelf.ui.warn "Local cookbook '#{cookbook.name} (#{cookbook.version_constraint})' is outdated (#{latest_version})"
-          end
-        rescue CookbookNotFound; end
-      end
+      berksfile.outdated(outdated_options)
     end
 
     method_option :foodcritic,
