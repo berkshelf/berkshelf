@@ -378,8 +378,13 @@ module Berkshelf
         sources: sources(options)
       )
 
-      cookbooks = resolver.resolve
-      sources   = resolver.sources
+      cookbooks         = resolver.resolve
+      sources           = resolver.sources
+      missing_cookbooks = (options[:cookbooks] - cookbooks.map(&:cookbook_name))
+
+      unless missing_cookbooks.empty?
+        raise Berkshelf::CookbookNotFound, "Could not find cookbooks #{missing_cookbooks.collect{|cookbook| "'#{cookbook}'"}.join(', ')} in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+      end
 
       update_lockfile(sources)
 
