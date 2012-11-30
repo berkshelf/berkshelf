@@ -92,6 +92,21 @@ module Berkshelf
       Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
 
+    desc "open NAME", "Opens the source directory of an installed cookbook"
+    def open(name)
+      editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
+      raise ArgumentError, "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR" unless editor
+
+      cookbook = Berkshelf.cookbook_store.cookbooks(name).last
+      raise CookbookNotFound, "Cookbook '#{name}' not found in any of the sources!" unless cookbook
+
+      Dir.chdir(cookbook.path) do
+        command = "#{editor} #{cookbook.path}"
+        success = system(command)
+        raise CommandUnsuccessful, "Could not run `#{command}`" unless success
+      end
+    end
+
     method_option :except,
       type: :array,
       desc: "Exclude cookbooks that are in these groups.",
