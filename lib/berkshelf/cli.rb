@@ -211,7 +211,7 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
-    desc "outdated [COOKBOOKS]", "Show all outdated cookbooks"
+    desc "outdated [COOKBOOKS]", "Show all outdated cookbooks from the community site"
     def outdated(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
