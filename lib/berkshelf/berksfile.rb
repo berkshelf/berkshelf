@@ -27,6 +27,12 @@ module Berkshelf
       # @return [String]
       #   expanded filepath to the vendor directory
       def vendor(cookbooks, path)
+        chefignore_file = [
+          File.join(Dir.pwd, 'chefignore'),
+          File.join(Dir.pwd, 'cookbooks', 'chefignore')
+        ].find{|f| File.exists?(f)}
+
+        chefignore = Chef::Cookbook::Chefignore.new(chefignore_file)
         path = File.expand_path(path)
         FileUtils.mkdir_p(path)
 
@@ -37,7 +43,12 @@ module Berkshelf
 
           # Dir.glob does not support backslash as a File separator
           src = cb.path.to_s.gsub('\\', '/')
-          FileUtils.cp_r(Dir.glob(File.join(src, "*")), dest)
+
+          # Filter out files using chefignore
+          files = Dir.glob(File.join(src, "*"))
+          filtered_files = chefignore.remove_ignores_from(files)
+
+          FileUtils.cp_r(filtered_files, dest)
         end
 
         FileUtils.remove_dir(path, force: true)
@@ -410,10 +421,10 @@ module Berkshelf
     # @return [Hash]
     #   a hash of cached cookbooks and their latest version. An empty hash is returned
     #   if there are no newer cookbooks for any of your sources
-    # 
+    #
     # @example
     #   berksfile.outdated => {
-    #     <#CachedCookbook name="artifact"> => "0.11.2"  
+    #     <#CachedCookbook name="artifact"> => "0.11.2"
     #   }
     def outdated(options = {})
       outdated = Hash.new
