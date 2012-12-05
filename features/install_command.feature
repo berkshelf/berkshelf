@@ -347,7 +347,7 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      Installing ohai (1.1.2) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing ohai (1.1.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       Failed to download doesntexist from git: 'git://github.com/asdjhfkljashflkjashfakljsf'
       An error occured during Git execution:
       """
