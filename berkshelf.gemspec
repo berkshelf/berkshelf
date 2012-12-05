@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.description           = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
   s.summary               = s.description
   s.homepage              = "http://berkshelf.com"
+  s.license               = "Apache 2.0"
   s.files                 = `git ls-files`.split($\)
   s.executables           = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   s.test_files            = s.files.grep(%r{^(test|spec|features)/})
