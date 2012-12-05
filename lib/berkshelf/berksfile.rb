@@ -32,10 +32,10 @@ module Berkshelf
         chefignore_file = [
           File.join(Dir.pwd, 'chefignore'),
           File.join(Dir.pwd, 'cookbooks', 'chefignore')
-        ].find{|f| File.exists?(f)}
+        ].find { |f| File.exists?(f) }
 
         chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
-        path = File.expand_path(path)
+        path       = File.expand_path(path)
         FileUtils.mkdir_p(path)
 
         scratch = Berkshelf.mktmpdir
