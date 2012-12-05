@@ -54,7 +54,8 @@ EOF
 
           it "removes files in chefignore" do
             cached_cookbooks = [ CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
-            FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).once
+            FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
+            FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
             subject.vendor(cached_cookbooks, tmpdir)
           end
         end
