@@ -33,11 +33,30 @@ EOF
       end
 
       describe "::vendor" do
-        it "returns the expanded filepath of the vendor directory" do
-          cached_cookbooks = Array.new
-          tmpdir = Dir.mktmpdir(nil, tmp_path)
+        let(:cached_cookbooks) { [] }
+        let(:tmpdir) { Dir.mktmpdir(nil, tmp_path) }
 
+        it "returns the expanded filepath of the vendor directory" do
           subject.vendor(cached_cookbooks, tmpdir).should eql(tmpdir)
+        end
+
+        context "with a chefignore" do
+          require 'chef/cookbook/chefignore'
+          before(:each) do
+            File.stub(:exists?).and_return(true)
+            ::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
+          end
+
+          it "finds a chefignore file" do
+            ::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
+            subject.vendor(cached_cookbooks, tmpdir)
+          end
+
+          it "removes files in chefignore" do
+            cached_cookbooks = [ CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
+            FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).once
+            subject.vendor(cached_cookbooks, tmpdir)
+          end
         end
       end
     end

@@ -27,12 +27,14 @@ module Berkshelf
       # @return [String]
       #   expanded filepath to the vendor directory
       def vendor(cookbooks, path)
+        require 'chef/cookbook/chefignore'
+
         chefignore_file = [
           File.join(Dir.pwd, 'chefignore'),
           File.join(Dir.pwd, 'cookbooks', 'chefignore')
         ].find{|f| File.exists?(f)}
 
-        chefignore = Chef::Cookbook::Chefignore.new(chefignore_file)
+        chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
         path = File.expand_path(path)
         FileUtils.mkdir_p(path)
 
@@ -43,12 +45,12 @@ module Berkshelf
 
           # Dir.glob does not support backslash as a File separator
           src = cb.path.to_s.gsub('\\', '/')
+          files = Dir.glob(File.join(src, "*"))
 
           # Filter out files using chefignore
-          files = Dir.glob(File.join(src, "*"))
-          filtered_files = chefignore.remove_ignores_from(files)
+          files = chefignore.remove_ignores_from(files) if chefignore
 
-          FileUtils.cp_r(filtered_files, dest)
+          FileUtils.cp_r(files, dest)
         end
 
         FileUtils.remove_dir(path, force: true)
