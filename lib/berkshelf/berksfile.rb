@@ -1,3 +1,5 @@
+require 'chef/cookbook/chefignore'
+
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Berksfile
@@ -27,8 +29,6 @@ module Berkshelf
       # @return [String]
       #   expanded filepath to the vendor directory
       def vendor(cookbooks, path)
-        require 'chef/cookbook/chefignore'
-
         chefignore_file = [
           File.join(Dir.pwd, 'chefignore'),
           File.join(Dir.pwd, 'cookbooks', 'chefignore')

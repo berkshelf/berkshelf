@@ -41,7 +41,6 @@ EOF
         end
 
         context "with a chefignore" do
-          require 'chef/cookbook/chefignore'
           before(:each) do
             File.stub(:exists?).and_return(true)
             ::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
