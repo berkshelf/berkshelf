@@ -341,7 +341,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a git error during download
     Given I write to "Berksfile" with:
       """
-      cookbook "ohai"
+      cookbook "ohai", "1.1.4"
       cookbook "doesntexist", git: "git://github.com/asdjhfkljashflkjashfakljsf"
       """
     When I run `berks install`
