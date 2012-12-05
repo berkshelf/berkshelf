@@ -92,7 +92,7 @@ module Berkshelf
       Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
 
-    desc "open NAME", "Opens the source directory of an installed cookbook"
+    desc "open NAME", "Opens the source directory of an installed cookbook", hide: true
     def open(name)
       editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
       raise ArgumentError, "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR" unless editor
