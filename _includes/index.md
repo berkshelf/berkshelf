@@ -3,7 +3,7 @@
 If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a breeze.
 
     $ gem install berkshelf
-    Successfully installed berkshelf-1.0.0
+    Successfully installed berkshelf-1.1.0
     1 gem installed
 
 Specify your dependencies in a Berksfile in your cookbook's root
