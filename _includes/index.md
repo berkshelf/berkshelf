@@ -245,7 +245,7 @@ The Site location can be used to specify a community site API to retrieve cookbo
 
 The symbol `:opscode` is an alias for "Opscode's newest community API" and can be provided in place of a URL
 
-    cookbook "artifact", site: opscode
+    cookbook "artifact", site: :opscode
 
 ##### Path Location
 
