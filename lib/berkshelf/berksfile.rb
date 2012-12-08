@@ -82,7 +82,7 @@ module Berkshelf
       @cached_cookbooks = nil
     end
 
-    # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recurisvely retrieved
+    # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recursively retrieved
     # and resolved.
     #
     # @example a cookbook source that will be retrieved from one of the default locations
