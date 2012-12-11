@@ -4,8 +4,9 @@ require 'mixlib/shellout'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Git
-    GIT_REGEXP = URI.regexp(%w{ https git }).freeze
-    SSH_REGEXP = /(.+)@(.+):(.+)\.git/.freeze
+    GIT_REGEXP = URI.regexp(%w(http https ssh git+ssh git rsync))
+    SCP_REGEXP = /^(.+@)?[\w\d\.-]+:.*$/
+
     HAS_QUOTE_RE = %r{\"}.freeze
     HAS_SPACE_RE = %r{\s}.freeze
 
@@ -99,15 +100,16 @@ module Berkshelf
       #
       # @return [Boolean]
       def validate_uri(uri)
+
         unless uri.is_a?(String)
           return false
         end
 
-        unless uri.slice(SSH_REGEXP).nil?
+        unless uri.slice(GIT_REGEXP).nil?
           return true
         end
 
-        unless uri.slice(GIT_REGEXP).nil?
+        unless uri.slice(SCP_REGEXP).nil?
           return true
         end
 
