@@ -85,6 +85,36 @@ describe Berkshelf::Git do
         end
       end
 
+      context "given a valid git+ssh URI without an username" do
+        it "returns true" do
+          subject.validate_uri("git+ssh://host.com/repo").should be_true
+        end
+      end
+
+      context "given a valid git+ssh URI with an username" do
+        it "returns true" do
+          subject.validate_uri("git+ssh://user@host.com/repo").should be_true
+        end
+      end
+
+      context "given a valid URI with a dash in the hostname" do
+        it "returns true" do
+          subject.validate_uri("git://user@git-host.com/repo").should be_true
+        end
+      end
+
+      context "given a valid URI with host being a subdomain" do
+        it "returns true" do
+          subject.validate_uri("git://user@git.host.com/repo").should be_true
+        end
+      end
+
+      context "given a valid git+ssh URI with home directory expansion" do
+        it "returns true" do
+          subject.validate_uri("git+ssh://user@host.com/~repo").should be_true
+        end
+      end
+
       context "given an invalid URI" do
         it "returns false" do
           subject.validate_uri(invalid_uri).should be_false
@@ -92,8 +122,8 @@ describe Berkshelf::Git do
       end
 
       context "given a HTTP URI" do
-        it "returns false" do
-          subject.validate_uri(http_uri).should be_false
+        it "returns true" do
+          subject.validate_uri(http_uri).should be_true
         end
       end
 
@@ -139,9 +169,7 @@ describe Berkshelf::Git do
 
       context "given a HTTP URI" do
         it "raises InvalidGitURI" do
-          lambda {
-            subject.validate_uri!(http_uri)
-          }.should raise_error(Berkshelf::InvalidGitURI)
+          subject.validate_uri!(http_uri).should be_true
         end
       end
 
