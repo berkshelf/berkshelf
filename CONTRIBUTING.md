@@ -1,6 +1,19 @@
 # Contributing
 
-## Running tests
+## Developing
+
+If you'd like to submit a patch:
+
+* Fork the project.
+* Make your feature addition or bug fix.
+* Add tests for it. This is important so that it isn't broken in a future
+  version unintentionally.
+* Commit. Do not touch any unrelated code, such as the gemspec or version.
+  If you must change unrelated code, do it in a commit by itself, so that it can
+  be ignored.
+* Send a pull request.
+
+## Testing
 
 ### Install prerequisites
 
