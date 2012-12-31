@@ -38,6 +38,7 @@ a.out
 .rspec
 spec/*
 spec/fixtures/*
+test/*
 features/*
 
 ## SCM
