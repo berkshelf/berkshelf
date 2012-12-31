@@ -20,3 +20,5 @@ See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 * Justin Campbell (<justin@justincampbell.me>)
 
 Thank you to all of our [Contributors](https://github.com/RiotGames/berkshelf/graphs/contributors), testers, and users.
+
+If you'd like to contribute, please see our [contribution guidelines](https://github.com/RiotGames/berkshelf/blob/master/CONTRIBUTING.md) first.
