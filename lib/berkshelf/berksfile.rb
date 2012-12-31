@@ -468,7 +468,6 @@ module Berkshelf
     #   group to be installed and all others to be ignored
     # @option cookbooks [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve sources for
-    # @option options [Integer] :thread_count
     # @option options [Hash] :params
     #   URI query unencoded key/value pairs
     # @option options [Hash] :headers
