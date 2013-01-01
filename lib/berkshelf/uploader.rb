@@ -42,13 +42,15 @@ module Berkshelf
     # @option options [Boolean] :freeze
     #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be
     #   overwritten
+    # @option options [Boolean] :skip_syntax_check
+    #   Skip syntax checking of the Cookbook to reduce the overall upload time 
     #
     # @raise [CookbookNotFound]
     # @raise [CookbookSyntaxError]
     #
     # @return [Boolean]
     def upload(cookbook, options = {})
-      cookbook.validate!
+      cookbook.validate! unless options[:skip_syntax_check]
       mutex     = Mutex.new
       checksums = cookbook.checksums.dup
       sandbox   = conn.sandbox.create(checksums.keys)

@@ -183,6 +183,11 @@ module Berkshelf
       type: :boolean,
       default: nil,
       desc: "Disable/Enable SSL verification when uploading cookbooks"
+    option :skip_syntax_check,
+      type: :boolean,
+      default: false,
+      desc: "Skip Ruby syntax check when uploading cookbooks",
+      aliases: "-s"
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
