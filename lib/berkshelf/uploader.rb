@@ -17,7 +17,6 @@ module Berkshelf
     # @option options [String] :organization
     #   the Organization to connect to. This is only used if you are connecting to
     #   private Chef or hosted Chef
-    # @option options [Integer] :thread_count
     # @option options [Hash] :params
     #   URI query unencoded key/value pairs
     # @option options [Hash] :headers
@@ -43,26 +42,23 @@ module Berkshelf
     # @option options [Boolean] :freeze
     #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be
     #   overwritten
+    # @option options [Boolean] :skip_syntax_check
+    #   Skip syntax checking of the Cookbook to reduce the overall upload time 
     #
     # @raise [CookbookNotFound]
     # @raise [CookbookSyntaxError]
     #
     # @return [Boolean]
     def upload(cookbook, options = {})
-      cookbook.validate!
+      cookbook.validate! unless options[:skip_syntax_check]
       mutex     = Mutex.new
       checksums = cookbook.checksums.dup
       sandbox   = conn.sandbox.create(checksums.keys)
 
-      conn.thread_count.times.collect do
-        Thread.new(conn, sandbox, checksums.to_a) do |conn, sandbox, checksums|
-          while checksum = mutex.synchronize { checksums.pop }
-            sandbox.upload(checksum[0], checksum[1])
-          end
-        end
-      end.each(&:join)
-
+      sandbox.multi_upload(checksums)
       sandbox.commit
+      sandbox.terminate
+
       conn.cookbook.save(
         cookbook.cookbook_name,
         cookbook.version,

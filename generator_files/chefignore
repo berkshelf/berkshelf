@@ -1,12 +1,21 @@
-# Put files/directories that should be ignored in this file.
+# Put files/directories that should be ignored in this file when uploading
+# or sharing to the community site.
 # Lines that start with '# ' are comments.
 
-## OS
+# OS generated files #
+######################
 .DS_Store
 Icon?
 nohup.out
+ehthumbs.db
+Thumbs.db
 
-## EDITORS
+# SASS #
+########
+.sass-cache
+
+# EDITORS #
+###########
 \#*
 .#*
 *~
@@ -22,31 +31,66 @@ tmtags
 .settings
 mkmf.log
 
-## COMPILED
+## COMPILED ##
+##############
 a.out
 *.o
 *.pyc
 *.so
+*.com
+*.class
+*.dll
+*.exe
+*/rdoc/
 
-## OTHER SCM
-*/.bzr/*
-*/.hg/*
-*/.svn/*
-
-## Don't send rspecs up in cookbook
+# Testing #
+###########
 .watchr
 .rspec
 spec/*
 spec/fixtures/*
+test/*
 features/*
+Guardfile
+Procfile
 
-## SCM
+# SCM #
+#######
+.git
+*/.git
 .gitignore
+.gitmodules
+.gitconfig
+.gitattributes
+.svn
+*/.bzr/*
+*/.hg/*
+*/.svn/*
 
-# Berkshelf
+# Berkshelf #
+#############
 Berksfile
 Berksfile.lock
 cookbooks/*
+tmp
 
-# Vagrant
+# Cookbooks #
+#############
+CONTRIBUTING
+CHANGELOG*
+
+# Strainer #
+############
+Colanderfile
+Strainerfile
+.colander
+.strainer
+
+# Vagrant #
+###########
 .vagrant
+Vagrantfile
+
+# Travis #
+##########
+.travis.yml
