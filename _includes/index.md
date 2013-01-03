@@ -69,7 +69,7 @@ This will install your Cookbooks to the `vendor/cookbooks` directory relative to
 
 ## Configuring Berkshelf
 
-Berkshelf will run with a default configuration unless you explicitly generate one. The configuration will attempt to populate itself with values found in your Knife configuration (if you have one) and fill in the rest with other sensible defaults. 
+Berkshelf will run with a default configuration unless you explicitly generate one. The configuration will attempt to populate itself with values found in your Knife configuration (if you have one) and fill in the rest with other sensible defaults.
 
 You can configure Berkshelf to your liking with the `configure` command
 
@@ -125,7 +125,7 @@ You will only be prompted to fill in the most travelled configuration options. L
 
 > The configuration values are notated in 'dotted path' format. These translate to a nested JSON structure.
 
-## Vagrant with Berkshelf 
+## Vagrant with Berkshelf
 
 Berkshelf was designed for iterating on cookbooks and applications quickly. [Vagrant](http://vagrantup.com) provides us with a way to spin up a virtual environment and configure it using a built-in Chef provisioner. If you have never used Vagrant before - stop now - read the Vagrant documentation and give it a try. Your cookbook development life is about to become 100% better.
 
@@ -269,6 +269,12 @@ An optional `branch` key can be specified whose value is a tag, branch, or ref t
 
 Given the previous example, the cookbook found at tag `1.0.1` of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
+An optional `rel` key can be specified if your repository contains many cookbooks in a single repository under a sub-directory or at root.
+
+    cookbook "rightscale", git: "https://github.com/rightscale/rightscale_cookbooks.git", rel: "cookbooks/rightscale"
+
+This will fetch the cookbook `rightscale` from the speficied Git location from under the `cookbooks` sub-directory.
+
 ##### GitHub Location
 
 As of version 1.0.0, you may now use GitHub shorthand to specify a location.
@@ -305,7 +311,7 @@ Provided my Berkshelf config contains these Chef credentials - this could have b
 
     chef_api :config
 
-> Specifying a Chef API default location is particularly useful if you have cookbooks that are 
+> Specifying a Chef API default location is particularly useful if you have cookbooks that are
 > private to your organization that are not shared on the Opscode community site.
 >
 > It is highly recommended that you upload your cookbooks to your organizations Chef Server
@@ -333,7 +339,7 @@ Groups can be defined via blocks:
     end
 
 Groups can also be defined inline as an option:
-    
+
     cookbook 'riot_base', group: 'solo'
 
 To exclude the groups when installing or updating just add the `--without` flag.
@@ -350,7 +356,7 @@ This will generate a cookbook called "my_face" in your current directory with Va
 
 ## Build Integration
 
-Instead of invoking Berkshelf directly on the command-line, you can also run Berkshelf from within a Thor process. 
+Instead of invoking Berkshelf directly on the command-line, you can also run Berkshelf from within a Thor process.
 
 ### Thor
 
