@@ -59,6 +59,16 @@ module Berkshelf
 
         true
       end
+
+      # Load a source from the given hash.
+      #
+      # @param [<Berkshelf::CookbookSource>] hash
+      #   the hash to convert into a cookbook source
+      def from_json(hash)
+        name = hash.delete(:name)
+        hash.delete(:location)
+        new(name, hash)
+      end
     end
 
     extend Forwardable
@@ -69,7 +79,7 @@ module Berkshelf
     attr_reader :location
     attr_accessor :cached_cookbook
 
-    def_delegator :cached_cookbook, :version, :locked_version
+    def_delegator :cached_cookbook, :version
 
     #  @param [String] name
     #  @param [Hash] options
@@ -97,6 +107,7 @@ module Berkshelf
       @groups = []
       @cached_cookbook = nil
       @location = nil
+      @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
 
       self.class.validate_options(options)
 
@@ -104,11 +115,14 @@ module Berkshelf
         @location = Location.init(name, version_constraint, options)
       end
 
+      # If the location is Path, resolve it locally. Otherwise, try to resolve it locally
+      # from the cookbook store.
       if @location.is_a?(PathLocation)
         @cached_cookbook = CachedCookbook.from_path(location.path)
+      else
+        @cached_cookbook = ::Berkshelf.cookbook_store.satisfy(@name, @locked_version || @version_constraint)
+        @location = Location.init(name, version_constraint, options)
       end
-
-      @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
@@ -123,7 +137,7 @@ module Berkshelf
     end
 
     # Returns true if the cookbook source has already been downloaded. A cookbook
-    # source is downloaded when a cached cookbooked is present.
+    # source is downloaded when it exists in the cookbook store
     #
     # @return [Boolean]
     def downloaded?
@@ -132,6 +146,19 @@ module Berkshelf
 
     def has_group?(group)
       groups.include?(group.to_sym)
+    end
+
+    # Get the locked version of this cookbook. First check the instance variable
+    # and then resort to the cached_cookbook for the version.
+    #
+    # This was formerly a delegator, but it would fail if the `@cached_cookbook`
+    # was nil or undefined. This ensures that {Berkshef::CachedCookbook#version}
+    # is only called if the `@cached_cookbook` is defined.
+    #
+    # @return [Solve::Version, nil]
+    #   the locked version of this cookbook
+    def locked_version
+      @locked_version ||= (cached_cookbook && cached_cookbook.version)
     end
 
     def to_s
@@ -143,22 +170,13 @@ module Berkshelf
     def to_hash
       {}.tap do |h|
         h[:name]           = self.name
-        h[:locked_version] = self.locked_version
+        h[:locked_version] = self.locked_version.to_s
         h[:location]       = self.location.to_hash if self.location
       end
     end
 
     def to_json
       MultiJson.dump(self.to_hash, pretty: true)
-    end
-
-    def marshal_dump
-      [ @name, @version_constraint.to_s, @groups, @cached_cookbook, @locked_version, @location ]
-    end
-
-    def marshal_load(data)
-      @name, @version_constraint, @groups, @cached_cookbook, @locked_version, @location = data
-      @version_constraint = Solve::Constraint.new(@version_constraint)
     end
   end
 end

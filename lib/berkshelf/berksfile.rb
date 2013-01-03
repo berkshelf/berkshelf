@@ -373,9 +373,7 @@ module Berkshelf
         sources: sources(options)
       )
 
-      puts
-      puts
-      lockfile = Berkshelf::Lockfile.new(resolver.sources)
+      lockfile = Berkshelf::Lockfile.new(resolver.sources, options)
       lockfile.save
 
       # @cached_cookbooks = resolver.resolve

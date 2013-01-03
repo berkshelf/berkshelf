@@ -27,14 +27,14 @@ Gem::Specification.new do |s|
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
 
-  s.add_dependency 'yajl-ruby'
   s.add_dependency 'activesupport'
   s.add_dependency 'chef', '>= 10.16.2'
   s.add_dependency 'ridley', '>= 0.6.2'
   s.add_dependency 'chozo', '>= 0.2.3'
   s.add_dependency 'hashie'
   s.add_dependency 'minitar'
-  s.add_dependency 'multi_json', '>= 1.3.0'
+  s.add_dependency 'multi_json', '~> 1.5'
+  s.add_dependency 'oj', '~> 2.0.0'
   s.add_dependency 'solve', '>= 0.4.0.rc1'
   s.add_dependency 'thor', '~> 0.16.0'
   s.add_dependency 'vagrant', '~> 1.0.5'

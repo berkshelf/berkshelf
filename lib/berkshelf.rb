@@ -1,4 +1,5 @@
-require 'yajl'
+require 'oj'
+require 'json'
 require 'chef/cookbook/metadata'
 require 'chef/cookbook_version'
 require 'chef/knife'

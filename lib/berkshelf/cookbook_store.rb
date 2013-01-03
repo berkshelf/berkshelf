@@ -49,10 +49,16 @@ module Berkshelf
         next if filter && cached_cookbook.cookbook_name != filter
 
         cached_cookbook
+      end.compact
+
+      if filter
+        @cookbooks.select{ |cookbook| cookbook.cookbook_name == filter }
+      else
+        @cookbooks
       end
     end
 
-    # Reload the cookbook store - used by developers
+    # Force a reload of the local cookbook_store
     def reload!
       @cookbooks = []
     end

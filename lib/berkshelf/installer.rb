@@ -39,12 +39,27 @@ module Berkshelf
             # because we should just use the locked version.
             @unlocked_sources.reject! do |source|
               locked_source = @locked_sources.find{ |s| s.name == source.name }
+              # p source
+              # p source.version_constraint
+              # puts
+              # p locked_source
+              # p locked_source.locked_version
+              # puts
+              # puts
+              # puts
               locked_source && source.version_constraint.satisfies?(locked_source.locked_version)
             end
+
+            # Now we need to remove files from our locked sources, since we have no
+            # way of detecting that a source was removed.
+            @locked_sources &= @unlocked_sources
           end
         end
 
-        resolve(@unlocked_sources + @locked_sources)
+        resolve, sources = resolve(@unlocked_sources + @locked_sources)
+
+        lockfile.update(sources)
+        lockfile.save
       end
 
       private
@@ -59,7 +74,7 @@ module Berkshelf
       # without the presence of a Berksfile.lock.
       def ensure_berksfile!
         unless ::File.exists?(Berkshelf::DEFAULT_FILENAME)
-          raise ::Berksfile::BerksfileNotFound, "No #{options[:berksfile]} was found at ."
+          raise ::Berkshelf::BerksfileNotFound, "No #{options[:berksfile]} was found at ."
         end
       end
 
@@ -106,7 +121,7 @@ module Berkshelf
           sources: sources
         )
 
-        resolver.resolve
+        [resolver.resolve, resolver.sources]
       end
 
     end
