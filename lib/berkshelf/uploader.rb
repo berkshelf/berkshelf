@@ -1,3 +1,5 @@
+require 'chef/cookbook_uploader'
+require 'chef/knife/cookbook_upload'
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Uploader
@@ -28,7 +30,7 @@ module Berkshelf
     # @option options [URI, String, Hash] :proxy
     #   URI, String, or Hash of HTTP proxy options
     def initialize(options = {})
-      @conn = Ridley.connection(options)
+    #  @conn = Ridley.connection(options)
     end
 
     # Uploads a CachedCookbook from a CookbookStore to this instances Chef Server URL
@@ -50,21 +52,15 @@ module Berkshelf
     #
     # @return [Boolean]
     def upload(cookbook, options = {})
-      cookbook.validate! unless options[:skip_syntax_check]
-      mutex     = Mutex.new
-      checksums = cookbook.checksums.dup
-      sandbox   = conn.sandbox.create(checksums.keys)
-
-      sandbox.multi_upload(checksums)
-      sandbox.commit
-      sandbox.terminate
-
-      conn.cookbook.save(
-        cookbook.cookbook_name,
-        cookbook.version,
-        cookbook.to_json,
-        options
-      )
+      loader = Chef::Cookbook::CookbookVersionLoader.new(cookbook.path)
+      loader.load_cookbooks
+      cv = loader.cookbook_version
+      cv.send(:generate_manifest)
+      cv.name = cookbook.cookbook_name.to_sym
+      cv.manifest['name'].sub!(%r{-\d+\.\d+\.\d+$}, '')
+      cv.manifest['cookbook_name'] = cookbook.cookbook_name
+      Chef::CookbookUploader.new([cv], cookbook.path).upload_cookbooks
+      puts "Uploaded cookbook: #{cookbook}"
     end
 
     private
