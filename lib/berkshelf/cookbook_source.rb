@@ -151,5 +151,14 @@ module Berkshelf
     def to_json
       MultiJson.dump(self.to_hash, pretty: true)
     end
+
+    def marshal_dump
+      [ @name, @version_constraint.to_s, @groups, @cached_cookbook, @locked_version, @location ]
+    end
+
+    def marshal_load(data)
+      @name, @version_constraint, @groups, @cached_cookbook, @locked_version, @location = data
+      @version_constraint = Solve::Constraint.new(@version_constraint)
+    end
   end
 end

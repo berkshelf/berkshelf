@@ -1,54 +1,65 @@
 module Berkshelf
   class Lockfile
     class << self
-      def remove!
-        FileUtils.rm_f DEFAULT_FILENAME
-      end
-
-      # @param [Array<CookbookSource>] sources
-      def update!(sources)
-        contents = File.readlines(DEFAULT_FILENAME)
-        contents.delete_if do |line|
-          line =~ /cookbook '(#{sources.map(&:name).join('|')})'/
-        end
-
-        contents += sources.map { |source| definition(source) }
-        File.open(DEFAULT_FILENAME, 'wb') { |f| f.write(contents.join("\n").squeeze("\n")) }
-      end
-
-      # @param [CookbookSource] source
+      # Build a lockfile instance from the local .lock file.
       #
-      # @return [String]
-      def definition(source)
-        definition = "cookbook '#{source.name}'"
-
-        if source.location.is_a?(GitLocation)
-          definition += ", :git => '#{source.location.uri}', :ref => '#{source.location.branch || 'HEAD'}'"
-        elsif source.location.is_a?(PathLocation)
-          definition += ", :path => '#{source.location.path}'"
-        else
-          definition += ", :locked_version => '#{source.locked_version}'"
+      # @raises Errno::ENOENT
+      #   when the Lockfile cannot be found
+      def load(filename)
+        begin
+          contents = File.read(filename)
+        rescue Errno::ENOENT
+          raise ::Berkshelf::LockfileNotFound, "Could not find a valid lock file at #{filename}"
         end
 
-        definition
+        Marshal.load(contents)
       end
     end
 
-    DEFAULT_FILENAME = "#{Berkshelf::DEFAULT_FILENAME}.lock".freeze
+    # The name for the lockfile
+    #
+    # @example
+    #   Berksfile.lock
+    LOCKFILE_FILENAME = "#{Berkshelf::DEFAULT_FILENAME}.lock".freeze
 
+    # Create a new lockfile instance from the given sources.
+    #
+    # @param [Array<Berkshelf::CookbookSource>] sources
+    #   the list of cookbook sources
+    # @param [Hash] options
+    #   a list of options to pass to the lockfile
     attr_reader :sources
 
-    def initialize(sources)
-      @sources = Array(sources)
+    def initialize(sources, options = {})
+      @sources = sources
     end
 
-    def write(filename = DEFAULT_FILENAME)
-      content = sources.map { |source| self.class.definition(source) }.join("\n")
-      File.open(filename, "wb") { |f| f.write content }
+    def save
+      File.open(LOCKFILE_FILENAME, 'wb') do |file|
+        file.write Marshal.dump(self)
+      end
+    end
+    alias_method :write, :save
+
+    # The last known sha of the the Berksfile from a successful install.
+    #
+    # This is used to quickly detect if the Berksfile has changed since the
+    # last install.
+    #
+    # @return [String, nil]
+    #   the last known SHA for the Berksfile
+    def sha
+      @sha ||= Berkshelf::Berksfile.sha
     end
 
-    def remove!
-      self.class.remove!
+    # Prepare this lockfile for marshaling
+    def marshal_dump
+      [sha, sources]
+    end
+
+    # Load the lockfile from marshal
+    def marshal_load(data)
+      @sha, @sources = data
     end
   end
 end

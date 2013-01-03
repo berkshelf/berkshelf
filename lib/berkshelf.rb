@@ -40,6 +40,7 @@ module Berkshelf
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Git, 'berkshelf/git'
   autoload :InitGenerator, 'berkshelf/init_generator'
+  autoload :Installer, 'berkshelf/installer'
   autoload :Lockfile, 'berkshelf/lockfile'
   autoload :Resolver, 'berkshelf/resolver'
   autoload :UI, 'berkshelf/ui'

@@ -171,6 +171,15 @@ module Berkshelf
       MultiJson.dump(self.to_hash, pretty: true)
     end
 
+    def marshal_dump
+      [@name, @version_constraint.to_s, @downloaded_status]
+    end
+
+    def marshal_load(data)
+      @name, @version_constraint, @downloaded_status = data
+      @version_constraint = Solve::Constraint.new(@version_constraint)
+    end
+
     private
 
       def set_downloaded_status(state)
