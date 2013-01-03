@@ -60,7 +60,6 @@ module Berkshelf
       cv.manifest['name'] = "#{cookbook.cookbook_name}-#{cookbook.version}" #.sub!(%r{-[^-]+$}, '')
       cv.manifest['cookbook_name'] = cookbook.cookbook_name
       Chef::CookbookUploader.new([cv], cookbook.path).upload_cookbooks
-      puts "Uploaded cookbook: #{cookbook}"
     end
 
     private
