@@ -269,9 +269,9 @@ An optional `branch` key can be specified whose value is a tag, branch, or ref t
 
 Given the previous example, the cookbook found at tag `1.0.1` of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
-An optional `sub_directory` key can be specified if your repository contains many cookbooks in a single repository under a sub-directory.
+An optional `rel` key can be specified if your repository contains many cookbooks in a single repository under a sub-directory.
 
-    cookbook "rightscale", git: "https://github.com/rightscale/rightscale_cookbooks.git", sub_directory: "cookbooks"
+    cookbook "rightscale", git: "https://github.com/rightscale/rightscale_cookbooks.git", rel: "cookbooks/rightscale"
 
 This will fetch the cookbook `rightscale` from the speficied Git location from the `cookbooks` sub-directory.
 
