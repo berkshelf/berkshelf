@@ -47,19 +47,6 @@ module Berkshelf
       aliases: "-F",
       banner: "FORMAT"
 
-
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: "Path to a Berksfile to operate off of.",
-      aliases: "-b",
-      banner: "PATH"
-    desc 'lock', 'Foo'
-    def lock
-      berksfile = Berksfile.from_file(options[:berksfile])
-      berksfile.install(options)
-    end
-
     method_option :force,
       type: :boolean,
       default: false,

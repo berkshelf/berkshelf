@@ -67,6 +67,7 @@ module Berkshelf
       def from_json(hash)
         name = hash.delete(:name)
         hash.delete(:location)
+        hash[:constraint] = "=#{hash[:locked_version]}"
         new(name, hash)
       end
     end
@@ -152,8 +153,7 @@ module Berkshelf
     # and then resort to the cached_cookbook for the version.
     #
     # This was formerly a delegator, but it would fail if the `@cached_cookbook`
-    # was nil or undefined. This ensures that {Berkshef::CachedCookbook#version}
-    # is only called if the `@cached_cookbook` is defined.
+    # was nil or undefined.
     #
     # @return [Solve::Version, nil]
     #   the locked version of this cookbook
@@ -162,9 +162,11 @@ module Berkshelf
     end
 
     def to_s
-      msg = "#{self.name} (#{self.version_constraint}) groups: #{self.groups}"
-      msg << " location: #{self.location}" if self.location
-      msg
+      "#<Berkshelf::CookbookSource: #{name} (#{version_constraint})>"
+    end
+
+    def inspect
+      "#<Berkshelf::CookbookSource: #{name} (#{version_constraint}), groups: #{groups}, location: #{location}>"
     end
 
     def to_hash

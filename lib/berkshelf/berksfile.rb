@@ -85,7 +85,7 @@ module Berkshelf
     # @return [String]
     #   the shasum for the Berksfile
     def sha
-      @sha ||= Digest::SHA1.hexdigest File.read(@filepath)
+      @sha ||= Digest::SHA1.hexdigest File.read(filepath)
     end
 
     # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recursively retrieved
@@ -368,22 +368,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      resolver = Resolver.new(
-        self.downloader,
-        sources: sources(options)
-      )
-
-      lockfile = Berkshelf::Lockfile.new(resolver.sources, options)
-      lockfile.save
-
-      # @cached_cookbooks = resolver.resolve
-      # write_lockfile(resolver.sources) unless lockfile_present?
-
-      # if options[:path]
-      #   self.class.vendor(@cached_cookbooks, options[:path])
-      # end
-
-      # self.cached_cookbooks
+      ::Berkshelf.ui.deprecated
     end
 
     # @option options [Symbol, Array] :except
@@ -544,15 +529,16 @@ module Berkshelf
     # the user can specify a different path to the Berksfile. So assuming the lockfile
     # is named "Berksfile.lock" is a poor assumption.
     #
-    # @return [::Berkshelf::Lockfile, nil]
-    #   the lockfile corresponding to this berksfile, or nil if one does not exist.
+    # @return [::Berkshelf::Lockfile]
+    #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
+    #   not exist
     def lockfile
-      lockfile_name = File.basename(@filepath) + '.lock'
+      lockfile_name = File.basename(filepath) + '.lock'
 
       begin
         ::Berkshelf::Lockfile.load(lockfile_name)
       rescue ::Berkshelf::LockfileNotFound
-        nil
+        ::Berkshelf::Lockfile.new([], { berksfile: filepath })
       end
     end
 
