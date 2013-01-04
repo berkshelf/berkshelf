@@ -29,6 +29,10 @@ module Berkshelf
       say(message, color)
     end
 
+    def deprecated(message)
+      warn("[DEPRECATION] #{message}")
+    end
+
     def error(message, color = :red)
       return if quiet?
 

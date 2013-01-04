@@ -356,19 +356,10 @@ module Berkshelf
     end
     alias_method :get_source, :[]
 
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any sources marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any sources marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option options [String] :path
-    #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
-    #   is a technique for packaging all cookbooks resolved by a Berksfile.
-    #
-    # @return [Array<Berkshelf::CachedCookbook>]
+    # @deprecated Use {Berkshelf::Installer.install} instead.
     def install(options = {})
-      ::Berkshelf.ui.deprecated
+      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.'
+      ::Berkshelf::Installer.install(options)
     end
 
     # @option options [Symbol, Array] :except

@@ -265,93 +265,109 @@ EOF
     end
 
     describe "#install" do
-      let(:resolver) { double('resolver') }
-      before(:each) { Berkshelf::Resolver.stub(:new) { resolver } }
-
-      context "when a lockfile is not present" do
-        before(:each) do
-          subject.should_receive(:lockfile_present?).and_return(false)
-          resolver.should_receive(:sources).and_return([])
+      context "is deprecated" do
+        before do
+          ::Berkshelf::Installer.stub(:install).and_return(nil)
         end
 
-        let(:cached_cookbooks) do
-          [
-            double('cached_one'),
-            double('cached_two')
-          ]
-        end
-
-        it "returns the result from sending the message resolve to resolver" do
-          resolver.should_receive(:resolve).and_return(cached_cookbooks)
-
-          subject.install.should eql(cached_cookbooks)
-        end
-
-        it "sets a value for self.cached_cookbooks equivalent to the return value" do
-          resolver.should_receive(:resolve).and_return(cached_cookbooks)
-          subject.install
-
-          subject.cached_cookbooks.should eql(cached_cookbooks)
-        end
-
-        it "creates a new resolver and finds a solution by calling resolve on the resolver" do
-          resolver.should_receive(:resolve)
-
+        it "prints a deprecation warning" do
+          ::Berkshelf.ui.should_receive(:deprecated).with('The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.')
           subject.install
         end
 
-        it "writes a lockfile with the resolvers sources" do
-          resolver.should_receive(:resolve)
-          subject.should_receive(:write_lockfile).with([])
-
+        it "calls Berkshelf::Installer.install" do
+          ::Berkshelf::Installer.should_receive(:install).once
           subject.install
         end
       end
 
-      context "when a lockfile is present" do
-        before(:each) { subject.should_receive(:lockfile_present?).and_return(true) }
+      # let(:resolver) { double('resolver') }
+      # before(:each) { Berkshelf::Resolver.stub(:new) { resolver } }
 
-        it "does not write a new lock file" do
-          resolver.should_receive(:resolve)
-          subject.should_not_receive(:write_lockfile)
+      # context "when a lockfile is not present" do
+      #   before(:each) do
+      #     subject.should_receive(:lockfile_present?).and_return(false)
+      #     resolver.should_receive(:sources).and_return([])
+      #   end
 
-          subject.install
-        end
-      end
+      #   let(:cached_cookbooks) do
+      #     [
+      #       double('cached_one'),
+      #       double('cached_two')
+      #     ]
+      #   end
 
-      context "when a value for :path is given" do
-        before(:each) { resolver.should_receive(:resolve) }
+      #   it "returns the result from sending the message resolve to resolver" do
+      #     resolver.should_receive(:resolve).and_return(cached_cookbooks)
 
-        it "sends the message 'vendor' to Berksfile with the value for :path" do
-          path = double('path')
-          subject.class.should_receive(:vendor).with(subject.cached_cookbooks, path)
+      #     subject.install.should eql(cached_cookbooks)
+      #   end
 
-          subject.install(path: path)
-        end
-      end
+      #   it "sets a value for self.cached_cookbooks equivalent to the return value" do
+      #     resolver.should_receive(:resolve).and_return(cached_cookbooks)
+      #     subject.install
 
-      context "when a value for :except is given" do
-        before(:each) { resolver.should_receive(:resolve) }
+      #     subject.cached_cookbooks.should eql(cached_cookbooks)
+      #   end
 
-        it "filters the sources and gives the results to the Resolver initializer" do
-          filtered = double('sources')
-          subject.should_receive(:sources).with(except: [:skip_me]).and_return(filtered)
-          Resolver.should_receive(:new).with(anything, sources: filtered)
+      #   it "creates a new resolver and finds a solution by calling resolve on the resolver" do
+      #     resolver.should_receive(:resolve)
 
-          subject.install(except: [:skip_me])
-        end
-      end
+      #     subject.install
+      #   end
 
-      context "when a value for :only is given" do
-        before(:each) { resolver.should_receive(:resolve) }
+      #   it "writes a lockfile with the resolvers sources" do
+      #     resolver.should_receive(:resolve)
+      #     subject.should_receive(:write_lockfile).with([])
 
-        it "filters the sources and gives the results to the Resolver initializer" do
-          filtered = double('sources')
-          subject.should_receive(:sources).with(only: [:skip_me]).and_return(filtered)
+      #     subject.install
+      #   end
+      # end
 
-          subject.install(only: [:skip_me])
-        end
-      end
+      # context "when a lockfile is present" do
+      #   before(:each) { subject.should_receive(:lockfile_present?).and_return(true) }
+
+      #   it "does not write a new lock file" do
+      #     resolver.should_receive(:resolve)
+      #     subject.should_not_receive(:write_lockfile)
+
+      #     subject.install
+      #   end
+      # end
+
+      # context "when a value for :path is given" do
+      #   before(:each) { resolver.should_receive(:resolve) }
+
+      #   it "sends the message 'vendor' to Berksfile with the value for :path" do
+      #     path = double('path')
+      #     subject.class.should_receive(:vendor).with(subject.cached_cookbooks, path)
+
+      #     subject.install(path: path)
+      #   end
+      # end
+
+      # context "when a value for :except is given" do
+      #   before(:each) { resolver.should_receive(:resolve) }
+
+      #   it "filters the sources and gives the results to the Resolver initializer" do
+      #     filtered = double('sources')
+      #     subject.should_receive(:sources).with(except: [:skip_me]).and_return(filtered)
+      #     Resolver.should_receive(:new).with(anything, sources: filtered)
+
+      #     subject.install(except: [:skip_me])
+      #   end
+      # end
+
+      # context "when a value for :only is given" do
+      #   before(:each) { resolver.should_receive(:resolve) }
+
+      #   it "filters the sources and gives the results to the Resolver initializer" do
+      #     filtered = double('sources')
+      #     subject.should_receive(:sources).with(only: [:skip_me]).and_return(filtered)
+
+      #     subject.install(only: [:skip_me])
+      #   end
+      # end
     end
 
     describe "#load" do

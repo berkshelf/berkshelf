@@ -7,11 +7,11 @@ Feature: Berksfile.lock
   Scenario: Writing the Berksfile.lock
     Given I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'ntp', '1.1.8'
       """
     When I run the install command
     Then a file named "Berksfile.lock" should exist in the current directory
-    And the file "Berksfile.lock" should contain in the current directory:
-      """
-      cookbook 'ntp', :locked_version => '1.1.8'
-      """
+    And the file "Berksfile.lock" should contain '"sha":"bd488b5cc2cf1ed968ef1930441a18b48e26c300"'
+    And the file "Berksfile.lock" should contain '"name":"ntp"'
+    And the file "Berksfile.lock" should contain '"locked_version":"1.1.8"'
