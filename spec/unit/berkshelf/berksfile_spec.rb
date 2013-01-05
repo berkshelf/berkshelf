@@ -266,18 +266,30 @@ EOF
 
     describe "#install" do
       context "is deprecated" do
-        before do
-          ::Berkshelf::Installer.stub(:install).and_return(nil)
-        end
+        before { ::Berkshelf::Installer.stub(:install) }
+        after { subject.install }
 
         it "prints a deprecation warning" do
-          ::Berkshelf.ui.should_receive(:deprecated).with('The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.')
-          subject.install
+          ::Berkshelf.ui.should_receive(:deprecated)
         end
 
         it "calls Berkshelf::Installer.install" do
           ::Berkshelf::Installer.should_receive(:install).once
-          subject.install
+        end
+      end
+    end
+
+    describe "#update" do
+      context "is deprecated" do
+        before { ::Berkshelf::Updater.stub(:update) }
+        after { subject.update }
+
+        it "prints a deprecation warning" do
+          ::Berkshelf.ui.should_receive(:deprecated)
+        end
+
+        it "calls Berkshelf::Updater.update" do
+          ::Berkshelf::Updater.should_receive(:update).once
         end
       end
     end
