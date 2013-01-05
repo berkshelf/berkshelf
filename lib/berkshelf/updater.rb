@@ -46,17 +46,21 @@ module Berkshelf
       ensure_berksfile!
       validate_options!
 
-      # Get the current list of locked sources
-      @locked_sources = lockfile.sources
-
-      # If no options were specified, then we are updating all cookbooks
-      @locked_sources = options.empty? ? [] : filter(lockfile.sources)
+      # If no options were specified, then we are updating all cookbooks.
+      # Otherwise, we lock all sources that haven't been specified.
+      @locked_sources = options.empty? ? [] : (lockfile.sources - filter(lockfile.sources))
 
       # Update the lockfile with the new sources, change the SHA, and write out
       # the new lockfile.
       lockfile.update(@locked_sources)
       lockfile.sha = nil
       lockfile.save
+
+      # Reset the filter options, because we don't want them to be excluded
+      # during the installation.
+      options.delete(:cookbooks)
+      options.delete(:only)
+      options.delete(:except)
 
       # Delegate all other responsible to the {Berkshelf::Installer}
       ::Berkshelf::Installer.install(options)
