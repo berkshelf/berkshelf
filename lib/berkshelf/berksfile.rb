@@ -362,35 +362,10 @@ module Berkshelf
       ::Berkshelf::Installer.install(options)
     end
 
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any sources marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any sources marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve sources for
+    # @deprecated Use {Berkshelf::Updater.update} instead.
     def update(options = {})
-      resolver = Resolver.new(
-        self.downloader,
-        sources: sources(options)
-      )
-
-      cookbooks         = resolver.resolve
-      sources           = resolver.sources
-      missing_cookbooks = (options[:cookbooks] - cookbooks.map(&:cookbook_name))
-
-      unless missing_cookbooks.empty?
-        raise Berkshelf::CookbookNotFound, "Could not find cookbooks #{missing_cookbooks.collect{|cookbook| "'#{cookbook}'"}.join(', ')} in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
-      end
-
-      update_lockfile(sources)
-
-      if options[:path]
-        self.class.vendor(cookbooks, options[:path])
-      end
-
-      cookbooks
+      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#update method has been deprecated. Please use Berkshelf::Updater.update instead.'
+      ::Berkshelf::Updater.update(options)
     end
 
     # Get a list of all the cookbooks which have newer versions found on the community

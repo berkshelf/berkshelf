@@ -147,13 +147,8 @@ module Berkshelf
       aliases: "-o"
     desc "update [COOKBOOKS]", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
     def update(*cookbook_names)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
-      update_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.update(update_options)
+      update_options = { cookbooks: cookbook_names }.merge(options).symbolize_keys
+      ::Berkshelf::Updater.update(update_options)
     end
 
     method_option :berksfile,

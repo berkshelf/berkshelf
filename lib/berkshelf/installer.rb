@@ -4,7 +4,7 @@ module Berkshelf
   #
   # @author Seth Vargo <sethvargo@gmail.com>
   # @author Jamie Winsor <jamie@vialstudios.com>
-  class Installer
+  class Installer < Command
     class << self
       # Install the sources listed in the Berksfile, respecting the locked
       # versions in the Berksfile.lock.
@@ -56,6 +56,8 @@ module Berkshelf
       #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
       #   is a technique for packaging all cookbooks resolved by a Berksfile.
       #
+      # @raise Berkshelf::BerksfileNotFound
+      #   if the Berksfile cannot be found
       # @raise Berkshelf::OutdatedCookbookSource
       #   if the lockfile constraints do not satisfy the Berskfile constraints
       # @raise Berkshelf::ArgumentError
@@ -132,68 +134,6 @@ module Berkshelf
       end
 
       private
-      # Ensure the berkshelf directory is created and accessible.
-      def ensure_berkshelf_directory!
-        unless ::File.exists?(Berkshelf.berkshelf_path)
-          ::FileUtils.mkdir_p(Berkshelf.berkshelf_path)
-        end
-      end
-
-      # Check for the presence of a Berksfile. Berkshelf cannot do anything
-      # without the presence of a Berksfile.lock.
-      def ensure_berksfile!
-        unless ::File.exists?(Berkshelf::DEFAULT_FILENAME)
-          raise ::Berkshelf::BerksfileNotFound, "No #{options[:berksfile]} was found at ."
-        end
-      end
-
-      # Check that the Berksfile has content. If the Berksfile is empty, raise
-      # an exception to require at least one definition.
-      def ensure_berksfile_content!
-        begin
-          unless ::File.read(Berkshelf::DEFAULT_FILENAME).size > 1
-            raise Berksfile::BerksfileNotFound, "Your #{Berkshelf::DEFAULT_FILENAME} is empty! You need at least one cookbook definition."
-          end
-        rescue Errno::ENOENT
-          ensure_berksfile!
-        end
-      end
-
-      # Validate the options hash, ensuring there are no conflicting arguments
-      #
-      # @raise Berkshelf::ArgumentError
-      #   if there are conflicting or invalid options
-      def validate_options!
-        if options[:except] && options[:only]
-          raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
-        end
-      end
-
-      # @return [Hash]
-      #   the options for this installer
-      def options
-        @options ||= {}
-      end
-
-      # Attempt to load and parse the lockfile associated with this berksfile.
-      #
-      # @return [Berkshelf::Lockfile, nil]
-      #   the lockfile for the current berksfile
-      def lockfile
-        @lockfile ||= berksfile.lockfile
-      end
-
-      # Load the Berksfile for the current project.
-      #
-      # @raise [Berkshelf::BerksfileNotFound]
-      #   if the file is not found
-      #
-      # @return [Berkshelf::Berksfile]
-      #   the current Berksfile
-      def berksfile
-        @berksfile ||= ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      end
-
       # Resolve the collection of sources using {Berkshelf::Resolver}.
       #
       # @param [Array<Berkshelf::CookbookSource>] sources
@@ -208,29 +148,6 @@ module Berkshelf
         )
 
         [resolver.resolve, resolver.sources]
-      end
-
-      # Filter the list of sources from the options passed to the installer.
-      #
-      # @param [Array<Berkshelf::CookbookSource>] sources
-      #   the list of sources to resolve
-      #
-      # @raise [Berkshelf::ArgumentError]
-      #   if a value for both :except and :only is provided
-      #
-      # @return [Array<Berkshelf::CookbookSource>]
-      def filter(sources)
-        except = Array(options[:except]).map(&:to_sym)
-        only = Array(options[:only]).map(&:to_sym)
-
-        case
-        when !except.empty?
-          sources.select { |source| (except & source.groups).empty? }
-        when !only.empty?
-          sources.select { |source| !(only & source.groups).empty? }
-        else
-          sources
-        end
       end
 
       # Copy all cached_cookbooks to the given directory. Each cookbook will
