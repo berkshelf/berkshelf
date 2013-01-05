@@ -3,6 +3,7 @@ module Berkshelf
   # `berks install` command.
   #
   # @author Seth Vargo <sethvargo@gmail.com>
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class Installer
     class << self
       # Install the sources listed in the Berksfile, respecting the locked
@@ -41,6 +42,7 @@ module Berkshelf
       #
       # 6. Write out a new lockfile.
       #
+      #
       # @param [Hash] options
       #   the list of options to pass to the installer (see below for acceptable
       #   options)
@@ -63,14 +65,14 @@ module Berkshelf
       def install(options = {})
         @options = options
 
-        validate_options!
         ensure_berkshelf_directory!
         ensure_berksfile!
         ensure_berksfile_content!
+        validate_options!
 
         # The sources begin as those in our berksfile. We will eventually shorten
         # replace some of these sources with their locked versions.
-        @sources = berksfile.sources
+        @sources = filter(berksfile.sources)
 
         # Assume there are no locked_sources to start
         @locked_sources = []
@@ -113,6 +115,9 @@ module Berkshelf
         # locked versions and version constraints.
         resolve, sources = resolve(@sources)
 
+        # Vendor the cookbooks if the user requested the cookbooks be vendorized
+        vendor(resolve) if vendorize?
+
         # Now we need to remove files from our locked sources, since we have no
         # way of detecting that a source was removed. We also only want to lock
         # versions that are in the Berksfile (i.e. don't lock dependency
@@ -127,21 +132,6 @@ module Berkshelf
       end
 
       private
-      # Validate the options hash, ensuring there are no conflicting arguments
-      #
-      # @raise Berkshelf::ArgumentError
-      #   if there are conflicting or invalid options
-      def validate_options!
-        if options[:except] && options[:only]
-          raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
-        end
-
-        if options[:cookbooks] && (options[:except] || options[:only])
-          options[:except], options[:only] = [], []
-          ::Berkshelf.ui.warn "Cookbooks were specified, ignoring `:except` and `:only` arguments"
-        end
-      end
-
       # Ensure the berkshelf directory is created and accessible.
       def ensure_berkshelf_directory!
         unless ::File.exists?(Berkshelf.berkshelf_path)
@@ -166,6 +156,16 @@ module Berkshelf
           end
         rescue Errno::ENOENT
           ensure_berksfile!
+        end
+      end
+
+      # Validate the options hash, ensuring there are no conflicting arguments
+      #
+      # @raise Berkshelf::ArgumentError
+      #   if there are conflicting or invalid options
+      def validate_options!
+        if options[:except] && options[:only]
+          raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
         end
       end
 
@@ -215,17 +215,15 @@ module Berkshelf
       # @param [Array<Berkshelf::CookbookSource>] sources
       #   the list of sources to resolve
       #
-      # @raise [Berkshelf::ArgumentError] if a value for both :except and :only is provided
+      # @raise [Berkshelf::ArgumentError]
+      #   if a value for both :except and :only is provided
       #
       # @return [Array<Berkshelf::CookbookSource>]
       def filter(sources)
-        cookbooks = Array(options[:cookbooks])
-        except    = Array(options[:except]).map(&:to_sym)
-        only      = Array(options[:only]).map(&:to_sym)
+        except = Array(options[:except]).map(&:to_sym)
+        only = Array(options[:only]).map(&:to_sym)
 
         case
-        when !cookbooks.empty?
-          sources.select { |source| cookbooks.include?(source.name) }
         when !except.empty?
           sources.select { |source| (except & source.groups).empty? }
         when !only.empty?
@@ -233,6 +231,56 @@ module Berkshelf
         else
           sources
         end
+      end
+
+      # Copy all cached_cookbooks to the given directory. Each cookbook will
+      # be contained in a directory named after the name of the cookbook.
+      #
+      # @param [Array<Berkshelf::CachedCookbook>] cookbooks
+      #   an array of CachedCookbooks to be copied to a vendor directory
+      #
+      # @return [String]
+      #   expanded filepath to the vendor directory
+      def vendor(cookbooks)
+        require 'chef/cookbook/chefignore'
+
+        chefignore_file = [
+          File.join(Dir.pwd, 'chefignore'),
+          File.join(Dir.pwd, 'cookbooks', 'chefignore')
+        ].find { |f| File.exists?(f) }
+
+        chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
+        path       = File.expand_path(options[:path])
+        FileUtils.mkdir_p(path)
+
+        scratch = Berkshelf.mktmpdir
+        cookbooks.each do |cb|
+          dest = File.join(scratch, cb.cookbook_name, '/')
+          FileUtils.mkdir_p(dest)
+
+          # Dir.glob does not support backslash as a File separator
+          src = cb.path.to_s.gsub('\\', '/')
+          files = Dir.glob(File.join(src, '*'))
+
+          # Filter out files using chefignore
+          files = chefignore.remove_ignores_from(files) if chefignore
+
+          FileUtils.cp_r(files, dest)
+        end
+
+        FileUtils.remove_dir(path, force: true)
+        FileUtils.mv(scratch, path)
+
+        path
+      end
+
+      # Determines if the cookbooks should be vendorized, based on the :path
+      # option.
+      #
+      # @return [Boolean]
+      #   true if :path was specified, false otherwise
+      def vendorize?
+        !!options[:path]
       end
 
     end
