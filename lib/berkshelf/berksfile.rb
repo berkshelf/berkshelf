@@ -489,9 +489,8 @@ module Berkshelf
         uploader.upload(cb, options)
       end
 
-    rescue Ridley::Errors::ClientKeyFileNotFound => e
-      msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
-      msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
+    rescue => e
+      msg << "Error: #{e}"
       raise UploadFailure, msg
     end
 
