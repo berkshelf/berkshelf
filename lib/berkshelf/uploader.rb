@@ -1,5 +1,5 @@
 require 'chef/cookbook_uploader'
-require 'chef/knife/cookbook_upload'
+
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Uploader
@@ -24,6 +24,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def upload(cookbook, options = {})
+      cookbook.validate! unless options[:skip_syntax_check]
       loader = Chef::Cookbook::CookbookVersionLoader.new(cookbook.path)
       loader.load_cookbooks
       cv = loader.cookbook_version
