@@ -5,34 +5,6 @@ module Berkshelf
   class Uploader
     extend Forwardable
 
-    def_delegator :conn, :client_name
-    def_delegator :conn, :client_key
-    def_delegator :conn, :organization
-
-    # @option options [String] :server_url
-    #   URL to the Chef API
-    # @option options [String] :client_name
-    #   name of the client used to authenticate with the Chef API
-    # @option options [String] :client_key
-    #   filepath to the client's private key used to authenticate with
-    #   the Chef API
-    # @option options [String] :organization
-    #   the Organization to connect to. This is only used if you are connecting to
-    #   private Chef or hosted Chef
-    # @option options [Hash] :params
-    #   URI query unencoded key/value pairs
-    # @option options [Hash] :headers
-    #   unencoded HTTP header key/value pairs
-    # @option options [Hash] :request
-    #   request options
-    # @option options [Hash] :ssl
-    #   SSL options
-    # @option options [URI, String, Hash] :proxy
-    #   URI, String, or Hash of HTTP proxy options
-    def initialize(options = {})
-    #  @conn = Ridley.connection(options)
-    end
-
     # Uploads a CachedCookbook from a CookbookStore to this instances Chef Server URL
     #
     # @param [CachedCookbook] cookbook
@@ -59,11 +31,8 @@ module Berkshelf
       cv.name = cookbook.cookbook_name.to_sym
       cv.manifest['name'] = "#{cookbook.cookbook_name}-#{cookbook.version}" #.sub!(%r{-[^-]+$}, '')
       cv.manifest['cookbook_name'] = cookbook.cookbook_name
-      Chef::CookbookUploader.new([cv], cookbook.path).upload_cookbooks
+      cv.freeze_version if options.delete(:freeze)
+      Chef::CookbookUploader.new([cv], cookbook.path, options).upload_cookbooks
     end
-
-    private
-
-      attr_reader :conn
   end
 end
