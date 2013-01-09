@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Berkshelf
   describe Uploader, :chef_server do
-    subject { Uploader.new(server_url: Chef::Config[:chef_server_url], client_key: Chef::Config[:client_key], client_name: Chef::Config[:node_name]) }
+    subject { Uploader.new }
 
     describe "#upload" do
       let(:cookbook) { double('nginx', name: "nginx-0.101.2", cookbook_name: "nginx", version: "0.101.2") }

@@ -133,5 +133,9 @@ module Berkshelf
       type: Boolean,
       default: true,
       required: true
+    attribute 'nodeps',
+      type: Boolean,
+      default: false,
+      required: false
   end
 end
