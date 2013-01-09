@@ -490,7 +490,7 @@ module Berkshelf
       end
 
     rescue => e
-      msg << "Error: #{e}"
+      msg = "Error: #{e}"
       raise UploadFailure, msg
     end
 
