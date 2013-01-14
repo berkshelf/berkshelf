@@ -31,34 +31,6 @@ EOF
           end
         end
       end
-
-      describe "::vendor" do
-        let(:cached_cookbooks) { [] }
-        let(:tmpdir) { Dir.mktmpdir(nil, tmp_path) }
-
-        it "returns the expanded filepath of the vendor directory" do
-          subject.vendor(cached_cookbooks, tmpdir).should eql(tmpdir)
-        end
-
-        context "with a chefignore" do
-          before(:each) do
-            File.stub(:exists?).and_return(true)
-            ::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
-          end
-
-          it "finds a chefignore file" do
-            ::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
-            subject.vendor(cached_cookbooks, tmpdir)
-          end
-
-          it "removes files in chefignore" do
-            cached_cookbooks = [ CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
-            FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
-            FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
-            subject.vendor(cached_cookbooks, tmpdir)
-          end
-        end
-      end
     end
 
     let(:source_one) { double('source_one', name: "nginx") }
@@ -264,31 +236,31 @@ EOF
       end
     end
 
-    describe "#install" do
-      context "is deprecated" do
+    describe '#install' do
+      context 'is deprecated' do
         before { ::Berkshelf::Installer.stub(:install) }
         after { subject.install }
 
-        it "prints a deprecation warning" do
+        it 'prints a deprecation warning' do
           ::Berkshelf.ui.should_receive(:deprecated)
         end
 
-        it "calls Berkshelf::Installer.install" do
+        it 'calls Berkshelf::Installer.install' do
           ::Berkshelf::Installer.should_receive(:install).once
         end
       end
     end
 
-    describe "#update" do
-      context "is deprecated" do
+    describe '#update' do
+      context 'is deprecated' do
         before { ::Berkshelf::Updater.stub(:update) }
         after { subject.update }
 
-        it "prints a deprecation warning" do
+        it 'prints a deprecation warning' do
           ::Berkshelf.ui.should_receive(:deprecated)
         end
 
-        it "calls Berkshelf::Updater.update" do
+        it 'calls Berkshelf::Updater.update' do
           ::Berkshelf::Updater.should_receive(:update).once
         end
       end
