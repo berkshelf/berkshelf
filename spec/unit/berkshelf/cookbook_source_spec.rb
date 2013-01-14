@@ -192,6 +192,34 @@ module Berkshelf
       end
     end
 
+    describe '.from_json' do
+      let(:hash) do
+        {
+          name: 'nginx',
+          locked_version: '1.2.3',
+          location: 'git://nowhere.git'
+        }
+      end
+
+      subject { Berkshelf::CookbookSource.from_json(hash) }
+
+      before do
+        hash.stub(:dup).and_return(hash)
+      end
+
+      it 'creates a new CookbookSource' do
+        expect(subject).to be_a(Berkshelf::CookbookSource)
+      end
+
+      it 'sets the name' do
+        expect(subject.name).to eq('nginx')
+      end
+
+      it 'sets the version constraint' do
+        expect(subject.locked_version.to_s).to eq('1.2.3')
+      end
+    end
+
     #
     # Instance methods
     #
@@ -216,6 +244,31 @@ module Berkshelf
       it 'accepts multiple groups as an array' do
         subject.add_group ['baz', 'quux']
         expect(subject.groups).to eq([:default, :baz, :quux])
+      end
+    end
+
+    describe '#has_group?' do
+      it 'returns false when there are no groups' do
+        expect(subject.has_group?(:foo)).to be_false
+      end
+
+      it 'returns false when the group does not exist' do
+        subject.add_group 'bill'
+        expect(subject.has_group?(:bob)).to be_false
+      end
+
+      it 'returns true when the group exists' do
+        subject.add_group 'foo'
+        subject.add_group 'bar'
+        subject.add_group 'biz'
+        expect(subject.has_group?(:foo)).to be_true
+      end
+
+      it 'finds the group as a string' do
+        subject.add_group 'foo'
+        subject.add_group 'bar'
+        subject.add_group 'biz'
+        expect(subject.has_group?('foo')).to be_true
       end
     end
 
@@ -249,6 +302,58 @@ module Berkshelf
       it 'contains the name, constraint, groups, and location' do
         source = Berkshelf::CookbookSource.new('artifact', constraint: '= 0.10.0')
         expect(source.inspect).to eq("#<Berkshelf::CookbookSource: artifact (= 0.10.0), groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
+      end
+    end
+
+    describe '#to_hash' do
+      before do
+        subject.instance_variable_set(:@locked_version, '1.2.3')
+      end
+
+      it 'has the :name key' do
+        expect(subject.to_hash).to have_key(:name)
+      end
+
+      it 'sets the :name key' do
+        expect(subject.to_hash[:name]).to eq('nginx')
+      end
+
+      it 'has the :locked_version key' do
+        expect(subject.to_hash).to have_key(:locked_version)
+      end
+
+      it 'sets the :locked_version key' do
+        expect(subject.to_hash[:locked_version]).to eq('1.2.3')
+      end
+
+      it 'has the :location key' do
+        expect(subject.to_hash).to have_key(:location)
+      end
+
+      it 'sets the :location key' do
+        expect(subject.to_hash[:location]).to eq({ type: :site, value: 'http://cookbooks.opscode.com/api/v1/cookbooks' })
+      end
+
+      context 'with a location' do
+        before do
+          subject.instance_variable_set(:@location, nil)
+        end
+
+        it 'does not have the :location key' do
+          expect(subject.to_hash).not_to have_key(:location)
+        end
+      end
+    end
+
+    describe '#to_json' do
+      before do
+        MultiJson.stub(:dump)
+        subject.stub(:to_hash).and_return({ foo: 'bar' })
+      end
+
+      it 'delegates to MultiJson' do
+        MultiJson.should_receive(:dump).with({ foo: 'bar' }, pretty: true)
+        subject.to_json
       end
     end
 
