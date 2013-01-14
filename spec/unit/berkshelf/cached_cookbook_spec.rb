@@ -450,14 +450,59 @@ module Berkshelf
       end
     end
 
-    describe "#to_json" do
-      before(:each) do
-        @json = subject.to_json
+    describe '#to_json' do
+      let(:json) { JSON.parse(subject.to_json) }
+
+      it "has a 'chef_type' key" do
+        expect(json['chef_type']).to eq('cookbook_version')
       end
 
-      it "has a 'json_class' key with 'Chef::CookbookVersion' as the value" do
-        @json.should have_json_path('json_class')
-        parse_json(@json)['json_class'].should eql("Chef::CookbookVersion")
+      it "has a 'name' key" do
+        expect(json['name']).to eq('nginx-0.100.5')
+      end
+
+      it "has a 'cookbook_name' key" do
+        expect(json['cookbook_name']).to eq('nginx')
+      end
+
+      it "has a 'version' key" do
+        expect(json['version']).to eq('0.100.5')
+      end
+
+      it "has a 'metadata' key" do
+        expect(json['metadata']).to_not be_nil
+      end
+
+      it "has a 'json_class' key" do
+        expect(json['json_class']).to eq('Chef::CookbookVersion')
+      end
+
+      it "has a 'frozen?' key" do
+        expect(json['frozen?']).to be_false
+      end
+    end
+
+    describe '#to_hash' do
+      let(:hash) { subject.to_hash }
+
+      it "has a 'chef_type' key" do
+        expect(hash['chef_type']).to eq('cookbook_version')
+      end
+
+      it "has a 'name' key" do
+        expect(hash['name']).to eq('nginx-0.100.5')
+      end
+
+      it "has a 'cookbook_name' key" do
+        expect(hash['cookbook_name']).to eq('nginx')
+      end
+
+      it "has a 'version' key" do
+        expect(hash['version']).to eq('0.100.5')
+      end
+
+      it "has a 'metadata' key" do
+        expect(hash['metadata']).to be_a Chef::Cookbook::Metadata
       end
     end
 
