@@ -40,6 +40,8 @@ module Berkshelf
     #   if there are missing or conflicting options
     #
     # @return [Array<Berkshelf::CachedCookbook>]
+    #
+    # @todo Support sources with :path, :git, and :github options
     def self.update(options = {})
       @options = options
 
