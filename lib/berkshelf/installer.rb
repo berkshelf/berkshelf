@@ -76,39 +76,36 @@ module Berkshelf
         # replace some of these sources with their locked versions.
         @sources = filter(berksfile.sources)
 
-        # Assume there are no locked_sources to start
-        @locked_sources = []
+        # Get a list of our locked sources. This will be an empty array in the
+        # absence of a lockfile.
+        @locked_sources = lockfile.sources
 
-        if lockfile
-          @locked_sources = lockfile.sources
+        # If the SHAs match, then the lockfile is in up-to-date with the Berksfile.
+        # We can rely solely on the lockfile.
+        if berksfile.sha == lockfile.sha
+          @sources = @locked_sources
+        else
+          # Since the SHAs were different, we need to determine which sources
+          # have diverged from the lockfile.
+          #
+          # For all of our unlocked sources, check if there's a locked version that
+          # still satisfies the version constraint. If it does, "lock" that source
+          # because we should just use the locked version.
+          #
+          # If a locked source exists, but doesn't satisfy the constraint, raise a
+          # {Berkshelf::OutdatedCookbookSource} and instruct the user to run
+          # <tt>berks update</tt>.
+          @sources.collect! do |source|
+            locked_source = @locked_sources.find{ |s| s.name == source.name }
 
-          # If the SHAs match, then the lockfile is in up-to-date with the Berksfile.
-          # We can rely solely on the lockfile.
-          if berksfile.sha == lockfile.sha
-            @sources = @locked_sources
-          else
-            # Since the SHAs were different, we need to determine which sources
-            # have diverged from the lockfile.
-            #
-            # For all of our unlocked sources, check if there's a locked version that
-            # still satisfies the version constraint. If it does, "lock" that source
-            # because we should just use the locked version.
-            #
-            # If a locked source exists, but doesn't satisfy the constraint, raise a
-            # {Berkshelf::OutdatedCookbookSource} and instruct the user to run
-            # <tt>berks update</tt>.
-            @sources.collect! do |source|
-              locked_source = @locked_sources.find{ |s| s.name == source.name }
-
-              if locked_source
-                if source.version_constraint.satisfies?(locked_source.locked_version)
-                  locked_source
-                else
-                  raise ::Berkshelf::OutdatedCookbookSource, "The current lockfile has #{locked_source.name} locked at #{locked_source.version}.\nTry running `berks update #{locked_source.name}`"
-                end
+            if locked_source
+              if source.version_constraint.satisfies?(locked_source.locked_version)
+                locked_source
               else
-                source
+                raise ::Berkshelf::OutdatedCookbookSource, "The current lockfile has #{locked_source.name} locked at #{locked_source.version}.\nTry running `berks update #{locked_source.name}`"
               end
+            else
+              source
             end
           end
         end
@@ -171,12 +168,12 @@ module Berkshelf
         FileUtils.mkdir_p(path)
 
         scratch = Berkshelf.mktmpdir
-        cookbooks.each do |cb|
-          dest = File.join(scratch, cb.cookbook_name, '/')
+        cookbooks.each do |cookbook|
+          dest = File.join(scratch, cookbook.cookbook_name, '/')
           FileUtils.mkdir_p(dest)
 
           # Dir.glob does not support backslash as a File separator
-          src = cb.path.to_s.gsub('\\', '/')
+          src = cookbook.path.to_s.gsub('\\', '/')
           files = Dir.glob(File.join(src, '*'))
 
           # Filter out files using chefignore
