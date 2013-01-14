@@ -42,8 +42,8 @@ module Berkshelf
     # @return [Array<Berkshelf::CachedCookbook>]
     #
     # @todo Support sources with :path, :git, and :github options
-    def self.update(options = {})
-      @options = options
+    def self.update(opts = {})
+      @options = opts
 
       ensure_berksfile!
       validate_options!
