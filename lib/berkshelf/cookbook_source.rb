@@ -65,6 +65,8 @@ module Berkshelf
       # @param [<Berkshelf::CookbookSource>] hash
       #   the hash to convert into a cookbook source
       def from_json(hash)
+        hash = hash.dup
+
         name = hash.delete(:name)
         hash.delete(:location)
         hash[:constraint] = "=#{hash[:locked_version]}"
