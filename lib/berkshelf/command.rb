@@ -26,7 +26,7 @@ module Berkshelf
       # Check for the presence of a Berksfile. Berkshelf cannot do anything
       # without the presence of a Berksfile.lock.
       def ensure_berksfile!
-        unless ::File.exists?(Berkshelf::DEFAULT_FILENAME)
+        unless ::File.exists?(::Berkshelf::DEFAULT_FILENAME)
           raise ::Berkshelf::BerksfileNotFound, "No #{options[:berksfile]} was found at ."
         end
       end
@@ -35,8 +35,8 @@ module Berkshelf
       # an exception to require at least one definition.
       def ensure_berksfile_content!
         begin
-          unless ::File.read(Berkshelf::DEFAULT_FILENAME).size > 1
-            raise Berksfile::BerksfileNotFound, "Your #{Berkshelf::DEFAULT_FILENAME} is empty! You need at least one cookbook definition."
+          unless ::File.read(::Berkshelf::DEFAULT_FILENAME).size > 1
+            raise ::Berksfile::BerksfileNotFound, "Your #{::Berkshelf::DEFAULT_FILENAME} is empty! You need at least one cookbook definition."
           end
         rescue Errno::ENOENT
           ensure_berksfile!
