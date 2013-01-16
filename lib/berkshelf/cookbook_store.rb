@@ -16,7 +16,6 @@ module Berkshelf
     def initialize(storage_path)
       @storage_path = Pathname.new(storage_path)
       initialize_filesystem
-      check_permissions
     end
 
     # Returns an instance of CachedCookbook representing the
@@ -87,13 +86,12 @@ module Berkshelf
     private
 
       def initialize_filesystem
-        # FileUtils.mkdir_p(storage_path, mode: 0755)
-      end
+        FileUtils.mkdir_p(storage_path, mode: 0755)
 
-      def check_permissions
         unless File.writable?(storage_path)
           raise ::Berkshelf::InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'! Please either chown the directory or use a different Cookbook Store."
         end
       end
+
   end
 end
