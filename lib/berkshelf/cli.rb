@@ -197,11 +197,6 @@ module Berkshelf
       default: false,
       desc: "Skip Ruby syntax check when uploading cookbooks",
       aliases: "-s"
-    option :nodeps,
-      type: :boolean,
-      desc: 'Do not upload dependencies',
-      default: false,
-      aliases: '-D'
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])

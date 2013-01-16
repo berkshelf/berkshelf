@@ -51,13 +51,6 @@ module Berkshelf
           resolver.should have_source("artifact")
         end
 
-        it "should not add dependencies if requested" do
-          resolver = subject.new(downloader, sources: source, nodeps: true)
-
-          resolver.should_not have_source("nginx")
-          resolver.should_not have_source("artifact")
-        end
-
         context "given an array of sources" do
           it "adds each source to the sources hash" do
             sources = [source]

@@ -22,10 +22,8 @@ module Berkshelf
         add_source(source, false)
       end
 
-      unless(options[:nodeps])
-        Array(options[:sources]).each do |source|
-          add_source_dependencies(source)
-        end
+      Array(options[:sources]).each do |source|
+        add_source_dependencies(source)
       end
     end
 
