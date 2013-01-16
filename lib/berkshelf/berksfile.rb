@@ -482,8 +482,20 @@ module Berkshelf
     # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
     def upload(options = {})
       uploader = Uploader.new(options)
-      solution = resolve(options)
-
+      if(options[:nodeps])
+        r = resolver(options)
+        solution = Array(options.fetch(:cookbooks, nil)).map{ |name|
+          if(c = r.get_source(name))
+            c.cached_cookbook 
+          end
+        }.compact
+        if(solution.empty?)
+          raise "Failed to locate requested cookbook(s).\n  - Cookbooks uploaded without dependencies must be defined within Berksfile."
+        end
+      else
+        solution = resolve(options)
+      end
+      
       solution.each do |cb|
         Berkshelf.formatter.upload cb.cookbook_name, cb.version, options[:server_url]
         uploader.upload(cb, options)
@@ -508,10 +520,27 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
+      resolver(options).resolve
+    end
+
+    # Builds a Resolver instance
+    #
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve sources for
+    #
+    # @return <Berkshelf::Resolver>
+    def resolver(options={})
       Resolver.new(
         self.downloader,
-        sources: sources(options)
-      ).resolve
+        sources: sources(options),
+        nodeps: options[:nodeps]
+      )
     end
 
     # Reload this instance of Berksfile with the given content. The content
