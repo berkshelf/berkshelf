@@ -1,0 +1,23 @@
+{
+  "sha":"6b76225554cc1f7c0aea0f8b3f10c6743aeba67e",
+  "sources":[
+    {
+      "name":"build-essential",
+      "locked_version":"1.1.2",
+      "location":{
+        "type":"site",
+        "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
+      }
+    },
+    {
+      "name":"chef-client",
+      "locked_version":"2.1.4",
+      "location":{
+        "type":"site",
+        "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
+      }
+    }
+  ],
+  "options":{
+    "berksfile":"/Users/svargo/Development/chef-is/Berksfile"
+  }}

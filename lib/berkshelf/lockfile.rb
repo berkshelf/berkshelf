@@ -41,7 +41,7 @@ module Berkshelf
 
     def save
       File.open(lockfile_name, 'wb') do |file|
-        file.write self.to_json
+        file.write self.to_json + "\n"
       end
     end
     alias_method :write, :save
@@ -52,9 +52,12 @@ module Berkshelf
     # @param [Array<Berkshelf::CookbookSource>] sources
     #   the list of sources to update
     def update(sources)
+      sources = [sources].flatten unless sources.is_a?(Array)
+
       unless sources.all?{ |cookbook| cookbook.is_a?(::Berkshelf::CookbookSource) }
         raise ::Berkshelf::ArgumentError, "`sources` must be a Berkshelf::CookbookSource!"
       end
+
       @sources = sources
     end
 
