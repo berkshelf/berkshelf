@@ -20,16 +20,16 @@ module Berkshelf
         it "adds the class of the includer to the list of registered formatters with the id" do
           subject.register(format_id, format_klass)
 
-          subject.formatters.should have_key(format_id)
-          subject.formatters[format_id].should eql(format_klass)
+          expect(subject.formatters).to have_key(format_id)
+          expect(subject.formatters[format_id]).to eql(format_klass)
         end
 
         context "when given a string instead of a symbol as the ID" do
           it "converts the string to a symbol and registers it" do
             subject.register("rspec", format_klass)
 
-            subject.formatters.should have_key(:rspec)
-            subject.formatters[:rspec].should eql(format_klass)
+            expect(subject.formatters).to have_key(:rspec)
+            expect(subject.formatters[:rspec]).to eql(format_klass)
           end
         end
 
@@ -37,9 +37,9 @@ module Berkshelf
           it "raises an InternalError" do
             subject.register(format_id, format_klass)
 
-            lambda {
+            expect {
               subject.register(format_id, format_klass)
-            }.should raise_error(Berkshelf::InternalError)
+            }.to raise_error(Berkshelf::InternalError)
           end
         end
       end
@@ -50,10 +50,10 @@ module Berkshelf
         end
 
         it "returns a hash where formatter ID's are keys and values are formatter classes" do
-          subject.formatters.should be_a(Hash)
-          subject.formatters.should have(1).item
-          subject.formatters.keys.first.should eql(format_id)
-          subject.formatters.values.first.should eql(format_klass)
+          expect(subject.formatters).to be_a(Hash)
+          expect(subject.formatters).to have(1).item
+          expect(subject.formatters.keys.first).to eql(format_id)
+          expect(subject.formatters.values.first).to eql(format_klass)
         end
       end
 
@@ -63,12 +63,12 @@ module Berkshelf
         end
 
         it "returns the class constant of the given formatter ID" do
-          subject[format_id].should eql(format_klass)
+          expect(subject[format_id]).to eql(format_klass)
         end
 
         context "when the ID has not been registered" do
           it "returns nil" do
-            subject[:not_there].should be_nil
+            expect(subject[:not_there]).to be_nil
           end
         end
       end
@@ -108,12 +108,12 @@ module Berkshelf
     end
 
     it "has abstract methods for all the messaging modes" do
-      lambda { subject.install("my_coobook","1.2.3","http://community") }.should raise_error(AbstractFunction)
-      lambda { subject.use("my_coobook","1.2.3") }.should raise_error(AbstractFunction)
-      lambda { subject.use("my_coobook","1.2.3","http://community") }.should raise_error(AbstractFunction)
-      lambda { subject.upload("my_coobook","1.2.3","http://chef_server") }.should raise_error(AbstractFunction)
-      lambda { subject.msg("something you should know") }.should raise_error(AbstractFunction)
-      lambda { subject.error("whoa this is bad") }.should raise_error(AbstractFunction)
+      expect { subject.install("my_coobook","1.2.3","http://community") }.to raise_error(AbstractFunction)
+      expect { subject.use("my_coobook","1.2.3") }.to raise_error(AbstractFunction)
+      expect { subject.use("my_coobook","1.2.3","http://community") }.to raise_error(AbstractFunction)
+      expect { subject.upload("my_coobook","1.2.3","http://chef_server") }.to raise_error(AbstractFunction)
+      expect { subject.msg("something you should know") }.to raise_error(AbstractFunction)
+      expect { subject.error("whoa this is bad") }.to raise_error(AbstractFunction)
     end
   end
 end

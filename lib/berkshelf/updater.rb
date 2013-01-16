@@ -21,16 +21,16 @@ module Berkshelf
     #   In this case, we must also remove the "sha" attribute, since the
     #   lockfile should be force-diverged from the Berksfile
     #
-    # @param [Hash] options
+    # @param [Hash] opts
     #   the list of options to pass to the updater (see below for acceptable
     #   options)
-    # @option options [Symbol, String, Array] :cookbooks
+    # @option opts [Symbol, String, Array] :cookbooks
     #   List of cookbook names to update
-    # @option options [Symbol, Array] :except
+    # @option opts [Symbol, Array] :except
     #   Group(s) to exclude when updating
-    # @option options [Symbol, Array] :only
+    # @option opts [Symbol, Array] :only
     #   Group(s) to exclusively unlock for updating
-    # @option options [String] :path
+    # @option opts [String] :path
     #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
     #   is a technique for packaging all cookbooks resolved by a Berksfile.
     #

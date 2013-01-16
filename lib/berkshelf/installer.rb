@@ -46,13 +46,13 @@ module Berkshelf
       # @param [Hash] options
       #   the list of options to pass to the installer (see below for acceptable
       #   options)
-      # @option options [Symbol, Array] :except
+      # @option opts [Symbol, Array] :except
       #   Group(s) to exclude which will cause any sources marked as a member of the
       #   group to not be installed
-      # @option options [Symbol, Array] :only
+      # @option opts [Symbol, Array] :only
       #   Group(s) to include which will cause any sources marked as a member of the
       #   group to be installed and all others to be ignored
-      # @option options [String] :path
+      # @option opts [String] :path
       #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
       #   is a technique for packaging all cookbooks resolved by a Berksfile.
       #
@@ -64,8 +64,8 @@ module Berkshelf
       #   if there are missing or conflicting options
       #
       # @return [Array<Berkshelf::CachedCookbook>]
-      def install(options = {})
-        @options = options
+      def install(opts = {})
+        @options = opts
 
         ensure_berkshelf_directory!
         ensure_berksfile!

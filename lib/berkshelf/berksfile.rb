@@ -41,7 +41,7 @@ module Berkshelf
     def_delegator :downloader, :locations
 
     def initialize(path)
-      @filepath = path
+      @filepath = path.to_s
       @sources = Hash.new
       @downloader = Downloader.new(Berkshelf.cookbook_store)
       @cached_cookbooks = nil
@@ -464,12 +464,12 @@ module Berkshelf
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      lockfile_name = File.basename(filepath) + '.lock'
+      lockfile_path = filepath.to_s + '.lock'
 
       begin
-        ::Berkshelf::Lockfile.load(lockfile_name)
+        ::Berkshelf::Lockfile.load(lockfile_path)
       rescue ::Berkshelf::LockfileNotFound
-        ::Berkshelf::Lockfile.new([], { berksfile: filepath })
+        ::Berkshelf::Lockfile.new(lockfile_path, [])
       end
     end
 

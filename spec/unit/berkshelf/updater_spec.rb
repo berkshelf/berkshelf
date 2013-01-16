@@ -40,7 +40,7 @@ module Berkshelf
         end
 
         context 'with no locked sources' do
-          it '' do
+          it 'unsets the sources and unlocks the sha' do
             lockfile.should_not_receive(:sources)
             lockfile.should_receive(:update).with([])
             lockfile.should_receive(:sha=).with(nil)
@@ -55,7 +55,7 @@ module Berkshelf
             lockfile.stub(:sources).and_return(sources)
           end
 
-          it '' do
+          it 'unsets the sources and unlocks the sha' do
             lockfile.should_not_receive(:sources)
             lockfile.should_receive(:update).with([])
             lockfile.should_receive(:sha=).with(nil)
@@ -74,7 +74,7 @@ module Berkshelf
             sources.stub(:-).and_return([])
           end
 
-          it '' do
+          it 'unsets the sources and unlocks the sha' do
             lockfile.should_receive(:sources).with(no_args())
             lockfile.should_receive(:update).with([])
             lockfile.should_receive(:sha=).with(nil)
@@ -90,7 +90,7 @@ module Berkshelf
             sources.stub(:-).and_return(sources)
           end
 
-          it '' do
+          it 'sets the sources and unlocks the sha' do
             lockfile.should_receive(:sources).with(no_args())
             lockfile.should_receive(:update).with(sources)
             lockfile.should_receive(:sha=).with(nil)

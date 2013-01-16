@@ -88,13 +88,6 @@ describe Berkshelf::Lockfile do
       end
     end
 
-    describe '#lockfile_name' do
-      it 'returns the berksfile name + .lock' do
-        lockfile.stub(:options).and_return({ berksfile: 'foo' })
-        expect(lockfile.lockfile_name).to eq('foo.lock')
-      end
-    end
-
     describe '#to_hash' do
       let(:hash) { lockfile.to_hash }
 
@@ -104,10 +97,6 @@ describe Berkshelf::Lockfile do
 
       it 'has the :sources key' do
         expect(hash).to have_key(:sources)
-      end
-
-      it 'has the :options key' do
-        expect(hash).to have_key(:options)
       end
     end
 

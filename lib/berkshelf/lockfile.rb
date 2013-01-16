@@ -5,16 +5,19 @@ module Berkshelf
       #
       # @raise [Errno::ENOENT]
       #   when the Lockfile cannot be found
-      def load(filename)
+      def load(filepath)
         begin
-          contents = File.read(filename)
+          contents = File.read(filepath)
         rescue Errno::ENOENT
-          raise ::Berkshelf::LockfileNotFound, "Could not find a valid lock file at #{filename}"
+          raise ::Berkshelf::LockfileNotFound, "Could not find a valid lock file at #{filepath}"
         end
 
         json = MultiJson.load(contents, symbolize_keys: true)
-        sources = json[:sources].map{ |source| ::Berkshelf::CookbookSource.from_json(source) }
-        lockfile = new(sources, json[:options])
+        sources = json[:sources].collect do |source|
+          ::Berkshelf::CookbookSource.from_json(source)
+        end
+
+        lockfile = new(filepath, sources)
         lockfile.instance_variable_set(:@sha, json[:sha])
         lockfile
       end
@@ -28,19 +31,21 @@ module Berkshelf
     #   the last known SHA of the Berksfile
     attr_accessor :sha
 
+    # @return [String]
+    #   the path to this lockfile (may not yet exist)
+    attr_reader :filepath
+
     # Create a new lockfile instance from the given sources.
     #
     # @param [Array<Berkshelf::CookbookSource>] sources
     #   the list of cookbook sources
-    # @param [Hash] options
-    #   a list of options to pass to the lockfile
-    def initialize(sources = [], options = {})
-      @options = options
+    def initialize(filepath, sources = [])
       @sources = sources
+      @filepath = filepath
     end
 
     def save
-      File.open(lockfile_name, 'wb') do |file|
+      File.open(filepath, 'wb') do |file|
         file.write self.to_json + "\n"
       end
     end
@@ -73,14 +78,6 @@ module Berkshelf
       @sources.push(source) unless @sources.include?(source)
     end
 
-    # The lockfile name associated with this berksfile
-    #
-    # @return [String]
-    #   the berksfile + '.lock'
-    def lockfile_name
-      options[:berksfile] + '.lock'
-    end
-
     # Write the current lockfile to a hash
     #
     # @return [Hash]
@@ -91,8 +88,7 @@ module Berkshelf
     def to_hash
       {
         sha: sha,
-        sources: sources,
-        options: options
+        sources: sources
       }
     end
 
@@ -104,15 +100,6 @@ module Berkshelf
     #   the JSON representation of this lockfile
     def to_json
       MultiJson.dump(self.to_hash, pretty: true)
-    end
-
-    private
-    # The list of options passed to the lockfile
-    #
-    # @return [Hash]
-    #   the hash of options
-    def options
-      @options ||= {}
     end
   end
 end
