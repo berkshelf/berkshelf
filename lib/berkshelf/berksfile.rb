@@ -18,45 +18,10 @@ module Berkshelf
         raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
       end
 
-      # Copy all cached_cookbooks to the given directory. Each cookbook will be contained in
-      # a directory named after the name of the cookbook.
-      #
-      # @param [Array<CachedCookbook>] cookbooks
-      #   an array of CachedCookbooks to be copied to a vendor directory
-      # @param [String] path
-      #   filepath to vendor cookbooks to
-      #
-      # @return [String]
-      #   expanded filepath to the vendor directory
+      # @deprecated Use {Berkshelf::Installer.install} with a :path option instead.
       def vendor(cookbooks, path)
-        chefignore_file = [
-          File.join(Dir.pwd, 'chefignore'),
-          File.join(Dir.pwd, 'cookbooks', 'chefignore')
-        ].find { |f| File.exists?(f) }
-
-        chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
-        path       = File.expand_path(path)
-        FileUtils.mkdir_p(path)
-
-        scratch = Berkshelf.mktmpdir
-        cookbooks.each do |cb|
-          dest = File.join(scratch, cb.cookbook_name, "/")
-          FileUtils.mkdir_p(dest)
-
-          # Dir.glob does not support backslash as a File separator
-          src = cb.path.to_s.gsub('\\', '/')
-          files = Dir.glob(File.join(src, "*"))
-
-          # Filter out files using chefignore
-          files = chefignore.remove_ignores_from(files) if chefignore
-
-          FileUtils.cp_r(files, dest)
-        end
-
-        FileUtils.remove_dir(path, force: true)
-        FileUtils.mv(scratch, path)
-
-        path
+        ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#vendor method has been deprecated. Please use Berkshelf::Installer.install with a :path option instead.'
+        ::Berkshelf::Installer.install(cookbooks: cookbooks, path: path)
       end
     end
 
@@ -508,23 +473,5 @@ module Berkshelf
       end
     end
 
-    private
-
-      def descendant_directory?(candidate, parent)
-        hack = FileUtils::Entry_.new('/tmp')
-        hack.send(:descendant_diretory?, candidate, parent)
-      end
-
-      def lockfile_present?
-        File.exist?(Berkshelf::Lockfile::DEFAULT_FILENAME)
-      end
-
-      def write_lockfile(sources)
-        Berkshelf::Lockfile.new(sources).write
-      end
-
-      def update_lockfile(sources)
-        Berkshelf::Lockfile.update!(sources)
-      end
   end
 end
