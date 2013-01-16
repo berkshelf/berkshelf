@@ -7,7 +7,7 @@ require 'vcr'
 Spork.prefork do
   unless ENV['DRB']
     require 'simplecov'
-    SimpleCov.start 'rails'
+    SimpleCov.start
   end
 
   require 'json_spec'
@@ -103,7 +103,7 @@ Spork.each_run do
 
   if ENV['DRB']
     require 'simplecov'
-    SimpleCov.start 'rails'
+    SimpleCov.start
   end
 
 end
