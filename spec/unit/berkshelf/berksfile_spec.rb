@@ -3,40 +3,73 @@ require 'spec_helper'
 module Berkshelf
   describe Berksfile do
     let(:content) do
-<<-EOF
-cookbook 'ntp', '<= 1.0.0'
-cookbook 'mysql'
-cookbook 'nginx', '< 0.101.2'
-cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
-EOF
+      """
+      cookbook 'ntp', '<= 1.0.0'
+      cookbook 'mysql'
+      cookbook 'nginx', '< 0.101.2'
+      cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
+      """
     end
 
-    describe "ClassMethods" do
-      subject { Berksfile }
+    let(:filepath) { tmp_path.join("Berksfile").to_s }
+    let(:source_one) { double('source_one', name: "nginx") }
+    let(:source_two) { double('source_two', name: "mysql") }
 
-      describe "::from_file" do
-        let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
+    subject { Berksfile.new(filepath) }
 
-        it "reads a Berksfile and returns an instance Berksfile" do
-          subject.from_file(cookbook_file).should be_a(Berksfile)
-        end
+    #
+    # Class Methods
+    #
+    describe ',from_file' do
+      let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
 
-        context "when Berksfile does not exist at given path" do
-          let(:bad_path) { tmp_path.join("thisdoesnotexist") }
+      it "reads a Berksfile and returns an instance Berksfile" do
+        Berksfile.from_file(cookbook_file).should be_a(Berksfile)
+      end
 
-          it "raises BerksfileNotFound" do
-            lambda {
-              subject.from_file(bad_path)
-            }.should raise_error(BerksfileNotFound)
-          end
+      context "when Berksfile does not exist at given path" do
+        let(:bad_path) { tmp_path.join("thisdoesnotexist") }
+
+        it "raises BerksfileNotFound" do
+          lambda {
+            Berksfile.from_file(bad_path)
+          }.should raise_error(BerksfileNotFound)
         end
       end
     end
 
-    let(:source_one) { double('source_one', name: "nginx") }
-    let(:source_two) { double('source_two', name: "mysql") }
+    describe '.vendor' do
+      context 'is deprecated' do
+        before { ::Berkshelf::Installer.stub(:install) }
+        after { Berksfile.vendor([source_one, source_two], '/tmp/nowhere') }
 
-    subject { Berksfile.new(tmp_path.join("Berksfile")) }
+        it 'prints a deprecation warning' do
+          ::Berkshelf.ui.should_receive(:deprecated)
+        end
+
+        it 'calls Berkshelf::Installer.install' do
+          ::Berkshelf::Installer.should_receive(:install).once
+        end
+      end
+    end
+
+    #
+    # Instance Methods
+    #
+    describe '#sha' do
+      before do
+        ::File.stub(:read).with(filepath).and_return('abc123')
+        ::File.should_receive(:read)
+
+        ::Digest::SHA1.stub(:hexdigest).with('abc123').and_return('aaabbbccc111222333')
+        ::Digest::SHA1.should_receive(:hexdigest).with('abc123')
+      end
+
+      it 'sets the @sha instance variable' do
+        subject.sha
+        expect(subject.instance_variable_get(:@sha)).to eq('aaabbbccc111222333')
+      end
+    end
 
     describe "#cookbook" do
       let(:name) { "artifact" }
@@ -100,6 +133,24 @@ EOF
       it "sends the add_source message with an explicit version constraint and the path to the cookbook" do
         subject.should_receive(:add_source).with("example_cookbook", "= 0.5.0", path: cb_path.to_s)
 
+        subject.metadata
+      end
+
+      it 'raises an except when the metadata file was not found' do
+        Berkshelf.stub(:find_metadata).and_return(nil)
+        expect {
+          subject.metadata
+        }.to raise_error(Berkshelf::CookbookNotFound)
+      end
+
+      it 'uses the metadata name' do
+        metadata = double('metadata')
+        ::Chef::Cookbook::Metadata.stub(:new).and_return(metadata)
+        metadata.stub(:from_file).with(any_args())
+        metadata.stub(:name).with(any_args).and_return('example_cookbook')
+        metadata.stub(:version).and_return('1.1.1')
+
+        metadata.should_receive(:name)
         subject.metadata
       end
     end
@@ -278,6 +329,12 @@ EOF
       it "returns an instance of Berksfile" do
         subject.load(content).should be_a(Berksfile)
       end
+
+      it 'raises a BerksfileReadError when the content is invalid' do
+        expect {
+          subject.load("not_a_method 'foo'")
+        }.to raise_error(::Berkshelf::BerksfileReadError)
+      end
     end
 
     describe "#add_source" do
@@ -305,6 +362,45 @@ EOF
         lambda {
           subject.add_source(name)
         }.should raise_error(DuplicateSourceDefined)
+      end
+    end
+
+    describe '#remove_source' do
+      let(:sources) { subject.instance_variable_get(:@sources) }
+
+      it 'calls #to_s on the source' do
+        source_one.should_receive(:to_s)
+        subject.remove_source(source_one)
+      end
+
+      it 'removes the item from the sources list' do
+        sources.should_receive(:delete).with(source_one.to_s)
+        subject.remove_source(source_one)
+      end
+    end
+
+    describe '#[]' do
+      let(:sources) { subject.instance_variable_get(:@sources) }
+
+      it 'delegates to the sources' do
+        sources.should_receive(:[]).with('my_cookbook')
+        subject['my_cookbook']
+      end
+    end
+
+    describe '#lockfile' do
+       it 'returns the lockfile if one exists' do
+        ::Berkshelf::Lockfile.stub(:load).and_return(true)
+        ::Berkshelf::Lockfile.should_receive(:load).with('Berksfile.lock')
+
+        subject.lockfile
+      end
+
+      it "returns a new lockfile if one doesn't exist" do
+        ::Berkshelf::Lockfile.stub(:load).and_raise(::Berkshelf::LockfileNotFound)
+        ::Berkshelf::Lockfile.should_receive(:new).with([], { berksfile: anything() })
+
+        subject.lockfile
       end
     end
 
