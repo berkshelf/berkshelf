@@ -22,6 +22,10 @@ module Berkshelf
         Berkshelf::Config.path = @options[:config]
       end
 
+      if @options[:quiet]
+        Berkshelf.ui.mute!
+      end
+
       Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
@@ -46,6 +50,11 @@ module Berkshelf
       desc: "Output format to use.",
       aliases: "-F",
       banner: "FORMAT"
+    class_option :quiet,
+      type: :boolean,
+      desc: "Silence all informational output.",
+      aliases: "-q",
+      default: false
 
     method_option :force,
       type: :boolean,
