@@ -87,6 +87,11 @@ module Berkshelf
 
       def initialize_filesystem
         FileUtils.mkdir_p(storage_path, mode: 0755)
+
+        unless File.writable?(storage_path)
+          raise ::Berkshelf::InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'! Please either chown the directory or use a different Cookbook Store."
+        end
       end
+
   end
 end
