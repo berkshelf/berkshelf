@@ -295,7 +295,6 @@ module Berkshelf
     def sources(options = {})
       l_sources = @sources.collect { |name, source| source }.flatten
 
-      cookbooks = Array(options.fetch(:cookbooks, nil))
       except    = Array(options.fetch(:except, nil)).collect(&:to_sym)
       only      = Array(options.fetch(:only, nil)).collect(&:to_sym)
 
