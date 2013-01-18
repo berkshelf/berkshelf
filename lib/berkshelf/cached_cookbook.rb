@@ -26,6 +26,7 @@ module Berkshelf
         end
 
         name = metadata.name.empty? ? File.basename(path) : metadata.name
+        metadata.name name if metadata.name.empty?
 
         new(name, path, metadata)
       end
@@ -48,6 +49,8 @@ module Berkshelf
         rescue IOError
           raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
         end
+        
+        metadata.name cached_name if metadata.name.empty?
 
         new(cached_name, path, metadata)
       end
