@@ -149,5 +149,9 @@ module Berkshelf
   class ConfigExists < BerkshelfError; status_code(116); end
   class ConfigurationError < BerkshelfError; status_code(117); end
   class CommandUnsuccessful < BerkshelfError; status_code(118); end
+<<<<<<< HEAD
   class InsufficientPrivledges < BerkshelfError; status_code(119); end
+=======
+  class ExplicitCookbookNotFound < BerkshelfError; status_code(119); end
+>>>>>>> RiotGames/master
 end
