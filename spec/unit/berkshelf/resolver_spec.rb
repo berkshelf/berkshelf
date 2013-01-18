@@ -32,6 +32,21 @@ module Berkshelf
       )
     end
 
+    let(:source_three) do
+      double('source-three',
+        name: 'thing1',
+        version_constraint: Solve::Constraint.new('= 0.1.0'),
+        downloaded?: true,
+        cached_cookbook: double('thing1-cookbook',
+          name: 'thing1-0.1.0',
+          cookbook_name: 'thing1',
+          version: '0.1.0',
+          dependencies: Hash.new
+        ),
+        location: double('location', validate_cached: true)
+      )
+    end
+
     describe "ClassMethods" do
       subject { Resolver }
 
@@ -125,6 +140,35 @@ module Berkshelf
 
       it "returns the source of the given name" do
         subject.has_source?(source.name).should be_true
+      end
+    end
+
+    describe "#resolve" do
+      before(:each) do
+        [source, source_two, source_three].each do |s|
+          subject.add_source(s)
+        end
+      end
+
+      it "returns all cookbooks" do
+        solution = subject.resolve
+        solution.should have(3).items
+        solution.should include(source.cached_cookbook)
+        solution.should include(source_two.cached_cookbook)
+        solution.should include(source_three.cached_cookbook)
+      end
+
+      it "returns cookbook and its dependencies" do
+        solution = subject.resolve(['mysql'])
+        solution.should have(2).items
+        solution.should include(source.cached_cookbook)
+        solution.should include(source_two.cached_cookbook)
+      end
+
+      it "returns the cookbook only if there are no dependencies" do
+        solution = subject.resolve(['thing1'])
+        solution.should have(1).items
+        solution.should include(source_three.cached_cookbook)
       end
     end
   end
