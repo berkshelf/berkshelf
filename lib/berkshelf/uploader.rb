@@ -28,7 +28,7 @@ module Berkshelf
     # @option options [URI, String, Hash] :proxy
     #   URI, String, or Hash of HTTP proxy options
     def initialize(options = {})
-      @conn = Ridley.connection(options)
+      @conn = Ridley.new(options)
     end
 
     # Uploads a CachedCookbook from a CookbookStore to this instances Chef Server URL
@@ -55,9 +55,8 @@ module Berkshelf
       checksums = cookbook.checksums.dup
       sandbox   = conn.sandbox.create(checksums.keys)
 
-      sandbox.multi_upload(checksums)
+      sandbox.upload(checksums)
       sandbox.commit
-      sandbox.terminate
 
       conn.cookbook.save(
         cookbook.cookbook_name,
