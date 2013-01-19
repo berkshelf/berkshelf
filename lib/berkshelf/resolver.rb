@@ -13,6 +13,7 @@ module Berkshelf
       @downloader = downloader
       @graph = Solve::Graph.new
       @sources = Hash.new
+      @artifacts = Hash.new
 
       # Dependencies need to be added AFTER the sources. If they are
       # not, then one of the dependencies of a source that is added
@@ -26,6 +27,8 @@ module Berkshelf
         Array(options[:sources]).each do |source|
           add_source_dependencies(source)
         end
+
+        chain_dependencies!
       end
     end
 
@@ -48,13 +51,24 @@ module Berkshelf
       @sources[source.name] = source
       use_source(source) || install_source(source)
 
-      graph.artifacts(source.name, source.cached_cookbook.version)
+      new_artifact = graph.artifacts(source.name, source.cached_cookbook.version)
+      @artifacts[source.name] = new_artifact
 
       if include_dependencies
         add_source_dependencies(source)
       end
 
       sources
+    end
+
+    # Adds dependencies to artifacts
+    def chain_dependencies!
+      @artifacts.each do |name, artifact|
+        @sources[name].cached_cookbook.dependencies.each do |dep|
+          dep_cook = @sources[dep.first].cached_cookbook
+          artifact.depends(dep_cook.cookbook_name, dep_cook.version)
+        end
+      end
     end
 
     # Add the dependencies of the given source as sources in the collection of sources
@@ -83,14 +97,19 @@ module Berkshelf
     # Finds a solution for the currently added sources and their dependencies and
     # returns an array of CachedCookbooks.
     #
+    # @param [CookbookName] demands
+    #   demands for solution
+    #
     # @return [Array<Berkshelf::CachedCookbook>]
-    def resolve
-      demands = [].tap do |l_demands|
-        graph.artifacts.each do |artifact|
-          l_demands << [ artifact.name, artifact.version ]
+    def resolve(demands = [])
+      if demands.empty?
+        demands = [].tap do |l_demands|
+          graph.artifacts.each do |artifact|
+            l_demands << [ artifact.name, artifact.version ]
+          end
         end
       end
-
+      
       solution = Solve.it!(graph, demands)
 
       [].tap do |cached_cookbooks|

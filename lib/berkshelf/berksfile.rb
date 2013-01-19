@@ -295,18 +295,12 @@ module Berkshelf
     def sources(options = {})
       l_sources = @sources.collect { |name, source| source }.flatten
 
-      cookbooks = Array(options.fetch(:cookbooks, nil))
       except    = Array(options.fetch(:except, nil)).collect(&:to_sym)
       only      = Array(options.fetch(:only, nil)).collect(&:to_sym)
 
       case
       when !except.empty? && !only.empty?
         raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
-      when !cookbooks.empty?
-        if !except.empty? && !only.empty?
-          Berkshelf.ui.warn "Cookbooks were specified, ignoring :except and :only"
-        end
-        l_sources.select { |source| options[:cookbooks].include?(source.name) }
       when !except.empty?
         l_sources.select { |source| (except & source.groups).empty? }
       when !only.empty?
@@ -514,7 +508,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
-      resolver(options).resolve
+      resolver(options).resolve(options.fetch(:cookbooks, nil))
     end
 
     # Builds a Resolver instance
