@@ -3,7 +3,6 @@ module Berkshelf
   # `berks install` command.
   #
   # @author Seth Vargo <sethvargo@gmail.com>
-  # @author Jamie Winsor <jamie@vialstudios.com>
   class Installer < Command
     class << self
       # Install the sources listed in the Berksfile, respecting the locked
