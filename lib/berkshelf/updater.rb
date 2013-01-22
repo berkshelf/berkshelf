@@ -21,9 +21,6 @@ module Berkshelf
     #   In this case, we must also remove the "sha" attribute, since the
     #   lockfile should be force-diverged from the Berksfile
     #
-    # @param [Hash] opts
-    #   the list of options to pass to the updater (see below for acceptable
-    #   options)
     # @option opts [Symbol, String, Array] :cookbooks
     #   List of cookbook names to update
     # @option opts [Symbol, Array] :except
