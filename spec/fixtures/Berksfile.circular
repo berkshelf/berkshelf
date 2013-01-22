@@ -1,0 +1,2 @@
+cookbook 'example_with_berksfile_circle1',
+  path: "#{File.dirname(__FILE__)}/cookbooks/example_with_berksfile_circle1"

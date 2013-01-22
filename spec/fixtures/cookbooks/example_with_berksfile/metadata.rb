@@ -1,0 +1,5 @@
+maintainer       "person"
+maintainer_email "person@example.com"
+license          "license"
+description      "Installs/Configures example_cookbook"
+version          "0.1.0"

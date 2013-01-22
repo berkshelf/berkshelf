@@ -1,0 +1,4 @@
+site :opscode
+
+cookbook 'example_with_berksfile_circle2', 
+  path: "#{File.dirname(__FILE__)}/../example_with_berksfile_circle2"

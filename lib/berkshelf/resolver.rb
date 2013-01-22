@@ -14,6 +14,7 @@ module Berkshelf
       @graph = Solve::Graph.new
       @sources = Hash.new
       @artifacts = Hash.new
+      @skip_dependencies = options[:skip_dependencies]
 
       # Dependencies need to be added AFTER the sources. If they are
       # not, then one of the dependencies of a source that is added
@@ -23,12 +24,14 @@ module Berkshelf
         add_source(source, false)
       end
 
+      if options[:nested_berksfiles]
+        process_nested_berksfiles(options[:sources])
+      end
+
       unless options[:skip_dependencies]
-        Array(options[:sources]).each do |source|
+        @sources.values.each do |source|
           add_source_dependencies(source)
         end
-
-        chain_dependencies!
       end
     end
 
@@ -67,6 +70,26 @@ module Berkshelf
         @sources[name].cached_cookbook.dependencies.each do |dep|
           dep_cook = @sources[dep.first].cached_cookbook
           artifact.depends(dep_cook.cookbook_name, dep_cook.version)
+        end
+      end
+    end
+
+    # Checks sources for Berksfiles and processes them if found.
+    # NOTE: Only undefined sources will be added (load order provides precedence)
+    #
+    # @param [Array<Berkshelf::CookbookSource>] srcs
+    #   sources to process
+    #
+    def process_nested_berksfiles(srcs)
+      srcs.map(&:name).each do |name|
+        berks_path = File.join(@sources[name].cached_cookbook.path, 'Berksfile')
+        if File.exists?(berks_path)
+          berksfile = Berksfile.from_file(berks_path)
+          new_sources = berksfile.sources.delete_if{|new_src| @sources.has_key?(new_src.name)}
+          new_sources.each do |source|
+            add_source(source, false)
+          end
+          process_nested_berksfiles(new_sources)
         end
       end
     end
@@ -110,6 +133,10 @@ module Berkshelf
         end
       end
       
+      unless @skip_dependencies
+        chain_dependencies!
+      end
+
       solution = Solve.it!(graph, demands)
 
       [].tap do |cached_cookbooks|

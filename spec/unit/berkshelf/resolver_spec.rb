@@ -73,6 +73,35 @@ module Berkshelf
           resolver.should_not have_source("artifact")
         end
 
+        context "given the nested_berksfiles option" do
+
+          it "should process Berksfiles found within sources of original Berksfile" do
+            berksfile = Berkshelf::Berksfile.from_file(
+              fixtures_path.join('Berksfile.nested')
+            )
+            resolver = subject.new(downloader, sources: berksfile.sources, nested_berksfiles: true)
+            resolver.should have_source('example_with_berksfile')
+            resolver.should have_source('example_cookbook')
+          end
+
+          it "should properly handle circular dependencies within nested Berksfiles" do
+            berksfile = Berkshelf::Berksfile.from_file(
+              fixtures_path.join('Berksfile.circular')
+            )
+            resolver = subject.new(downloader, sources: berksfile.sources, nested_berksfiles: true)
+            resolver.should have_source('example_cookbook')
+            resolver.should have_source('example_with_berksfile_circle1')
+            resolver.should have_source('example_with_berksfile_circle2')
+          end
+
+        end
+
+        context "given the nested_berksfiles option" do
+          let(:berksfile) do
+          end
+
+        end
+
         context "given an array of sources" do
           it "adds each source to the sources hash" do
             sources = [source]
@@ -145,14 +174,13 @@ module Berkshelf
 
     describe "#resolve" do
       before(:each) do
-        [source, source_two, source_three].each do |s|
+        [source_three, source_two, source].each do |s|
           subject.add_source(s)
         end
       end
 
       it "returns all cookbooks" do
         solution = subject.resolve
-        solution.should have(3).items
         solution.should include(source.cached_cookbook)
         solution.should include(source_two.cached_cookbook)
         solution.should include(source_three.cached_cookbook)
@@ -160,7 +188,6 @@ module Berkshelf
 
       it "returns cookbook and its dependencies" do
         solution = subject.resolve(['mysql'])
-        solution.should have(2).items
         solution.should include(source.cached_cookbook)
         solution.should include(source_two.cached_cookbook)
       end
