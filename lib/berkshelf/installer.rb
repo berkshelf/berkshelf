@@ -66,10 +66,10 @@ module Berkshelf
       def install(opts = {})
         @options = opts
 
+        validate_options!
         ensure_berkshelf_directory!
         ensure_berksfile!
         ensure_berksfile_content!
-        validate_options!
 
         # The sources begin as those in our berksfile. We will eventually shorten
         # replace some of these sources with their locked versions.
