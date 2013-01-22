@@ -130,71 +130,72 @@ module Berkshelf
       end
 
       private
-      # Resolve the collection of sources using {Berkshelf::Resolver}.
-      #
-      # @param [Array<Berkshelf::CookbookSource>] sources
-      #   the list of sources to resolve
-      # @return [Array<Berkshelf::CachedCookbook, Berkshelf::CookbookSource>]
-      #   a collection of the resolved {Berkshelf::CachedCookbook}s (index 0) and
-      #   {Berkshelf::CookbookSource}s (index 1)
-      def resolve(sources)
-        resolver = Resolver.new(
-          Downloader.new(Berkshelf.cookbook_store),
-          sources: sources
-        )
 
-        [resolver.resolve, resolver.sources]
-      end
+        # Resolve the collection of sources using {Berkshelf::Resolver}.
+        #
+        # @param [Array<Berkshelf::CookbookSource>] sources
+        #   the list of sources to resolve
+        # @return [Array<Berkshelf::CachedCookbook, Berkshelf::CookbookSource>]
+        #   a collection of the resolved {Berkshelf::CachedCookbook}s (index 0) and
+        #   {Berkshelf::CookbookSource}s (index 1)
+        def resolve(sources)
+          resolver = Resolver.new(
+            Downloader.new(Berkshelf.cookbook_store),
+            sources: sources
+          )
 
-      # Copy all cached_cookbooks to the given directory. Each cookbook will
-      # be contained in a directory named after the name of the cookbook.
-      #
-      # @param [Array<Berkshelf::CachedCookbook>] cookbooks
-      #   an array of CachedCookbooks to be copied to a vendor directory
-      #
-      # @return [String]
-      #   expanded filepath to the vendor directory
-      def vendor(cookbooks)
-        require 'chef/cookbook/chefignore'
-
-        chefignore_file = [
-          File.join(Dir.pwd, 'chefignore'),
-          File.join(Dir.pwd, 'cookbooks', 'chefignore')
-        ].find { |f| File.exists?(f) }
-
-        chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
-        path       = File.expand_path(options[:path])
-        FileUtils.mkdir_p(path)
-
-        scratch = Berkshelf.mktmpdir
-        cookbooks.each do |cookbook|
-          dest = File.join(scratch, cookbook.cookbook_name, '/')
-          FileUtils.mkdir_p(dest)
-
-          # Dir.glob does not support backslash as a File separator
-          src = cookbook.path.to_s.gsub('\\', '/')
-          files = Dir.glob(File.join(src, '*'))
-
-          # Filter out files using chefignore
-          files = chefignore.remove_ignores_from(files) if chefignore
-
-          FileUtils.cp_r(files, dest)
+          [resolver.resolve, resolver.sources]
         end
 
-        FileUtils.remove_dir(path, force: true)
-        FileUtils.mv(scratch, path)
+        # Copy all cached_cookbooks to the given directory. Each cookbook will
+        # be contained in a directory named after the name of the cookbook.
+        #
+        # @param [Array<Berkshelf::CachedCookbook>] cookbooks
+        #   an array of CachedCookbooks to be copied to a vendor directory
+        #
+        # @return [String]
+        #   expanded filepath to the vendor directory
+        def vendor(cookbooks)
+          require 'chef/cookbook/chefignore'
 
-        path
-      end
+          chefignore_file = [
+            File.join(Dir.pwd, 'chefignore'),
+            File.join(Dir.pwd, 'cookbooks', 'chefignore')
+          ].find { |f| File.exists?(f) }
 
-      # Determines if the cookbooks should be vendorized, based on the :path
-      # option.
-      #
-      # @return [Boolean]
-      #   true if :path was specified, false otherwise
-      def vendorize?
-        !!options[:path]
-      end
+          chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
+          path       = File.expand_path(options[:path])
+          FileUtils.mkdir_p(path)
+
+          scratch = Berkshelf.mktmpdir
+          cookbooks.each do |cookbook|
+            dest = File.join(scratch, cookbook.cookbook_name, '/')
+            FileUtils.mkdir_p(dest)
+
+            # Dir.glob does not support backslash as a File separator
+            src = cookbook.path.to_s.gsub('\\', '/')
+            files = Dir.glob(File.join(src, '*'))
+
+            # Filter out files using chefignore
+            files = chefignore.remove_ignores_from(files) if chefignore
+
+            FileUtils.cp_r(files, dest)
+          end
+
+          FileUtils.remove_dir(path, force: true)
+          FileUtils.mv(scratch, path)
+
+          path
+        end
+
+        # Determines if the cookbooks should be vendorized, based on the :path
+        # option.
+        #
+        # @return [Boolean]
+        #   true if :path was specified, false otherwise
+        def vendorize?
+          !!options[:path]
+        end
 
     end
   end
