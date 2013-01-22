@@ -467,7 +467,7 @@ module Berkshelf
       lockfile_path = filepath.to_s + '.lock'
 
       begin
-        ::Berkshelf::Lockfile.load(lockfile_path)
+        ::Berkshelf::Lockfile.from_file(lockfile_path)
       rescue ::Berkshelf::LockfileNotFound
         ::Berkshelf::Lockfile.new(lockfile_path, [])
       end

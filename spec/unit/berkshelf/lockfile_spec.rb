@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe Berkshelf::Lockfile do
-  describe '.load' do
+  describe '.from_file' do
     let(:filename) { 'Berksfile.lock' }
-    let(:lockfile) { Berkshelf::Lockfile.load(filename) }
+    let(:lockfile) { Berkshelf::Lockfile.from_file(filename) }
     let(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
 
     before do
@@ -26,7 +26,7 @@ describe Berkshelf::Lockfile do
 
       it 'raises a Berkshelf::LockfileNotFound' do
         expect {
-          ::Berkshelf::Lockfile.load(filename)
+          ::Berkshelf::Lockfile.from_file(filename)
         }.to raise_error(::Berkshelf::LockfileNotFound)
       end
     end

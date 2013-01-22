@@ -391,7 +391,7 @@ module Berkshelf
     describe '#lockfile' do
        it 'returns the lockfile if one exists' do
         ::Berkshelf::Lockfile.stub(:load).and_return(true)
-        ::Berkshelf::Lockfile.should_receive(:load).with(/Berksfile\.lock/)
+        ::Berkshelf::Lockfile.should_receive(:from_file).with(/Berksfile\.lock/)
 
         subject.lockfile
       end

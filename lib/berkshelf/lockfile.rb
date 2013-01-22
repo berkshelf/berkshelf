@@ -5,7 +5,7 @@ module Berkshelf
       #
       # @raise [Errno::ENOENT]
       #   when the Lockfile cannot be found
-      def load(filepath)
+      def from_file(filepath)
         begin
           contents = File.read(filepath)
         rescue Errno::ENOENT
