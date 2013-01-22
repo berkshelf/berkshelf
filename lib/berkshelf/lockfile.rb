@@ -37,6 +37,8 @@ module Berkshelf
 
     # Create a new lockfile instance from the given sources.
     #
+    # @param [String] filepath
+    #   the path to this lockfile
     # @param [Array<Berkshelf::CookbookSource>] sources
     #   the list of cookbook sources
     def initialize(filepath, sources = [])
