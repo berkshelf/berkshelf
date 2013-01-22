@@ -124,7 +124,8 @@ module Berkshelf
     #   demands for solution
     #
     # @return [Array<Berkshelf::CachedCookbook>]
-    def resolve(demands = [])
+    def resolve(demands = nil)
+      demands = Array(demands) unless demands.is_a?(Array)
       if demands.empty?
         demands = [].tap do |l_demands|
           graph.artifacts.each do |artifact|
