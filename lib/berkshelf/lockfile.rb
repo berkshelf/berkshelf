@@ -9,7 +9,7 @@ module Berkshelf
         begin
           contents = File.read(filepath)
         rescue Errno::ENOENT
-          raise ::Berkshelf::LockfileNotFound, "Could not find a valid lock file at #{filepath}"
+          raise ::Berkshelf::LockfileNotFound, "Could not find a lockfile at #{filepath}!"
         end
 
         json = MultiJson.load(contents, symbolize_keys: true)
