@@ -4,7 +4,7 @@ module Berkshelf
       private
       # Validate the options hash, ensuring there are no conflicting arguments
       #
-      # @raise Berkshelf::ArgumentError
+      # @raise [Berkshelf::ArgumentError]
       #   if there are conflicting or invalid options
       def validate_options!
         if options[:except] && options[:only]
