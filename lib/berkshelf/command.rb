@@ -1,4 +1,7 @@
 module Berkshelf
+  # This superclass is responsible for handling common command methods and options.
+  #
+  # @author Seth Vargo <sethvargo@gmail.com>
   class Command
     class << self
       private
