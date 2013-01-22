@@ -45,8 +45,8 @@ module Berkshelf
     def self.update(opts = {})
       @options = opts
 
-      ensure_berksfile!
       validate_options!
+      ensure_berksfile!
 
       # If no options were specified, then we are updating all cookbooks.
       # Otherwise, we lock all sources that haven't been specified.
