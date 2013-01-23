@@ -9,7 +9,7 @@ module Berkshelf
         storage_path = tmp_path.join("random_storage")
         subject.class.new(storage_path)
 
-        storage_path.should exist
+        expect(storage_path).to exist
       end
     end
 
@@ -22,15 +22,15 @@ module Berkshelf
       end
 
       it "returns an instance of Pathname" do
-        @cb_path.should be_a(Pathname)
+        expect(@cb_path).to be_a(Pathname)
       end
 
       it "returns a Cookbook Version's filepath within the storage path" do
-        @cb_path.dirname.should eql(subject.storage_path)
+        expect(@cb_path.dirname).to eql(subject.storage_path)
       end
 
       it "returns a basename containing the cookbook name and version separated by a dash" do
-        @cb_path.basename.to_s.should eql("#{cookbook_name}-#{cookbook_version}")
+        expect(@cb_path.basename.to_s).to eql("#{cookbook_name}-#{cookbook_version}")
       end
     end
 
@@ -48,14 +48,14 @@ module Berkshelf
       it "gets and returns the the CachedCookbook best matching the name and constraint" do
         subject.should_receive(:cookbook).with(name, version).and_return(cached_cb)
 
-        subject.satisfy(name, constraint).should eql(cached_cb)
+        expect(subject.satisfy(name, constraint)).to eql(cached_cb)
       end
 
       context "when there are no cookbooks in the cookbook store" do
         before(:each) { subject.stub(:cookbooks).and_return([]) }
 
         it "returns nil" do
-          subject.satisfy(name, constraint).should be_nil
+          expect(subject.satisfy(name, constraint)).to be_nil
         end
       end
 
@@ -68,7 +68,7 @@ module Berkshelf
         end
 
         it "returns nil if there is no matching cookbook for the name and constraint" do
-          subject.satisfy(name, constraint).should be_nil
+          expect(subject.satisfy(name, constraint)).to be_nil
         end
       end
     end
@@ -77,11 +77,11 @@ module Berkshelf
       subject { CookbookStore.new(fixtures_path.join("cookbooks")) }
 
       it "returns a CachedCookbook if the specified cookbook version exists" do
-        subject.cookbook("example_cookbook", "0.5.0").should be_a(CachedCookbook)
+        expect(subject.cookbook("example_cookbook", "0.5.0")).to be_a(CachedCookbook)
       end
 
       it "returns nil if the specified cookbook version does not exist" do
-        subject.cookbook("doesnotexist", "0.1.0").should be_nil
+        expect(subject.cookbook("doesnotexist", "0.1.0")).to be_nil
       end
     end
 
@@ -93,17 +93,17 @@ module Berkshelf
 
       it "returns a list of CachedCookbooks" do
         subject.cookbooks.each do |cb|
-          cb.should be_a(CachedCookbook)
+          expect(cb).to be_a(CachedCookbook)
         end
       end
 
       it "contains a CachedCookbook for every cookbook in the storage path" do
-        subject.cookbooks.should have(2).items
+        expect(subject.cookbooks).to have(2).items
       end
 
       context "given a value for the filter parameter" do
         it "returns only the CachedCookbooks whose name match the filter" do
-          subject.cookbooks("mysql").should have(1).item
+          expect(subject.cookbooks("mysql")).to have(1).item
         end
       end
     end

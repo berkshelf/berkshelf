@@ -2,14 +2,12 @@ require 'spec_helper'
 
 module Berkshelf
   describe CookbookGenerator do
-    subject { CookbookGenerator }
-
     let(:name) { "sparkle_motion" }
     let(:target) { tmp_path.join(name) }
 
     context "with default options" do
       before do
-        generator = subject.new([name, target])
+        generator = Berkshelf::CookbookGenerator.new([name, target])
         capture(:stdout) { generator.invoke_all }
       end
 
@@ -62,7 +60,7 @@ module Berkshelf
     context "given a value for the maintainer_email option" do
       before do
         @email = "jamie@vialstudios.com"
-        generator = subject.new([name, target], maintainer_email: @email)
+        generator = Berkshelf::CookbookGenerator.new([name, target], maintainer_email: @email)
         capture(:stdout) { generator.invoke_all }
       end
 

@@ -137,8 +137,7 @@ module Berkshelf
       banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock"
     def install
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.install(options)
+      ::Berkshelf::Installer.install(options)
     end
 
     method_option :berksfile,
@@ -157,13 +156,8 @@ module Berkshelf
       aliases: "-o"
     desc "update [COOKBOOKS]", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
     def update(*cookbook_names)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
-      update_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.update(update_options)
+      update_options = { cookbooks: cookbook_names }.merge(options).symbolize_keys
+      ::Berkshelf::Updater.update(update_options)
     end
 
     method_option :berksfile,

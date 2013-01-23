@@ -1,54 +1,107 @@
 module Berkshelf
   class Lockfile
     class << self
-      def remove!
-        FileUtils.rm_f DEFAULT_FILENAME
-      end
-
-      # @param [Array<CookbookSource>] sources
-      def update!(sources)
-        contents = File.readlines(DEFAULT_FILENAME)
-        contents.delete_if do |line|
-          line =~ /cookbook '(#{sources.map(&:name).join('|')})'/
-        end
-
-        contents += sources.map { |source| definition(source) }
-        File.open(DEFAULT_FILENAME, 'wb') { |f| f.write(contents.join("\n").squeeze("\n")) }
-      end
-
-      # @param [CookbookSource] source
+      # Build a lockfile instance from the local .lock file.
       #
-      # @return [String]
-      def definition(source)
-        definition = "cookbook '#{source.name}'"
-
-        if source.location.is_a?(GitLocation)
-          definition += ", :git => '#{source.location.uri}', :ref => '#{source.location.branch || 'HEAD'}'"
-        elsif source.location.is_a?(PathLocation)
-          definition += ", :path => '#{source.location.path}'"
-        else
-          definition += ", :locked_version => '#{source.locked_version}'"
+      # @raise [Errno::ENOENT]
+      #   when the Lockfile cannot be found
+      def from_file(filepath)
+        begin
+          contents = File.read(filepath)
+        rescue Errno::ENOENT
+          raise ::Berkshelf::LockfileNotFound, "Could not find a lockfile at #{filepath}!"
         end
 
-        definition
+        json = MultiJson.load(contents, symbolize_keys: true)
+        sources = json[:sources].collect do |source|
+          ::Berkshelf::CookbookSource.from_json(source)
+        end
+
+        lockfile = new(filepath, sources)
+        lockfile.instance_variable_set(:@sha, json[:sha])
+        lockfile
       end
     end
 
-    DEFAULT_FILENAME = "#{Berkshelf::DEFAULT_FILENAME}.lock".freeze
-
+    # @return [Array<Berkshelf::CookbookSource>]
+    #   the list of sources for this lockfile
     attr_reader :sources
 
-    def initialize(sources)
-      @sources = Array(sources)
+    # @return [String]
+    #   the last known SHA of the Berksfile
+    attr_accessor :sha
+
+    # @return [String]
+    #   the path to this lockfile (may not yet exist)
+    attr_reader :filepath
+
+    # Create a new lockfile instance from the given sources.
+    #
+    # @param [String] filepath
+    #   the path to this lockfile
+    # @param [Array<Berkshelf::CookbookSource>] sources
+    #   the list of cookbook sources
+    def initialize(filepath, sources = [])
+      @sources = sources
+      @filepath = filepath
     end
 
-    def write(filename = DEFAULT_FILENAME)
-      content = sources.map { |source| self.class.definition(source) }.join("\n")
-      File.open(filename, "wb") { |f| f.write content }
+    def save
+      File.open(filepath, 'wb') do |file|
+        file.write self.to_json + "\n"
+      end
+    end
+    alias_method :write, :save
+
+    # Replace the current list of sources with `sources`. This method does
+    # not write out the lockfile - it only changes the state of the object.
+    #
+    # @param [Array<Berkshelf::CookbookSource>] sources
+    #   the list of sources to update
+    def update(sources)
+      sources = [sources].flatten unless sources.is_a?(Array)
+
+      unless sources.all?{ |cookbook| cookbook.is_a?(::Berkshelf::CookbookSource) }
+        raise ::Berkshelf::ArgumentError, "`sources` must be a Berkshelf::CookbookSource!"
+      end
+
+      @sources = sources
     end
 
-    def remove!
-      self.class.remove!
+    # Add the given source to the `sources` list, if it doesn't already exist.
+    #
+    # @param [Berkshelf::CookbookSource] source
+    #   the source to append to the sources list
+    def append(source)
+      unless source.is_a?(::Berkshelf::CookbookSource)
+        raise ::Berkshelf::ArgumentError, "`source` must be a Berkshelf::CookbookSource!"
+      end
+
+      @sources.push(source) unless @sources.include?(source)
+    end
+
+    # Write the current lockfile to a hash
+    #
+    # @return [Hash]
+    #   the hash representation of this lockfile
+    #   * :sha [String] the last-known sha for the berksfile
+    #   * :sources [Array<Berkshelf::CookbookSource>] the list of sources
+    #   * :options [Hash] an arbitrary list of options for this lockfile
+    def to_hash
+      {
+        sha: sha,
+        sources: sources
+      }
+    end
+
+    # The JSON representation of this lockfile
+    #
+    # Relies on {#to_hash} to generate the json
+    #
+    # @return [String]
+    #   the JSON representation of this lockfile
+    def to_json
+      MultiJson.dump(self.to_hash, pretty: true)
     end
   end
 end
