@@ -22,6 +22,10 @@ module Berkshelf
         Berkshelf::Config.path = @options[:config]
       end
 
+      if @options[:quiet]
+        Berkshelf.ui.mute!
+      end
+
       Berkshelf.set_format @options[:format]
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
@@ -46,6 +50,11 @@ module Berkshelf
       desc: "Output format to use.",
       aliases: "-F",
       banner: "FORMAT"
+    class_option :quiet,
+      type: :boolean,
+      desc: "Silence all informational output.",
+      aliases: "-q",
+      default: false
 
     method_option :force,
       type: :boolean,
@@ -92,7 +101,7 @@ module Berkshelf
       Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
 
-    desc "open NAME", "Opens the source directory of an installed cookbook", hide: true
+    desc "open NAME", "Opens the source directory of an installed cookbook"
     def open(name)
       editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
       raise ArgumentError, "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR" unless editor
@@ -182,6 +191,11 @@ module Berkshelf
       default: false,
       desc: "Skip Ruby syntax check when uploading cookbooks",
       aliases: "-s"
+    option :skip_dependencies,
+      type: :boolean,
+      desc: 'Do not upload dependencies',
+      default: false,
+      aliases: '-D'
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])

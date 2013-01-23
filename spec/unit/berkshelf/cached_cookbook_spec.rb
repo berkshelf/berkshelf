@@ -28,6 +28,10 @@ module Berkshelf
           it "has a cookbook_name attribute set to the basename of the folder" do
             expect(subject.from_path(cookbook_path).cookbook_name).to eql("example_metadata_no_name")
           end
+
+          it "sets value of metadata.name to the cookbook_name" do
+            subject.from_path(cookbook_path).metadata.name.should eql("example_metadata_no_name")
+          end
         end
 
         context "given a path that does not contain a metadata file" do
@@ -52,6 +56,10 @@ module Berkshelf
 
         it "sets a version number" do
           expect(@cached_cb.version).to eql("0.5.0")
+        end
+
+        it "sets the metadata.name value to the cookbook_name" do
+          @cached_cb.metadata.name.should eql("example_cookbook")
         end
 
         context "given a path that does not contain a cookbook" do
