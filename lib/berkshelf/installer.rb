@@ -42,9 +42,6 @@ module Berkshelf
       # 6. Write out a new lockfile.
       #
       #
-      # @param [Hash] options
-      #   the list of options to pass to the installer (see below for acceptable
-      #   options)
       # @option opts [Symbol, Array] :except
       #   Group(s) to exclude which will cause any sources marked as a member of the
       #   group to not be installed
