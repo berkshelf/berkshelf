@@ -35,6 +35,17 @@ module Berkshelf
             Berksfile.from_file(bad_path)
           }.should raise_error(BerksfileNotFound)
         end
+
+        context "when Berksfile uses self for directory positioning" do
+          let(:berks_path){ fixtures_path.join('Berksfile.nested') }
+
+          it "properly locates the directory" do
+            lambda {
+              berksfile = subject.from_file(berks_path)
+            }.should_not raise_error(BerksfileReadError)
+          end
+
+        end
       end
     end
 

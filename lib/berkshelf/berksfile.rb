@@ -11,11 +11,13 @@ module Berkshelf
       #
       # @return [Berksfile]
       def from_file(file)
-        content = File.read(file)
-        object = new(file)
-        object.load(content)
-      rescue Errno::ENOENT => e
-        raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
+        begin
+          object = new(file)
+          content = File.read(file)
+          object.load(content, file.to_s)
+        rescue Errno::ENOENT => e
+          raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
+        end
       end
 
       # @deprecated Use {Berkshelf::Installer.install} with a :path option instead.
@@ -452,7 +454,8 @@ module Berkshelf
       Resolver.new(
         self.downloader,
         sources: sources(options),
-        skip_dependencies: options[:skip_dependencies]
+        skip_dependencies: options[:skip_dependencies],
+        nested_berksfiles: options[:nested_berksfiles]
       )
     end
 
@@ -464,9 +467,9 @@ module Berkshelf
     # @raise [BerksfileReadError] if Berksfile contains bad content
     #
     # @return [Berksfile]
-    def load(content)
+    def load(content, file='')
       begin
-        instance_eval(content)
+        instance_eval(content, file, 1)
       rescue => e
         raise BerksfileReadError.new(e), "An error occurred while reading the Berksfile: #{e.to_s}"
       end
