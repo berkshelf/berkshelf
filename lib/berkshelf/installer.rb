@@ -1,8 +1,8 @@
 module Berkshelf
-  # This class is responsible for installing cookbooks and handling the
-  # `berks install` command.
+  # Responsible for installing cookbooks
   #
   # @author Seth Vargo <sethvargo@gmail.com>
+  # @author Jamie Winsor <jamie@vialstudios.com>
   class Installer < Command
     class << self
       # Install the sources listed in the Berksfile, respecting the locked
@@ -41,27 +41,26 @@ module Berkshelf
       #
       # 6. Write out a new lockfile.
       #
-      #
-      # @option opts [Symbol, Array] :except
+      # @option options [Symbol, Array] :except
       #   Group(s) to exclude which will cause any sources marked as a member of the
       #   group to not be installed
-      # @option opts [Symbol, Array] :only
+      # @option options [Symbol, Array] :only
       #   Group(s) to include which will cause any sources marked as a member of the
       #   group to be installed and all others to be ignored
-      # @option opts [String] :path
+      # @option options [String] :path
       #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
       #   is a technique for packaging all cookbooks resolved by a Berksfile.
       #
-      # @raise Berkshelf::BerksfileNotFound
+      # @raise [Berkshelf::BerksfileNotFound]
       #   if the Berksfile cannot be found
-      # @raise Berkshelf::OutdatedCookbookSource
+      # @raise [Berkshelf::OutdatedCookbookSource]
       #   if the lockfile constraints do not satisfy the Berskfile constraints
-      # @raise Berkshelf::ArgumentError
+      # @raise [Berkshelf::ArgumentError]
       #   if there are missing or conflicting options
       #
       # @return [Array<Berkshelf::CachedCookbook>]
-      def install(opts = {})
-        @options = opts
+      def install(options = {})
+        @options = options
 
         validate_options!
         ensure_berkshelf_directory!
@@ -118,7 +117,7 @@ module Berkshelf
         # versions that are in the Berksfile (i.e. don't lock dependency
         # versions)
         cookbooks = berksfile.sources.map(&:name)
-        locked_sources = sources.select{ |source| cookbooks.include?(source.name) }
+        locked_sources = sources.select { |source| cookbooks.include?(source.name) }
 
         # Update the lockfile with the locked sources
         lockfile.update(locked_sources)
@@ -193,7 +192,6 @@ module Berkshelf
         def vendorize?
           !!options[:path]
         end
-
     end
   end
 end
