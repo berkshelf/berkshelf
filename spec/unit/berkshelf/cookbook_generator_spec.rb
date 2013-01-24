@@ -7,7 +7,7 @@ describe Berkshelf::CookbookGenerator do
   context "with default options" do
     before(:each) do
       capture(:stdout) {
-        described_class.new([name, target]).invoke_all
+        described_class.new([target, name]).invoke_all
       }
     end
 
@@ -60,7 +60,7 @@ describe Berkshelf::CookbookGenerator do
   context "given a value for the maintainer_email option" do
     before(:each) do
       @email = "jamie@vialstudios.com"
-      generator = described_class.new([name, target], maintainer_email: @email)
+      generator = described_class.new([target, name], maintainer_email: @email)
       capture(:stdout) { generator.invoke_all }
     end
 
