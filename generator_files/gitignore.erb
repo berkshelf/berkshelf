@@ -1,6 +1,5 @@
 .vagrant
 Berksfile.lock
-Gemfile.lock
 *~
 *#
 .#*
@@ -8,6 +7,12 @@ Gemfile.lock
 .*.sw[a-z]
 *.un~
 /cookbooks
+
+# Bundler
+Gemfile.lock
+bin/*
+.bundle/*
+
 <% if options[:scmversion] -%>
 VERSION
 <% end -%>
