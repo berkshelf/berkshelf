@@ -9,10 +9,6 @@ module Berkshelf
       end
     end
 
-    argument :path,
-      type: :string,
-      required: true
-
     class_option :metadata_entry,
       type: :boolean,
       default: false

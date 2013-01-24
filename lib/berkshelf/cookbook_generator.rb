@@ -5,10 +5,6 @@ module Berkshelf
       type: :string,
       required: true
 
-    argument :path,
-      type: :string,
-      required: true
-
     class_option :skip_vagrant,
       type: :boolean,
       default: false
