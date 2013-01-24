@@ -9,15 +9,16 @@ module Berkshelf
       end
     end
 
+    shell = Berkshelf.ui
+
+    argument :path,
+      type: :string,
+      required: true
+
     include Thor::Actions
 
-    def initialize(*args)
-      super(*args)
-      self.shell = Berkshelf.ui
-    end
-
     private
-
+    
       def target
         @target ||= Pathname.new(File.expand_path(path))
       end

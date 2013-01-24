@@ -381,7 +381,7 @@ module Berkshelf
         raise InvalidConfiguration.new(Config.instance.errors)
       end
 
-      ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
+      ::Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end
 
     private

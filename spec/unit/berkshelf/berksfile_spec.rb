@@ -229,7 +229,6 @@ module Berkshelf
           filtered.should have(1).item
           filtered.first.name.should eql(source_one.name)
         end
-
       end
 
       context "given the option :only" do
@@ -253,17 +252,6 @@ module Berkshelf
           lambda {
             subject.sources(only: [:default], except: [:other])
           }.should raise_error(Berkshelf::ArgumentError, "Cannot specify both :except and :only")
-        end
-      end
-
-      context "given the option :cookbooks" do
-        it "returns all of the sources" do
-          subject.add_source(source_one.name)
-          subject.add_source(source_two.name)
-
-          subject.sources(:cookbooks => ['nginx']).should have(2).items
-          subject.should have_source(source_one.name)
-          subject.should have_source(source_two.name)
         end
       end
     end
