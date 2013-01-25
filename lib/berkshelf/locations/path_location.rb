@@ -16,15 +16,23 @@ module Berkshelf
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
-      @path               = File.expand_path(options[:path])
+      @path               = PathLocation.normalize_path(options[:path])
       set_downloaded_status(true)
+    end
+
+    def self.normalize_path(path)
+      if (path[0] == "~") || Pathname.new(path).absolute?
+        File.expand_path(path)
+      else
+         path
+      end
     end
 
     # @param [#to_s] destination
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      cached = CachedCookbook.from_path(path)
+      cached = CachedCookbook.from_path(File.expand_path(path))
       validate_cached(cached)
 
       set_downloaded_status(true)
