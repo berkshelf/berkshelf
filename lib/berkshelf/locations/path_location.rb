@@ -1,6 +1,25 @@
 module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class PathLocation
+    class << self
+      # Expand and return a string representation of the given path if it is
+      # absolute or a path in the users home directory.
+      #
+      # Returns the given relative path otherwise.
+      #
+      # @param [#to_s] path
+      #
+      # @return [String]
+      def normalize_path(path)
+        path = path.to_s
+        if (path[0] == "~") || Pathname.new(path).absolute?
+          File.expand_path(path)
+        else
+          path
+        end
+      end
+    end
+
     include Location
 
     set_location_key :path
@@ -16,16 +35,8 @@ module Berkshelf
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
-      @path               = PathLocation.normalize_path(options[:path])
+      @path               = self.class.normalize_path(options[:path])
       set_downloaded_status(true)
-    end
-
-    def self.normalize_path(path)
-      if (path[0] == "~") || Pathname.new(path).absolute?
-        File.expand_path(path)
-      else
-         path
-      end
     end
 
     # @param [#to_s] destination
