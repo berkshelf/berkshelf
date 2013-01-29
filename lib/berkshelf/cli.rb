@@ -1,8 +1,6 @@
 require 'berkshelf'
 
 module Berkshelf
-  Thor::Base.shell = Berkshelf::UI
-
   # @author Jamie Winsor <jamie@vialstudios.com>
   class Cli < Thor
     class << self

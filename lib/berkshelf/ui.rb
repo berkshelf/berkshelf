@@ -1,5 +1,5 @@
 module Berkshelf
-  class UI < ::Thor::Shell::Color
+  module UI
     # Mute the output of this instance of UI until {#unmute!} is called
     def mute!
       @mute = true

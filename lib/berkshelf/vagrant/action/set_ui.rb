@@ -8,7 +8,7 @@ module Berkshelf
         end
 
         def call(env)
-          Berkshelf.ui = ::Vagrant::UI::Colored.new("Berkshelf")
+          Berkshelf.ui = ::Vagrant::UI::Colored.tap { |c| c.send(:include, ::Berkshelf::UI).new("Berkshelf")
           @app.call(env)
         end
       end
