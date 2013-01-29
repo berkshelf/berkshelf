@@ -1,4 +1,5 @@
 require 'vagrant'
+require 'vagrant_ext'
 require 'berkshelf'
 
 module Berkshelf

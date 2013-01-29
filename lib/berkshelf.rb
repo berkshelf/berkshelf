@@ -22,7 +22,6 @@ require 'zlib'
 require 'berkshelf/version'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
-require 'berkshelf/ui'
 require 'thor/monkies'
 
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
@@ -46,6 +45,7 @@ module Berkshelf
   autoload :Installer, 'berkshelf/installer'
   autoload :Lockfile, 'berkshelf/lockfile'
   autoload :Resolver, 'berkshelf/resolver'
+  autoload :UI, 'berkshelf/ui'
   autoload :Updater, 'berkshelf/updater'
   autoload :Uploader, 'berkshelf/uploader'
 
@@ -63,7 +63,7 @@ module Berkshelf
 
     # @return [::Thor::Shell::Color]
     def ui
-      @ui ||= ::Thor::Shell::Color.tap { |c| c.send(:include, ::Berkshelf::UI) }.new
+      @ui ||= ::Thor::Shell::Color.new
     end
 
     # Returns the filepath to the location Berskhelf will use for
