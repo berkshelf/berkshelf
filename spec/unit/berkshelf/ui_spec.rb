@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-module Berkshelf
-  describe UI do
+module Thor::Shell
+  describe Color do
     let(:stdout) { double('stdout') }
     let(:stderr) { double('stderr') }
 
