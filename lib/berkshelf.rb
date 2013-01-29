@@ -45,7 +45,6 @@ module Berkshelf
   autoload :Installer, 'berkshelf/installer'
   autoload :Lockfile, 'berkshelf/lockfile'
   autoload :Resolver, 'berkshelf/resolver'
-  autoload :UI, 'berkshelf/ui'
   autoload :Updater, 'berkshelf/updater'
   autoload :Uploader, 'berkshelf/uploader'
 
