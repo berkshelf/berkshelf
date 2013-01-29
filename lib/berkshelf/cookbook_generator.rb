@@ -27,15 +27,15 @@ module Berkshelf
 
     class_option :license,
       type: :string,
-      default: "reserved"
+      default: ::Berkshelf::Config.instance.cookbook.license || 'All Rights Reserved'
 
     class_option :maintainer,
       type: :string,
-      default: "YOUR_NAME"
+      default: ::Berkshelf::Config.instance.cookbook.copyright || 'YOUR_NAME'
 
     class_option :maintainer_email,
       type: :string,
-      default: "YOUR_EMAIL"
+      default: ::Berkshelf::Config.instance.cookbook.email || 'YOUR_EMAIL'
 
     def generate
       empty_directory target.join("files/default")
