@@ -2,26 +2,45 @@ require 'spec_helper'
 
 module Berkshelf
   describe Updater do
-    context '.update' do
-      let(:berksfile) { double('berksfile') }
-      let(:lockfile) { double('lockfile') }
-      let(:sources) { double('sources') }
-      let(:options) { double('options') }
+    let(:berksfile) { double('berksfile') }
+    let(:lockfile) { double('lockfile') }
+    let(:sources) { double('sources') }
+    let(:options) { double('options') }
+
+    subject { ::Berkshelf::Updater.new(options) }
+
+    #
+    # Class Methods
+    #
+    describe '.update' do
+      let(:instance) { double('instance') }
 
       before do
-        ::Berkshelf::Command.stub(:validate_options!).and_return(true)
-        ::Berkshelf::Command.stub(:ensure_berksfile!).and_return(true)
+        ::Berkshelf::Updater.stub(:new).and_return(instance)
+      end
 
-        ::Berkshelf::Command.stub(:options).and_return(options)
+      it 'creates a new instance' do
+        ::Berkshelf::Updater.should_receive(:new).with(options)
+        instance.should_receive(:update)
+        ::Berkshelf::Updater.update(options)
+      end
+    end
+
+    #
+    # Instance Methods
+    #
+    describe '#initialize' do
+      before do
+        ::Berkshelf::Updater.any_instance.stub(:validate_options!).and_return(true)
+        ::Berkshelf::Updater.any_instance.stub(:ensure_berksfile!).and_return(true)
+
+        ::Berkshelf::Updater.any_instance.stub(:options).and_return(options)
         berksfile.stub(:sources).and_return(sources)
 
-        ::Berkshelf::Command.stub(:lockfile).and_return(lockfile)
+        ::Berkshelf::Updater.any_instance.stub(:lockfile).and_return(lockfile)
         lockfile.stub(:sources).and_return(sources)
 
-        ::Berkshelf::Command.stub(:filter).and_return([])
-
-        ::Berkshelf::Updater.should_receive(:validate_options!).once
-        ::Berkshelf::Updater.should_receive(:ensure_berksfile!).once
+        ::Berkshelf::Updater.any_instance.stub(:filter).and_return([])
 
         options.should_receive(:delete).with(:cookbooks)
         options.should_receive(:delete).with(:only)
@@ -31,7 +50,7 @@ module Berkshelf
       end
 
       after do
-        ::Berkshelf::Updater.update
+        subject.update
       end
 
       context 'with no options' do
@@ -99,6 +118,6 @@ module Berkshelf
         end
       end
 
-   end
+    end
   end
 end
