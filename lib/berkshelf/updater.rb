@@ -3,7 +3,17 @@ module Berkshelf
   # `berks install` command.
   #
   # @author Seth Vargo <sethvargo@gmail.com>
-  class Updater < Command
+  class Updater
+    include ::Berkshelf::Command
+
+    class << self
+      # @see Berkshelf::Updater.initialize
+      def update(options = {})
+        instance = self.new(options)
+        instance.update
+      end
+    end
+
     # Update the sources listed in the Berksfile, or specific sources passed
     # to the updater.
     #
@@ -39,9 +49,7 @@ module Berkshelf
     # @return [Array<Berkshelf::CachedCookbook>]
     #
     # @todo Support sources with :path, :git, and :github options
-    def self.update(opts = {})
-      @options = opts
-
+    def update
       validate_options!
       ensure_berksfile!
 
