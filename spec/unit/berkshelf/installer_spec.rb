@@ -17,62 +17,82 @@ module Berkshelf
     let(:sources) { [source_1, source_2] }
     let(:locked_sources) { [locked_1, locked_2] }
 
+    subject { ::Berkshelf::Installer.new(options) }
+
     before do
-      ::Berkshelf::Command.stub(:validate_options!).and_return(true)
-      ::Berkshelf::Command.stub(:ensure_berksfile_content!).and_return(true)
-      ::Berkshelf::Command.stub(:ensure_berksfile!).and_return(true)
-      ::Berkshelf::Command.stub(:options).and_return(options)
+      ::Berkshelf::Installer.any_instance.stub(:validate_options!).and_return(true)
+      ::Berkshelf::Installer.any_instance.stub(:ensure_berkshelf_directory!).and_return(true)
+      ::Berkshelf::Installer.any_instance.stub(:ensure_berksfile_content!).and_return(true)
+      ::Berkshelf::Installer.any_instance.stub(:ensure_berksfile!).and_return(true)
+      ::Berkshelf::Installer.any_instance.stub(:options).and_return(options)
+
+      ::Berkshelf::Installer.any_instance.stub(:berksfile).and_return(berksfile)
+      berksfile.stub(:sources).and_return(sources)
+      berksfile.stub(:sha).and_return('abc123')
+
+      ::Berkshelf::Installer.any_instance.stub(:lockfile).and_return(lockfile)
+      lockfile.stub(:sources).and_return(locked_sources)
+      lockfile.stub(:sha).and_return('abc123')
+
+      ::Berkshelf::Installer.any_instance.stub(:filter).and_return(sources)
+
+      ::Berkshelf::Resolver.stub(:new).with(any_args()).and_return(resolver)
+      resolver.stub(:resolve).and_return(sources)
+      resolver.stub(:sources).and_return(sources)
+
+      options.stub(:[]).with(:path).and_return(nil)
+
+      source_1.stub(:name).and_return('build-essential')
+      source_1.stub(:version_constraint).and_return(version_constraint)
+
+      source_2.stub(:name).and_return('chef-client')
+      source_2.stub(:version_constraint).and_return(version_constraint)
+
+      locked_1.stub(:name).and_return('build-essential')
+      locked_1.stub(:locked_version).and_return('1.1.0')
+      locked_1.stub(:version).and_return('1.1.0')
+
+      locked_2.stub(:name).and_return('chef-client')
+      locked_2.stub(:locked_version).and_return('0.0.4')
+      locked_2.stub(:version).and_return('0.0.4')
+
+      version_constraint.stub(:satisfies?).with(any_args()).and_return(true)
     end
 
+    #
+    # Class Methods
+    #
     describe '.install' do
+      let(:instance) { double('instance') }
+
       before do
-        ::Berkshelf::Command.stub(:berksfile).and_return(berksfile)
-        berksfile.stub(:sources).and_return(sources)
-
-        ::Berkshelf::Command.stub(:lockfile).and_return(lockfile)
-        lockfile.stub(:sources).and_return(locked_sources)
-
-        ::Berkshelf::Command.stub(:filter).and_return(sources)
-
-        ::Berkshelf::Command.should_receive(:validate_options!).once
-        ::Berkshelf::Command.should_receive(:ensure_berksfile_content!).once
-        ::Berkshelf::Command.should_receive(:ensure_berksfile!).once
-
-        ::Berkshelf::Resolver.stub(:new).with(any_args()).and_return(resolver)
-        resolver.stub(:resolve).and_return(sources)
-        resolver.stub(:sources).and_return(sources)
-
-        options.stub(:[]).with(:path).and_return(nil)
-
-        source_1.stub(:name).and_return('build-essential')
-        source_1.stub(:version_constraint).and_return(version_constraint)
-
-        source_2.stub(:name).and_return('chef-client')
-        source_2.stub(:version_constraint).and_return(version_constraint)
-
-        locked_1.stub(:name).and_return('build-essential')
-        locked_1.stub(:locked_version).and_return('1.1.0')
-        locked_1.stub(:version).and_return('1.1.0')
-
-        locked_2.stub(:name).and_return('chef-client')
-        locked_2.stub(:locked_version).and_return('0.0.4')
-        locked_2.stub(:version).and_return('0.0.4')
-
-        version_constraint.stub(:satisfies?).with(any_args()).and_return(true)
+        ::Berkshelf::Installer.stub(:new).and_return(instance)
       end
 
+      it 'creates a new instance' do
+        ::Berkshelf::Installer.should_receive(:new).with(options)
+        instance.should_receive(:install)
+        ::Berkshelf::Installer.install(options)
+      end
+    end
+
+    #
+    # Instance Methods
+    #
+    describe '#initialize' do
       context 'with an unchanged Berksfile' do
         before do
           berksfile.stub(:sha).and_return('abc123')
           lockfile.stub(:sha).and_return('abc123')
+
+          ::Berkshelf::Installer.any_instance.stub(:resolve).with(locked_sources).and_return([sources, locked_sources])
         end
 
         it 'uses the lockfile sources' do
-          ::Berkshelf::Installer.should_receive(:resolve).with(locked_sources).and_return([sources, locked_sources])
           lockfile.should_receive(:update).with(locked_sources)
           lockfile.should_receive(:sha=).with('abc123')
           lockfile.should_receive(:save)
-          ::Berkshelf::Installer.install
+          subject.install
         end
       end
 
@@ -80,14 +100,15 @@ module Berkshelf
         before do
           berksfile.stub(:sha).and_return('abc123')
           lockfile.stub(:sha).and_return('def456')
+
+          ::Berkshelf::Installer.any_instance.stub(:resolve).with(locked_sources).and_return([sources, locked_sources])
         end
 
         it 'builds a sources diff' do
-          ::Berkshelf::Installer.should_receive(:resolve).with(locked_sources).and_return([sources, locked_sources])
           lockfile.should_receive(:update).with(locked_sources)
           lockfile.should_receive(:sha=).with('abc123')
           lockfile.should_receive(:save)
-          ::Berkshelf::Installer.install
+          subject.install
         end
 
         context 'with conflicting constraints' do
@@ -96,21 +117,21 @@ module Berkshelf
           end
 
           it 'raises a ::Bershelf::OutdatedCookbookSource' do
-            expect { ::Berkshelf::Installer.install }.to raise_error(::Berkshelf::OutdatedCookbookSource)
+            expect { subject.install }.to raise_error(::Berkshelf::OutdatedCookbookSource)
           end
         end
 
         context 'with unlocked sources' do
           before do
             locked_sources.stub(:find).with(any_args()).and_return(nil)
+            ::Berkshelf::Installer.any_instance.stub(:resolve).with(sources).and_return([sources, locked_sources])
           end
 
           it 'returns just the sources' do
-            ::Berkshelf::Installer.should_receive(:resolve).with(sources).and_return([sources, locked_sources])
             lockfile.should_receive(:update).with(locked_sources)
             lockfile.should_receive(:sha=).with('abc123')
             lockfile.should_receive(:save)
-            ::Berkshelf::Installer.install
+            subject.install
           end
         end
 
@@ -119,15 +140,15 @@ module Berkshelf
             options.stub(:[]).with(:path).and_return('/tmp')
             berksfile.stub(:sha).and_return('abc123')
             lockfile.stub(:sha).and_return('abc123')
-            ::Berkshelf::Installer.stub(:vendor).and_return(nil)
+            ::Berkshelf::Installer.any_instance.stub(:vendor).and_return(nil)
+            ::Berkshelf::Installer.any_instance.stub(:resolve).with(locked_sources).and_return([sources, locked_sources])
           end
 
           it 'vendors the cookbooks' do
-            ::Berkshelf::Installer.should_receive(:resolve).with(locked_sources).and_return([sources, locked_sources])
             lockfile.should_receive(:update).with(locked_sources)
             lockfile.should_receive(:sha=).with('abc123')
             lockfile.should_receive(:save)
-            ::Berkshelf::Installer.install
+            subject.install
           end
         end
       end
@@ -136,7 +157,7 @@ module Berkshelf
     describe '.vendor' do
       # Make .vendor public for testing
       let(:vendor) do
-        lambda { |*args| ::Berkshelf::Installer.send(:vendor, *args) }
+        lambda { |*args| subject.send(:vendor, *args) }
       end
 
       before do
@@ -192,14 +213,12 @@ module Berkshelf
         before do
           ::File.stub(:exists?).with('/current_dir/chefignore').and_return(true)
           ::File.stub(:exists?).with('/current_dir/cookbooks/chefignore').and_return(false)
-
           ::Chef::Cookbook::Chefignore.stub(:new).and_return(chefignore)
-          ::Chef::Cookbook::Chefignore.should_receive(:new).with('/current_dir/chefignore')
-
-          chefignore.should_receive(:remove_ignores_from).twice.with(['file1', 'file2', 'file3']).and_return(['file1', 'file2', 'file3'])
         end
 
         it 'creates a Chefignore instance' do
+          ::Chef::Cookbook::Chefignore.should_receive(:new).with('/current_dir/chefignore')
+          chefignore.should_receive(:remove_ignores_from).twice.with(['file1', 'file2', 'file3']).and_return(['file1', 'file2', 'file3'])
           vendor.call(sources)
         end
       end
