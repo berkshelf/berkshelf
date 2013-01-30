@@ -1,5 +1,3 @@
-notification :off
-
 guard 'spork' do
   watch('Gemfile')
   watch('spec/spec_helper.rb')  { :rspec }
