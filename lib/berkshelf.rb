@@ -45,7 +45,6 @@ module Berkshelf
   autoload :Installer, 'berkshelf/installer'
   autoload :Lockfile, 'berkshelf/lockfile'
   autoload :Resolver, 'berkshelf/resolver'
-  autoload :UI, 'berkshelf/ui'
   autoload :Updater, 'berkshelf/updater'
   autoload :Uploader, 'berkshelf/uploader'
 
@@ -61,9 +60,9 @@ module Berkshelf
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
 
-    # @return [Berkshelf::UI]
+    # @return [::Thor::Shell::Color]
     def ui
-      @ui ||= Berkshelf::UI.new
+      @ui ||= ::Thor::Shell::Color.new
     end
 
     # Returns the filepath to the location Berskhelf will use for
