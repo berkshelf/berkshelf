@@ -109,6 +109,15 @@ module Berkshelf
     attribute 'chef.node_name',
       type: String,
       default: chef_config[:node_name]
+    attribute 'cookbook.copyright',
+      type: String,
+      default: chef_config[:cookbook_copyright]
+    attribute 'cookbook.email',
+      type: String,
+      default: chef_config[:cookbook_email]
+    attribute 'cookbook.license',
+      type: String,
+      default: chef_config[:cookbook_license]
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
