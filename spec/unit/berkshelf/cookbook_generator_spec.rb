@@ -63,7 +63,8 @@ describe Berkshelf::CookbookGenerator do
       ::Berkshelf::Config.instance.cookbook.stub(email: 'sethvargo@gmail.com')
       ::Berkshelf::Config.instance.cookbook.stub(license: 'apachev2')
 
-      load 'lib/berkshelf/cookbook_generator.rb'
+      # This is a temporary hack until class_option is evaluated as a lambda
+      load File.expand_path '../../../../lib/berkshelf/cookbook_generator.rb', __FILE__
 
       capture(:stdout) {
         described_class.new([target, name]).invoke_all
