@@ -92,6 +92,7 @@ module Berkshelf
     #       ...
     #     }
     attr_reader :manifest
+    attr_accessor :frozen
 
     def_delegator :@metadata, :version
 
@@ -111,6 +112,7 @@ module Berkshelf
         providers: Array.new,
         root_files: Array.new
       )
+      @frozen = false
 
       load_files
     end
@@ -205,7 +207,7 @@ module Berkshelf
     def to_json(*a)
       result = self.to_hash
       result['json_class'] = chef_json_class
-      result['frozen?'] = false
+      result['frozen?'] = frozen
       result.to_json(*a)
     end
 
