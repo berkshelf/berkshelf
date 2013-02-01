@@ -202,6 +202,10 @@ module Berkshelf
       desc: 'Do not upload dependencies',
       default: false,
       aliases: '-D'
+    option :ignore_frozen,
+      type: :boolean,
+      desc: 'Do not halt uploads if frozen cookbook discovered',
+      default: false
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
