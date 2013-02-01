@@ -2,7 +2,7 @@ module Berkshelf
   # @author Jamie Winsor <jamie@vialstudios.com>
   class CookbookSource
     class << self
-      @@valid_options = [:constraint, :locations, :group, :locked_version]
+      @@valid_options = [:constraint, :locations, :group, :locked_version, :berksfile_path]
       @@location_keys = Hash.new
 
       # Returns an array of valid options to pass to the initializer
@@ -103,6 +103,8 @@ module Berkshelf
     #    same as ref
     #  @option options [String] :tag
     #    same as tag
+    #  @option options [String] :berksfile_path
+    #    path to berksfile in use
     #  @option options [String] :locked_version
     def initialize(name, options = {})
       @name = name

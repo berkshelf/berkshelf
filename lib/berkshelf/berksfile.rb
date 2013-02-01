@@ -232,7 +232,7 @@ module Berkshelf
 
       options[:constraint] = constraint
 
-      @sources[name] = CookbookSource.new(name, options)
+      @sources[name] = CookbookSource.new(name, {:berksfile_path => filepath}.merge(options))
     end
 
     # @param [#to_s] source

@@ -10,10 +10,17 @@ module Berkshelf
       # @param [#to_s] path
       #
       # @return [String]
-      def normalize_path(path)
+      def normalize_path(path, berksfile_path=nil)
         path = path.to_s
-        if (path[0] == "~") || Pathname.new(path).absolute?
-          File.expand_path(path)
+        expanded_path = File.expand_path(path)
+        if Pathname.new(path).absolute?
+          expanded_path
+        elsif berksfile_path
+          expanded_root = File.expand_path(File.dirname(berksfile_path))
+          split_root = expanded_root.split(File::SEPARATOR)
+          split_path = expanded_path.split(File::SEPARATOR)
+          common = split_root & split_path
+          ((['..'] * (split_root - common).size) + (split_path - common)).join(File::SEPARATOR)
         else
           path
         end
@@ -35,7 +42,7 @@ module Berkshelf
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
-      @path               = self.class.normalize_path(options[:path])
+      @path               = self.class.normalize_path(options[:path], options[:berksfile_path])
       set_downloaded_status(true)
     end
 
