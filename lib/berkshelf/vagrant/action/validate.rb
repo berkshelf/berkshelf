@@ -1,7 +1,7 @@
 module Berkshelf
   module Vagrant
     module Action
-      # @author Jamie Winsor <jamie@vialstudios.com>
+      # @author Jamie Winsor <reset@riotgames.com>
       #
       # As of Vagrant 1.0.5 it is not possible to validate configuration values of
       # a configuraiton that was not explicitly described in a Vagrant::Config.run block.

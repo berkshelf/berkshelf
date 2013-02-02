@@ -1,6 +1,6 @@
 module Berkshelf
   module Vagrant
-    # @author Jamie Winsor <jamie@vialstudios.com>
+    # @author Jamie Winsor <reset@riotgames.com>
     # @author Andrew Garson <andrew.garson@gmail.com>
     class Config < ::Vagrant::Config::Base
       # @return [String]

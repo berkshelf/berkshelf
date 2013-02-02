@@ -1,5 +1,5 @@
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class PathLocation
     class << self
       # Expand and return a string representation of the given path if it is

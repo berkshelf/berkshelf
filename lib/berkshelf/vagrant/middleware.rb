@@ -1,6 +1,6 @@
 module Berkshelf
   module Vagrant
-    # @author Jamie Winsor <jamie@vialstudios.com>
+    # @author Jamie Winsor <reset@riotgames.com>
     #
     # Middleware stacks for use with Vagrant
     module Middleware
