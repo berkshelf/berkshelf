@@ -1,7 +1,7 @@
 module Berkshelf
   module Vagrant
     module Action
-      # @author Jamie Winsor <jamie@vialstudios.com>
+      # @author Jamie Winsor <reset@riotgames.com>
       # @author Andrew Garson <andrew.garson@gmail.com>
       class Install
         attr_reader :shelf

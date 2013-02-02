@@ -98,7 +98,7 @@ describe Berkshelf::CookbookGenerator do
 
   context 'given a value for the maintainer_email option' do
     before(:each) do
-      @email = 'jamie@vialstudios.com'
+      @email = 'reset@riotgames.com'
       generator = described_class.new([target, name], maintainer_email: @email)
       capture(:stdout) { generator.invoke_all }
     end

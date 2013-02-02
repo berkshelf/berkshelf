@@ -1,5 +1,5 @@
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class CookbookGenerator < BaseGenerator
     argument :name,
       type: :string,

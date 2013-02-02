@@ -2,7 +2,7 @@ require 'uri'
 require 'mixlib/shellout'
 
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class Git
     GIT_REGEXP = URI.regexp(%w(http https ssh git+ssh git rsync))
     SCP_REGEXP = /^(.+@)?[\w\d\.-]+:.*$/
