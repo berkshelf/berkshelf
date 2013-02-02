@@ -1,7 +1,7 @@
 require 'chef/cookbook/chefignore'
 
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
     extend Forwardable
 

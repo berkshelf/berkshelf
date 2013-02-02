@@ -1,5 +1,5 @@
 module Berkshelf
-  # @author Josiah Kiehl <josiah@skirmisher.net>
+  # @author Josiah Kiehl <jkiehl@riotgames.com>
   class GithubLocation < GitLocation
     DEFAULT_PROTOCOL = :git
 

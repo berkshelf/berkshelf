@@ -1,7 +1,7 @@
 require 'berkshelf'
 
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
     class << self
       def dispatch(meth, given_args, given_opts, config)

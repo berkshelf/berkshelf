@@ -23,10 +23,10 @@ See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
 Authors
 -------
-- Jamie Winsor (<jamie@vialstudios.com>)
-- Josiah Kiehl (<josiah@skirmisher.net>)
-- Michael Ivey (<ivey@gweezlebur.com>)
-- Justin Campbell (<justin@justincampbell.me>)
+- Jamie Winsor (<reset@riotgames.com>)
+- Josiah Kiehl (<jkiehl@riotgames.com>)
+- Michael Ivey (<michael.ivey@riotgames.com>)
+- Justin Campbell (<justin.campbell@riotgames.com>)
 
 Thank you to all of our [Contributors](https://github.com/RiotGames/berkshelf/graphs/contributors), testers, and users.
 

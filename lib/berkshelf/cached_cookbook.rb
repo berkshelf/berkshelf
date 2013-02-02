@@ -2,7 +2,7 @@ require 'chef/checksum_cache'
 require 'chef/cookbook/syntax_check'
 
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class CachedCookbook
     class << self
       # Creates a new instance of Berkshelf::CachedCookbook from a path on disk that

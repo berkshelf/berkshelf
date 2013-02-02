@@ -2,7 +2,7 @@ module Berkshelf
   # Responsible for installing cookbooks
   #
   # @author Seth Vargo <sethvargo@gmail.com>
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class Installer
     include ::Berkshelf::Command
 
