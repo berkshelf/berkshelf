@@ -10,7 +10,7 @@ matrix:
   allow_failures:
     - rvm: 1.9.2
     - rvm: 2.0.0
-    - gemfiles: gemfiles/Gemfile.chef-master
+    - gemfile: gemfiles/Gemfile.chef-master
 notifications:
   irc:
     channels:

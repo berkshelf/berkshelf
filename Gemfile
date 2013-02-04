@@ -10,7 +10,6 @@ group :development do
   gem 'guard-spork'
   gem 'guard-yard'
   gem 'redcarpet'
-  gem 'spork'
   gem 'yard'
 
   require 'rbconfig'
@@ -36,5 +35,4 @@ end
 
 group :test do
   gem 'fuubar'
-  gem 'simplecov', require: false
 end
