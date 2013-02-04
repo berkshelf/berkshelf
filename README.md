@@ -1,7 +1,7 @@
 Berkshelf
 =========
 [![Build Status](https://travis-ci.org/RiotGames/berkshelf.png)](https://travis-ci.org/RiotGames/berkshelf)
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/RiotGames/berkshelf)
+[![Code Climate](https://codeclimate.com/github/RiotGames/berkshelf.png)](https://codeclimate.com/github/RiotGames/berkshelf)
 
 Manage a Cookbook or an Application's Cookbook dependencies
 
