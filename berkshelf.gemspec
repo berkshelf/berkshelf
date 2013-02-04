@@ -38,4 +38,12 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve', '>= 0.4.0.rc1'
   s.add_dependency 'thor', '~> 0.16.0'
   s.add_dependency 'vagrant', '~> 1.0.5'
+
+  s.add_development_dependency 'aruba'
+  s.add_development_dependency 'json_spec'
+  s.add_development_dependency 'rake', '>= 0.9.2.2'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'thor'
+  s.add_development_dependency 'vcr'
+  s.add_development_dependency 'webmock'
 end
