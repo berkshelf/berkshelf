@@ -10,7 +10,6 @@ group :development do
   gem 'guard-spork'
   gem 'guard-yard'
   gem 'redcarpet'
-  gem 'spork'
   gem 'yard'
 
   require 'rbconfig'
@@ -35,13 +34,5 @@ group :development do
 end
 
 group :test do
-  gem 'aruba'
   gem 'fuubar'
-  gem 'json_spec'
-  gem 'rake', '>= 0.9.2.2'
-  gem 'rspec'
-  gem 'simplecov', require: false
-  gem 'thor'
-  gem 'vcr'
-  gem 'webmock'
 end
