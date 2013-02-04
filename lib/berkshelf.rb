@@ -3,7 +3,6 @@ require 'chef/platform'
 require 'chef/cookbook/metadata'
 require 'chef/cookbook_version'
 require 'chef/knife'
-require 'chef/platform'
 
 require 'chozo/core_ext'
 
@@ -72,6 +71,20 @@ module Berkshelf
     # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
+    end
+
+    # Check if we're running a version of Chef that is in the 11.x line
+    #
+    # @return [Boolean]
+    def chef_11?
+      chef_version >= Solve::Version.new("11.0.0") && chef_version <= Solve::Version.new("12.0.0")
+    end
+
+    # Return the loaded version of Chef
+    #
+    # @return [Solve::Version]
+    def chef_version
+      @chef_version ||= Solve::Version.new(::Chef::VERSION)
     end
 
     # @return [String]
