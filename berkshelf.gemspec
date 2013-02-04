@@ -1,8 +1,6 @@
 # -*- encoding: utf-8; mode: ruby -*-
 require File.expand_path('../lib/berkshelf/version', __FILE__)
 
-chef_version = Gem::Requirement.new(ENV['CHEF_VERSION']) unless ENV['CHEF_VERSION'].to_s.empty?
-
 Gem::Specification.new do |s|
   s.authors               = [
     "Jamie Winsor",
@@ -30,7 +28,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.9.1"
 
   s.add_dependency 'activesupport'
-  s.add_dependency 'chef', chef_version
+  s.add_dependency 'chef', '>= 10.0'
   s.add_dependency 'ridley', '>= 0.7.0.rc1'
   s.add_dependency 'chozo', '>= 0.2.3'
   s.add_dependency 'hashie'

@@ -1,17 +1,16 @@
 rvm:
   - 1.9.2
   - 1.9.3
-  - ruby-head
-env:
-  - CHEF_VERSION=
-  - CHEF_VERSION="~> 10.16.4"
-  - CHEF_VERSION="~> 10.14.4"
-  - CHEF_VERSION="~> 0.10.10"
-  - CHEF_VERSION="~> 0.9.18"
+  - 2.0.0
+gemfile:
+  - gemfiles/Gemfile.master
+  - gemfiles/Gemfile.11
+  - gemfiles/Gemfile.10
 matrix:
   allow_failures:
     - rvm: 1.9.2
-    - rvm: ruby-head
+    - rvm: 2.0.0
+    - gemfiles: gemfiles/Gemfile.master
 notifications:
   irc:
     channels:
