@@ -1,4 +1,4 @@
-require 'chef/checksum_cache'
+require 'chef/digester'
 require 'chef/cookbook/syntax_check'
 
 module Berkshelf
@@ -49,6 +49,8 @@ module Berkshelf
           raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
         end
 
+        metadata.name cached_name if metadata.name.empty?
+
         new(cached_name, path, metadata)
       end
 
@@ -59,7 +61,7 @@ module Berkshelf
       #   a checksum that can be used to uniquely identify the file understood
       #   by a Chef Server.
       def checksum(filepath)
-        Chef::ChecksumCache.generate_md5_checksum_for_file(filepath)
+        Chef::Digester.generate_md5_checksum_for_file(filepath)
       end
     end
 
