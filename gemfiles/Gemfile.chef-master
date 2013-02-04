@@ -2,4 +2,4 @@ source :rubygems
 
 gem 'chef', github: 'opscode/chef'
 
-gemspec
+gemspec path: '..'
