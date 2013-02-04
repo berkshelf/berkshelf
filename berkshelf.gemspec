@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.9.1"
 
   s.add_dependency 'activesupport'
-  s.add_dependency 'chef', '>= 10.16.2'
+  s.add_dependency 'chef', '~> 10.16'
   s.add_dependency 'ridley', '>= 0.7.0.rc1'
   s.add_dependency 'chozo', '>= 0.2.3'
   s.add_dependency 'hashie'
@@ -38,4 +38,14 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve', '>= 0.4.0.rc1'
   s.add_dependency 'thor', '~> 0.16.0'
   s.add_dependency 'vagrant', '~> 1.0.5'
+
+  s.add_development_dependency 'aruba'
+  s.add_development_dependency 'json_spec'
+  s.add_development_dependency 'rake', '>= 0.9.2.2'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'simplecov'
+  s.add_development_dependency 'spork'
+  s.add_development_dependency 'thor'
+  s.add_development_dependency 'vcr'
+  s.add_development_dependency 'webmock'
 end
