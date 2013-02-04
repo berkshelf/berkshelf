@@ -2,7 +2,7 @@ source :rubygems
 
 gem 'chef', '~> 11.0'
 
-gemspec, path: '../berkshelf.gemspec'
+gemspec path: '..'
 
 group :development do
   gem 'coolline'
