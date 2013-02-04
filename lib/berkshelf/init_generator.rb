@@ -1,6 +1,6 @@
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
-  # @author Josiah Kiehl <josiah@skirmisher.net>
+  # @author Jamie Winsor <reset@riotgames.com>
+  # @author Josiah Kiehl <jkiehl@riotgames.com>
   class InitGenerator < BaseGenerator
     def initialize(*args)
       super(*args)
@@ -8,10 +8,6 @@ module Berkshelf
         @cookbook_name = @options[:cookbook_name]
       end
     end
-
-    argument :path,
-      type: :string,
-      required: true
 
     class_option :metadata_entry,
       type: :boolean,
@@ -83,7 +79,7 @@ module Berkshelf
 
       unless options[:skip_vagrant]
         template "Vagrantfile.erb", target.join("Vagrantfile")
-        ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile")).invoke(:install)
+        ::Berkshelf::Installer.install(berksfile: target.join('Berksfile'))
       end
     end
 
@@ -114,7 +110,7 @@ module Berkshelf
           raise InvalidConfiguration.new Config.instance.errors
         end
       end
-      
+
 
       # Check for supporting gems for provided options
       #
@@ -144,7 +140,7 @@ module Berkshelf
 
       # Warn if the supporting gem for a default is not installed
       #
-      # @return [Boolean]  
+      # @return [Boolean]
       def assert_default_supported(option, gem_name = option.to_s)
         unless options[option]
           begin

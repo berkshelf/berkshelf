@@ -1,4 +1,6 @@
-require 'yajl'
+require 'oj'
+require 'json'
+require 'chef/platform'
 require 'chef/cookbook/metadata'
 require 'chef/cookbook_version'
 require 'chef/knife'
@@ -33,6 +35,7 @@ module Berkshelf
   autoload :Berksfile, 'berkshelf/berksfile'
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
   autoload :Cli, 'berkshelf/cli'
+  autoload :Command, 'berkshelf/command'
   autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
@@ -40,9 +43,10 @@ module Berkshelf
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Git, 'berkshelf/git'
   autoload :InitGenerator, 'berkshelf/init_generator'
+  autoload :Installer, 'berkshelf/installer'
   autoload :Lockfile, 'berkshelf/lockfile'
   autoload :Resolver, 'berkshelf/resolver'
-  autoload :UI, 'berkshelf/ui'
+  autoload :Updater, 'berkshelf/updater'
   autoload :Uploader, 'berkshelf/uploader'
 
   require 'berkshelf/location'
@@ -57,9 +61,9 @@ module Berkshelf
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
 
-    # @return [Berkshelf::UI]
+    # @return [::Thor::Shell::Color]
     def ui
-      @ui ||= Berkshelf::UI.new
+      @ui ||= ::Thor::Shell::Color.new
     end
 
     # Returns the filepath to the location Berskhelf will use for

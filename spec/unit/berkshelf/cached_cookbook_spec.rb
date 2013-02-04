@@ -10,11 +10,11 @@ module Berkshelf
           let(:cookbook_path) { fixtures_path.join("cookbooks", "example_metadata_name") }
 
           it "returns an instance of CachedCookbook" do
-            subject.from_path(cookbook_path).should be_a(CachedCookbook)
+            expect(subject.from_path(cookbook_path)).to be_a(CachedCookbook)
           end
 
           it "has a cookbook_name attribute set to what is found in the metadata" do
-            subject.from_path(cookbook_path).cookbook_name.should eql("has_metadata")
+            expect(subject.from_path(cookbook_path).cookbook_name).to eql("has_metadata")
           end
         end
 
@@ -22,11 +22,15 @@ module Berkshelf
           let(:cookbook_path) { fixtures_path.join("cookbooks", "example_metadata_no_name") }
 
           it "returns an instnace of CachedCookbook" do
-            subject.from_path(cookbook_path).should be_a(CachedCookbook)
+            expect(subject.from_path(cookbook_path)).to be_a(CachedCookbook)
           end
 
           it "has a cookbook_name attribute set to the basename of the folder" do
-            subject.from_path(cookbook_path).cookbook_name.should eql("example_metadata_no_name")
+            expect(subject.from_path(cookbook_path).cookbook_name).to eql("example_metadata_no_name")
+          end
+
+          it "sets value of metadata.name to the cookbook_name" do
+            subject.from_path(cookbook_path).metadata.name.should eql("example_metadata_no_name")
           end
         end
 
@@ -34,9 +38,9 @@ module Berkshelf
           let(:cookbook_path) { fixtures_path.join("cookbooks", "example_no_metadata") }
 
           it "raises a CookbookNotFound error" do
-            lambda {
+            expect {
               subject.from_path(cookbook_path)
-            }.should raise_error(Berkshelf::CookbookNotFound)
+            }.to raise_error(Berkshelf::CookbookNotFound)
           end
         end
       end
@@ -47,36 +51,40 @@ module Berkshelf
         end
 
         it "returns an instance of CachedCookbook" do
-          @cached_cb.should be_a(CachedCookbook)
+          expect(@cached_cb).to be_a(CachedCookbook)
         end
 
         it "sets a version number" do
-          @cached_cb.version.should eql("0.5.0")
+          expect(@cached_cb.version).to eql("0.5.0")
+        end
+
+        it "sets the metadata.name value to the cookbook_name" do
+          @cached_cb.metadata.name.should eql("example_cookbook")
         end
 
         context "given a path that does not contain a cookbook" do
           it "returns nil" do
-            subject.from_store_path(tmp_path).should be_nil
+            expect(subject.from_store_path(tmp_path)).to be_nil
           end
         end
 
         context "given a path that does not match the CachedCookbook dirname format" do
           it "returns nil" do
-            subject.from_store_path(fixtures_path.join("cookbooks", "example_cookbook")).should be_nil
+            expect(subject.from_store_path(fixtures_path.join("cookbooks", "example_cookbook"))).to be_nil
           end
         end
       end
 
       describe "#checksum" do
         it "returns a checksum of the given filepath" do
-          subject.checksum(fixtures_path.join("cookbooks", "example_cookbook-0.5.0", "README.md")).should eql("6e21094b7a920e374e7261f50e9c4eef")
+          expect(subject.checksum(fixtures_path.join("cookbooks", "example_cookbook-0.5.0", "README.md"))).to eql("6e21094b7a920e374e7261f50e9c4eef")
         end
 
         context "given path does not exist" do
           it "raises an Errno::ENOENT error" do
-            lambda {
+            expect {
               subject.checksum(fixtures_path.join("notexisting.file"))
-            }.should raise_error(Errno::ENOENT)
+            }.to raise_error(Errno::ENOENT)
           end
         end
       end
@@ -87,15 +95,15 @@ module Berkshelf
 
     describe "#checksums" do
       it "returns a Hash containing an entry for all matching cookbook files on disk" do
-        subject.checksums.should have(11).items
+        expect(subject.checksums).to have(11).items
       end
 
       it "has a checksum for each key" do
-        subject.checksums.should have_key("fb1f925dcd5fc4ebf682c4442a21c619")
+        expect(subject.checksums).to have_key("fb1f925dcd5fc4ebf682c4442a21c619")
       end
 
       it "has a filepath for each value" do
-        subject.checksums.should have_value(cb_path.join("recipes/default.rb").to_s)
+        expect(subject.checksums).to have_value(cb_path.join("recipes/default.rb").to_s)
       end
     end
 
@@ -112,7 +120,7 @@ module Berkshelf
           :providers,
           :root_files
         ].each do |category|
-          subject.manifest.should have_key(category)
+          expect(subject.manifest).to have_key(category)
         end
       end
     end
@@ -134,18 +142,18 @@ module Berkshelf
       it "raises CookbookSyntaxError if the cookbook contains invalid ruby files" do
         syntax_checker.should_receive(:validate_ruby_files).and_return(false)
 
-        lambda {
+        expect {
           subject.validate!
-        }.should raise_error(CookbookSyntaxError)
+        }.to raise_error(CookbookSyntaxError)
       end
 
       it "raises CookbookSyntaxError if the cookbook contains invalid template files" do
         syntax_checker.should_receive(:validate_ruby_files).and_return(true)
         syntax_checker.should_receive(:validate_templates).and_return(false)
 
-        lambda {
+        expect {
           subject.validate!
-        }.should raise_error(CookbookSyntaxError)
+        }.to raise_error(CookbookSyntaxError)
       end
     end
 
@@ -155,23 +163,23 @@ module Berkshelf
       before(:each) { @metadata = subject.file_metadata(:file, file) }
 
       it "has a 'path' key whose value is a relative path from the CachedCookbook's path" do
-        @metadata.should have_key(:path)
-        @metadata[:path].should be_relative_path
-        @metadata[:path].should eql("files/default/mime.types")
+        expect(@metadata).to have_key(:path)
+        expect(@metadata[:path]).to be_relative_path
+        expect(@metadata[:path]).to eql("files/default/mime.types")
       end
 
       it "has a 'name' key whose value is the basename of the target file" do
-        @metadata.should have_key(:name)
-        @metadata[:name].should eql("mime.types")
+        expect(@metadata).to have_key(:name)
+        expect(@metadata[:name]).to eql("mime.types")
       end
 
       it "has a 'checksum' key whose value is the checksum of the target file" do
-        @metadata.should have_key(:checksum)
-        @metadata[:checksum].should eql("06e7eca1d6cb608e2e74fd1f8e059f34")
+        expect(@metadata).to have_key(:checksum)
+        expect(@metadata[:checksum]).to eql("06e7eca1d6cb608e2e74fd1f8e059f34")
       end
 
       it "has a 'specificity' key" do
-        @metadata.should have_key(:specificity)
+        expect(@metadata).to have_key(:specificity)
       end
 
       context "given a 'template' or 'file' berksfile type" do
@@ -179,7 +187,7 @@ module Berkshelf
         before(:each) { @metadata = subject.file_metadata(:files, file) }
 
         it "has a 'specificity' key whose value represents the specificity found in filepath" do
-          @metadata[:specificity].should eql("ubuntu")
+          expect(@metadata[:specificity]).to eql("ubuntu")
         end
       end
 
@@ -188,276 +196,295 @@ module Berkshelf
         before(:each) { @metadata = subject.file_metadata(:root, file) }
 
         it "has a 'specificity' key whose value is 'default'" do
-          @metadata[:specificity].should eql("default")
+          expect(@metadata[:specificity]).to eql("default")
         end
       end
     end
 
     describe "#to_hash" do
-      before(:each) do
-        @hash = subject.to_hash
-      end
+      let(:hash) { subject.to_hash }
 
       let(:cookbook_name) { subject.cookbook_name }
       let(:cookbook_version) { subject.version }
 
       it "has a 'recipes' key with a value of an Array Hashes" do
-        @hash.should have_key('recipes')
-        @hash['recipes'].should be_a(Array)
-        @hash['recipes'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('recipes')
+        expect(hash['recipes']).to be_a(Array)
+        hash['recipes'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'recipes' Array of Hashes" do
-        @hash['recipes'].first.should have_key('name')
+        expect(hash['recipes'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'recipes' Array of Hashes" do
-        @hash['recipes'].first.should have_key('path')
+        expect(hash['recipes'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'recipes' Array of Hashes" do
-        @hash['recipes'].first.should have_key('checksum')
+        expect(hash['recipes'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'recipes' Array of Hashes" do
-        @hash['recipes'].first.should have_key('specificity')
+        expect(hash['recipes'].first).to have_key('specificity')
       end
 
       it "has a 'definitions' key with a value of an Array Hashes" do
-        @hash.should have_key('definitions')
-        @hash['definitions'].should be_a(Array)
-        @hash['definitions'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('definitions')
+        expect(hash['definitions']).to be_a(Array)
+        hash['definitions'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'definitions' Array of Hashes" do
-        @hash['definitions'].first.should have_key('name')
+        expect(hash['definitions'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'definitions' Array of Hashes" do
-        @hash['definitions'].first.should have_key('path')
+        expect(hash['definitions'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'definitions' Array of Hashes" do
-        @hash['definitions'].first.should have_key('checksum')
+        expect(hash['definitions'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'definitions' Array of Hashes" do
-        @hash['definitions'].first.should have_key('specificity')
+        expect(hash['definitions'].first).to have_key('specificity')
       end
 
       it "has a 'libraries' key with a value of an Array Hashes" do
-        @hash.should have_key('libraries')
-        @hash['libraries'].should be_a(Array)
-        @hash['libraries'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('libraries')
+        expect(hash['libraries']).to be_a(Array)
+        hash['libraries'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'libraries' Array of Hashes" do
-        @hash['libraries'].first.should have_key('name')
+        expect(hash['libraries'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'libraries' Array of Hashes" do
-        @hash['libraries'].first.should have_key('path')
+        expect(hash['libraries'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'libraries' Array of Hashes" do
-        @hash['libraries'].first.should have_key('checksum')
+        expect(hash['libraries'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'libraries' Array of Hashes" do
-        @hash['libraries'].first.should have_key('specificity')
+        expect(hash['libraries'].first).to have_key('specificity')
       end
 
       it "has a 'attributes' key with a value of an Array Hashes" do
-        @hash.should have_key('attributes')
-        @hash['attributes'].should be_a(Array)
-        @hash['attributes'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('attributes')
+        expect(hash['attributes']).to be_a(Array)
+        hash['attributes'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'attributes' Array of Hashes" do
-        @hash['attributes'].first.should have_key('name')
+        expect(hash['attributes'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'attributes' Array of Hashes" do
-        @hash['attributes'].first.should have_key('path')
+        expect(hash['attributes'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'attributes' Array of Hashes" do
-        @hash['attributes'].first.should have_key('checksum')
+        expect(hash['attributes'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'attributes' Array of Hashes" do
-        @hash['attributes'].first.should have_key('specificity')
+        expect(hash['attributes'].first).to have_key('specificity')
       end
 
       it "has a 'files' key with a value of an Array Hashes" do
-        @hash.should have_key('files')
-        @hash['files'].should be_a(Array)
-        @hash['files'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('files')
+        expect(hash['files']).to be_a(Array)
+        hash['files'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'files' Array of Hashes" do
-        @hash['files'].first.should have_key('name')
+        expect(hash['files'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'files' Array of Hashes" do
-        @hash['files'].first.should have_key('path')
+        expect(hash['files'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'files' Array of Hashes" do
-        @hash['files'].first.should have_key('checksum')
+        expect(hash['files'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'files' Array of Hashes" do
-        @hash['files'].first.should have_key('specificity')
+        expect(hash['files'].first).to have_key('specificity')
       end
 
       it "has a 'templates' key with a value of an Array Hashes" do
-        @hash.should have_key('templates')
-        @hash['templates'].should be_a(Array)
-        @hash['templates'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('templates')
+        expect(hash['templates']).to be_a(Array)
+        hash['templates'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'templates' Array of Hashes" do
-        @hash['templates'].first.should have_key('name')
+        expect(hash['templates'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'templates' Array of Hashes" do
-        @hash['templates'].first.should have_key('path')
+        expect(hash['templates'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'templates' Array of Hashes" do
-        @hash['templates'].first.should have_key('checksum')
+        expect(hash['templates'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'templates' Array of Hashes" do
-        @hash['templates'].first.should have_key('specificity')
+        expect(hash['templates'].first).to have_key('specificity')
       end
 
       it "has a 'resources' key with a value of an Array Hashes" do
-        @hash.should have_key('resources')
-        @hash['resources'].should be_a(Array)
-        @hash['resources'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('resources')
+        expect(hash['resources']).to be_a(Array)
+        hash['resources'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'resources' Array of Hashes" do
-        @hash['resources'].first.should have_key('name')
+        expect(hash['resources'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'resources' Array of Hashes" do
-        @hash['resources'].first.should have_key('path')
+        expect(hash['resources'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'resources' Array of Hashes" do
-        @hash['resources'].first.should have_key('checksum')
+        expect(hash['resources'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'resources' Array of Hashes" do
-        @hash['resources'].first.should have_key('specificity')
+        expect(hash['resources'].first).to have_key('specificity')
       end
 
       it "has a 'providers' key with a value of an Array Hashes" do
-        @hash.should have_key('providers')
-        @hash['providers'].should be_a(Array)
-        @hash['providers'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('providers')
+        expect(hash['providers']).to be_a(Array)
+        hash['providers'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'providers' Array of Hashes" do
-        @hash['providers'].first.should have_key('name')
+        expect(hash['providers'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'providers' Array of Hashes" do
-        @hash['providers'].first.should have_key('path')
+        expect(hash['providers'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'providers' Array of Hashes" do
-        @hash['providers'].first.should have_key('checksum')
+        expect(hash['providers'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'providers' Array of Hashes" do
-        @hash['providers'].first.should have_key('specificity')
+        expect(hash['providers'].first).to have_key('specificity')
       end
 
       it "has a 'root_files' key with a value of an Array Hashes" do
-        @hash.should have_key('root_files')
-        @hash['root_files'].should be_a(Array)
-        @hash['root_files'].each do |item|
-          item.should be_a(Hash)
+        expect(hash).to have_key('root_files')
+        expect(hash['root_files']).to be_a(Array)
+        hash['root_files'].each do |item|
+          expect(item).to be_a(Hash)
         end
       end
 
       it "has a 'name' key value pair in a Hash of the 'root_files' Array of Hashes" do
-        @hash['root_files'].first.should have_key('name')
+        expect(hash['root_files'].first).to have_key('name')
       end
 
       it "has a 'path' key value pair in a Hash of the 'root_files' Array of Hashes" do
-        @hash['root_files'].first.should have_key('path')
+        expect(hash['root_files'].first).to have_key('path')
       end
 
       it "has a 'checksum' key value pair in a Hash of the 'root_files' Array of Hashes" do
-        @hash['root_files'].first.should have_key('checksum')
+        expect(hash['root_files'].first).to have_key('checksum')
       end
 
       it "has a 'specificity' key value pair in a Hash of the 'root_files' Array of Hashes" do
-        @hash['root_files'].first.should have_key('specificity')
+        expect(hash['root_files'].first).to have_key('specificity')
       end
 
       it "has a 'cookbook_name' key with a String value" do
-        @hash.should have_key('cookbook_name')
-        @hash['cookbook_name'].should be_a(String)
+        expect(hash).to have_key('cookbook_name')
+        expect(hash['cookbook_name']).to be_a(String)
       end
 
       it "has a 'metadata' key with a Cookbook::Metadata value" do
-        @hash.should have_key('metadata')
-        @hash['metadata'].should be_a(Chef::Cookbook::Metadata)
+        expect(hash).to have_key('metadata')
+        expect(hash['metadata']).to be_a(Chef::Cookbook::Metadata)
       end
 
       it "has a 'version' key with a String value" do
-        @hash.should have_key('version')
-        @hash['version'].should be_a(String)
+        expect(hash).to have_key('version')
+        expect(hash['version']).to be_a(String)
       end
 
       it "has a 'name' key with a String value" do
-        @hash.should have_key('name')
-        @hash['name'].should be_a(String)
+        expect(hash).to have_key('name')
+        expect(hash['name']).to be_a(String)
       end
 
       it "has a value containing the cookbook name and version separated by a dash for 'name'" do
-        name, version = @hash['name'].split('-')
+        name, version = hash['name'].split('-')
 
-        name.should eql(cookbook_name)
-        version.should eql(cookbook_version)
+        expect(name).to eql(cookbook_name)
+        expect(version).to eql(cookbook_version)
       end
 
       it "has a 'chef_type' key with 'cookbook_version' as the value" do
-        @hash.should have_key('chef_type')
-        @hash['chef_type'].should eql("cookbook_version")
+        expect(hash).to have_key('chef_type')
+        expect(hash['chef_type']).to eql("cookbook_version")
       end
     end
 
-    describe "#to_json" do
-      before(:each) do
-        @json = subject.to_json
+    describe '#to_json' do
+      let(:json) { JSON.parse(subject.to_json) }
+
+      it "has a 'chef_type' key" do
+        expect(json['chef_type']).to eq('cookbook_version')
       end
 
-      it "has a 'json_class' key with 'Chef::CookbookVersion' as the value" do
-        @json.should have_json_path('json_class')
-        parse_json(@json)['json_class'].should eql("Chef::CookbookVersion")
+      it "has a 'name' key" do
+        expect(json['name']).to eq('nginx-0.100.5')
+      end
+
+      it "has a 'cookbook_name' key" do
+        expect(json['cookbook_name']).to eq('nginx')
+      end
+
+      it "has a 'version' key" do
+        expect(json['version']).to eq('0.100.5')
+      end
+
+      it "has a 'metadata' key" do
+        expect(json['metadata']).to_not be_nil
+      end
+
+      it "has a 'json_class' key" do
+        expect(json['json_class']).to eq('Chef::CookbookVersion')
+      end
+
+      it "has a 'frozen?' key" do
+        expect(json['frozen?']).to be_false
       end
     end
 
@@ -466,17 +493,17 @@ module Berkshelf
       let(:recommendations) { { "database" => ">= 0.0.0" } }
 
       let(:cb_path) do
-        generate_cookbook(Berkshelf.cookbook_store.to_s, "sparkle", "0.1.0", dependencies: dependencies, recommendations: recommendations)
+        generate_cookbook(Berkshelf.cookbook_store.storage_path, "sparkle", "0.1.0", dependencies: dependencies, recommendations: recommendations)
       end
 
       subject { CachedCookbook.from_store_path(cb_path) }
 
       it "contains depends from the cookbook metadata" do
-        subject.dependencies.should include(dependencies)
+        expect(subject.dependencies).to include(dependencies)
       end
 
       it "contains recommendations from the cookbook metadata" do
-        subject.dependencies.should include(recommendations)
+        expect(subject.dependencies).to include(recommendations)
       end
     end
   end

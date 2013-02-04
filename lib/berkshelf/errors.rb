@@ -149,4 +149,8 @@ module Berkshelf
   class ConfigExists < BerkshelfError; status_code(116); end
   class ConfigurationError < BerkshelfError; status_code(117); end
   class CommandUnsuccessful < BerkshelfError; status_code(118); end
+  class LockfileNotFound < BerkshelfError; status_code(119); end
+  class OutdatedCookbookSource < BerkshelfError; status_code(120); end
+  class InsufficientPrivledges < BerkshelfError; status_code(121); end
+  class ExplicitCookbookNotFound < BerkshelfError; status_code(122); end
 end

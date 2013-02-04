@@ -1,6 +1,6 @@
 module Berkshelf
   module Formatters
-    # @author Michael Ivey <ivey@gweezlebur.com>
+    # @author Michael Ivey <michael.ivey@riotgames.com>
     class HumanReadable
       include AbstractFormatter
 

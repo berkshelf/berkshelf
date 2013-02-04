@@ -1,11 +1,7 @@
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class CookbookGenerator < BaseGenerator
     argument :name,
-      type: :string,
-      required: true
-
-    argument :path,
       type: :string,
       required: true
 
@@ -31,15 +27,15 @@ module Berkshelf
 
     class_option :license,
       type: :string,
-      default: "reserved"
+      default: ::Berkshelf::Config.instance.cookbook.license || ::Chef::Config[:cookbook_license] || 'reserved'
 
     class_option :maintainer,
       type: :string,
-      default: "YOUR_NAME"
+      default: ::Berkshelf::Config.instance.cookbook.copyright || ::Chef::Config[:cookbook_copyright] || 'YOUR_NAME'
 
     class_option :maintainer_email,
       type: :string,
-      default: "YOUR_EMAIL"
+      default: ::Berkshelf::Config.instance.cookbook.email || ::Chef::Config[:cookbook_email] || 'YOUR_EMAIL'
 
     def generate
       empty_directory target.join("files/default")

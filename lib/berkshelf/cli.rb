@@ -1,9 +1,7 @@
 require 'berkshelf'
 
 module Berkshelf
-  Thor::Base.shell = Berkshelf::UI
-
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
     class << self
       def dispatch(meth, given_args, given_opts, config)
@@ -20,6 +18,10 @@ module Berkshelf
           raise BerksConfigNotFound, "You specified a path to a configuration file that did not exist: '#{@options[:config]}'"
         end
         Berkshelf::Config.path = @options[:config]
+      end
+
+      if @options[:quiet]
+        Berkshelf.ui.mute!
       end
 
       Berkshelf.set_format @options[:format]
@@ -46,6 +48,11 @@ module Berkshelf
       desc: "Output format to use.",
       aliases: "-F",
       banner: "FORMAT"
+    class_option :quiet,
+      type: :boolean,
+      desc: "Silence all informational output.",
+      aliases: "-q",
+      default: false
 
     method_option :force,
       type: :boolean,
@@ -128,8 +135,7 @@ module Berkshelf
       banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock"
     def install
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.install(options)
+      ::Berkshelf::Installer.install(options)
     end
 
     method_option :berksfile,
@@ -148,13 +154,8 @@ module Berkshelf
       aliases: "-o"
     desc "update [COOKBOOKS]", "Update all Cookbooks and their dependencies specified by a Berksfile to their latest versions"
     def update(*cookbook_names)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
-      update_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.update(update_options)
+      update_options = { cookbooks: cookbook_names }.merge(options).symbolize_keys
+      ::Berkshelf::Updater.update(update_options)
     end
 
     method_option :berksfile,
@@ -188,6 +189,11 @@ module Berkshelf
       default: false,
       desc: "Skip Ruby syntax check when uploading cookbooks",
       aliases: "-s"
+    option :skip_dependencies,
+      type: :boolean,
+      desc: 'Do not upload dependencies',
+      default: false,
+      aliases: '-D'
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
@@ -373,7 +379,7 @@ module Berkshelf
         raise InvalidConfiguration.new(Config.instance.errors)
       end
 
-      ::Berkshelf::CookbookGenerator.new([name, File.join(Dir.pwd, name)], options).invoke_all
+      ::Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end
 
     private

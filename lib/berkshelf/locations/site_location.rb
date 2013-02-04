@@ -1,7 +1,7 @@
 require 'chef/rest'
 
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class SiteLocation
     include Location
 

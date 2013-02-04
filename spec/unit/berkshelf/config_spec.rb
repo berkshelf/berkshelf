@@ -32,13 +32,13 @@ describe Berkshelf::Config do
       it "points to a location within ENV['BERKSHELF_PATH']" do
         ENV.stub(:[]).with('BERKSHELF_PATH').and_return('/tmp')
 
-        subject.should eql("/tmp/config.json")
+        expect(subject).to eql("/tmp/config.json")
       end
     end
 
     describe "::chef_config" do
       it "returns the Chef::Config" do
-        subject.chef_config.should eql(Chef::Config)
+        expect(subject.chef_config).to eql(Chef::Config)
       end
     end
 

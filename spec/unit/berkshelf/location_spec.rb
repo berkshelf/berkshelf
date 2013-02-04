@@ -20,9 +20,9 @@ module Berkshelf
         it "adds the given location key with the includer's Class to CookbookSource.location_keys" do
           subject.set_location_key(:reset)
 
-          CookbookSource.location_keys.should have(1).item
-          CookbookSource.location_keys.should include(:reset)
-          CookbookSource.location_keys[:reset].should eql(subject)
+          expect(CookbookSource.location_keys).to have(1).item
+          expect(CookbookSource.location_keys).to include(:reset)
+          expect(CookbookSource.location_keys[:reset]).to eql(subject)
         end
       end
 
@@ -39,7 +39,7 @@ module Berkshelf
         it "returns the class' registered location key" do
           subject.set_location_key(:reset)
 
-          subject.location_key.should eql(:reset)
+          expect(subject.location_key).to eql(:reset)
         end
       end
 
@@ -56,16 +56,16 @@ module Berkshelf
         it "adds the given symbol to the list of valid options on CookbookSource" do
           subject.set_valid_options(:mundo)
 
-          CookbookSource.valid_options.should have(1).item
-          CookbookSource.valid_options.should include(:mundo)
+          expect(CookbookSource.valid_options).to have(1).item
+          expect(CookbookSource.valid_options).to include(:mundo)
         end
 
         it "adds parameters to the list of valid options on the CookbookSource" do
           subject.set_valid_options(:riot, :arenanet)
 
-          CookbookSource.valid_options.should have(2).items
-          CookbookSource.valid_options.should include(:riot)
-          CookbookSource.valid_options.should include(:arenanet)
+          expect(CookbookSource.valid_options).to have(2).items
+          expect(CookbookSource.valid_options).to include(:riot)
+          expect(CookbookSource.valid_options).to include(:arenanet)
         end
       end
 
@@ -83,22 +83,22 @@ module Berkshelf
         it "returns an array with a string containing the version of the solution at index 0" do
           result = subject.solve_for_constraint(constraint, versions)
 
-          result[0].should eql("0.101.2")
+          expect(result[0]).to eql("0.101.2")
         end
 
         it "returns an array containing a URI at index 0" do
           result = subject.solve_for_constraint(constraint, versions)
 
-          result[1].should match(URI.regexp)
+          expect(result[1]).to match(URI.regexp)
         end
 
         it "should return the best match for the constraint and versions given" do
-          subject.solve_for_constraint(constraint, versions)[0].to_s.should eql("0.101.2")
+          expect(subject.solve_for_constraint(constraint, versions)[0].to_s).to eql("0.101.2")
         end
 
         context "given a solution can not be found for constraint" do
           it "returns nil" do
-            subject.solve_for_constraint(Solve::Constraint.new(">= 1.0"), versions).should be_nil
+            expect(subject.solve_for_constraint(Solve::Constraint.new(">= 1.0"), versions)).to be_nil
           end
         end
       end
@@ -114,32 +114,32 @@ module Berkshelf
         it "returns an instance of SiteLocation given a site: option key" do
           result = subject.init(name, constraint, site: "http://site/value")
 
-          result.should be_a(SiteLocation)
+          expect(result).to be_a(SiteLocation)
         end
 
         it "returns an instance of PathLocation given a path: option key" do
           result = subject.init(name, constraint, path: "/Users/reset/code")
 
-          result.should be_a(PathLocation)
+          expect(result).to be_a(PathLocation)
         end
 
         it "returns an instance of GitLocation given a git: option key" do
           result = subject.init(name, constraint, git: "git://github.com/something.git")
 
-          result.should be_a(GitLocation)
+          expect(result).to be_a(GitLocation)
         end
 
         it "returns an instance of SiteLocation when no option key is given that matches a registered location_key" do
           result = subject.init(name, constraint)
 
-          result.should be_a(SiteLocation)
+          expect(result).to be_a(SiteLocation)
         end
 
         context "given two location_keys" do
           it "raises an InternalError" do
-            lambda {
+            expect {
               subject.init(name, constraint, git: :value, path: :value)
-            }.should raise_error(InternalError)
+            }.to raise_error(InternalError)
           end
         end
       end
@@ -155,14 +155,14 @@ module Berkshelf
     end
 
     it "sets the downloaded? state to false" do
-      subject.downloaded?.should be_false
+      expect(subject.downloaded?).to be_false
     end
 
     describe "#download" do
       it "raises a AbstractFunction if not defined" do
-        lambda {
+        expect {
           subject.download(double('destination'))
-        }.should raise_error(AbstractFunction)
+        }.to raise_error(AbstractFunction)
       end
     end
 
@@ -172,15 +172,15 @@ module Berkshelf
       it "raises a ConstraintNotSatisfied error if the version constraint does not satisfy the cached version" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(false)
 
-        lambda {
+        expect {
           subject.validate_cached(cached)
-        }.should raise_error(ConstraintNotSatisfied)
+        }.to raise_error(ConstraintNotSatisfied)
       end
 
       it "returns true if cached_cookbooks satisfies the version constraint" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
 
-        subject.validate_cached(cached).should be_true
+        expect(subject.validate_cached(cached)).to be_true
       end
 
       context "when the cached_cookbooks satisfies the version constraint" do
@@ -188,7 +188,7 @@ module Berkshelf
           constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
           cached.stub(:name) { name }
 
-          subject.validate_cached(cached).should be_true
+          expect(subject.validate_cached(cached)).to be_true
         end
 
         it "raises an AmbiguousCookbookName error if the cached_cookbook's name does not match the location's" do
@@ -197,9 +197,9 @@ module Berkshelf
           constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
           cached.stub(:cookbook_name) { "artifact" }
 
-          lambda {
+          expect {
             subject.validate_cached(cached)
-          }.should raise_error(AmbiguousCookbookName)
+          }.to raise_error(AmbiguousCookbookName)
         end
       end
     end

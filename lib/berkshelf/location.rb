@@ -1,5 +1,5 @@
 module Berkshelf
-  # @author Jamie Winsor <jamie@vialstudios.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   module Location
     OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
 
@@ -145,7 +145,7 @@ module Berkshelf
     # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
     #   this instance of Location.
     #
-    # @raise [AmbiguousCookbookName] if the CachedCookbook's name does not match the locations's name attribute
+    # @raise [AmbiguousCookbookName] if the CachedCookbook's name does not match the location's name attribute
     #
     # @return [Boolean]
     def validate_cached(cached_cookbook)
@@ -169,6 +169,15 @@ module Berkshelf
 
     def to_json
       MultiJson.dump(self.to_hash, pretty: true)
+    end
+
+    def marshal_dump
+      [@name, @version_constraint.to_s, @downloaded_status]
+    end
+
+    def marshal_load(data)
+      @name, @version_constraint, @downloaded_status = data
+      @version_constraint = Solve::Constraint.new(@version_constraint)
     end
 
     private
