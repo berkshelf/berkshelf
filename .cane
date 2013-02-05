@@ -1,0 +1,5 @@
+--doc-exclude lib/berkshelf/errors.rb
+--gte coverage/.last_run.json,93
+--max-violations 24
+--no-style
+--parallel

@@ -38,7 +38,7 @@ class Default < Thor
 
     desc "all", "Run all tests"
     def all
-      unless run_unit && run_acceptance
+      unless run_unit && run_acceptance && run_quality
         exit 1
       end
     end
@@ -46,7 +46,7 @@ class Default < Thor
     desc "ci", "Run all possible tests on Travis-CI"
     def ci
       ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
-      unless run_unit("--tag ~chef_server") && run_acceptance("--tags ~@chef_server")
+      unless run_unit("--tag ~chef_server") && run_acceptance("--tags ~@chef_server") && run_quality
         exit 1
       end
     end
@@ -65,6 +65,13 @@ class Default < Thor
       end
     end
 
+    desc "quality", "Run quality tests"
+    def quality
+      unless run_quality
+        exit 1
+      end
+    end
+
     no_tasks do
       def run_unit(*flags)
         run "rspec --color --format=documentation #{flags.join(' ')} spec"
@@ -72,6 +79,10 @@ class Default < Thor
 
       def run_acceptance(*flags)
         run "cucumber --color --format pretty --tags ~@no_run #{flags.join(' ')}"
+      end
+
+      def run_quality
+        run "cane"
       end
     end
   end
