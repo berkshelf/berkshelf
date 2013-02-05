@@ -23,7 +23,9 @@ Given /^I have a default Berkshelf config file$/ do
 end
 
 Given /^I have a Berkshelf config file containing:$/ do |contents|
-  Berkshelf::Config.new.from_json(contents).save
+  File.open(Berkshelf::Config.path, 'w+') do |f|
+    f.write(contents)
+  end
 end
 
 Given /^I do not have a Berkshelf config file$/ do
