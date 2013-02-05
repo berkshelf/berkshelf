@@ -1,4 +1,9 @@
-require 'chef/checksum_cache'
+if Berkshelf.chef_11?
+  require 'chef/digester'
+else
+  require 'chef/checksum_cache'
+end
+
 require 'chef/cookbook/syntax_check'
 
 module Berkshelf
@@ -52,6 +57,8 @@ module Berkshelf
         
         metadata.name cached_name if metadata.name.empty?
 
+        metadata.name cached_name if metadata.name.empty?
+
         new(cached_name, path, metadata)
       end
 
@@ -62,7 +69,11 @@ module Berkshelf
       #   a checksum that can be used to uniquely identify the file understood
       #   by a Chef Server.
       def checksum(filepath)
-        Chef::ChecksumCache.generate_md5_checksum_for_file(filepath)
+        if Berkshelf.chef_11?
+          Chef::Digester.generate_md5_checksum_for_file(filepath)
+        else
+          Chef::ChecksumCache.generate_md5_checksum_for_file(filepath)
+        end
       end
     end
 
