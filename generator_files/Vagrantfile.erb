@@ -9,11 +9,11 @@ Vagrant::Config.run do |config|
   # config.berkshelf.berksfile_path = "./Berksfile"
 
   # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to skip installing and copying to Vagrant's shelf.
+  # to exclusively install and copy to Vagrant's shelf.
   # config.berkshelf.only = []
 
   # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to exclusively install and copy to Vagrant's shelf.
+  # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
   config.vm.host_name = "<%= "#{cookbook_name}-berkshelf" %>"
