@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport'
   s.add_dependency 'chef', '>= 10.16.2'
   s.add_dependency 'ridley', '>= 0.7.0.rc1'
-  s.add_dependency 'chozo', '>= 0.2.3'
+  s.add_dependency 'chozo', '>= 0.4.2'
   s.add_dependency 'hashie'
   s.add_dependency 'minitar'
   s.add_dependency 'multi_json', '~> 1.5'

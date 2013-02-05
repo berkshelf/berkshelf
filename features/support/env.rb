@@ -29,6 +29,8 @@ Spork.prefork do
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
+  World(Berkshelf::TestGenerators)
+
   Around do |scenario, block|
     VCR.use_cassette(scenario.name) do
       block.call

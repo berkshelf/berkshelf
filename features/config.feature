@@ -61,15 +61,16 @@ Feature: cookbook creation with a config file
     Given I have a Berkshelf config file containing:
     """
     {
-      "vagrant": null
+      "vagrant": {
+        "vm": {
+          "box": 1
+        }
+      }
     }
     """
     When I run the cookbook command to create "sparkle_motion"
     Then the output should contain "Invalid configuration"
     And the output should contain "vagrant.vm.box Expected attribute: 'vagrant.vm.box' to be a type of: 'String'"
-    And the output should contain "vagrant.vm.box A value is required for attribute: 'vagrant.vm.box'"
-    And the output should contain "vagrant.vm.box_url Expected attribute: 'vagrant.vm.box_url' to be a type of: 'String'"
-    And the output should contain "vagrant.vm.box_url A value is required for attribute: 'vagrant.vm.box_url'"
     And the CLI should exit with the status code for error "InvalidConfiguration"
 
   Scenario: creating a new cookbook with a chef client config

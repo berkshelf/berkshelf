@@ -29,6 +29,7 @@ Feature: configure command
 
   Scenario: generating a config with default values
     Given I do not have a Berkshelf config file
+    And I have a default Chef config
     When I run the "configure" command interactively
     And I type ""
     And I type ""
