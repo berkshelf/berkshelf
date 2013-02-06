@@ -23,11 +23,11 @@ Feature: update
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
-
+        ]
+      }
       """
     When I successfully run `berks update`
-    Then the file "Berksfile.lock" should contain exactly:
+    Then the file "Berksfile.lock" should contain JSON:
       """
       {
         "sha":"b1d1fb7e34f6a3a3a71282d311e4d23e4c929aaf",
@@ -48,8 +48,8 @@ Feature: update
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
-
+        ]
+      }
       """
 
   @slow_process
@@ -80,12 +80,12 @@ Feature: update
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
-
+        ]
+      }
       """
     And I successfully run `berks install`
     When I successfully run `berks update build-essential`
-    Then the file "Berksfile.lock" should contain exactly:
+    Then the file "Berksfile.lock" should contain JSON:
       """
       {
         "sha":"2bbadebb88837d537ca5bc29e5765b97c7d5f5a3",
@@ -100,14 +100,14 @@ Feature: update
           },
           {
             "name":"build-essential",
-            "locked_version":"1.3.2",
+            "locked_version":"1.3.4",
             "location":{
               "type":"site",
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
-
+        ]
+      }
       """
 
   @slow_process
@@ -129,7 +129,8 @@ Feature: update
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
+        ]
+      }
       """
     When I run `berks update non-existent-cookbook`
     Then the output should contain:
