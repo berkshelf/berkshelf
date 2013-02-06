@@ -12,7 +12,7 @@ Feature: Berksfile.lock
       """
     When I successfully run `berks install`
     Then a file named "Berksfile.lock" should exist in the current directory
-    And the file "Berksfile.lock" should contain exactly:
+    And the file "Berksfile.lock" should contain JSON:
       """
       {
         "sha":"23150cfe61b7b86882013c8664883058560b899d",
@@ -25,8 +25,8 @@ Feature: Berksfile.lock
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
-
+        ]
+      }
       """
 
   @slow_process
@@ -49,12 +49,12 @@ Feature: Berksfile.lock
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
-
+        ]
+      }
       """
     When I successfully run `berks install`
     Then a file named "Berksfile.lock" should exist in the current directory
-    And the file "Berksfile.lock" should contain exactly:
+    And the file "Berksfile.lock" should contain JSON:
       """
       {
         "sha":"7403c97a9321beb8060dde3fdc8702ad1b623f4b",
@@ -67,8 +67,8 @@ Feature: Berksfile.lock
               "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
             }
           }
-        ]}
-
+        ]
+      }
       """
 
   @slow_process
@@ -91,12 +91,12 @@ Feature: Berksfile.lock
             "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
           }
         }
-      ]}
-
+      ]
+    }
     """
   When I successfully run `berks update ntp`
   Then a file named "Berksfile.lock" should exist in the current directory
-  And the file "Berksfile.lock" should contain exactly:
+  And the file "Berksfile.lock" should contain JSON:
     """
     {
       "sha":"3dced4fcd9c3f72b68e746190aaa1140bdc6cc3d",
@@ -109,8 +109,8 @@ Feature: Berksfile.lock
             "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
           }
         }
-      ]}
-
+      ]
+    }
     """
 
   @slow_process
@@ -133,12 +133,12 @@ Feature: Berksfile.lock
             "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
           }
         }
-      ]}
-
+      ]
+    }
     """
   When I successfully run `berks update ntp`
   Then a file named "Berksfile.lock" should exist in the current directory
-  And the file "Berksfile.lock" should contain exactly:
+  And the file "Berksfile.lock" should contain JSON:
     """
     {
       "sha":"7d07c22eca03bf6da5aaf38ae81cb9a8a439c692",
@@ -151,6 +151,6 @@ Feature: Berksfile.lock
             "value":"http://cookbooks.opscode.com/api/v1/cookbooks"
           }
         }
-      ]}
-
+      ]
+    }
     """

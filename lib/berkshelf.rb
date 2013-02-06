@@ -1,12 +1,10 @@
-require 'oj'
-require 'json'
+require 'multi_json'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
 require 'chef/cookbook_version'
 require 'chef/knife'
 
 require 'chozo/core_ext'
-
 require 'active_support/core_ext'
 require 'archive/tar/minitar'
 require 'forwardable'
@@ -25,6 +23,8 @@ require 'berkshelf/errors'
 require 'thor/monkies'
 
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
+
+JSON.create_id = nil
 
 module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
