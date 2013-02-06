@@ -24,6 +24,8 @@ require 'thor/monkies'
 
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
+JSON.create_id = nil
+
 module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
