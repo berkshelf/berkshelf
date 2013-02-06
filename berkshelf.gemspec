@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.9.1"
 
   s.add_dependency 'activesupport'
-  s.add_dependency 'chef', '>= 10.16.2'
+  s.add_dependency 'chef', '>= 10.16.2', '<= 11.0.1'
   s.add_dependency 'ridley', '>= 0.7.0.rc1'
   s.add_dependency 'chozo', '>= 0.4.2'
   s.add_dependency 'hashie'
