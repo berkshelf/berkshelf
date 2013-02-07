@@ -11,11 +11,11 @@ Given /^a cookbook named "(.*?)"$/ do |name|
 end
 
 Given /^I do not have a Berksfile$/ do
-  in_current_dir { FileUtils.rm_f(Berkshelf::DEFAULT_FILENAME) }
+  in_current_dir { FileUtils.rm_f(Berkshelf::Berksfile::FILENAME) }
 end
 
 Given /^I do not have a Berksfile\.lock$/ do
-  in_current_dir { FileUtils.rm_f(Berkshelf::Lockfile::DEFAULT_FILENAME) }
+  in_current_dir { FileUtils.rm_f(Berkshelf::Lockfile::FILENAME) }
 end
 
 Given /^I have a default Berkshelf config file$/ do

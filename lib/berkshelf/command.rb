@@ -36,8 +36,9 @@ module Berkshelf
       # Check for the presence of a Berksfile. Berkshelf cannot do anything
       # without the presence of a Berksfile.lock.
       def ensure_berksfile!
-        unless ::File.exists?(options[:berksfile])
-          raise ::Berkshelf::BerksfileNotFound, "No #{options[:berksfile]} was found at ."
+        unless File.exists?(options[:berksfile])
+          err = "No #{Berksfile::FILENAME} or #{Lockfile::FILENAME} found at: '#{File.dirname(options[:berksfile])}'"
+          raise BerksfileNotFound, err
         end
       end
 

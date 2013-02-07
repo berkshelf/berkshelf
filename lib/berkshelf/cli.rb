@@ -124,7 +124,7 @@ module Berkshelf
       aliases: "-o"
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: File.join(Dir.pwd, Berksfile::FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -140,7 +140,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: File.join(Dir.pwd, Berksfile::FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -160,7 +160,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: File.join(Dir.pwd, Berksfile::FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -225,7 +225,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: File.join(Dir.pwd, Berksfile::FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -298,7 +298,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: File.join(Dir.pwd, Berksfile::FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -314,7 +314,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: File.join(Dir.pwd, Berksfile::FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"

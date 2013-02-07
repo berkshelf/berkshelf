@@ -28,7 +28,6 @@ JSON.create_id = nil
 
 module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
-  DEFAULT_FILENAME = 'Berksfile'.freeze
 
   autoload :BaseGenerator, 'berkshelf/base_generator'
   autoload :Berksfile, 'berkshelf/berksfile'

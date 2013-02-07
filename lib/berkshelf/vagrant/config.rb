@@ -18,7 +18,7 @@ module Berkshelf
       attr_accessor :except
 
       def initialize
-        @berksfile_path = File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
+        @berksfile_path = File.join(Dir.pwd, Berksfile::FILENAME)
         @except         = Array.new
         @only           = Array.new
       end

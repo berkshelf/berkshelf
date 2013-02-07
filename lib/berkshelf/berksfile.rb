@@ -25,6 +25,8 @@ module Berkshelf
       end
     end
 
+    FILENAME = 'Berksfile'.freeze
+
     @@active_group = nil
 
     # @return [String]
@@ -483,18 +485,15 @@ module Berkshelf
     # the user can specify a different path to the Berksfile. So assuming the lockfile
     # is named "Berksfile.lock" is a poor assumption.
     #
-    # @return [::Berkshelf::Lockfile]
+    # @return [Lockfile]
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      lockfile_path = filepath.to_s + '.lock'
+      lockfile_path = File.join(File.dirname(filepath), Lockfile::FILENAME)
 
-      begin
-        ::Berkshelf::Lockfile.from_file(lockfile_path)
-      rescue ::Berkshelf::LockfileNotFound
-        ::Berkshelf::Lockfile.new(lockfile_path, [])
-      end
+      Lockfile.from_file(lockfile_path)
+    rescue LockfileNotFound
+      Lockfile.new(lockfile_path, [])
     end
-
   end
 end
