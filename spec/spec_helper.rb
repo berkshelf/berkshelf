@@ -99,7 +99,7 @@ Spork.prefork do
     origin = local_git_origin_path_for(repo)
 
     Dir.chdir(origin.join('..')) do
-      Berkshelf::Cli.new.cookbook(repo)
+      capture(:stdout) { Berkshelf::Cli.new.cookbook(repo) }
     end
 
     Dir.chdir(origin) do
