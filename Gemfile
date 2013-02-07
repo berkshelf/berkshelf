@@ -3,6 +3,7 @@ source :rubygems
 gemspec
 
 group :development do
+  gem 'vagrant', '~> 1.0.6'
   gem 'coolline'
   gem 'guard', '>= 1.5.0'
   gem 'guard-cucumber'
@@ -43,4 +44,5 @@ group :test do
   gem 'thor'
   gem 'vcr'
   gem 'webmock'
+  gem 'moneta', '~> 0.6.0'
 end
