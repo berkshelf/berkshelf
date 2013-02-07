@@ -27,7 +27,6 @@ require 'thor/monkies'
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
 module Berkshelf
-  DEFAULT_STORE_PATH = '~/.berkshelf'.freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   autoload :BaseGenerator, 'berkshelf/base_generator'
