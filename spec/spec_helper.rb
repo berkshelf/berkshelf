@@ -112,14 +112,16 @@ Spork.prefork do
         run! "echo '#{tag}' > content_file"
         run! "git commit -am '#{tag} content'"
         run! "git tag '#{tag}'"
-      end
+      end if options.has_key? :tags
     end
 
     "file://#{origin.to_s}/.git"
   end
 
-  def clean_git_origin_for(repo)
-    run! "rm -rf #{local_git_origin_path_for(repo)}"
+  def git_sha_for_tag(repo, tag)
+    Dir.chdir local_git_origin_path_for(repo) do
+      run!("git show-ref '#{tag}'").chomp.split(/\s/).first
+    end
   end
 
   def local_git_origin_path_for(repo)
@@ -128,18 +130,14 @@ Spork.prefork do
     remote_repos_path.join(repo)
   end
 
-  def with_git_origin_for(repo, options = {})
-    begin
-      yield(generate_git_origin_for(repo, options))
-    ensure
-      clean_git_origin_for(repo)
-    end
+  def clone_target
+    tmp_path.join('clone_targets')
   end
 
   def clone_target_for(repo)
-    tmp_path.join('clone_targets', repo)
+    clone_target.join(repo)
   end
-  
+
   def run! cmd
     out = `#{cmd}`
     $?.success?.should be_true, "`#{cmd}` failed with status #{$?.exitstatus} and output:\n#{out}"

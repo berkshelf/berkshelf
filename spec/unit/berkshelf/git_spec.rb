@@ -22,20 +22,18 @@ describe Berkshelf::Git do
       let(:target) { clone_target_for('nginx') }
 
       it "clones the repository to the target path" do
-        with_git_origin_for("nginx") do |origin_uri|
-          subject.clone(origin_uri, target)
-          expect(target).to exist
-          expect(target).to be_directory
-        end
+        origin_uri = generate_git_origin_for("nginx")
+        subject.clone(origin_uri, target)
+        expect(target).to exist
+        expect(target).to be_directory
       end
     end
 
     describe "::checkout" do
       let(:repo_path) { clone_target_for('nginx') }
       let(:repo) { 
-        with_git_origin_for('nginx', tags: ['1.0.1']) do |origin_uri|
-          subject.clone(origin_uri, repo_path)
-        end
+        origin_uri = generate_git_origin_for('nginx', tags: ['1.0.1'])
+        subject.clone(origin_uri, repo_path)
       }
       let(:tag) { "1.0.1" }
 
@@ -50,13 +48,14 @@ describe Berkshelf::Git do
 
     describe "::rev_parse" do
       let(:repo_path) { clone_target_for('nginx') }
-      before(:each) do
-        subject.clone("git://github.com/opscode-cookbooks/nginx.git", repo_path)
-        subject.checkout(repo_path, "0e4887d9eef8cb83972f974a85890983c8204c3b")
+      before(:each) do |example|
+        origin_uri = generate_git_origin_for('nginx', tags: ['1.1.1'])
+        subject.clone(origin_uri, repo_path)
+        subject.checkout(repo_path, git_sha_for_tag('nginx', '1.1.1'))
       end
 
       it "returns the ref for HEAD" do
-        expect(subject.rev_parse(repo_path)).to eql("0e4887d9eef8cb83972f974a85890983c8204c3b")
+        expect(subject.rev_parse(repo_path)).to eql(git_sha_for_tag('nginx', '1.1.1'))
       end
     end
 
