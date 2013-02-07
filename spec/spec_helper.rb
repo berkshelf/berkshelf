@@ -95,6 +95,28 @@ Spork.prefork do
     FileUtils.mkdir_p(tmp_path)
   end
 
+  def generate_git_origin_for(repo)
+    Dir.chdir(tmp_path) do
+      Berkshelf::Cli.new.cookbook(repo)
+    end
+
+    origin = tmp_path.join(repo)
+    Dir.chdir(origin) do
+      run! "git init"
+      run! "git config receive.denyCurrentBranch ignore"
+      run! "git add ."
+      run! "git commit -am 'Add generated cookbook files.'"
+    end
+
+    "file://#{origin.to_s}/.git"
+  end
+  
+  def run! cmd
+    out = `#{cmd}`
+    $?.success?.should be_true, "`#{cmd}` failed with status #{$?.exitstatus} and output:\n#{out}"
+    out
+  end
+
   Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
 end
 

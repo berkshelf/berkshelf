@@ -22,7 +22,8 @@ describe Berkshelf::Git do
       let(:target) { tmp_path.join("nginx") }
 
       it "clones the repository to the target path" do
-        subject.clone("git://github.com/opscode-cookbooks/nginx.git", target)
+        origin_uri = generate_git_origin_for('nginx')
+        subject.clone(origin_uri, target)
 
         expect(target).to exist
         expect(target).to be_directory
