@@ -1,5 +1,6 @@
 require 'vagrant'
 require 'berkshelf'
+require 'berkshelf/vagrant/errors'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>

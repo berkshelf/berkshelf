@@ -100,10 +100,10 @@ end
 
 Spork.each_run do
   require 'berkshelf'
+  require 'berkshelf/vagrant'
 
   if ENV['DRB']
     require 'simplecov'
     SimpleCov.start
   end
-
 end

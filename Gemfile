@@ -3,6 +3,7 @@ source :rubygems
 gemspec
 
 group :development do
+  gem 'vagrant', '~> 1.0.6'
   gem 'coolline'
   gem 'guard', '>= 1.5.0'
   gem 'guard-cucumber'
@@ -35,4 +36,11 @@ end
 
 group :test do
   gem 'fuubar'
+  gem 'json_spec'
+  gem 'rake', '>= 0.9.2.2'
+  gem 'rspec'
+  gem 'thor'
+  gem 'vcr'
+  gem 'webmock'
+  gem 'moneta', '~> 0.6.0'
 end
