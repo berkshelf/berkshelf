@@ -96,11 +96,12 @@ Spork.prefork do
   end
 
   def generate_git_origin_for(repo)
-    Dir.chdir(tmp_path) do
+    origin = local_git_origin_path_for(repo)
+
+    Dir.chdir(origin.join('..')) do
       Berkshelf::Cli.new.cookbook(repo)
     end
 
-    origin = tmp_path.join(repo)
     Dir.chdir(origin) do
       run! "git init"
       run! "git config receive.denyCurrentBranch ignore"
@@ -109,6 +110,24 @@ Spork.prefork do
     end
 
     "file://#{origin.to_s}/.git"
+  end
+
+  def clean_git_origin_for(repo)
+    run! "rm -rf #{local_git_origin_path_for(repo)}"
+  end
+
+  def local_git_origin_path_for(repo)
+    remote_repos_path = tmp_path.join('remote_repos')
+    FileUtils.mkdir_p(remote_repos_path)
+    remote_repos_path.join(repo)
+  end
+
+  def with_git_origin_for(repo)
+    begin
+      yield(generate_git_origin_for(repo))
+    ensure
+      clean_git_origin_for(repo)
+    end
   end
   
   def run! cmd

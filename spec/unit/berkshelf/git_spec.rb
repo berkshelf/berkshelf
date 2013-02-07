@@ -22,11 +22,11 @@ describe Berkshelf::Git do
       let(:target) { tmp_path.join("nginx") }
 
       it "clones the repository to the target path" do
-        origin_uri = generate_git_origin_for('nginx')
-        subject.clone(origin_uri, target)
-
-        expect(target).to exist
-        expect(target).to be_directory
+        with_git_origin_for("nginx") do |origin_uri|
+          subject.clone(origin_uri, target)
+          expect(target).to exist
+          expect(target).to be_directory
+        end
       end
     end
 
