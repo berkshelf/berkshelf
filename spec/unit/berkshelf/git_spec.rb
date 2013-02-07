@@ -19,7 +19,7 @@ describe Berkshelf::Git do
     end
 
     describe "::clone" do
-      let(:target) { tmp_path.join("nginx") }
+      let(:target) { clone_target_for('nginx') }
 
       it "clones the repository to the target path" do
         with_git_origin_for("nginx") do |origin_uri|
@@ -31,9 +31,13 @@ describe Berkshelf::Git do
     end
 
     describe "::checkout" do
-      let(:repo_path) { tmp_path.join("nginx") }
-      let(:repo) { subject.clone("git://github.com/opscode-cookbooks/nginx.git", repo_path) }
-      let(:tag) { "0.101.2" }
+      let(:repo_path) { clone_target_for('nginx') }
+      let(:repo) { 
+        with_git_origin_for('nginx', tags: ['1.0.1']) do |origin_uri|
+          subject.clone(origin_uri, repo_path)
+        end
+      }
+      let(:tag) { "1.0.1" }
 
       it "checks out the specified path of the given repository" do
         subject.checkout(repo, tag)
@@ -45,7 +49,7 @@ describe Berkshelf::Git do
     end
 
     describe "::rev_parse" do
-      let(:repo_path) { tmp_path.join("nginx") }
+      let(:repo_path) { clone_target_for('nginx') }
       before(:each) do
         subject.clone("git://github.com/opscode-cookbooks/nginx.git", repo_path)
         subject.checkout(repo_path, "0e4887d9eef8cb83972f974a85890983c8204c3b")

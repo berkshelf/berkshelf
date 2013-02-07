@@ -95,7 +95,7 @@ Spork.prefork do
     FileUtils.mkdir_p(tmp_path)
   end
 
-  def generate_git_origin_for(repo)
+  def generate_git_origin_for(repo, options = {})
     origin = local_git_origin_path_for(repo)
 
     Dir.chdir(origin.join('..')) do
@@ -105,8 +105,14 @@ Spork.prefork do
     Dir.chdir(origin) do
       run! "git init"
       run! "git config receive.denyCurrentBranch ignore"
+      run! "echo 'content!' > content_file"
       run! "git add ."
       run! "git commit -am 'Add generated cookbook files.'"
+      options[:tags].each do |tag| 
+        run! "echo '#{tag}' > content_file"
+        run! "git commit -am '#{tag} content'"
+        run! "git tag '#{tag}'"
+      end
     end
 
     "file://#{origin.to_s}/.git"
@@ -122,12 +128,16 @@ Spork.prefork do
     remote_repos_path.join(repo)
   end
 
-  def with_git_origin_for(repo)
+  def with_git_origin_for(repo, options = {})
     begin
-      yield(generate_git_origin_for(repo))
+      yield(generate_git_origin_for(repo, options))
     ensure
       clean_git_origin_for(repo)
     end
+  end
+
+  def clone_target_for(repo)
+    tmp_path.join('clone_targets', repo)
   end
   
   def run! cmd
