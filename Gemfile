@@ -44,6 +44,3 @@ group :test do
   gem 'moneta', '~> 0.6.0'
 end
 
-group :development, :test do
-  gem 'vagrant', '~> 1.0.6'
-end
