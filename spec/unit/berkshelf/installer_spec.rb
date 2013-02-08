@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe Berkshelf::Installer do
   let(:berksfile) { double('berksfile') }
   let(:lockfile) { double('lockfile') }

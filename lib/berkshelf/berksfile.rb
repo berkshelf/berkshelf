@@ -4,6 +4,47 @@ module Berkshelf
     extend Forwardable
 
     class << self
+      # Filter an array of sources based on the given options
+      #
+      # @param [Array<Berkshelf::CookbookSource>] sources
+      #   the list of sources to resolve
+      #
+      # @option options [Symbol, Array] :except
+      #   Group(s) to exclude which will cause any sources marked as a member of the
+      #   group to not be installed
+      # @option options [Symbol, Array] :only
+      #   Group(s) to include which will cause any sources marked as a member of the
+      #   group to be installed and all others to be ignored
+      # @option options [String, Array] :cookbooks
+      #   Cookbook(s) to include in the filtered results
+      #
+      # @raise [Berkshelf::CookbookNotFound]
+      #   if a cookbook name is specified that does not exist
+      #
+      # @return [Array<Berkshelf::CookbookSource>]
+      def filter_sources(sources, options = {})
+        cookbooks = Array(options[:cookbooks]).map(&:to_s)
+        except    = Array(options[:except]).map(&:to_sym)
+        only      = Array(options[:only]).map(&:to_sym)
+
+        case
+        when !cookbooks.empty?
+          missing_cookbooks = (cookbooks - sources.map(&:name))
+
+          unless missing_cookbooks.empty?
+            raise CookbookNotFound, "Could not find cookbooks #{missing_cookbooks.collect { |cookbook| "'#{cookbook}'"}.join(', ')} in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+          end
+
+          sources.select { |source| options[:cookbooks].include?(source.name) }
+        when !except.empty?
+          sources.select { |source| (except & source.groups).empty? }
+        when !only.empty?
+          sources.select { |source| !(only & source.groups).empty? }
+        else
+          sources
+        end
+      end
+
       # @param [String] file
       #   a path on disk to a Berksfile to instantiate from
       #

@@ -117,11 +117,13 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      validate_options!(options)
+      if options[:except] && options[:only]
+        raise ArgumentError, "Cannot specify both :except and :only"
+      end
 
       # The sources begin as those in our berksfile. We will eventually shorten
       # replace some of these sources with their locked versions.
-      @sources = filter(berksfile.sources)
+      @sources = Berksfile.filter_sources(berksfile.sources)
 
       # Get a list of our locked sources. This will be an empty array in the
       # absence of a lockfile.
