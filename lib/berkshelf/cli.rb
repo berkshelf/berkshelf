@@ -135,7 +135,8 @@ module Berkshelf
       banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock"
     def install
-      ::Berkshelf::Installer.install(options)
+      berksfile = Berksfile.from_file(options[:berksfile])
+      Installer.install(berksfile, options)
     end
 
     method_option :berksfile,

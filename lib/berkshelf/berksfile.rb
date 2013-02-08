@@ -1,5 +1,3 @@
-require 'chef/cookbook/chefignore'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
@@ -15,13 +13,13 @@ module Berkshelf
         object = new(file)
         object.load(content)
       rescue Errno::ENOENT => e
-        raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
+        raise BerksfileNotFound, "No #{Berksfile::FILENAME} or #{Lockfile::FILENAME} found at: '#{File.dirname(file)}'"
       end
 
       # @deprecated Use {Berkshelf::Installer.install} with a :path option instead.
       def vendor(cookbooks, path)
-        ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#vendor method has been deprecated. Please use Berkshelf::Installer.install with a :path option instead.'
-        ::Berkshelf::Installer.install(cookbooks: cookbooks, path: path)
+        Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#vendor method has been deprecated. Please use Berkshelf::Installer.install with a :path option instead.'
+        Installer.install(cookbooks: cookbooks, path: path)
       end
     end
 
@@ -50,7 +48,7 @@ module Berkshelf
     end
 
     # @return [String]
-    #   the shasum for the Berksfile
+    #   the SHA1 checksum for this Berksfile
     def sha
       @sha ||= Digest::SHA1.hexdigest File.read(filepath)
     end
@@ -325,14 +323,14 @@ module Berkshelf
 
     # @deprecated Use {Berkshelf::Installer.install} instead.
     def install(options = {})
-      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.'
-      ::Berkshelf::Installer.install(options)
+      Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.'
+      Installer.install(options)
     end
 
     # @deprecated Use {Berkshelf::Updater.update} instead.
     def update(options = {})
-      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#update method has been deprecated. Please use Berkshelf::Updater.update instead.'
-      ::Berkshelf::Updater.update(options)
+      Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#update method has been deprecated. Please use Berkshelf::Updater.update instead.'
+      Updater.update(options)
     end
 
     # Get a list of all the cookbooks which have newer versions found on the community

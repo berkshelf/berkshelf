@@ -1,6 +1,7 @@
 require 'multi_json'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
+require 'chef/cookbook/chefignore'
 require 'chef/cookbook_version'
 require 'chef/knife'
 
@@ -89,6 +90,11 @@ module Berkshelf
       @chef_version ||= Solve::Version.new(::Chef::VERSION)
     end
 
+    # Initialize the Berkshelf
+    def init
+      FileUtils.mkdir_p(berkshelf_path)
+    end
+
     # @return [String]
     def tmp_dir
       File.join(berkshelf_path, "tmp")
@@ -158,6 +164,8 @@ module Berkshelf
         end
       end
   end
+
+  init
 end
 
 require 'berkshelf/formatters'

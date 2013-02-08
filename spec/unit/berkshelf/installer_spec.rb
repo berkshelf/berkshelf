@@ -17,6 +17,38 @@ module Berkshelf
     let(:sources) { [source_1, source_2] }
     let(:locked_sources) { [locked_1, locked_2] }
 
+    describe "ClassMethods" do
+      subject { described_class }
+      
+      describe "::vendor" do
+        let(:cached_cookbooks) { [] }
+        let(:tmpdir) { Dir.mktmpdir(nil, tmp_path) }
+
+        it "returns the expanded filepath of the vendor directory" do
+          subject.vendor(cached_cookbooks, tmpdir).should eql(tmpdir)
+        end
+
+        context "with a chefignore" do
+          before(:each) do
+            File.stub(:exists?).and_return(true)
+            ::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
+          end
+
+          it "finds a chefignore file" do
+            ::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
+            subject.vendor(cached_cookbooks, tmpdir)
+          end
+
+          it "removes files in chefignore" do
+            cached_cookbooks = [ CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
+            FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
+            FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
+            subject.vendor(cached_cookbooks, tmpdir)
+          end
+        end
+      end
+    end
+
     subject { ::Berkshelf::Installer.new(options) }
 
     before do
@@ -152,77 +184,6 @@ module Berkshelf
           end
         end
       end
-    end
-
-    describe '.vendor' do
-      # Make .vendor public for testing
-      let(:vendor) do
-        lambda { |*args| subject.send(:vendor, *args) }
-      end
-
-      before do
-        require 'chef/cookbook/chefignore'
-
-        options.stub(:[]).with(:path).and_return('/tmp')
-        ::File.should_receive(:join).once.with(Dir.pwd, 'chefignore').and_return('/current_dir/chefignore')
-        ::File.should_receive(:join).once.with(Dir.pwd, 'cookbooks', 'chefignore').and_return('/current_dir/cookbooks/chefignore')
-
-        ::FileUtils.should_receive(:mkdir_p).with('/tmp').once
-
-        ::Berkshelf.stub(:mktmpdir).and_return('/fakepath')
-
-        source_1.should_receive(:cookbook_name).once.and_return('build-essential')
-        source_2.should_receive(:cookbook_name).once.and_return('chef-client')
-
-        ::File.should_receive(:join).once.with('/fakepath', 'build-essential', '/').once.and_return('/fakepath/build-essential/')
-        ::File.should_receive(:join).once.with('/fakepath', 'chef-client', '/').once.and_return('/fakepath/chef-client/')
-        ::FileUtils.should_receive(:mkdir_p).with('/fakepath/build-essential/').once
-        ::FileUtils.should_receive(:mkdir_p).with('/fakepath/chef-client/').once
-
-        source_1.should_receive(:path).once.and_return('build-essential')
-        source_2.should_receive(:path).once.and_return('chef-client')
-
-        ::File.should_receive(:join).once.with('build-essential', '*').and_return('build-essential/*')
-        ::File.should_receive(:join).once.with('chef-client', '*').and_return('chef-client/*')
-        ::Dir.stub(:glob).with(any_args()).and_return(['file1', 'file2', 'file3'])
-
-        ::FileUtils.should_receive(:cp_r).once.with(['file1', 'file2', 'file3'], '/fakepath/build-essential/').and_return(nil)
-        ::FileUtils.should_receive(:cp_r).once.with(['file1', 'file2', 'file3'], '/fakepath/chef-client/').and_return(nil)
-
-        ::FileUtils.should_receive(:remove_dir).with('/tmp', force: true)
-
-        ::FileUtils.stub(:mv).with('/fakepath', '/tmp').and_return(nil)
-        ::FileUtils.should_receive(:mv).with('/fakepath', '/tmp')
-      end
-
-      context 'without a chefignore' do
-        before do
-          ::File.stub(:exists?).with('/current_dir/chefignore').and_return(false)
-          ::File.stub(:exists?).with('/current_dir/cookbooks/chefignore').and_return(false)
-          ::Chef::Cookbook::Chefignore.should_not_receive(:new).with(any_args())
-        end
-
-        it 'returns the expanded filepath of the vendor directory' do
-          expect(vendor.call(sources)).to eq('/tmp')
-        end
-      end
-
-      context 'with a chefignore' do
-        let(:chefignore) { double('chefignore') }
-
-        before do
-          ::File.stub(:exists?).with('/current_dir/chefignore').and_return(true)
-          ::File.stub(:exists?).with('/current_dir/cookbooks/chefignore').and_return(false)
-          ::Chef::Cookbook::Chefignore.stub(:new).and_return(chefignore)
-        end
-
-        it 'creates a Chefignore instance' do
-          ::Chef::Cookbook::Chefignore.should_receive(:new).with('/current_dir/chefignore')
-          chefignore.should_receive(:remove_ignores_from).twice.with(['file1', 'file2', 'file3']).and_return(['file1', 'file2', 'file3'])
-          vendor.call(sources)
-        end
-      end
-
     end
   end
 end
