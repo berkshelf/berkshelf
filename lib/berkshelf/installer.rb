@@ -53,8 +53,7 @@ module Berkshelf
         path
       end
     end
-
-    include Berkshelf::Command
+    
     extend Forwardable
 
     attr_reader :berksfile
