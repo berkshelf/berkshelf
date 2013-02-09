@@ -5,11 +5,6 @@ require 'spork'
 require 'vcr'
 
 Spork.prefork do
-  unless ENV['DRB']
-    require 'simplecov'
-    SimpleCov.start
-  end
-
   require 'json_spec'
   require 'pp'
   require 'rspec'
@@ -150,9 +145,4 @@ end
 Spork.each_run do
   require 'berkshelf'
   require 'berkshelf/vagrant'
-
-  if ENV['DRB']
-    require 'simplecov'
-    SimpleCov.start
-  end
 end

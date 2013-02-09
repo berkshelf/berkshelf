@@ -9,21 +9,16 @@ describe Berkshelf::Uploader, :chef_server do
     )
   end
 
-  describe '#upload' do
-    let(:cookbook) { double('nginx', name: 'nginx-0.101.2', cookbook_name: 'nginx', version: '0.101.2', to_json: nil) }
-    let(:checksums) { { 'nginx' => 'dsjkl224rjlkadu08fda' } }
-    let(:conn) { double('conn') }
-    let(:sandbox) { double('sandbox') }
+  describe "#upload" do
+    let(:cookbook) { double('nginx', name: "nginx-0.101.2", cookbook_name: "nginx", version: "0.101.2") }
 
-    context 'when cookbook is invalid' do
-      before do
-        cookbook.stub(:validate!).and_raise(::Berkshelf::CookbookSyntaxError)
-      end
+    context "when cookbook is invalid" do
+      before(:each) { cookbook.should_receive(:validate!).and_raise(Berkshelf::CookbookSyntaxError) }
 
-      it 'raises a CookbookSyntaxError error' do
-        expect {
+      it "raises a CookbookSyntaxError error" do
+        lambda {
           subject.upload(cookbook)
-        }.to raise_error(::Berkshelf::CookbookSyntaxError)
+        }.should raise_error(Berkshelf::CookbookSyntaxError)
       end
     end
   end
