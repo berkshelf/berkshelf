@@ -37,6 +37,9 @@ module Berkshelf
     map 'ver'       => :version
     map 'book'      => :cookbook
 
+    # Make `install` the default task (so berks -> berks install)
+    default_task :install
+
     class_option :config,
       type: :string,
       desc: "Path to Berkshelf configuration to use.",
