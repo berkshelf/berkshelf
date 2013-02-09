@@ -168,6 +168,29 @@ module Berkshelf
       @@active_group = nil
     end
 
+    # Require a specific version of Chef locally - similar to bundler's "ruby" directive.
+    #
+    # @example lock to a specific chef version
+    #   chef '10.20.0'
+    #
+    # @example require higher than Chef 9
+    #   chef '> 0.9.0'
+    #
+    # @example pessimistic lock
+    #   chef '~> 11.2.0'
+    def chef(constraint)
+      # Require chef/version (so this still functions after removing Chef as a dependency)
+      require 'chef/version'
+
+      unless Solve::Constraint.new(constraint).satisfies?(Chef::VERSION)
+        raise Berkshelf::InvalidChefVersion,
+          "You have requested Chef '#{constraint}', but the local Chef version is " +
+          "'#{Chef::VERSION}'. Please update your Gemfile."
+      end
+    rescue LoadError
+      raise LoadError, "Could not load 'chef/version'. Is Chef in your Gemfile?"
+    end
+
     # Use a Cookbook metadata file to determine additional cookbook sources to retrieve. All
     # sources found in the metadata will use the default locations set in the Berksfile (if any are set)
     # or the default locations defined by Berkshelf.
