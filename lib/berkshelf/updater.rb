@@ -1,17 +1,27 @@
 module Berkshelf
-  # This class is responsible for installing cookbooks and handling the
-  # `berks install` command.
+  # This class is responsible for updating installed cookbooks
   #
   # @author Seth Vargo <sethvargo@gmail.com>
+  # @author Jamie Winsor <reset@riotgames.com>
   class Updater
-    include ::Berkshelf::Command
-
     class << self
-      # @see Berkshelf::Updater.initialize
-      def update(options = {})
-        instance = self.new(options)
-        instance.update
+      # @param [Berkshelf::Berksfile] berksfile
+      # @param [Hash] options
+      #   @see {Updater#update}
+      def update(berksfile, options = {})
+        new(berksfile).update(options)
       end
+    end
+
+    extend Forwardable
+
+    attr_reader :berksfile
+
+    def_delegator :berksfile, :lockfile
+
+    # @param [Berkshelf::Berksfile] berksfile
+    def initialize(berksfile)
+      @berksfile = berksfile
     end
 
     # Update the sources listed in the Berksfile, or specific sources passed
@@ -49,17 +59,14 @@ module Berkshelf
     # @return [Array<Berkshelf::CachedCookbook>]
     #
     # @todo Support sources with :path, :git, and :github options
-    def update
-      validate_options!
-      ensure_berksfile!
+    def update(options = {})
+      if options[:except] && options[:only]
+        raise ArgumentError, "Cannot specify both :except and :only"
+      end
 
-      # If no options were specified, then we are updating all cookbooks.
-      # Otherwise, we lock all sources that haven't been specified.
-      @locked_sources = options.empty? ? [] : (lockfile.sources - filter(lockfile.sources))
+      locked_sources = (lockfile.sources - Berksfile.filter_sources(lockfile.sources, options))
 
-      # Update the lockfile with the new sources, change the SHA, and write out
-      # the new lockfile.
-      lockfile.update(@locked_sources)
+      lockfile.update(locked_sources)
       lockfile.sha = nil
       lockfile.save
 
@@ -70,8 +77,7 @@ module Berkshelf
       options.delete(:except)
 
       # Delegate all other responsible to the {Berkshelf::Installer}
-      ::Berkshelf::Installer.install(options)
+      Installer.install(berksfile, options)
     end
-
   end
 end

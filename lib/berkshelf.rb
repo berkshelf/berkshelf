@@ -1,6 +1,7 @@
 require 'multi_json'
 require 'chef/platform'
 require 'chef/cookbook/metadata'
+require 'chef/cookbook/chefignore'
 require 'chef/cookbook_version'
 require 'chef/knife'
 
@@ -28,13 +29,11 @@ JSON.create_id = nil
 
 module Berkshelf
   DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
-  DEFAULT_FILENAME = 'Berksfile'.freeze
 
   autoload :BaseGenerator, 'berkshelf/base_generator'
   autoload :Berksfile, 'berkshelf/berksfile'
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
   autoload :Cli, 'berkshelf/cli'
-  autoload :Command, 'berkshelf/command'
   autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
@@ -88,6 +87,11 @@ module Berkshelf
     # @return [Solve::Version]
     def chef_version
       @chef_version ||= Solve::Version.new(::Chef::VERSION)
+    end
+
+    # Initialize the Berkshelf
+    def init
+      FileUtils.mkdir_p(berkshelf_path)
     end
 
     # @return [String]
@@ -159,6 +163,8 @@ module Berkshelf
         end
       end
   end
+
+  init
 end
 
 require 'berkshelf/formatters'

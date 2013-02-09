@@ -1,11 +1,50 @@
-require 'chef/cookbook/chefignore'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
     extend Forwardable
 
     class << self
+      # Filter an array of sources based on the given options
+      #
+      # @param [Array<Berkshelf::CookbookSource>] sources
+      #   the list of sources to resolve
+      #
+      # @option options [Symbol, Array] :except
+      #   Group(s) to exclude which will cause any sources marked as a member of the
+      #   group to not be installed
+      # @option options [Symbol, Array] :only
+      #   Group(s) to include which will cause any sources marked as a member of the
+      #   group to be installed and all others to be ignored
+      # @option options [String, Array] :cookbooks
+      #   Cookbook(s) to include in the filtered results
+      #
+      # @raise [Berkshelf::CookbookNotFound]
+      #   if a cookbook name is specified that does not exist
+      #
+      # @return [Array<Berkshelf::CookbookSource>]
+      def filter_sources(sources, options = {})
+        cookbooks = Array(options[:cookbooks]).map(&:to_s)
+        except    = Array(options[:except]).map(&:to_sym)
+        only      = Array(options[:only]).map(&:to_sym)
+
+        case
+        when !cookbooks.empty?
+          missing_cookbooks = (cookbooks - sources.map(&:name))
+
+          unless missing_cookbooks.empty?
+            raise CookbookNotFound, "Could not find cookbooks #{missing_cookbooks.collect { |cookbook| "'#{cookbook}'"}.join(', ')} in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+          end
+
+          sources.select { |source| options[:cookbooks].include?(source.name) }
+        when !except.empty?
+          sources.select { |source| (except & source.groups).empty? }
+        when !only.empty?
+          sources.select { |source| !(only & source.groups).empty? }
+        else
+          sources
+        end
+      end
+
       # @param [String] file
       #   a path on disk to a Berksfile to instantiate from
       #
@@ -15,15 +54,17 @@ module Berkshelf
         object = new(file)
         object.load(content)
       rescue Errno::ENOENT => e
-        raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
+        raise BerksfileNotFound, "No #{Berksfile::FILENAME} or #{Lockfile::FILENAME} found at: '#{File.dirname(file)}'"
       end
 
       # @deprecated Use {Berkshelf::Installer.install} with a :path option instead.
       def vendor(cookbooks, path)
-        ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#vendor method has been deprecated. Please use Berkshelf::Installer.install with a :path option instead.'
-        ::Berkshelf::Installer.install(cookbooks: cookbooks, path: path)
+        Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#vendor method has been deprecated. Please use Berkshelf::Installer.install with a :path option instead.'
+        Installer.install(cookbooks: cookbooks, path: path)
       end
     end
+
+    FILENAME = 'Berksfile'.freeze
 
     @@active_group = nil
 
@@ -48,7 +89,7 @@ module Berkshelf
     end
 
     # @return [String]
-    #   the shasum for the Berksfile
+    #   the SHA1 checksum for this Berksfile
     def sha
       @sha ||= Digest::SHA1.hexdigest File.read(filepath)
     end
@@ -323,14 +364,12 @@ module Berkshelf
 
     # @deprecated Use {Berkshelf::Installer.install} instead.
     def install(options = {})
-      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.'
-      ::Berkshelf::Installer.install(options)
+      Installer.install(self, options)
     end
 
     # @deprecated Use {Berkshelf::Updater.update} instead.
     def update(options = {})
-      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#update method has been deprecated. Please use Berkshelf::Updater.update instead.'
-      ::Berkshelf::Updater.update(options)
+      Updater.update(self, options)
     end
 
     # Get a list of all the cookbooks which have newer versions found on the community
@@ -483,18 +522,15 @@ module Berkshelf
     # the user can specify a different path to the Berksfile. So assuming the lockfile
     # is named "Berksfile.lock" is a poor assumption.
     #
-    # @return [::Berkshelf::Lockfile]
+    # @return [Lockfile]
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      lockfile_path = filepath.to_s + '.lock'
+      lockfile_path = File.join(File.dirname(filepath), Lockfile::FILENAME)
 
-      begin
-        ::Berkshelf::Lockfile.from_file(lockfile_path)
-      rescue ::Berkshelf::LockfileNotFound
-        ::Berkshelf::Lockfile.new(lockfile_path, [])
-      end
+      Lockfile.from_file(lockfile_path)
+    rescue LockfileNotFound
+      Lockfile.new(lockfile_path, [])
     end
-
   end
 end

@@ -23,6 +23,8 @@ module Berkshelf
       end
     end
 
+    FILENAME = "#{Berksfile::FILENAME}.lock".freeze
+
     # @return [Array<Berkshelf::CookbookSource>]
     #   the list of sources for this lockfile
     attr_reader :sources
