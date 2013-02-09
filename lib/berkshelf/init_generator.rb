@@ -79,8 +79,9 @@ module Berkshelf
 
       unless options[:skip_vagrant]
         template "Vagrantfile.erb", target.join("Vagrantfile")
-        ::Berkshelf::Installer.install(berksfile: target.join('Berksfile'))
       end
+
+      Installer.install(Berksfile.from_file(target.join('Berksfile')))
     end
 
     private
