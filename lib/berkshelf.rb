@@ -31,6 +31,11 @@ require 'berkshelf/errors'
 require 'thor/monkies'
 
 Chef::Config[:cache_options][:path] = Dir.mktmpdir
+Chef::Config[:http_proxy] = ENV['http_proxy']
+Chef::Config[:https_proxy] = ENV['https_proxy']
+Chef::Config[:http_proxy_user] = ENV['https_proxy_user']
+Chef::Config[:http_proxy_pass] = ENV['https_proxy_pass']
+Chef::Config[:no_proxy] = ENV['no_proxy']
 
 JSON.create_id = nil
 
