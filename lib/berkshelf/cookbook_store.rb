@@ -42,25 +42,16 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)
-      @cookbooks ||= storage_path.each_child.collect do |p|
-        cached_cookbook = CachedCookbook.from_store_path(p)
+      [].tap do |cookbooks|
+        storage_path.each_child do |p|
+          cached_cookbook = CachedCookbook.from_store_path(p)
 
-        next unless cached_cookbook
-        next if filter && cached_cookbook.cookbook_name != filter
+          next unless cached_cookbook
+          next if filter && cached_cookbook.cookbook_name != filter
 
-        cached_cookbook
-      end.compact
-
-      if filter
-        @cookbooks.select{ |cookbook| cookbook.cookbook_name == filter }
-      else
-        @cookbooks
+          cookbooks << cached_cookbook
+        end
       end
-    end
-
-    # Force a reload of the local cookbook_store
-    def reload!
-      @cookbooks = []
     end
 
     # Returns an expanded path to the location on disk where the Cookbook

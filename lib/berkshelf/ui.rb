@@ -25,7 +25,7 @@ module Berkshelf
 
     def warn(message, color = :yellow)
       return if quiet?
-
+      
       say(message, color)
     end
 

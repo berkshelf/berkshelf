@@ -79,7 +79,7 @@ module Berkshelf
 
       unless options[:skip_vagrant]
         template "Vagrantfile.erb", target.join("Vagrantfile")
-        ::Berkshelf::Installer.install(berksfile: target.join('Berksfile'))
+        ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile")).invoke(:install)
       end
     end
 
@@ -110,7 +110,7 @@ module Berkshelf
           raise InvalidConfiguration.new Config.instance.errors
         end
       end
-
+      
 
       # Check for supporting gems for provided options
       #
@@ -140,7 +140,7 @@ module Berkshelf
 
       # Warn if the supporting gem for a default is not installed
       #
-      # @return [Boolean]
+      # @return [Boolean]  
       def assert_default_supported(option, gem_name = option.to_s)
         unless options[option]
           begin

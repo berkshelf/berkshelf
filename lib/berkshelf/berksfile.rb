@@ -18,10 +18,45 @@ module Berkshelf
         raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
       end
 
-      # @deprecated Use {Berkshelf::Installer.install} with a :path option instead.
+      # Copy all cached_cookbooks to the given directory. Each cookbook will be contained in
+      # a directory named after the name of the cookbook.
+      #
+      # @param [Array<CachedCookbook>] cookbooks
+      #   an array of CachedCookbooks to be copied to a vendor directory
+      # @param [String] path
+      #   filepath to vendor cookbooks to
+      #
+      # @return [String]
+      #   expanded filepath to the vendor directory
       def vendor(cookbooks, path)
-        ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#vendor method has been deprecated. Please use Berkshelf::Installer.install with a :path option instead.'
-        ::Berkshelf::Installer.install(cookbooks: cookbooks, path: path)
+        chefignore_file = [
+          File.join(Dir.pwd, 'chefignore'),
+          File.join(Dir.pwd, 'cookbooks', 'chefignore')
+        ].find { |f| File.exists?(f) }
+
+        chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
+        path       = File.expand_path(path)
+        FileUtils.mkdir_p(path)
+
+        scratch = Berkshelf.mktmpdir
+        cookbooks.each do |cb|
+          dest = File.join(scratch, cb.cookbook_name, "/")
+          FileUtils.mkdir_p(dest)
+
+          # Dir.glob does not support backslash as a File separator
+          src = cb.path.to_s.gsub('\\', '/')
+          files = Dir.glob(File.join(src, "*"))
+
+          # Filter out files using chefignore
+          files = chefignore.remove_ignores_from(files) if chefignore
+
+          FileUtils.cp_r(files, dest)
+        end
+
+        FileUtils.remove_dir(path, force: true)
+        FileUtils.mv(scratch, path)
+
+        path
       end
     end
 
@@ -41,16 +76,10 @@ module Berkshelf
     def_delegator :downloader, :locations
 
     def initialize(path)
-      @filepath = path.to_s
+      @filepath = path
       @sources = Hash.new
       @downloader = Downloader.new(Berkshelf.cookbook_store)
       @cached_cookbooks = nil
-    end
-
-    # @return [String]
-    #   the shasum for the Berksfile
-    def sha
-      @sha ||= Digest::SHA1.hexdigest File.read(filepath)
     end
 
     # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recursively retrieved
@@ -321,16 +350,62 @@ module Berkshelf
     end
     alias_method :get_source, :[]
 
-    # @deprecated Use {Berkshelf::Installer.install} instead.
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
+    # @option options [String] :path
+    #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
+    #   is a technique for packaging all cookbooks resolved by a Berksfile.
+    #
+    # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.'
-      ::Berkshelf::Installer.install(options)
+      resolver = Resolver.new(
+        self.downloader,
+        sources: sources(options)
+      )
+
+      @cached_cookbooks = resolver.resolve
+      write_lockfile(resolver.sources) unless lockfile_present?
+
+      if options[:path]
+        self.class.vendor(@cached_cookbooks, options[:path])
+      end
+
+      self.cached_cookbooks
     end
 
-    # @deprecated Use {Berkshelf::Updater.update} instead.
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any sources marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve sources for
     def update(options = {})
-      ::Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#update method has been deprecated. Please use Berkshelf::Updater.update instead.'
-      ::Berkshelf::Updater.update(options)
+      resolver = Resolver.new(
+        self.downloader,
+        sources: sources(options)
+      )
+
+      cookbooks         = resolver.resolve
+      sources           = resolver.sources
+      missing_cookbooks = (options[:cookbooks] - cookbooks.map(&:cookbook_name))
+
+      unless missing_cookbooks.empty?
+        raise Berkshelf::CookbookNotFound, "Could not find cookbooks #{missing_cookbooks.collect{|cookbook| "'#{cookbook}'"}.join(', ')} in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+      end
+
+      update_lockfile(sources)
+
+      if options[:path]
+        self.class.vendor(cookbooks, options[:path])
+      end
+
+      cookbooks
     end
 
     # Get a list of all the cookbooks which have newer versions found on the community
@@ -479,22 +554,23 @@ module Berkshelf
       self
     end
 
-    # Get the lockfile corresponding to this Berksfile. This is necessary because
-    # the user can specify a different path to the Berksfile. So assuming the lockfile
-    # is named "Berksfile.lock" is a poor assumption.
-    #
-    # @return [::Berkshelf::Lockfile]
-    #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
-    #   not exist
-    def lockfile
-      lockfile_path = filepath.to_s + '.lock'
+    private
 
-      begin
-        ::Berkshelf::Lockfile.from_file(lockfile_path)
-      rescue ::Berkshelf::LockfileNotFound
-        ::Berkshelf::Lockfile.new(lockfile_path, [])
+      def descendant_directory?(candidate, parent)
+        hack = FileUtils::Entry_.new('/tmp')
+        hack.send(:descendant_diretory?, candidate, parent)
       end
-    end
 
+      def lockfile_present?
+        File.exist?(Berkshelf::Lockfile::DEFAULT_FILENAME)
+      end
+
+      def write_lockfile(sources)
+        Berkshelf::Lockfile.new(sources).write
+      end
+
+      def update_lockfile(sources)
+        Berkshelf::Lockfile.update!(sources)
+      end
   end
 end

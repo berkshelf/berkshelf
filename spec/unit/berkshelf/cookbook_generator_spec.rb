@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe Berkshelf::CookbookGenerator do
-  let(:name) { 'sparkle_motion' }
+  subject { described_class }
+
+  let(:name) { "sparkle_motion" }
   let(:target) { tmp_path.join(name) }
 
-  context 'with default options' do
-    before(:each) do
-      capture(:stdout) {
-        described_class.new([target, name]).invoke_all
-      }
+  context "with default options" do
+    before do
+      capture(:stdout) { subject.new([target, name]).invoke_all }
     end
 
     specify do
@@ -57,53 +57,15 @@ describe Berkshelf::CookbookGenerator do
     end
   end
 
-  context 'using values from the Berksfile config' do
+  context "given a 'maintainer_email' option" do
     before do
-      ::Berkshelf::Config.instance.cookbook.stub(copyright: 'Seth Vargo')
-      ::Berkshelf::Config.instance.cookbook.stub(email: 'sethvargo@gmail.com')
-      ::Berkshelf::Config.instance.cookbook.stub(license: 'apachev2')
-
-      # This is a temporary hack until class_option is evaluated as a lambda
-      load File.expand_path '../../../../lib/berkshelf/cookbook_generator.rb', __FILE__
-
+      @email = "jamie@vialstudios.com"
       capture(:stdout) {
-        described_class.new([target, name]).invoke_all
+        described_class.new([target, name], maintainer_email: @email).invoke_all
       }
     end
 
-    it 'sets the maintainer' do
-      expect(target).to have_structure {
-        file 'metadata.rb' do
-          contains 'maintainer       "Seth Vargo"'
-        end
-      }
-    end
-
-    it 'sets the maintainer email' do
-      expect(target).to have_structure {
-        file 'metadata.rb' do
-          contains 'maintainer_email "sethvargo@gmail.com"'
-        end
-      }
-    end
-
-    it 'sets the maintainer' do
-      expect(target).to have_structure {
-        file 'metadata.rb' do
-          contains 'license          "Apache 2.0"'
-        end
-      }
-    end
-  end
-
-  context 'given a value for the maintainer_email option' do
-    before(:each) do
-      @email = 'reset@riotgames.com'
-      generator = described_class.new([target, name], maintainer_email: @email)
-      capture(:stdout) { generator.invoke_all }
-    end
-
-    it 'generates a metadata.rb with a default value for maintainer_email' do
+    it "generates a metadata.rb with the 'maintainer_email' value set" do
       email = @email
 
       expect(target).to have_structure {

@@ -1,16 +1,11 @@
 rvm:
   - 1.9.2
   - 1.9.3
-  - 2.0.0
-gemfile:
-  - gemfiles/Gemfile.chef-master
-  - gemfiles/Gemfile.chef-11
-  - gemfiles/Gemfile.chef-10
+  - ruby-head
 matrix:
   allow_failures:
     - rvm: 1.9.2
-    - rvm: 2.0.0
-    - gemfile: gemfiles/Gemfile.chef-master
+    - rvm: ruby-head
 notifications:
   irc:
     channels:
