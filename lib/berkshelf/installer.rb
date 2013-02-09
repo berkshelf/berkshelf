@@ -53,7 +53,7 @@ module Berkshelf
         path
       end
     end
-    
+
     extend Forwardable
 
     attr_reader :berksfile
@@ -122,16 +122,16 @@ module Berkshelf
 
       # The sources begin as those in our berksfile. We will eventually shorten
       # replace some of these sources with their locked versions.
-      @sources = Berksfile.filter_sources(berksfile.sources)
+      sources = Berksfile.filter_sources(berksfile.sources, options)
 
       # Get a list of our locked sources. This will be an empty array in the
       # absence of a lockfile.
-      @locked_sources = lockfile.sources
+      locked_sources = lockfile.sources
 
       # If the SHAs match, then the lockfile is in up-to-date with the Berksfile.
       # We can rely solely on the lockfile.
       if berksfile.sha == lockfile.sha
-        @sources = @locked_sources
+        sources = locked_sources
       else
         # Since the SHAs were different, we need to determine which sources
         # have diverged from the lockfile.
@@ -143,8 +143,8 @@ module Berkshelf
         # If a locked source exists, but doesn't satisfy the constraint, raise a
         # {Berkshelf::OutdatedCookbookSource} and instruct the user to run
         # <tt>berks update</tt>.
-        @sources.collect! do |source|
-          locked_source = @locked_sources.find{ |s| s.name == source.name }
+        sources.collect! do |source|
+          locked_source = locked_sources.find{ |s| s.name == source.name }
 
           if locked_source
             if source.version_constraint.satisfies?(locked_source.locked_version)
@@ -160,7 +160,7 @@ module Berkshelf
 
       # Create a solution from the sources. These sources are both specifically
       # locked versions and version constraints.
-      resolve, sources = resolve(@sources)
+      resolve, sources = resolve(sources)
 
       if options[:path]
         self.class.vendor(resolve, options[:path])
