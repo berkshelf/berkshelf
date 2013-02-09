@@ -82,7 +82,7 @@ class Default < Thor
       end
 
       def run_quality
-        run "cane"
+        run "cane --gte coverage/.last_run.json,90"
       end
     end
   end
