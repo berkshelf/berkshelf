@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
 
+  s.add_dependency 'yajl-ruby'
   s.add_dependency 'activesupport'
   # Must lock 10.16 because of Vagrant 1-0-stable JSON requirement
   s.add_dependency 'chef', '= 10.16.2'
