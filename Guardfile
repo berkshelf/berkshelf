@@ -23,3 +23,7 @@ guard 'cucumber', cli: "--drb --format pretty --tags ~@no_run --tags ~@wip", all
 
   watch(%r{^lib/berkshelf/cli.rb})                      { 'features' }
 end
+
+guard 'cane' do
+  watch(/.*\.rb/)
+end
