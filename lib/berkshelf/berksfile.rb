@@ -364,14 +364,12 @@ module Berkshelf
 
     # @deprecated Use {Berkshelf::Installer.install} instead.
     def install(options = {})
-      Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#install method has been deprecated. Please use Berkshelf::Installer.install instead.'
-      Installer.install(options)
+      Installer.install(self, options)
     end
 
     # @deprecated Use {Berkshelf::Updater.update} instead.
     def update(options = {})
-      Berkshelf.ui.deprecated 'The Berkshelf::Berksfile#update method has been deprecated. Please use Berkshelf::Updater.update instead.'
-      Updater.update(options)
+      Updater.update(self, options)
     end
 
     # Get a list of all the cookbooks which have newer versions found on the community

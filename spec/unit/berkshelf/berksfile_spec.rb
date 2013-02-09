@@ -273,33 +273,21 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#install' do
-    context 'is deprecated' do
-      before { ::Berkshelf::Installer.stub(:install) }
-      after { subject.install }
+  describe "#install" do
+    it "delegates to Berkshelf::Installer.install" do
+      options = double('options')
+      Berkshelf::Installer.should_receive(:install).with(subject, options)
 
-      it 'prints a deprecation warning' do
-        ::Berkshelf.ui.should_receive(:deprecated)
-      end
-
-      it 'calls Berkshelf::Installer.install' do
-        ::Berkshelf::Installer.should_receive(:install).once
-      end
+      subject.install(options)
     end
   end
 
-  describe '#update' do
-    context 'is deprecated' do
-      before { ::Berkshelf::Updater.stub(:update) }
-      after { subject.update }
+  describe "#update" do
+    it "delegates to Berkshelf::Updater.update" do
+      options = double('options')
+      Berkshelf::Updater.should_receive(:update).with(subject, options)
 
-      it 'prints a deprecation warning' do
-        ::Berkshelf.ui.should_receive(:deprecated)
-      end
-
-      it 'calls Berkshelf::Updater.update' do
-        ::Berkshelf::Updater.should_receive(:update).once
-      end
+      subject.update(options)
     end
   end
 
