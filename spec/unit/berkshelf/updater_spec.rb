@@ -1,18 +1,15 @@
 require 'spec_helper'
 
-module Berkshelf
-  describe Updater do
-    let(:berksfile) { double('berksfile') }
-    let(:lockfile) { double('lockfile') }
-    let(:sources) { double('sources') }
-    let(:options) { double('options') }
+describe Berkshelf::Updater do
+  let(:berksfile) { double('berksfile', lockfile: lockfile) }
+  let(:lockfile) { double('lockfile', sources: sources) }
+  let(:sources) { Array.new }
+  let(:options) do
+    Hash.new
+  end
 
-    subject { ::Berkshelf::Updater.new(options) }
-
-    #
-    # Class Methods
-    #
-    describe '.update' do
+  describe "ClassMethods" do
+    describe "::update" do
       let(:instance) { double('instance') }
 
       before do
@@ -25,99 +22,71 @@ module Berkshelf
         ::Berkshelf::Updater.update(options)
       end
     end
+  end
 
-    #
-    # Instance Methods
-    #
-    describe '#initialize' do
-      before do
-        ::Berkshelf::Updater.any_instance.stub(:validate_options!).and_return(true)
-        ::Berkshelf::Updater.any_instance.stub(:ensure_berksfile!).and_return(true)
+  subject { described_class.new(berksfile) }
 
-        ::Berkshelf::Updater.any_instance.stub(:options).and_return(options)
-        berksfile.stub(:sources).and_return(sources)
+  describe "#update" do
+    before do
+      Berkshelf::Installer.should_receive(:install).with(berksfile, options)
+    end
 
-        ::Berkshelf::Updater.any_instance.stub(:lockfile).and_return(lockfile)
-        lockfile.stub(:sources).and_return(sources)
+    after do
+      subject.update(options)
+    end
 
-        ::Berkshelf::Updater.any_instance.stub(:filter).and_return([])
+    context 'with no options' do
+      let(:options) { Hash.new }
 
-        options.should_receive(:delete).with(:cookbooks)
-        options.should_receive(:delete).with(:only)
-        options.should_receive(:delete).with(:except)
-
-        ::Berkshelf::Installer.should_receive(:install).with(options)
+      context 'with no locked sources' do
+        it 'unsets the sources and unlocks the sha' do
+          lockfile.should_receive(:update).with(sources)
+          lockfile.should_receive(:sha=).with(nil)
+          lockfile.should_receive(:save).with(no_args())
+        end
       end
 
-      after do
-        subject.update
-      end
+      context 'with locked sources' do
+        let(:sources) { [ double('cookbook_source'), double('cookbook_source') ] }
 
-      context 'with no options' do
         before do
-          options.stub(:empty?).and_return(true)
+          lockfile.stub(:sources).and_return(sources)
         end
 
-        context 'with no locked sources' do
-          it 'unsets the sources and unlocks the sha' do
-            lockfile.should_not_receive(:sources)
-            lockfile.should_receive(:update).with([])
-            lockfile.should_receive(:sha=).with(nil)
-            lockfile.should_receive(:save).with(no_args())
-          end
-        end
-
-        context 'with locked sources' do
-          let(:sources) { [double('cookbook_source'), double('cookbook_source')] }
-
-          before do
-            lockfile.stub(:sources).and_return(sources)
-          end
-
-          it 'unsets the sources and unlocks the sha' do
-            lockfile.should_not_receive(:sources)
-            lockfile.should_receive(:update).with([])
-            lockfile.should_receive(:sha=).with(nil)
-            lockfile.should_receive(:save).with(no_args())
-          end
+        it 'unsets the sources and unlocks the sha' do
+          lockfile.should_receive(:update).with([])
+          lockfile.should_receive(:sha=).with(nil)
+          lockfile.should_receive(:save).with(no_args())
         end
       end
+    end
 
-      context 'with options' do
+    context 'with options' do
+      context 'with no locked sources' do
         before do
-          options.stub(:empty?).and_return(false)
+          sources.stub(:-).and_return([])
         end
 
-        context 'with no locked sources' do
-          before do
-            sources.stub(:-).and_return([])
-          end
-
-          it 'unsets the sources and unlocks the sha' do
-            lockfile.should_receive(:sources).with(no_args())
-            lockfile.should_receive(:update).with([])
-            lockfile.should_receive(:sha=).with(nil)
-            lockfile.should_receive(:save).with(no_args())
-          end
-        end
-
-        context 'with locked sources' do
-          let(:sources) { [double('cookbook_source'), double('cookbook_source')] }
-
-          before do
-            lockfile.stub(:sources).and_return(sources)
-            sources.stub(:-).and_return(sources)
-          end
-
-          it 'sets the sources and unlocks the sha' do
-            lockfile.should_receive(:sources).with(no_args())
-            lockfile.should_receive(:update).with(sources)
-            lockfile.should_receive(:sha=).with(nil)
-            lockfile.should_receive(:save).with(no_args())
-          end
+        it 'unsets the sources and unlocks the sha' do
+          lockfile.should_receive(:update).with(sources)
+          lockfile.should_receive(:sha=).with(nil)
+          lockfile.should_receive(:save).with(no_args())
         end
       end
 
+      context 'with locked sources' do
+        let(:sources) { [ double('cookbook_source'), double('cookbook_source') ] }
+
+        before do
+          lockfile.stub(:sources).and_return(sources)
+        end
+
+        it 'sets the sources and unlocks the sha' do
+          lockfile.should_receive(:update).with(sources)
+          lockfile.should_receive(:sha=).with(nil)
+          lockfile.should_receive(:save)
+        end
+      end
     end
   end
 end

@@ -34,7 +34,6 @@ module Berkshelf
   autoload :Berksfile, 'berkshelf/berksfile'
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
   autoload :Cli, 'berkshelf/cli'
-  autoload :Command, 'berkshelf/command'
   autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
