@@ -21,6 +21,20 @@ Usage
 -----
 See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
+Bash Completion
+---------------
+There is a [berkshelf bash completion script](https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh). If you're using homebrew, you can install it like this:
+
+    brew install bash-completion # if you haven't already
+
+Download the latest script
+
+    cd `brew --prefix`/etc/bash_completion && wget https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh
+
+And make sure you have this in your bash/zsh profile:
+
+    [ -f `brew --prefix`/etc/bash_completion ] && source `brew --prefix`/etc/bash_completion
+
 Authors
 -------
 - Jamie Winsor (<reset@riotgames.com>)
