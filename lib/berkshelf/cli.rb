@@ -37,6 +37,8 @@ module Berkshelf
     map 'ver'       => :version
     map 'book'      => :cookbook
 
+    default_task :install
+
     class_option :config,
       type: :string,
       desc: "Path to Berkshelf configuration to use.",
