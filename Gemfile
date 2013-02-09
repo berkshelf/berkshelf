@@ -42,7 +42,3 @@ group :test do
   gem 'vcr'
   gem 'webmock'
 end
-
-group :development, :test do
-  gem 'vagrant', '~> 1.0.6'
-end
