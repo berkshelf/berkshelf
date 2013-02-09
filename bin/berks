@@ -6,8 +6,10 @@ begin
   Berkshelf::Cli.start
 rescue Berkshelf::BerkshelfError => e
   Berkshelf.ui.error e
+  Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
   exit e.status_code
 rescue Ridley::Errors::RidleyError => e
   Berkshelf.ui.error "#{e.class} #{e}"
+  Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
   exit 47
 end
