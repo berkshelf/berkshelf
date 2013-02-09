@@ -5,6 +5,7 @@ gemspec
 group :development do
   gem 'coolline'
   gem 'guard', '>= 1.5.0'
+  gem 'guard-cane'
   gem 'guard-cucumber'
   gem 'guard-rspec'
   gem 'guard-spork'
