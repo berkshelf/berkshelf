@@ -13,7 +13,7 @@ Feature: update
       cookbook 'artifact', :locked_version => '0.1.0'
       """
     When I successfully run `berks update`
-    Then the file "Berksfile.lock" should contain JSON:
+    Then the file "Berksfile.lock" should contain exactly:
       """
       cookbook 'artifact', :locked_version => '0.10.0'
       """
@@ -30,7 +30,7 @@ Feature: update
       cookbook 'build-essential', :locked_version => '1.1.0'
       """
     When I successfully run `berks update build-essential`
-    Then the file "Berksfile.lock" should contain JSON:
+    Then the file "Berksfile.lock" should contain exactly:
       """
       cookbook 'artifact', :locked_version => '0.10.0'
       cookbook 'build-essential', :locked_version => '1.1.2'
