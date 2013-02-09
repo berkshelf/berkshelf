@@ -119,6 +119,28 @@ EOF
       end
     end
 
+    describe '#chef' do
+      before do
+        stub_const 'Chef::VERSION', '10.20.0'
+      end
+
+      context 'with an unsatisfied constraint' do
+        it 'raises an exception' do
+          expect {
+            subject.chef('>= 11.0.0')
+          }.to raise_error Berkshelf::InvalidChefVersion
+        end
+      end
+
+      context 'with an satisfied constraint' do
+        it 'does not raise an exception' do
+          expect {
+            subject.chef('10.20.0')
+          }.to_not raise_error
+        end
+      end
+    end
+
     describe "#metadata" do
       let(:cb_path) { fixtures_path.join('cookbooks/example_cookbook') }
       subject { Berksfile.new(cb_path.join("Berksfile")) }
