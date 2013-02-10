@@ -1,0 +1,16 @@
+{
+  "sha":"6b76225554cc1f7c0aea0f8b3f10c6743aeba67e",
+  "sources":[
+    {
+      "name":"build-essential",
+      "options":{
+        "locked_version":"1.1.2"
+      }
+    },
+    {
+      "name":"chef-client",
+      "options":{
+        "locked_version":"2.1.4"
+      }
+    }
+  ]}
