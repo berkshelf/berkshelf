@@ -259,11 +259,12 @@ EOF
 
   describe "#install" do
     let(:resolver) { double('resolver') }
+    let(:lockfile) { double('lockfile') }
     before(:each) { Berkshelf::Resolver.stub(:new) { resolver } }
 
     context "when a lockfile is not present" do
       before(:each) do
-        subject.should_receive(:lockfile_present?).and_return(false)
+        subject.should_receive(:sha).twice.and_return('abc123')
         resolver.should_receive(:sources).and_return([])
       end
 
@@ -295,25 +296,23 @@ EOF
 
       it "writes a lockfile with the resolvers sources" do
         resolver.should_receive(:resolve)
-        subject.should_receive(:write_lockfile).with([])
-
-        subject.install
-      end
-    end
-
-    context "when a lockfile is present" do
-      before(:each) { subject.should_receive(:lockfile_present?).and_return(true) }
-
-      it "does not write a new lock file" do
-        resolver.should_receive(:resolve)
-        subject.should_not_receive(:write_lockfile)
+        subject.should_receive(:lockfile).exactly(5).times.and_return(lockfile)
+        lockfile.should_receive(:sources)
+        lockfile.should_receive(:sha)
+        lockfile.should_receive(:sha=)
+        lockfile.should_receive(:update)
+        lockfile.should_receive(:save)
 
         subject.install
       end
     end
 
     context "when a value for :path is given" do
-      before(:each) { resolver.should_receive(:resolve) }
+      before(:each) do
+        resolver.should_receive(:resolve)
+        resolver.should_receive(:sources).and_return([])
+        subject.should_receive(:sha).exactly(2).times.and_return('abc123')
+      end
 
       it "sends the message 'vendor' to Berksfile with the value for :path" do
         path = double('path')
@@ -324,23 +323,33 @@ EOF
     end
 
     context "when a value for :except is given" do
-      before(:each) { resolver.should_receive(:resolve) }
+      before(:each) do
+        resolver.should_receive(:resolve)
+        resolver.should_receive(:sources).and_return([])
+        subject.should_receive(:sha).exactly(2).times.and_return('abc123')
+      end
 
       it "filters the sources and gives the results to the Resolver initializer" do
         filtered = double('sources')
         subject.should_receive(:sources).with(except: [:skip_me]).and_return(filtered)
-        Berkshelf::Resolver.should_receive(:new).with(anything, sources: filtered)
+        filtered.should_receive(:collect!).once
+        Resolver.should_receive(:new).with(anything, sources: filtered)
 
         subject.install(except: [:skip_me])
       end
     end
 
     context "when a value for :only is given" do
-      before(:each) { resolver.should_receive(:resolve) }
+      before(:each) do
+        resolver.should_receive(:resolve)
+        resolver.should_receive(:sources).and_return([])
+        subject.should_receive(:sha).exactly(2).times.and_return('abc123')
+      end
 
       it "filters the sources and gives the results to the Resolver initializer" do
         filtered = double('sources')
         subject.should_receive(:sources).with(only: [:skip_me]).and_return(filtered)
+        filtered.should_receive(:collect!).once
 
         subject.install(only: [:skip_me])
       end
