@@ -6,5 +6,5 @@ Then /^the file "(.*?)" should contain JSON:$/ do |file, data|
   target = MultiJson.decode(data)
   actual = MultiJson.decode(File.read(File.join(current_dir, file)))
 
-  target.should eql(actual)
+  actual.should eql(target)
 end
