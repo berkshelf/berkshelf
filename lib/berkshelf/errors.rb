@@ -163,4 +163,6 @@ module Berkshelf
       "Unknown site shortname: #{@shortname.inspect}. Supported shortnames are: #{SiteLocation::SHORTNAMES.keys.map(&:inspect).join(',')}"
     end
   end
+
+  class LockfileNotFound < BerkshelfError; status_code(128); end
 end
