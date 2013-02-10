@@ -64,6 +64,16 @@ module Berkshelf
 
         true
       end
+
+      # Load a source from the given hash.
+      #
+      # @param [<Berkshelf::CookbookSource>] hash
+      #   the hash to convert into a cookbook source
+      def from_hash(hash)
+        name = hash[:name]
+        options = hash[:options]
+        new(name, options)
+      end
     end
 
     extend Forwardable
@@ -100,6 +110,8 @@ module Berkshelf
     #   same as tag
     # @option options [String] :locked_version
     def initialize(berksfile, name, options = {})
+      @options = options
+
       self.class.validate_options(options)
 
       @berksfile          = berksfile
@@ -179,11 +191,11 @@ module Berkshelf
     end
 
     def to_hash
-      {}.tap do |h|
-        h[:name]           = self.name
-        h[:locked_version] = self.locked_version
-        h[:location]       = self.location.to_hash if self.location
-      end
+      {
+        name: name.to_s,
+        options: @options.to_hash,
+        locked_version: locked_version.to_s
+      }
     end
 
     def to_json
