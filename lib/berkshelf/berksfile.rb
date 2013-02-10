@@ -83,6 +83,12 @@ module Berkshelf
       @cached_cookbooks = nil
     end
 
+    # @return [String]
+    #   the shasum for the Berksfile
+    def sha
+      @sha ||= Digest::SHA1.hexdigest File.read(filepath.to_s)
+    end
+
     # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recursively retrieved
     # and resolved.
     #
@@ -365,15 +371,72 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      resolver = Resolver.new(self, sources: sources(options))
+      # The sources begin as those in our berksfile. We will eventually shorten
+      # replace some of these sources with their locked versions.
+      local_sources = self.sources(options)
+
+      # Get a list of our locked sources. This will be an empty array in the
+      # absence of a lockfile.
+      locked_sources = lockfile.sources
+
+      # If the SHAs match, then the lockfile is in up-to-date with the Berksfile.
+      # We can rely solely on the lockfile.
+      if self.sha == lockfile.sha
+        local_sources = locked_sources
+      else
+        # Since the SHAs were different, we need to determine which sources
+        # have diverged from the lockfile.
+        #
+        # For all of our unlocked sources, check if there's a locked version that
+        # still satisfies the version constraint. If it does, "lock" that source
+        # because we should just use the locked version.
+        #
+        # If a locked source exists, but doesn't satisfy the constraint, raise a
+        # {Berkshelf::OutdatedCookbookSource} and instruct the user to run
+        # <tt>berks update</tt>.
+        local_sources.collect! do |source|
+          locked_source = locked_sources.find{ |s| s.name == source.name }
+
+          if locked_source
+            if source.version_constraint.satisfies?(locked_source.locked_version)
+              locked_source
+            else
+              raise Berkshelf::OutdatedCookbookSource, "The current lockfile has #{locked_source.name} locked at #{locked_source.locked_version}.\nTry running `berks update #{locked_source.name}`"
+            end
+          else
+            source
+          end
+        end
+      end
+
+      # Create a solution from the sources. These sources are both specifically
+      # locked versions and version constraints.
+      resolver = Resolver.new(
+        self.downloader,
+        sources: local_sources
+      )
 
       @cached_cookbooks = resolver.resolve
-      write_lockfile(resolver.sources) unless lockfile_present?
+      local_sources = resolver.sources
 
+      # Vendor the cookbooks if the user requested the cookbooks be vendorized
       if options[:path]
         self.class.vendor(@cached_cookbooks, options[:path])
       end
 
+      # Now we need to remove files from our locked sources, since we have no
+      # way of detecting that a source was removed. We also only want to lock
+      # versions that are in the Berksfile (i.e. don't lock dependency
+      # versions)
+      cookbooks = local_sources.map(&:name)
+      locked_sources = local_sources.select { |source| cookbooks.include?(source.name) }
+
+      # Update the lockfile with the new locked sources
+      lockfile.update(locked_sources)
+      lockfile.sha = self.sha
+      lockfile.save
+
+      # Return the collection of cached cookbooks
       self.cached_cookbooks
     end
 
@@ -564,6 +627,23 @@ module Berkshelf
         raise BerksfileReadError.new(e), "An error occurred while reading the Berksfile: #{e.to_s}"
       end
       self
+    end
+
+    # Get the lockfile corresponding to this Berksfile. This is necessary because
+    # the user can specify a different path to the Berksfile. So assuming the lockfile
+    # is named "Berksfile.lock" is a poor assumption.
+    #
+    # @return [::Berkshelf::Lockfile]
+    #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
+    #   not exist
+    def lockfile
+      lockfile_path = "#{filepath.to_s}.lock"
+
+      if File.exists?(lockfile_path)
+        Berkshelf::Lockfile.from_file(lockfile_path)
+      else
+        Berkshelf::Lockfile.new(filepath: lockfile_path)
+      end
     end
 
     private
