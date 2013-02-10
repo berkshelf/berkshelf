@@ -8,6 +8,9 @@ module Berkshelf
     class << self
       # Build a lockfile instance from the local .lock file.
       #
+      # @param [String] filepath
+      #   the path to the lockfile to load
+      #
       # @raise [Errno::ENOENT]
       #   when the Lockfile cannot be found
       def from_file(filepath)
@@ -17,21 +20,22 @@ module Berkshelf
           raise Berkshelf::LockfileNotFound, "Could not find lockfile at '#{filepath}'!"
         end
 
-        json = MultiJson.load(contents)
+        json = MultiJson.load(contents, symbolize_keys: true)
 
-        sources = json['sources'].collect { |s| Berkshelf::CookbookSource.from_json(s) }
-        sha = json['sha']
+        sources = json[:sources].collect { |source| Berkshelf::CookbookSource.from_hash(source) }
+        sha = json[:sha]
 
-        self.new(sources: sources, sha: sha)
+        self.new(sources: sources, sha: sha, filepath: filepath)
       end
     end
-
-    # The default filename for the lockfile (Berksfile.lock)
-    DEFAULT_FILENAME = "#{Berkshelf::DEFAULT_FILENAME}.lock".freeze
 
     # @return [Array<Berkshelf::CookbookSource>]
     #   the list of sources in this lockfile
     attr_reader :sources
+
+    # @return [Pathname]
+    #   the path to this lockfile
+    attr_reader :filepath
 
     # @return [String]
     #   the last known SHA of the Berksfile
@@ -45,14 +49,17 @@ module Berkshelf
     #   the list of cookbook sources
     # @option sha [String]
     #   the last-saved sha of the Berksfile
+    # @option filepath [String]
+    #   the path to this lockfile
     def initialize(options = {})
-      @sources = options[:sources]
+      @sources = options[:sources] || []
       @sha = options[:sha]
+      @filepath = options[:filepath]
     end
 
     # Save the contents of the lockfile to disk.
     def save
-      File.open(DEFAULT_FILENAME, 'wb') do |file|
+      File.open(filepath, 'w') do |file|
         file.write self.to_json + "\n"
       end
     end
