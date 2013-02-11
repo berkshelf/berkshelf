@@ -272,16 +272,32 @@ describe Berkshelf::CookbookSource do
 
   describe "#to_s" do
     it "contains the name, constraint, and groups" do
-      source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0")
+      source = CookbookSource.new("artifact", constraint: "= 0.10.0")
 
-      source.to_s.should eql("artifact (= 0.10.0) groups: [:default]")
+      source.to_s.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0)>")
     end
 
     context "given a CookbookSource with an explicit location" do
       it "contains the name, constraint, groups, and location" do
-        source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
+        source = CookbookSource.new("artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
 
-        source.to_s.should eql("artifact (= 0.10.0) groups: [:default] location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
+        source.to_s.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0)>")
+      end
+    end
+  end
+
+  describe "#inspect" do
+    it "contains the name, constraint, and groups" do
+      source = CookbookSource.new("artifact", constraint: "= 0.10.0")
+
+      source.inspect.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0), groups: [:default], location: default>")
+    end
+
+    context "given a CookbookSource with an explicit location" do
+      it "contains the name, constraint, groups, and location" do
+        source = CookbookSource.new("artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
+
+        source.inspect.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0), groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
       end
     end
   end
