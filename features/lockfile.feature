@@ -147,3 +147,29 @@ Feature: Berksfile.lock
       ]
     }
     """
+
+  @slow_process
+  Scenario: Updating a Berksfile.lock with a git location
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'hostsfile', git: 'git@github.com:sethvargo-cookbooks/hostsfile.git'
+    """
+  When I successfully run `berks install`
+  Then a file named "Berksfile.lock" should exist in the current directory
+  And the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "3ea47efeaabe392e16b1514f86853f218a6c587b",
+      "sources":[
+        {
+          "name":"hostsfile",
+          "options":{
+            "git":"git@github.com:sethvargo-cookbooks/hostsfile.git",
+            "ref":"c65010da2e0c10d890f5cdf5449b9c8da864d2d0",
+            "locked_version":"0.2.5"
+          }
+        }
+      ]
+    }
+    """
