@@ -233,7 +233,8 @@ module Berkshelf
       end
 
       [].tap do |a|
-        a.push "        Name: #{name}"
+        a.push "        Name: #{cookbook_name}" unless name.blank?
+        a.push "     Version: #{version}" unless version.blank?
         a.push " Description: #{metadata.description}" unless metadata.description.blank?
         a.push "      Author: #{metadata.maintainer}" unless metadata.maintainer.blank?
         a.push "       Email: #{metadata.maintainer_email}" unless metadata.maintainer_email.blank?

@@ -344,7 +344,7 @@ module Berkshelf
       aliases: "-b",
       banner: "PATH"
     desc "info [COOKBOOK]", "Display name, author information, copyright, and dependency information about the given cookbook"
-    def info(name)
+    def info(name = nil)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
 
