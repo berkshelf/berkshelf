@@ -20,7 +20,7 @@ Feature: Berksfile.lock
           {
             "name":"ntp",
             "options":{
-              "constraint":"1.1.8",
+              "constraint":"= 1.1.8",
               "locked_version":"1.1.8"
             }
           }
@@ -123,7 +123,7 @@ Feature: Berksfile.lock
         {
           "name":"ntp",
           "options":{
-            "constraint":"1.3.0",
+            "constraint":"= 1.3.0",
             "locked_version":"1.3.0"
           }
         }
@@ -140,7 +140,7 @@ Feature: Berksfile.lock
         {
           "name":"ntp",
           "options":{
-            "constraint":"1.3.0",
+            "constraint":"= 1.3.0",
             "locked_version":"1.3.0"
           }
         }
@@ -153,20 +153,46 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'hostsfile', git: 'git@github.com:sethvargo-cookbooks/hostsfile.git'
+    cookbook 'hostsfile', git: 'git@github.com:sethvargo-cookbooks/hostsfile.git', ref: 'c65010d'
     """
   When I successfully run `berks install`
   Then a file named "Berksfile.lock" should exist in the current directory
   And the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha": "3ea47efeaabe392e16b1514f86853f218a6c587b",
+      "sha": "4c882d50615c8e5aa7078d0cae35a0073e87c884",
       "sources":[
         {
           "name":"hostsfile",
           "options":{
             "git":"git@github.com:sethvargo-cookbooks/hostsfile.git",
-            "ref":"c65010da2e0c10d890f5cdf5449b9c8da864d2d0",
+            "ref":"c65010d",
+            "locked_version":"0.2.5"
+          }
+        }
+      ]
+    }
+    """
+
+  @slow_process
+  Scenario: Updating a Berksfile.lock with a git location
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'hostsfile', github: 'sethvargo-cookbooks/hostsfile', ref: 'c65010d'
+    """
+  When I successfully run `berks install`
+  Then a file named "Berksfile.lock" should exist in the current directory
+  And the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "16523c4b800eef9964d354b7f2d217b2de1d2d75",
+      "sources":[
+        {
+          "name":"hostsfile",
+          "options":{
+            "git":"git://github.com/sethvargo-cookbooks/hostsfile.git",
+            "ref":"c65010d",
             "locked_version":"0.2.5"
           }
         }

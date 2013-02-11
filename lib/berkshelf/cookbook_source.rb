@@ -199,7 +199,7 @@ module Berkshelf
     def to_hash
       options = @options.dup
       options[:locked_version] = locked_version.to_s
-      options[:constraint] = @version_constraint.to_s
+      options[:constraint] = @version_constraint.to_s unless @version_constraint.to_s == '>= 0.0.0'
       options[:ref] = @location.branch if @location.respond_to?(:ref)
 
       {
