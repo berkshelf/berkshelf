@@ -20,10 +20,15 @@ module Berkshelf
           raise Berkshelf::LockfileNotFound, "Could not find lockfile at '#{filepath}'!"
         end
 
-        json = MultiJson.load(contents, symbolize_keys: true)
+        begin
+          hash = MultiJson.load(contents, symbolize_keys: true)
+        rescue MultiJson::DecodeError
+          Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
+          hash = LockfileLegacy.parse(contents)
+        end
 
-        sources = json[:sources].collect { |source| Berkshelf::CookbookSource.from_hash(source) }
-        sha = json[:sha]
+        sources = hash[:sources].collect { |source| Berkshelf::CookbookSource.from_hash(source) }
+        sha = hash[:sha]
 
         self.new(sources: sources, sha: sha, filepath: filepath)
       end
@@ -114,6 +119,40 @@ module Berkshelf
     #   the JSON representation of this lockfile
     def to_json
       MultiJson.dump(self.to_hash, pretty: true)
+    end
+  end
+
+  # Legacy support for old lockfiles
+  #
+  # @author Seth Vargo <sethvargo@gmail.com>
+  class LockfileLegacy
+    class << self
+      def parse(content)
+        sources = content.split("\n").collect do |line|
+          self.new(line).to_hash unless line.empty?
+        end.compact
+
+        {
+          sha: nil,
+          sources: sources
+        }
+      end
+    end
+
+    def initialize(content)
+      instance_eval(content).to_json
+    end
+
+    def cookbook(name, options = {})
+      @name = name
+      @options = options
+    end
+
+    def to_hash
+      {
+        name: @name.to_s,
+        options: @options.to_hash
+      }
     end
   end
 end
