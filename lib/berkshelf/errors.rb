@@ -165,4 +165,18 @@ module Berkshelf
   end
 
   class LockfileNotFound < BerkshelfError; status_code(128); end
+  class OutdatedCookbookSource < BerkshelfError
+    status_code(129)
+
+    def initialize(source)
+      @source = source
+    end
+
+    def to_s
+      [
+        "The current lockfile has #{@source.name} locked at #{@source.locked_version}.",
+        "Try running `berks update #{@source.name}`"
+      ]
+    end
+  end
 end
