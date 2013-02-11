@@ -185,9 +185,11 @@ module Berkshelf
     end
 
     def to_s
-      msg = "#{self.name} (#{self.version_constraint}) groups: #{self.groups}"
-      msg << " location: #{self.location}" if self.location
-      msg
+      "#<Berkshelf::CookbookSource: #{name} (#{version_constraint})>"
+    end
+
+    def inspect
+      "#<Berkshelf::CookbookSource: #{name} (#{version_constraint}), groups: #{groups}, location: #{location || 'default'}>"
     end
 
     def to_hash
