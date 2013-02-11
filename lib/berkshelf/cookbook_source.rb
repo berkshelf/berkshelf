@@ -191,10 +191,13 @@ module Berkshelf
     end
 
     def to_hash
+      options = @options.dup
+      options[:locked_version] = locked_version.to_s
+      options[:ref] = @location.branch if @location.respond_to?(:ref)
+
       {
         name: name.to_s,
-        options: @options.to_hash,
-        locked_version: locked_version.to_s
+        options: options.reject { |k,v| v.nil? || v.empty? }
       }
     end
 
