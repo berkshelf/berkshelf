@@ -82,8 +82,12 @@ module Berkshelf
     attr_reader :berksfile
     # @return [String]
     attr_reader :name
+    # @return [Array<String,Symbol>]
+    attr_reader :groups
+    # @return [Berkshelf::Location]
+    attr_reader :location
     # @return [Solve::Constraint]
-    attr_reader :version_constraint
+    attr_accessor :version_constraint
     # @return [Berkshelf::CachedCookbook]
     attr_accessor :cached_cookbook
 
@@ -195,6 +199,7 @@ module Berkshelf
     def to_hash
       options = @options.dup
       options[:locked_version] = locked_version.to_s
+      options[:constraint] = @version_constraint.to_s
       options[:ref] = @location.branch if @location.respond_to?(:ref)
 
       {
