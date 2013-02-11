@@ -399,6 +399,9 @@ module Berkshelf
 
           if locked_source
             if source.version_constraint.satisfies?(locked_source.locked_version)
+              # Update to the new constraint (it might have changd, but still be satisfied)
+              locked_source.version_constraint = source.version_constraint
+
               locked_source
             else
               raise Berkshelf::OutdatedCookbookSource.new(locked_source)
@@ -449,25 +452,37 @@ module Berkshelf
     # @option cookbooks [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve sources for
     def update(options = {})
-      resolver = Resolver.new(self, sources: sources(options))
+      # Get a list of local sources
+      local_sources = self.sources(options)
 
-      cookbooks         = resolver.resolve
-      sources           = resolver.sources
-      missing_cookbooks = (options[:cookbooks] - cookbooks.map(&:cookbook_name))
-
-      unless missing_cookbooks.empty?
-        msg = "Could not find cookbooks #{missing_cookbooks.collect{|cookbook| "'#{cookbook}'"}.join(', ')}"
-        msg << " in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
-        raise Berkshelf::CookbookNotFound, msg
+      # If no options were specified, then we are updating all cookbooks.
+      # Otherwise, we lock all sources that haven't been specified.
+      if options.empty?
+        locked_sources = []
+      else
+        locked_sources = lockfile.sources.reject { |source| local_sources.map(&:name).include?(source.name) }
       end
 
-      update_lockfile(sources)
-
-      if options[:path]
-        self.class.vendor(cookbooks, options[:path])
+      # Determine if any cookbooks were specified that aren't in our shelf
+      missing = (Array(options[:cookbooks]) - local_sources.map(&:name))
+      unless missing.empty?
+        raise Berkshelf::CookbookNotFound,
+          "Could not find cookbooks #{missing.collect{ |c| "'#{c}'" }.join(', ')} " +
+          "in any of the sources. #{missing.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
       end
 
-      cookbooks
+      # Update the lockfile with the new sources, change the SHA, and write out
+      # the new lockfile.
+      lockfile.update(locked_sources)
+      lockfile.sha = nil
+      lockfile.save
+
+      # Delegate all other responsible to #install
+      #
+      # NOTE: We intentionally do NOT pass options to the installer. Relaying these same
+      # options to the installer would cause the lockfile to become out of sync when
+      # specifying a group or single cookbook update.
+      self.install
     end
 
     # Get a list of all the cookbooks which have newer versions found on the community
@@ -637,12 +652,14 @@ module Berkshelf
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      lockfile_path = "#{filepath.to_s}.lock"
+      @lockfile ||= begin
+        lockfile_path = "#{filepath.to_s}.lock"
 
-      if File.exists?(lockfile_path)
-        Berkshelf::Lockfile.from_file(lockfile_path)
-      else
-        Berkshelf::Lockfile.new(filepath: lockfile_path)
+        if File.exists?(lockfile_path)
+          Berkshelf::Lockfile.from_file(lockfile_path)
+        else
+          Berkshelf::Lockfile.new(filepath: lockfile_path)
+        end
       end
     end
 
@@ -651,36 +668,6 @@ module Berkshelf
       def descendant_directory?(candidate, parent)
         hack = FileUtils::Entry_.new('/tmp')
         hack.send(:descendant_diretory?, candidate, parent)
-      end
-
-      def lockfile_present?
-        File.exist?(Berkshelf::Lockfile::DEFAULT_FILENAME)
-      end
-
-      # Builds a Resolver instance
-      #
-      # @option options [Symbol, Array] :except
-      #   Group(s) to exclude which will cause any sources marked as a member of the
-      #   group to not be installed
-      # @option options [Symbol, Array] :only
-      #   Group(s) to include which will cause any sources marked as a member of the
-      #   group to be installed and all others to be ignored
-      # @option options [String, Array] :cookbooks
-      #   Names of the cookbooks to retrieve sources for
-      # @option options [Boolean] :skip_dependencies
-      #   Skip resolving of dependencies
-      #
-      # @return <Berkshelf::Resolver>
-      def resolver(options = {})
-        Resolver.new(self, sources: sources(options), skip_dependencies: options[:skip_dependencies])
-      end
-
-      def write_lockfile(sources)
-        Berkshelf::Lockfile.new(sources).write
-      end
-
-      def update_lockfile(sources)
-        Berkshelf::Lockfile.update!(sources)
       end
   end
 end
