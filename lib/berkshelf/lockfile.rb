@@ -97,6 +97,18 @@ module Berkshelf
       @sources.push(source) unless @sources.include?(source)
     end
 
+    # @return [String]
+    #   the string representation of the lockfile
+    def to_s
+      "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}>"
+    end
+
+    # @return [String]
+    #   the detailed string representation of the lockfile
+    def inspect
+      "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}, sources: #{sources.inspect}>"
+    end
+
     # Write the current lockfile to a hash
     #
     # @return [Hash]
