@@ -99,11 +99,10 @@ Spork.prefork do
     origin = local_git_origin_path_for(repo)
 
     Dir.chdir(origin.join('..')) do
-      capture(:stdout) { Berkshelf::Cli.new.cookbook(repo) }
+      capture(:stdout) { Berkshelf::Cli.new.invoke :cookbook, [repo, '--skip_vagrant'] }
     end
 
     Dir.chdir(origin) do
-      run! "git init"
       run! "git config receive.denyCurrentBranch ignore"
       run! "echo 'content!' > content_file"
       run! "git add ."
@@ -111,11 +110,45 @@ Spork.prefork do
       options[:tags].each do |tag| 
         run! "echo '#{tag}' > content_file"
         run! "git commit -am '#{tag} content'"
-        run! "git tag '#{tag}'"
+        run! "git tag '#{tag}' 2> /dev/null"
       end if options.has_key? :tags
     end
 
     "file://#{origin.to_s}/.git"
+  end
+
+  def generate_fake_git_remote(uri, options = {})
+    remote_bucket = Pathname.new(File.dirname(__FILE__)).join('tmp', 'remote_repos')
+    FileUtils.mkdir_p(remote_bucket)
+
+    repo_name = uri.to_s.split('/').last.split('.')
+    name = if repo_name.last == 'git'
+             repo_name.first
+           else
+             repo_name.last
+           end
+    name = 'rspec_cookbook' if name.nil? or name.empty?
+
+    path = ''
+    capture(:stdout) do
+      Dir.chdir(remote_bucket) do
+        Berkshelf::Cli.new.invoke(:cookbook, [name], skip_vagrant: true, force: true)
+      end
+
+      Dir.chdir(path = remote_bucket.join(name)) do
+      run! "git config receive.denyCurrentBranch ignore"
+      run! "echo '# a change!' >> content_file"
+      run! "git add ."
+      run "git commit -am 'A commit.'"
+        options[:tags].each do |tag| 
+          run! "echo '#{tag}' > content_file"
+          run! "git add content_file"
+          run "git commit -am '#{tag} content'"
+          run "git tag '#{tag}' 2> /dev/null"
+        end if options.has_key? :tags
+      end
+    end
+    path
   end
 
   def git_sha_for_tag(repo, tag)
@@ -140,8 +173,12 @@ Spork.prefork do
 
   def run! cmd
     out = `#{cmd}`
-    $?.success?.should be_true, "`#{cmd}` failed with status #{$?.exitstatus} and output:\n#{out}"
+    raise "#{cmd} did not succeed:\n\tstatus: #{$?.exitstatus}\n\toutput: #{out}" unless $?.success?
     out
+  end
+
+  def run cmd
+    `#{cmd}`
   end
 
   Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
@@ -150,9 +187,21 @@ end
 Spork.each_run do
   require 'berkshelf'
   require 'berkshelf/vagrant'
+  module Berkshelf
+    class GitLocation
+      alias :real_clone :clone
+      def clone
+        fake_remote = generate_fake_git_remote(uri, tags: @branch ? [@branch] : [])
+        tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
+        @uri = "file://#{fake_remote}"
+        real_clone
+      end
+    end
+  end
 
   if ENV['DRB']
     require 'simplecov'
     SimpleCov.start
   end
 end
+

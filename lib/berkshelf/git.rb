@@ -58,7 +58,7 @@ module Berkshelf
         end
       end
 
-      # @param [Strin] repo_path
+      # @param [String] repo_path
       def rev_parse(repo_path)
         Dir.chdir repo_path do
           git("rev-parse", "HEAD")
