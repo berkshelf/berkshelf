@@ -95,26 +95,8 @@ Spork.prefork do
     FileUtils.mkdir_p(tmp_path)
   end
 
-  def generate_git_origin_for(repo, options = {})
-    origin = local_git_origin_path_for(repo)
-
-    Dir.chdir(origin.join('..')) do
-      capture(:stdout) { Berkshelf::Cli.new.invoke :cookbook, [repo, '--skip_vagrant'] }
-    end
-
-    Dir.chdir(origin) do
-      run! "git config receive.denyCurrentBranch ignore"
-      run! "echo 'content!' > content_file"
-      run! "git add ."
-      run! "git commit -am 'Add generated cookbook files.'"
-      options[:tags].each do |tag| 
-        run! "echo '#{tag}' > content_file"
-        run! "git commit -am '#{tag} content'"
-        run! "git tag '#{tag}' 2> /dev/null"
-      end if options.has_key? :tags
-    end
-
-    "file://#{origin.to_s}/.git"
+  def git_origin_for(repo, options = {})
+    "file://#{generate_fake_git_remote("git@github.com/RiotGames/#{repo}.git", options)}/.git"
   end
 
   def generate_fake_git_remote(uri, options = {})
