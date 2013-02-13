@@ -177,10 +177,5 @@ Spork.each_run do
     end
   end
 
-  if ENV['DRB']
-    require 'simplecov'
-    SimpleCov.start
-  end
-
 end
 
