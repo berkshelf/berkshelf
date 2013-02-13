@@ -4,13 +4,21 @@ require 'chef/cookbook/metadata'
 require 'chef/cookbook_version'
 require 'chef/knife'
 
+# Fix for Facter < 1.7.0 changing LANG to C
+# https://github.com/puppetlabs/facter/commit/f77584f4
+begin
+  old_lang = ENV['LANG']
+  require 'ridley'
+ensure
+  ENV['LANG'] = old_lang
+end
+
 require 'chozo/core_ext'
 require 'active_support/core_ext'
 require 'archive/tar/minitar'
 require 'forwardable'
 require 'hashie'
 require 'pathname'
-require 'ridley'
 require 'solve'
 require 'thor'
 require 'tmpdir'
@@ -34,7 +42,6 @@ module Berkshelf
   autoload :Berksfile, 'berkshelf/berksfile'
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
   autoload :Cli, 'berkshelf/cli'
-  autoload :Command, 'berkshelf/command'
   autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
@@ -42,10 +49,9 @@ module Berkshelf
   autoload :Downloader, 'berkshelf/downloader'
   autoload :Git, 'berkshelf/git'
   autoload :InitGenerator, 'berkshelf/init_generator'
-  autoload :Installer, 'berkshelf/installer'
   autoload :Lockfile, 'berkshelf/lockfile'
   autoload :Resolver, 'berkshelf/resolver'
-  autoload :Updater, 'berkshelf/updater'
+  autoload :UI, 'berkshelf/ui'
   autoload :Uploader, 'berkshelf/uploader'
 
   require 'berkshelf/location'

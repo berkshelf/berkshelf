@@ -5,6 +5,7 @@ gemspec
 group :development do
   gem 'coolline'
   gem 'guard', '>= 1.5.0'
+  gem 'guard-cane'
   gem 'guard-cucumber'
   gem 'guard-rspec'
   gem 'guard-spork'
@@ -41,9 +42,4 @@ group :test do
   gem 'thor'
   gem 'vcr'
   gem 'webmock'
-  gem 'moneta', '~> 0.6.0'
-end
-
-group :development, :test do
-  gem 'vagrant', '~> 1.0.6'
 end

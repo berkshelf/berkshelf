@@ -1,0 +1,4 @@
+--doc-exclude lib/berkshelf/errors.rb
+--max-violations 100
+--style-measure 120
+--parallel
