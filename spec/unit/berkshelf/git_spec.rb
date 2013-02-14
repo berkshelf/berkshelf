@@ -22,7 +22,7 @@ describe Berkshelf::Git do
       let(:target) { clone_target_for('nginx') }
 
       it "clones the repository to the target path" do
-        origin_uri = generate_git_origin_for("nginx")
+        origin_uri = git_origin_for("nginx")
         subject.clone(origin_uri, target)
 
         expect(target).to exist
@@ -33,7 +33,7 @@ describe Berkshelf::Git do
     describe "::checkout" do
       let(:repo_path) { clone_target_for('nginx') }
       let(:repo) { 
-        origin_uri = generate_git_origin_for('nginx', tags: ['1.0.1'])
+        origin_uri = git_origin_for('nginx', tags: ['1.0.1'])
         subject.clone(origin_uri, repo_path)
       }
       let(:tag) { "1.0.1" }
@@ -50,7 +50,7 @@ describe Berkshelf::Git do
     describe "::rev_parse" do
       let(:repo_path) { clone_target_for('nginx') }
       before(:each) do |example|
-        origin_uri = generate_git_origin_for('nginx', tags: ['1.1.1'])
+        origin_uri = git_origin_for('nginx', tags: ['1.1.1'])
         subject.clone(origin_uri, repo_path)
         subject.checkout(repo_path, git_sha_for_tag('nginx', '1.1.1'))
       end
