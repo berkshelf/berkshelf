@@ -36,16 +36,6 @@ module Berkshelf
 
         self.new(sources: sources, sha: sha, filepath: filepath)
       end
-
-      def foo(content)
-        filename = '/Users/sethvargo/Desktop/output.txt'
-        if File.exists?(filename)
-          File.open(filename, 'a') { |f| f.write("\n\n") }
-          File.open(filename, 'a') { |f| f.write(content.to_s) }
-        else
-          File.open(filename, 'w') { |f| f.write(content.to_s) }
-        end
-      end
     end
 
     # @return [Array<Berkshelf::CookbookSource>]
