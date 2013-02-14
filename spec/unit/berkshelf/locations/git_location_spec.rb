@@ -22,7 +22,7 @@ module Berkshelf
       end
     end
 
-    subject { GitLocation.new("artifact", complacent_constraint, git: "git://github.com/RiotGames/artifact-cookbook.git") }
+    subject { GitLocation.new("nginx", complacent_constraint, git: "git://github.com/opscode-cookbooks/nginx.git") }
 
     describe "#download" do
       it "returns an instance of Berkshelf::CachedCookbook" do
@@ -59,6 +59,7 @@ module Berkshelf
         subject { GitLocation.new("doesnot_exist", complacent_constraint, git: "git://github.com/RiotGames/thisrepo_does_not_exist.git") }
 
         it "raises a GitError" do
+          Berkshelf::Git.stub(:git).and_raise(GitError.new(''))
           lambda {
             subject.download(tmp_path)
           }.should raise_error(GitError)
@@ -66,9 +67,15 @@ module Berkshelf
       end
 
       context "given a git repo that does not contain a cookbook" do
-        subject { GitLocation.new("doesnot_exist", complacent_constraint, git: "git://github.com/RiotGames/berkshelf.git") }
+        let(:fake_remote) { local_git_origin_path_for('not_a_cookbook') }
+        subject { GitLocation.new("doesnot_exist", complacent_constraint, git: "file://#{fake_remote}.git") }
 
         it "raises a CookbookNotFound error" do
+          subject.stub(:clone).and_return {
+            FileUtils.mkdir_p(fake_remote)
+            Dir.chdir(fake_remote) { |dir| `git init; echo hi > README; git add README; git commit README -m "README"`; dir }
+          }
+
           lambda {
             subject.download(tmp_path)
           }.should raise_error(CookbookNotFound)
@@ -91,22 +98,22 @@ module Berkshelf
       end
 
       context "given a value for ref that is a tag or branch and not a commit hash" do
+        let(:ref) { "0.9.8" }
+
         subject do
-          GitLocation.new("artifact",
+          GitLocation.new("nginx",
             complacent_constraint,
-            git: "git://github.com/RiotGames/artifact-cookbook.git",
-            ref: "0.9.8"
+            git: "git://github.com/opscode-cookbooks/nginx.git",
+            ref: ref
           )
         end
-
+        let(:cached_cookbook) { subject.download(tmp_path) }
         let(:commit_hash) { "d7be334b094f497f5cce4169a8b3012bf7b27bc3" }
+        let(:expected_path) { tmp_path.join("#{cached_cookbook.cookbook_name}-#{commit_hash}") }
 
         before(:each) { Git.should_receive(:rev_parse).and_return(commit_hash) }
 
         it "returns a cached cookbook with a path that contains the commit hash it is pointing to" do
-          cached_cookbook = subject.download(tmp_path)
-          expected_path = tmp_path.join("#{cached_cookbook.cookbook_name}-#{commit_hash}")
-
           cached_cookbook.path.should eql(expected_path)
         end
       end
