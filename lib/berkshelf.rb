@@ -35,7 +35,6 @@ Chef::Config[:cache_options][:path] = Dir.mktmpdir
 JSON.create_id = nil
 
 module Berkshelf
-  DEFAULT_STORE_PATH = File.expand_path("~/.berkshelf").freeze
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   autoload :BaseGenerator, 'berkshelf/base_generator'
@@ -79,7 +78,7 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
+      @berkshelf_path ||= ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
     end
 
     # Check if we're running a version of Chef that is in the 11.x line
