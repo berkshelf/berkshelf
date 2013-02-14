@@ -100,10 +100,10 @@ Spork.prefork do
 
     repo_name = uri.to_s.split('/').last.split('.')
     name = if repo_name.last == 'git'
-             repo_name.first
-           else
-             repo_name.last
-           end
+      repo_name.first
+    else
+      repo_name.last
+    end
     name = 'rspec_cookbook' if name.nil? or name.empty?
 
     path = ''
@@ -148,13 +148,13 @@ Spork.prefork do
     clone_target.join(repo)
   end
 
-  def run! cmd
+  def run!(cmd)
     out = `#{cmd}`
     raise "#{cmd} did not succeed:\n\tstatus: #{$?.exitstatus}\n\toutput: #{out}" unless $?.success?
     out
   end
 
-  def run cmd
+  def run(cmd)
     `#{cmd}`
   end
 
@@ -176,6 +176,5 @@ Spork.each_run do
       end
     end
   end
-
 end
 
