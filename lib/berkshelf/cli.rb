@@ -343,7 +343,7 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "info [COOKBOOK]", "Display name, author information, copyright, and dependency information about the given cookbook"
+    desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook in this Berksfile"
     def info(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
