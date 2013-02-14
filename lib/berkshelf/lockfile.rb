@@ -23,8 +23,12 @@ module Berkshelf
         begin
           hash = MultiJson.load(contents, symbolize_keys: true)
         rescue MultiJson::DecodeError
-          Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
-          hash = LockfileLegacy.parse(contents)
+          if contents =~ /^cookbook ["'](.+)["']/
+            Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
+            hash = LockfileLegacy.parse(contents)
+          else
+            raise
+          end
         end
 
         sources = hash[:sources].collect { |source| Berkshelf::CookbookSource.from_hash(source) }
