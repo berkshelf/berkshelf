@@ -31,16 +31,13 @@ module Berkshelf
           end
         end
 
-        sources = hash[:sources].collect { |source| Berkshelf::CookbookSource.from_hash(source) }
-        sha = hash[:sha]
-
-        self.new(sources: sources, sha: sha, filepath: filepath)
+        lockfile = self.new(sha: hash[:sha], filepath: filepath)
+        hash[:sources].each do |name, options|
+          lockfile.add Berkshelf::CookbookSource.new(name, options)
+        end
+        lockfile
       end
     end
-
-    # @return [Array<Berkshelf::CookbookSource>]
-    #   the list of sources in this lockfile
-    attr_reader :sources
 
     # @return [Pathname]
     #   the path to this lockfile
@@ -61,9 +58,29 @@ module Berkshelf
     # @option filepath [String]
     #   the path to this lockfile
     def initialize(options = {})
-      @sources = options[:sources] || []
-      @sha = options[:sha]
+      @sha      = options[:sha]
       @filepath = options[:filepath]
+
+      @sources = {}
+    end
+
+    # The list of sources constrained in this lockfile.
+    #
+    # @return [Array<Berkshelf::CookbookSource>]
+    #   the list of sources in this lockfile
+    def sources
+      @sources.values
+    end
+
+    # Check if this lockfile has the given source
+    #
+    # @param [#to_s] source
+    #   the source to check presence of
+    #
+    # @return [Boolean]
+    #   true if the source exists, false otherwise
+    def has_source?(source)
+      @sources.has_key?(source.to_s)
     end
 
     # Save the contents of the lockfile to disk.
@@ -80,26 +97,18 @@ module Berkshelf
     # @param [Array<Berkshelf::CookbookSource>] sources
     #   the list of sources to update
     def update(sources)
-      sources = [sources].flatten unless sources.is_a?(Array)
-
-      unless sources.all? { |cookbook| cookbook.is_a?(Berkshelf::CookbookSource) }
-        raise Berkshelf::ArgumentError, "`source` must be a Berkshelf::CookbookSource!"
-      end
-
-      @sources = sources
+      @sources = {}
+      sources.each { |source| append(source) }
     end
 
     # Add the given source to the `sources` list, if it doesn't already exist.
     #
     # @param [Berkshelf::CookbookSource] source
     #   the source to append to the sources list
-    def append(source)
-      unless source.is_a?(Berkshelf::CookbookSource)
-        raise Berkshelf::ArgumentError, "`source` must be a Berkshelf::CookbookSource!"
-      end
-
-      @sources.push(source) unless @sources.include?(source)
+    def add(source)
+      @sources[source.name] = source
     end
+    alias_method :append, :add
 
     # @return [String]
     #   the string representation of the lockfile
@@ -119,11 +128,10 @@ module Berkshelf
     #   the hash representation of this lockfile
     #   * :sha [String] the last-known sha for the berksfile
     #   * :sources [Array<Berkshelf::CookbookSource>] the list of sources
-    #   * :options [Hash] an arbitrary list of options for this lockfile
     def to_hash
       {
         sha: sha,
-        sources: sources
+        sources: @sources
       }
     end
 
@@ -138,37 +146,61 @@ module Berkshelf
     end
   end
 
-  # Legacy support for old lockfiles
-  #
-  # @author Seth Vargo <sethvargo@gmail.com>
-  class LockfileLegacy
-    class << self
-      def parse(content)
-        sources = content.split("\n").collect do |line|
-          self.new(line).to_hash unless line.empty?
-        end.compact
+  private
 
-        {
-          sha: nil,
-          sources: sources
-        }
+    # Legacy support for old lockfiles
+    #
+    # @author Seth Vargo <sethvargo@gmail.com>
+    # @todo Remove this class in the next major release.
+    class LockfileLegacy
+      class << self
+        # Read the old lockfile content and instance eval in context.
+        #
+        # @param [String] content
+        #   the string content read from a legacy lockfile
+        def parse(content)
+          sources = {}.tap do |hash|
+            content.split("\n").each do |line|
+              next if line.empty?
+
+              source = self.new(line)
+              hash[source.name] = source.options
+            end
+          end
+
+          {
+            sha: nil,
+            sources: sources
+          }
+        end
+      end
+
+      # @return [Hash]
+      #   the hash of options
+      attr_reader :options
+
+      # @return [String]
+      #   the name of this cookbook
+      attr_reader :name
+
+      # Create a new legacy lockfile for processing
+      #
+      # @param [String] content
+      #   the content to parse out and convert to a hash
+      def initialize(content)
+        instance_eval(content).to_hash
+      end
+
+      # Method defined in legacy lockfiles (since we are using
+      # instance_eval).
+      #
+      # @param [String] name
+      #   the name of this cookbook
+      # @option options [String] :locked_version
+      #   the locked version of this cookbook
+      def cookbook(name, options = {})
+        @name = name
+        @options = options
       end
     end
-
-    def initialize(content)
-      instance_eval(content).to_json
-    end
-
-    def cookbook(name, options = {})
-      @name = name
-      @options = options
-    end
-
-    def to_hash
-      {
-        name: @name.to_s,
-        options: @options.to_hash
-      }
-    end
-  end
 end
