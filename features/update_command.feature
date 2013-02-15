@@ -19,15 +19,12 @@ Feature: update
       """
       {
         "sha":"4882acee1fd114467076d9d5d3c8afe19dc2c316",
-        "sources":[
-          {
-            "name":"apt",
-            "options":{
-              "locked_version":"1.8.4",
-              "constraint":"~> 1.8.0"
-            }
+        "sources":{
+          "apt":{
+            "locked_version":"1.8.4",
+            "constraint":"~> 1.8.0"
           }
-        ]
+        }
       }
       """
 
@@ -42,15 +39,12 @@ Feature: update
       """
       {
         "sha":"23150cfe61b7b86882013c8664883058560b899d",
-        "sources":[
-          {
-            "name":"ntp",
-            "options":{
-              "locked_version":"0.10.0",
-              "constraint":"= 0.10.0"
-            }
+        "sources":{
+          "ntp":{
+            "locked_version":"0.10.0",
+            "constraint":"= 0.10.0"
           }
-        ]
+        }
       }
       """
     When I successfully run `berks update`
@@ -58,22 +52,16 @@ Feature: update
       """
       {
         "sha":"b1d1fb7e34f6a3a3a71282d311e4d23e4c929aaf",
-        "sources":[
-          {
-            "name":"artifact",
-            "options":{
-              "locked_version":"0.10.0",
-              "constraint":"= 0.10.0"
-            }
+        "sources":{
+          "artifact":{
+            "locked_version":"0.10.0",
+            "constraint":"= 0.10.0"
           },
-          {
-            "name":"build-essential",
-            "options":{
-              "locked_version":"1.1.2",
-              "constraint":"~> 1.1.0"
-            }
+          "build-essential":{
+            "locked_version":"1.1.2",
+            "constraint":"~> 1.1.0"
           }
-        ]
+        }
       }
       """
 
@@ -88,22 +76,16 @@ Feature: update
       """
       {
         "sha":"23150cfe61b7b86882013c8664883058560b899d",
-        "sources":[
-          {
-            "name":"artifact",
-            "options":{
-              "locked_version":"0.10.0",
-              "constraint":"= 0.10.0"
-            }
+        "sources":{
+          "artifact":{
+            "locked_version":"0.10.0",
+            "constraint":"= 0.10.0"
           },
-          {
-            "name":"build-essential",
-            "options":{
-              "locked_version":"1.3.0",
-              "constraint":"~> 1.3.0"
-            }
+          "build-essential":{
+            "locked_version":"1.3.0",
+            "constraint":"~> 1.3.0"
           }
-        ]
+        }
       }
       """
     And I successfully run `berks install`
@@ -112,22 +94,16 @@ Feature: update
       """
       {
         "sha":"2bbadebb88837d537ca5bc29e5765b97c7d5f5a3",
-        "sources":[
-          {
-            "name":"artifact",
-            "options":{
-              "locked_version":"0.10.0",
-              "constraint":"= 0.10.0"
-            }
+        "sources":{
+          "artifact":{
+            "locked_version":"0.10.0",
+            "constraint":"= 0.10.0"
           },
-          {
-            "name":"build-essential",
-            "options":{
-              "locked_version":"1.3.4",
-              "constraint":"~> 1.3.0"
-            }
+          "build-essential":{
+            "locked_version":"1.3.4",
+            "constraint":"~> 1.3.0"
           }
-        ]
+        }
       }
       """
 
@@ -141,15 +117,12 @@ Feature: update
       """
       {
         "sha":"23150cfe61b7b86882013c8664883058560b899d",
-        "sources":[
-          {
-            "name":"artifact",
-            "options":{
-              "locked_version":"0.10.0",
-              "constraint":"= 0.10.0"
-            }
+        "sources":{
+          "artifact":{
+            "locked_version":"0.10.0",
+            "constraint":"= 0.10.0"
           }
-        ]
+        }
       }
       """
     When I run `berks update non-existent-cookbook`
