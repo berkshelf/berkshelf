@@ -21,7 +21,7 @@ Feature: update
         "sha":"4882acee1fd114467076d9d5d3c8afe19dc2c316",
         "sources":{
           "apt":{
-            "locked_version":"1.8.4",
+            "locked_version":"1.8.2",
             "constraint":"~> 1.8.0"
           }
         }
