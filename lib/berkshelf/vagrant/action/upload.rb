@@ -11,7 +11,8 @@ module Berkshelf
         end
 
         def call(env)
-          if Berkshelf::Vagrant.chef_client?(env[:vm].config)
+          if Berkshelf::Vagrant.chef_client?(env[:vm].config) && env['provision.enabled'] &&
+            (!env['provision.types'] || env['provision.types'].include?('chef_client'))
             upload(env)
           end
 
