@@ -320,7 +320,7 @@ module Berkshelf
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
       Berkshelf.ui.say "Cookbooks installed by your Berksfile:"
-      Berkshelf.ui.mute { berksfile.resolve }.sort.each do |cookbook|
+      Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
         Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
       end
     end
@@ -334,7 +334,11 @@ module Berkshelf
     desc "show COOKBOOK", "Display the source path on the local file system for the given cookbook"
     def show(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
+      source = berksfile.find(name)
+
+      cookbook = Berkshelf.ui.mute {
+        berksfile.resolve(source)[:solution].first
+      }
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.ui.say(cookbook.path)
