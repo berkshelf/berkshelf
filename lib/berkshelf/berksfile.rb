@@ -359,6 +359,35 @@ module Berkshelf
     end
     alias_method :get_source, :[]
 
+
+
+    # Install the sources listed in the Berksfile, respecting the locked
+    # versions in the Berksfile.lock.
+    #
+    # 1. Check that a lockfile exists. If a lockfile does not exist, all
+    #    sources are considered to be "unlocked". If a lockfile is specified, a
+    #    definition is created via the following algorithm:
+    #
+    #    - Compare the SHA of the current Berksfile with the last-known SHA.
+    #    - If the SHAs match, the Berksfile has not been updated, so we rely
+    #      solely on the locked sources.
+    #    - If the SHAs don't match, then the Berksfile has diverged from the
+    #      lockfile, which means some sources are outdated. For each unlocked
+    #      source, see if there exists a locked version that still satisfies
+    #      the version constraint in the Berksfile. If there exists such a
+    #      source, remove it from the list of unlocked sources. If not, then
+    #      either a version constraint has changed, or a new source has been
+    #      added to the Berksfile. In the event that a locked_source exists,
+    #      but it no longer satisfies the constraint, this method will raise
+    #      a {Berkshelf::OutdatedCookbookSource}, and inform the user to run
+    #      <tt>berks update COOKBOOK</tt> to remedy the issue.
+    #    - Remove any locked sources that no longer exist in the Berksfile
+    #      (i.e. a cookbook source was removed from the Berksfile).
+    #
+    # 2. Resolve the collection of locked and unlocked sources.
+    #
+    # 3. Write out a new lockfile.
+    #
     # @option options [Symbol, Array] :except
     #   Group(s) to exclude which will cause any sources marked as a member of the
     #   group to not be installed
@@ -368,6 +397,11 @@ module Berkshelf
     # @option options [String] :path
     #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
     #   is a technique for packaging all cookbooks resolved by a Berksfile.
+    #
+    # @raise [Berkshelf::OutdatedCookbookSource]
+    #   if the lockfile constraints do not satisfy the Berskfile constraints
+    # @raise [Berkshelf::ArgumentError]
+    #   if there are missing or conflicting options
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
