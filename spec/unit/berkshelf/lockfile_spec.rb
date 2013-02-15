@@ -2,11 +2,9 @@ require 'spec_helper'
 
 describe Berkshelf::Lockfile do
   describe '.from_file' do
-    let(:filename) { 'Berksfile.lock' }
-    let(:lockfile) { Berkshelf::Lockfile.from_file(filename) }
     let(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
 
-    subject { lockfile }
+    subject { Berkshelf::Lockfile.from_file('Berksfile.lock') }
 
     before do
       content
@@ -14,11 +12,12 @@ describe Berkshelf::Lockfile do
     end
 
     it 'has the correct sha' do
-      expect(lockfile.sha).to eq('6b76225554cc1f7c0aea0f8b3f10c6743aeba67e')
+      expect(subject.sha).to eq('6b76225554cc1f7c0aea0f8b3f10c6743aeba67e')
     end
 
     it 'has the correct sources' do
-      expect(lockfile.sources.map(&:name)).to eq(['build-essential', 'chef-client'])
+      expect(subject).to have_source 'build-essential'
+      expect(subject).to have_source 'chef-client'
     end
 
     context 'when the file does not exist' do
@@ -28,12 +27,13 @@ describe Berkshelf::Lockfile do
 
       it 'raises a Berkshelf::LockfileNotFound' do
         expect {
-          Berkshelf::Lockfile.from_file(filename)
+          Berkshelf::Lockfile.from_file('Berksfile.lock')
         }.to raise_error(Berkshelf::LockfileNotFound)
       end
     end
 
     describe '#save' do
+      before { Berkshelf::Lockfile.send(:public, :save) }
       let(:file) { double('file') }
 
       before(:each) do
@@ -48,50 +48,64 @@ describe Berkshelf::Lockfile do
     end
 
     describe '#update' do
-      it 'raises a Berkshelf::ArgumentError if one of the sources is not valid' do
-        expect {
-          lockfile.update(['foo'])
-        }.to raise_error(Berkshelf::ArgumentError)
+      it 'resets the sources' do
+        subject.should_receive(:reset_sources!).once
+        subject.update([])
       end
 
-      it 'sets the `@sources` instance variable' do
-        source = double('source')
-        source.stub(:is_a?).with(any_args()).and_return(true)
+      it 'updates the sha' do
+        expect {
+          subject.update([])
+        }.to change { subject.sha }
+      end
 
-        lockfile.update([source])
-        expect(lockfile.sources).to eq([source])
+      it 'appends each of the sources' do
+        source = double('source')
+        subject.should_receive(:append).with(source).once
+        subject.update([source])
+      end
+
+      it 'saves the file' do
+        subject.should_receive(:save).once
+        subject.update([])
       end
     end
 
-    describe '#append' do
-      it 'raises a Berkshelf::ArgumentError if one of the sources is not valid' do
-        expect {
-          lockfile.append('foo')
-        }.to raise_error(Berkshelf::ArgumentError)
-      end
+    describe '#add' do
+      let(:source) { double('source', name: 'build-essential') }
 
       it 'adds the new source to the @sources instance variable' do
-        source = double(name: 'source')
-        source.stub(:is_a?).with(any_args()).and_return(true)
-
-        lockfile.append(source)
-        expect(lockfile.sources.map(&:name)).to eq(['build-essential', 'chef-client', 'source'])
+        subject.add(source)
+        expect(subject).to have_source(source)
       end
 
       it 'does not add duplicate sources' do
-        source = double(name: 'source')
-        source.stub(:is_a?).with(any_args()).and_return(true)
+        5.times { subject.add(source) }
+        expect(subject).to have_source(source)
+      end
+    end
 
-        5.times do
-          lockfile.append(source)
-        end
+    describe '#remove' do
+      let(:source) { double('source', name: 'build-essential') }
 
-        expect(lockfile.sources.map(&:name)).to eq(['build-essential', 'chef-client', 'source'])
+      before do
+        subject.add(source)
+      end
+
+      it 'removes the source' do
+        subject.remove(source)
+        expect(subject).to_not have_source(source)
+      end
+
+      it 'raises an except if the source does not exist' do
+        expect {
+          subject.remove(nil)
+        }.to raise_error Berkshelf::CookbookNotFound
       end
     end
 
     describe '#to_hash' do
-      let(:hash) { lockfile.to_hash }
+      let(:hash) { subject.to_hash }
 
       it 'has the `:sha` key' do
         expect(hash).to have_key(:sha)
@@ -104,8 +118,8 @@ describe Berkshelf::Lockfile do
 
     describe '#to_json' do
       it 'dumps the #to_hash to MultiJson' do
-        MultiJson.should_receive(:dump).with(lockfile.to_hash, pretty: true)
-        lockfile.to_json
+        MultiJson.should_receive(:dump).with(subject.to_hash, pretty: true)
+        subject.to_json
       end
     end
   end
