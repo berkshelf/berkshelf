@@ -64,16 +64,6 @@ module Berkshelf
 
         true
       end
-
-      # Load a source from the given hash.
-      #
-      # @param [<Berkshelf::CookbookSource>] hash
-      #   the hash to convert into a cookbook source
-      def from_hash(hash)
-        name = hash[:name]
-        options = hash[:options]
-        new(name, options)
-      end
     end
 
     extend Forwardable
@@ -202,10 +192,7 @@ module Berkshelf
       options[:constraint] = @version_constraint.to_s unless @version_constraint.to_s == '>= 0.0.0'
       options[:ref] = @location.branch if @location.respond_to?(:ref)
 
-      {
-        name: name.to_s,
-        options: options.reject { |k,v| v.nil? || v.empty? }
-      }
+      options.reject { |k,v| v.nil? || v.empty? }
     end
 
     def to_json
