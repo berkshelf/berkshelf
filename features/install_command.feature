@@ -18,15 +18,12 @@ Feature: install cookbooks from a Berksfile
       """
       {
         "sha":"9b860e9aa6b54c75fd223dae626ac78ed0480356",
-        "sources":[
-          {
-            "name":"artifact",
-            "options":{
-              "locked_version":"0.10.0",
-              "constraint":"= 0.10.0"
-            }
+        "sources":{
+          "artifact":{
+            "locked_version":"0.10.0",
+            "constraint":"= 0.10.0"
           }
-        ]
+        }
       }
       """
 
