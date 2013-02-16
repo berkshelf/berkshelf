@@ -32,18 +32,35 @@ describe Berkshelf::Lockfile do
       end
     end
 
-    describe '#save' do
-      before { Berkshelf::Lockfile.send(:public, :save) }
-      let(:file) { double('file') }
+    describe '#reset_sha!' do
+      it 'sets the sha to nil' do
+        expect { subject.reset_sha! }.to change { subject.sha }.to nil
+      end
+    end
 
-      before(:each) do
-        File.stub(:open).with('Berksfile.lock', 'w')
+    describe '#sources' do
+      it 'returns an array' do
+        expect(subject.sources).to be_a(Array)
+      end
+    end
+
+    describe '#find' do
+      it 'returns a matching cookbook' do
+        expect(subject.find('build-essential').name).to eq 'build-essential'
       end
 
-      it 'saves itself to a file on disk' do
-        File.should_receive(:open).with('Berksfile.lock', 'w').and_yield(file)
-        file.should_receive(:write).once
-        subject.save
+      it 'returns nil for a missing cookbook' do
+        expect(subject.find('foo')).to be_nil
+      end
+    end
+
+    describe '#has_source?' do
+      it 'returns true if a matching cookbook is found' do
+        expect(subject.has_source?('build-essential')).to be_true
+      end
+
+      it 'returns false if no matching cookbook is found' do
+        expect(subject.has_source?('foo')).to be_false
       end
     end
 
@@ -104,6 +121,18 @@ describe Berkshelf::Lockfile do
       end
     end
 
+    describe '#to_s' do
+      it 'returns a pretty-formatted string' do
+        expect(subject.to_s).to eq '#<Berkshelf::Lockfile Berksfile.lock>'
+      end
+    end
+
+    describe '#inspect' do
+      it 'returns a pretty-formatted, detailed string' do
+        expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), groups: [:default], location: default>]>'
+      end
+    end
+
     describe '#to_hash' do
       let(:hash) { subject.to_hash }
 
@@ -120,6 +149,44 @@ describe Berkshelf::Lockfile do
       it 'dumps the #to_hash to MultiJson' do
         MultiJson.should_receive(:dump).with(subject.to_hash, pretty: true)
         subject.to_json
+      end
+    end
+
+    describe '#save' do
+      before { Berkshelf::Lockfile.send(:public, :save) }
+      let(:file) { double('file') }
+
+      before(:each) do
+        File.stub(:open).with('Berksfile.lock', 'w')
+      end
+
+      it 'saves itself to a file on disk' do
+        File.should_receive(:open).with('Berksfile.lock', 'w').and_yield(file)
+        file.should_receive(:write).once
+        subject.save
+      end
+    end
+
+    describe '#reset_sources!' do
+      before { Berkshelf::Lockfile.send(:public, :reset_sources!) }
+
+      it 'sets the sources to an empty hash' do
+        expect {
+          subject.reset_sources!
+        }.to change { subject.sources }.to([])
+      end
+    end
+
+    describe '#cookbook_name' do
+      before { Berkshelf::Lockfile.send(:public, :cookbook_name) }
+
+      it 'accepts a cookbook source' do
+        source = double('source', name: 'build-essential', is_a?: true)
+        expect(subject.cookbook_name(source)).to eq 'build-essential'
+      end
+
+      it 'accepts a string' do
+        expect(subject.cookbook_name('build-essential')).to eq 'build-essential'
       end
     end
   end
