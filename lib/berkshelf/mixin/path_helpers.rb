@@ -15,9 +15,14 @@ module Berkshelf::Mixin
       path
     end
 
+    # Convert a unixy filepath to a windowsy filepath. Swaps forward slashes for
+    # double backslashes
+    #
     # @param [String] path
+    #   filepath to convert
     #
     # @return [String]
+    #   converted filepath
     def win_slashify(path)
       path.gsub(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
     end

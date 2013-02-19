@@ -1,4 +1,4 @@
-module Berkshelf::Chef
+module Berkshelf::Chef::Cookbook
   # Borrowed and modified from: {https://raw.github.com/opscode/chef/11.4.0/lib/chef/cookbook/chefignore.rb}
   #
   # Copyright:: Copyright (c) 2011 Opscode, Inc.

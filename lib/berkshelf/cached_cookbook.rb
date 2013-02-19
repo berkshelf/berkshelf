@@ -1,5 +1,3 @@
-require 'chef/cookbook/syntax_check'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class CachedCookbook
@@ -234,7 +232,7 @@ module Berkshelf
       end
 
       def syntax_checker
-        @syntax_checker ||= ::Chef::Cookbook::SyntaxCheck.new(path.to_s)
+        @syntax_checker ||= Berkshelf::Chef::Cookbook::SyntaxCheck.new(path.to_s)
       end
 
       def load_files

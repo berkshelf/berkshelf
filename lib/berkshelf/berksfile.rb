@@ -28,11 +28,11 @@ module Berkshelf
       #   expanded filepath to the vendor directory
       def vendor(cookbooks, path)
         chefignore_file = [
-          File.join(Dir.pwd, Berkshelf::Chef::Chefignore::FILENAME),
-          File.join(Dir.pwd, 'cookbooks', Berkshelf::Chef::Chefignore::FILENAME)
+          File.join(Dir.pwd, Berkshelf::Chef::Cookbook::Chefignore::FILENAME),
+          File.join(Dir.pwd, 'cookbooks', Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
         ].find { |f| File.exists?(f) }
 
-        chefignore = chefignore_file && Berkshelf::Chef::Chefignore.new(chefignore_file)
+        chefignore = chefignore_file && Berkshelf::Chef::Cookbook::Chefignore.new(chefignore_file)
         path       = File.expand_path(path)
         FileUtils.mkdir_p(path)
 

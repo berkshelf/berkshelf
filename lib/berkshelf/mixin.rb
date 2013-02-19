@@ -1,5 +1,7 @@
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
+  #
+  # Helpful mixins for use within Berkshelf
   module Mixin; end
 end
 

@@ -52,7 +52,7 @@ module Berkshelf
       template "Berksfile.erb", target.join("Berksfile")
 
       if options[:chefignore]
-        copy_file "chefignore", target.join(Berkshelf::Chef::Chefignore::FILENAME)
+        copy_file "chefignore", target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
       end
 
       unless options[:skip_git]

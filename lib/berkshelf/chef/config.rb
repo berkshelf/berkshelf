@@ -80,6 +80,13 @@ module Berkshelf::Chef
     cookbook_email          "YOUR_EMAIL"
     cookbook_license        "reserved"
 
-    cache_options           path: Dir.mktmpdir
+    # history: prior to Chef 11, the cache implementation was based on
+    # moneta and configured via cache_options[:path]. Knife configs
+    # generated with Chef 11 will have `syntax_check_cache_path`, but older
+    # configs will have `cache_options[:path]`. `cache_options` is marked
+    # deprecated in chef/config.rb but doesn't currently trigger a warning.
+    # See also: CHEF-3715
+    syntax_check_cache_path Dir.mktmpdir
+    cache_options           path: syntax_check_cache_path
   end
 end

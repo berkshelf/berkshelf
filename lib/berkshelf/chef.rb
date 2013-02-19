@@ -5,7 +5,7 @@ module Berkshelf
   # site, and Chef Cookbooks
   module Chef
     autoload :Config, 'berkshelf/chef/config'
-    autoload :Chefignore, 'berkshelf/chef/chefignore'
+    autoload :Cookbook, 'berkshelf/chef/cookbook'
     autoload :Digester, 'berkshelf/chef/digester'
   end
 end
