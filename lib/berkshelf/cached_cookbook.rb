@@ -1,9 +1,3 @@
-if Berkshelf.chef_11?
-  require 'chef/digester'
-else
-  require 'chef/checksum_cache'
-end
-
 require 'chef/cookbook/syntax_check'
 
 module Berkshelf
@@ -22,7 +16,7 @@ module Berkshelf
       # @return [Berkshelf::CachedCookbook]
       def from_path(path)
         path = Pathname.new(path)
-        metadata = Chef::Cookbook::Metadata.new
+        metadata = ::Chef::Cookbook::Metadata.new
 
         begin
           metadata.from_file(path.join("metadata.rb").to_s)
@@ -47,7 +41,7 @@ module Berkshelf
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
         return nil if cached_name.nil?
 
-        metadata = Chef::Cookbook::Metadata.new
+        metadata = ::Chef::Cookbook::Metadata.new
 
         begin
           metadata.from_file(path.join("metadata.rb").to_s)
@@ -69,11 +63,7 @@ module Berkshelf
       #   a checksum that can be used to uniquely identify the file understood
       #   by a Chef Server.
       def checksum(filepath)
-        if Berkshelf.chef_11?
-          Chef::Digester.generate_md5_checksum_for_file(filepath)
-        else
-          Chef::ChecksumCache.generate_md5_checksum_for_file(filepath)
-        end
+        Chef::Digester.generate_md5_checksum_for_file(filepath)
       end
     end
 
@@ -244,7 +234,7 @@ module Berkshelf
       end
 
       def syntax_checker
-        @syntax_checker ||= Chef::Cookbook::SyntaxCheck.new(path.to_s)
+        @syntax_checker ||= ::Chef::Cookbook::SyntaxCheck.new(path.to_s)
       end
 
       def load_files

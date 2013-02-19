@@ -38,7 +38,7 @@ describe Berkshelf::Config do
 
     describe "::chef_config" do
       it "returns the Chef::Config" do
-        subject.chef_config.should eql(Chef::Config)
+        subject.chef_config.should eql(::Chef::Config)
       end
     end
 

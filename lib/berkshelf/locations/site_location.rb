@@ -37,7 +37,7 @@ module Berkshelf
         options[:site]
       end
 
-      @rest = Chef::REST.new(api_uri, false, false)
+      @rest = ::Chef::REST.new(api_uri, false, false)
     end
 
     # @param [#to_s] destination

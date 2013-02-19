@@ -30,7 +30,7 @@ require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 require 'thor/monkies'
 
-Chef::Config[:cache_options][:path] = Dir.mktmpdir
+::Chef::Config[:cache_options][:path] = Dir.mktmpdir
 
 JSON.create_id = nil
 
@@ -40,6 +40,7 @@ module Berkshelf
   autoload :BaseGenerator, 'berkshelf/base_generator'
   autoload :Berksfile, 'berkshelf/berksfile'
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
+  autoload :Chef, 'berkshelf/chef'
   autoload :Cli, 'berkshelf/cli'
   autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
@@ -79,20 +80,6 @@ module Berkshelf
     # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
-    end
-
-    # Check if we're running a version of Chef that is in the 11.x line
-    #
-    # @return [Boolean]
-    def chef_11?
-      chef_version >= Solve::Version.new("11.0.0") && chef_version <= Solve::Version.new("12.0.0")
-    end
-
-    # Return the loaded version of Chef
-    #
-    # @return [Solve::Version]
-    def chef_version
-      @chef_version ||= Solve::Version.new(::Chef::VERSION)
     end
 
     # @return [String]

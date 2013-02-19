@@ -432,7 +432,7 @@ module Berkshelf
 
       it "has a 'metadata' key with a Cookbook::Metadata value" do
         @hash.should have_key('metadata')
-        @hash['metadata'].should be_a(Chef::Cookbook::Metadata)
+        @hash['metadata'].should be_a(::Chef::Cookbook::Metadata)
       end
 
       it "has a 'version' key with a String value" do
