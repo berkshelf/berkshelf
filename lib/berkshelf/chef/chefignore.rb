@@ -15,6 +15,7 @@ module Berkshelf::Chef
   # See the License for the specific language governing permissions and
   # limitations under the License.
   class Chefignore
+    FILENAME                = "chefignore".freeze
     COMMENTS_AND_WHITESPACE = /^\s*(?:#.*)?$/
 
     attr_reader :ignores
@@ -49,10 +50,10 @@ module Berkshelf::Chef
       end
 
       def find_ignore_file(path)
-        if File.basename(path) =~ /chefignore/
+        if File.basename(path) =~ /#{FILENAME}/
           path
         else
-          File.join(path, 'chefignore')
+          File.join(path, FILENAME)
         end
       end
   end
