@@ -1,11 +1,13 @@
 require 'spec_helper'
 
 describe Berkshelf::Uploader, :chef_server do
+  let(:chef_config) { Berkshelf::Chef::Config }
+
   subject do
     Berkshelf::Uploader.new(
-      server_url: ::Chef::Config[:chef_server_url],
-      client_key: ::Chef::Config[:client_key],
-      client_name: ::Chef::Config[:node_name]
+      server_url: chef_config[:chef_server_url],
+      client_key: chef_config[:client_key],
+      client_name: chef_config[:node_name]
     )
   end
 

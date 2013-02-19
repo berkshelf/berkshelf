@@ -99,14 +99,20 @@ EOF
       private
 
         def rest
-          quietly { ::Chef::REST.new(Chef::Config[:chef_server_url]) }
+          quietly do
+            ::Chef::REST.new(
+              Berkshelf::Chef::Config[:chef_server_url],
+              Berkshelf::Chef::Config[:node_name],
+              Berkshelf::Chef::Config[:client_key]
+            )
+          end
         end
 
         def uploader
           @uploader ||= Berkshelf::Uploader.new(
-            server_url: ::Chef::Config[:chef_server_url],
-            client_name: ::Chef::Config[:node_name],
-            client_key: ::Chef::Config[:client_key]
+            server_url: Berkshelf::Chef::Config[:chef_server_url],
+            client_name: Berkshelf::Chef::Config[:node_name],
+            client_key: Berkshelf::Chef::Config[:client_key]
           )
         end
     end

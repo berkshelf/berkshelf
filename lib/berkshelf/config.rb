@@ -53,10 +53,10 @@ module Berkshelf
       # @return [Chef::Config]
       def chef_config
         @chef_config ||= begin
-          ::Chef::Config.from_file(File.expand_path(chef_config_path))
-          ::Chef::Config
+          Berkshelf::Chef::Config.from_file(File.expand_path(chef_config_path))
+          Berkshelf::Chef::Config
         rescue
-          ::Chef::Config
+          Berkshelf::Chef::Config
         end
       end
 

@@ -30,8 +30,6 @@ require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 require 'thor/monkies'
 
-::Chef::Config[:cache_options][:path] = Dir.mktmpdir
-
 JSON.create_id = nil
 
 module Berkshelf
@@ -50,6 +48,7 @@ module Berkshelf
   autoload :Git, 'berkshelf/git'
   autoload :InitGenerator, 'berkshelf/init_generator'
   autoload :Lockfile, 'berkshelf/lockfile'
+  autoload :Mixin, 'berkshelf/mixin'
   autoload :Resolver, 'berkshelf/resolver'
   autoload :UI, 'berkshelf/ui'
   autoload :Uploader, 'berkshelf/uploader'
