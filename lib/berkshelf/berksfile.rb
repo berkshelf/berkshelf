@@ -1,5 +1,3 @@
-require 'chef/cookbook/chefignore'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
@@ -34,7 +32,7 @@ module Berkshelf
           File.join(Dir.pwd, 'cookbooks', 'chefignore')
         ].find { |f| File.exists?(f) }
 
-        chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
+        chefignore = chefignore_file && Berkshelf::Chef::Chefignore.new(chefignore_file)
         path       = File.expand_path(path)
         FileUtils.mkdir_p(path)
 
