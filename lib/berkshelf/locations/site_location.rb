@@ -1,5 +1,3 @@
-require 'chef/rest'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class SiteLocation

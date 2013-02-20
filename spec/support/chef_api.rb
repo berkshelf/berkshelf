@@ -1,7 +1,3 @@
-require 'pathname'
-require 'chef/rest'
-require 'chef/cookbook_version'
-
 module Berkshelf
   module RSpec
     module ChefAPI

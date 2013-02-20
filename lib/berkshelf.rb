@@ -1,8 +1,6 @@
 require 'multi_json'
 require 'chef/platform'
-require 'chef/cookbook/metadata'
-require 'chef/cookbook_version'
-require 'chef/knife'
+require 'chef/rest'
 
 # Fix for Facter < 1.7.0 changing LANG to C
 # https://github.com/puppetlabs/facter/commit/f77584f4

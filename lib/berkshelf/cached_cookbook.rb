@@ -2,6 +2,8 @@ module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class CachedCookbook
     class << self
+      include Berkshelf::Mixin::Checksum
+
       # Creates a new instance of Berkshelf::CachedCookbook from a path on disk that
       # contains a Cookbook. The name of the Cookbook will be determined first by the
       # name attribute of the metadata.rb file if it is present. If the name attribute
@@ -13,17 +15,11 @@ module Berkshelf
       #
       # @return [Berkshelf::CachedCookbook]
       def from_path(path)
-        path = Pathname.new(path)
-        metadata = ::Chef::Cookbook::Metadata.new
-
-        begin
-          metadata.from_file(path.join("metadata.rb").to_s)
-        rescue IOError
-          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
-        end
+        path     = Pathname.new(path)
+        metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(path.join('metadata.rb'))
 
         name = metadata.name.empty? ? File.basename(path) : metadata.name
-        metadata.name name if metadata.name.empty?
+        metadata.name(name) if metadata.name.empty?
 
         new(name, path, metadata)
       end
@@ -35,21 +31,12 @@ module Berkshelf
       #   an instance of CachedCookbook initialized by the contents found at the
       #   given path.
       def from_store_path(path)
-        path = Pathname.new(path)
+        path        = Pathname.new(path)
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
         return nil if cached_name.nil?
 
-        metadata = ::Chef::Cookbook::Metadata.new
-
-        begin
-          metadata.from_file(path.join("metadata.rb").to_s)
-        rescue IOError
-          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
-        end
-        
-        metadata.name cached_name if metadata.name.empty?
-
-        metadata.name cached_name if metadata.name.empty?
+        metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(path.join('metadata.rb'))
+        metadata.name(cached_name) if metadata.name.empty?
 
         new(cached_name, path, metadata)
       end
@@ -61,7 +48,7 @@ module Berkshelf
       #   a checksum that can be used to uniquely identify the file understood
       #   by a Chef Server.
       def checksum(filepath)
-        Chef::Digester.generate_md5_checksum_for_file(filepath)
+        Berkshelf::Chef::Digester.md5_checksum_for_file(filepath)
       end
     end
 

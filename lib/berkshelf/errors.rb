@@ -121,4 +121,6 @@ module Berkshelf
   class CommandUnsuccessful < BerkshelfError; status_code(118); end
   class InsufficientPrivledges < BerkshelfError; status_code(119); end
   class ExplicitCookbookNotFound < BerkshelfError; status_code(120); end
+  class ValidationFailed < BerkshelfError; status_code(121); end
+  class InvalidVersionConstraint < BerkshelfError; status_code(122); end
 end

@@ -21,10 +21,14 @@ module Berkshelf::Chef
       def instance
         @instance ||= new
       end
-    end
 
-    def self.checksum_for_file(*args)
-      instance.checksum_for_file(*args)
+      def checksum_for_file(*args)
+        instance.checksum_for_file(*args)
+      end
+
+      def md5_checksum_for_file(*args)
+        instance.generate_md5_checksum_for_file(*args)
+      end
     end
 
     def validate_checksum(*args)
@@ -37,10 +41,6 @@ module Berkshelf::Chef
 
     def generate_checksum(file)
       checksum_file(file, Digest::SHA256.new)
-    end
-
-    def self.generate_md5_checksum_for_file(*args)
-      instance.generate_md5_checksum_for_file(*args)
     end
 
     def generate_md5_checksum_for_file(file)
