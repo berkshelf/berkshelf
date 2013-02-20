@@ -62,8 +62,8 @@ module Berkshelf
     attr_reader :path
     attr_reader :metadata
 
-    # @return [Mash]
-    #   a Mash containing Cookbook file category names as keys and an Array of Hashes
+    # @return [Hashie::Mash]
+    #   a Hashie::Mash containing Cookbook file category names as keys and an Array of Hashes
     #   containing metadata about the files belonging to that category. This is used
     #   to communicate what a Cookbook looks like when uploading to a Chef Server.
     #
@@ -89,7 +89,7 @@ module Berkshelf
       @path = Pathname.new(path)
       @metadata = metadata
       @files = Array.new
-      @manifest = Mash.new(
+      @manifest = Hashie::Mash.new(
         recipes: Array.new,
         definitions: Array.new,
         libraries: Array.new,
@@ -188,7 +188,8 @@ module Berkshelf
       result['cookbook_name'] = cookbook_name
       result['version'] = version
       result['metadata'] = metadata
-      result.to_hash
+      result['chef_type']
+      result
     end
 
     def to_json(*a)
