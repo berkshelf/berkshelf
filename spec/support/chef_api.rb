@@ -5,22 +5,12 @@ module Berkshelf
       #
       # @return [Array]
       def get_cookbooks
-        rest.get_rest("cookbooks")
+        ridley.cookbook.all
       end
 
       def upload_cookbook(path)
         cached = CachedCookbook.from_store_path(path)
         uploader.upload(cached)
-      end
-
-      # Remove all versions of all cookbooks from the Chef Server defined in your
-      # Knife config.
-      def purge_cookbooks
-        get_cookbooks.each do |name, info|
-          info["versions"].each do |version_info|
-            rest.delete_rest("cookbooks/#{name}/#{version_info["version"]}?purge=true")
-          end
-        end
       end
 
       # Remove the version of the given cookbook from the Chef Server defined
@@ -29,16 +19,11 @@ module Berkshelf
       # @param [#to_s] name
       # @param [#to_s] version
       def purge_cookbook(name, version)
-        rest.delete_rest("cookbooks/#{name}/#{version}?purge=true")
-      rescue Net::HTTPServerException => e
-        raise unless e.to_s =~ /^404/
+        ridley.cookbook.delete(name, version, purge: true)
       end
 
       def server_has_cookbook?(name, version)
-        rest.get_rest("cookbooks/#{name}/#{version}")
-        true
-      rescue Net::HTTPServerException => e
-        false
+        !ridley.cookbook.find(name, version).nil?
       end
 
       def generate_cookbook(path, name, version, options = {})
@@ -94,21 +79,21 @@ EOF
 
       private
 
-        def rest
-          quietly do
-            ::Chef::REST.new(
-              Berkshelf::Chef::Config[:chef_server_url],
-              Berkshelf::Chef::Config[:node_name],
-              Berkshelf::Chef::Config[:client_key]
-            )
-          end
+        def ridley
+          @ridley ||= Ridley.new(
+            server_url: Berkshelf::Chef::Config[:chef_server_url],
+            client_name: Berkshelf::Chef::Config[:node_name],
+            client_key: Berkshelf::Chef::Config[:client_key],
+            ssl: { verify: false }
+          )
         end
 
         def uploader
           @uploader ||= Berkshelf::Uploader.new(
             server_url: Berkshelf::Chef::Config[:chef_server_url],
             client_name: Berkshelf::Chef::Config[:node_name],
-            client_key: Berkshelf::Chef::Config[:client_key]
+            client_key: Berkshelf::Chef::Config[:client_key],
+            ssl: { verify: false }
           )
         end
     end
