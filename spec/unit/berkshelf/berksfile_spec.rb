@@ -43,11 +43,11 @@ EOF
         context "with a chefignore" do
           before(:each) do
             File.stub(:exists?).and_return(true)
-            ::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
+            Berkshelf::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
           end
 
           it "finds a chefignore file" do
-            ::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
+            Berkshelf::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
             subject.vendor(cached_cookbooks, tmpdir)
           end
 

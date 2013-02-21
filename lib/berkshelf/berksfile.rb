@@ -1,5 +1,3 @@
-require 'chef/cookbook/chefignore'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
@@ -30,11 +28,11 @@ module Berkshelf
       #   expanded filepath to the vendor directory
       def vendor(cookbooks, path)
         chefignore_file = [
-          File.join(Dir.pwd, 'chefignore'),
-          File.join(Dir.pwd, 'cookbooks', 'chefignore')
+          File.join(Dir.pwd, Berkshelf::Chef::Cookbook::Chefignore::FILENAME),
+          File.join(Dir.pwd, 'cookbooks', Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
         ].find { |f| File.exists?(f) }
 
-        chefignore = chefignore_file && ::Chef::Cookbook::Chefignore.new(chefignore_file)
+        chefignore = chefignore_file && Berkshelf::Chef::Cookbook::Chefignore.new(chefignore_file)
         path       = File.expand_path(path)
         FileUtils.mkdir_p(path)
 
@@ -185,8 +183,7 @@ module Berkshelf
         raise CookbookNotFound, "No 'metadata.rb' found at #{path}"
       end
 
-      metadata = Chef::Cookbook::Metadata.new
-      metadata.from_file(metadata_file.to_s)
+      metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(metadata_file.to_s)
 
       name = if metadata.name.empty? || metadata.name.nil?
         File.basename(File.dirname(metadata_file))

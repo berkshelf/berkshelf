@@ -108,7 +108,7 @@ module Berkshelf
         @uri        = options[:chef_api]
       end
 
-      @rest = Chef::REST.new(uri, node_name, client_key)
+      @rest = ::Chef::REST.new(uri, node_name, client_key)
     end
 
     # @param [#to_s] destination
@@ -190,7 +190,7 @@ module Berkshelf
       #
       # @return [Hash]
       def download_manifest(uri)
-        Chef::CookbookVersion.json_create(rest.get_rest(uri)).manifest
+        ::Chef::CookbookVersion.json_create(rest.get_rest(uri)).manifest
       end
 
       # Returns an array containing the version and download URL for the cookbook version that
@@ -227,7 +227,7 @@ module Berkshelf
       # @return [String]
       #   the path to the directory containing the files
       def download_files(manifest, destination = Dir.mktmpdir)
-        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+        ::Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
           next unless manifest.has_key?(segment)
           manifest[segment].each do |segment_file|
             dest = File.join(destination, segment_file['path'].gsub('/', File::SEPARATOR))

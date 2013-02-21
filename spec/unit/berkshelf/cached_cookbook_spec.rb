@@ -432,7 +432,7 @@ module Berkshelf
 
       it "has a 'metadata' key with a Cookbook::Metadata value" do
         @hash.should have_key('metadata')
-        @hash['metadata'].should be_a(Chef::Cookbook::Metadata)
+        @hash['metadata'].should be_a(Berkshelf::Chef::Cookbook::Metadata)
       end
 
       it "has a 'version' key with a String value" do
@@ -474,7 +474,7 @@ module Berkshelf
       let(:recommendations) { { "database" => ">= 0.0.0" } }
 
       let(:cb_path) do
-        generate_cookbook(Berkshelf.cookbook_store.to_s, "sparkle", "0.1.0", dependencies: dependencies, recommendations: recommendations)
+        generate_cookbook(Berkshelf.cookbook_store.storage_path, "sparkle", "0.1.0", dependencies: dependencies, recommendations: recommendations)
       end
 
       subject { CachedCookbook.from_store_path(cb_path) }

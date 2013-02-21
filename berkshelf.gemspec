@@ -31,13 +31,15 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport'
   # Must lock 10.16 because of Vagrant 1-0-stable JSON requirement
   s.add_dependency 'chef', '= 10.16.2'
-  s.add_dependency 'ridley', '>= 0.7.0.rc1'
-  s.add_dependency 'chozo', '>= 0.4.2'
+  s.add_dependency 'mixlib-shellout'
+  s.add_dependency 'mixlib-config'
+  s.add_dependency 'ridley', '>= 0.7.0.rc3'
+  s.add_dependency 'chozo', '>= 0.5.0'
   s.add_dependency 'hashie'
   s.add_dependency 'minitar'
   s.add_dependency 'json', '>= 1.5.0'
   s.add_dependency 'multi_json', '~> 1.5'
-  s.add_dependency 'solve', '>= 0.4.0.rc1'
+  s.add_dependency 'solve', '>= 0.4.2'
   s.add_dependency 'thor', '~> 0.16.0'
 
   # Vagrant 1-0-stable compatability locks

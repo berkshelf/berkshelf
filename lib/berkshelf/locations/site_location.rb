@@ -1,5 +1,3 @@
-require 'chef/rest'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class SiteLocation
@@ -37,7 +35,7 @@ module Berkshelf
         options[:site]
       end
 
-      @rest = Chef::REST.new(api_uri, false, false)
+      @rest = ::Chef::REST.new(api_uri, false, false)
     end
 
     # @param [#to_s] destination
