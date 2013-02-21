@@ -1,47 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Berkshelf : Manage a Cookbook's, or an Application's, Cookbook dependencies" />
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/stylesheets/stylesheet.css">
-
     <title>Berkshelf</title>
+
+    <link rel="shortcut icon" href="http://www.riotgames.com/sites/default/files/favicon_1.ico" type="image/vnd.microsoft.icon">
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <script src="/javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header"><a href="./index.html">Berkshelf</a></h1>
+        <p class="header">Manage a Cookbook or an Application's Cookbook dependencies</p>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/RiotGames/berkshelf">View on GitHub</a>
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/RiotGames/berkshelf/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/RiotGames/berkshelf/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/RiotGames/berkshelf">View On GitHub</a></li>
+        </ul>
 
-          <h1 id="project_title"><a href="./index.html">Berkshelf</a></h1>
-          <h2 id="project_tagline">Manage a Cookbook or an Application's Cookbook dependencies</h2>
+        <p class="copyright">
+          Berkshelf is maintained by
+          <a class="header name" href="https://github.com/RiotGames">
+            <img src="images/Riot_logo_WHITE_TEXT-113x87.png" />
+          </a>
+        </p>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/RiotGames/berkshelf/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/RiotGames/berkshelf/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+      </header>
+      <section>
         {{ content }}
       </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <h3 id="authors">Authors</h2>
-        {% capture authors %}{% include authors.md %}{% endcapture %}{{ authors | markdownify }}
-        <p class="copyright">Berkshelf maintained by <a href="https://github.com/RiotGames">RiotGames</a></p>
+      <footer>
+        <p class="copyright">Copyright &copy; 2012-2013 <a href="http://riotgames.com">Riot Games</a></p>
       </footer>
     </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
   </body>
 </html>
