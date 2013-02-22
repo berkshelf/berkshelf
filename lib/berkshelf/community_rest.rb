@@ -1,3 +1,5 @@
+require 'open-uri'
+
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class CommunityREST < Faraday::Connection
