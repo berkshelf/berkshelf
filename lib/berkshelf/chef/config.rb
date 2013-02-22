@@ -1,3 +1,4 @@
+require 'socket'
 require 'berkshelf/mixin'
 require 'mixlib/config'
 
