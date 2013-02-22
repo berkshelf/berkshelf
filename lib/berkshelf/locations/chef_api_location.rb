@@ -137,7 +137,7 @@ module Berkshelf
     # @return [Ridley::CookbookResource]
     def target_cookbook
       return @target_cookbook unless @target_cookbook.nil?
-      
+
       @target_cookbook = if version_constraint
         conn.cookbook.satisfy(name, version_constraint)
       else
@@ -182,7 +182,7 @@ module Berkshelf
         unless missing_options.empty?
           missing_options.collect! { |opt| "'#{opt}'" }
           msg = "Source '#{name}' is a 'chef_api' location with a URL for it's value"
-          msg << "but is missing options: #{missing_options.join(', ')}."
+          msg << " but is missing options: #{missing_options.join(', ')}."
 
           raise Berkshelf::InvalidChefAPILocation, msg
         end
