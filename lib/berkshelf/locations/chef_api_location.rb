@@ -119,7 +119,7 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      berks_path = File.join(destination, "#{name}-#{version}")
+      berks_path = File.join(destination, "#{name}-#{target_cookbook.version}")
       
       temp_path = target_cookbook.download
       FileUtils.mv(temp_path, berks_path)
@@ -136,19 +136,21 @@ module Berkshelf
     #
     # @return [Ridley::CookbookResource]
     def target_cookbook
-      cookbook = if version_constraint
+      return @target_cookbook unless @target_cookbook.nil?
+      
+      @target_cookbook = if version_constraint
         conn.cookbook.satisfy(name, version_constraint)
       else
         conn.cookbook.latest_version(name)
       end
 
-      if cookbook.nil?
+      if @target_cookbook.nil?
         msg = "Cookbook '#{name}' found at #{self}"
         msg << " that would satisfy constraint (#{version_constraint}" if version_constraint
         raise CookbookNotFound, msg
       end
 
-      cookbook
+      @target_cookbook
     end
 
     def to_hash
