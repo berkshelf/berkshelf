@@ -7,7 +7,6 @@ Spork.prefork do
   require 'rspec'
   require 'pp'
   require 'aruba/cucumber'
-  require 'vcr'
 
   APP_ROOT = File.expand_path('../../../', __FILE__)
 
@@ -26,16 +25,9 @@ Spork.prefork do
 
   ENV["GIT_SSH"] = git_ssh_path
 
-
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
   World(Berkshelf::TestGenerators)
-
-  Around do |scenario, block|
-    VCR.use_cassette(scenario.name) do
-      block.call
-    end
-  end
 
   Before do
     clean_cookbook_store

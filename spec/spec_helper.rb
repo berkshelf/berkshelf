@@ -2,7 +2,6 @@ require 'rubygems'
 
 require 'bundler'
 require 'spork'
-require 'vcr'
 
 Spork.prefork do
   require 'json_spec'
@@ -15,11 +14,6 @@ Spork.prefork do
   ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "tmp", "knife.rb")
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
-
-  VCR.configure do |c|
-    c.cassette_library_dir = File.join(File.dirname(__FILE__), 'fixtures', 'vcr_cassettes')
-    c.hook_into :webmock
-  end
 
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
@@ -38,10 +32,6 @@ Spork.prefork do
       identifiers = [example.metadata[:description_args]]
       while cur = cur[:example_group] do
         identifiers << cur[:description_args]
-      end
-
-      VCR.use_cassette(identifiers.reverse.join(' ')) do
-        example.run
       end
     end
 

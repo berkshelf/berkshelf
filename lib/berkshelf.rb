@@ -38,6 +38,7 @@ module Berkshelf
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
   autoload :Chef, 'berkshelf/chef'
   autoload :Cli, 'berkshelf/cli'
+  autoload :CommunityREST, 'berkshelf/community_rest'
   autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'

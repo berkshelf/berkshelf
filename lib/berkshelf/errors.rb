@@ -123,4 +123,5 @@ module Berkshelf
   class ExplicitCookbookNotFound < BerkshelfError; status_code(120); end
   class ValidationFailed < BerkshelfError; status_code(121); end
   class InvalidVersionConstraint < BerkshelfError; status_code(122); end
+  class CommunitySiteError < BerkshelfError; status_code(123); end
 end

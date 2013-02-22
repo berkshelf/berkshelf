@@ -109,7 +109,7 @@ module Berkshelf
           begin
             cached_cookbook = location.download(storage_path)
             break
-          rescue
+          rescue Berkshelf::CookbookNotFound
             cached_cookbook, location = nil
             next
           end

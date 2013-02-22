@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'chef', '= 10.16.2'
   s.add_dependency 'mixlib-shellout'
   s.add_dependency 'mixlib-config'
+  s.add_dependency 'faraday', '>= 0.8.5'
   s.add_dependency 'ridley', '>= 0.7.0.rc3'
   s.add_dependency 'chozo', '>= 0.5.0'
   s.add_dependency 'hashie'
@@ -54,7 +55,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'spork'
   s.add_development_dependency 'thor'
-  s.add_development_dependency 'vcr'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'vagrant', '~> 1.0.6'
 end
