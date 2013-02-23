@@ -46,6 +46,13 @@ module Berkshelf
       cached
     end
 
+    # Return the latest version that the site location has for the the cookbook
+    #
+    # @return [String]
+    def latest_version
+      conn.latest_version(name)
+    end
+
     # Returns a string representing the version of the cookbook that should be downloaded
     # for this location
     #
@@ -54,7 +61,7 @@ module Berkshelf
       version = if version_constraint
         conn.satisfy(name, version_constraint)
       else
-        conn.latest_version(name)
+        latest_version
       end
 
       if version.nil?

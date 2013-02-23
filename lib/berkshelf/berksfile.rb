@@ -432,7 +432,7 @@ module Berkshelf
         location = cookbook.location || Location.init(cookbook.name, cookbook.version_constraint)
 
         if location.is_a?(SiteLocation)
-          latest_version = SiteLocation.new(cookbook.name, cookbook.version_constraint).latest_version[0]
+          latest_version = location.latest_version
 
           unless cookbook.version_constraint.satisfies?(latest_version)
             outdated[cookbook] = latest_version

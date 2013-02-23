@@ -41,7 +41,7 @@ Spork.prefork do
   end
 
   def cookbook_store
-    Pathname.new(File.join(ENV["BERKSHELF_PATH"],"cookbooks"))
+    Pathname.new(File.join(ENV["BERKSHELF_PATH"], "cookbooks"))
   end
 
   def clean_cookbook_store
