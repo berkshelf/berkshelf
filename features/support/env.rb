@@ -31,6 +31,7 @@ Spork.prefork do
 
   Before do
     clean_cookbook_store
+    generate_berks_config(File.join(ENV["BERKSHELF_PATH"], 'config.json'))
     @aruba_io_wait_seconds = 5
     @aruba_timeout_seconds = 16
   end

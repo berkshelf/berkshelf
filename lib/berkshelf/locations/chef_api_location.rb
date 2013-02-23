@@ -75,13 +75,18 @@ module Berkshelf
     #   a URL to a Chef API. Alternatively the symbol :config can be provided
     #   which will instantiate this location with the values found in your
     #   Berkshelf configuration.
-    # @option options [String] :node_name
+    # @option options [String] :node_name (Berkshelf::Config.instance.chef.node_name)
     #   the name of the client to use to communicate with the Chef API.
-    #   Default: Chef::Config[:node_name]
-    # @option options [String] :client_key
+    # @option options [String] :client_key (Berkshelf::Config.instance.chef.client_key)
     #   the filepath to the authentication key for the client
-    #   Default: Chef::Config[:client_key]
+    # @option options [Boolean] :verify_ssl (Berkshelf::Config.instance.chef.ssl.verify) 
     def initialize(name, version_constraint, options = {})
+      options = options.reverse_merge(
+        client_key: Berkshelf::Config.instance.chef.client_key,
+        node_name: Berkshelf::Config.instance.chef.node_name,
+        verify_ssl: Berkshelf::Config.instance.ssl.verify
+      )
+
       @name               = name
       @version_constraint = version_constraint
       @downloaded_status  = false
@@ -112,7 +117,14 @@ module Berkshelf
         @uri        = options[:chef_api]
       end
 
-      @conn = Ridley.new(server_url: uri, client_name: node_name, client_key: client_key)
+      @conn = Ridley.new(
+        server_url: uri,
+        client_name: node_name,
+        client_key: client_key,
+        ssl: {
+          verify: options[:verify_ssl]
+        }
+      )
     end
 
     # @param [#to_s] destination
