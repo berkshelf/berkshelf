@@ -33,7 +33,7 @@ module Berkshelf
 
           # Ascending search for .chef directory
           Pathname.new(working_dir).ascend do |file|
-            possibles << file.expand_path if file.basename == '.chef'
+            possibles << file.expand_path if file.basename == '.chef' && file.directory?
           end if working_dir
 
           # $HOME/.chef/knife.rb
