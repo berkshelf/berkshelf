@@ -22,8 +22,16 @@ module Berkshelf
         ridley.cookbook.delete(name, version, purge: true)
       end
 
-      def server_has_cookbook?(name, version)
-        !ridley.cookbook.find(name, version).nil?
+      def server_has_cookbook?(name, version = nil)
+        versions = ridley.cookbook.versions(name)
+
+        if version.nil?
+          !versions.empty?
+        else
+          !versions.find { |ver| ver == version }.nil?
+        end
+      rescue Ridley::Errors::HTTPNotFound
+        false
       end
 
       def generate_cookbook(path, name, version, options = {})
