@@ -43,7 +43,6 @@ module Berkshelf
           possibles.compact!
 
           location = possibles.find { |loc| File.exists?(File.expand_path(loc)) }
-          location ||= "~/.chef/knife.rb"
 
           File.expand_path(location)
         end
