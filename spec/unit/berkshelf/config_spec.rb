@@ -46,15 +46,53 @@ describe Berkshelf::Config do
         expect(subject.chef_config_path).to eq(config)
       end
 
-      it 'does an ascending search' do
-        Berkshelf::Config.stub(:working_dir).and_return(path)
+      context 'an ascending search' do
+        context 'with multiple .chef directories' do
+          let(:path) { '/fake/.chef/path/with/multiple/.chef/directories' }
 
-        pathname = double('pathname')
-        Pathname.stub(:new).and_return(pathname)
-        Pathname.should_receive(:new).and_return(pathname)
-        pathname.should_receive(:ascend).once
+          before do
+            Berkshelf::Config.stub(:working_dir).and_return(path)
+            File.stub(:exists?).and_return(false)
+            File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
+            FileTest.stub(:directory?).with('/fake/.chef').and_return(true)
+            File.stub(:exists?).with('/fake/.chef/path/with/multiple/.chef/knife.rb').and_return(true)
+            FileTest.stub(:directory?).with('/fake/.chef/path/with/multiple/.chef').and_return(true)
+          end
 
-        expect(subject.chef_config_path).to eq(config)
+          it 'chooses the closest path' do
+            expect(subject.chef_config_path).to eq('/fake/.chef/path/with/multiple/.chef/knife.rb')
+          end
+        end
+
+        context 'with the current directory as .chef' do
+          let(:path) { '/fake/.chef' }
+
+          before do
+            Berkshelf::Config.stub(:working_dir).and_return(path)
+            File.stub(:exists?).and_return(false)
+            File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
+            FileTest.stub(:directory?).with('/fake/.chef').and_return(true)
+          end
+
+          it 'uses the current directory' do
+            expect(subject.chef_config_path).to eq('/fake/.chef/knife.rb')
+          end
+        end
+
+        context 'with .chef at the top-level' do
+          let(:path) { '/.chef/some/random/sub/directories' }
+
+          before do
+            Berkshelf::Config.stub(:working_dir).and_return(path)
+            File.stub(:exists?).and_return(false)
+            File.stub(:exists?).with('/.chef/knife.rb').and_return(true)
+            FileTest.stub(:directory?).with('/.chef').and_return(true)
+          end
+
+          it 'uses the top-level directory' do
+            expect(subject.chef_config_path).to eq('/.chef/knife.rb')
+          end
+        end
       end
 
       it 'uses $HOME' do
