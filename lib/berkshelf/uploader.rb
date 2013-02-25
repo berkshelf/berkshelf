@@ -50,6 +50,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def upload(cookbook, options = {})
+      cookbook.frozen = options[:freeze] if options[:freeze]
       cookbook.validate! unless options[:skip_syntax_check]
       mutex     = Mutex.new
       checksums = cookbook.checksums.dup
