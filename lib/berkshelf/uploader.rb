@@ -51,7 +51,6 @@ module Berkshelf
     # @return [Boolean]
     def upload(cookbook, options = {})
       cookbook.validate! unless options[:skip_syntax_check]
-      mutex     = Mutex.new
       checksums = cookbook.checksums.dup
       sandbox   = conn.sandbox.create(checksums.keys)
 
