@@ -6,15 +6,6 @@ module Berkshelf
   class Config < Chozo::Config::JSON
     FILENAME = "config.json".freeze
 
-    # List taken from: http://wiki.opscode.com/display/chef/Chef+Configuration+Settings
-    # Listed in order of preferred preference
-    KNIFE_LOCATIONS = [
-      './.chef/knife.rb',
-      '~/.chef/knife.rb',
-      '/etc/chef/solo.rb',
-      '/etc/chef/client.rb'
-    ].freeze
-
     class << self
       # @return [String]
       def path
@@ -29,15 +20,29 @@ module Berkshelf
       # @return [String, nil]
       def chef_config_path
         @chef_config_path ||= begin
-          possibles = KNIFE_LOCATIONS.dup
+          possibles = []
 
-          unless ENV['BERKSHELF_CHEF_CONFIG'].nil?
-            possibles.unshift(ENV['BERKSHELF_CHEF_CONFIG'])
-          end
+          # (mostly for testing purposes)
+          possibles << ENV['BERKSHELF_CHEF_CONFIG'] if ENV['BERKSHELF_CHEF_CONFIG']
 
-          location = possibles.find do |location|
-            File.exists?(File.expand_path(location))
-          end
+          # $KNIFE_HOME/knife.rb
+          possibles << File.join(ENV['KNIFE_HOME'], 'knife.rb') if ENV['KNIFE_HOME']
+
+          # $PWD/knife.rb
+          possibles << File.join(working_dir, 'knife.rb') if working_dir
+
+          # Ascending search for .chef directory
+          Pathname.new(working_dir).ascend do |file|
+            possibles << file.expand_path if file.basename == '.chef'
+          end if working_dir
+
+          # $HOME/.chef/knife.rb
+          possibles << File.join(ENV['HOME'], '.chef', 'knife.rb') if ENV['HOME']
+
+          # Remove any nil values that may have snuck in
+          possibles.compact!
+
+          location = possibles.find { |loc| File.exists?(File.expand_path(loc)) }
           location ||= "~/.chef/knife.rb"
 
           File.expand_path(location)
@@ -85,6 +90,12 @@ module Berkshelf
         @instance = nil
         self.instance
       end
+
+      private
+
+        def working_dir
+          ENV['PWD'] || Dir.pwd
+        end
     end
 
     # @param [String] path
