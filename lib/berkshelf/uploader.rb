@@ -1,6 +1,12 @@
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Uploader
+    class << self
+      def finalize
+        conn.terminate if conn.alive?
+      end
+    end
+
     extend Forwardable
 
     def_delegator :conn, :client_name
@@ -29,6 +35,8 @@ module Berkshelf
     #   URI, String, or Hash of HTTP proxy options
     def initialize(options = {})
       @conn = Ridley.new(options)
+
+      ObjectSpace.define_finalizer(self, self.class.method(:finalize).to_proc)
     end
 
     # Uploads a CachedCookbook from a CookbookStore to this instances Chef Server URL

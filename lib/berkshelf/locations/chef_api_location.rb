@@ -2,6 +2,10 @@ module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class ChefAPILocation
     class << self
+      def finalize
+        conn.terminate if conn.alive?
+      end
+
       # @param [String] node_name
       #
       # @return [Boolean]
@@ -125,6 +129,8 @@ module Berkshelf
           verify: options[:verify_ssl]
         }
       )
+
+      ObjectSpace.define_finalizer(self, self.class.method(:finalize).to_proc)
     end
 
     # @param [#to_s] destination
