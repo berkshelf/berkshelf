@@ -1,15 +1,9 @@
-if Berkshelf.chef_11?
-  require 'chef/digester'
-else
-  require 'chef/checksum_cache'
-end
-
-require 'chef/cookbook/syntax_check'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class CachedCookbook
     class << self
+      include Berkshelf::Mixin::Checksum
+
       # Creates a new instance of Berkshelf::CachedCookbook from a path on disk that
       # contains a Cookbook. The name of the Cookbook will be determined first by the
       # name attribute of the metadata.rb file if it is present. If the name attribute
@@ -21,17 +15,11 @@ module Berkshelf
       #
       # @return [Berkshelf::CachedCookbook]
       def from_path(path)
-        path = Pathname.new(path)
-        metadata = Chef::Cookbook::Metadata.new
-
-        begin
-          metadata.from_file(path.join("metadata.rb").to_s)
-        rescue IOError
-          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
-        end
+        path     = Pathname.new(path)
+        metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(path.join('metadata.rb'))
 
         name = metadata.name.empty? ? File.basename(path) : metadata.name
-        metadata.name name if metadata.name.empty?
+        metadata.name(name) if metadata.name.empty?
 
         new(name, path, metadata)
       end
@@ -43,21 +31,12 @@ module Berkshelf
       #   an instance of CachedCookbook initialized by the contents found at the
       #   given path.
       def from_store_path(path)
-        path = Pathname.new(path)
+        path        = Pathname.new(path)
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
         return nil if cached_name.nil?
 
-        metadata = Chef::Cookbook::Metadata.new
-
-        begin
-          metadata.from_file(path.join("metadata.rb").to_s)
-        rescue IOError
-          raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
-        end
-        
-        metadata.name cached_name if metadata.name.empty?
-
-        metadata.name cached_name if metadata.name.empty?
+        metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(path.join('metadata.rb'))
+        metadata.name(cached_name) if metadata.name.empty?
 
         new(cached_name, path, metadata)
       end
@@ -69,11 +48,7 @@ module Berkshelf
       #   a checksum that can be used to uniquely identify the file understood
       #   by a Chef Server.
       def checksum(filepath)
-        if Berkshelf.chef_11?
-          Chef::Digester.generate_md5_checksum_for_file(filepath)
-        else
-          Chef::ChecksumCache.generate_md5_checksum_for_file(filepath)
-        end
+        Berkshelf::Chef::Digester.md5_checksum_for_file(filepath)
       end
     end
 
@@ -87,8 +62,8 @@ module Berkshelf
     attr_reader :path
     attr_reader :metadata
 
-    # @return [Mash]
-    #   a Mash containing Cookbook file category names as keys and an Array of Hashes
+    # @return [Hashie::Mash]
+    #   a Hashie::Mash containing Cookbook file category names as keys and an Array of Hashes
     #   containing metadata about the files belonging to that category. This is used
     #   to communicate what a Cookbook looks like when uploading to a Chef Server.
     #
@@ -114,7 +89,7 @@ module Berkshelf
       @path = Pathname.new(path)
       @metadata = metadata
       @files = Array.new
-      @manifest = Mash.new(
+      @manifest = Hashie::Mash.new(
         recipes: Array.new,
         definitions: Array.new,
         libraries: Array.new,
@@ -213,7 +188,8 @@ module Berkshelf
       result['cookbook_name'] = cookbook_name
       result['version'] = version
       result['metadata'] = metadata
-      result.to_hash
+      result['chef_type']
+      result
     end
 
     def to_json(*a)
@@ -244,7 +220,7 @@ module Berkshelf
       end
 
       def syntax_checker
-        @syntax_checker ||= Chef::Cookbook::SyntaxCheck.new(path.to_s)
+        @syntax_checker ||= Berkshelf::Chef::Cookbook::SyntaxCheck.new(path.to_s)
       end
 
       def load_files

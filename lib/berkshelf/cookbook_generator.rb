@@ -27,15 +27,15 @@ module Berkshelf
 
     class_option :license,
       type: :string,
-      default: ::Berkshelf::Config.instance.cookbook.license || ::Chef::Config[:cookbook_license] || 'reserved'
+      default: Berkshelf::Config.instance.cookbook.license
 
     class_option :maintainer,
       type: :string,
-      default: ::Berkshelf::Config.instance.cookbook.copyright || ::Chef::Config[:cookbook_copyright] || 'YOUR_NAME'
+      default: Berkshelf::Config.instance.cookbook.copyright
 
     class_option :maintainer_email,
       type: :string,
-      default: ::Berkshelf::Config.instance.cookbook.email || ::Chef::Config[:cookbook_email] || 'YOUR_EMAIL'
+      default: Berkshelf::Config.instance.cookbook.email
 
     def generate
       empty_directory target.join("files/default")
@@ -52,7 +52,7 @@ module Berkshelf
       template license_file, target.join("LICENSE")
       template "README.md.erb", target.join("README.md")
 
-      ::Berkshelf::InitGenerator.new([target], options.merge(default_options)).invoke_all
+      Berkshelf::InitGenerator.new([target], options.merge(default_options)).invoke_all
     end
 
     private

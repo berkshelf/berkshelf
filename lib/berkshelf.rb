@@ -1,8 +1,4 @@
 require 'multi_json'
-require 'chef/platform'
-require 'chef/cookbook/metadata'
-require 'chef/cookbook_version'
-require 'chef/knife'
 
 # Fix for Facter < 1.7.0 changing LANG to C
 # https://github.com/puppetlabs/facter/commit/f77584f4
@@ -30,8 +26,6 @@ require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 require 'thor/monkies'
 
-Chef::Config[:cache_options][:path] = Dir.mktmpdir
-
 JSON.create_id = nil
 
 module Berkshelf
@@ -40,7 +34,9 @@ module Berkshelf
   autoload :BaseGenerator, 'berkshelf/base_generator'
   autoload :Berksfile, 'berkshelf/berksfile'
   autoload :CachedCookbook, 'berkshelf/cached_cookbook'
+  autoload :Chef, 'berkshelf/chef'
   autoload :Cli, 'berkshelf/cli'
+  autoload :CommunityREST, 'berkshelf/community_rest'
   autoload :Config, 'berkshelf/config'
   autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
   autoload :CookbookSource, 'berkshelf/cookbook_source'
@@ -49,6 +45,7 @@ module Berkshelf
   autoload :Git, 'berkshelf/git'
   autoload :InitGenerator, 'berkshelf/init_generator'
   autoload :Lockfile, 'berkshelf/lockfile'
+  autoload :Mixin, 'berkshelf/mixin'
   autoload :Resolver, 'berkshelf/resolver'
   autoload :UI, 'berkshelf/ui'
   autoload :Uploader, 'berkshelf/uploader'
@@ -79,20 +76,6 @@ module Berkshelf
     # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
-    end
-
-    # Check if we're running a version of Chef that is in the 11.x line
-    #
-    # @return [Boolean]
-    def chef_11?
-      chef_version >= Solve::Version.new("11.0.0") && chef_version <= Solve::Version.new("12.0.0")
-    end
-
-    # Return the loaded version of Chef
-    #
-    # @return [Solve::Version]
-    def chef_version
-      @chef_version ||= Solve::Version.new(::Chef::VERSION)
     end
 
     # @return [String]
