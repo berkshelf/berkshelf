@@ -71,7 +71,7 @@ module Berkshelf
         begin
           [source.location.download(storage_path), source.location]
         rescue
-          Berkshelf.formatter.error "Failed to download #{source.name} from #{source.location}"
+          Berkshelf.formatter.error "Failed to download '#{source.name}' from #{source.location}"
 
           raise
         end
