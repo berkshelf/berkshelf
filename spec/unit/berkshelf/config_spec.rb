@@ -54,9 +54,7 @@ describe Berkshelf::Config do
             Berkshelf::Config.stub(:working_dir).and_return(path)
             File.stub(:exists?).and_return(false)
             File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
-            FileTest.stub(:directory?).with('/fake/.chef').and_return(true)
             File.stub(:exists?).with('/fake/.chef/path/with/multiple/.chef/knife.rb').and_return(true)
-            FileTest.stub(:directory?).with('/fake/.chef/path/with/multiple/.chef').and_return(true)
           end
 
           it 'chooses the closest path' do
@@ -71,7 +69,6 @@ describe Berkshelf::Config do
             Berkshelf::Config.stub(:working_dir).and_return(path)
             File.stub(:exists?).and_return(false)
             File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
-            FileTest.stub(:directory?).with('/fake/.chef').and_return(true)
           end
 
           it 'uses the current directory' do
@@ -86,7 +83,6 @@ describe Berkshelf::Config do
             Berkshelf::Config.stub(:working_dir).and_return(path)
             File.stub(:exists?).and_return(false)
             File.stub(:exists?).with('/.chef/knife.rb').and_return(true)
-            FileTest.stub(:directory?).with('/.chef').and_return(true)
           end
 
           it 'uses the top-level directory' do
