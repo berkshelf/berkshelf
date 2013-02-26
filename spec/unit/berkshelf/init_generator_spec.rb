@@ -18,7 +18,6 @@ describe Berkshelf::InitGenerator do
         file "Berksfile"
         file "Gemfile" do
           contains "gem 'berkshelf'"
-          contains "gem 'vagrant'"
         end
         file "Vagrantfile" do
           contains "require 'berkshelf/vagrant'"
