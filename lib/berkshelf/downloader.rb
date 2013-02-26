@@ -70,9 +70,9 @@ module Berkshelf
       cached_cookbook, location = if source.location
         begin
           [source.location.download(storage_path), source.location]
+        rescue CookbookValidationFailure; raise
         rescue
           Berkshelf.formatter.error "Failed to download '#{source.name}' from #{source.location}"
-
           raise
         end
       else

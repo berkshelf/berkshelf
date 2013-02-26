@@ -242,7 +242,6 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      Failed to download 'artifact' from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
       Cookbook downloaded for 'artifact' from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0' does not satisfy the version constraint (= 0.9.8)
       """
     And the CLI should exit with the status code for error "CookbookValidationFailure"
@@ -313,7 +312,7 @@ Feature: install cookbooks from a Berksfile
     Then the output should contain:
       """
       Installing ohai (1.1.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      Failed to download doesntexist from git: 'git://github.com/asdjhfkljashflkjashfakljsf'
+      Failed to download 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf'
       An error occured during Git execution:
       """
       And the CLI should exit with the status code for error "GitError"
