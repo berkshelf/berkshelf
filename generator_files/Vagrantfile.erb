@@ -1,13 +1,15 @@
 begin
-  require 'berkshelf/vagrant'
+  require 'berkshelf/vagrantx'
 rescue LoadError
-  puts "Berkshelf not found in your Vagrant's RubyGems!"
+  puts "[WARNING] Berkshelf not found in your Vagrant's RubyGems but your Vagrantfile is attempting"
+  puts "[WARNING] to require the Berkshelf Vagrant plugin! Install the Berkshelf Vagrant plugin or"
+  puts "[WARNING] remove the 'require \"berkshelf/vagrant\"' line from the top of your Vagrantfile."
   puts ""
   puts "If you installed Vagrant by RubyGems:"
   puts "  Install Berkshelf by running: \"gem install berkshelf\""
   puts "If you installed Vagrant by one of the pre-packaged installers:"
   puts "  Install Berkshelf by running: \"vagrant gem install berkshelf\""
-  exit(1)
+  puts ""
 end
 
 Vagrant::Config.run do |config|
