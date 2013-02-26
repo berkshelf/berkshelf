@@ -141,16 +141,17 @@ module Berkshelf
     # Ensure the retrieved CachedCookbook is valid
     #
     # @param [CachedCookbook] cached_cookbook
+    #   the downloaded cookbook to validate
     #
-    # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
-    #   this instance of Location.
-    #
-    # @raise [AmbiguousCookbookName] if the CachedCookbook's name does not match the locations's name attribute
+    # @raise [CookbookValidationFailure] if given CachedCookbook does not satisfy the constraint of the location
     #
     # @return [Boolean]
     def validate_cached(cached_cookbook)
       unless version_constraint.satisfies?(cached_cookbook.version)
-        raise ConstraintNotSatisfied, "A cookbook satisfying '#{self.name}' (#{self.version_constraint}) not found at #{self}"
+        msg = "Cookbook downloaded for '#{self.name}' from #{self} does not satisfy the version constraint"
+        msg << " (#{self.version_constraint}). This usually happens if the Chef server contains a cookbook that"
+        msg << " contains a metadata file with a missing or mis-matched version number."
+        raise CookbookValidationFailure, msg
       end
 
       # JW TODO: Safe to uncomment when when Opscode makes the 'name' a required attribute in Cookbook metadata

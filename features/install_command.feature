@@ -242,9 +242,9 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      A cookbook satisfying 'artifact' (= 0.9.8) not found at git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0'
+      Cookbook downloaded for 'artifact' from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0' does not satisfy the version constraint (= 0.9.8)
       """
-    And the CLI should exit with the status code for error "ConstraintNotSatisfied"
+    And the CLI should exit with the status code for error "CookbookValidationFailure"
 
   Scenario: when a git location source is defined and a cookbook of the same name is already cached in the cookbook store
     Given I write to "Berksfile" with:
@@ -276,17 +276,17 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a cookbook definition containing a chef_api source location
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", "= 0.10.2", chef_api: :config
+      cookbook "cuke-test", "= 1.0.0", chef_api: :config
       """
     And the Chef server has cookbooks:
-      | artifact | 0.10.2 |
+      | cuke-test | 1.0.0 |
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing artifact (0.10.2) from chef_api:
+      Installing cuke-test (1.0.0) from chef_api:
       """
     And the cookbook store should have the cookbooks:
-      | artifact | 0.10.2 |
+      | cuke-test | 1.0.0 |
     And the exit status should be 0
 
   Scenario: with a chef_api source location specifying :config when a Berkshelf config is not found at the given path
@@ -302,42 +302,6 @@ Feature: install cookbooks from a Berksfile
       """
     And the CLI should exit with the status code for error "BerksConfigNotFound"
 
-  Scenario: with a chef_api source location specifying a Chef API URL but missing a node_name option
-    Given I write to "Berksfile" with:
-      """
-      cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", client_key: "/Users/reset/.chef/knife.rb"
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name'.
-      """
-    And the CLI should exit with the status code for error "InvalidChefAPILocation"
-
-  Scenario: with a chef_api source location specifying a Chef API URL but missing a client_key option
-    Given I write to "Berksfile" with:
-      """
-      cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", node_name: "reset"
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'client_key'.
-      """
-    And the CLI should exit with the status code for error "InvalidChefAPILocation"
-
-  Scenario: with a chef_api source location specifying a Chef API URL but missing a client_key option
-    Given I write to "Berksfile" with:
-      """
-      cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios"
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      Source 'artifact' is a 'chef_api' location with a URL for it's value but is missing options: 'node_name', 'client_key'.
-      """
-    And the CLI should exit with the status code for error "InvalidChefAPILocation"
-
   Scenario: with a git error during download
     Given I write to "Berksfile" with:
       """
@@ -348,7 +312,7 @@ Feature: install cookbooks from a Berksfile
     Then the output should contain:
       """
       Installing ohai (1.1.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      Failed to download doesntexist from git: 'git://github.com/asdjhfkljashflkjashfakljsf'
+      Failed to download 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf'
       An error occured during Git execution:
       """
       And the CLI should exit with the status code for error "GitError"

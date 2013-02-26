@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Berkshelf::Resolver, :chef_server do
+  # These tests should be properly mocked and WebMock should be enabled
+  before(:all) { WebMock.disable! }
+  after(:all) { WebMock.enable! }
+
   let(:source) do
     double('source',
       name: 'mysql',
