@@ -183,7 +183,7 @@ module Berkshelf
         raise CookbookNotFound, "No 'metadata.rb' found at #{path}"
       end
 
-      metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(metadata_file.to_s)
+      metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_file.to_s)
 
       name = if metadata.name.empty? || metadata.name.nil?
         File.basename(File.dirname(metadata_file))
@@ -478,12 +478,17 @@ module Berkshelf
     #
     # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
     def upload(options = {})
-      uploader = Uploader.new(options)
+      conn     = Ridley.new(options)
       solution = resolve(options)
+
       solution.each do |cb|
-        Berkshelf.formatter.upload cb.cookbook_name, cb.version, options[:server_url]
-        uploader.upload(cb, options)
+        upload_opts = options.dup
+        upload_opts[:name] = cb.cookbook_name
+
+        Berkshelf.formatter.upload cb.cookbook_name, cb.version, upload_opts[:server_url]
+        conn.cookbook.upload(cb.path, upload_opts)
       end
+
       if options[:skip_dependencies]
         missing_cookbooks = options.fetch(:cookbooks, nil) - solution.map(&:cookbook_name)
         unless missing_cookbooks.empty?
@@ -496,6 +501,8 @@ module Berkshelf
       msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
       msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
       raise UploadFailure, msg
+    ensure
+      conn.terminate if conn && conn.alive?
     end
 
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.

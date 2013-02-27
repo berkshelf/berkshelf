@@ -1,4 +1,5 @@
 require 'socket'
+require 'tmpdir'
 require 'berkshelf/mixin'
 require 'mixlib/config'
 
