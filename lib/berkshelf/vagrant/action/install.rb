@@ -14,7 +14,8 @@ module Berkshelf
         end
 
         def call(env)
-          if Berkshelf::Vagrant.chef_solo?(env[:vm].config)
+          if Berkshelf::Vagrant.chef_solo?(env[:vm].config) && env['provision.enabled'] &&
+            (!env['provision.types'] || env['provision.types'].include?('chef_solo'))
             configure_cookbooks_path(env)
             install(env)
           end
