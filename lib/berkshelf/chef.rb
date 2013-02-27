@@ -6,6 +6,5 @@ module Berkshelf
   module Chef
     autoload :Config, 'berkshelf/chef/config'
     autoload :Cookbook, 'berkshelf/chef/cookbook'
-    autoload :Digester, 'berkshelf/chef/digester'
   end
 end

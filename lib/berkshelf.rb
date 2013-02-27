@@ -48,7 +48,6 @@ module Berkshelf
   autoload :Mixin, 'berkshelf/mixin'
   autoload :Resolver, 'berkshelf/resolver'
   autoload :UI, 'berkshelf/ui'
-  autoload :Uploader, 'berkshelf/uploader'
 
   require 'berkshelf/location'
 

@@ -91,7 +91,7 @@ module Berkshelf
       #   name of the cookbook
       def cookbook_name
         @cookbook_name ||= begin
-          metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(target.join("metadata.rb").to_s)
+          metadata = Ridley::Chef::Cookbook::Metadata.from_file(target.join("metadata.rb").to_s)
           metadata.name.empty? ? File.basename(target) : metadata.name
         rescue CookbookNotFound, IOError
           File.basename(target)
