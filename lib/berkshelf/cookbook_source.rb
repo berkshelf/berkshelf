@@ -105,7 +105,11 @@ module Berkshelf
       end
 
       if @location.is_a?(PathLocation)
-        @cached_cookbook = CachedCookbook.from_path(location.path)
+        begin
+          @cached_cookbook = CachedCookbook.from_path(location.path)
+        rescue IOError
+          raise Berkshelf::CookbookNotFound
+        end
       end
 
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]

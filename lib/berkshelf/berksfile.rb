@@ -183,7 +183,7 @@ module Berkshelf
         raise CookbookNotFound, "No 'metadata.rb' found at #{path}"
       end
 
-      metadata = Berkshelf::Chef::Cookbook::Metadata.from_file(metadata_file.to_s)
+      metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_file.to_s)
 
       name = if metadata.name.empty? || metadata.name.nil?
         File.basename(File.dirname(metadata_file))
