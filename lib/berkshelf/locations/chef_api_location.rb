@@ -2,8 +2,9 @@ module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class ChefAPILocation
     class << self
-      def finalize
-        conn.terminate if conn.alive?
+      # @return [Proc]
+      def finalizer
+        proc { conn.terminate if conn.alive? }
       end
 
       # @param [String] node_name
@@ -130,7 +131,9 @@ module Berkshelf
         }
       )
 
-      ObjectSpace.define_finalizer(self, self.class.method(:finalize).to_proc)
+      # Why do we use a class function for defining our finalizer?
+      # http://www.mikeperham.com/2010/02/24/the-trouble-with-ruby-finalizers/
+      ObjectSpace.define_finalizer(self, self.class.finalizer)
     end
 
     # @param [#to_s] destination
