@@ -1,4 +1,4 @@
-require 'berkshelf/chef'
+require 'berkshelf/chef/config'
 
 module Berkshelf
   module RSpec
