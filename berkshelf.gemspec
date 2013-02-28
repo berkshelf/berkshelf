@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'mixlib-shellout'
   s.add_dependency 'mixlib-config'
   s.add_dependency 'faraday', '>= 0.8.5'
-  s.add_dependency 'ridley', '>= 0.7.0'
+  s.add_dependency 'ridley', '>= 0.8.0'
   s.add_dependency 'chozo', '>= 0.6.1'
   s.add_dependency 'hashie', '>= 2.0.2'
   s.add_dependency 'minitar'
@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'multi_json', '~> 1.5'
   s.add_dependency 'solve', '>= 0.4.2'
   s.add_dependency 'thor', '~> 0.16.0'
+  s.add_dependency 'retryable'
 
   # Vagrant 1-0-stable compatability locks
   s.add_dependency 'moneta', '~> 0.6.0'
