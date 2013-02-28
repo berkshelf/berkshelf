@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'retryable'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
@@ -32,13 +33,35 @@ module Berkshelf
 
     V1_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
 
+    # @return [String]
     attr_reader :api_uri
+    # @return [Integer]
+    #   how many retries to attempt on HTTP requests
+    attr_reader :retries
+    # @return [Float]
+    #   time to wait between retries
+    attr_reader :retry_interval
 
-    def initialize(uri = V1_API)
-      @api_uri = Addressable::URI.parse(uri)
+    # @param [String] uri (CommunityREST::V1_API)
+    #   location of community site to connect to
+    #
+    # @option options [Integer] :retries (5)
+    #   retry requests on 5XX failures
+    # @option options [Float] :retry_interval (0.5)
+    #   how often we should pause between retries
+    def initialize(uri = V1_API, options = {})
+      options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
+      @api_uri        = Addressable::URI.parse(uri)
+      @retries        = options[:retries]
+      @retry_interval = options[:retry_interval]
 
       builder = Faraday::Builder.new do |b|
         b.response :json
+        b.request :retry,
+          max: @retries,
+          interval: @retry_interval,
+          exceptions: [Faraday::Error::TimeoutError]
+
         b.adapter :net_http
       end
 
@@ -123,10 +146,12 @@ module Berkshelf
       local = Tempfile.new('community-rest-stream')
       local.binmode
 
-      open(target, 'rb', headers) do |remote|
-        local.write(remote.read)
+      retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
+        open(target, 'rb', headers) do |remote|
+          local.write(remote.read)
+        end
       end
-      
+
       local
     ensure
       local.close(false) unless local.nil?
