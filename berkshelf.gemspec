@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'multi_json', '~> 1.5'
   s.add_dependency 'solve', '>= 0.4.2'
   s.add_dependency 'thor', '~> 0.16.0'
+  s.add_dependency 'retryable'
 
   # Vagrant 1-0-stable compatability locks
   s.add_dependency 'moneta', '~> 0.6.0'
