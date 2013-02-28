@@ -1,4 +1,3 @@
-<a id="getting-started"></a>
 ## Getting Started
 
 If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a breeze.
@@ -38,7 +37,6 @@ Want to start a new cookbook for a new application or supporting application?
 
     $ berks cookbook new_application
 
-<a id="the-berkshelf"></a>
 ## The Berkshelf
 
 > After running `berks install` you may ask yourself, "Where did my cookbooks go?". They were added to The Berkshelf.
@@ -69,7 +67,6 @@ You can easily install your Cookbooks and their dependencies to a location other
 
 This will install your Cookbooks to the `vendor/cookbooks` directory relative to where you ran the command from. Inside the vendored cookbooks directory you will find a directory named after the cookbook it contains.
 
-<a id="configuring-berkshelf"></a>
 ## Configuring Berkshelf
 
 Berkshelf will run with a default configuration unless you explicitly generate one. The configuration will attempt to populate itself with values found in your Knife configuration (if you have one) and fill in the rest with other sensible defaults.
@@ -128,7 +125,6 @@ You will only be prompted to fill in the most travelled configuration options. L
 
 > The configuration values are notated in 'dotted path' format. These translate to a nested JSON structure.
 
-<a id="vagrant-with-berkshelf"></a>
 ## Vagrant with Berkshelf
 
 Berkshelf was designed for iterating on cookbooks and applications quickly. [Vagrant](http://vagrantup.com) provides us with a way to spin up a virtual environment and configure it using a built-in Chef provisioner. If you have never used Vagrant before - stop now - read the Vagrant documentation and give it a try. Your cookbook development life is about to become 100% better.
@@ -167,7 +163,6 @@ By default, the Berkshelf Vagrant plugin will assume that the Vagrantfile is loc
 
 The above example will use an absolute path to the Berksfile of a sweet application called MyFace.
 
-<a id="the-berksfile"></a>
 ## The Berksfile
 
 Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berskfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
@@ -351,7 +346,6 @@ To exclude the groups when installing or updating just add the `--without` flag.
 
     $ berks install --without solo
 
-<a id="generating-a-new-cookbook"></a>
 ## Generating a New Cookbook
 
 Berkshelf includes a command to help you quickly generate a cookbook with a number of helpful supporting tools
@@ -360,7 +354,6 @@ Berkshelf includes a command to help you quickly generate a cookbook with a numb
 
 This will generate a cookbook called "my_face" in your current directory with Vagrant, Git, and Foodcritic support. Check out [this guide](http://vialstudios.com/guide-authoring-cookbooks.html) for more information and the help provided in the Berkshelf CLI for the cookbook command.
 
-<a id="build-integration"></a>
 ## Build Integration
 
 Instead of invoking Berkshelf directly on the command-line, you can also run Berkshelf from within a Thor process.
@@ -383,7 +376,6 @@ Now you have access to common Berkshelf tasks without shelling out
     $ thor berkshelf:upload       # Upload the Cookbooks specified by a Be...
     $ thor berkshelf:version      # Display version and copyright informat...
 
-<a id="cli-reference"></a>
 ## CLI Reference
 
 ### install
