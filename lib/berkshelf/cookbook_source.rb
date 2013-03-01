@@ -93,7 +93,7 @@ module Berkshelf
     #  @option options [String] :locked_version
     def initialize(name, options = {})
       @name = name
-      @version_constraint = Solve::Constraint.new(options[:constraint] || ">= 0.0.0")
+      @version_constraint = Solve::Constraint.new(options[:locked_version] || options[:constraint] || ">= 0.0.0")
       @groups = []
       @cached_cookbook = nil
       @location = nil
@@ -106,6 +106,13 @@ module Berkshelf
 
       if @location.is_a?(PathLocation)
         @cached_cookbook = CachedCookbook.from_path(location.path)
+      end
+
+      cache_path = File.join(Berkshelf.cookbooks_dir, "#{name}-#{options[:locked_version]}")
+
+      if File.directory?(cache_path) and !@location and options[:locked_version]
+        @cached_cookbook = CachedCookbook.from_path(cache_path, name)
+        @location = PathLocation.new(name, version_constraint, :path => cache_path)
       end
 
       @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]

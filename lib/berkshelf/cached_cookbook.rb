@@ -20,7 +20,7 @@ module Berkshelf
       #   a path on disk to the location of a Cookbook
       #
       # @return [Berkshelf::CachedCookbook]
-      def from_path(path)
+      def from_path(path, provided_name=nil)
         path = Pathname.new(path)
         metadata = Chef::Cookbook::Metadata.new
 
@@ -30,7 +30,11 @@ module Berkshelf
           raise CookbookNotFound, "No 'metadata.rb' file found at: '#{path}'"
         end
 
-        name = metadata.name.empty? ? File.basename(path) : metadata.name
+        name = provided_name || metadata.name
+
+        if !name or name.empty?
+          name = File.basename(path)
+        end
 
         new(name, path, metadata)
       end

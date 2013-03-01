@@ -117,7 +117,6 @@ module Berkshelf
       aliases: "-o"
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -128,7 +127,11 @@ module Berkshelf
       banner: "PATH"
     desc "install", "Install the Cookbooks specified by a Berksfile or a Berksfile.lock"
     def install
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      # loljava
+      lockfile_name = Berkshelf::Lockfile::DEFAULT_FILENAME
+      berksfile_name = Berkshelf::DEFAULT_FILENAME
+      default_filename = [lockfile_name, berksfile_name].find { |x| File.exist?(File.join(Dir.pwd, x)) }
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile] || default_filename)
       berksfile.install(options)
     end
 

@@ -25,7 +25,7 @@ module Berkshelf
         if source.location.is_a?(GitLocation)
           definition += ", :git => '#{source.location.uri}', :ref => '#{source.location.branch || 'HEAD'}'"
         elsif source.location.is_a?(PathLocation)
-          definition += ", :path => '#{source.location.path}'"
+          definition += ", :path => '#{File.expand_path(source.location.path, Dir.pwd)}'"
         else
           definition += ", :locked_version => '#{source.locked_version}'"
         end

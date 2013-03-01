@@ -42,16 +42,33 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
       @uri                = options[:git]
+      @options            = options
       @branch             = options[:branch] || options[:ref] || options[:tag]
       @rel                = options[:rel]
 
       Git.validate_uri!(@uri)
     end
 
+    def ref_path(destination)
+      # refs and tags should never change
+      # great idea! let's not treat them like a branch.
+      if @options[:ref] || @options[:tag]
+        File.join(destination, [name, (@options[:ref] || @options[:tag])].join("-"))
+      else
+        nil
+      end
+    end
+
     # @param [#to_s] destination
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
+      if (already_there = ref_path(destination)) && File.directory?(already_there)
+        cached = CachedCookbook.from_store_path(already_there)
+        validate_cached(cached)
+        return cached
+      end
+
       ::Berkshelf::Git.checkout(clone, branch) if branch
       unless branch
         self.branch = ::Berkshelf::Git.rev_parse(clone)
