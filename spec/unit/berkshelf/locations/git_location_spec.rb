@@ -25,6 +25,20 @@ module Berkshelf
     subject { GitLocation.new("nginx", complacent_constraint, git: "git://github.com/opscode-cookbooks/nginx.git") }
 
     describe "#download" do
+      context "when a local revision is present", focus: true do
+        let(:cached) { double('cached') }
+
+        before do
+          Berkshelf::GitLocation.any_instance.stub(:cached?).and_return(true)
+          Berkshelf::GitLocation.any_instance.stub(:validate_cached).with(cached).and_return(cached)
+          Berkshelf::CachedCookbook.stub(:from_store_path).with(any_args()).and_return(cached)
+        end
+
+        it "returns the cached cookbook" do
+          expect(subject.download(tmp_path)).to eq(cached)
+        end
+      end
+
       it "returns an instance of Berkshelf::CachedCookbook" do
         subject.download(tmp_path).should be_a(Berkshelf::CachedCookbook)
       end

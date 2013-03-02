@@ -20,6 +20,7 @@ module Berkshelf
     attr_accessor :uri
     attr_accessor :branch
     attr_accessor :rel
+    attr_reader :options
 
     alias_method :ref, :branch
     alias_method :tag, :branch
@@ -41,6 +42,7 @@ module Berkshelf
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
+      @options            = options
       @uri                = options[:git]
       @branch             = options[:branch] || options[:ref] || options[:tag]
       @rel                = options[:rel]
@@ -52,6 +54,8 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
+      return local_revision(destination) if cached?(destination)
+
       ::Berkshelf::Git.checkout(clone, branch) if branch
       unless branch
         self.branch = ::Berkshelf::Git.rev_parse(clone)
@@ -103,6 +107,22 @@ module Berkshelf
         end
 
         tmp_clone
+      end
+
+      def cached?(destination)
+        revision_path(destination) && File.exists?(revision_path(destination))
+      end
+
+      def local_revision(destination)
+        path = revision_path(destination)
+        cached = Berkshelf::CachedCookbook.from_store_path(path)
+        validate_cached(cached)
+        return cached
+      end
+
+      def revision_path(destination)
+        return unless path = options[:ref] || options[:tag]
+        File.join(destination, "#{name}-#{path}")
       end
   end
 end
