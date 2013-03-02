@@ -102,14 +102,21 @@ Spork.prefork do
           run "git commit -am '#{tag} content'"
           run "git tag '#{tag}' 2> /dev/null"
         end if options.has_key? :tags
+        options[:branches].each do |branch|
+          run! "git checkout -b #{branch} master 2> /dev/null"
+          run! "echo '#{branch}' > content_file"
+          run! "git add content_file"
+          run "git commit -am '#{branch} content'"
+          run "git checkout master 2> /dev/null"
+        end if options.has_key? :branches
       end
     end
     path
   end
 
-  def git_sha_for_tag(repo, tag)
+  def git_sha_for_ref(repo, ref)
     Dir.chdir local_git_origin_path_for(repo) do
-      run!("git show-ref '#{tag}'").chomp.split(/\s/).first
+      run!("git show-ref '#{ref}'").chomp.split(/\s/).first
     end
   end
 

@@ -37,6 +37,30 @@ module Berkshelf
     end
   end
   class PrivateGitRepo < GitError; end
+  class AmbiguousGitRef < GitError
+    attr_reader :ref
+
+    def initialize(ref)
+      @ref = ref
+    end
+
+    def to_s
+      out = "An error occurred during Git execution:\n"
+      out << "Ambiguous Git ref: #{ref}"
+    end
+  end
+  class InvalidGitRef < GitError
+    attr_reader :ref
+
+    def initialize(ref)
+      @ref = ref
+    end
+
+    def to_s
+      out = "An error occurred during Git execution:\n"
+      out << "Invalid Git ref: #{ref}"
+    end
+  end
 
   class DuplicateSourceDefined < BerkshelfError; status_code(105); end
   class NoSolution < BerkshelfError; status_code(106); end
