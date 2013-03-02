@@ -11,8 +11,9 @@ module Berkshelf
         context "given no location key (i.e. :git, :path, :site)" do
           let(:source) { subject.new(cookbook_name) }
 
-          it "sets a nil value for location" do
-            source.location.should be_nil
+          it "uses the community site as the default location" do
+            source.location.should be_a SiteLocation
+            source.location.api_uri.should eq(Berkshelf::Location::OPSCODE_COMMUNITY_API)
           end
         end
 
@@ -253,7 +254,7 @@ module Berkshelf
       it "contains the name, constraint, and groups" do
         source = CookbookSource.new("artifact", constraint: "= 0.10.0")
 
-        source.to_s.should eql("artifact (= 0.10.0) groups: [:default]")
+        source.to_s.should eql("artifact (= 0.10.0) groups: [:default] location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
       end
 
       context "given a CookbookSource with an explicit location" do

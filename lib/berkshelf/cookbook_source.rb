@@ -57,6 +57,11 @@ module Berkshelf
           raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
         end
 
+        if (options.keys & [:site, :path, :git]).size > 1
+          invalid = (options.keys & [:site, :path, :git]).map { |opt| "'#{opt}" }
+          raise InternalError, "Cannot specify #{invalid.to_sentence} for a Cookbook Source!"
+        end
+
         true
       end
     end
@@ -64,12 +69,9 @@ module Berkshelf
     extend Forwardable
 
     attr_reader :name
+    attr_reader :options
     attr_reader :version_constraint
-    attr_reader :groups
-    attr_reader :location
-    attr_accessor :cached_cookbook
-
-    def_delegator :cached_cookbook, :version, :locked_version
+    attr_writer :cached_cookbook
 
     #  @param [String] name
     #  @param [Hash] options
@@ -92,46 +94,82 @@ module Berkshelf
     #    same as tag
     #  @option options [String] :locked_version
     def initialize(name, options = {})
-      @name = name
-      @version_constraint = Solve::Constraint.new(options[:locked_version] || options[:constraint] || ">= 0.0.0")
-      @groups = []
-      @cached_cookbook = nil
-      @location = nil
-
       self.class.validate_options(options)
 
-      unless (options.keys & self.class.location_keys.keys).empty?
-        @location = Location.init(name, version_constraint, options)
-      end
+      @name = name
+      @options = options
 
-      if @location.is_a?(PathLocation)
-        @cached_cookbook = CachedCookbook.from_path(location.path)
-      end
+      @version_constraint = Solve::Constraint.new(options[:locked_version] || options[:constraint] || ">= 0.0.0")
 
-      @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
+      # Eager-load the cached_cookbook so exceptions are raised here an not down the line
+      cached_cookbook
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
     end
 
-    def add_group(*groups)
-      groups = groups.first if groups.first.is_a?(Array)
-      groups.each do |group|
+    def add_group(*local_groups)
+      local_groups = local_groups.first if local_groups.first.is_a?(Array)
+
+      local_groups.each do |group|
         group = group.to_sym
-        @groups << group unless @groups.include?(group)
+        groups << group unless groups.include?(group)
       end
     end
 
     # Returns true if the cookbook source has already been downloaded. A cookbook
-    # source is downloaded when a cached cookbooked is present.
+    # source is downloaded when a cached cookbook is present.
     #
     # @return [Boolean]
     def downloaded?
       !self.cached_cookbook.nil?
     end
 
+    # Returns true if this CookbookSource has the given group.
+    #
+    # @return [Boolean]
     def has_group?(group)
       groups.include?(group.to_sym)
+    end
+
+    # Get the locked version of this cookbook. First check the instance variable
+    # and then resort to the cached_cookbook for the version.
+    #
+    # This was formerly a delegator, but it would fail if the `@cached_cookbook`
+    # was nil or undefined.
+    #
+    # @return [Solve::Version, nil]
+    #   the locked version of this cookbook
+    def locked_version
+      @locked_version ||= begin
+        return Solve::Version.new(options[:locked_version]) if options[:locked_version]
+        cached_cookbook && cached_cookbook.version
+      end
+    end
+
+    # The associated CachedCookbok for this CookbookSource. This will first check a 
+    # local file path if the :path option was provided, and then attempt to locate
+    # the CachedCookbook from the CookbookStore (if it's already been downloaded).
+    #
+    # @return [Berkshelf::CachedCookbook, nil]
+    def cached_cookbook
+      @cached_cookbook ||= from_path || from_cache
+    end
+
+    # The location for this CookbookSource, such as a remote Chef Server, the 
+    # community API, :git, or a :path location. By default, this will be the
+    # community API.
+    #
+    # @return [Berkshelf::Location]
+    def location
+      @location ||= Location.init(name, version_constraint, options)
+    end
+
+    # The list of groups this CookbookSource belongs to.
+    #
+    # @return [Array<Symbol>]
+    def groups
+      @groups ||= []
     end
 
     def to_s
@@ -151,5 +189,39 @@ module Berkshelf
     def to_json
       MultiJson.dump(self.to_hash, pretty: true)
     end
+
+    private
+
+      # Attempt to load a CachedCookbook from a local file system path (if the :path
+      # option was given). If one is found, the location and cached_cookbook is 
+      # updated. Otherwise, this method will raise a CookbookNotFound exception.
+      #
+      # @raises [Berkshelf::CookbookNotFound]
+      #   if no CachedCookbook exists at the given path
+      #
+      # @return [Berkshelf::CachedCookbook]
+      def from_path
+        return nil unless options[:path]
+
+        @location = PathLocation.new(name, version_constraint, path: options[:path])
+        cached = CachedCookbook.from_path(@location.path)
+
+        raise Berkshelf::CookbookNotFound unless cached
+        return cached
+      end
+
+      # Attempt to load a CachedCookbook from the local CookbookStore. This will save 
+      # the need to make an http request to download a cookbook we already have cached
+      # locally.
+      #
+      # @return [Berkshelf::CachedCookbook, nil]
+      def from_cache
+        path = File.join(Berkshelf.cookbooks_dir, "#{name}-#{options[:locked_version]}")
+
+        return nil unless File.exists?(path)
+
+        @location = PathLocation.new(name, version_constraint, path: path)
+        return CachedCookbook.from_path(path, name)       
+      end
   end
 end
