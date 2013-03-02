@@ -16,19 +16,43 @@ module Berkshelf
           end
         end
 
-        context "given no value for constraint" do
+        context 'given no value for :locked_version' do
           let(:source) { subject.new(cookbook_name) }
 
-          it "returns a wildcard match for any version" do
-            source.version_constraint.to_s.should eql(">= 0.0.0")
+          it 'returns a wildcard match for any version' do
+            expect(source.version_constraint.to_s).to eq('>= 0.0.0')
           end
         end
 
-        context "given a value for constraint" do
-          let(:source) { subject.new(cookbook_name, constraint: "~> 1.0.84") }
+        context 'given a value for :locked_version' do
+          let(:source) { subject.new(cookbook_name, locked_version: '1.2.3') }
 
-          it "returns a Solve::Constraint for the given version for version_constraint" do
-            source.version_constraint.to_s.should eql("~> 1.0.84")
+          it 'returns the locked_version as the constraint' do
+            expect(source.version_constraint.to_s).to eq('= 1.2.3')
+          end
+        end
+
+        context 'given no value for :constraint' do
+          let(:source) { subject.new(cookbook_name) }
+
+          it 'returns a wildcard match for any version' do
+            expect(source.version_constraint.to_s).to eq('>= 0.0.0')
+          end
+        end
+
+        context 'given a value for :constraint' do
+          let(:source) { subject.new(cookbook_name, constraint: '~> 1.0.84') }
+
+          it 'returns a Solve::Constraint for the given version for version_constraint' do
+            expect(source.version_constraint.to_s).to eq('~> 1.0.84')
+          end
+        end
+
+        context 'given a value for :locked_version and :constraint' do
+          let(:source) { subject.new(cookbook_name, constraint: '~> 1.0.84', locked_version: '1.2.3') }
+
+          it 'uses the :locked_version' do
+            expect(source.version_constraint.to_s).to eq('= 1.2.3')
           end
         end
 

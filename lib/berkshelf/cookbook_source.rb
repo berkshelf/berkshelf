@@ -93,7 +93,7 @@ module Berkshelf
     #  @option options [String] :locked_version
     def initialize(name, options = {})
       @name = name
-      @version_constraint = Solve::Constraint.new(options[:constraint] || ">= 0.0.0")
+      @version_constraint = Solve::Constraint.new(options[:locked_version] || options[:constraint] || ">= 0.0.0")
       @groups = []
       @cached_cookbook = nil
       @location = nil
