@@ -25,7 +25,7 @@ module Berkshelf
     subject { GitLocation.new("nginx", complacent_constraint, git: "git://github.com/opscode-cookbooks/nginx.git") }
 
     describe "#download" do
-      context "when a local revision is present", focus: true do
+      context "when a local revision is present" do
         let(:cached) { double('cached') }
 
         before do
