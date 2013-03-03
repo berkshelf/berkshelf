@@ -25,6 +25,7 @@ module Berkshelf
     set_location_key :path
 
     attr_accessor :path
+    attr_reader :name
 
     # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint
@@ -43,7 +44,7 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      cached = CachedCookbook.from_path(File.expand_path(path))
+      cached = CachedCookbook.from_path(path, name)
       validate_cached(cached)
 
       set_downloaded_status(true)
