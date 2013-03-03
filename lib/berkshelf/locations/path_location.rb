@@ -44,7 +44,7 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      cached = CachedCookbook.from_path(path, name)
+      cached = CachedCookbook.from_path(path, name: name)
       validate_cached(cached)
 
       set_downloaded_status(true)

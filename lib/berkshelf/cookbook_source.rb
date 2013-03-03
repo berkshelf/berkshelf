@@ -147,7 +147,7 @@ module Berkshelf
       end
     end
 
-    # The associated CachedCookbok for this CookbookSource. This will first check a 
+    # The associated CachedCookbok for this CookbookSource. This will first check a
     # local file path if the :path option was provided, and then attempt to locate
     # the CachedCookbook from the CookbookStore (if it's already been downloaded).
     #
@@ -156,7 +156,7 @@ module Berkshelf
       @cached_cookbook ||= from_path || from_cache
     end
 
-    # The location for this CookbookSource, such as a remote Chef Server, the 
+    # The location for this CookbookSource, such as a remote Chef Server, the
     # community API, :git, or a :path location. By default, this will be the
     # community API.
     #
@@ -193,7 +193,7 @@ module Berkshelf
     private
 
       # Attempt to load a CachedCookbook from a local file system path (if the :path
-      # option was given). If one is found, the location and cached_cookbook is 
+      # option was given). If one is found, the location and cached_cookbook is
       # updated. Otherwise, this method will raise a CookbookNotFound exception.
       #
       # @raises [Berkshelf::CookbookNotFound]
@@ -204,13 +204,15 @@ module Berkshelf
         return nil unless options[:path]
 
         @location = PathLocation.new(name, version_constraint, path: options[:path])
-        cached = CachedCookbook.from_path(@location.path)
 
-        raise Berkshelf::CookbookNotFound unless cached
-        return cached
+        begin
+          return CachedCookbook.from_path(@location.path)
+        rescue IOError
+          raise Berkshelf::CookbookNotFound
+        end
       end
 
-      # Attempt to load a CachedCookbook from the local CookbookStore. This will save 
+      # Attempt to load a CachedCookbook from the local CookbookStore. This will save
       # the need to make an http request to download a cookbook we already have cached
       # locally.
       #
@@ -221,7 +223,7 @@ module Berkshelf
         return nil unless File.exists?(path)
 
         @location = PathLocation.new(name, version_constraint, path: path)
-        return CachedCookbook.from_path(path, name)       
+        return CachedCookbook.from_path(path, name: name)
       end
   end
 end

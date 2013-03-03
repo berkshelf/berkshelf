@@ -13,7 +13,7 @@ module Berkshelf
 
           it "uses the community site as the default location" do
             source.location.should be_a SiteLocation
-            source.location.api_uri.should eq(Berkshelf::Location::OPSCODE_COMMUNITY_API)
+            source.location.api_uri.to_s.should eq(Berkshelf::Location::OPSCODE_COMMUNITY_API)
           end
         end
 
