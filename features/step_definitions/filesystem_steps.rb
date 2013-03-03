@@ -106,7 +106,6 @@ Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
     end
     file "Gemfile" do
       contains "gem 'berkshelf'"
-      contains "gem 'vagrant'"
     end
     file "metadata.rb"
     file "README.md"

@@ -52,7 +52,7 @@ module Berkshelf
       template "Berksfile.erb", target.join("Berksfile")
 
       if options[:chefignore]
-        copy_file "chefignore", target.join("chefignore")
+        copy_file "chefignore", target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
       end
 
       unless options[:skip_git]
@@ -91,11 +91,9 @@ module Berkshelf
       #   name of the cookbook
       def cookbook_name
         @cookbook_name ||= begin
-          metadata = Chef::Cookbook::Metadata.new
-
-          metadata.from_file(target.join("metadata.rb").to_s)
+          metadata = Ridley::Chef::Cookbook::Metadata.from_file(target.join("metadata.rb").to_s)
           metadata.name.empty? ? File.basename(target) : metadata.name
-        rescue IOError
+        rescue CookbookNotFound, IOError
           File.basename(target)
         end
       end

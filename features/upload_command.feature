@@ -94,175 +94,123 @@ Feature: upload command
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: Running the upload command with multiple cookbooks
+  Scenario: explicitly specifying multiple cookbooks to upload
     Given I write to "Berksfile" with:
       """
-      cookbook "build-essential"
-      cookbook "chef-client"
-      cookbook "database"
-      cookbook "editor"
-      cookbook "git"
-      cookbook "known_host"
-      cookbook "networking_basic"
+      cookbook "ntp"
       cookbook "vim"
+      cookbook "apt"
       """
     And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | build-essential  |
-      | chef-client      |
-      | database         |
-      | editor           |
-      | git              |
-      | known_host       |
-      | networking_basic |
-      | vim              |
-    When I run `berks upload build-essential chef-client database`
-    Then the output should contain "Uploading build-essential"
-    And the output should contain "Uploading chef-client"
-    And the output should contain "Uploading database"
-    And the output should not contain "Uploading editor"
-    And the output should not contain "Uploading git"
-    And the output should not contain "Uploading known_host"
-    And the output should not contain "Uploading networking_basic"
+      | ntp |
+      | vim |
+      | apt |
+    When I run `berks upload ntp vim`
+    Then the output should contain "Uploading ntp"
+    And the output should contain "Uploading vim"
+    And the output should not contain "Uploading apt"
+    And the Chef server should have the cookbooks:
+      | ntp |
+      | vim |
+    And the Chef server should not have the cookbooks:
+      | apt |
+    And the exit status should be 0
+
+  @chef_server @slow_process
+  Scenario: uploading a single group of cookbooks with the --only flag
+    Given I write to "Berksfile" with:
+      """
+      group :core do
+        cookbook "ntp"
+      end
+
+      group :system do
+        cookbook "vim"
+      end
+      """
+    And I successfully run `berks install`
+    And the Chef server does not have the cookbooks:
+      | ntp |
+      | vim |
+    When I run `berks upload --only core`
+    Then the output should contain "Uploading ntp"
     And the output should not contain "Uploading vim"
     And the Chef server should have the cookbooks:
-      | build_essential |
-      | chef-client     |
-      | database        |
+      | ntp |
     And the Chef server should not have the cookbooks:
-      | editor           |
-      | git              |
-      | known_host       |
-      | networking_basic |
-      | vim              |
+      | vim |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: Running the upload command with the :only option
+  Scenario: uploading multiple groups of cookbooks with the --only flag
     Given I write to "Berksfile" with:
       """
       group :core do
-        cookbook "build-essential"
-        cookbook "chef-client"
+        cookbook "ntp"
       end
 
       group :system do
-        cookbook "database"
-        cookbook "editor"
+        cookbook "vim"
       end
       """
     And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | build-essential  |
-      | chef-client      |
-      | database         |
-      | editor           |
-    When I run `berks upload --only core`
-    Then the output should contain "Uploading build-essential"
-    And the output should contain "Uploading chef-client"
-    And the output should not contain "Uploading database"
-    And the output should not contain "Uploading editor"
-    And the Chef server should have the cookbooks:
-      | build_essential |
-      | chef-client     |
-    And the Chef server should not have the cookbooks:
-      | database |
-      | editor   |
-    And the exit status should be 0
-
-  @chef_server @slow_process
-  Scenario: Running the upload command with the :only option multiple
-    Given I write to "Berksfile" with:
-      """
-      group :core do
-        cookbook "build-essential"
-        cookbook "chef-client"
-      end
-
-      group :system do
-        cookbook "database"
-        cookbook "editor"
-      end
-      """
-    And I successfully run `berks install`
-    And the Chef server does not have the cookbooks:
-      | build-essential  |
-      | chef-client      |
-      | database         |
-      | editor           |
+      | ntp |
+      | vim |
     When I run `berks upload --only core system`
-    Then the output should contain "Uploading build-essential"
-    And the output should contain "Uploading chef-client"
-    And the output should contain "Uploading database"
-    And the output should contain "Uploading editor"
+    Then the output should contain "Uploading ntp"
+    And the output should contain "Uploading vim"
     And the Chef server should have the cookbooks:
-      | build_essential |
-      | chef-client     |
-      | database        |
-      | editor          |
+      | ntp |
+      | vim |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: Running the upload command with the :except option
+  Scenario: skip uploading one group of cookbooks with the --except flag
     Given I write to "Berksfile" with:
       """
       group :core do
-        cookbook "build-essential"
-        cookbook "chef-client"
+        cookbook "ntp"
       end
 
       group :system do
-        cookbook "database"
-        cookbook "editor"
+        cookbook "vim"
       end
       """
     And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | build-essential  |
-      | chef-client      |
-      | database         |
-      | editor           |
+      | ntp |
+      | vim |
     When I run `berks upload --except core`
-    Then the output should not contain "Uploading build-essential"
-    And the output should not contain "Uploading chef-client"
-    And the output should contain "Uploading database"
-    And the output should contain "Uploading editor"
+    Then the output should not contain "Uploading ntp"
+    And the output should contain "Uploading vim"
     And the Chef server should not have the cookbooks:
-      | build_essential |
-      | chef-client     |
+      | ntp |
     And the Chef server should have the cookbooks:
-      | database |
-      | editor   |
+      | vim |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: Running the upload command with the :except option multiple
+  Scenario: skip uploading multiple groups of cookbooks with the --except flag
     Given I write to "Berksfile" with:
       """
       group :core do
-        cookbook "build-essential"
-        cookbook "chef-client"
+        cookbook "ntp"
       end
 
       group :system do
-        cookbook "database"
-        cookbook "editor"
+        cookbook "vim"
       end
       """
     And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | build-essential  |
-      | chef-client      |
-      | database         |
-      | editor           |
+      | ntp |
+      | vim |
     When I run `berks upload --except core system`
-    Then the output should not contain "Uploading build-essential"
-    And the output should not contain "Uploading chef-client"
-    And the output should not contain "Uploading database"
-    And the output should not contain "Uploading editor"
+    Then the output should not contain "Uploading ntp"
+    And the output should not contain "Uploading vim"
     And the Chef server should not have the cookbooks:
-      | build_essential |
-      | chef-client     |
-      | database        |
-      | editor          |
+      | ntp |
+      | vim |
     And the exit status should be 0

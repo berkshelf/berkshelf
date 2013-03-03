@@ -1,8 +1,6 @@
 require 'rubygems'
-
 require 'bundler'
 require 'spork'
-require 'vcr'
 
 Spork.prefork do
   require 'json_spec'
@@ -16,11 +14,6 @@ Spork.prefork do
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
-  VCR.configure do |c|
-    c.cassette_library_dir = File.join(File.dirname(__FILE__), 'fixtures', 'vcr_cassettes')
-    c.hook_into :webmock
-  end
-
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
     config.include JsonSpec::Helpers
@@ -30,20 +23,6 @@ Spork.prefork do
     config.treat_symbols_as_metadata_keys_with_true_values = true
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
-
-    config.around do |example|
-      # Dynamically create cassettes based on the name of the example
-      # being run. This creates a new cassette for every test.
-      cur = example.metadata
-      identifiers = [example.metadata[:description_args]]
-      while cur = cur[:example_group] do
-        identifiers << cur[:description_args]
-      end
-
-      VCR.use_cassette(identifiers.reverse.join(' ')) do
-        example.run
-      end
-    end
 
     config.before(:each) do
       clean_tmp_path
