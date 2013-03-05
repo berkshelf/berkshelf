@@ -3,7 +3,7 @@
 If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a breeze.
 
     $ gem install berkshelf
-    Successfully installed berkshelf-1.1.0
+    Successfully installed berkshelf-1.2.0
     1 gem installed
 
 Specify your dependencies in a Berksfile in your cookbook's root
@@ -130,6 +130,16 @@ You will only be prompted to fill in the most travelled configuration options. L
 Berkshelf was designed for iterating on cookbooks and applications quickly. [Vagrant](http://vagrantup.com) provides us with a way to spin up a virtual environment and configure it using a built-in Chef provisioner. If you have never used Vagrant before - stop now - read the Vagrant documentation and give it a try. Your cookbook development life is about to become 100% better.
 
 If you have used Vagrant before, READ ON!
+
+### Install the Berkshelf into Vagrant
+
+If you've installed Vagrant using one of the stand alone installers then you will need to install Berkshelf into Vagrant's Rubygems.
+
+    $ vagrant gem install berkshelf
+    Successfully installed berkshelf-1.2.0
+    1 gem installed
+
+You can skip this step if you've installed Vagrant using Rubygems.
 
 ### Berkshelf Vagrant plugin
 
