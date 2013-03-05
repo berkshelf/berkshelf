@@ -19,6 +19,8 @@ module Berkshelf
 
     attr_accessor :uri
     attr_accessor :branch
+    attr_accessor :ref
+    attr_accessor :tag
     attr_accessor :rel
     attr_reader :options
 
@@ -43,8 +45,10 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
       @options            = options
+      @ref                = options[:ref]
+      @tag                = options[:tag]
       @uri                = options[:git]
-      @branch             = options[:branch] || options[:ref] || options[:tag]
+      @branch             = options[:branch] || @ref || @tag
       @rel                = options[:rel]
 
       Git.validate_uri!(@uri)
@@ -121,7 +125,7 @@ module Berkshelf
       end
 
       def revision_path(destination)
-        return unless path = options[:ref] || options[:tag]
+        return unless path = @ref || @tag
         File.join(destination, "#{name}-#{path}")
       end
   end
