@@ -82,6 +82,8 @@ module Berkshelf::Chef
     cookbook_email          "YOUR_EMAIL"
     cookbook_license        "reserved"
 
+    knife                   Hash.new
+
     # history: prior to Chef 11, the cache implementation was based on
     # moneta and configured via cache_options[:path]. Knife configs
     # generated with Chef 11 will have `syntax_check_cache_path`, but older
