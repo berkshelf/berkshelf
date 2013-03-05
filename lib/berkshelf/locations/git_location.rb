@@ -44,7 +44,6 @@ module Berkshelf
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
-      @options            = options
       @ref                = options[:ref]
       @tag                = options[:tag]
       @uri                = options[:git]
