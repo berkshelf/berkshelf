@@ -205,7 +205,7 @@ Feature: install cookbooks from a Berksfile
     And I run `berks install`
     Then the output should contain:
       """
-      Failed to download doesntexist from site
+      Failed to download 'doesntexist' from site
       """
     And the CLI should exit with the status code for error "CookbookNotFound"
 
