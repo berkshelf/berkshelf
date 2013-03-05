@@ -68,9 +68,14 @@ module Berkshelf
     # @return [Array<CookbookSource>]
     def add_source_dependencies(source)
       source.cached_cookbook.dependencies.each do |name, constraint|
-        next if has_source?(name)
-
-        add_source(CookbookSource.new(name, constraint: constraint))
+        existing = get_source(name)
+        if existing
+          unless Solve::Constraint.new(constraint).satisfies?(existing.cached_cookbook.version)
+            raise Berkshelf::NoSolution, "#{source.name} dependency #{name} #{constraint} conflicts with already loaded #{name} #{existing.cached_cookbook.version} (#{existing.version_constraint})"
+          end
+        else
+          add_source(CookbookSource.new(name, constraint: constraint))
+        end
       end
     end
 
