@@ -14,7 +14,7 @@ describe Berkshelf::Resolver, :chef_server do
         name: 'mysql-1.2.4',
         cookbook_name: 'mysql',
         version: '1.2.4',
-        dependencies: { "nginx" => ">= 0.1.0", "artifact" => "~> 0.10.0" }
+        dependencies: { "nginx" => "~> 1.2.0", "artifact" => "~> 1.2.0" }
       ),
       location: double('location', validate_cached: true)
     )
@@ -30,6 +30,21 @@ describe Berkshelf::Resolver, :chef_server do
         cookbook_name: 'nginx',
         version: '0.101.2',
         dependencies: Hash.new
+      ),
+      location: double('location', validate_cached: true)
+    )
+  end
+
+  let(:incompat) do
+    double('incompat',
+      name: 'incompat',
+      version_constraint: Solve::Constraint.new('= 1.2.3'),
+      downloaded?: true,
+      cached_cookbook: double('mysql-cookbook',
+        name: 'incompat-1.2.3',
+        cookbook_name: 'incompat',
+        version: '1.2.3',
+        dependencies: { "nginx" => "< 0.1.0" }
       ),
       location: double('location', validate_cached: true)
     )
@@ -109,6 +124,19 @@ describe Berkshelf::Resolver, :chef_server do
         subject.should_not_receive(:add_source_dependencies)
 
         subject.add_source(source, false)
+      end
+    end
+
+    context "with incompatible dependencies" do
+      before do
+        subject.add_source(source)
+        subject.add_source(source_two)
+      end
+
+      it "raises a NoSolution exeption" do
+        lambda {
+          subject.add_source(incompat)
+        }.should raise_error(Berkshelf::NoSolution)
       end
     end
   end
