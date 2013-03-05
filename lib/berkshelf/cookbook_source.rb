@@ -206,7 +206,7 @@ module Berkshelf
         @location = PathLocation.new(name, version_constraint, path: options[:path])
 
         begin
-          return CachedCookbook.from_path(@location.path)
+          CachedCookbook.from_path(@location.path)
         rescue IOError
           raise Berkshelf::CookbookNotFound
         end
@@ -223,7 +223,7 @@ module Berkshelf
         return nil unless File.exists?(path)
 
         @location = PathLocation.new(name, version_constraint, path: path)
-        return CachedCookbook.from_path(path, name: name)
+        CachedCookbook.from_path(path, name: name)
       end
   end
 end
