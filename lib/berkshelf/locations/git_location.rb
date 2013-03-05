@@ -24,9 +24,6 @@ module Berkshelf
     attr_accessor :rel
     attr_reader :options
 
-    alias_method :ref, :branch
-    alias_method :tag, :branch
-
     # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint
     # @param [Hash] options
@@ -47,7 +44,7 @@ module Berkshelf
       @ref                = options[:ref]
       @tag                = options[:tag]
       @uri                = options[:git]
-      @branch             = options[:branch] || @ref || @tag
+      @branch             = options[:branch] || ref || tag
       @rel                = options[:rel]
 
       Git.validate_uri!(@uri)
@@ -124,7 +121,7 @@ module Berkshelf
       end
 
       def revision_path(destination)
-        return unless path = @ref || @tag
+        return unless path = ref || tag
         File.join(destination, "#{name}-#{path}")
       end
   end
