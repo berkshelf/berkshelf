@@ -1,5 +1,6 @@
 Berkshelf
 =========
+[![Gem Version](https://badge.fury.io/rb/berkshelf.png)](http://badge.fury.io/rb/berkshelf)
 [![Build Status](https://travis-ci.org/RiotGames/berkshelf.png?branch=master)](https://travis-ci.org/RiotGames/berkshelf)
 [![Code Climate](https://codeclimate.com/github/RiotGames/berkshelf.png)](https://codeclimate.com/github/RiotGames/berkshelf)
 
