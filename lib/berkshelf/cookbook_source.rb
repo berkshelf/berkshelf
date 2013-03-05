@@ -71,7 +71,7 @@ module Berkshelf
     attr_reader :name
     attr_reader :options
     attr_reader :version_constraint
-    attr_writer :cached_cookbook
+    attr_accessor :cached_cookbook
 
     #  @param [String] name
     #  @param [Hash] options
@@ -97,12 +97,10 @@ module Berkshelf
       self.class.validate_options(options)
 
       @name = name
-      @options = options
-
+      @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
       @version_constraint = Solve::Constraint.new(options[:locked_version] || options[:constraint] || ">= 0.0.0")
 
-      # Eager-load the cached_cookbook so exceptions are raised here an not down the line
-      cached_cookbook
+      @cached_cookbook, @location = cached_and_location(options)
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
@@ -141,19 +139,7 @@ module Berkshelf
     # @return [Solve::Version, nil]
     #   the locked version of this cookbook
     def locked_version
-      @locked_version ||= begin
-        return Solve::Version.new(options[:locked_version]) if options[:locked_version]
-        cached_cookbook && cached_cookbook.version
-      end
-    end
-
-    # The associated CachedCookbok for this CookbookSource. This will first check a
-    # local file path if the :path option was provided, and then attempt to locate
-    # the CachedCookbook from the CookbookStore (if it's already been downloaded).
-    #
-    # @return [Berkshelf::CachedCookbook, nil]
-    def cached_cookbook
-      @cached_cookbook ||= from_path || from_cache
+      @locked_version ||= cached_cookbook.try(:version)
     end
 
     # The location for this CookbookSource, such as a remote Chef Server, the
@@ -192,6 +178,13 @@ module Berkshelf
 
     private
 
+      # Determine the CachedCookbook and Location information from the given options.
+      #
+      # @return [Array<CachedCookbook, Location>]
+      def cached_and_location(options = {})
+        from_path(options) || from_cache(options) || from_default(options)
+      end
+
       # Attempt to load a CachedCookbook from a local file system path (if the :path
       # option was given). If one is found, the location and cached_cookbook is
       # updated. Otherwise, this method will raise a CookbookNotFound exception.
@@ -200,16 +193,15 @@ module Berkshelf
       #   if no CachedCookbook exists at the given path
       #
       # @return [Berkshelf::CachedCookbook]
-      def from_path
+      def from_path(options = {})
         return nil unless options[:path]
 
-        @location = PathLocation.new(name, version_constraint, path: options[:path])
+        location = PathLocation.new(name, version_constraint, path: options[:path])
+        cached = CachedCookbook.from_path(location.path)
 
-        begin
-          CachedCookbook.from_path(@location.path)
-        rescue IOError
-          raise Berkshelf::CookbookNotFound
-        end
+        [cached, location]
+      rescue IOError
+        raise Berkshelf::CookbookNotFound
       end
 
       # Attempt to load a CachedCookbook from the local CookbookStore. This will save
@@ -217,13 +209,31 @@ module Berkshelf
       # locally.
       #
       # @return [Berkshelf::CachedCookbook, nil]
-      def from_cache
-        path = File.join(Berkshelf.cookbooks_dir, "#{name}-#{options[:locked_version]}")
-
+      def from_cache(options = {})
+        path = File.join(Berkshelf.cookbooks_dir, filename(options))
         return nil unless File.exists?(path)
 
-        @location = PathLocation.new(name, version_constraint, path: path)
-        CachedCookbook.from_path(path, name: name)
+        location = PathLocation.new(name, version_constraint, path: path)
+        cached = CachedCookbook.from_path(path, name: name)
+
+        [cached, location]
+      end
+
+      # Use the default location, and a nil CachedCookbook.
+      #
+      # @return [Array<nil, Location>]
+      def from_default(options = {})
+        location = Location.init(name, version_constraint, options)
+        cached = nil
+
+        [cached, location]
+      end
+
+      # The hypothetical location of this CachedCookbook, if it were to exist.
+      #
+      # @return [String]
+      def filename(options = {})
+        "#{name}-#{options[:locked_version]}"
       end
   end
 end
