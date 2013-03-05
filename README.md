@@ -2,6 +2,7 @@ Berkshelf
 =========
 [![Gem Version](https://badge.fury.io/rb/berkshelf.png)](http://badge.fury.io/rb/berkshelf)
 [![Build Status](https://travis-ci.org/RiotGames/berkshelf.png?branch=master)](https://travis-ci.org/RiotGames/berkshelf)
+[![Dependency Status](https://gemnasium.com/RiotGames/berkshelf.png)](https://gemnasium.com/RiotGames/berkshelf)
 [![Code Climate](https://codeclimate.com/github/RiotGames/berkshelf.png)](https://codeclimate.com/github/RiotGames/berkshelf)
 
 Manage a Cookbook or an Application's Cookbook dependencies
