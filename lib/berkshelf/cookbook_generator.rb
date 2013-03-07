@@ -17,6 +17,10 @@ module Berkshelf
       type: :boolean,
       default: false
 
+    class_option :chef_minitest,
+      type: :boolean,
+      default: false
+
     class_option :scmversion,
       type: :boolean,
       default: false
