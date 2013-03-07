@@ -116,6 +116,38 @@ Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
   }
 end
 
+Then /^I should have a new cookbook skeleton "(.*?)" with Chef-Minitest support$/ do |name|
+  steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
+
+  cb_path = Pathname.new(current_dir).join(name)
+  cb_path.should have_structure {
+    file "Berksfile" do
+      contains "cookbook 'minitest-handler'"
+    end
+    file "Vagrantfile" do
+      contains "recipe[minitest-handler::default]"
+    end
+    directory "files" do
+      directory "default" do
+        directory "tests" do
+          directory "minitest" do
+            file "default_test.rb" do
+              contains "describe '#{name}::default' do"
+              contains "include Helpers::#{name.capitalize}"
+            end
+            directory "support" do
+              file "helpers.rb" do
+                contains "module #{name.capitalize}"
+              end
+            end
+          end
+        end
+      end
+    end
+  }
+end
+
+
 Then /^I should have a new cookbook skeleton "(.*?)" with Foodcritic support$/ do |name|
   steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
 

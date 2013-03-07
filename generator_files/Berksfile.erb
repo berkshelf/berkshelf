@@ -1,4 +1,8 @@
 site :opscode
+<% if options[:chef_minitest] -%>
+
+cookbook 'minitest-handler'
+<% end -%>
 <% if options[:metadata_entry] -%>
 
 metadata
