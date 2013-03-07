@@ -29,6 +29,10 @@ module Berkshelf
       type: :boolean,
       default: false
 
+    class_option :chef_minitest,
+      type: :boolean,
+      default: false
+
     class_option :scmversion,
       type: :boolean,
       default: false
@@ -67,6 +71,12 @@ module Berkshelf
 
       if options[:foodcritic] || options[:scmversion]
         template "Thorfile.erb", target.join("Thorfile")
+      end
+
+      if options[:chef_minitest]
+        empty_directory target.join("files/default/tests/minitest/support")
+        template "default_test.rb.erb", target.join("files/default/tests/minitest/default_test.rb")
+        template "helpers.rb.erb", target.join("files/default/tests/minitest/support/helpers.rb")
       end
 
       if options[:scmversion]

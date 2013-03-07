@@ -157,4 +157,44 @@ describe Berkshelf::InitGenerator do
       }
     end
   end
+
+  # context "with the chef_minitest option true" do
+  #   before(:each) do
+  #     # stub_request(:get, "http://cookbooks.opscode.com/api/v1/cookbooks/minitest-handler").
+  #     #   with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.8.6'}).
+  #     #   to_return(:status => 200, :body => "", :headers => {})
+  #     capture(:stdout) {
+  #       subject.new([target], chef_minitest: true).invoke_all
+  #     }
+  #   end
+
+  #   specify do
+  #     target.should have_structure {
+  #       file "Berksfile" do
+  #         contains "cookbook 'minitest-handler'"
+  #       end
+  #       file "Vagrantfile" do
+  #         contains "\"recipe[minitest-handler::default]\""
+  #       end
+  #      directory "files" do
+  #        directory "default" do
+  #          directory "tests" do
+  #            directory "minitest" do
+  #              file "default_test.rb" do
+  #                contains "describe '#{name}::default' do"
+  #                contains "include Helpers::#{name.capitalize}"
+  #              end
+  #              directory "support" do
+  #                file "helpers.rb" do
+  #                  contains "module #{name.capitalize}"
+  #                end
+  #              end
+  #            end
+  #          end
+  #        end
+  #      end
+  #     }
+  #   end
+  # end
+
 end
