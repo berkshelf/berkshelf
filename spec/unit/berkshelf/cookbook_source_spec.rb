@@ -11,49 +11,24 @@ module Berkshelf
         context "given no location key (i.e. :git, :path, :site)" do
           let(:source) { subject.new(cookbook_name) }
 
-          it "uses the community site as the default location" do
-            source.location.should be_a SiteLocation
-            source.location.api_uri.to_s.should eq(Berkshelf::Location::OPSCODE_COMMUNITY_API)
+          it "sets a nil value for location" do
+            source.location.should be_nil
           end
         end
 
-        context 'given no value for :locked_version' do
+        context "given no value for constraint" do
           let(:source) { subject.new(cookbook_name) }
 
-          it 'returns a wildcard match for any version' do
-            expect(source.version_constraint.to_s).to eq('>= 0.0.0')
+          it "returns a wildcard match for any version" do
+            source.version_constraint.to_s.should eql(">= 0.0.0")
           end
         end
 
-        context 'given a value for :locked_version' do
-          let(:source) { subject.new(cookbook_name, locked_version: '1.2.3') }
+        context "given a value for constraint" do
+          let(:source) { subject.new(cookbook_name, constraint: "~> 1.0.84") }
 
-          it 'returns the locked_version as the constraint' do
-            expect(source.version_constraint.to_s).to eq('= 1.2.3')
-          end
-        end
-
-        context 'given no value for :constraint' do
-          let(:source) { subject.new(cookbook_name) }
-
-          it 'returns a wildcard match for any version' do
-            expect(source.version_constraint.to_s).to eq('>= 0.0.0')
-          end
-        end
-
-        context 'given a value for :constraint' do
-          let(:source) { subject.new(cookbook_name, constraint: '~> 1.0.84') }
-
-          it 'returns a Solve::Constraint for the given version for version_constraint' do
-            expect(source.version_constraint.to_s).to eq('~> 1.0.84')
-          end
-        end
-
-        context 'given a value for :locked_version and :constraint' do
-          let(:source) { subject.new(cookbook_name, constraint: '~> 1.0.84', locked_version: '1.2.3') }
-
-          it 'uses the :locked_version' do
-            expect(source.version_constraint.to_s).to eq('= 1.2.3')
+          it "returns a Solve::Constraint for the given version for version_constraint" do
+            source.version_constraint.to_s.should eql("~> 1.0.84")
           end
         end
 
@@ -254,7 +229,7 @@ module Berkshelf
       it "contains the name, constraint, and groups" do
         source = CookbookSource.new("artifact", constraint: "= 0.10.0")
 
-        source.to_s.should eql("artifact (= 0.10.0) groups: [:default] location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
+        source.to_s.should eql("artifact (= 0.10.0) groups: [:default]")
       end
 
       context "given a CookbookSource with an explicit location" do
