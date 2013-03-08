@@ -28,7 +28,7 @@ Vagrant::Config.run do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-  config.vm.host_name = "<%= "#{cookbook_name}-berkshelf" %>"
+  config.vm.host_name = "<%= "#{cookbook_name.gsub('_','-')}-berkshelf" %>"
 
   config.vm.box = "<%= options[:berkshelf_config].vagrant.vm.box %>"
   config.vm.box_url = "<%= options[:berkshelf_config].vagrant.vm.box_url %>"
