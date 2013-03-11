@@ -159,10 +159,14 @@ module Berkshelf
     def target_cookbook
       return @target_cookbook unless @target_cookbook.nil?
 
-      @target_cookbook = if version_constraint
-        conn.cookbook.satisfy(name, version_constraint)
-      else
-        conn.cookbook.latest_version(name)
+      begin
+        @target_cookbook = if version_constraint
+                             conn.cookbook.satisfy(name, version_constraint)
+                           else
+                             conn.cookbook.latest_version(name)
+                           end
+      rescue Ridley::Errors::HTTPNotFound
+        @target_cookbook = nil
       end
 
       if @target_cookbook.nil?
