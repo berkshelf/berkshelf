@@ -46,6 +46,7 @@ class Default < Thor
     desc "ci", "Run all possible tests on Travis-CI"
     def ci
       ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
+      ensure_git_user
       unless run_unit("--tag ~chef_server") && run_acceptance("--tags ~@chef_server") && run_quality
         exit 1
       end
@@ -83,6 +84,15 @@ class Default < Thor
 
       def run_quality
         run "cane --gte coverage/.last_run.json,90"
+      end
+
+      def ensure_git_user
+        {
+          "user.name" => "CI",
+          "user.email" => "ci@berkshelf.com"
+        }.each do |key, value|
+          system "git config #{key} #{value}" unless system "git config #{key}"
+        end
       end
     end
   end
