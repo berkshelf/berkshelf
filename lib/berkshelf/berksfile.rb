@@ -485,7 +485,7 @@ module Berkshelf
         upload_opts = options.dup
         upload_opts[:name] = cb.cookbook_name
 
-        if upload_opts[:trust_version] then
+        if upload_opts[:trust_versions] then
           vs = conn.cookbook.versions(cb.cookbook_name)
           next if vs.nil? or vs.include? cb.version
         end
