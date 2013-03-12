@@ -486,7 +486,11 @@ module Berkshelf
         upload_opts[:name] = cb.cookbook_name
 
         if upload_opts[:trust_versions] then
-          vs = conn.cookbook.versions(cb.cookbook_name)
+          begin
+            vs = conn.cookbook.versions(cb.cookbook_name)
+          rescue Ridley::Errors::HTTPNotFound
+            vs = nil
+          end
           next if vs and vs.include? cb.version
         end
         Berkshelf.formatter.upload cb.cookbook_name, cb.version, upload_opts[:server_url]
