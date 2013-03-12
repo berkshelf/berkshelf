@@ -487,7 +487,7 @@ module Berkshelf
 
         Berkshelf.formatter.upload cb.cookbook_name, cb.version, upload_opts[:server_url]
         if upload_opts[:trust_version] then
-          vs = conn.cookbook.find(cb.cookbook_name)
+          vs = conn.cookbook.versions(cb.cookbook_name,cb.version)
           next if vs.nil? or vs.include? cb.version
         end
         conn.cookbook.upload(cb.path, upload_opts)
