@@ -91,7 +91,7 @@ class Default < Thor
           "user.name" => "CI",
           "user.email" => "ci@berkshelf.com"
         }.each do |key, value|
-          system "git config #{key} #{value}" unless system "git config #{key}"
+          system "git config --global #{key} #{value}" unless system "git config #{key}"
         end
       end
     end
