@@ -6,12 +6,11 @@ module Berkshelf
     class << self
       def dispatch(meth, given_args, given_opts, config)
         unless (given_args & ['-h', '--help']).empty?
-          command = given_args.first
-
           if given_args.length == 1
             # berks --help
             super
           else
+            command = given_args.first
             super(meth, ['help', command].compact, nil, config)
           end
         else
