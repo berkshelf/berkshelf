@@ -1,4 +1,3 @@
-before_install: gem update --system 1.8.25
 rvm:
   - 1.9.2
   - 1.9.3
@@ -13,4 +12,7 @@ notifications:
       - "irc.freenode.org#berkshelf"
     skip_join: true
     use_notice: true
+before_script:
+  - git config --global user.email "travis@travis-ci.org"
+  - git config --global user.name "Travis CI"
 script: 'bundle exec thor spec:ci'
