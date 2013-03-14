@@ -5,8 +5,19 @@ module Berkshelf
   class Cli < Thor
     class << self
       def dispatch(meth, given_args, given_opts, config)
-        super
-        Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+        unless (given_args & ['-h', '--help']).empty?
+          command = given_args.first
+
+          if given_args.length == 1
+            # berks --help
+            super
+          else
+            super(meth, ['help', command].compact, nil, config)
+          end
+        else
+          super
+          Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+        end
       end
     end
 
@@ -38,6 +49,8 @@ module Berkshelf
     map 'book'      => :cookbook
 
     default_task :install
+
+    map ['-v', '--version'] => :version
 
     class_option :config,
       type: :string,
