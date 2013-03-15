@@ -40,16 +40,14 @@ module Berkshelf
 
     namespace "berkshelf"
 
-    map 'in'        => :install
-    map 'up'        => :upload
-    map 'ud'        => :update
-    map 'ls'        => :list
-    map 'ver'       => :version
-    map 'book'      => :cookbook
+    map 'in'   => :install
+    map 'up'   => :upload
+    map 'ud'   => :update
+    map 'ls'   => :list
+    map 'book' => :cookbook
+    map ['ver', '-v', '--version'] => :version
 
     default_task :install
-
-    map ['-v', '--version'] => :version
 
     class_option :config,
       type: :string,
