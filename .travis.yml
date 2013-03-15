@@ -12,4 +12,7 @@ notifications:
       - "irc.freenode.org#berkshelf"
     skip_join: true
     use_notice: true
+before_script:
+  - git config --global user.email "ci@berkshelf.com"
+  - git config --global user.name "Berkshelf"
 script: 'bundle exec thor spec:ci'
