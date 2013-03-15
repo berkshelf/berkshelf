@@ -1,39 +1,65 @@
 require 'spec_helper'
 
-describe Berkshelf::CommunityREST do
-  let(:show_nginx_cookbook) do
-    {
-      "maintainer" => "opscode",
-      "updated_at" => "2013-02-06T02:06:21Z",
-      "category" => "Web Servers",
-      "external_url" => "github.com/opscode-cookbooks/nginx",
-      "latest_version" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_3_0",
-      "created_at" => "2009-10-25T23:52:41Z",
-      "average_rating" => 3.875,
-      "name" => "nginx",
-      "versions" => [
-        "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_3_0",
-        "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_2_0",
-        "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_1_0",
-        "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_0_0"
-      ],
-      "description" => "Installs and configures nginx"
-    }
+describe Berkshelf::CommunityREST, vcr: { record: :new_episodes } do
+  # def unpack(target, destination = Dir.mktmpdir)
+  #   Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
+  #   destination
+  # end
+
+  describe '.unpack' do
+    let(:target) { '/foo/bar' }
+    let(:destination) { '/destination/bar' }
+    let(:file) { double('file') }
+    let(:gzip_reader) { double('gzip_reader') }
+
+    before do
+      File.stub(:open).with(target, 'rb').and_return(file)
+      Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
+      Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
+    end
+
+    it 'unpacks the tar' do
+      File.should_receive(:open).with(target, 'rb')
+      Zlib::GzipReader.should_receive(:new).with(file)
+      Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
+
+      expect(described_class.unpack(target, destination)).to eq(destination)
+    end
   end
 
-  describe "ClassMethods" do
-    subject { described_class }
-
-    describe "::unpack" do
-      pending
+  describe '.uri_escape_version' do
+    it 'returns a string' do
+      expect(described_class.uri_escape_version(nil)).to be_a(String)
     end
 
-    describe "::uri_escape_version" do
-      pending
+    it 'converts a version to it\'s underscored version' do
+      expect(described_class.uri_escape_version('1.1.2')).to eq('1_1_2')
     end
 
-    describe "::version_from_uri" do
-      pending
+    it 'works when the version has more than three points' do
+      expect(described_class.uri_escape_version('1.1.1.2')).to eq('1_1_1_2')
+    end
+
+    it 'works when the version has less than three points' do
+      expect(described_class.uri_escape_version('1.2')).to eq('1_2')
+    end
+  end
+
+  describe '.version_from_uri' do
+    it 'returns a string' do
+      expect(described_class.version_from_uri(nil)).to be_a(String)
+    end
+
+    it 'extracts the version from the URL' do
+      expect(described_class.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_2')).to eq('1.1.2')
+    end
+
+    it 'works when the version has more than three points' do
+      expect(described_class.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_1_2')).to eq('1.1.1.2')
+    end
+
+    it 'works when the version has less than three points' do
+      expect(described_class.version_from_uri('/api/v1/cookbooks/nginx/versions/1_2')).to eq('1.2')
     end
   end
 
@@ -43,78 +69,98 @@ describe Berkshelf::CommunityREST do
     described_class.new(api_uri)
   end
 
-  describe "#download" do
-    pending
-  end
+  describe '#download' do
+    let(:archive) { double('archive', path: '/foo/bar', unlink: true) }
 
-  describe "#find" do
-    pending
-  end
-
-  describe "#latest_version" do
-    it "returns the version number of the latest version of the cookbook" do
-      stub_request(:get, File.join(api_uri, "nginx")).
-        to_return(status: 200, body: show_nginx_cookbook)
-
-      subject.latest_version("nginx").should eql("1.3.0")
+    before do
+      subject.stub(:stream).with(any_args()).and_return(archive)
+      Berkshelf::CommunityREST.stub(:unpack)
     end
 
-    it "raises a CookbookNotFound error on a 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
-        to_return(status: 404, body: {})
+    it 'unpacks the archive' do
+      Berkshelf::CommunityREST.should_receive(:unpack).with('/foo/bar').once
+      archive.should_receive(:unlink).once
 
+      subject.download('nginx', '1.4.0')
+    end
+  end
+
+  describe '#find' do
+    it 'returns the cookbook and version information' do
+      result = subject.find('nginx', '1.4.0')
+
+      expect(result.cookbook).to eq('http://cookbooks.opscode.com/api/v1/cookbooks/nginx')
+      expect(result.version).to eq('1.4.0')
+    end
+
+    it 'raises a CookbookNotFound error on a 404 response for a non-existent cookbook' do
       expect {
-        subject.latest_version("not_existant")
+        subject.find('not_a_real_cookbook_that_anyone_should_ever_make', '0.1.0')
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
 
-    it "raises a CommunitySiteError error on any non 200 or 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
-        to_return(status: 500, body: {})
-
+    it 'raises a CookbookNotFound error on a 404 response for a non-existent version' do
       expect {
-        subject.latest_version("not_existant")
+        subject.find('nginx', '0.0.0')
+      }.to raise_error(Berkshelf::CookbookNotFound)
+    end
+
+    # @warn if you re-record the VCR cassettes, you'll need to manually change the
+    # HTTP Response Code in the YAML file to 500
+    it 'raises a CommunitySiteError error on any non 200 or 404 response' do
+      expect {
+        subject.find('not_a_real_cookbook_that_anyone_should_ever_make', '0.0.0')
       }.to raise_error(Berkshelf::CommunitySiteError)
     end
   end
 
-  describe "#versions" do
-    it "returns an array containing an item for each version" do
-      stub_request(:get, File.join(api_uri, "nginx")).
-        to_return(status: 200, body: show_nginx_cookbook)
-
-      subject.versions("nginx").should have(4).versions
+  describe '#latest_version' do
+    it 'returns the version number of the latest version of the cookbook' do
+      subject.latest_version('nginx').should eql('1.4.0')
     end
 
-    it "raises a CookbookNotFound error on a 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
-        to_return(status: 404, body: {})
-
+    it 'raises a CookbookNotFound error on a 404 response' do
       expect {
-        subject.versions("not_existant")
+        subject.latest_version('not_a_real_cookbook_that_anyone_should_ever_make')
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
 
-    it "raises a CommunitySiteError error on any non 200 or 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
-        to_return(status: 500, body: {})
-
+    # @warn if you re-record the VCR cassettes, you'll need to manually change the
+    # HTTP Response Code in the YAML file to 500
+    it 'raises a CommunitySiteError error on any non 200 or 404 response' do
       expect {
-        subject.versions("not_existant")
+        subject.latest_version('not_a_real_cookbook_that_anyone_should_ever_make')
       }.to raise_error(Berkshelf::CommunitySiteError)
     end
   end
 
-  describe "#satisfy" do
-    it "returns the version number of the best solution" do
-      stub_request(:get, File.join(api_uri, "nginx")).
-        to_return(status: 200, body: show_nginx_cookbook)
+  describe '#versions' do
+    it 'returns an array containing an item for each version' do
+      subject.versions('nginx').should have(24).versions
+    end
 
-      subject.satisfy("nginx", "= 1.1.0").should eql("1.1.0")
+    it 'raises a CookbookNotFound error on a 404 response' do
+      expect {
+        subject.versions('not_a_real_cookbook_that_anyone_should_ever_make')
+      }.to raise_error(Berkshelf::CookbookNotFound)
+    end
+
+    # @warn if you re-record the VCR cassettes, you'll need to manually change the
+    # HTTP Response Code in the YAML file to 500
+    it 'raises a CommunitySiteError error on any non 200 or 404 response' do
+      expect {
+        subject.versions('not_a_real_cookbook_that_anyone_should_ever_make')
+      }.to raise_error(Berkshelf::CommunitySiteError)
     end
   end
 
-  describe "#stream" do
+  describe '#satisfy' do
+    it 'returns the version number of the best solution' do
+      subject.satisfy('nginx', '= 1.1.0').should eql('1.1.0')
+    end
+  end
+
+  describe '#stream' do
     pending
   end
 end

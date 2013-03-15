@@ -1,0 +1,76 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://cookbooks.opscode.com/api/v1/cookbooks/nginx
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.8.6
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 200
+      message: !binary |-
+        T0s=
+    headers:
+      !binary "U2VydmVy":
+      - !binary |-
+        bmdpbngvMS4wLjU=
+      !binary "RGF0ZQ==":
+      - !binary |-
+        RnJpLCAxNSBNYXIgMjAxMyAyMTo0Mjo1MSBHTVQ=
+      !binary "Q29udGVudC1UeXBl":
+      - !binary |-
+        YXBwbGljYXRpb24vanNvbjsgY2hhcnNldD11dGYtOA==
+      !binary "VHJhbnNmZXItRW5jb2Rpbmc=":
+      - !binary |-
+        Y2h1bmtlZA==
+      !binary "Q29ubmVjdGlvbg==":
+      - !binary |-
+        a2VlcC1hbGl2ZQ==
+      !binary "U3RhdHVz":
+      - !binary |-
+        MjAwIE9L
+      !binary "WC1SdW50aW1l":
+      - !binary |-
+        MzM=
+      !binary "RXRhZw==":
+      - !binary |-
+        IjY2YzAwODJhZjEwNTIwZWQxNjkxYjU2ZDlmNmRhZTAwIg==
+      !binary "U2V0LUNvb2tpZQ==":
+      - !binary |-
+        X3NhbmRib3hfc2Vzc2lvbj1leUp6WlhOemFXOXVYMmxrSWpvaU16RmlNamc1
+        TnpOak1EWTBaREZpTXpNeU1UQmhNbVJoWVdGa1pqTmhNek1pTENKc2IyTmhk
+        R2x2YmlJNmV5SnBaQ0k2SW01bmFXNTRJaXdpWTI5dWRISnZiR3hsY2lJNklt
+        RndhUzkyTVM5amIyOXJZbTl2YTNNaUxDSmhZM1JwYjI0aU9pSnphRzkzSW4x
+        OS0tMDhjZjdlMTJhMTMxNzMwMmMxMjZlZDRhZTEwYmI4M2M2ODBiNzczNDsg
+        ZG9tYWluPS5vcHNjb2RlLmNvbTsgcGF0aD0vOyBIdHRwT25seQ==
+      - !binary |-
+        bG9nZ2VkLWluLXVzZXJuYW1lPTsgZG9tYWluPS5vcHNjb2RlLmNvbTsgcGF0
+        aD0v
+      !binary "Q2FjaGUtQ29udHJvbA==":
+      - !binary |-
+        cHJpdmF0ZSwgbWF4LWFnZT0wLCBtdXN0LXJldmFsaWRhdGU=
+      !binary "Q29udGVudC1FbmNvZGluZw==":
+      - !binary |-
+        Z3ppcA==
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAAAAAAAAA62VQW7DIBBFr2KxjmPAuI25QdeNVKlVhQimDooDFuAoVdW7
+        dxKStntYsPHMPL7/DPCFlIx6dP4TcfSid9Wz9iftA1ohfY7aWzmJxU8QHE3c
+        L7u1csfGzUG5QdfKucMOVmjsaOwZao7S2AhLe6i4pcHnCfYIUVzAxlkI7WOc
+        edP8Ata33CtezqY5kb9goje36tAQwQQG6jIPwB2EjECkmLQ1pjVlW9xx1nOK
+        XyFHef0/B/c1wTXttrTlHeWMXHIkkOWohZfR2BHxdr157FbIyqMG8P3X7tsj
+        /lZGfqYH7dWDTAgtAYF+5CshgpaAFPAEl1CC843FgmAiHnJdSZjsDiVMdo8S
+        JrtLF0yBPiVMATV9nz80WAClgBbC8s8jGMNEW2D0WAlfQAspoqWEu7SIliL3
+        wwbG5X2FBh2UN3NMT+uTDVFOU6ikHSrl7IcZF69Dld6x7x8gZ1Bm8QcAAA==
+    http_version: 
+  recorded_at: Fri, 15 Mar 2013 21:42:53 GMT
+recorded_with: VCR 2.4.0
