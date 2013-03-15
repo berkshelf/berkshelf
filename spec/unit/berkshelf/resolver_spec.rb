@@ -10,7 +10,7 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes } do
         name: 'mysql-1.2.4',
         cookbook_name: 'mysql',
         version: '1.2.4',
-        dependencies: { "nginx" => ">= 0.1.0", "artifact" => "~> 0.10.0" }
+        dependencies: { "nginx" => ">= 0.1.0" }
       ),
       location: double('location', validate_cached: true)
     )
@@ -28,27 +28,16 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes } do
         resolver.should have_source(source.name)
       end
 
-      it "adds the dependencies of the source as sources" do
-        resolver = subject.new(downloader, sources: [source])
-
-        resolver.should have_source("nginx")
-        resolver.should have_source("artifact")
-      end
-
       it "should not add dependencies if requested" do
         resolver = subject.new(downloader, sources: [source], skip_dependencies: true)
 
         resolver.should_not have_source("nginx")
-        resolver.should_not have_source("artifact")
       end
 
-      context "given an array of sources" do
-        it "adds each source to the sources hash" do
-          sources = [source]
-          resolver = subject.new(downloader, sources: sources, skip_dependencies: true)
+      it "adds the dependencies of the source as sources" do
+        resolver = subject.new(downloader, sources: [source])
 
-          resolver.should have_source(sources[0].name)
-        end
+        resolver.should have_source("nginx")
       end
     end
   end
