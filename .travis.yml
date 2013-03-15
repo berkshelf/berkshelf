@@ -1,15 +1,15 @@
+language: ruby
 rvm:
   - 1.9.2
   - 1.9.3
-  - ruby-head
-matrix:
-  allow_failures:
-    - rvm: 1.9.2
-    - rvm: ruby-head
+  - 2.0.0
 notifications:
   irc:
     channels:
       - "irc.freenode.org#berkshelf"
     skip_join: true
     use_notice: true
+before_script:
+  - git config --global user.email "ci@berkshelf.com"
+  - git config --global user.name "Berkshelf"
 script: 'bundle exec thor spec:ci'
