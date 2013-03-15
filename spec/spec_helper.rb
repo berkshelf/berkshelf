@@ -74,7 +74,7 @@ Spork.prefork do
   end
 
   def generate_fake_git_remote(uri, options = {})
-    remote_bucket = Pathname.new(File.dirname(__FILE__)).join('tmp', 'remote_repos')
+    remote_bucket = Pathname.new(::File.dirname(__FILE__)).join('tmp', 'remote_repos')
     FileUtils.mkdir_p(remote_bucket)
 
     repo_name = uri.to_s.split('/').last.split('.')
@@ -96,7 +96,7 @@ Spork.prefork do
       run! "echo '# a change!' >> content_file"
       run! "git add ."
       run "git commit -am 'A commit.'"
-        options[:tags].each do |tag| 
+        options[:tags].each do |tag|
           run! "echo '#{tag}' > content_file"
           run! "git add content_file"
           run "git commit -am '#{tag} content'"
