@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 module Berkshelf
   describe Location do
     describe "ClassMethods Module" do
