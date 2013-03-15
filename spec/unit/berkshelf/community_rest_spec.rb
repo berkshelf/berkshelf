@@ -53,14 +53,14 @@ describe Berkshelf::CommunityREST do
 
   describe "#latest_version" do
     it "returns the version number of the latest version of the cookbook" do
-      stub_request(:get, File.join(api_uri, "nginx")).
+      stub_request(:get, ::File.join(api_uri, "nginx")).
         to_return(status: 200, body: show_nginx_cookbook)
 
       subject.latest_version("nginx").should eql("1.3.0")
     end
 
     it "raises a CookbookNotFound error on a 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
+      stub_request(:get, ::File.join(api_uri, "not_existant")).
         to_return(status: 404, body: {})
 
       expect {
@@ -69,7 +69,7 @@ describe Berkshelf::CommunityREST do
     end
 
     it "raises a CommunitySiteError error on any non 200 or 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
+      stub_request(:get, ::File.join(api_uri, "not_existant")).
         to_return(status: 500, body: {})
 
       expect {
@@ -80,14 +80,14 @@ describe Berkshelf::CommunityREST do
 
   describe "#versions" do
     it "returns an array containing an item for each version" do
-      stub_request(:get, File.join(api_uri, "nginx")).
+      stub_request(:get, ::File.join(api_uri, "nginx")).
         to_return(status: 200, body: show_nginx_cookbook)
 
       subject.versions("nginx").should have(4).versions
     end
 
     it "raises a CookbookNotFound error on a 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
+      stub_request(:get, ::File.join(api_uri, "not_existant")).
         to_return(status: 404, body: {})
 
       expect {
@@ -96,7 +96,7 @@ describe Berkshelf::CommunityREST do
     end
 
     it "raises a CommunitySiteError error on any non 200 or 404 response" do
-      stub_request(:get, File.join(api_uri, "not_existant")).
+      stub_request(:get, ::File.join(api_uri, "not_existant")).
         to_return(status: 500, body: {})
 
       expect {
@@ -107,7 +107,7 @@ describe Berkshelf::CommunityREST do
 
   describe "#satisfy" do
     it "returns the version number of the best solution" do
-      stub_request(:get, File.join(api_uri, "nginx")).
+      stub_request(:get, ::File.join(api_uri, "nginx")).
         to_return(status: 200, body: show_nginx_cookbook)
 
       subject.satisfy("nginx", "= 1.1.0").should eql("1.1.0")
