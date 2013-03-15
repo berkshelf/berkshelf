@@ -10,6 +10,7 @@ Feature: list command
       cookbook "build-essential", "1.2.0"
       cookbook "chef-client", "1.2.0"
       cookbook "mysql", "1.2.4"
+      cookbook "openssl", "1.0.0"
       """
     And I successfully run `berks install`
     When I run `berks list`

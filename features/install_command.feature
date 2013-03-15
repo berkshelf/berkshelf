@@ -7,6 +7,7 @@ Feature: install cookbooks from a Berksfile
     Given I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4"
+      cookbook "openssl", "1.0.0"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the cookbooks:
@@ -161,6 +162,7 @@ Feature: install cookbooks from a Berksfile
     Given I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
+      cookbook "openssl", "1.0.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the cookbooks:
