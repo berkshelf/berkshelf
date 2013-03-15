@@ -1,11 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf::CommunityREST, vcr: { record: :new_episodes } do
-  # def unpack(target, destination = Dir.mktmpdir)
-  #   Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
-  #   destination
-  # end
-
   describe '.unpack' do
     let(:target) { '/foo/bar' }
     let(:destination) { '/destination/bar' }
