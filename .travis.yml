@@ -5,7 +5,7 @@ rvm:
   - 2.0.0
 matrix:
   allow_failures:
-    - rvm: ruby-head
+    - rvm: 2.0.0
 notifications:
   irc:
     channels:
