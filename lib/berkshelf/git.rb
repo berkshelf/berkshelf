@@ -121,7 +121,7 @@ module Berkshelf
       # @raise [GitNotFound] if executable is not found in system path
       def find_git
         git_path = nil
-        ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
+        ENV["PATH"].split(::File::PATH_SEPARATOR).each do |path|
           git_path = detect_git_path(path)
           break if git_path
         end
