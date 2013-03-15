@@ -8,13 +8,13 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes } do
     let(:gzip_reader) { double('gzip_reader') }
 
     before do
-      File.stub(:open).with(target, 'rb').and_return(file)
+      ::File.stub(:open).with(target, 'rb').and_return(file)
       Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
       Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
     end
 
     it 'unpacks the tar' do
-      File.should_receive(:open).with(target, 'rb')
+      ::File.should_receive(:open).with(target, 'rb')
       Zlib::GzipReader.should_receive(:new).with(file)
       Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
 
