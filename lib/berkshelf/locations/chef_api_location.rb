@@ -2,6 +2,11 @@ module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class ChefAPILocation
     class << self
+      # @return [Proc]
+      def finalizer
+        proc { conn.terminate if conn.alive? }
+      end
+
       # @param [String] node_name
       #
       # @return [Boolean]
@@ -75,13 +80,18 @@ module Berkshelf
     #   a URL to a Chef API. Alternatively the symbol :config can be provided
     #   which will instantiate this location with the values found in your
     #   Berkshelf configuration.
-    # @option options [String] :node_name
+    # @option options [String] :node_name (Berkshelf::Config.instance.chef.node_name)
     #   the name of the client to use to communicate with the Chef API.
-    #   Default: Chef::Config[:node_name]
-    # @option options [String] :client_key
+    # @option options [String] :client_key (Berkshelf::Config.instance.chef.client_key)
     #   the filepath to the authentication key for the client
-    #   Default: Chef::Config[:client_key]
+    # @option options [Boolean] :verify_ssl (Berkshelf::Config.instance.chef.ssl.verify) 
     def initialize(name, version_constraint, options = {})
+      options = options.reverse_merge(
+        client_key: Berkshelf::Config.instance.chef.client_key,
+        node_name: Berkshelf::Config.instance.chef.node_name,
+        verify_ssl: Berkshelf::Config.instance.ssl.verify
+      )
+
       @name               = name
       @version_constraint = version_constraint
       @downloaded_status  = false
@@ -97,7 +107,11 @@ module Berkshelf
         unless Berkshelf::Config.instance.chef.node_name.present? &&
           Berkshelf::Config.instance.chef.client_key.present? &&
           Berkshelf::Config.instance.chef.chef_server_url.present?
-          raise ConfigurationError, "A Berkshelf configuration is required with a 'chef.client_key', 'chef.chef_server_Url', and 'chef.node_name' setting to install or upload cookbooks using 'chef_api :config'."
+
+          msg = "A Berkshelf configuration is required with a 'chef.client_key', 'chef.chef_server_Url',"
+          msg << " and 'chef.node_name' setting to install or upload cookbooks using 'chef_api :config'."
+
+          raise Berkshelf::ConfigurationError, msg
         end
         @node_name  = Berkshelf::Config.instance.chef.node_name
         @client_key = Berkshelf::Config.instance.chef.client_key
@@ -108,68 +122,56 @@ module Berkshelf
         @uri        = options[:chef_api]
       end
 
-      @rest = Chef::REST.new(uri, node_name, client_key)
+      @conn = Ridley.new(
+        server_url: uri,
+        client_name: node_name,
+        client_key: client_key,
+        ssl: {
+          verify: options[:verify_ssl]
+        }
+      )
+
+      # Why do we use a class function for defining our finalizer?
+      # http://www.mikeperham.com/2010/02/24/the-trouble-with-ruby-finalizers/
+      ObjectSpace.define_finalizer(self, self.class.finalizer)
     end
 
     # @param [#to_s] destination
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      version, uri = target_version
-      scratch = download_files(download_manifest(uri))
+      berks_path = File.join(destination, "#{name}-#{target_cookbook.version}")
+      
+      temp_path = target_cookbook.download
+      FileUtils.mv(temp_path, berks_path)
 
-      cb_path = File.join(destination, "#{name}-#{version}")
-      FileUtils.mv(scratch, cb_path)
-
-      cached = CachedCookbook.from_store_path(cb_path)
+      cached = CachedCookbook.from_store_path(berks_path)
       validate_cached(cached)
 
       set_downloaded_status(true)
       cached
     end
 
-    # Returns a hash representing the cookbook versions on at a Chef API for location's cookbook.
-    # The keys are version strings and the values are URLs to download the cookbook version.
+    # Returns a Ridley::CookbookResource representing the cookbook that should be downloaded
+    # for this location
     #
-    # @example
-    #   {
-    #     "0.101.2" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2",
-    #     "0.101.5" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.5"
-    #   }
-    #
-    # @return [Hash]
-    def versions
-      {}.tap do |versions|
-        rest.get_rest("cookbooks/#{name}").each do |name, data|
-          data["versions"].each do |version_info|
-            versions[version_info["version"]] = version_info["url"]
-          end
-        end
-      end
-    rescue Net::HTTPServerException => e
-      if e.response.code == "404"
-        raise CookbookNotFound, "Cookbook '#{name}' not found at chef_api: '#{uri}'"
+    # @return [Ridley::CookbookResource]
+    def target_cookbook
+      return @target_cookbook unless @target_cookbook.nil?
+
+      @target_cookbook = if version_constraint
+        conn.cookbook.satisfy(name, version_constraint)
       else
-        raise
-      end
-    end
-
-    # Returns an array where the first element is a string representing the latest version of
-    # the Cookbook and the second element is the download URL for that version.
-    #
-    # @example
-    #   [ "0.101.2" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2" ]
-    #
-    # @return [Array]
-    def latest_version
-      graph = Solve::Graph.new
-      versions.each do |version, url|
-        graph.artifacts(name, version)
+        conn.cookbook.latest_version(name)
       end
 
-      version = Solve.it!(graph, [name])[name]
+      if @target_cookbook.nil?
+        msg = "Cookbook '#{name}' found at #{self}"
+        msg << " that would satisfy constraint (#{version_constraint}" if version_constraint
+        raise CookbookNotFound, msg
+      end
 
-      [ version, versions[version] ]
+      @target_cookbook
     end
 
     def to_hash
@@ -182,64 +184,8 @@ module Berkshelf
 
     private
 
-      attr_reader :rest
-
-      # Retrieve a cookbooks manifest from the given URL
-      #
-      # @param [String] uri
-      #
-      # @return [Hash]
-      def download_manifest(uri)
-        Chef::CookbookVersion.json_create(rest.get_rest(uri)).manifest
-      end
-
-      # Returns an array containing the version and download URL for the cookbook version that
-      # should be downloaded for this location.
-      #
-      # @example
-      #   [ "0.101.2" => "https://api.opscode.com/organizations/vialstudios/cookbooks/nginx/0.101.2" ]
-      #
-      # @return [Array]
-      def target_version
-        if version_constraint
-          solution = self.class.solve_for_constraint(version_constraint, versions)
-
-          unless solution
-            raise NoSolution, "No cookbook version of '#{name}' found at #{self} that would satisfy constraint (#{version_constraint})."
-          end
-
-          solution
-        else
-          latest_version
-        end
-      end
-
-      # Download all of the files in the given manifest to the given destination. If no destination
-      # is provided a temporary directory will be created and the files will be downloaded to there.
-      #
-      # @note
-      #   the manifest Hash is the same manifest that you get by sending the manifest message to
-      #   an instance of Chef::CookbookVersion.
-      #
-      # @param [Hash] manifest
-      # @param [String] destination
-      #
-      # @return [String]
-      #   the path to the directory containing the files
-      def download_files(manifest, destination = Dir.mktmpdir)
-        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          next unless manifest.has_key?(segment)
-          manifest[segment].each do |segment_file|
-            dest = File.join(destination, segment_file['path'].gsub('/', File::SEPARATOR))
-            FileUtils.mkdir_p(File.dirname(dest))
-            rest.sign_on_redirect = false
-            tempfile = rest.get_rest(segment_file['url'], true)
-            FileUtils.mv(tempfile.path, dest)
-          end
-        end
-
-        destination
-      end
+      # @return [Ridley::Client]
+      attr_reader :conn
 
       # Validates the options hash given to the constructor.
       #
@@ -256,7 +202,10 @@ module Berkshelf
 
         unless missing_options.empty?
           missing_options.collect! { |opt| "'#{opt}'" }
-          raise InvalidChefAPILocation, "Source '#{name}' is a 'chef_api' location with a URL for it's value but is missing options: #{missing_options.join(', ')}."
+          msg = "Source '#{name}' is a 'chef_api' location with a URL for it's value"
+          msg << " but is missing options: #{missing_options.join(', ')}."
+
+          raise Berkshelf::InvalidChefAPILocation, msg
         end
 
         self.class.validate_node_name!(options[:node_name])

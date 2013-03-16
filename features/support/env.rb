@@ -7,7 +7,6 @@ Spork.prefork do
   require 'rspec'
   require 'pp'
   require 'aruba/cucumber'
-  require 'vcr'
 
   APP_ROOT = File.expand_path('../../../', __FILE__)
 
@@ -26,19 +25,13 @@ Spork.prefork do
 
   ENV["GIT_SSH"] = git_ssh_path
 
-
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
   World(Berkshelf::TestGenerators)
 
-  Around do |scenario, block|
-    VCR.use_cassette(scenario.name) do
-      block.call
-    end
-  end
-
   Before do
     clean_cookbook_store
+    generate_berks_config(File.join(ENV["BERKSHELF_PATH"], 'config.json'))
     @aruba_io_wait_seconds = 5
     @aruba_timeout_seconds = 16
   end
@@ -49,7 +42,7 @@ Spork.prefork do
   end
 
   def cookbook_store
-    Pathname.new(File.join(ENV["BERKSHELF_PATH"],"cookbooks"))
+    Pathname.new(File.join(ENV["BERKSHELF_PATH"], "cookbooks"))
   end
 
   def clean_cookbook_store

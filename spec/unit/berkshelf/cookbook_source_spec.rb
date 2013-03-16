@@ -145,7 +145,7 @@ module Berkshelf
           end
 
           it "points to the specified URI" do
-            source.location.api_uri.should eql(url)
+            source.location.api_uri.to_s.should eql(url)
           end
         end
 

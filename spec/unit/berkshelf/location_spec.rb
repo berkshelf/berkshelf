@@ -169,12 +169,12 @@ module Berkshelf
     describe "#validate_cached" do
       let(:cached) { double('cached-cb', cookbook_name: name, version: "0.1.0") }
 
-      it "raises a ConstraintNotSatisfied error if the version constraint does not satisfy the cached version" do
+      it "raises a CookbookValidationFailure error if the version constraint does not satisfy the cached version" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(false)
 
         lambda {
           subject.validate_cached(cached)
-        }.should raise_error(ConstraintNotSatisfied)
+        }.should raise_error(CookbookValidationFailure)
       end
 
       it "returns true if cached_cookbooks satisfies the version constraint" do

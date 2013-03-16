@@ -37,6 +37,30 @@ module Berkshelf
     end
   end
   class PrivateGitRepo < GitError; end
+  class AmbiguousGitRef < GitError
+    attr_reader :ref
+
+    def initialize(ref)
+      @ref = ref
+    end
+
+    def to_s
+      out = "An error occurred during Git execution:\n"
+      out << "Ambiguous Git ref: #{ref}"
+    end
+  end
+  class InvalidGitRef < GitError
+    attr_reader :ref
+
+    def initialize(ref)
+      @ref = ref
+    end
+
+    def to_s
+      out = "An error occurred during Git execution:\n"
+      out << "Invalid Git ref: #{ref}"
+    end
+  end
 
   class DuplicateSourceDefined < BerkshelfError; status_code(105); end
   class NoSolution < BerkshelfError; status_code(106); end
@@ -121,4 +145,8 @@ module Berkshelf
   class CommandUnsuccessful < BerkshelfError; status_code(118); end
   class InsufficientPrivledges < BerkshelfError; status_code(119); end
   class ExplicitCookbookNotFound < BerkshelfError; status_code(120); end
+  class ValidationFailed < BerkshelfError; status_code(121); end
+  class InvalidVersionConstraint < BerkshelfError; status_code(122); end
+  class CommunitySiteError < BerkshelfError; status_code(123); end
+  class CookbookValidationFailure < BerkshelfError; status_code(124); end
 end

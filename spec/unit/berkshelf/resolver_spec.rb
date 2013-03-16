@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Berkshelf::Resolver, :chef_server do
+  # These tests should be properly mocked and WebMock should be enabled
+  before(:all) { WebMock.disable! }
+  after(:all) { WebMock.enable! }
+
   let(:source) do
     double('source',
       name: 'mysql',
@@ -38,20 +42,20 @@ describe Berkshelf::Resolver, :chef_server do
       let(:downloader) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
 
       it "adds the specified sources to the sources hash" do
-        resolver = subject.new(downloader, sources: source)
+        resolver = subject.new(downloader, sources: [source])
 
         resolver.should have_source(source.name)
       end
 
       it "adds the dependencies of the source as sources" do
-        resolver = subject.new(downloader, sources: source)
+        resolver = subject.new(downloader, sources: [source])
 
         resolver.should have_source("nginx")
         resolver.should have_source("artifact")
       end
 
       it "should not add dependencies if requested" do
-        resolver = subject.new(downloader, sources: source, skip_dependencies: true)
+        resolver = subject.new(downloader, sources: [source], skip_dependencies: true)
 
         resolver.should_not have_source("nginx")
         resolver.should_not have_source("artifact")

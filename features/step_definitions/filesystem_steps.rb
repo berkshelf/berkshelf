@@ -23,17 +23,17 @@ Given /^I have a default Berkshelf config file$/ do
 end
 
 Given /^I have a Berkshelf config file containing:$/ do |contents|
-  File.open(Berkshelf::Config.path, 'w+') do |f|
+  ::File.open(Berkshelf::Config.path, 'w+') do |f|
     f.write(contents)
   end
 end
 
 Given /^I do not have a Berkshelf config file$/ do
-  remove_file Berkshelf::Config.path if File.exists? Berkshelf::Config.path
+  remove_file Berkshelf::Config.path if ::File.exists? Berkshelf::Config.path
 end
 
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
-  write_file(File.join(cookbook_name, file_name), content)
+  write_file(::File.join(cookbook_name, file_name), content)
 end
 
 Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
@@ -106,7 +106,6 @@ Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
     end
     file "Gemfile" do
       contains "gem 'berkshelf'"
-      contains "gem 'vagrant'"
     end
     file "metadata.rb"
     file "README.md"
@@ -189,11 +188,11 @@ Then /^I should have a new cookbook skeleton "(.*?)" with no Vagrant support$/ d
 end
 
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, true)
+  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, true)
 end
 
 Then /^the cookbook "(.*?)" should not have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, false)
+  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, false)
 end
 
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|
@@ -216,11 +215,11 @@ Then /^the resulting "(.+)" Vagrantfile should contain:$/ do |cookbook_name, con
 end
 
 Then /^the directory "(.*?)" should have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, true)
+  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, true)
 end
 
 Then /^the directory "(.*?)" should not have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| File.join(name, file_row[0])}, false)
+  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, false)
 end
 
 Then /^the file "(.*?)" in the directory "(.*?)" should not contain:$/ do |file_name, directory_name, content|

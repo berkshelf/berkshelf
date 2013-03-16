@@ -54,14 +54,62 @@ module Berkshelf
       #   reference to checkout
       def checkout(repo_path, ref)
         Dir.chdir repo_path do
-          git("checkout", "-q", ref)
+          git("checkout", "-qf", revision_from_ref(repo_path, ref))
         end
       end
 
-      # @param [Strin] repo_path
+      # @param [String] repo_path
       def rev_parse(repo_path)
         Dir.chdir repo_path do
           git("rev-parse", "HEAD")
+        end
+      end
+
+      # Return the sha revision for the given reference in the given repository
+      #
+      # @param [String] repo_path
+      #   path to a Git repo on disk
+      # @param [String] ref
+      #   reference to show
+      #
+      # @return [String]
+      #   the sha revision for the given ref
+      #
+      # @raise [AmbiguousGitRef] if the ref could refer to more than one revision
+      def show_ref(repo_path, ref)
+        Dir.chdir repo_path do
+          lines = git('show-ref', "'#{ref}'").lines.to_a
+
+          raise AmbiguousGitRef, ref if lines.size > 1
+
+          lines.first.chomp.split(/\s/).first
+        end
+      end
+
+      # Return the sha revision for the given reference or revision in the given repository
+      #
+      # This method is useful when you have either a sha revision, tag, or branch and
+      # you'd like to end up with a sha revision.
+      #
+      # @param [String] repo_path
+      #   path to a Git repo on disk
+      # @param [String] ref
+      #   reference to show
+      #
+      # @return [String]
+      #   the sha revision for the given ref
+      #
+      # @raise [InvalidGitRef] if the ref could not be found
+      def revision_from_ref(repo_path, ref)
+        begin
+          show_ref(repo_path, ref)
+        rescue GitError
+          begin
+            git('rev-parse', ref)
+            ref
+          rescue GitError
+            raise InvalidGitRef, ref
+          end
         end
       end
 
@@ -73,7 +121,7 @@ module Berkshelf
       # @raise [GitNotFound] if executable is not found in system path
       def find_git
         git_path = nil
-        ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
+        ENV["PATH"].split(::File::PATH_SEPARATOR).each do |path|
           git_path = detect_git_path(path)
           break if git_path
         end
