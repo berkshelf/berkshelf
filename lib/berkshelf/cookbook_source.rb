@@ -148,7 +148,7 @@ module Berkshelf
     #
     # @return [Berkshelf::Location]
     def location
-      @location ||= Location.init(name, version_constraint, options)
+      @location
     end
 
     # The list of groups this CookbookSource belongs to.
@@ -219,14 +219,18 @@ module Berkshelf
         [cached, location]
       end
 
-      # Use the default location, and a nil CachedCookbook.
+      # Use the default location, and a nil CachedCookbook. If there is no location
+      # specified,
       #
       # @return [Array<nil, Location>]
       def from_default(options = {})
-        location = Location.init(name, version_constraint, options)
-        cached = nil
+        if (options.keys & self.class.location_keys.keys).empty?
+          location = nil
+        else
+          location = Location.init(name, version_constraint, options)
+        end
 
-        [cached, location]
+        [nil, location]
       end
 
       # The hypothetical location of this CachedCookbook, if it were to exist.
