@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes } do
+describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
   let(:source) do
     double('source',
       name: 'mysql',

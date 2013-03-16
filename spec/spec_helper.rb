@@ -19,6 +19,7 @@ Spork.prefork do
     config.configure_rspec_metadata!
     config.cassette_library_dir = 'spec/fixtures/cassettes'
     config.hook_into :webmock
+    config.default_cassette_options = { record: :new_episodes }
   end
 
   RSpec.configure do |config|

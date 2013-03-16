@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::CommunityREST, vcr: { record: :new_episodes } do
+describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with: :json } do
   describe '.unpack' do
     let(:target) { '/foo/bar' }
     let(:destination) { '/destination/bar' }
