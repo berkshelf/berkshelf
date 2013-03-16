@@ -42,12 +42,6 @@ module Berkshelf
         @instance = nil
         self.instance
       end
-
-      private
-
-        def working_dir
-          ENV['PWD'] || Dir.pwd
-        end
     end
 
     # @param [String] path

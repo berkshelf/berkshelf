@@ -53,7 +53,7 @@ module Berkshelf::Chef
 
           location = possibles.find { |loc| File.exists?(File.expand_path(loc)) }
 
-          File.expand_path(location)
+          File.expand_path(location) unless location.nil?
         end
       end
 
@@ -64,6 +64,12 @@ module Berkshelf::Chef
         @instance = nil
         @path     = value
       end
+
+      private
+
+        def working_dir
+          ENV['PWD'] || Dir.pwd
+        end
     end
 
     extend Berkshelf::Mixin::PathHelpers
