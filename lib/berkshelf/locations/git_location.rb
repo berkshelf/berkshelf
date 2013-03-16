@@ -8,7 +8,7 @@ module Berkshelf
       # @return [String]
       #   the path to the created temporary directory
       def tmpdir
-        @tmpdir ||= Dir.mktmpdir(Berkshelf.mktmpdir)
+        @tmpdir ||= Berkshelf.mktmpdir
       end
     end
 

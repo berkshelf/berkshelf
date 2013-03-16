@@ -18,7 +18,6 @@ describe Berkshelf::InitGenerator do
         file "Berksfile"
         file "Gemfile" do
           contains "gem 'berkshelf'"
-          contains "gem 'vagrant'"
         end
         file "Vagrantfile" do
           contains "require 'berkshelf/vagrant'"
@@ -47,10 +46,10 @@ describe Berkshelf::InitGenerator do
   context "with a metadata entry in the Berksfile" do
     before(:each) do
       Dir.mkdir target
-      File.open(target.join("metadata.rb"), 'w+') do |f|
+      ::File.open(target.join("metadata.rb"), 'w+') do |f|
         f.write ""
       end
-      
+
       capture(:stdout) {
         subject.new([target], metadata_entry: true).invoke_all
       }

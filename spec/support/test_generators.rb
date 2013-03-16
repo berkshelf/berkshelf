@@ -1,5 +1,13 @@
 module Berkshelf
   module TestGenerators
+    def generate_berks_config(path)
+      Berkshelf::Config.new(path,
+        ssl: {
+          verify: false
+        }
+      ).save
+    end
+
     # Generate a minimal, default, Chef configuration file
     #
     # @param [#to_s] path

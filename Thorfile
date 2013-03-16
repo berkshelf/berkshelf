@@ -86,14 +86,4 @@ class Default < Thor
       end
     end
   end
-
-  class VCR < Thor
-    namespace :vcr
-    default_task :clean
-
-    desc "clean", "clean VCR cassettes"
-    def clean
-      FileUtils.rm_rf("spec/fixtures/vcr_cassettes")
-    end
-  end
 end

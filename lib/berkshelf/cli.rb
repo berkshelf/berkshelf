@@ -5,8 +5,18 @@ module Berkshelf
   class Cli < Thor
     class << self
       def dispatch(meth, given_args, given_opts, config)
-        super
-        Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+        unless (given_args & ['-h', '--help']).empty?
+          if given_args.length == 1
+            # berks --help
+            super
+          else
+            command = given_args.first
+            super(meth, ['help', command].compact, nil, config)
+          end
+        else
+          super
+          Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+        end
       end
     end
 
@@ -30,12 +40,12 @@ module Berkshelf
 
     namespace "berkshelf"
 
-    map 'in'        => :install
-    map 'up'        => :upload
-    map 'ud'        => :update
-    map 'ls'        => :list
-    map 'ver'       => :version
-    map 'book'      => :cookbook
+    map 'in'   => :install
+    map 'up'   => :upload
+    map 'ud'   => :update
+    map 'ls'   => :list
+    map 'book' => :cookbook
+    map ['ver', '-v', '--version'] => :version
 
     default_task :install
 

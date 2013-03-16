@@ -1,3 +1,11 @@
+# 1.2.0
+- Remove Vagrant as a gem dependency
+- Remove Chef as a gem dependency
+- Add retries to downloads/uploads
+- Speed optimizations to resolver
+- Speed optimizations to downloading cookbooks
+- Speed optimizations to uploading cookbooks
+
 # 1.1.0
 ## new/improved commands
 - `berks show` command: display the file path for the given cookbook's current version resolved by your Berksfile
