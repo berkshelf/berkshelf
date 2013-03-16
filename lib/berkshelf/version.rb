@@ -1,3 +1,3 @@
 module Berkshelf
-  VERSION = "1.1.6"
+  VERSION = "1.2.1"
 end

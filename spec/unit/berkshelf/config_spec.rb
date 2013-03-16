@@ -11,7 +11,7 @@ describe Berkshelf::Config do
 
       context "when the file does not exist" do
         before :each do
-          File.stub exists?: false
+          ::File.stub exists?: false
         end
 
         it { should be_nil }
@@ -113,18 +113,6 @@ describe Berkshelf::Config do
 
         subject.should eql("/tmp/config.json")
       end
-    end
-
-    describe "::chef_config" do
-      it "returns the Chef::Config" do
-        subject.chef_config.should eql(Chef::Config)
-      end
-    end
-
-    describe "::chef_config_path" do
-      subject { klass.chef_config_path }
-
-      it { should be_a String }
     end
   end
 end

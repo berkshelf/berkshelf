@@ -48,6 +48,8 @@ module Berkshelf
 
       set_downloaded_status(true)
       cached
+    rescue IOError
+      raise Berkshelf::CookbookNotFound
     end
 
     def to_hash

@@ -1,8 +1,6 @@
 require 'rubygems'
-
 require 'bundler'
 require 'spork'
-require 'vcr'
 
 Spork.prefork do
   require 'json_spec'
@@ -16,11 +14,6 @@ Spork.prefork do
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
-  VCR.configure do |c|
-    c.cassette_library_dir = File.join(File.dirname(__FILE__), 'fixtures', 'vcr_cassettes')
-    c.hook_into :webmock
-  end
-
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
     config.include JsonSpec::Helpers
@@ -30,20 +23,6 @@ Spork.prefork do
     config.treat_symbols_as_metadata_keys_with_true_values = true
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
-
-    config.around do |example|
-      # Dynamically create cassettes based on the name of the example
-      # being run. This creates a new cassette for every test.
-      cur = example.metadata
-      identifiers = [example.metadata[:description_args]]
-      while cur = cur[:example_group] do
-        identifiers << cur[:description_args]
-      end
-
-      VCR.use_cassette(identifiers.reverse.join(' ')) do
-        example.run
-      end
-    end
 
     config.before(:each) do
       clean_tmp_path
@@ -95,7 +74,7 @@ Spork.prefork do
   end
 
   def generate_fake_git_remote(uri, options = {})
-    remote_bucket = Pathname.new(File.dirname(__FILE__)).join('tmp', 'remote_repos')
+    remote_bucket = Pathname.new(::File.dirname(__FILE__)).join('tmp', 'remote_repos')
     FileUtils.mkdir_p(remote_bucket)
 
     repo_name = uri.to_s.split('/').last.split('.')
@@ -117,20 +96,27 @@ Spork.prefork do
       run! "echo '# a change!' >> content_file"
       run! "git add ."
       run "git commit -am 'A commit.'"
-        options[:tags].each do |tag| 
+        options[:tags].each do |tag|
           run! "echo '#{tag}' > content_file"
           run! "git add content_file"
           run "git commit -am '#{tag} content'"
           run "git tag '#{tag}' 2> /dev/null"
         end if options.has_key? :tags
+        options[:branches].each do |branch|
+          run! "git checkout -b #{branch} master 2> /dev/null"
+          run! "echo '#{branch}' > content_file"
+          run! "git add content_file"
+          run "git commit -am '#{branch} content'"
+          run "git checkout master 2> /dev/null"
+        end if options.has_key? :branches
       end
     end
     path
   end
 
-  def git_sha_for_tag(repo, tag)
+  def git_sha_for_ref(repo, ref)
     Dir.chdir local_git_origin_path_for(repo) do
-      run!("git show-ref '#{tag}'").chomp.split(/\s/).first
+      run!("git show-ref '#{ref}'").chomp.split(/\s/).first
     end
   end
 

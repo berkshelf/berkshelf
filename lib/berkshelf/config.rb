@@ -18,54 +18,6 @@ module Berkshelf
       end
 
       # @return [String, nil]
-      def chef_config_path
-        @chef_config_path ||= begin
-          possibles = []
-
-          # (mostly for testing purposes)
-          possibles << ENV['BERKSHELF_CHEF_CONFIG'] if ENV['BERKSHELF_CHEF_CONFIG']
-
-          # $KNIFE_HOME/knife.rb
-          possibles << File.join(ENV['KNIFE_HOME'], 'knife.rb') if ENV['KNIFE_HOME']
-
-          # $PWD/knife.rb
-          possibles << File.join(working_dir, 'knife.rb') if working_dir
-
-          # Ascending search for .chef directory siblings
-          Pathname.new(working_dir).ascend do |file|
-            sibling_chef = File.join(file, '.chef')
-            possibles << File.join(sibling_chef, 'knife.rb')
-          end if working_dir
-
-          # $HOME/.chef/knife.rb
-          possibles << File.join(ENV['HOME'], '.chef', 'knife.rb') if ENV['HOME']
-
-          # Remove any nil values that may have snuck in
-          possibles.compact!
-
-          location = possibles.find { |loc| File.exists?(File.expand_path(loc)) }
-
-          File.expand_path(location)
-        end
-      end
-
-      # @param [String] value
-      def chef_config_path=(value)
-        @chef_config = nil
-        @chef_config_path = value
-      end
-
-      # @return [Chef::Config]
-      def chef_config
-        @chef_config ||= begin
-          Chef::Config.from_file(File.expand_path(chef_config_path))
-          Chef::Config
-        rescue
-          Chef::Config
-        end
-      end
-
-      # @return [String, nil]
       #   the contents of the file
       def file
         File.read(path) if File.exists?(path)
@@ -107,28 +59,28 @@ module Berkshelf
 
     attribute 'chef.chef_server_url',
       type: String,
-      default: chef_config[:chef_server_url]
+      default: Berkshelf::Chef::Config.instance[:chef_server_url]
     attribute 'chef.validation_client_name',
       type: String,
-      default: chef_config[:validation_client_name]
+      default: Berkshelf::Chef::Config.instance[:validation_client_name]
     attribute 'chef.validation_key_path',
       type: String,
-      default: chef_config[:validation_key]
+      default: Berkshelf::Chef::Config.instance[:validation_key]
     attribute 'chef.client_key',
       type: String,
-      default: chef_config[:client_key]
+      default: Berkshelf::Chef::Config.instance[:client_key]
     attribute 'chef.node_name',
       type: String,
-      default: chef_config[:node_name]
+      default: Berkshelf::Chef::Config.instance[:node_name]
     attribute 'cookbook.copyright',
       type: String,
-      default: chef_config[:cookbook_copyright]
+      default: Berkshelf::Chef::Config.instance[:cookbook_copyright]
     attribute 'cookbook.email',
       type: String,
-      default: chef_config[:cookbook_email]
+      default: Berkshelf::Chef::Config.instance[:cookbook_email]
     attribute 'cookbook.license',
       type: String,
-      default: chef_config[:cookbook_license]
+      default: Berkshelf::Chef::Config.instance[:cookbook_license]
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
