@@ -20,14 +20,14 @@ module Berkshelf
       #
       # @return [String]
       def uri_escape_version(version)
-        version.gsub('.', '_')
+        version.to_s.gsub('.', '_')
       end
 
       # @param [String] uri
       #
       # @return [String]
       def version_from_uri(uri)
-        File.basename(uri).gsub('_', '.')
+        File.basename(uri.to_s).gsub('_', '.')
       end
     end
 

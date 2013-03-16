@@ -56,4 +56,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'thor'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'vagrant', '~> 1.0.6'
+  s.add_development_dependency 'vcr', '~> 2.4.0'
 end
