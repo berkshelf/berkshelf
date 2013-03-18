@@ -15,14 +15,15 @@ module Berkshelf
     include Location
 
     set_location_key :git
-    set_valid_options :ref, :branch, :tag, :rel
+    set_valid_options :branch, :rel
 
     attr_accessor :uri
     attr_accessor :branch
-    attr_accessor :ref
-    attr_accessor :tag
     attr_accessor :rel
     attr_reader :options
+
+    alias_method :ref, :branch
+    alias_method :tag, :branch
 
     # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint
@@ -41,10 +42,8 @@ module Berkshelf
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
-      @ref                = options[:ref]
-      @tag                = options[:tag]
       @uri                = options[:git]
-      @branch             = options[:branch] || ref || tag
+      @branch             = options[:branch] || options[:ref] || options[:tag]
       @rel                = options[:rel]
 
       Git.validate_uri!(@uri)
@@ -121,8 +120,8 @@ module Berkshelf
       end
 
       def revision_path(destination)
-        return unless path = ref || tag
-        File.join(destination, "#{name}-#{path}")
+        return unless branch
+        File.join(destination, "#{name}-#{branch}")
       end
   end
 end
