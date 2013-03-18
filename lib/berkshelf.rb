@@ -1,19 +1,9 @@
-require 'multi_json'
-
-# Fix for Facter < 1.7.0 changing LANG to C
-# https://github.com/puppetlabs/facter/commit/f77584f4
-begin
-  old_lang = ENV['LANG']
-  require 'ridley'
-ensure
-  ENV['LANG'] = old_lang
-end
-
 require 'chozo/core_ext'
 require 'active_support/core_ext'
 require 'archive/tar/minitar'
 require 'forwardable'
 require 'hashie'
+require 'multi_json'
 require 'pathname'
 require 'solve'
 require 'thor'
@@ -24,6 +14,7 @@ require 'zlib'
 require 'berkshelf/version'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
+require 'berkshelf/ridley'
 require 'thor/monkies'
 
 JSON.create_id = nil
