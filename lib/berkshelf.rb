@@ -11,10 +11,11 @@ require 'tmpdir'
 require 'uri'
 require 'zlib'
 
-require 'berkshelf/version'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 require 'berkshelf/ridley'
+require 'berkshelf/test'
+require 'berkshelf/version'
 require 'thor/monkies'
 
 JSON.create_id = nil

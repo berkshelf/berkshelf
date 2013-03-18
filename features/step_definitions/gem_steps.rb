@@ -1,5 +1,6 @@
 Given /^the gem "(.*)" is not installed$/ do |gem_name|
-  # Because aruba is out of process, need to figure out how to mock the Gem::Specification.find_by_name call to pretend gems are not available.
+  # @see berkshelf/test.rb
+  set_env 'MISSING_GEMS', [ENV['MISSING_GEMS'], gem_name].compact.join(',')
 end
 
 Then /^the output should contain a warning to suggest supporting the option "(.*?)" by installing "(.*?)"$/ do |option, gem_name|
