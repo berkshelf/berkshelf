@@ -6,7 +6,7 @@ module Berkshelf
   #
   # @author Seth Vargo <sethvargo@gmail.com>
   class Mocks
-    require 'rspec'
+    require 'rspec/mocks/standalone'
 
     class << self
       def env_keys
