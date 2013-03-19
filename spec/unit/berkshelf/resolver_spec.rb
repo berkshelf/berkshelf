@@ -1,10 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::Resolver, :chef_server do
-  # These tests should be properly mocked and WebMock should be enabled
-  before(:all) { WebMock.disable! }
-  after(:all) { WebMock.enable! }
-
+describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
   let(:source) do
     double('source',
       name: 'mysql',
@@ -14,22 +10,7 @@ describe Berkshelf::Resolver, :chef_server do
         name: 'mysql-1.2.4',
         cookbook_name: 'mysql',
         version: '1.2.4',
-        dependencies: { "nginx" => ">= 0.1.0", "artifact" => "~> 0.10.0" }
-      ),
-      location: double('location', validate_cached: true)
-    )
-  end
-
-  let(:source_two) do
-    double('source-two',
-      name: 'nginx',
-      version_constraint: Solve::Constraint.new('= 0.101.2'),
-      downloaded?: true,
-      cached_cookbook: double('nginx-cookbook',
-        name: 'nginx-0.101.2',
-        cookbook_name: 'nginx',
-        version: '0.101.2',
-        dependencies: Hash.new
+        dependencies: { "nginx" => ">= 0.1.0" }
       ),
       location: double('location', validate_cached: true)
     )
@@ -42,32 +23,21 @@ describe Berkshelf::Resolver, :chef_server do
       let(:downloader) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
 
       it "adds the specified sources to the sources hash" do
-        resolver = subject.new(downloader, sources: source)
+        resolver = subject.new(downloader, sources: [source], skip_dependencies: true)
 
         resolver.should have_source(source.name)
       end
 
-      it "adds the dependencies of the source as sources" do
-        resolver = subject.new(downloader, sources: source)
-
-        resolver.should have_source("nginx")
-        resolver.should have_source("artifact")
-      end
-
       it "should not add dependencies if requested" do
-        resolver = subject.new(downloader, sources: source, skip_dependencies: true)
+        resolver = subject.new(downloader, sources: [source], skip_dependencies: true)
 
         resolver.should_not have_source("nginx")
-        resolver.should_not have_source("artifact")
       end
 
-      context "given an array of sources" do
-        it "adds each source to the sources hash" do
-          sources = [source]
-          resolver = subject.new(downloader, sources: sources)
+      it "adds the dependencies of the source as sources" do
+        resolver = subject.new(downloader, sources: [source])
 
-          resolver.should have_source(sources[0].name)
-        end
+        resolver.should have_source("nginx")
       end
     end
   end
@@ -79,7 +49,7 @@ describe Berkshelf::Resolver, :chef_server do
     let(:package_version) { double('package-version', dependencies: Array.new) }
 
     it "adds the source to the instance of resolver" do
-      subject.add_source(source)
+      subject.add_source(source, false)
 
       subject.sources.should include(source)
     end
@@ -114,7 +84,7 @@ describe Berkshelf::Resolver, :chef_server do
   end
 
   describe "#get_source" do
-    before(:each) { subject.add_source(source) }
+    before { subject.add_source(source, false) }
 
     context "given a string representation of the source to retrieve" do
       it "returns the source of the same name" do
@@ -124,7 +94,7 @@ describe Berkshelf::Resolver, :chef_server do
   end
 
   describe "#has_source?" do
-    before(:each) { subject.add_source(source) }
+    before { subject.add_source(source, false) }
 
     it "returns the source of the given name" do
       subject.has_source?(source.name).should be_true

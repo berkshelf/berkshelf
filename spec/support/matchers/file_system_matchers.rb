@@ -3,7 +3,7 @@
 module Berkshelf
   module RSpec
     module FileSystemMatchers
-      class File
+      class File < ::File
         def initialize(name, &block)
           @contents = []
           @negative_contents = []
@@ -58,7 +58,9 @@ module Berkshelf
         end
 
         def file(name, &block)
-          @tree[name] = File.new(location(name), &block)
+          silence_warnings do
+            @tree[name] = Berkshelf::RSpec::FileSystemMatchers::File.new(location(name), &block)
+          end
         end
 
         def no_file(name)
