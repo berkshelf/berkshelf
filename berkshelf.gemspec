@@ -25,11 +25,11 @@ Gem::Specification.new do |s|
   s.name                  = "berkshelf"
   s.require_paths         = ["lib"]
   s.version               = Berkshelf::VERSION
-  s.required_ruby_version = ">= 1.9.3"
+  s.required_ruby_version = ">= 1.9.1"
 
   s.add_dependency 'celluloid', '>= 0.13.0'
   s.add_dependency 'yajl-ruby'
-  s.add_dependency 'activesupport', '>= 4.0.0.beta'
+  s.add_dependency 'activesupport', '>= 3.2.0'
   s.add_dependency 'mixlib-shellout', '~> 1.1'
   s.add_dependency 'mixlib-config', '~> 1.1'
   s.add_dependency 'faraday', '>= 0.8.5'
