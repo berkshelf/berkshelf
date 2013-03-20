@@ -110,7 +110,6 @@ Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
     file "metadata.rb"
     file "README.md"
     file "Vagrantfile" do
-      contains "require 'berkshelf/vagrant'"
       contains "recipe[#{name}::default]"
     end
   }
