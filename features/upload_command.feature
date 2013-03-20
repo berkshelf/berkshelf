@@ -28,6 +28,7 @@ Feature: upload command
     Given I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4"
+      cookbook "openssl", "= 1.0.0"
       """
     And the Chef server does not have the cookbooks:
       | mysql   | 1.2.4 |
@@ -76,6 +77,7 @@ Feature: upload command
       """
       cookbook "build-essential", "1.2.0"
       cookbook "mysql", "1.2.4"
+      cookbook "openssl", "= 1.0.0"
       """
     And I successfully run `berks install`
     And the Chef server does not have the cookbooks:

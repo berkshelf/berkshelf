@@ -157,7 +157,6 @@ end
 
 Spork.each_run do
   require 'berkshelf'
-  require 'berkshelf/vagrant'
 
   module Berkshelf
     class GitLocation
