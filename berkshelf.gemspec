@@ -42,10 +42,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'thor', '~> 0.16.0'
   s.add_dependency 'retryable'
 
-  # Vagrant 1-0-stable compatability locks
-  s.add_dependency 'moneta', '~> 0.6.0'
-  s.add_dependency 'net-ssh-gateway', '= 1.1.0'
-
   s.add_development_dependency 'aruba'
   s.add_development_dependency 'cane'
   s.add_development_dependency 'json_spec'
@@ -55,6 +51,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'spork'
   s.add_development_dependency 'thor'
   s.add_development_dependency 'webmock'
-  s.add_development_dependency 'vagrant', '~> 1.0.6'
   s.add_development_dependency 'vcr', '~> 2.4.0'
 end
