@@ -30,6 +30,10 @@ module Berkshelf
         Berkshelf::Config.path = @options[:config]
       end
 
+      if @options[:debug]
+        Berkshelf.log.level = ::Logger::DEBUG
+      end
+
       if @options[:quiet]
         Berkshelf.ui.mute!
       end
@@ -64,6 +68,11 @@ module Berkshelf
       type: :boolean,
       desc: "Silence all informational output.",
       aliases: "-q",
+      default: false
+    class_option :debug,
+      type: :boolean,
+      desc: "Output debug information",
+      aliases: "-d",
       default: false
 
     method_option :force,
