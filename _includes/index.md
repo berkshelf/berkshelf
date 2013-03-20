@@ -3,7 +3,7 @@
 If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a breeze.
 
     $ gem install berkshelf
-    Successfully installed berkshelf-1.2.0
+    Successfully installed berkshelf-1.3.0
     1 gem installed
 
 Specify your dependencies in a Berksfile in your cookbook's root
@@ -131,43 +131,47 @@ Berkshelf was designed for iterating on cookbooks and applications quickly. [Vag
 
 If you have used Vagrant before, READ ON!
 
-### Install the Berkshelf into Vagrant
+### Install Vagrant
 
-If you've installed Vagrant using one of the stand alone installers then you will need to install Berkshelf into Vagrant's Rubygems.
+Visit the [Vagrant downloads page](http://downloads.vagrantup.com/) and download the latest installer for your operating system.
 
-    $ vagrant gem install berkshelf
-    Successfully installed berkshelf-1.2.0
-    1 gem installed
+### Install the Berkshelf Vagrant plugin
 
-You can skip this step if you've installed Vagrant using Rubygems.
+As of Berkshelf 1.3.0 there is now a separate gem which includes the [Berkshelf Vagrant plugin](https://github.com/riotgames/berkshelf-vagrant). This plugin supports Vagrant 1.1.0 and greater.
 
-### Berkshelf Vagrant plugin
+To install the plugin run the Vagrant plugin install command
 
-Berkshelf ships with a Vagrant plugin that integrates the Berkshelf development process into creating and provisioning virtual machines. All you need to do is require the Berkshelf Vagrant plugin at the top of your `Vagrantfile`.
+    $ vagrant plugin install berkshelf-vagrant
+    Installing the 'berkshelf-vagrant' plugin. This can take a few minutes...
+    Installed the plugin 'berkshelf-vagrant (1.0.0)!'
 
-    require 'berkshelf/vagrant'
+### Using the Berkshelf Vagrant plugin
 
-    Vagrant::Config.run do |config|
-      ...
-    end
+The Berkshelf Vagrant plugin automatically hooks into the Vagrant provisioning middleware; theres no need to perform any additional steps after installation.
 
-When a Vagrant virutal machine is provisioned or "upped" Berkshelf will be invoked and take care of all the necessary steps to get your cookbooks and their dependencies made available to Vagrant.
+Just ensure that you have a Berksfile in the directory with your Vagrantfile and when you run `vagrant up`, `vagrant provision`, or `vagrant destroy` the Berkshelf integration will automatically kick in!
 
-    $ bundle exec vagrant provision
-    [default] [Berkshelf] installing cookbooks
+    $ vagrant provision
+    [Berkshelf] Updating Vagrant's berkshelf: '/Users/reset/.berkshelf/vagrant/berkshelf-20130320-28478-sy1k0n'
+    [Berkshelf] Installing nginx (1.2.0)
     ...
 
-Cookbooks will be made available through a mounted drive when the Chef-Solo provisioner is used. There is no need to explicitly set a value for the `chef_solo` provisioner's `cookbook_path` attribute.
+You can use both the Vagrant provided Chef Solo and Chef Client provisioners with the Berkshelf Vagrant plugin.
 
-If the `chef_client` provisioner is used, cookbooks will be uploaded to a Chef Server before the provisioning process begins.
+#### Chef Solo provisioner
+
+The Chef Solo provisioner's `cookbook_path` attribute is hijacked when using the Berkshelf Vagrant plugin. Cookbooks resolved from your Berksfile will automatically be made available to your Vagrant virtual machine. There is no need to explicitly set a value for `cookbook_path` attribute.
+
+#### Chef Client provisioner
+
+Cookbooks will automatically be uploaded to the Chef Server you have configured in the Vagrantfile's Chef Client provisioner block. Your Berkshelf configuration's `chef.node_name` and `chef.client_key` credentials will be used to authenticate the upload.
 
 #### Setting a Berksfile location
 
 By default, the Berkshelf Vagrant plugin will assume that the Vagrantfile is located in the same directory as a Berksfile. If your Berksfile is located in another directory you can override this behavior
 
-    require 'berkshelf/vagrant'
-
-    Vagrant::Config.run do |config|
+    Vagrant.configure("2") do |config|
+      ...
       config.berkshelf.berksfile_path = "/Users/reset/code/my_face/Berksfile"
     end
 
