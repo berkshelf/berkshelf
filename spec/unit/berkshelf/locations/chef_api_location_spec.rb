@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Berkshelf::ChefAPILocation, :chef_server do
   let(:test_chef_api) { "https://chefserver:8081" }
+  let(:node_name) { "reset" }
+  let(:client_key) { fixtures_path.join("reset.pem").to_s }
 
   describe "ClassMethods" do
     subject { described_class }
@@ -11,9 +13,6 @@ describe Berkshelf::ChefAPILocation, :chef_server do
     let(:constraint) { double('constraint') }
 
     describe "::initialize" do
-      let(:node_name) { "reset" }
-      let(:client_key) { fixtures_path.join("reset.pem").to_s }
-
       before(:each) do
         @location = subject.new("nginx",
           constraint,
@@ -104,7 +103,7 @@ describe Berkshelf::ChefAPILocation, :chef_server do
   end
 
   subject do
-    described_class.new('nginx', nil, chef_api: :config)
+    described_class.new('nginx', nil, chef_api: test_chef_api, node_name: node_name, client_key: client_key)
   end
 
   describe "#target_cookbook" do
@@ -133,7 +132,7 @@ describe Berkshelf::ChefAPILocation, :chef_server do
 
   describe "#to_s" do
     it "returns a string containing the location key and the Chef API URI" do
-      subject.to_s.should eql("chef_api: '#{Berkshelf::Config.instance.chef.chef_server_url}'")
+      subject.to_s.should eql("chef_api: '#{test_chef_api}'")
     end
   end
 end
