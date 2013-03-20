@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.9.1"
 
   s.add_dependency 'yajl-ruby'
-  s.add_dependency 'activesupport'
+  s.add_dependency 'activesupport', '~> 3.2'
   s.add_dependency 'mixlib-shellout'
   s.add_dependency 'mixlib-config'
   s.add_dependency 'faraday', '>= 0.8.5'
