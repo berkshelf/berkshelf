@@ -475,6 +475,8 @@ module Berkshelf
     #   SSL options
     # @option options [URI, String, Hash] :proxy
     #   URI, String, or Hash of HTTP proxy options
+    # @option options [Boolean] :halt_on_frozen
+    #   Halts uploads and raises error if frozen cookbook is encountered
     #
     # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
     def upload(options = {})
@@ -486,7 +488,12 @@ module Berkshelf
         upload_opts[:name] = cb.cookbook_name
 
         Berkshelf.formatter.upload cb.cookbook_name, cb.version, upload_opts[:server_url]
-        conn.cookbook.upload(cb.path, upload_opts)
+        begin
+          conn.cookbook.upload(cb.path, upload_opts)
+        rescue Ridley::Errors::HTTPConflict
+          raise if options[:halt_on_frozen]
+          Berkshelf.ui.warn "Cookbook #{cb.cookbook_name} (#{cb.version}) is frozen."
+        end
       end
 
       if options[:skip_dependencies]
