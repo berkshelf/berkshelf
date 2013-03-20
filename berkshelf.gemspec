@@ -27,12 +27,13 @@ Gem::Specification.new do |s|
   s.version               = Berkshelf::VERSION
   s.required_ruby_version = ">= 1.9.1"
 
+  s.add_dependency 'celluloid', '>= 0.13.0'
   s.add_dependency 'yajl-ruby'
-  s.add_dependency 'activesupport'
-  s.add_dependency 'mixlib-shellout'
-  s.add_dependency 'mixlib-config'
+  s.add_dependency 'activesupport', '>= 3.2.0'
+  s.add_dependency 'mixlib-shellout', '~> 1.1'
+  s.add_dependency 'mixlib-config', '~> 1.1'
   s.add_dependency 'faraday', '>= 0.8.5'
-  s.add_dependency 'ridley', '>= 0.8.5'
+  s.add_dependency 'ridley', '>= 0.8.6'
   s.add_dependency 'chozo', '>= 0.6.1'
   s.add_dependency 'hashie', '>= 2.0.2'
   s.add_dependency 'minitar'
@@ -41,10 +42,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve', '>= 0.4.2'
   s.add_dependency 'thor', '~> 0.16.0'
   s.add_dependency 'retryable'
-
-  # Vagrant 1-0-stable compatability locks
-  s.add_dependency 'moneta', '~> 0.6.0'
-  s.add_dependency 'net-ssh-gateway', '= 1.1.0'
 
   s.add_development_dependency 'aruba'
   s.add_development_dependency 'cane'
@@ -55,6 +52,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'spork'
   s.add_development_dependency 'thor'
   s.add_development_dependency 'webmock'
-  s.add_development_dependency 'vagrant', '~> 1.0.6'
   s.add_development_dependency 'vcr', '~> 2.4.0'
 end

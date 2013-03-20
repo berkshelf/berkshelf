@@ -20,6 +20,7 @@ require 'thor'
 require 'tmpdir'
 require 'uri'
 require 'zlib'
+require 'celluloid'
 
 require 'berkshelf/version'
 require 'berkshelf/core_ext'
@@ -75,6 +76,11 @@ module Berkshelf
     # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
+    end
+
+    # @return [Logger]
+    def log
+      Celluloid.logger
     end
 
     # @return [String]
