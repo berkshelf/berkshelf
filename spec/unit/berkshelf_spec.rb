@@ -52,5 +52,11 @@ describe Berkshelf do
         end
       end
     end
+
+    describe "::log" do
+      it "returns an instance of Logger" do
+        subject.log.should be_a(::Logger)
+      end
+    end
   end
 end
