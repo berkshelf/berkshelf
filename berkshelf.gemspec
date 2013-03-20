@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.name                  = "berkshelf"
   s.require_paths         = ["lib"]
   s.version               = Berkshelf::VERSION
-  s.required_ruby_version = ">= 1.9.1"
+  s.required_ruby_version = ">= 1.9.3"
 
   s.add_dependency 'yajl-ruby'
   s.add_dependency 'activesupport', '>= 4.0.0.beta'
