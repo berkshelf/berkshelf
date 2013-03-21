@@ -199,28 +199,28 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
-    method_option :freeze,
+    method_option :no_freeze,
       type: :boolean,
       default: false,
-      desc: "Freeze the uploaded cookbooks so that they cannot be overwritten"
-    option :force,
+      desc: "Do not freeze uploaded cookbook(s)."
+    method_option :force,
       type: :boolean,
       default: false,
-      desc: "Upload cookbook(s) even if a frozen one exists on the target Chef Server"
-    option :ssl_verify,
+      desc: "Upload all cookbook(s) even if a frozen one exists on the Chef Server."
+    method_option :ssl_verify,
       type: :boolean,
       default: nil,
-      desc: "Disable/Enable SSL verification when uploading cookbooks"
-    option :skip_syntax_check,
+      desc: "Disable/Enable SSL verification when uploading cookbooks."
+    method_option :skip_syntax_check,
       type: :boolean,
       default: false,
-      desc: "Skip Ruby syntax check when uploading cookbooks",
+      desc: "Skip Ruby syntax check when uploading cookbooks.",
       aliases: "-s"
-    option :skip_dependencies,
+    method_option :skip_dependencies,
       type: :boolean,
-      desc: 'Do not upload dependencies',
+      desc: "Skip uploading dependant cookbook(s).",
       default: false,
-      aliases: '-D'
+      aliases: "-D"
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
