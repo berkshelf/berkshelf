@@ -122,11 +122,9 @@ describe Berkshelf::GitLocation do
       end
       let(:cached_cookbook) { subject.download(tmp_path) }
       let(:commit_hash) { "d7be334b094f497f5cce4169a8b3012bf7b27bc3" }
-      let(:expected_path) { tmp_path.join("#{cached_cookbook.cookbook_name}-#{commit_hash}") }
+      let(:expected_path) { tmp_path.join("#{cached_cookbook.cookbook_name}-#{ref}") }
 
-      before(:each) { Berkshelf::Git.should_receive(:rev_parse).and_return(commit_hash) }
-
-      it "returns a cached cookbook with a path that contains the commit hash it is pointing to" do
+      it "returns a cached cookbook with a path that contains the ref and not the commit hash it is pointing to" do
         cached_cookbook.path.should eql(expected_path)
       end
     end
