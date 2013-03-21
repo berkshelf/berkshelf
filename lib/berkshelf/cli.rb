@@ -218,7 +218,7 @@ module Berkshelf
       aliases: "-s"
     method_option :skip_dependencies,
       type: :boolean,
-      desc: "Skip uploading dependant cookbook(s).",
+      desc: "Skip uploading dependent cookbook(s).",
       default: false,
       aliases: "-D"
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."

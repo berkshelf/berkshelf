@@ -2,6 +2,7 @@ module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
     extend Forwardable
+    include Berkshelf::Mixin::Logging
 
     class << self
       # @param [String] file
@@ -101,7 +102,8 @@ module Berkshelf
     #   cookbook 'artifact', git: 'git://github.com/RiotGames/artifact-cookbook.git'
     #
     # @example a cookbook source that will be retrieved from a Chef API (Chef Server)
-    #   cookbook 'artifact', chef_api: 'https://api.opscode.com/organizations/vialstudios', node_name: 'reset', client_key: '/Users/reset/.chef/knife.rb'
+    #   cookbook 'artifact', chef_api: 'https://api.opscode.com/organizations/vialstudios',
+    #     node_name: 'reset', client_key: '/Users/reset/.chef/knife.rb'
     #
     # @example a cookbook source that will be retrieved from a Chef API using your Berkshelf config
     #   cookbook 'artifact', chef_api: :config
@@ -227,7 +229,8 @@ module Berkshelf
     #   chef_api :config
     #
     # @example using a URL, node_name, and client_key to add a Chef API default location
-    #   chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "reset", client_key: "/Users/reset/.chef/knife.rb"
+    #   chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "reset",
+    #     client_key: "/Users/reset/.chef/knife.rb"
     #
     # @param [String, Symbol] value
     # @param [Hash] options
@@ -254,7 +257,8 @@ module Berkshelf
         # Only raise an exception if the source is a true duplicate
         groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
         if !(@sources[name].groups & groups).empty?
-          raise DuplicateSourceDefined, "Berksfile contains multiple sources named '#{name}'. Use only one, or put them in different groups."
+          raise DuplicateSourceDefined,
+            "Berksfile contains multiple sources named '#{name}'. Use only one, or put them in different groups."
         end
       end
 
@@ -395,7 +399,9 @@ module Berkshelf
       missing_cookbooks = (options[:cookbooks] - cookbooks.map(&:cookbook_name))
 
       unless missing_cookbooks.empty?
-        raise Berkshelf::CookbookNotFound, "Could not find cookbooks #{missing_cookbooks.collect{|cookbook| "'#{cookbook}'"}.join(', ')} in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+        msg = "Could not find cookbooks #{missing_cookbooks.collect{|cookbook| "'#{cookbook}'"}.join(', ')}"
+        msg << " in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+        raise Berkshelf::CookbookNotFound, msg
       end
 
       update_lockfile(sources)
@@ -446,7 +452,7 @@ module Berkshelf
     end
 
     # @option options [Boolean] :force (false)
-    #   Upload the Cookbook even if the version already exists and is frozen on the 
+    #   Upload the Cookbook even if the version already exists and is frozen on the
     #   target Chef Server
     # @option options [Boolean] :freeze (true)
     #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be overwritten
@@ -456,10 +462,12 @@ module Berkshelf
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any sources marked as a member of the
     #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
+    # @option options [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve sources for
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
+    # @option options [Boolean] :skip_dependencies (false)
+    #   Skip uploading dependent cookbook(s).
     #
     # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
     #
@@ -468,14 +476,15 @@ module Berkshelf
       options = options.reverse_merge(
         force: false,
         freeze: true,
-        ssl_verify: Berkshelf::Config.instance.ssl.verify
+        ssl_verify: Berkshelf::Config.instance.ssl.verify,
+        skip_dependencies: false
       )
 
       ridley_options               = options.slice(:ssl)
       ridley_options[:server_url]  = Berkshelf::Config.instance.chef.chef_server_url
       ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
       ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
-      ridley_options[:ssl]         = { verify: options[:ssl_verify] }     
+      ridley_options[:ssl]         = { verify: options[:ssl_verify] }
 
       unless ridley_options[:server_url].present?
         raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.server_url"
@@ -504,13 +513,15 @@ module Berkshelf
         missing_cookbooks = options.fetch(:cookbooks, nil) - solution.map(&:cookbook_name)
         unless missing_cookbooks.empty?
           msg = "Unable to upload cookbooks: #{missing_cookbooks.sort.join(', ')}\n"
-          msg << "Specified cookbooks must be defined within the Berkshelf file when using the `--skip-dependencies` option"
+          msg << "Specified cookbooks must be defined within the Berkshelf file when using the"
+          msg << " `--skip-dependencies` option"
           raise ExplicitCookbookNotFound.new(msg)
         end
       end
 
       results
     rescue Ridley::Errors::RidleyError => ex
+      log_exception(ex)
       raise UploadFailure, ex
     ensure
       conn.terminate if conn && conn.alive?
@@ -526,30 +537,12 @@ module Berkshelf
     #   group to be installed and all others to be ignored
     # @option cookbooks [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve sources for
+    # @option options [Boolean] :skip_dependencies
+    #   Skip resolving of dependencies
     #
     # @return [Array<Berkshelf::CachedCookbooks]
     def resolve(options = {})
       resolver(options).resolve
-    end
-
-    # Builds a Resolver instance
-    #
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any sources marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any sources marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve sources for
-    #
-    # @return <Berkshelf::Resolver>
-    def resolver(options={})
-      Resolver.new(
-        self.downloader,
-        sources: sources(options),
-        skip_dependencies: options[:skip_dependencies]
-      )
     end
 
     # Reload this instance of Berksfile with the given content. The content
@@ -578,6 +571,28 @@ module Berkshelf
 
       def lockfile_present?
         File.exist?(Berkshelf::Lockfile::DEFAULT_FILENAME)
+      end
+
+      # Builds a Resolver instance
+      #
+      # @option options [Symbol, Array] :except
+      #   Group(s) to exclude which will cause any sources marked as a member of the
+      #   group to not be installed
+      # @option options [Symbol, Array] :only
+      #   Group(s) to include which will cause any sources marked as a member of the
+      #   group to be installed and all others to be ignored
+      # @option options [String, Array] :cookbooks
+      #   Names of the cookbooks to retrieve sources for
+      # @option options [Boolean] :skip_dependencies
+      #   Skip resolving of dependencies
+      #
+      # @return <Berkshelf::Resolver>
+      def resolver(options = {})
+        Resolver.new(
+          self.downloader,
+          sources: sources(options),
+          skip_dependencies: options[:skip_dependencies]
+        )
       end
 
       def write_lockfile(sources)
