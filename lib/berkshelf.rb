@@ -37,6 +37,7 @@ module Berkshelf
   autoload :Git, 'berkshelf/git'
   autoload :InitGenerator, 'berkshelf/init_generator'
   autoload :Lockfile, 'berkshelf/lockfile'
+  autoload :Logger, 'berkshelf/logger'
   autoload :Mixin, 'berkshelf/mixin'
   autoload :Resolver, 'berkshelf/resolver'
   autoload :UI, 'berkshelf/ui'
@@ -44,8 +45,9 @@ module Berkshelf
   require 'berkshelf/location'
 
   class << self
-    attr_accessor :ui
+    include Berkshelf::Mixin::Logging
 
+    attr_accessor :ui
     attr_writer :cookbook_store
 
     # @return [Pathname]
@@ -67,11 +69,6 @@ module Berkshelf
     # @return [String]
     def berkshelf_path
       ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
-    end
-
-    # @return [Logger]
-    def log
-      Celluloid.logger
     end
 
     # @return [String]
