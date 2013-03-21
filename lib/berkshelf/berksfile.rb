@@ -73,10 +73,12 @@ module Berkshelf
     def_delegator :downloader, :add_location
     def_delegator :downloader, :locations
 
+    # @param [String] path
+    #   path on disk to the file containing the contents of this Berksfile
     def initialize(path)
-      @filepath = path
-      @sources = Hash.new
-      @downloader = Downloader.new(Berkshelf.cookbook_store)
+      @filepath         = path
+      @sources          = Hash.new
+      @downloader       = Downloader.new(Berkshelf.cookbook_store)
       @cached_cookbooks = nil
     end
 
@@ -443,20 +445,11 @@ module Berkshelf
       outdated
     end
 
-    # @option options [String] :server_url
-    #   URL to the Chef API
-    # @option options [String] :client_name
-    #   name of the client used to authenticate with the Chef API
-    # @option options [String] :client_key
-    #   filepath to the client's private key used to authenticate with
-    #   the Chef API
-    # @option options [String] :organization
-    #   the Organization to connect to. This is only used if you are connecting to
-    #   private Chef or hosted Chef
-    # @option options [Boolean] :force Upload the Cookbook even if the version
-    #   already exists and is frozen on the target Chef Server
-    # @option options [Boolean] :freeze Freeze the uploaded Cookbook on the Chef
-    #   Server so that it cannot be overwritten
+    # @option options [Boolean] :force (false)
+    #   Upload the Cookbook even if the version already exists and is frozen on the 
+    #   target Chef Server
+    # @option options [Boolean] :freeze (true)
+    #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be overwritten
     # @option options [Symbol, Array] :except
     #   Group(s) to exclude which will cause any sources marked as a member of the
     #   group to not be installed
@@ -465,27 +458,45 @@ module Berkshelf
     #   group to be installed and all others to be ignored
     # @option cookbooks [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve sources for
-    # @option options [Hash] :params
-    #   URI query unencoded key/value pairs
-    # @option options [Hash] :headers
-    #   unencoded HTTP header key/value pairs
-    # @option options [Hash] :request
-    #   request options
-    # @option options [Hash] :ssl
-    #   SSL options
-    # @option options [URI, String, Hash] :proxy
-    #   URI, String, or Hash of HTTP proxy options
+    # @option options [Hash] :ssl_verify (true)
+    #   Disable/Enable SSL verification during uploads
     #
     # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
+    #
+    # @return [Array<Hash>]
     def upload(options = {})
-      conn     = Ridley.new(options)
+      options = options.reverse_merge(
+        force: false,
+        freeze: true,
+        ssl_verify: Berkshelf::Config.instance.ssl.verify
+      )
+
+      ridley_options               = options.slice(:ssl)
+      ridley_options[:server_url]  = Berkshelf::Config.instance.chef.chef_server_url
+      ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
+      ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
+      ridley_options[:ssl]         = { verify: options[:ssl_verify] }     
+
+      unless ridley_options[:server_url].present?
+        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.server_url"
+      end
+
+      unless ridley_options[:client_name].present?
+        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.node_name"
+      end
+
+      unless ridley_options[:client_key].present?
+        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.client_key"
+      end
+
+      conn     = Ridley.new(ridley_options)
       solution = resolve(options)
 
-      solution.each do |cb|
-        upload_opts = options.dup
+      results = solution.collect do |cb|
+        upload_opts        = options.slice(:force, :freeze)
         upload_opts[:name] = cb.cookbook_name
 
-        Berkshelf.formatter.upload cb.cookbook_name, cb.version, upload_opts[:server_url]
+        Berkshelf.formatter.upload cb.cookbook_name, cb.version, conn.server_url
         conn.cookbook.upload(cb.path, upload_opts)
       end
 
@@ -497,10 +508,10 @@ module Berkshelf
           raise ExplicitCookbookNotFound.new(msg)
         end
       end
-    rescue Ridley::Errors::ClientKeyFileNotFound => e
-      msg = "Could not upload cookbooks: Missing Chef client key: '#{Berkshelf::Config.instance.chef.client_key}'."
-      msg << " Generate or update your Berkshelf configuration that contains a valid path to a Chef client key."
-      raise UploadFailure, msg
+
+      results
+    rescue Ridley::Errors::RidleyError => ex
+      raise UploadFailure, ex
     ensure
       conn.terminate if conn && conn.alive?
     end

@@ -225,27 +225,9 @@ module Berkshelf
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      unless Berkshelf::Config.instance.chef.chef_server_url.present?
-        msg = "Could not upload cookbooks: Missing Chef server_url."
-        msg << " Generate or update your Berkshelf configuration that contains a valid Chef Server URL."
-        raise UploadFailure, msg
-      end
-
-      unless Berkshelf::Config.instance.chef.node_name.present?
-        msg = "Could not upload cookbooks: Missing Chef node_name."
-        msg << " Generate or update your Berkshelf configuration that contains a valid Chef node_name."
-        raise UploadFailure, msg
-      end
-
-      upload_options = {
-        server_url: Berkshelf::Config.instance.chef.chef_server_url,
-        client_name: Berkshelf::Config.instance.chef.node_name,
-        client_key: Berkshelf::Config.instance.chef.client_key,
-        ssl: {
-          verify: (options[:ssl_verify].nil? ? Berkshelf::Config.instance.ssl.verify : options[:ssl_verify])
-        },
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
+      upload_options             = options.except(:no_freeze, :berksfile).symbolize_keys
+      upload_options[:cookbooks] = cookbook_names
+      upload_options[:freeze]    = false if options[:no_freeze]
 
       berksfile.upload(upload_options)
     end
