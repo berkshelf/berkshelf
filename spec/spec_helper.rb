@@ -10,8 +10,8 @@ Spork.prefork do
   require 'vcr'
 
   APP_ROOT = File.expand_path('../../', __FILE__)
-  ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "berkshelf")
-  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "tmp", "knife.rb")
+  ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "spec", "tmp", "berkshelf")
+  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "tmp", "knife.rb")
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
@@ -157,7 +157,6 @@ end
 
 Spork.each_run do
   require 'berkshelf'
-  require 'berkshelf/vagrant'
 
   module Berkshelf
     class GitLocation

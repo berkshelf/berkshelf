@@ -34,9 +34,9 @@ Feature: cookbook creation with a config file
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
-      | config.vm.forward_port 12345, 54321 |
-      | config.vm.network :hostonly, "12.34.56.78" |
-      | config.vm.network :bridged |
+      | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
+      | config.vm.network :private_network, ip: "12.34.56.78" |
+      | config.vm.network :public_network |
     And the exit status should be 0
 
   Scenario: creating a new cookbook using a partial Berkshelf config
@@ -54,7 +54,7 @@ Feature: cookbook creation with a config file
     """
     When I run the cookbook command to create "sparkle_motion"
     Then the resulting "sparkle_motion" Vagrantfile should contain:
-      | config.vm.forward_port 12345, 54321 |
+      | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
     And the exit status should be 0
 
   Scenario: creating a new cookbook using an invalid Berkshelf config
@@ -91,8 +91,8 @@ Feature: cookbook creation with a config file
     """
     When I run the cookbook command to create "sparkle_motion"
     Then the resulting "sparkle_motion" Vagrantfile should contain:
-      | config.vm.provision :chef_client |
-      | chef.chef_server_url = "localhost:4000" |
+      | config.vm.provision :chef_client                    |
+      | chef.chef_server_url        = "localhost:4000"      |
       | chef.validation_client_name = "my_client-validator" |
-      | chef.validation_key_path = "/a/b/c/my_client-validator.pem" |
+      | chef.validation_key_path    = "/a/b/c/my_client-validator.pem" |
     Then the exit status should be 0

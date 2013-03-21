@@ -149,4 +149,5 @@ module Berkshelf
   class InvalidVersionConstraint < BerkshelfError; status_code(122); end
   class CommunitySiteError < BerkshelfError; status_code(123); end
   class CookbookValidationFailure < BerkshelfError; status_code(124); end
+  class ClientKeyFileNotFound < BerkshelfError; status_code(125); end
 end

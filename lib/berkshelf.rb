@@ -5,15 +5,16 @@ require 'forwardable'
 require 'hashie'
 require 'multi_json'
 require 'pathname'
+require 'ridley'
 require 'solve'
 require 'thor'
 require 'tmpdir'
 require 'uri'
 require 'zlib'
+require 'celluloid'
 
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
-require 'berkshelf/ridley'
 require 'berkshelf/test'
 require 'berkshelf/version'
 require 'thor/monkies'
@@ -37,6 +38,7 @@ module Berkshelf
   autoload :Git, 'berkshelf/git'
   autoload :InitGenerator, 'berkshelf/init_generator'
   autoload :Lockfile, 'berkshelf/lockfile'
+  autoload :Logger, 'berkshelf/logger'
   autoload :Mixin, 'berkshelf/mixin'
   autoload :Resolver, 'berkshelf/resolver'
   autoload :UI, 'berkshelf/ui'
@@ -44,8 +46,9 @@ module Berkshelf
   require 'berkshelf/location'
 
   class << self
-    attr_accessor :ui
+    include Berkshelf::Mixin::Logging
 
+    attr_accessor :ui
     attr_writer :cookbook_store
 
     # @return [Pathname]
