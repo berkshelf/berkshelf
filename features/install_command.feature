@@ -90,7 +90,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | artifact | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.9.8'
@@ -104,7 +104,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | artifact | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8'
@@ -118,7 +118,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | artifact | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8' over protocol: 'git'
@@ -132,7 +132,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | artifact | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8' over protocol: '<protocol>'

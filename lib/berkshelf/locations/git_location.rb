@@ -68,7 +68,7 @@ module Berkshelf
         raise CookbookNotFound, msg
       end
 
-      cb_path = File.join(destination, "#{name}-#{branch || Git.rev_parse(clone)}")
+      cb_path = File.join(destination, revision_path(destination) || "#{name}-#{Git.rev_parse(clone)}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 
