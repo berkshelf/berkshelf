@@ -221,6 +221,10 @@ module Berkshelf
       desc: 'Do not upload dependencies',
       default: false,
       aliases: '-D'
+    option :trust_versions,
+      type: :boolean,
+      default: false,
+      desc: 'Trust already uploaded cookbook versions and do not overwrite them'
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
