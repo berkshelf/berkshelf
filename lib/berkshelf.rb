@@ -71,6 +71,11 @@ module Berkshelf
       ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
     end
 
+    # @return [Logger]
+    def logger
+      Celluloid.logger
+    end
+
     # @return [String]
     def tmp_dir
       File.join(berkshelf_path, "tmp")

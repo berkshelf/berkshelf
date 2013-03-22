@@ -468,16 +468,21 @@ module Berkshelf
     #   Disable/Enable SSL verification during uploads
     # @option options [Boolean] :skip_dependencies (false)
     #   Skip uploading dependent cookbook(s).
+    # @option options [Boolean] :halt_on_frozen (false)
+    #   Raise a FrozenCookbook error if one of the cookbooks being uploaded is already located
+    #   on the remote Chef Server and frozen.
     #
     # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
-    #
-    # @return [Array<Hash>]
+    # @raise [Berkshelf::FrozenCookbook]
+    #   if an attempt to upload a cookbook which has been frozen on the target server is made
+    #   and the :halt_on_frozen option was true
     def upload(options = {})
       options = options.reverse_merge(
         force: false,
         freeze: true,
         ssl_verify: Berkshelf::Config.instance.ssl.verify,
-        skip_dependencies: false
+        skip_dependencies: false,
+        halt_on_frozen: false
       )
 
       ridley_options               = options.slice(:ssl)
@@ -498,15 +503,20 @@ module Berkshelf
         raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 
-      conn     = Ridley.new(ridley_options)
-      solution = resolve(options)
+      conn        = Ridley.new(ridley_options)
+      solution    = resolve(options)
+      upload_opts = options.slice(:force, :freeze)
 
-      results = solution.collect do |cb|
-        upload_opts        = options.slice(:force, :freeze)
-        upload_opts[:name] = cb.cookbook_name
+      solution.each do |cb|
+        Berkshelf.formatter.upload(cb.cookbook_name, cb.version, conn.server_url)
 
-        Berkshelf.formatter.upload cb.cookbook_name, cb.version, conn.server_url
-        conn.cookbook.upload(cb.path, upload_opts)
+        begin
+          conn.cookbook.upload(cb.path, upload_opts.merge(name: cb.cookbook_name))
+        rescue Ridley::Errors::FrozenCookbook => ex
+          if options[:halt_on_frozen]
+            raise Berkshelf::FrozenCookbook.new(ex.to_s)
+          end
+        end
       end
 
       if options[:skip_dependencies]
@@ -518,8 +528,6 @@ module Berkshelf
           raise ExplicitCookbookNotFound.new(msg)
         end
       end
-
-      results
     rescue Ridley::Errors::RidleyError => ex
       log_exception(ex)
       raise UploadFailure, ex

@@ -31,7 +31,7 @@ module Berkshelf
       end
 
       if @options[:debug]
-        Berkshelf.log.level = ::Logger::DEBUG
+        Berkshelf.logger.level = ::Logger::DEBUG
       end
 
       if @options[:quiet]
@@ -221,11 +221,15 @@ module Berkshelf
       desc: "Skip uploading dependent cookbook(s).",
       default: false,
       aliases: "-D"
+    method_option :halt_on_frozen,
+      type: :boolean,
+      default: false,
+      desc: "Halt uploading and exit if the Chef Server has a frozen version of the cookbook(s)."
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      upload_options             = options.except(:no_freeze, :berksfile).symbolize_keys
+      upload_options             = Hash[options.except(:no_freeze, :berksfile)].symbolize_keys
       upload_options[:cookbooks] = cookbook_names
       upload_options[:freeze]    = false if options[:no_freeze]
 

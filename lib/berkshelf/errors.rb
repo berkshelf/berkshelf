@@ -65,7 +65,6 @@ module Berkshelf
   class DuplicateSourceDefined < BerkshelfError; status_code(105); end
   class NoSolution < BerkshelfError; status_code(106); end
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
-  class UploadFailure < BerkshelfError; status_code(108); end
   class BerksConfigNotFound < BerkshelfError; status_code(109); end
 
   class InvalidGitURI < BerkshelfError
@@ -150,4 +149,7 @@ module Berkshelf
   class CommunitySiteError < BerkshelfError; status_code(123); end
   class CookbookValidationFailure < BerkshelfError; status_code(124); end
   class ClientKeyFileNotFound < BerkshelfError; status_code(125); end
+
+  class UploadFailure < BerkshelfError; end
+  class FrozenCookbook < UploadFailure; status_code(126); end
 end
