@@ -15,6 +15,21 @@ module Berkshelf::Chef::Cookbook
   # See the License for the specific language governing permissions and
   # limitations under the License.
   class Chefignore
+    class << self
+      # Traverse a path in relative context to find a Chefignore file
+      #
+      # @param [String] path
+      #   path to traverse
+      #
+      # @return [String, nil]
+      def find_relative_to(path)
+        [
+          File.join(path, Berkshelf::Chef::Cookbook::Chefignore::FILENAME),
+          File.join(path, 'cookbooks', Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
+        ].find { |f| File.exists?(f) }
+      end
+    end
+
     FILENAME                = "chefignore".freeze
     COMMENTS_AND_WHITESPACE = /^\s*(?:#.*)?$/
 
