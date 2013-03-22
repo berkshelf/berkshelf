@@ -20,9 +20,9 @@ module Berkshelf
       # @param [#to_s] version
       def purge_cookbook(name, version = nil)
         if version.nil?
-          ridley.cookbook.delete_all(name, purge: true)
+          ridley.cookbook.delete_all(name)
         else
-          ridley.cookbook.delete(name, version, purge: true)
+          ridley.cookbook.delete(name, version)
         end
       rescue Ridley::Errors::HTTPNotFound
         true
