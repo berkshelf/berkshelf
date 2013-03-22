@@ -514,7 +514,7 @@ module Berkshelf
           conn.cookbook.upload(cb.path, upload_opts.merge(name: cb.cookbook_name))
         rescue Ridley::Errors::FrozenCookbook => ex
           if options[:halt_on_frozen]
-            raise Berkshelf::FrozenCookbook.new(ex.to_s)
+            raise Berkshelf::FrozenCookbook, ex
           end
         end
       end
