@@ -40,20 +40,14 @@ EOF
       end
 
       context "with a chefignore" do
-        before(:each) do
-          File.stub(:exists?).and_return(true)
-          Berkshelf::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
-        end
-
         it "finds a chefignore file" do
-          Berkshelf::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
+          Berkshelf::Chef::Cookbook::Chefignore.should_receive(:find_relative_to).and_return(File.expand_path('chefignore'))
           subject.vendor(cached_cookbooks, tmpdir)
         end
 
-        it "removes files in chefignore" do
-          cached_cookbooks = [ Berkshelf::CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
-          FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
-          FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
+        it "ignores files specified by a chefignore if a chefignore is present" do
+          Berkshelf::Chef::Cookbook::Chefignore.should_receive(:find_relative_to).and_return(File.expand_path('chefignore'))
+          Berkshelf::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
           subject.vendor(cached_cookbooks, tmpdir)
         end
       end
