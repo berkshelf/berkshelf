@@ -9,18 +9,18 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = "<%= "#{cookbook_name.gsub('_','-')}-berkshelf" %>"
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "<%= options[:berkshelf_config].vagrant.vm.box %>"
+  config.vm.box = "<%= berkshelf_config.vagrant.vm.box %>"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "<%= options[:berkshelf_config].vagrant.vm.box_url %>"
+  config.vm.box_url = "<%= berkshelf_config.vagrant.vm.box_url %>"
 
   # Assign this VM to a host-only network IP, allowing you to access it
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
   # network interface) by any external networks.
-<% if options[:berkshelf_config].vagrant.vm.network.hostonly.present? -%>
-  config.vm.network :private_network, ip: "<%= options[:berkshelf_config].vagrant.vm.network.hostonly %>"
+<% if berkshelf_config.vagrant.vm.network.hostonly.present? -%>
+  config.vm.network :private_network, ip: "<%= berkshelf_config.vagrant.vm.network.hostonly %>"
 <% else %>
   config.vm.network :private_network, ip: "192.168.33.10"
 <% end -%>
@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
   # your network.
-<% if options[:berkshelf_config].vagrant.vm.network.bridged -%>
+<% if berkshelf_config.vagrant.vm.network.bridged -%>
   config.vm.network :public_network
 <% else %>
   # config.vm.network :public_network
@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-<% options[:berkshelf_config].vagrant.vm.forward_port.each do |guest, host| %>
+<% berkshelf_config.vagrant.vm.forward_port.each do |guest, host| %>
   config.vm.network :forwarded_port, guest: <%= guest %>, host: <%= host %>
 <% end -%>
 
@@ -80,11 +80,11 @@ Vagrant.configure("2") do |config|
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
-<% if options[:berkshelf_config].vagrant.vm.provision == "chef_client" -%>
+<% if berkshelf_config.vagrant.vm.provision == "chef_client" -%>
   config.vm.provision :chef_client do |chef|
-    chef.chef_server_url        = "<%= options[:berkshelf_config].chef.chef_server_url %>"
-    chef.validation_client_name = "<%= options[:berkshelf_config].chef.validation_client_name %>"
-    chef.validation_key_path    = "<%= options[:berkshelf_config].chef.validation_key_path %>"
+    chef.chef_server_url        = "<%= berkshelf_config.chef.chef_server_url %>"
+    chef.validation_client_name = "<%= berkshelf_config.chef.validation_client_name %>"
+    chef.validation_key_path    = "<%= berkshelf_config.chef.validation_key_path %>"
 
     chef.run_list = [
   <% if options[:chef_minitest] -%>
@@ -93,7 +93,7 @@ Vagrant.configure("2") do |config|
       "recipe[<%= cookbook_name %>::default]"
     ]
   end
-<% elsif options[:berkshelf_config].vagrant.vm.provision == "chef_solo" -%>
+<% elsif berkshelf_config.vagrant.vm.provision == "chef_solo" -%>
   config.vm.provision :chef_solo do |chef|
     chef.json = {
       :mysql => {
