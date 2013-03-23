@@ -1,4 +1,5 @@
 require 'berkshelf'
+require 'kitchen/cli'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
@@ -50,6 +51,8 @@ module Berkshelf
     map 'ls'   => :list
     map 'book' => :cookbook
     map ['ver', '-v', '--version'] => :version
+
+    register(Kitchen::CLI, 'test', 'test <command>', 'Testing tasks for your cookbook')
 
     default_task :install
 
