@@ -52,7 +52,7 @@ module Berkshelf
     map 'book' => :cookbook
     map ['ver', '-v', '--version'] => :version
 
-    register(Kitchen::CLI, 'test', 'test <command>', 'Testing tasks for your cookbook')
+    register(Kitchen::CLI, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook')
 
     default_task :install
 
