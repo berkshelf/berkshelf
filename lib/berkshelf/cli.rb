@@ -1,5 +1,8 @@
 require 'berkshelf'
-require 'kitchen/cli'
+
+if ENV['BERKS_TEST_KITCHEN'] == "1"
+  require 'kitchen/cli'
+end
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
@@ -52,7 +55,9 @@ module Berkshelf
     map 'book' => :cookbook
     map ['ver', '-v', '--version'] => :version
 
-    register(Kitchen::CLI, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook')
+    if ENV['BERKS_TEST_KITCHEN'] == "1"
+      register(Kitchen::CLI, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook')
+    end
 
     default_task :install
 
