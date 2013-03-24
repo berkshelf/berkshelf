@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::InitGenerator do
+describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with: :json } do
   subject { described_class }
 
   let(:target) { tmp_path.join("some_cookbook") }
@@ -160,18 +160,15 @@ describe Berkshelf::InitGenerator do
 
   context "with the chef_minitest option true" do
     before(:each) do
-      # stub_request(:get, "http://cookbooks.opscode.com/api/v1/cookbooks/minitest-handler").
-      #   with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Faraday v0.8.6'}).
-      #   to_return(:status => 200, :body => "", :headers => {})
-      capture(:stdout) {
-        subject.new([target], chef_minitest: true).invoke_all
-      }
+        capture(:stdout) {
+          subject.new([target], chef_minitest: true).invoke_all
+        }
     end
 
     specify do
       target.should have_structure {
         file "Berksfile" do
-          contains "cookbook 'minitest-handler'"
+          contains "cookbook \"minitest-handler\""
         end
         file "Vagrantfile" do
           contains "\"recipe[minitest-handler::default]\""
@@ -181,12 +178,12 @@ describe Berkshelf::InitGenerator do
            directory "tests" do
              directory "minitest" do
                file "default_test.rb" do
-                 contains "describe '#{name}::default' do"
-                 contains "include Helpers::#{name.capitalize}"
+                 contains "describe 'some_cookbook::default' do"
+                 contains "include Helpers::some_cookbook"
                end
                directory "support" do
                  file "helpers.rb" do
-                   contains "module #{name.capitalize}"
+                   contains "module Some_cookbook"
                  end
                end
              end
@@ -196,5 +193,4 @@ describe Berkshelf::InitGenerator do
       }
     end
   end
-
 end
