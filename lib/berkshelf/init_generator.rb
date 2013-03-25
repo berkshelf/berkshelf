@@ -44,10 +44,20 @@ module Berkshelf
       type: :hash,
       default: Config.instance
 
+    class_option :cookbook_templates,
+      type: :string,
+      default: Berkshelf::Config.instance.cookbook_templates
+
     # Generate the cookbook
     def generate
       validate_configuration
       check_option_support
+
+      if options[:cookbook_templates]
+        unless source_paths.include?(options[:cookbook_templates])
+          source_paths.unshift(File.expand_path(options[:cookbook_templates]))
+        end
+      end
 
       template "Berksfile.erb", target.join("Berksfile")
 

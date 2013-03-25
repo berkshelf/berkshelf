@@ -99,5 +99,7 @@ module Berkshelf
       type: Boolean,
       default: true,
       required: true
+    attribute 'cookbook_templates',
+      type: String
   end
 end
