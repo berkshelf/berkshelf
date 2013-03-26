@@ -23,6 +23,7 @@ Feature: cookbook command
     | skip-vagrant | no Vagrant |
 
   Scenario Outline: creating a new cookbook skeleton with options without the supporting gem installed
+    Given the gem "<gem>" is not installed
     When I run the cookbook command to create "sparkle_motion" with options:
       | --<option> |
     Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
@@ -33,10 +34,10 @@ Feature: cookbook command
     | option     | feature    | gem             |
     | foodcritic | Foodcritic | foodcritic      |
     | scmversion | SCMVersion | thor-scmversion |
-    # | no-bundler   | no Bundler | bundler         |
 
-    @pending
   Scenario: creating a new cookbook skeleton with bundler support without bundler installed
-    Given pending "Bundler is used in tests, so it always appears available. Need to mock out the Gem::Specification.find_by_name, but aruba is out of process testing."
-
-
+    Given the gem "bundler" is not installed
+    When I run the cookbook command to create "sparkle_motion"
+    Then I should have a new cookbook skeleton "sparkle_motion"
+    And the output should contain a warning to suggest supporting the default for "bundler" by installing "bundler"
+    And the exit status should be 0
