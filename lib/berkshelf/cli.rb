@@ -348,8 +348,8 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "contingent [COOKBOOK]", "Display a list of cookbooks that depend on the given cookbook"
-    def contingent(name = nil)
+    desc "contingent COOKBOOK", "Display a list of cookbooks that depend on the given cookbook"
+    def contingent(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
       Berkshelf.ui.say "Cookbooks contingent upon #{name}:"
