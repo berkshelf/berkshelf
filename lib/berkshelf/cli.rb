@@ -342,6 +342,24 @@ module Berkshelf
       Berkshelf.ui.say(cookbook.path)
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    desc "contingent [COOKBOOK]", "Display a list of cookbooks that depend on the given cookbook"
+    def contingent(name = nil)
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+
+      Berkshelf.ui.say "Cookbooks contingent upon #{name}:"
+      sources = Berkshelf.ui.mute { berksfile.resolve }.sort.each do |cookbook|
+        if cookbook.dependencies.include?(name)
+          Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+        end
+      end
+    end
+
     desc "version", "Display version and copyright information"
     def version
       Berkshelf.formatter.msg version_header
