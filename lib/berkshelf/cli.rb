@@ -30,6 +30,10 @@ module Berkshelf
         Berkshelf::Config.path = @options[:config]
       end
 
+      if @options[:debug]
+        Berkshelf.logger.level = ::Logger::DEBUG
+      end
+
       if @options[:quiet]
         Berkshelf.ui.mute!
       end
@@ -64,6 +68,11 @@ module Berkshelf
       type: :boolean,
       desc: "Silence all informational output.",
       aliases: "-q",
+      default: false
+    class_option :debug,
+      type: :boolean,
+      desc: "Output debug information",
+      aliases: "-d",
       default: false
 
     method_option :force,
@@ -190,53 +199,39 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
-    method_option :freeze,
+    method_option :no_freeze,
       type: :boolean,
       default: false,
-      desc: "Freeze the uploaded cookbooks so that they cannot be overwritten"
-    option :force,
+      desc: "Do not freeze uploaded cookbook(s)."
+    method_option :force,
       type: :boolean,
       default: false,
-      desc: "Upload cookbook(s) even if a frozen one exists on the target Chef Server"
-    option :ssl_verify,
+      desc: "Upload all cookbook(s) even if a frozen one exists on the Chef Server."
+    method_option :ssl_verify,
       type: :boolean,
       default: nil,
-      desc: "Disable/Enable SSL verification when uploading cookbooks"
-    option :skip_syntax_check,
+      desc: "Disable/Enable SSL verification when uploading cookbooks."
+    method_option :skip_syntax_check,
       type: :boolean,
       default: false,
-      desc: "Skip Ruby syntax check when uploading cookbooks",
+      desc: "Skip Ruby syntax check when uploading cookbooks.",
       aliases: "-s"
-    option :skip_dependencies,
+    method_option :skip_dependencies,
       type: :boolean,
-      desc: 'Do not upload dependencies',
+      desc: "Skip uploading dependent cookbook(s).",
       default: false,
-      aliases: '-D'
+      aliases: "-D"
+    method_option :halt_on_frozen,
+      type: :boolean,
+      default: false,
+      desc: "Halt uploading and exit if the Chef Server has a frozen version of the cookbook(s)."
     desc "upload [COOKBOOKS]", "Upload cookbook(s) specified by a Berksfile to the configured Chef Server."
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      unless Berkshelf::Config.instance.chef.chef_server_url.present?
-        msg = "Could not upload cookbooks: Missing Chef server_url."
-        msg << " Generate or update your Berkshelf configuration that contains a valid Chef Server URL."
-        raise UploadFailure, msg
-      end
-
-      unless Berkshelf::Config.instance.chef.node_name.present?
-        msg = "Could not upload cookbooks: Missing Chef node_name."
-        msg << " Generate or update your Berkshelf configuration that contains a valid Chef node_name."
-        raise UploadFailure, msg
-      end
-
-      upload_options = {
-        server_url: Berkshelf::Config.instance.chef.chef_server_url,
-        client_name: Berkshelf::Config.instance.chef.node_name,
-        client_key: Berkshelf::Config.instance.chef.client_key,
-        ssl: {
-          verify: (options[:ssl_verify].nil? ? Berkshelf::Config.instance.ssl.verify : options[:ssl_verify])
-        },
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
+      upload_options             = Hash[options.except(:no_freeze, :berksfile)].symbolize_keys
+      upload_options[:cookbooks] = cookbook_names
+      upload_options[:freeze]    = false if options[:no_freeze]
 
       berksfile.upload(upload_options)
     end
@@ -360,6 +355,24 @@ module Berkshelf
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.ui.say(cookbook.pretty_print)
+    end
+
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    desc "contingent [COOKBOOK]", "Display a list of cookbooks that depend on the given cookbook"
+    def contingent(name = nil)
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+
+      Berkshelf.ui.say "Cookbooks contingent upon #{name}:"
+      sources = Berkshelf.ui.mute { berksfile.resolve }.sort.each do |cookbook|
+        if cookbook.dependencies.include?(name)
+          Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+        end
+      end
     end
 
     desc "version", "Display version and copyright information"

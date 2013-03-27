@@ -20,7 +20,6 @@ describe Berkshelf::InitGenerator do
           contains "gem 'berkshelf'"
         end
         file "Vagrantfile" do
-          contains "require 'berkshelf/vagrant'"
           contains "recipe[some_cookbook::default]"
         end
         no_file "chefignore"

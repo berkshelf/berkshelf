@@ -108,7 +108,7 @@ module Berkshelf
           raise InvalidConfiguration.new Config.instance.errors
         end
       end
-      
+
 
       # Check for supporting gems for provided options
       #
@@ -138,14 +138,14 @@ module Berkshelf
 
       # Warn if the supporting gem for a default is not installed
       #
-      # @return [Boolean]  
+      # @return [Boolean]
       def assert_default_supported(option, gem_name = option.to_s)
         unless options[option]
           begin
             Gem::Specification.find_by_name(gem_name)
           rescue Gem::LoadError
             Berkshelf.ui.warn "By default, this cookbook was generated to support #{gem_name}, however, #{gem_name} is not installed."
-            Berkshelf.ui.warn "To skip support for #{gem_name}, use --#{option}"
+            Berkshelf.ui.warn "To skip support for #{gem_name}, use --#{option.to_s.gsub('_', '-')}"
             Berkshelf.ui.warn "To install #{gem_name}: gem install #{gem_name}"
             return false
           end

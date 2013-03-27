@@ -7,12 +7,20 @@ Spork.prefork do
   require 'pp'
   require 'rspec'
   require 'webmock/rspec'
+  require 'vcr'
 
   APP_ROOT = File.expand_path('../../', __FILE__)
-  ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "berkshelf")
-  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "tmp", "knife.rb")
+  ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "spec", "tmp", "berkshelf")
+  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "tmp", "knife.rb")
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
+
+  VCR.configure do |config|
+    config.configure_rspec_metadata!
+    config.cassette_library_dir = 'spec/fixtures/cassettes'
+    config.hook_into :webmock
+    config.default_cassette_options = { record: :new_episodes }
+  end
 
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
@@ -149,7 +157,6 @@ end
 
 Spork.each_run do
   require 'berkshelf'
-  require 'berkshelf/vagrant'
 
   module Berkshelf
     class GitLocation

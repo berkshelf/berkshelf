@@ -52,5 +52,11 @@ describe Berkshelf do
         end
       end
     end
+
+    describe "::log" do
+      it "returns Berkshelf::Logger" do
+        subject.log.should eql(Berkshelf::Logger)
+      end
+    end
   end
 end

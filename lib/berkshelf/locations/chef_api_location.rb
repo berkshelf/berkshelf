@@ -84,7 +84,14 @@ module Berkshelf
     #   the name of the client to use to communicate with the Chef API.
     # @option options [String] :client_key (Berkshelf::Config.instance.chef.client_key)
     #   the filepath to the authentication key for the client
-    # @option options [Boolean] :verify_ssl (Berkshelf::Config.instance.chef.ssl.verify) 
+    # @option options [Boolean] :verify_ssl (Berkshelf::Config.instance.chef.ssl.verify)
+    #
+    # @raise [ClientKeyFileNotFound] if the value for :client_key does not contain a filepath
+    #   pointing to a readable file containing a Chef client key.
+    #
+    #   If the :chef_api option is given the symbol :config and your Berkshelf config does not
+    #   have a value for chef.client_key which points to a readable file containing a Chef
+    #   client key.
     def initialize(name, version_constraint, options = {})
       options = options.reverse_merge(
         client_key: Berkshelf::Config.instance.chef.client_key,
@@ -134,6 +141,8 @@ module Berkshelf
       # Why do we use a class function for defining our finalizer?
       # http://www.mikeperham.com/2010/02/24/the-trouble-with-ruby-finalizers/
       ObjectSpace.define_finalizer(self, self.class.finalizer)
+    rescue Ridley::Errors::ClientKeyFileNotFound => ex
+      raise ClientKeyFileNotFound, ex
     end
 
     # @param [#to_s] destination
@@ -159,10 +168,14 @@ module Berkshelf
     def target_cookbook
       return @target_cookbook unless @target_cookbook.nil?
 
-      @target_cookbook = if version_constraint
-        conn.cookbook.satisfy(name, version_constraint)
-      else
-        conn.cookbook.latest_version(name)
+      begin
+        @target_cookbook = if version_constraint
+          conn.cookbook.satisfy(name, version_constraint)
+        else
+          conn.cookbook.latest_version(name)
+        end
+      rescue Ridley::Errors::HTTPNotFound
+        @target_cookbook = nil
       end
 
       if @target_cookbook.nil?
