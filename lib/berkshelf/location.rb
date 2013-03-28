@@ -147,6 +147,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def validate_cached(cached_cookbook)
+      puts "version_constraint: #{version_constraint}"
       unless version_constraint.satisfies?(cached_cookbook.version)
         msg = "Cookbook downloaded for '#{self.name}' from #{self} does not satisfy the version constraint"
         msg << " (#{self.version_constraint}). This usually happens if the Chef server contains a cookbook that"

@@ -11,6 +11,8 @@ module Berkshelf
       def from_store_path(path)
         path        = Pathname.new(path)
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
+        puts "cached_name: #{cached_name}"
+        puts "path: #{path}"
         return nil if cached_name.nil?
 
         from_path(path, name: cached_name)

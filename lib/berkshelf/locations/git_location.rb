@@ -43,7 +43,7 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
       @uri                = options[:git]
-      @branch             = options[:branch] || options[:ref] || options[:tag]
+      @branch             = options[:branch] || options[:ref] || options[:tag] || "origin/master"
       @rel                = options[:rel]
 
       Git.validate_uri!(@uri)
@@ -60,6 +60,8 @@ module Berkshelf
         self.branch = ::Berkshelf::Git.rev_parse(clone)
       end
 
+      branch_name = self.branch.sub(/(.*)\/(.*)$/, '\1-\2')
+
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
@@ -67,11 +69,18 @@ module Berkshelf
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
-
-      cb_path = File.join(destination, "#{name}-#{branch || Git.rev_parse(clone)}")
+      
+      cb_path = File.join(destination, "#{name}-#{branch_name}")
+      puts "branch: #{branch}"
+      puts "self.branch: #{self.branch}"
+      puts "tmp_path: #{tmp_path}"
+      puts "cb_path: #{cb_path}"
       FileUtils.rm_rf(cb_path)
+      #root_path = cb_path.sub(/(.*)\/.*$/, '\1')
+      #FileUtils.mkdir_p(root_path)
       FileUtils.mv(tmp_path, cb_path)
-
+      puts "make it here?"
+      
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
 
@@ -109,19 +118,27 @@ module Berkshelf
       end
 
       def cached?(destination)
+        puts "destination: #{destination}"
+        puts "revision_path(destination): #{revision_path(destination)}"
         revision_path(destination) && File.exists?(revision_path(destination))
       end
 
       def local_revision(destination)
         path = revision_path(destination)
+        puts "path: #{path}"
         cached = Berkshelf::CachedCookbook.from_store_path(path)
+        puts "cached: #{cached}"
         validate_cached(cached)
+        puts "cached: #{cached}"
         return cached
       end
 
       def revision_path(destination)
+        puts "branch: #{branch}"
         return unless branch
-        File.join(destination, "#{name}-#{branch}")
+        branch_name = branch.sub(/(.*)\/(.*)$/, '\1-\2')
+        puts "branch_name: #{branch_name}"
+        File.join(destination, "#{name}-#{branch_name}")
       end
   end
 end
