@@ -155,8 +155,6 @@ module Berkshelf
       FileUtils.mv(temp_path, berks_path)
 
       cached = CachedCookbook.from_store_path(berks_path)
-      puts "cached: #{cached}"
-      puts "berks_path: #{berks_path}"
       validate_cached(cached)
 
       set_downloaded_status(true)
