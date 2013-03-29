@@ -1,3 +1,5 @@
+ENV['RUBY_ENV'] ||= 'test'
+
 require 'rubygems'
 require 'bundler'
 require 'spork'
