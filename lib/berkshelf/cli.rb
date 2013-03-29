@@ -351,7 +351,7 @@ module Berkshelf
       if options[:version]
         cookbook = Berkshelf.cookbook_store.cookbook(name, options[:version])
       else
-        cookbook = Berkshelf.cookbook_store.cookbooks(name).sory_by(&:version).last
+        cookbook = Berkshelf.cookbook_store.cookbooks(name).sort_by(&:version).last
       end
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" if cookbook.nil?
