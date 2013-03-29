@@ -20,6 +20,8 @@ module Berkshelf
     attr_accessor :uri
     attr_accessor :branch
     attr_accessor :rel
+    attr_accessor :branch_name
+    attr_accessor :remote_name
     attr_reader :options
 
     alias_method :ref, :branch
@@ -45,6 +47,9 @@ module Berkshelf
       @uri                = options[:git]
       @branch             = options[:branch] || options[:ref] || options[:tag] || "origin/master"
       @rel                = options[:rel]
+      @remote_name        = @branch.sub(/(.*)\/.*$/, '\1')
+      @branch_name        = @branch.sub(/.*\/(.*)$/, '\1')
+      @branch_name.gsub!("-", "_")
 
       Git.validate_uri!(@uri)
     end
@@ -68,9 +73,6 @@ module Berkshelf
         raise CookbookNotFound, msg
       end
       
-      remote_name = self.branch.sub(/(.*)\/.*$/, '\1')
-      branch_name = self.branch.sub(/.*\/(.*)$/, '\1')
-      branch_name.gsub!("-", "_")
       cb_path = File.join(destination, "#{name}-#{remote_name}__#{branch_name}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
@@ -124,9 +126,6 @@ module Berkshelf
 
       def revision_path(destination)
         return unless branch
-        remote_name = self.branch.sub(/(.*)\/.*$/, '\1')
-        branch_name = self.branch.sub(/.*\/(.*)$/, '\1')
-        branch_name.gsub!("-", "_")
         File.join(destination, "#{name}-#{remote_name}__#{branch_name}")
       end
   end
