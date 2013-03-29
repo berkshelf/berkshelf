@@ -60,8 +60,6 @@ module Berkshelf
         self.branch = ::Berkshelf::Git.rev_parse(clone)
       end
 
-      branch_name = self.branch.sub(/(.*)\/(.*)$/, '\1-\2')
-
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
@@ -70,7 +68,10 @@ module Berkshelf
         raise CookbookNotFound, msg
       end
       
-      cb_path = File.join(destination, "#{name}-#{branch_name}")
+      remote_name = self.branch.sub(/(.*)\/.*$/, '\1')
+      branch_name = self.branch.sub(/.*\/(.*)$/, '\1')
+      branch_name.gsub!("-", "_")
+      cb_path = File.join(destination, "#{name}-#{remote_name}__#{branch_name}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
       
@@ -123,8 +124,10 @@ module Berkshelf
 
       def revision_path(destination)
         return unless branch
-        branch_name = branch.sub(/(.*)\/(.*)$/, '\1-\2')
-        File.join(destination, "#{name}-#{branch_name}")
+        remote_name = self.branch.sub(/(.*)\/.*$/, '\1')
+        branch_name = self.branch.sub(/.*\/(.*)$/, '\1')
+        branch_name.gsub!("-", "_")
+        File.join(destination, "#{name}-#{remote_name}__#{branch_name}")
       end
   end
 end
