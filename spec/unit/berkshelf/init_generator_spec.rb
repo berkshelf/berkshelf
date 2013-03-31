@@ -4,6 +4,7 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
   subject { described_class }
 
   let(:target) { tmp_path.join("some_cookbook") }
+  let(:resolver) { double('resolver') }
 
   context "with default options" do
     before(:each) do
@@ -160,6 +161,7 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
 
   context "with the chef_minitest option true" do
     before(:each) do
+        Berkshelf::Resolver.stub(:resolve) { resolver }
         pending "Runs fine with no mock for the HTTP call on the first pass, subsequent passes throw errors"
         capture(:stdout) {
           subject.new([target], chef_minitest: true).invoke_all
