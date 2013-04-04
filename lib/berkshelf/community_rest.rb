@@ -12,7 +12,11 @@ module Berkshelf
       #
       # @return [String]
       def unpack(target, destination = Dir.mktmpdir)
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
+        begin
+          Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
+        rescue Zlib::GzipFile::Error
+          Archive::Tar::Minitar.unpack(target, destination)
+        end
         destination
       end
 
