@@ -1,3 +1,5 @@
+# We set this variable to load additional test materials during cucumber
+# runs, since aruba runs in a subprocess. See lib/berkshelf/test.rb
 ENV['RUBY_ENV'] ||= 'test'
 
 require 'rubygems'
