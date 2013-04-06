@@ -370,6 +370,9 @@ module Berkshelf
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+    method_option :chef_minitest,
+      type: :boolean,
+      desc: "Creates chef-minitest support files and directories, adds minitest-handler cookbook to run_list of Vagrantfile"
     method_option :scmversion,
       type: :boolean,
       desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"

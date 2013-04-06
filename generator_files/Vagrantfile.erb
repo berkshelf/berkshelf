@@ -83,6 +83,9 @@ Vagrant.configure("2") do |config|
     chef.validation_key_path    = "<%= options[:berkshelf_config].chef.validation_key_path %>"
 
     chef.run_list = [
+  <% if options[:chef_minitest] -%>
+      "recipe[minitest-handler::default]",
+  <% end -%>
       "recipe[<%= cookbook_name %>::default]"
     ]
   end
@@ -97,6 +100,9 @@ Vagrant.configure("2") do |config|
     }
 
     chef.run_list = [
+  <% if options[:chef_minitest] -%>
+      "recipe[minitest-handler::default]",
+  <% end -%>
       "recipe[<%= cookbook_name %>::default]"
     ]
   end
