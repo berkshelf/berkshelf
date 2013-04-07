@@ -342,6 +342,22 @@ module Berkshelf
       Berkshelf.ui.say(cookbook.path)
     end
 
+    method_option :version,
+      type: :string,
+      desc: 'The version of the cookbook to display.',
+      aliases: '-v'
+    desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
+    def info(name)
+      if options[:version]
+        cookbook = Berkshelf.cookbook_store.cookbook(name, options[:version])
+      else
+        cookbook = Berkshelf.cookbook_store.cookbooks(name).sort_by(&:version).last
+      end
+
+      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" if cookbook.nil?
+      Berkshelf.ui.say(cookbook.pretty_print)
+    end
+
     method_option :berksfile,
       type: :string,
       default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),

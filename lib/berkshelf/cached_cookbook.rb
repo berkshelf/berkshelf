@@ -23,5 +23,23 @@ module Berkshelf
     def dependencies
       metadata.recommendations.merge(metadata.dependencies)
     end
+
+    def pretty_print
+      [].tap do |a|
+        a.push "        Name: #{cookbook_name}" unless name.blank?
+        a.push "     Version: #{version}" unless version.blank?
+        a.push " Description: #{metadata.description}" unless metadata.description.blank?
+        a.push "      Author: #{metadata.maintainer}" unless metadata.maintainer.blank?
+        a.push "       Email: #{metadata.maintainer_email}" unless metadata.maintainer_email.blank?
+        a.push "     License: #{metadata.license}" unless metadata.license.blank?
+        a.push "   Platforms: #{pretty_map(metadata.platforms, 14)}" unless metadata.platforms.blank?
+        a.push "Dependencies: #{pretty_map(dependencies, 14)}" unless dependencies.blank?
+      end.join("\n")
+    end
+
+    private
+      def pretty_map(hash, padding)
+        hash.map { |k,v| "#{k} (#{v})" }.join("\n" + ' '*padding)
+      end
   end
 end
