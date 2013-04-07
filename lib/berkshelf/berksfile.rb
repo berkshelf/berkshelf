@@ -503,9 +503,9 @@ module Berkshelf
         raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 
-      conn        = Ridley.new(ridley_options)
       solution    = resolve(options)
       upload_opts = options.slice(:force, :freeze)
+      conn        = Ridley.new(ridley_options)
 
       solution.each do |cb|
         Berkshelf.formatter.upload(cb.cookbook_name, cb.version, conn.server_url)
