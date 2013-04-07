@@ -331,10 +331,8 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
-    def show(name = nil)
-      return list if name.nil?
-
+    desc "show COOKBOOK", "Display the source path on the local file system for the given cookbook"
+    def show(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
 
