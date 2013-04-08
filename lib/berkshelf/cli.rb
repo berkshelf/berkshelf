@@ -15,7 +15,7 @@ module Berkshelf
           end
         else
           super
-          Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+          Berkshelf.formatter.cleanup_hook unless config[:current_command].name == "help"
         end
       end
     end
