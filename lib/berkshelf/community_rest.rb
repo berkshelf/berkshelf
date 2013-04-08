@@ -36,8 +36,9 @@ module Berkshelf
 
       private
         def is_gzip_file(path)
-          signature = IO.binread(path, 2)
-          signature[0] == "\x1F" && signature[1].ord == 0x8B
+          # You cannot write "\x1F\x8B" because the default encoding of
+          # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
+          IO.binread(path, 2) == [0x1F, 0x8B].pack("C*")
         end
 
         def is_tar_file(path)
