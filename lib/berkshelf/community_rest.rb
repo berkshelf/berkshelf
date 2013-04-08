@@ -36,7 +36,8 @@ module Berkshelf
 
       private
         def is_gzip_file(path)
-          IO.binread(path, 2) == "\x1F\x8B"
+          signature = IO.binread(path, 2)
+          signature[0] == "\x1F" && signature[1].ord == 0x8B
         end
 
         def is_tar_file(path)
