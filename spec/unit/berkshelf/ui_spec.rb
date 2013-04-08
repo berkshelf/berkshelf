@@ -93,7 +93,7 @@ describe Thor::Shell::Color do
 
       it 'calls #say with yellow coloring' do
         stdout.stub :tty?
-        stdout.should_receive(:puts).with("\e[33mwarning\e[0m")
+        stdout.should_receive(:puts).with("warning")
         stdout.should_receive(:flush).with(no_args())
         subject.warn 'warning'
       end
