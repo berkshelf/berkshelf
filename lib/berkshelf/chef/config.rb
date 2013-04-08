@@ -30,13 +30,8 @@ module Berkshelf::Chef
         @path ||= begin
           possibles = []
 
-          # (mostly for testing purposes)
           possibles << ENV['BERKSHELF_CHEF_CONFIG'] if ENV['BERKSHELF_CHEF_CONFIG']
-
-          # $KNIFE_HOME/knife.rb
           possibles << File.join(ENV['KNIFE_HOME'], 'knife.rb') if ENV['KNIFE_HOME']
-
-          # $PWD/knife.rb
           possibles << File.join(working_dir, 'knife.rb') if working_dir
 
           # Ascending search for .chef directory siblings
@@ -45,10 +40,7 @@ module Berkshelf::Chef
             possibles << File.join(sibling_chef, 'knife.rb')
           end if working_dir
 
-          # $HOME/.chef/knife.rb
           possibles << File.join(ENV['HOME'], '.chef', 'knife.rb') if ENV['HOME']
-
-          # Remove any nil values that may have snuck in
           possibles.compact!
 
           location = possibles.find { |loc| File.exists?(File.expand_path(loc)) }
