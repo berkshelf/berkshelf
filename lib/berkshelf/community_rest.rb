@@ -12,9 +12,9 @@ module Berkshelf
       #
       # @return [String]
       def unpack(target, destination = Dir.mktmpdir)
-        begin
+        if is_gzip_file(target)
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
-        rescue Zlib::GzipFile::Error
+        elsif is_tar_file(target)
           Archive::Tar::Minitar.unpack(target, destination)
         end
         destination
@@ -33,6 +33,15 @@ module Berkshelf
       def version_from_uri(uri)
         File.basename(uri.to_s).gsub('_', '.')
       end
+
+      private
+        def is_gzip_file(path)
+          IO.binread(path, 2) == "\x1F\x8B"
+        end
+
+        def is_tar_file(path)
+          IO.binread(path, 8, 257) == "ustar  \0"
+        end
     end
 
     V1_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
