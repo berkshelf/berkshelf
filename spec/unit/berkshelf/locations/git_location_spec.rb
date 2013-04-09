@@ -44,9 +44,10 @@ describe Berkshelf::GitLocation do
 
     it "downloads the cookbook to the given destination" do
       cached_cookbook = subject.download(tmp_path)
+      branch_name = subject.branch_name
 
       tmp_path.should have_structure {
-        directory "#{cached_cookbook.cookbook_name}-#{Berkshelf::Git.rev_parse(cached_cookbook.path)}" do
+        directory "#{cached_cookbook.cookbook_name}-#{branch_name}" do
           file "metadata.rb"
         end
       }
