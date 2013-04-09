@@ -1,3 +1,7 @@
+# We set this variable to load additional test materials during cucumber
+# runs, since aruba runs in a subprocess. See lib/berkshelf/test.rb
+ENV['RUBY_ENV'] ||= 'test'
+
 require 'rubygems'
 require 'bundler'
 require 'spork'
@@ -11,7 +15,7 @@ Spork.prefork do
 
   APP_ROOT = File.expand_path('../../', __FILE__)
   ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "spec", "tmp", "berkshelf")
-  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "tmp", "knife.rb")
+  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "knife.rb")
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 

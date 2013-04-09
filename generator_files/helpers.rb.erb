@@ -1,0 +1,7 @@
+module Helpers
+  module <%= cookbook_name.capitalize.sub('-','_') %>
+    include MiniTest::Chef::Assertions
+    include MiniTest::Chef::Context
+    include MiniTest::Chef::Resources
+  end
+end

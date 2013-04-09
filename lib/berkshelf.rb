@@ -15,7 +15,7 @@ require 'celluloid'
 
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
-require 'berkshelf/test'
+require 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
 require 'berkshelf/version'
 require 'thor/monkies'
 

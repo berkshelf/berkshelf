@@ -15,7 +15,7 @@ module Berkshelf
           end
         else
           super
-          Berkshelf.formatter.cleanup_hook unless config[:current_task].name == "help"
+          Berkshelf.formatter.cleanup_hook unless config[:current_command].name == "help"
         end
       end
     end
@@ -331,15 +331,29 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "show [COOKBOOK]", "Display the source path on the local file system for the given cookbook"
-    def show(name = nil)
-      return list if name.nil?
-
+    desc "show COOKBOOK", "Display the source path on the local file system for the given cookbook"
+    def show(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       cookbook = Berkshelf.ui.mute { berksfile.resolve }.find{ |cookbook| cookbook.cookbook_name == name }
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.ui.say(cookbook.path)
+    end
+
+    method_option :version,
+      type: :string,
+      desc: 'The version of the cookbook to display.',
+      aliases: '-v'
+    desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
+    def info(name)
+      if options[:version]
+        cookbook = Berkshelf.cookbook_store.cookbook(name, options[:version])
+      else
+        cookbook = Berkshelf.cookbook_store.cookbooks(name).sort_by(&:version).last
+      end
+
+      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" if cookbook.nil?
+      Berkshelf.ui.say(cookbook.pretty_print)
     end
 
     method_option :berksfile,
@@ -348,8 +362,8 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "contingent [COOKBOOK]", "Display a list of cookbooks that depend on the given cookbook"
-    def contingent(name = nil)
+    desc "contingent COOKBOOK", "Display a list of cookbooks that depend on the given cookbook"
+    def contingent(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
       Berkshelf.ui.say "Cookbooks contingent upon #{name}:"
@@ -370,6 +384,9 @@ module Berkshelf
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+    method_option :chef_minitest,
+      type: :boolean,
+      desc: "Creates chef-minitest support files and directories, adds minitest-handler cookbook to run_list of Vagrantfile"
     method_option :scmversion,
       type: :boolean,
       desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"

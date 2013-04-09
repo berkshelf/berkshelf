@@ -1,9 +1,10 @@
 require 'spec_helper'
 
-describe Berkshelf::InitGenerator do
+describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with: :json } do
   subject { described_class }
 
   let(:target) { tmp_path.join("some_cookbook") }
+  let(:resolver) { double('resolver') }
 
   context "with default options" do
     before(:each) do
@@ -154,6 +155,44 @@ describe Berkshelf::InitGenerator do
     it "should not have a Vagrantfile" do
       target.should have_structure {
         no_file "Vagrantfile"
+      }
+    end
+  end
+
+  context "with the chef_minitest option true" do
+    before(:each) do
+        Berkshelf::Resolver.stub(:resolve) { resolver }
+        pending "Runs fine with no mock for the HTTP call on the first pass, subsequent passes throw errors"
+        capture(:stdout) {
+          subject.new([target], chef_minitest: true).invoke_all
+        }
+    end
+
+    specify do
+      target.should have_structure {
+        file "Berksfile" do
+          contains "cookbook \"minitest-handler\""
+        end
+        file "Vagrantfile" do
+          contains "\"recipe[minitest-handler::default]\""
+        end
+       directory "files" do
+         directory "default" do
+           directory "tests" do
+             directory "minitest" do
+               file "default_test.rb" do
+                 contains "describe 'some_cookbook::default' do"
+                 contains "include Helpers::Some_cookbook"
+               end
+               directory "support" do
+                 file "helpers.rb" do
+                   contains "module Some_cookbook"
+                 end
+               end
+             end
+           end
+         end
+       end
       }
     end
   end
