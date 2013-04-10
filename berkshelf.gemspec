@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve', '>= 0.4.2'
   s.add_dependency 'thor', '~> 0.18.0'
   s.add_dependency 'retryable'
+  s.add_dependency 'addressable'
 
   s.add_development_dependency 'aruba'
   s.add_development_dependency 'cane'
