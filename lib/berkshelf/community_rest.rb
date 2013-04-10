@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'retryable'
+require 'addressable/uri'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
