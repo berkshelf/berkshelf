@@ -15,6 +15,7 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
 
     it 'unpacks the tar' do
       ::File.should_receive(:open).with(target, 'rb')
+      ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
       Zlib::GzipReader.should_receive(:new).with(file)
       Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
 
