@@ -36,7 +36,7 @@ module Berkshelf
     def initialize(name, version_constraint, options = {})
       @name               = name
       @version_constraint = version_constraint
-      @path               = self.class.normalize_path(options[:path])
+      @path               = options[:path]
       set_downloaded_status(true)
     end
 
