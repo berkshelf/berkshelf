@@ -3,16 +3,20 @@ module Berkshelf
   class Resolver
     extend Forwardable
 
+    # @return [Berkshelf::Berksfile]
+    attr_reader :berksfile
+    # @return [Solve::Graph]
     attr_reader :graph
 
-    # @param [Downloader] downloader
+    # @param [Berkshelf::Berksfile] berksfile
     # @param [Hash] options
     #
     # @option options [Array<CookbookSource>, CookbookSource] sources
-    def initialize(downloader, options = {})
-      @downloader = downloader
-      @graph = Solve::Graph.new
-      @sources = Hash.new
+    def initialize(berksfile, options = {})
+      @berksfile  = berksfile
+      @downloader = @berksfile.downloader
+      @graph      = Solve::Graph.new
+      @sources    = Hash.new
 
       # Dependencies need to be added AFTER the sources. If they are
       # not, then one of the dependencies of a source that is added
@@ -70,7 +74,7 @@ module Berkshelf
       source.cached_cookbook.dependencies.each do |name, constraint|
         next if has_source?(name)
 
-        add_source(CookbookSource.new(name, constraint: constraint))
+        add_source(CookbookSource.new(berksfile, name, constraint: constraint))
       end
     end
 

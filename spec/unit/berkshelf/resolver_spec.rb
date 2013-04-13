@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
+  let(:downloader ) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
+  let(:berksfile) { double(downloader: downloader) }
   let(:source) do
     double('source',
       name: 'mysql',
@@ -20,30 +22,27 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     subject { described_class }
 
     describe "::initialize" do
-      let(:downloader) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
-
       it "adds the specified sources to the sources hash" do
-        resolver = subject.new(downloader, sources: [source], skip_dependencies: true)
+        resolver = subject.new(berksfile, sources: [source], skip_dependencies: true)
 
         resolver.should have_source(source.name)
       end
 
       it "should not add dependencies if requested" do
-        resolver = subject.new(downloader, sources: [source], skip_dependencies: true)
+        resolver = subject.new(berksfile, sources: [source], skip_dependencies: true)
 
         resolver.should_not have_source("nginx")
       end
 
       it "adds the dependencies of the source as sources" do
-        resolver = subject.new(downloader, sources: [source])
+        resolver = subject.new(berksfile, sources: [source])
 
         resolver.should have_source("nginx")
       end
     end
   end
 
-  let(:downloader) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
-  subject { described_class.new(downloader) }
+  subject { described_class.new(berksfile) }
 
   describe "#add_source" do
     let(:package_version) { double('package-version', dependencies: Array.new) }
