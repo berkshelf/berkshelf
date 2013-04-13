@@ -365,10 +365,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      resolver = Resolver.new(
-        self.downloader,
-        sources: sources(options)
-      )
+      resolver = Resolver.new(self, sources: sources(options))
 
       @cached_cookbooks = resolver.resolve
       write_lockfile(resolver.sources) unless lockfile_present?
@@ -389,10 +386,7 @@ module Berkshelf
     # @option cookbooks [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve sources for
     def update(options = {})
-      resolver = Resolver.new(
-        self.downloader,
-        sources: sources(options)
-      )
+      resolver = Resolver.new(self, sources: sources(options))
 
       cookbooks         = resolver.resolve
       sources           = resolver.sources
@@ -596,11 +590,7 @@ module Berkshelf
       #
       # @return <Berkshelf::Resolver>
       def resolver(options = {})
-        Resolver.new(
-          self.downloader,
-          sources: sources(options),
-          skip_dependencies: options[:skip_dependencies]
-        )
+        Resolver.new(self, sources: sources(options), skip_dependencies: options[:skip_dependencies])
       end
 
       def write_lockfile(sources)
