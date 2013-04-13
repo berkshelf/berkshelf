@@ -264,7 +264,7 @@ module Berkshelf
 
       options[:constraint] = constraint
 
-      @sources[name] = CookbookSource.new(name, options)
+      @sources[name] = CookbookSource.new(self, name, options)
     end
 
     # @param [#to_s] source

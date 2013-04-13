@@ -68,6 +68,7 @@ module Berkshelf
 
     extend Forwardable
 
+    attr_reader :berksfile
     attr_reader :name
     attr_reader :options
     attr_reader :version_constraint
@@ -93,11 +94,12 @@ module Berkshelf
     #  @option options [String] :tag
     #    same as tag
     #  @option options [String] :locked_version
-    def initialize(name, options = {})
+    def initialize(berksfile, name, options = {})
       self.class.validate_options(options)
 
-      @name = name
-      @locked_version = Solve::Version.new(options[:locked_version]) if options[:locked_version]
+      @berksfile          = berksfile
+      @name               = name
+      @locked_version     = Solve::Version.new(options[:locked_version]) if options[:locked_version]
       @version_constraint = Solve::Constraint.new(options[:locked_version] || options[:constraint] || ">= 0.0.0")
 
       @cached_cookbook, @location = cached_and_location(options)
@@ -113,6 +115,13 @@ module Berkshelf
         group = group.to_sym
         groups << group unless groups.include?(group)
       end
+    end
+
+    # Determine the CachedCookbook and Location information from the given options.
+    #
+    # @return [Array<CachedCookbook, Location>]
+    def cached_and_location(options = {})
+      from_path(options) || from_cache(options) || from_default(options)
     end
 
     # Returns true if the cookbook source has already been downloaded. A cookbook
@@ -178,13 +187,6 @@ module Berkshelf
 
     private
 
-      # Determine the CachedCookbook and Location information from the given options.
-      #
-      # @return [Array<CachedCookbook, Location>]
-      def cached_and_location(options = {})
-        from_path(options) || from_cache(options) || from_default(options)
-      end
-
       # Attempt to load a CachedCookbook from a local file system path (if the :path
       # option was given). If one is found, the location and cached_cookbook is
       # updated. Otherwise, this method will raise a CookbookNotFound exception.
@@ -196,12 +198,13 @@ module Berkshelf
       def from_path(options = {})
         return nil unless options[:path]
 
-        location = PathLocation.new(name, version_constraint, path: options[:path])
-        cached = CachedCookbook.from_path(location.path)
+        path     = File.expand_path(PathLocation.normalize_path(options[:path]), File.dirname(berksfile.filepath))
+        location = PathLocation.new(name, version_constraint, path: path)
+        cached   = CachedCookbook.from_path(location.path)
 
-        [cached, location]
-      rescue IOError
-        raise Berkshelf::CookbookNotFound
+        [ cached, location ]
+      rescue IOError => ex
+        raise Berkshelf::CookbookNotFound, ex
       end
 
       # Attempt to load a CachedCookbook from the local CookbookStore. This will save
@@ -214,9 +217,9 @@ module Berkshelf
         return nil unless File.exists?(path)
 
         location = PathLocation.new(name, version_constraint, path: path)
-        cached = CachedCookbook.from_path(path, name: name)
+        cached   = CachedCookbook.from_path(path, name: name)
 
-        [cached, location]
+        [ cached, location ]
       end
 
       # Use the default location, and a nil CachedCookbook. If there is no location
@@ -230,7 +233,7 @@ module Berkshelf
           location = Location.init(name, version_constraint, options)
         end
 
-        [nil, location]
+        [ nil, location ]
       end
 
       # The hypothetical location of this CachedCookbook, if it were to exist.

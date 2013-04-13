@@ -1,267 +1,287 @@
 require 'spec_helper'
 
-module Berkshelf
-  describe CookbookSource do
-    let(:cookbook_name) { "nginx" }
+describe Berkshelf::CookbookSource do
+  let(:cookbook_name) { "nginx" }
+  let(:berksfile) { double('berksfile', filepath: fixtures_path.join("Berksfile").to_s) }
 
-    describe "ClassMethods" do
-      subject { CookbookSource }
+  describe "ClassMethods" do
+    subject { Berkshelf::CookbookSource }
 
-      describe "::initialize" do
-        context "given no location key (i.e. :git, :path, :site)" do
-          let(:source) { subject.new(cookbook_name) }
+    describe "::initialize" do
+      context "given no location key (i.e. :git, :path, :site)" do
+        let(:source) { subject.new(berksfile, cookbook_name) }
 
-          it "sets a nil valie for location" do
-            source.location.should be_nil
+        it "sets a nil valie for location" do
+          source.location.should be_nil
+        end
+      end
+
+      context 'given no value for :locked_version' do
+        let(:source) { subject.new(berksfile, cookbook_name) }
+
+        it 'returns a wildcard match for any version' do
+          expect(source.version_constraint.to_s).to eq('>= 0.0.0')
+        end
+      end
+
+      context 'given a value for :locked_version' do
+        let(:source) { subject.new(berksfile, cookbook_name, locked_version: '1.2.3') }
+
+        it 'returns the locked_version as the constraint' do
+          expect(source.version_constraint.to_s).to eq('= 1.2.3')
+        end
+      end
+
+      context 'given no value for :constraint' do
+        let(:source) { subject.new(berksfile, cookbook_name) }
+
+        it 'returns a wildcard match for any version' do
+          expect(source.version_constraint.to_s).to eq('>= 0.0.0')
+        end
+      end
+
+      context 'given a value for :constraint' do
+        let(:source) { subject.new(berksfile, cookbook_name, constraint: '~> 1.0.84') }
+
+        it 'returns a Solve::Constraint for the given version for version_constraint' do
+          expect(source.version_constraint.to_s).to eq('~> 1.0.84')
+        end
+      end
+
+      context 'given a value for :locked_version and :constraint' do
+        let(:source) { subject.new(berksfile, cookbook_name, constraint: '~> 1.0.84', locked_version: '1.2.3') }
+
+        it 'uses the :locked_version' do
+          expect(source.version_constraint.to_s).to eq('= 1.2.3')
+        end
+      end
+
+      context "given a location key :git" do
+        let(:url) { "git://url_to_git" }
+        let(:source) { subject.new(berksfile, cookbook_name, git: url) }
+
+        it "initializes a GitLocation for location" do
+          source.location.should be_a(Berkshelf::GitLocation)
+        end
+
+        it "points to the given Git URL" do
+          source.location.uri.should eql(url)
+        end
+      end
+
+      context "given a location key :path" do
+        context "given a value for path that contains a cookbook" do
+          let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
+
+          it "initializes a PathLocation for location" do
+            subject.new(berksfile, cookbook_name, path: path).location.should be_a(Berkshelf::PathLocation)
+          end
+
+          it "points to the specified path" do
+            subject.new(berksfile, cookbook_name, path: path).location.path.should eql(path)
           end
         end
 
-        context 'given no value for :locked_version' do
-          let(:source) { subject.new(cookbook_name) }
+        context "given a value for path that does not contain a cookbook" do
+          let(:path) { "/does/not/exist" }
 
-          it 'returns a wildcard match for any version' do
-            expect(source.version_constraint.to_s).to eq('>= 0.0.0')
-          end
-        end
-
-        context 'given a value for :locked_version' do
-          let(:source) { subject.new(cookbook_name, locked_version: '1.2.3') }
-
-          it 'returns the locked_version as the constraint' do
-            expect(source.version_constraint.to_s).to eq('= 1.2.3')
-          end
-        end
-
-        context 'given no value for :constraint' do
-          let(:source) { subject.new(cookbook_name) }
-
-          it 'returns a wildcard match for any version' do
-            expect(source.version_constraint.to_s).to eq('>= 0.0.0')
-          end
-        end
-
-        context 'given a value for :constraint' do
-          let(:source) { subject.new(cookbook_name, constraint: '~> 1.0.84') }
-
-          it 'returns a Solve::Constraint for the given version for version_constraint' do
-            expect(source.version_constraint.to_s).to eq('~> 1.0.84')
-          end
-        end
-
-        context 'given a value for :locked_version and :constraint' do
-          let(:source) { subject.new(cookbook_name, constraint: '~> 1.0.84', locked_version: '1.2.3') }
-
-          it 'uses the :locked_version' do
-            expect(source.version_constraint.to_s).to eq('= 1.2.3')
-          end
-        end
-
-        context "given a location key :git" do
-          let(:url) { "git://url_to_git" }
-          let(:source) { subject.new(cookbook_name, git: url) }
-
-          it "initializes a GitLocation for location" do
-            source.location.should be_a(GitLocation)
-          end
-
-          it "points to the given Git URL" do
-            source.location.uri.should eql(url)
-          end
-        end
-
-        context "given a location key :path" do
-          context "given a value for path that contains a cookbook" do
-            let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
-
-            it "initializes a PathLocation for location" do
-              subject.new(cookbook_name, path: path).location.should be_a(PathLocation)
-            end
-
-            it "points to the specified path" do
-              subject.new(cookbook_name, path: path).location.path.should eql(path)
-            end
-          end
-
-          context "given a value for path that does not contain a cookbook" do
-            let(:path) { "/does/not/exist" }
-
-            it "raises Berkshelf::CookbookNotFound" do
-              lambda {
-                subject.new(cookbook_name, path: path)
-              }.should raise_error(Berkshelf::CookbookNotFound)
-            end
-          end
-
-          context "given an invalid option" do
-            it "raises BerkshelfError with a friendly message" do
-              lambda {
-                subject.new(cookbook_name, invalid_opt: "thisisnotvalid")
-              }.should raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_opt'.")
-            end
-
-            it "raises BerkshelfError with a messaging containing all of the invalid options" do
-              lambda {
-                subject.new(cookbook_name, invalid_one: "one", invalid_two: "two")
-              }.should raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_one', 'invalid_two'.")
-            end
-          end
-
-          describe "::add_valid_option" do
-            before(:each) do
-              @original = subject.class_variable_get :@@valid_options
-              subject.class_variable_set :@@valid_options, []
-            end
-
-            after(:each) do
-              subject.class_variable_set :@@valid_options, @original
-            end
-
-            it "adds an option to the list of valid options" do
-              subject.add_valid_option(:one)
-
-              subject.valid_options.should have(1).item
-              subject.valid_options.should include(:one)
-            end
-
-            it "does not add duplicate options to the list of valid options" do
-              subject.add_valid_option(:one)
-              subject.add_valid_option(:one)
-
-              subject.valid_options.should have(1).item
-              subject.valid_options.should include(:one)
-            end
-          end
-
-          describe "::add_location_key" do
-            before(:each) do
-              @original = subject.class_variable_get :@@location_keys
-              subject.class_variable_set :@@location_keys, {}
-            end
-
-            after(:each) do
-              subject.class_variable_set :@@location_keys, @original
-            end
-
-            it "adds a location key and the associated class to the list of valid locations" do
-              subject.add_location_key(:git, subject.class)
-
-              subject.location_keys.should have(1).item
-              subject.location_keys.should include(:git)
-              subject.location_keys[:git].should eql(subject.class)
-            end
-
-            it "does not add duplicate location keys to the list of location keys" do
-              subject.add_location_key(:git, subject.class)
-              subject.add_location_key(:git, subject.class)
-
-              subject.location_keys.should have(1).item
-              subject.location_keys.should include(:git)
-            end
-          end
-        end
-
-        context "given a location key :site" do
-          let(:url) { "http://path_to_api/v1" }
-          let(:source) { subject.new(cookbook_name, site: url) }
-
-          it "initializes a SiteLocation for location" do
-            source.location.should be_a(SiteLocation)
-          end
-
-          it "points to the specified URI" do
-            source.location.api_uri.to_s.should eql(url)
-          end
-        end
-
-        context "given multiple location options" do
-          it "raises with an Berkshelf::BerkshelfError" do
+          it "raises Berkshelf::CookbookNotFound" do
             lambda {
-              subject.new(cookbook_name, site: "something", git: "something")
-            }.should raise_error(Berkshelf::BerkshelfError)
+              subject.new(berksfile, cookbook_name, path: path)
+            }.should raise_error(Berkshelf::CookbookNotFound)
           end
         end
 
-        context "given a group option containing a single group" do
-          let(:group) { :production }
-          let(:source) { subject.new(cookbook_name, group: group) }
+        context "given an invalid option" do
+          it "raises BerkshelfError with a friendly message" do
+            lambda {
+              subject.new(berksfile, cookbook_name, invalid_opt: "thisisnotvalid")
+            }.should raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_opt'.")
+          end
 
-          it "assigns the single group to the groups attribute" do
-            source.groups.should include(group)
+          it "raises BerkshelfError with a messaging containing all of the invalid options" do
+            lambda {
+              subject.new(berksfile, cookbook_name, invalid_one: "one", invalid_two: "two")
+            }.should raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_one', 'invalid_two'.")
           end
         end
 
-        context "given a group option containing an array of groups" do
-          let(:groups) { [ :development, :test ] }
-          let(:source) { subject.new(cookbook_name, group: groups) }
+        describe "::add_valid_option" do
+          before(:each) do
+            @original = subject.class_variable_get :@@valid_options
+            subject.class_variable_set :@@valid_options, []
+          end
 
-          it "assigns all the groups to the group attribute" do
-            source.groups.should eql(groups)
+          after(:each) do
+            subject.class_variable_set :@@valid_options, @original
+          end
+
+          it "adds an option to the list of valid options" do
+            subject.add_valid_option(:one)
+
+            subject.valid_options.should have(1).item
+            subject.valid_options.should include(:one)
+          end
+
+          it "does not add duplicate options to the list of valid options" do
+            subject.add_valid_option(:one)
+            subject.add_valid_option(:one)
+
+            subject.valid_options.should have(1).item
+            subject.valid_options.should include(:one)
           end
         end
 
-        context "given no group option" do
-          let(:source) { subject.new(cookbook_name) }
-
-          it "should have the default group assigned" do
-            source.groups.should include(:default)
+        describe "::add_location_key" do
+          before(:each) do
+            @original = subject.class_variable_get :@@location_keys
+            subject.class_variable_set :@@location_keys, {}
           end
+
+          after(:each) do
+            subject.class_variable_set :@@location_keys, @original
+          end
+
+          it "adds a location key and the associated class to the list of valid locations" do
+            subject.add_location_key(:git, subject.class)
+
+            subject.location_keys.should have(1).item
+            subject.location_keys.should include(:git)
+            subject.location_keys[:git].should eql(subject.class)
+          end
+
+          it "does not add duplicate location keys to the list of location keys" do
+            subject.add_location_key(:git, subject.class)
+            subject.add_location_key(:git, subject.class)
+
+            subject.location_keys.should have(1).item
+            subject.location_keys.should include(:git)
+          end
+        end
+      end
+
+      context "given a location key :site" do
+        let(:url) { "http://path_to_api/v1" }
+        let(:source) { subject.new(berksfile, cookbook_name, site: url) }
+
+        it "initializes a SiteLocation for location" do
+          source.location.should be_a(Berkshelf::SiteLocation)
+        end
+
+        it "points to the specified URI" do
+          source.location.api_uri.to_s.should eql(url)
+        end
+      end
+
+      context "given multiple location options" do
+        it "raises with an Berkshelf::BerkshelfError" do
+          lambda {
+            subject.new(berksfile, cookbook_name, site: "something", git: "something")
+          }.should raise_error(Berkshelf::BerkshelfError)
+        end
+      end
+
+      context "given a group option containing a single group" do
+        let(:group) { :production }
+        let(:source) { subject.new(berksfile, cookbook_name, group: group) }
+
+        it "assigns the single group to the groups attribute" do
+          source.groups.should include(group)
+        end
+      end
+
+      context "given a group option containing an array of groups" do
+        let(:groups) { [ :development, :test ] }
+        let(:source) { subject.new(berksfile, cookbook_name, group: groups) }
+
+        it "assigns all the groups to the group attribute" do
+          source.groups.should eql(groups)
+        end
+      end
+
+      context "given no group option" do
+        let(:source) { subject.new(berksfile, cookbook_name) }
+
+        it "should have the default group assigned" do
+          source.groups.should include(:default)
         end
       end
     end
+  end
 
-    subject { CookbookSource.new(cookbook_name) }
+  subject { Berkshelf::CookbookSource.new(berksfile, cookbook_name) }
 
-    describe '#add_group' do
-      it "should store strings as symbols" do
-        subject.add_group "foo"
-        subject.groups.should =~ [:default, :foo]
-      end
-
-      it "should not store duplicate groups" do
-        subject.add_group "bar"
-        subject.add_group "bar"
-        subject.add_group :bar
-        subject.groups.should =~ [:default, :bar]
-      end
-
-      it "should add multiple groups" do
-        subject.add_group "baz", "quux"
-        subject.groups.should =~ [:default, :baz, :quux]
-      end
-
-      it "should handle multiple groups as an array" do
-        subject.add_group ["baz", "quux"]
-        subject.groups.should =~ [:default, :baz, :quux]
-      end
+  describe '#add_group' do
+    it "should store strings as symbols" do
+      subject.add_group "foo"
+      subject.groups.should =~ [:default, :foo]
     end
 
-    describe "#downloaded?" do
-      it "returns true if self.cached_cookbook is not nil" do
-        subject.stub(:cached_cookbook) { double('cb') }
-
-        subject.downloaded?.should be_true
-      end
-
-      it "returns false if self.cached_cookbook is nil" do
-        subject.stub(:cached_cookbook) { nil }
-
-        subject.downloaded?.should be_false
-      end
+    it "should not store duplicate groups" do
+      subject.add_group "bar"
+      subject.add_group "bar"
+      subject.add_group :bar
+      subject.groups.should =~ [:default, :bar]
     end
 
-    describe "#to_s" do
-      it "contains the name, constraint, and groups" do
-        source = CookbookSource.new("artifact", constraint: "= 0.10.0")
+    it "should add multiple groups" do
+      subject.add_group "baz", "quux"
+      subject.groups.should =~ [:default, :baz, :quux]
+    end
 
-        source.to_s.should eql("artifact (= 0.10.0) groups: [:default]")
+    it "should handle multiple groups as an array" do
+      subject.add_group ["baz", "quux"]
+      subject.groups.should =~ [:default, :baz, :quux]
+    end
+  end
+
+  describe "#cached_and_location" do
+    let(:options) { Hash.new }
+
+    before do
+      Berkshelf::CachedCookbook.stub(:from_path).and_return(double('cached_cookbook'))
+    end
+
+    context "when given a value for :path" do
+      before do
+        berksfile.stub(filepath: "/rspec/Berksfile")
+        options[:path] = "cookbooks/whatever"
       end
 
-      context "given a CookbookSource with an explicit location" do
-        it "contains the name, constraint, groups, and location" do
-          source = CookbookSource.new("artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
+      it "returns a PathLocation with a path relative to the Berksfile's filepath" do
+        _, location = subject.cached_and_location(options)
 
-          source.to_s.should eql("artifact (= 0.10.0) groups: [:default] location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
-        end
+        location.path.should eql("/rspec/cookbooks/whatever")
+      end
+    end
+  end
+
+  describe "#downloaded?" do
+    it "returns true if self.cached_cookbook is not nil" do
+      subject.stub(:cached_cookbook) { double('cb') }
+
+      subject.downloaded?.should be_true
+    end
+
+    it "returns false if self.cached_cookbook is nil" do
+      subject.stub(:cached_cookbook) { nil }
+
+      subject.downloaded?.should be_false
+    end
+  end
+
+  describe "#to_s" do
+    it "contains the name, constraint, and groups" do
+      source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0")
+
+      source.to_s.should eql("artifact (= 0.10.0) groups: [:default]")
+    end
+
+    context "given a CookbookSource with an explicit location" do
+      it "contains the name, constraint, groups, and location" do
+        source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
+
+        source.to_s.should eql("artifact (= 0.10.0) groups: [:default] location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'")
       end
     end
   end
