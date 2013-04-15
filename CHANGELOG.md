@@ -1,3 +1,13 @@
+# 1.4.0
+
+- Add ability to freeze cookbooks. Cookbooks are frozen on upload by default
+- Add ability to forcefully upload cookbooks even if they are frozen with the `--force` option
+- Add `berks info` command for displaying information about cookbooks in your Berkshelf
+- Add `berks contingent` command for displaying a list of cookbooks which are dependent upon one another
+- Cookbook generator now has the option of generating chef minispec files (false by default)
+- Fix bug in downloading cookbooks which were packaged as plain tars instead of tar.gzs
+- Path locations will now be relative to the Berksfile they are defined in
+
 # 1.3.1
 - Support for Vagrant 1.1.x
 - Move Berkshelf Vagrant plugin into it's [own repository](https://github.com/RiotGames/berkshelf-vagrant)

@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'retryable'
+require 'addressable/uri'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
@@ -12,7 +13,11 @@ module Berkshelf
       #
       # @return [String]
       def unpack(target, destination = Dir.mktmpdir)
-        Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
+        if is_gzip_file(target)
+          Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
+        elsif is_tar_file(target)
+          Archive::Tar::Minitar.unpack(target, destination)
+        end
         destination
       end
 
@@ -29,6 +34,17 @@ module Berkshelf
       def version_from_uri(uri)
         File.basename(uri.to_s).gsub('_', '.')
       end
+
+      private
+        def is_gzip_file(path)
+          # You cannot write "\x1F\x8B" because the default encoding of
+          # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
+          IO.binread(path, 2) == [0x1F, 0x8B].pack("C*")
+        end
+
+        def is_tar_file(path)
+          IO.binread(path, 8, 257) == "ustar  \0"
+        end
     end
 
     V1_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze

@@ -4,6 +4,16 @@ describe Berkshelf::PathLocation do
   let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
   let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
 
+  describe "ClassMethods" do
+    describe "::new" do
+      it "assigns the value of :path to @path" do
+        obj = described_class.new("nginx", complacent_constraint, path: path)
+
+        obj.path.should eql(path)
+      end
+    end
+  end
+
   subject { described_class.new("nginx", complacent_constraint, path: path) }
 
   describe "#download" do
