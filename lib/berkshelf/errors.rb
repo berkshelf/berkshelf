@@ -152,4 +152,15 @@ module Berkshelf
 
   class UploadFailure < BerkshelfError; end
   class FrozenCookbook < UploadFailure; status_code(126); end
+  class InvalidSiteShortnameError < BerkshelfError
+    status_code(127)
+
+    def initialize(shortname)
+      @shortname = shortname
+    end
+
+    def to_s
+      "Unknown site shortname: #{@shortname.inspect}. Supported shortnames are: #{SiteLocation::SHORTNAMES.keys.map(&:inspect).join(',')}"
+    end
+  end
 end
