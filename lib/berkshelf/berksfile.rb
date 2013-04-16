@@ -393,7 +393,7 @@ module Berkshelf
       missing_cookbooks = (options[:cookbooks] - cookbooks.map(&:cookbook_name))
 
       unless missing_cookbooks.empty?
-        msg = "Could not find cookbooks #{missing_cookbooks.collect{|cookbook| "'#{cookbook}'"}.join(', ')}"
+        msg = "Could not find cookbooks #{missing_cookbooks.collect {|cookbook| "'#{cookbook}'"}.join(', ')}"
         msg << " in any of the sources. #{missing_cookbooks.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
         raise Berkshelf::CookbookNotFound, msg
       end
@@ -474,32 +474,13 @@ module Berkshelf
       options = options.reverse_merge(
         force: false,
         freeze: true,
-        ssl_verify: Berkshelf::Config.instance.ssl.verify,
         skip_dependencies: false,
         halt_on_frozen: false
       )
 
-      ridley_options               = options.slice(:ssl)
-      ridley_options[:server_url]  = Berkshelf::Config.instance.chef.chef_server_url
-      ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
-      ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
-      ridley_options[:ssl]         = { verify: options[:ssl_verify] }
-
-      unless ridley_options[:server_url].present?
-        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.server_url"
-      end
-
-      unless ridley_options[:client_name].present?
-        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.node_name"
-      end
-
-      unless ridley_options[:client_key].present?
-        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.client_key"
-      end
-
       solution    = resolve(options)
       upload_opts = options.slice(:force, :freeze)
-      conn        = Ridley.new(ridley_options)
+      conn        = ridley_connection(options)
 
       solution.each do |cb|
         Berkshelf.formatter.upload(cb.cookbook_name, cb.version, conn.server_url)
@@ -524,9 +505,51 @@ module Berkshelf
       end
     rescue Ridley::Errors::RidleyError => ex
       log_exception(ex)
-      raise UploadFailure, ex
+      raise ChefConnectionError, ex
     ensure
       conn.terminate if conn && conn.alive?
+    end
+
+    def lock(environment_name, options = {})
+      conn = ridley_connection(options)
+      environment = Ridley::Search.new(conn, :environment, "name:#{environment_name}").run.first
+      if environment
+        solution = resolve(options)
+        cookbook_versions = solution.inject({}) { |versions, cb| versions.merge(cb.cookbook_name => cb.version) }
+        environment.cookbook_versions = cookbook_versions
+        environment.save
+      else
+        raise EnvironmentNotFound.new(environment_name) # TODO implement
+      end
+    rescue Ridley::Errors::RidleyError => ex
+      log_exception(ex)
+      raise ChefConnectionError, ex # TODO implement
+    ensure
+      conn.terminate if conn && conn.alive?
+    end
+
+    def ridley_connection(options = {})
+      ridley_options               = options.slice(:ssl)
+      ridley_options[:server_url]  = Berkshelf::Config.instance.chef.chef_server_url
+      ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
+      ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
+      ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
+
+
+      # TODO imlpement ChefConnectionError
+      unless ridley_options[:server_url].present?
+        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.server_url"
+      end
+
+      unless ridley_options[:client_name].present?
+        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
+      end
+
+      unless ridley_options[:client_key].present?
+        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
+      end
+      
+      Ridley.new(ridley_options)
     end
 
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.

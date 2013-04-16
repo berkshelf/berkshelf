@@ -236,6 +236,39 @@ module Berkshelf
       berksfile.upload(upload_options)
     end
 
+
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    method_option :except,
+      type: :array,
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    method_option :ssl_verify,
+      type: :boolean,
+      default: nil,
+      desc: "Disable/Enable SSL verification when locking cookbooks."
+    method_option :skip_dependencies,
+      type: :boolean,
+      desc: "Don't lock dependent cookbook(s).",
+      default: false,
+      aliases: "-D"
+    desc "lock ENVIRONMENT_NAME", "Set the cookbook version locks in ENVIRONMENT to match the Berkshelf resolution."
+    def lock(environment_name)
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+
+      lock_options = Hash[options].symbolize_keys
+
+      berksfile.lock(environment_name, lock_options)
+    end
+
     method_option :berksfile,
       type: :string,
       default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
