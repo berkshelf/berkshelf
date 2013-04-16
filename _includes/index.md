@@ -336,7 +336,7 @@ Provided my Berkshelf config contains these Chef credentials - this could have b
 > Specifying a Chef API default location is particularly useful if you have cookbooks that are
 > private to your organization that are not shared on the Opscode community site.
 >
-> It is highly recommended that you upload your cookbooks to your organizations Chef Server
+> It is highly recommended that you upload your cookbooks to your organization's Chef Server
 > and then set a chef_api default location at the top of every application cookbook's Berksfile
 
 #### Multiple default locations
