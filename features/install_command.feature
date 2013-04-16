@@ -318,3 +318,15 @@ Feature: install cookbooks from a Berksfile
       An error occured during Git execution:
       """
       And the CLI should exit with the status code for error "GitError"
+
+  Scenario: invalid site symbol
+    Given I write to "Berksfile" with:
+      """
+      site :somethingabsurd
+      cookbook "ohai"
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Unknown site shortname: :somethingabsurd. Supported shortnames are: :opscode
+      """

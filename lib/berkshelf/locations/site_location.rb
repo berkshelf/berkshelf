@@ -9,6 +9,8 @@ module Berkshelf
     def_delegator :conn, :api_uri
     attr_accessor :version_constraint
 
+    SHORTNAMES = {opscode: CommunityREST::V1_API}.freeze
+
     # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint
     # @param [Hash] options
@@ -20,8 +22,10 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
 
-      api_uri = if options[:site].nil? || options[:site] == :opscode
-        CommunityREST::V1_API
+      api_uri = if options[:site].nil? || SHORTNAMES.has_key?(options[:site])
+        SHORTNAMES[options[:site]]
+      elsif options[:site].kind_of?(Symbol)
+        raise InvalidSiteShortnameError.new(options[:site])
       else
         options[:site]
       end
