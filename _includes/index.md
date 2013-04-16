@@ -372,7 +372,7 @@ To exclude the groups when installing or updating just add the `--without` flag.
 
 Berkshelf includes a command to help you quickly generate a cookbook with a number of helpful supporting tools
 
-    $ berks cookbook my_face --vagrant --git --foodcritic
+    $ berks cookbook my_face --foodcritic
 
 This will generate a cookbook called "my_face" in your current directory with Vagrant, Git, and Foodcritic support. Check out [this guide](http://vialstudios.com/guide-authoring-cookbooks.html) for more information and the help provided in the Berkshelf CLI for the cookbook command.
 
