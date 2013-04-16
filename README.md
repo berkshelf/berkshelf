@@ -37,6 +37,10 @@ And make sure you have this in your bash/zsh profile:
 
     [ -f `brew --prefix`/etc/bash_completion ] && source `brew --prefix`/etc/bash_completion
 
+Plugins
+-------
+Please see [Plugins page](https://github.com/RiotGames/berkshelf/blob/master/PLUGINS.md) for more information.
+
 Authors
 -------
 - Jamie Winsor (<reset@riotgames.com>)
