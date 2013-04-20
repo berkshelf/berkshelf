@@ -3,7 +3,6 @@ Feature: outdated command
   I want to know what cookbooks are outdated before I run update
   So that I can decide whether to update everything at once
 
-  @dependency-api
   Scenario: Running berks outdated with no version constraints
     Given I write to "Berksfile" with:
       """
@@ -20,7 +19,6 @@ Feature: outdated command
       All cookbooks up to date
       """
 
-  @dependency-api
   Scenario: Running berks outdated with satisfied version constraints
     Given I write to "Berksfile" with:
       """
@@ -36,7 +34,7 @@ Feature: outdated command
       """
       All cookbooks up to date
       """
-  @dependency-api
+
   Scenario: Running berks outdated with unsatisfied version constraints
     Given I write to "Berksfile" with:
       """
