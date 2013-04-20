@@ -135,19 +135,19 @@ If you have used Vagrant before, READ ON!
 
 Visit the [Vagrant downloads page](http://downloads.vagrantup.com/) and download the latest installer for your operating system.
 
-### Install the Berkshelf Vagrant plugin
+### Install the Vagrant Berkshelf plugin
 
-As of Berkshelf 1.3.0 there is now a separate gem which includes the [Berkshelf Vagrant plugin](https://github.com/riotgames/berkshelf-vagrant). This plugin supports Vagrant 1.1.0 and greater.
+As of Berkshelf 1.3.0 there is now a separate gem which includes the [Vagrant Berkshelf plugin](https://github.com/riotgames/vagrant-berkshelf). This plugin supports Vagrant 1.1.0 and greater.
 
 To install the plugin run the Vagrant plugin install command
 
-    $ vagrant plugin install berkshelf-vagrant
-    Installing the 'berkshelf-vagrant' plugin. This can take a few minutes...
-    Installed the plugin 'berkshelf-vagrant (1.1.0)!'
+    $ vagrant plugin install vagrant-berkshelf
+    Installing the 'vagrant-berkshelf' plugin. This can take a few minutes...
+    Installed the plugin 'vagrant-berkshelf (1.2.0)!'
 
-### Using the Berkshelf Vagrant plugin
+### Using the Vagrant Berkshelf plugin
 
-Once the Berkshelf Vagrant plugin is installed it can be enabled in your Vagrantfile
+Once the Vagrant Berkshelf plugin is installed it can be enabled in your Vagrantfile
 
     Vagrant.configure("2") do |config|
       ...
@@ -164,11 +164,11 @@ The plugin will look in your current working directory for your `Berksfile` by d
     [Berkshelf] Installing nginx (1.2.0)
     ...
 
-You can use both the Vagrant provided Chef Solo and Chef Client provisioners with the Berkshelf Vagrant plugin.
+You can use both the Vagrant provided Chef Solo and Chef Client provisioners with the Vagrant Berkshelf plugin.
 
 #### Chef Solo provisioner
 
-The Chef Solo provisioner's `cookbook_path` attribute is hijacked when using the Berkshelf Vagrant plugin. Cookbooks resolved from your Berksfile will automatically be made available to your Vagrant virtual machine. There is no need to explicitly set a value for `cookbook_path` attribute.
+The Chef Solo provisioner's `cookbook_path` attribute is hijacked when using the Vagrant Berkshelf plugin. Cookbooks resolved from your Berksfile will automatically be made available to your Vagrant virtual machine. There is no need to explicitly set a value for `cookbook_path` attribute.
 
 #### Chef Client provisioner
 
@@ -176,7 +176,7 @@ Cookbooks will automatically be uploaded to the Chef Server you have configured 
 
 #### Setting a Berksfile location
 
-By default, the Berkshelf Vagrant plugin will assume that the Vagrantfile is located in the same directory as a Berksfile. If your Berksfile is located in another directory you can override this behavior
+By default, the Vagrant Berkshelf plugin will assume that the Vagrantfile is located in the same directory as a Berksfile. If your Berksfile is located in another directory you can override this behavior
 
     Vagrant.configure("2") do |config|
       ...
