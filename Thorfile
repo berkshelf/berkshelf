@@ -46,7 +46,7 @@ class Default < Thor
     desc "ci", "Run all possible tests on Travis-CI"
     def ci
       ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
-      unless run_unit("--tag ~chef_server") && run_acceptance("--tags ~@chef_server --tags ~@dependency-api") && run_quality
+      unless run_unit("--tag ~chef_server") && run_acceptance("--tags ~@chef_server ~@dependency-api") && run_quality
         exit 1
       end
     end
