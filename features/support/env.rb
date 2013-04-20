@@ -1,5 +1,3 @@
-ENV['RUBY_ENV'] == 'test'
-
 require 'rubygems'
 require 'bundler'
 require 'spork'
@@ -12,6 +10,7 @@ Spork.prefork do
 
   APP_ROOT = File.expand_path('../../../', __FILE__)
 
+  ENV['RUBY_ENV'] == 'test'
   ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "tmp", "berkshelf")
   ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "knife.rb")
 
@@ -32,6 +31,7 @@ Spork.prefork do
   World(Berkshelf::TestGenerators)
 
   Before do
+    set_env 'RUBY_ENV', 'test'
     clean_cookbook_store
     generate_berks_config(File.join(ENV["BERKSHELF_PATH"], 'config.json'))
     @aruba_io_wait_seconds = 5
