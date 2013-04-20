@@ -255,16 +255,18 @@ module Berkshelf
       type: :boolean,
       default: nil,
       desc: "Disable/Enable SSL verification when locking cookbooks."
-    method_option :skip_dependencies,
+    method_option :include_dependencies,
       type: :boolean,
-      desc: "Don't lock dependent cookbook(s).",
+      desc: "Lock dependent cookbook(s).",
       default: false,
-      aliases: "-D"
+      aliases: "-a"
     desc "lock ENVIRONMENT_NAME", "Set the cookbook version locks in ENVIRONMENT to match the Berkshelf resolution."
     def lock(environment_name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-
+      
       lock_options = Hash[options].symbolize_keys
+
+      lock_options[:skip_dependencies] = !lock_options.delete(:include_dependencies)
 
       berksfile.lock(environment_name, lock_options)
     end

@@ -91,6 +91,18 @@ EOF
         cookbook_path
       end
 
+      def create_environment(environment_name)
+        ridley.environment.create(name: environment_name)
+      end
+
+      def environment(environment_name)
+        Ridley::Search.new(ridley, :environment, "name:#{environment_name}").run.first
+      end
+
+      def environment_exists?(environment_name)
+        !environment(environment_name).nil?
+      end
+
       private
 
         def ridley

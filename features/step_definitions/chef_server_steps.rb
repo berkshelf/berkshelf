@@ -25,3 +25,15 @@ Then /^the Chef server should not have the cookbooks:$/ do |cookbooks|
     server_has_cookbook?(name, version).should be_false
   end
 end
+
+Given(/^I have an environment named "(.*?)"$/) do |environment_name|
+  create_environment(environment_name) unless environment_exists? environment_name
+  environment(environment_name).should_not be_nil
+end
+
+Then(/^the version locks in "(.*?)" should be:$/) do |environment_name, version_locks|
+  environment_cookbook_versions = environment(environment_name).cookbook_versions
+  version_locks.hashes.each do |hash|
+    environment_cookbook_versions[hash['cookbook']].should == hash['version_lock']
+  end
+end
