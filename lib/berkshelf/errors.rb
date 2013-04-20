@@ -163,4 +163,16 @@ module Berkshelf
       "Unknown site shortname: #{@shortname.inspect}. Supported shortnames are: #{SiteLocation::SHORTNAMES.keys.map(&:inspect).join(',')}"
     end
   end
+  class EnvironmentNotFound < BerkshelfError
+    status_code(128)
+
+    def initialize(environment_name)
+      @environment_name = environment_name
+    end
+
+    def to_s
+      %Q[The environment "#{@environment_name}" does not exist.]
+    end
+  end
+  
 end

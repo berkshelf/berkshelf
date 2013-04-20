@@ -95,6 +95,10 @@ EOF
         ridley.environment.create(name: environment_name)
       end
 
+      def delete_environment(environment_name)
+        ridley.environment.delete(environment_name)
+      end
+
       def environment(environment_name)
         Ridley::Search.new(ridley, :environment, "name:#{environment_name}").run.first
       end

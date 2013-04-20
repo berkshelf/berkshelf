@@ -265,7 +265,6 @@ module Berkshelf
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       
       lock_options = Hash[options].symbolize_keys
-
       lock_options[:skip_dependencies] = !lock_options.delete(:include_dependencies)
 
       berksfile.lock(environment_name, lock_options)

@@ -37,3 +37,7 @@ Then(/^the version locks in "(.*?)" should be:$/) do |environment_name, version_
     environment_cookbook_versions[hash['cookbook']].should == hash['version_lock']
   end
 end
+
+Given(/^I do not have an environment named "(.*?)"$/) do |environment_name|
+  delete_environment(environment_name) if environment_exists? environment_name
+end
