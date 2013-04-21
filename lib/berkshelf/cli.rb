@@ -145,7 +145,7 @@ module Berkshelf
       aliases: "-o"
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -371,7 +371,7 @@ module Berkshelf
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
       Berkshelf.ui.say "Cookbooks contingent upon #{name}:"
-      sources = Berkshelf.ui.mute { berksfile.resolve }.sort.each do |cookbook|
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
         if cookbook.dependencies.include?(name)
           Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
         end

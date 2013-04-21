@@ -41,26 +41,25 @@ Feature: Berksfile.lock
         },
         "mysql":{
           "constraint":">= 1.3.0",
-          "locked_version":"2.1.2"
+          "locked_version":"3.0.0"
         },
         "openssl":{
-          "constraint":">= 0.0.0",
-          "locked_version":"1.0.0"
+          "locked_version":"1.0.2"
         },
         "build-essential":{
-          "constraint":">= 0.0.0",
-          "locked_version":"1.3.4"
+          "locked_version":"1.4.0"
         },
         "postgresql":{
           "constraint":">= 1.0.0",
-          "locked_version":"2.2.2"
+          "locked_version":"2.4.0"
+        },
+        "apt":{
+          "locked_version":"1.9.2"
         },
         "aws":{
-          "constraint":">= 0.0.0",
           "locked_version":"0.100.6"
         },
         "xfs":{
-          "constraint":">= 0.0.0",
           "locked_version":"1.1.0"
         }
       }
@@ -167,18 +166,18 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'hostsfile', git: 'git://github.com/sethvargo-cookbooks/hostsfile.git', ref: 'c65010d'
+    cookbook 'sudo', git: 'git://github.com/opscode-cookbooks/sudo.git', ref: 'f7ada1e95'
     """
   When I successfully run `berks install`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha": "9536a7a09fc3be98aaa5728465525935916c9c7f",
+      "sha": "d8fff7d2d491eb5ad9b15edfdf0a8a4da513f33a",
       "sources":{
-        "hostsfile":{
-          "git":"git://github.com/sethvargo-cookbooks/hostsfile.git",
-          "ref":"c65010d",
-          "locked_version":"0.2.5"
+        "sudo":{
+          "git":"git://github.com/opscode-cookbooks/sudo.git",
+          "ref":"f7ada1e95",
+          "locked_version":"2.0.4"
         }
       }
     }
@@ -188,19 +187,60 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'hostsfile', github: 'sethvargo-cookbooks/hostsfile', ref: 'c65010d'
+    cookbook 'sudo', github: 'opscode-cookbooks/sudo', ref: 'f7ada1e95'
     """
   When I successfully run `berks install`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha": "16523c4b800eef9964d354b7f2d217b2de1d2d75",
+      "sha": "3232c5ae6f54aee3efc5fdcfce69249a2526822b",
       "sources":{
-        "hostsfile":{
-          "git":"git://github.com/sethvargo-cookbooks/hostsfile.git",
-          "ref":"c65010d",
-          "locked_version":"0.2.5"
+        "sudo":{
+          "git":"git://github.com/opscode-cookbooks/sudo.git",
+          "ref":"f7ada1e95",
+          "locked_version":"2.0.4"
         }
       }
     }
     """
+
+  Scenario: Updating a Berksfile.lock with a path location
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'fake', path: './fake'
+    """
+  And a cookbook named "fake"
+  When I successfully run `berks install`
+  Then the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "42a13f91f1ba19ce8c6776fe267e74510dee27ce",
+      "sources":{
+        "fake":{
+          "path":"fake",
+          "locked_version":"0.0.0"
+        }
+      }
+    }
+    """
+
+  Scenario: Updating a Berksfile.lock with a different site location
+  Given pending we have a reliable non-opscode site to test
+  # Given I write to "Berksfile" with:
+  #   """
+  #   cookbook 'fake', site: 'example.com'
+  #   """
+  # When I successfully run `berks install`
+  # Then the file "Berksfile.lock" should contain JSON:
+  #   """
+  #   {
+  #     "sha": "3232c5ae6f54aee3efc5fdcfce69249a2526822b",
+  #     "sources":{
+  #       "sudo":{
+  #         "site":"opscode",
+  #         "locked_version":"2.0.4"
+  #       }
+  #     }
+  #   }
+  #   """

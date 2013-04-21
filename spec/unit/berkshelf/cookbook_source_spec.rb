@@ -20,15 +20,7 @@ describe Berkshelf::CookbookSource do
         let(:source) { subject.new(berksfile, cookbook_name) }
 
         it 'returns a wildcard match for any version' do
-          expect(source.version_constraint.to_s).to eq('>= 0.0.0')
-        end
-      end
-
-      context 'given a value for :locked_version' do
-        let(:source) { subject.new(berksfile, cookbook_name, locked_version: '1.2.3') }
-
-        it 'returns the locked_version as the constraint' do
-          expect(source.version_constraint.to_s).to eq('= 1.2.3')
+          expect(source.locked_version).to be_nil
         end
       end
 
@@ -45,14 +37,6 @@ describe Berkshelf::CookbookSource do
 
         it 'returns a Solve::Constraint for the given version for version_constraint' do
           expect(source.version_constraint.to_s).to eq('~> 1.0.84')
-        end
-      end
-
-      context 'given a value for :locked_version and :constraint' do
-        let(:source) { subject.new(berksfile, cookbook_name, constraint: '~> 1.0.84', locked_version: '1.2.3') }
-
-        it 'uses the :locked_version' do
-          expect(source.version_constraint.to_s).to eq('= 1.2.3')
         end
       end
 
@@ -270,16 +254,81 @@ describe Berkshelf::CookbookSource do
     end
   end
 
+  describe "#to_hash" do
+    let(:hash) { subject.to_hash }
+
+    it "does not include default values" do
+      expect(hash).to_not have_key(:constraint)
+      expect(hash).to_not have_key(:locked_version)
+      expect(hash).to_not have_key(:site)
+      expect(hash).to_not have_key(:git)
+      expect(hash).to_not have_key(:ref)
+      expect(hash).to_not have_key(:path)
+    end
+
+    it "includes the constraint" do
+      subject.version_constraint = '~> 1.0.0'
+
+      expect(hash).to have_key(:constraint)
+      expect(hash[:constraint]).to eq('~> 1.0.0')
+    end
+
+    it "includes the locked version" do
+      subject.cached_cookbook = double('cached', version: '1.2.3')
+
+      expect(hash).to have_key(:locked_version)
+      expect(hash[:locked_version]).to eq('1.2.3')
+    end
+
+    it "does not include the site if it's the default" do
+      location = double('site', site: Berkshelf::CommunityREST::V1_API)
+      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
+      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
+      subject.stub(:location).and_return(location)
+
+      expect(hash).to_not have_key(:site)
+    end
+
+    it "includes the site" do
+      location = double('site', site: 'www.example.com')
+      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
+      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
+      subject.stub(:location).and_return(location)
+
+      expect(hash).to have_key(:site)
+      expect(hash[:site]).to eq('www.example.com')
+    end
+
+    it "includes the git url and ref" do
+      location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234')
+      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(false)
+      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
+      subject.stub(:location).and_return(location)
+
+      expect(hash).to have_key(:git)
+      expect(hash[:git]).to eq('git://github.com/foo/bar.git')
+      expect(hash).to have_key(:ref)
+      expect(hash[:ref]).to eq('abcd1234')
+    end
+
+    it "includes a relative path" do
+      subject.instance_variable_set(:@options, { path: '~/Development/foo' })
+
+      expect(hash).to have_key(:path)
+      expect(hash[:path]).to eq('~/Development/foo')
+    end
+  end
+
   describe "#to_s" do
     it "contains the name, constraint, and groups" do
-      source = CookbookSource.new("artifact", constraint: "= 0.10.0")
+      source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0")
 
       source.to_s.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0)>")
     end
 
     context "given a CookbookSource with an explicit location" do
       it "contains the name, constraint, groups, and location" do
-        source = CookbookSource.new("artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
+        source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
 
         source.to_s.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0)>")
       end
@@ -288,16 +337,24 @@ describe Berkshelf::CookbookSource do
 
   describe "#inspect" do
     it "contains the name, constraint, and groups" do
-      source = CookbookSource.new("artifact", constraint: "= 0.10.0")
+      source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0")
 
-      source.inspect.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0), groups: [:default], location: default>")
+      source.inspect.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: default>")
     end
 
     context "given a CookbookSource with an explicit location" do
       it "contains the name, constraint, groups, and location" do
-        source = CookbookSource.new("artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
+        source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks")
 
-        source.inspect.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0), groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
+        source.inspect.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
+      end
+    end
+
+    context "given an explicitly locked version" do
+      it "includes the locked_version" do
+        source = Berkshelf::CookbookSource.new(berksfile, "artifact", constraint: "= 0.10.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks", locked_version: '1.2.3')
+
+        source.inspect.should eql("#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: 1.2.3, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
       end
     end
   end

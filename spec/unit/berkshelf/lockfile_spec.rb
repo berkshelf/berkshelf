@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe Berkshelf::Lockfile do
-  describe '.from_file' do
+  describe '.initialize' do
     let(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
+    let(:berksfile) { Berkshelf::Berksfile.new('Berksfile') }
 
-    subject { Berkshelf::Lockfile.from_file('Berksfile.lock') }
+    subject { Berkshelf::Lockfile.new(berksfile) }
 
     before do
       content
@@ -18,18 +19,6 @@ describe Berkshelf::Lockfile do
     it 'has the correct sources' do
       expect(subject).to have_source 'build-essential'
       expect(subject).to have_source 'chef-client'
-    end
-
-    context 'when the file does not exist' do
-      before do
-        File.stub(:read).and_raise(Errno::ENOENT)
-      end
-
-      it 'raises a Berkshelf::LockfileNotFound' do
-        expect {
-          Berkshelf::Lockfile.from_file('Berksfile.lock')
-        }.to raise_error(Berkshelf::LockfileNotFound)
-      end
     end
 
     describe '#reset_sha!' do
@@ -129,7 +118,7 @@ describe Berkshelf::Lockfile do
 
     describe '#inspect' do
       it 'returns a pretty-formatted, detailed string' do
-        expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), groups: [:default], location: default>]>'
+        expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>'
       end
     end
 
@@ -161,7 +150,7 @@ describe Berkshelf::Lockfile do
       end
 
       it 'saves itself to a file on disk' do
-        File.should_receive(:open).with('Berksfile.lock', 'w').and_yield(file)
+        File.should_receive(:open).with(/(.+)\/Berksfile\.lock/, 'w').and_yield(file)
         file.should_receive(:write).once
         subject.save
       end

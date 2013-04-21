@@ -5,63 +5,52 @@ module Berkshelf
   #
   # @author Seth Vargo <sethvargo@gmail.com>
   class Lockfile
-    class << self
-      # Build a lockfile instance from the local .lock file.
-      #
-      # @param [String] filepath
-      #   the path to the lockfile to load
-      #
-      # @raise [Errno::ENOENT]
-      #   when the Lockfile cannot be found
-      def from_file(filepath)
-        begin
-          contents = File.read(filepath)
-        rescue Errno::ENOENT
-          raise Berkshelf::LockfileNotFound, "Could not find lockfile at '#{filepath}'!"
-        end
-
-        begin
-          hash = MultiJson.load(contents, symbolize_keys: true)
-        rescue MultiJson::DecodeError
-          if contents =~ /^cookbook ["'](.+)["']/
-            Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
-            hash = LockfileLegacy.parse(contents)
-          else
-            raise
-          end
-        end
-
-        lockfile = self.new(sha: hash[:sha], filepath: filepath)
-        hash[:sources].each do |name, options|
-          lockfile.add Berkshelf::CookbookSource.new(name.to_s, options)
-        end
-        lockfile
-      end
-    end
-
     # @return [Pathname]
-    #   the path to this lockfile
+    #   the path to this Lockfile
     attr_reader :filepath
+
+    # @return [Berkshelf::Berksfile]
+    #   the Berksfile for this Lockfile
+    attr_reader :berksfile
 
     # @return [String]
     #   the last known SHA of the Berksfile
     attr_accessor :sha
 
-    # Create a new lockfile instance from the given sources and sha.
+    # Create a new lockfile instance associated with the given Berksfile. If a
+    # Lockfile exists, it is automatically loaded. Otherwise, an empty instance is
+    # created and ready for use.
     #
-    # @param [Hash] options
-    #   a list of options to create the lockfile with
-    # @option options [Array<Berkshelf::CookbookSource>]
-    #   the list of cookbook sources
-    # @option sha [String]
-    #   the last-saved sha of the Berksfile
-    # @option filepath [String]
-    #   the path to this lockfile
-    def initialize(options = {})
-      @sha      = options[:sha]
-      @filepath = options[:filepath]
+    # @param berksfile [Berkshelf::Berksfile]
+    #   the Berksfile associated with this Lockfile
+    def initialize(berksfile)
+      @berksfile = berksfile
+      @filepath  = File.expand_path("#{berksfile.filepath}.lock")
+      @sources   = {}
 
-      @sources = {}
+      load! if File.exists?(@filepath)
+    end
+
+    # Load the lockfile from file system.
+    def load!
+      contents = File.read(filepath)
+
+      begin
+        hash = MultiJson.load(contents, symbolize_keys: true)
+      rescue MultiJson::DecodeError
+        if contents =~ /^cookbook ["'](.+)["']/
+          Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
+          hash = LockfileLegacy.parse(contents)
+        else
+          raise
+        end
+      end
+
+      @sha = hash[:sha]
+
+      hash[:sources].each do |name, options|
+        add(CookbookSource.new(berksfile, name.to_s, options))
+      end
     end
 
     # Set the sha value to nil to mark that the lockfile is not out of

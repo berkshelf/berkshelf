@@ -564,7 +564,7 @@ module Berkshelf
     # @return [Array<Berkshelf::CachedCookbooks>]
     def resolve(sources = [], options = {})
       resolver = Resolver.new(
-        self.downloader,
+        self,
         sources: sources,
         skip_dependencies: options[:skip_dependencies]
       )
@@ -597,15 +597,7 @@ module Berkshelf
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      @lockfile ||= begin
-        lockfile_path = "#{filepath.to_s}.lock"
-
-        if File.exists?(lockfile_path)
-          Berkshelf::Lockfile.from_file(lockfile_path)
-        else
-          Berkshelf::Lockfile.new(filepath: lockfile_path)
-        end
-      end
+      @lockfile ||= Berkshelf::Lockfile.new(self)
     end
 
     private
