@@ -68,32 +68,37 @@ module Berkshelf
 
     extend Forwardable
 
+    # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
+    # @return [String]
     attr_reader :name
-    attr_reader :options
+    # @return [Solve::Constraint]
     attr_reader :version_constraint
+    # @return [Berkshelf::CachedCookbook]
     attr_accessor :cached_cookbook
 
-    #  @param [String] name
-    #  @param [Hash] options
+    # @param [Berkshelf::Berksfile] berksfile
+    #   the berksfile this source belongs to
+    # @param [String] name
+    #   the name of source
     #
-    #  @option options [String, Solve::Constraint] constraint
-    #    version constraint to resolve for this source
-    #  @option options [String] :git
-    #    the Git URL to clone
-    #  @option options [String] :site
-    #    a URL pointing to a community API endpoint
-    #  @option options [String] :path
-    #    a filepath to the cookbook on your local disk
-    #  @option options [Symbol, Array] :group
-    #    the group or groups that the cookbook belongs to
-    #  @option options [String] :ref
-    #    the commit hash or an alias to a commit hash to clone
-    #  @option options [String] :branch
-    #    same as ref
-    #  @option options [String] :tag
-    #    same as tag
-    #  @option options [String] :locked_version
+    # @option options [String, Solve::Constraint] :constraint
+    #   version constraint to resolve for this source
+    # @option options [String] :git
+    #   the Git URL to clone
+    # @option options [String] :site
+    #   a URL pointing to a community API endpoint
+    # @option options [String] :path
+    #   a filepath to the cookbook on your local disk
+    # @option options [Symbol, Array] :group
+    #   the group or groups that the cookbook belongs to
+    # @option options [String] :ref
+    #   the commit hash or an alias to a commit hash to clone
+    # @option options [String] :branch
+    #   same as ref
+    # @option options [String] :tag
+    #   same as tag
+    # @option options [String] :locked_version
     def initialize(berksfile, name, options = {})
       self.class.validate_options(options)
 
