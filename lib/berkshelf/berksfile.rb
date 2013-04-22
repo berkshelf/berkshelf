@@ -541,30 +541,6 @@ module Berkshelf
       conn.terminate if conn && conn.alive?
     end
 
-    def ridley_connection(options = {})
-      ridley_options               = options.slice(:ssl)
-      ridley_options[:server_url]  = Berkshelf::Config.instance.chef.chef_server_url
-      ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
-      ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
-      ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
-
-
-      # TODO imlpement ChefConnectionError
-      unless ridley_options[:server_url].present?
-        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.server_url"
-      end
-
-      unless ridley_options[:client_name].present?
-        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
-      end
-
-      unless ridley_options[:client_key].present?
-        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
-      end
-      
-      Ridley.new(ridley_options)
-    end
-
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
     #
     # @option options [Symbol, Array] :except
@@ -601,6 +577,28 @@ module Berkshelf
     end
 
     private
+
+      def ridley_connection(options = {})
+        ridley_options               = options.slice(:ssl)
+        ridley_options[:server_url]  = Berkshelf::Config.instance.chef.chef_server_url
+        ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
+        ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
+        ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
+  
+        unless ridley_options[:server_url].present?
+          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.server_url"
+        end
+  
+        unless ridley_options[:client_name].present?
+          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
+        end
+  
+        unless ridley_options[:client_key].present?
+          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
+        end
+        
+        Ridley.new(ridley_options)
+      end
 
       def descendant_directory?(candidate, parent)
         hack = FileUtils::Entry_.new('/tmp')
