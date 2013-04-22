@@ -9,7 +9,7 @@ module Berkshelf
     def_delegator :conn, :api_uri
     attr_accessor :version_constraint
 
-    SHORTNAMES = {opscode: CommunityREST::V1_API}
+    SHORTNAMES = {opscode: CommunityREST::V1_API}.freeze
 
     # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint

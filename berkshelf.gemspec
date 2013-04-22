@@ -15,17 +15,18 @@ Gem::Specification.new do |s|
     "justin.campbell@riotgames.com"
   ]
 
-  s.description           = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
-  s.summary               = s.description
-  s.homepage              = "http://berkshelf.com"
-  s.license               = "Apache 2.0"
-  s.files                 = `git ls-files`.split($\)
-  s.executables           = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  s.test_files            = s.files.grep(%r{^(test|spec|features)/})
-  s.name                  = "berkshelf"
-  s.require_paths         = ["lib"]
-  s.version               = Berkshelf::VERSION
-  s.required_ruby_version = ">= 1.9.1"
+  s.description               = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
+  s.summary                   = s.description
+  s.homepage                  = "http://berkshelf.com"
+  s.license                   = "Apache 2.0"
+  s.files                     = `git ls-files`.split($\)
+  s.executables               = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  s.test_files                = s.files.grep(%r{^(test|spec|features)/})
+  s.name                      = "berkshelf"
+  s.require_paths             = ["lib"]
+  s.version                   = Berkshelf::VERSION
+  s.required_ruby_version     = ">= 1.9.1"
+  s.required_rubygems_version = ">= 1.8.0"
 
   s.add_dependency 'celluloid', '>= 0.13.0'
   s.add_dependency 'yajl-ruby'
