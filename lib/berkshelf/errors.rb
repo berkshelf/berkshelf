@@ -174,5 +174,12 @@ module Berkshelf
       %Q[The environment "#{@environment_name}" does not exist.]
     end
   end
+  class ChefConnectionError < BerkshelfError
+    status_code(129)
+
+    def to_s
+      "There was an error connecting to the chef server."
+    end
+  end
   
 end

@@ -532,11 +532,11 @@ module Berkshelf
         environment.cookbook_versions = cookbook_versions
         environment.save
       else
-        raise EnvironmentNotFound.new(environment_name) # TODO implement
+        raise EnvironmentNotFound.new(environment_name)
       end
     rescue Ridley::Errors::RidleyError => ex
       log_exception(ex)
-      raise ChefConnectionError, ex # TODO implement
+      raise ChefConnectionError, ex
     ensure
       conn.terminate if conn && conn.alive?
     end

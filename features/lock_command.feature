@@ -10,7 +10,7 @@ Feature: lock cookbook versions on the server
       """
       cookbook "mysql", "1.2.4"
       """
-    When I successfully run `berks lock berkshelf_lock_test`
+    When I successfully run the lock command on "berkshelf_lock_test"
     Then the version locks in "berkshelf_lock_test" should be:
     | cookbook        | version_lock |
     | mysql           |        1.2.4 |
@@ -22,7 +22,8 @@ Feature: lock cookbook versions on the server
       """
       cookbook "mysql", "1.2.4"
       """
-    When I successfully run `berks lock berkshelf_lock_test --include_dependencies`
+    When I successfully run the lock command on "berkshelf_lock_test" with flags:
+    | --include_dependencies |
     Then the version locks in "berkshelf_lock_test" should be:
     | cookbook        | version_lock |
     | mysql           |        1.2.4 |
@@ -35,20 +36,21 @@ Feature: lock cookbook versions on the server
       """
       cookbook "mysql", "1.2.4"
       """
-    When I successfully run `berks lock berkshelf_lock_test -a`
+    When I successfully run the lock command on "berkshelf_lock_test" with flags:
+    | -a   |
     Then the version locks in "berkshelf_lock_test" should be:
     | cookbook        | version_lock |
     | mysql           |        1.2.4 |
     | openssl         |        1.0.2 |
 
-    @chef_server
+  @chef_server
   Scenario: locking cookbook versions to an environment that does not exist
     Given I do not have an environment named "berkshelf_lock_test"
     And I write to "Berksfile" with:
       """
       cookbook "mysql", "1.2.4"
       """
-    When I run `berks lock berkshelf_lock_test`
+    When I run the lock command on "berkshelf_lock_test"
     Then the output should contain:
       """
       The environment "berkshelf_lock_test" does not exist.

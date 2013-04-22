@@ -58,6 +58,14 @@ When /^I run the cookbook command to create "(.*?)"$/ do |name|
   run_simple(unescape("berks cookbook #{name}"), false)
 end
 
+When /^I (successfully )?run the lock command on "(.*?)"$/ do |successfully, environment_name|
+  run_simple(unescape("berks lock #{environment_name}"), !!successfully)
+end
+
+When /^I (successfully )?run the lock command on "(.*?)" with flags:$/ do |successfully, environment_name, flags|
+  run_simple(unescape("berks lock #{environment_name} #{flags.raw.join(" ")}"), !!successfully)
+end
+
 When /^I run the cookbook command to create "(.*?)" with options:$/ do |name, options|
   run_simple(unescape("berks cookbook #{name} #{options.raw.join(" ")}"))
 end

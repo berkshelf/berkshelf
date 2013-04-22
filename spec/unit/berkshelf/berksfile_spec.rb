@@ -402,6 +402,26 @@ EOF
   end
 
   describe "#upload" do
-    pending
+    it "should throw a ChefConnectionError when Ridley returns an error" do
+      subject.stub(:ridley_connection).and_raise(Ridley::Errors::RidleyError)
+
+      lambda {
+        quietly do
+          subject.lock("env")
+        end
+      }.should raise_error(Berkshelf::ChefConnectionError)
+    end
+  end
+
+  describe "#lock" do
+    it "should throw a ChefConnectionError when Ridley returns an error" do
+      subject.stub(:ridley_connection).and_raise(Ridley::Errors::RidleyError)
+
+      lambda {
+        quietly do
+          subject.lock("env")
+        end
+      }.should raise_error(Berkshelf::ChefConnectionError)
+    end
   end
 end
