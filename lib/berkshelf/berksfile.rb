@@ -446,7 +446,19 @@ module Berkshelf
       outdated = Hash.new
 
       filter(sources, options).each do |cookbook|
-        location = cookbook.location || Location.init(cookbook.name, cookbook.version_constraint)
+        location = cookbook.location || Location.init(cookbook.name, cookbook.version_constraint, site: :opscode)
+
+        $stderr.puts
+        $stderr.puts
+        $stderr.puts
+        $stderr.puts
+        $stderr.puts "cookbook: " + cookbook.inspect
+        $stderr.puts "cookbook.location: " + cookbook.location.inspect
+        $stderr.puts "Location.init: " + Location.init(cookbook.name, cookbook.version_constraint).inspect
+        $stderr.puts "location:" + location.inspect
+        $stderr.puts
+        $stderr.puts
+        $stderr.puts
 
         if location.is_a?(SiteLocation)
           latest_version = location.latest_version

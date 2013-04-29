@@ -30,6 +30,9 @@ module Berkshelf
         options[:site]
       end
 
+      $stderr.puts "options: " + options.inspect
+      $stderr.puts "api_uri: " + api_uri.inspect
+
       @conn = Berkshelf::CommunityREST.new(api_uri)
     end
 
