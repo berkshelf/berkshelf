@@ -199,8 +199,8 @@ module Berkshelf
           h[:constraint] = version_constraint.to_s
         end
 
-        if location.kind_of?(SiteLocation) && location.site != CommunityREST::V1_API
-          h[:site] = location.site
+        if location.kind_of?(SiteLocation) && location.api_uri != CommunityREST::V1_API
+          h[:site] = location.api_uri
         end
 
         if location.kind_of?(GitLocation)
