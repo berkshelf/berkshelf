@@ -281,7 +281,7 @@ describe Berkshelf::CookbookSource do
     end
 
     it "does not include the site if it's the default" do
-      location = double('site', site: Berkshelf::CommunityREST::V1_API)
+      location = double('site', api_uri: Berkshelf::CommunityREST::V1_API)
       location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
       subject.stub(:location).and_return(location)
@@ -290,7 +290,7 @@ describe Berkshelf::CookbookSource do
     end
 
     it "includes the site" do
-      location = double('site', site: 'www.example.com')
+      location = double('site', api_uri: 'www.example.com')
       location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
       subject.stub(:location).and_return(location)
