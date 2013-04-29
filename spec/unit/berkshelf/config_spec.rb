@@ -11,7 +11,7 @@ describe Berkshelf::Config do
 
       context "when the file does not exist" do
         before :each do
-          ::File.stub exists?: false
+          File.stub exists?: false
         end
 
         it { should be_nil }
