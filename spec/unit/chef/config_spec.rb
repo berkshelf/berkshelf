@@ -5,13 +5,13 @@ describe Berkshelf::Chef::Config do
 
   describe '::path' do
     let(:path) { '/fake/path/for/.chef' }
-    let(:config) { ::File.join(path, 'knife.rb') }
+    let(:config) { File.join(path, 'knife.rb') }
 
     before do
       ENV.stub(:[]).and_return(nil)
 
-      ::File.stub(:exists?).with(any_args()).and_return(false)
-      ::File.stub(:exists?).with(config).and_return(true)
+      File.stub(:exists?).with(any_args()).and_return(false)
+      File.stub(:exists?).with(config).and_return(true)
 
       subject.instance_variable_set(:@path, nil)
     end
@@ -37,9 +37,9 @@ describe Berkshelf::Chef::Config do
 
         before do
           Berkshelf::Chef::Config.stub(:working_dir).and_return(path)
-          ::File.stub(:exists?).and_return(false)
-          ::File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
-          ::File.stub(:exists?).with('/fake/.chef/path/with/multiple/.chef/knife.rb').and_return(true)
+          File.stub(:exists?).and_return(false)
+          File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
+          File.stub(:exists?).with('/fake/.chef/path/with/multiple/.chef/knife.rb').and_return(true)
         end
 
         it 'chooses the closest path' do
@@ -52,8 +52,8 @@ describe Berkshelf::Chef::Config do
 
         before do
           Berkshelf::Chef::Config.stub(:working_dir).and_return(path)
-          ::File.stub(:exists?).and_return(false)
-          ::File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
+          File.stub(:exists?).and_return(false)
+          File.stub(:exists?).with('/fake/.chef/knife.rb').and_return(true)
         end
 
         it 'uses the current directory' do
@@ -66,8 +66,8 @@ describe Berkshelf::Chef::Config do
 
         before do
           Berkshelf::Chef::Config.stub(:working_dir).and_return(path)
-          ::File.stub(:exists?).and_return(false)
-          ::File.stub(:exists?).with('/.chef/knife.rb').and_return(true)
+          File.stub(:exists?).and_return(false)
+          File.stub(:exists?).with('/.chef/knife.rb').and_return(true)
         end
 
         it 'uses the top-level directory' do
