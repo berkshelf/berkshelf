@@ -218,7 +218,7 @@ Feature: Berksfile.lock
       "sha": "42a13f91f1ba19ce8c6776fe267e74510dee27ce",
       "sources":{
         "fake":{
-          "path":"fake",
+          "path":"./fake",
           "locked_version":"0.0.0"
         }
       }
