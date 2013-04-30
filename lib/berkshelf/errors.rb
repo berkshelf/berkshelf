@@ -155,12 +155,41 @@ module Berkshelf
   class InvalidSiteShortnameError < BerkshelfError
     status_code(127)
 
+    # @param [String,Symbol] shortname
+    #   the shortname for the site (see SiteLocation::SHORTNAMES)
     def initialize(shortname)
       @shortname = shortname
     end
 
     def to_s
       "Unknown site shortname: #{@shortname.inspect}. Supported shortnames are: #{SiteLocation::SHORTNAMES.keys.map(&:inspect).join(',')}"
+    end
+  end
+
+  class OutdatedCookbookSource < BerkshelfError
+    status_code(128)
+
+    # @return [Berkshelf::CookbookSource]
+    attr_reader :locked_source, :source
+
+    # @param [Berkshelf::CookbookSource] source
+    #   the cookbook source that is outdated
+    def initialize(locked_source, source)
+      @locked_source = locked_source
+      @source = source
+    end
+
+    def to_s
+      [
+        "Berkshelf could not find compatible versions for cookbook '#{source.name}':",
+        "  In Berksfile:",
+        "    #{locked_source.name} (#{locked_source.locked_version})",
+        "",
+        "  In Berksfile.lock:",
+        "    #{source.name} (#{source.version_constraint})",
+        "",
+        "Try running `berks update #{source.name}, which will try to find  '#{source.name}' matching '#{source.version_constraint}'."
+      ].join("\n")
     end
   end
 end
