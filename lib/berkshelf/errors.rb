@@ -169,6 +169,8 @@ module Berkshelf
   class OutdatedCookbookSource < BerkshelfError
     status_code(128)
 
+    # @param [Berkshelf::CookbookSource] source
+    #   the cookbook source that is outdated
     def initialize(source)
       @source = source
     end
