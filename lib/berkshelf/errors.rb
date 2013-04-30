@@ -155,6 +155,8 @@ module Berkshelf
   class InvalidSiteShortnameError < BerkshelfError
     status_code(127)
 
+    # @param [String,Symbol] shortname
+    #   the shortname for the site (see SiteLocation::SHORTNAMES)
     def initialize(shortname)
       @shortname = shortname
     end
