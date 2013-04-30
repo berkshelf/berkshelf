@@ -402,6 +402,104 @@ EOF
   end
 
   describe "#upload" do
-    pending
+    let(:upload) { subject.upload(options) }
+    let(:options) { Hash.new }
+    let(:ssl) { double('ssl', verify: true) }
+    let(:chef) {
+      double('chef',
+        node_name: "fake-client",
+        client_key: "client-key",
+        chef_server_url: "http://configured-chef-server/")
+    }
+    let(:berkshelf_config) { double('berks', ssl: ssl, chef: chef) }
+    let(:default_ridley_options) {
+      {
+        client_name: "fake-client",
+        client_key: "client-key",
+        ssl: {
+          verify: true
+        }
+      }
+    }
+
+    before do
+      Berkshelf::Config.stub(:instance).and_return(berkshelf_config)
+      subject.stub(:resolve).and_return([])
+    end
+
+    context "when there is no :server_url" do
+      let(:chef) {
+        double('chef',
+          node_name: "fake-client",
+          client_key: "client-key",
+          chef_server_url: nil)
+      }
+      let(:message) { "Missing required attribute in your Berkshelf configuration: chef.server_url" }
+
+      it "raises an error" do
+        expect {
+          upload
+        }.to raise_error(Berkshelf::UploadFailure, message)
+      end
+    end
+
+    context "when there is no :client_name" do
+      let(:chef) {
+        double('chef',
+          node_name: nil,
+          client_key: "client-key",
+          chef_server_url: "http://configured-chef-server/")
+      }
+      let(:message) { "Missing required attribute in your Berkshelf configuration: chef.node_name" }
+
+      it "raises an error" do
+        expect {
+          upload
+        }.to raise_error(Berkshelf::UploadFailure, message)
+      end
+    end
+
+    context "when there is no :client_key" do
+      let(:chef) {
+        double('chef',
+          node_name: "fake-client",
+          client_key: nil,
+          chef_server_url: "http://configured-chef-server/")
+      }
+      let(:message) { "Missing required attribute in your Berkshelf configuration: chef.client_key" }
+
+      it "raises an error" do
+        expect {
+          upload
+        }.to raise_error(Berkshelf::UploadFailure, message)
+      end
+    end
+
+    context "when a Chef Server url is not passed as an option" do
+      let(:ridley_options) do
+        {server_url: "http://configured-chef-server/"}.merge(default_ridley_options)
+      end
+
+      it "uses Berkshelf::Config configured server_url" do
+        Ridley.should_receive(:new).with(ridley_options)
+        upload
+      end
+    end
+
+    context "when a Chef Server url is passed as an option" do
+      let(:options) {
+        {
+          server_url: "http://fake-chef-server.com/"
+        }
+      }
+      let(:ridley_options) {
+        {server_url: "http://fake-chef-server.com/"}.merge(default_ridley_options)
+      }
+
+      it "uses the passed in :server_url" do
+        Ridley.should_receive(:new).with(ridley_options)
+        upload
+      end
+    end
   end
 end
