@@ -69,7 +69,7 @@ module Berkshelf
     #
     # @return [String]
     def to_s
-      if path.to_s.include?(berkshelf_path.to_s)
+      if path.to_s.include?(Berkshelf.berkshelf_path.to_s)
         "#{self.class.location_key}"
       else
         "#{self.class.location_key}: '#{path}'"
