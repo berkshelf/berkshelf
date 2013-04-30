@@ -245,7 +245,6 @@ Feature: Berksfile.lock
   #   }
   #   """
 
-  @focus
   Scenario: Installing when the locked version is no longer satisfied
   Given I write to "Berksfile" with:
     """
