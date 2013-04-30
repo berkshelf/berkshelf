@@ -244,3 +244,30 @@ Feature: Berksfile.lock
   #     }
   #   }
   #   """
+
+  @focus
+  Scenario: Installing when the locked version is no longer satisfied
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'ntp', '1.1.8'
+    """
+  And I successfully run `berks install`
+  And I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'ntp', '~> 1.3.0'
+    """
+  When I run `berks install`
+  Then the output should contain:
+    """
+    Berkshelf could not find compatible versions for cookbook 'ntp':
+      In Berksfile:
+        ntp (1.1.8)
+
+      In Berksfile.lock:
+        ntp (~> 1.3.0)
+
+    Try running `berks update ntp, which will try to find  'ntp' matching '~> 1.3.0'.
+    """
+  And the CLI should exit with the status code for error "OutdatedCookbookSource"
