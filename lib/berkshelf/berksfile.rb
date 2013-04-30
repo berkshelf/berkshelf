@@ -465,6 +465,8 @@ module Berkshelf
     # @option options [Boolean] :halt_on_frozen (false)
     #   Raise a FrozenCookbook error if one of the cookbooks being uploaded is already located
     #   on the remote Chef Server and frozen.
+    # @option options [String] :server_url
+    #   An overriding Chef Server to upload the cookbooks to
     #
     # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
     # @raise [Berkshelf::FrozenCookbook]
@@ -480,7 +482,7 @@ module Berkshelf
       )
 
       ridley_options               = options.slice(:ssl)
-      ridley_options[:server_url]  = Berkshelf::Config.instance.chef.chef_server_url
+      ridley_options[:server_url]  = options[:server_url] || Berkshelf::Config.instance.chef.chef_server_url
       ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
       ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
       ridley_options[:ssl]         = { verify: options[:ssl_verify] }
