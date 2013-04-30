@@ -169,17 +169,27 @@ module Berkshelf
   class OutdatedCookbookSource < BerkshelfError
     status_code(128)
 
+    # @return [Berkshelf::CookbookSource]
+    attr_reader :locked_source, :source
+
     # @param [Berkshelf::CookbookSource] source
     #   the cookbook source that is outdated
-    def initialize(source)
+    def initialize(locked_source, source)
+      @locked_source = locked_source
       @source = source
     end
 
     def to_s
       [
-        "The current lockfile has #{@source.name} locked at #{@source.locked_version}.",
-        "Try running `berks update #{@source.name}`"
-      ]
+        "Berkshelf could not find compatible versions for cookbook '#{source.name}':",
+        "  In Berksfile:",
+        "    #{locked_source.name} (#{locked_source.locked_version})",
+        "",
+        "  In Berksfile.lock:",
+        "    #{source.name} (#{source.version_constraint})",
+        "",
+        "Try running `berks update #{source.name}, which will try to find  '#{source.name}' matching '#{source.version_constraint}'."
+      ].join("\n")
     end
   end
 end

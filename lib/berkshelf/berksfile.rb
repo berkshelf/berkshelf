@@ -686,9 +686,7 @@ module Berkshelf
         return nil unless locked_source
 
         unless source.version_constraint.satisfies?(locked_source.locked_version)
-          raise Berkshelf::OutdatedCookbookSource,
-            "The current lockfile has #{locked_source.name} locked at #{locked_source.locked_version}.\n" +
-            "Try running `berks update #{locked_source.name}`"
+          raise Berkshelf::OutdatedCookbookSource.new(locked_source, source)
         end
 
         # Update to the new constraint (it might have changed, but still be satisfied)
