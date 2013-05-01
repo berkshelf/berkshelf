@@ -3,13 +3,17 @@ Feature: outdated command
   I want to know what cookbooks are outdated before I run update
   So that I can decide whether to update everything at once
 
+  @focus
   Scenario: Running berks outdated with no version constraints
     Given I write to "Berksfile" with:
       """
+      site :opscode
+
       cookbook "artifact"
       cookbook "build-essential"
       """
-    When I run `berks outdated`
+    And I successfully run `berks install`
+    When I successfully run `berks outdated`
     Then the output should contain:
       """
       Listing outdated cookbooks with newer versions available...
@@ -22,6 +26,8 @@ Feature: outdated command
   Scenario: Running berks outdated with satisfied version constraints
     Given I write to "Berksfile" with:
       """
+      site :opscode
+
       cookbook "artifact", ">= 0.11.0"
       cookbook "build-essential", ">= 1.0.0"
       """
@@ -38,6 +44,8 @@ Feature: outdated command
   Scenario: Running berks outdated with unsatisfied version constraints
     Given I write to "Berksfile" with:
       """
+      site :opscode
+
       cookbook "artifact", "~> 0.9.0"
       cookbook "build-essential", "~> 0.7.0"
       """

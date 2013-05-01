@@ -11,7 +11,7 @@ Feature: show command
       cookbook "mysql", "1.2.4"
       """
     And I successfully run `berks install`
-    When I run `berks show build-essential`
+    When I successfully run `berks show build-essential`
     Then the output should contain "berkshelf/tmp/berkshelf/cookbooks/build-essential-1.2.0"
     And the exit status should be 0
 

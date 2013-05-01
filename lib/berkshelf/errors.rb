@@ -155,6 +155,8 @@ module Berkshelf
   class InvalidSiteShortnameError < BerkshelfError
     status_code(127)
 
+    # @param [String,Symbol] shortname
+    #   the shortname for the site (see SiteLocation::SHORTNAMES)
     def initialize(shortname)
       @shortname = shortname
     end
@@ -163,8 +165,36 @@ module Berkshelf
       "Unknown site shortname: #{@shortname.inspect}. Supported shortnames are: #{SiteLocation::SHORTNAMES.keys.map(&:inspect).join(',')}"
     end
   end
-  class EnvironmentNotFound < BerkshelfError
+
+  class OutdatedCookbookSource < BerkshelfError
     status_code(128)
+
+    # @return [Berkshelf::CookbookSource]
+    attr_reader :locked_source, :source
+
+    # @param [Berkshelf::CookbookSource] source
+    #   the cookbook source that is outdated
+    def initialize(locked_source, source)
+      @locked_source = locked_source
+      @source = source
+    end
+
+    def to_s
+      [
+        "Berkshelf could not find compatible versions for cookbook '#{source.name}':",
+        "  In Berksfile:",
+        "    #{locked_source.name} (#{locked_source.locked_version})",
+        "",
+        "  In Berksfile.lock:",
+        "    #{source.name} (#{source.version_constraint})",
+        "",
+        "Try running `berks update #{source.name}, which will try to find  '#{source.name}' matching '#{source.version_constraint}'."
+      ].join("\n")
+    end
+  end
+
+  class EnvironmentNotFound < BerkshelfError
+    status_code(129)
 
     def initialize(environment_name)
       @environment_name = environment_name
@@ -174,12 +204,12 @@ module Berkshelf
       %Q[The environment "#{@environment_name}" does not exist.]
     end
   end
+
   class ChefConnectionError < BerkshelfError
-    status_code(129)
+    status_code(130)
 
     def to_s
       "There was an error connecting to the chef server."
     end
   end
-  
 end
