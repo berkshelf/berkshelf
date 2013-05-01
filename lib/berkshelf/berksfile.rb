@@ -291,10 +291,45 @@ module Berkshelf
 
     # The list of cookbook sources specified in this Berksfile
     #
+    # @param [Array] sources
+    #   the list of sources to filter
+    #
+    # @option options [Symbol, Array] :except
+    #   group(s) to exclude to exclude from the returned Array of sources
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   group(s) to include which will cause any sources marked as a member of the
+    #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   names of the cookbooks to retrieve sources for
+    #
+    # @raise [Berkshelf::ArgumentError]
+    #   if a value for both :except and :only is provided
+    #
     # @return [Array<Berkshelf::CookbookSource>]
-    #   the cookbook sources defined by this Berksfile
-    def sources
-      @sources.values
+    #   the list of cookbook sources that match the given options
+    def sources(options = {})
+      l_sources = @sources.values
+
+      cookbooks = Array(options[:cookbooks])
+      except    = Array(options[:except]).collect(&:to_sym)
+      only      = Array(options[:only]).collect(&:to_sym)
+
+      case
+      when !except.empty? && !only.empty?
+        raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
+      when !cookbooks.empty?
+        if !except.empty? && !only.empty?
+          Berkshelf.ui.warn "Cookbooks were specified, ignoring :except and :only"
+        end
+        l_sources.select { |source| cookbooks.include?(source.name) }
+      when !except.empty?
+        l_sources.select { |source| (except & source.groups).empty? }
+      when !only.empty?
+        l_sources.select { |source| !(only & source.groups).empty? }
+      else
+        l_sources
+      end
     end
 
     # Find a source defined in this berksfile by name.
@@ -388,12 +423,12 @@ module Berkshelf
       if self.sha == lockfile.sha
         local_sources = locked_sources
       else
-        local_sources = apply_lockfile(filter(sources, options))
+        local_sources = apply_lockfile(sources(options))
       end
 
-      resolver = resolve(local_sources)
+      resolver          = resolve(local_sources)
       @cached_cookbooks = resolver[:solution]
-      local_sources = resolver[:sources]
+      local_sources     = resolver[:sources]
 
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
 
@@ -414,7 +449,7 @@ module Berkshelf
       validate_cookbook_names!(options)
 
       # Unlock any/all specified cookbooks
-      filter(sources, options).each { |source| lockfile.unlock(source) }
+      sources(options).each { |source| lockfile.unlock(source) }
 
       lockfile.reset_sha!
 
@@ -445,7 +480,7 @@ module Berkshelf
     def outdated(options = {})
       outdated = Hash.new
 
-      filter(sources, options).each do |cookbook|
+      sources(options).each do |cookbook|
         location = cookbook.location || Location.init(cookbook.name, cookbook.version_constraint, site: :opscode)
 
         if location.is_a?(SiteLocation)
@@ -514,7 +549,7 @@ module Berkshelf
         raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 
-      solution    = resolve(filter(sources, options), options)[:solution]
+      solution    = resolve(sources(options), options)[:solution]
       upload_opts = options.slice(:force, :freeze)
       conn        = Ridley.new(ridley_options)
 
@@ -550,14 +585,7 @@ module Berkshelf
     #
     # @param [Array<Berkshelf::CookbookSource>] sources
     #   Array of cookbook sources to resolve
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any sources marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any sources marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve sources for
+    #
     # @option options [Boolean] :skip_dependencies
     #   Skip resolving of dependencies
     #
@@ -601,46 +629,6 @@ module Berkshelf
     end
 
     private
-
-      # Reduce the given list of sources based on the provided options.
-      #
-      # @param [Array] sources
-      #   the list of sources to filter
-      # @option options [Symbol, Array] :except
-      #   group(s) to exclude to exclude from the returned Array of sources
-      #   group to not be installed
-      # @option options [Symbol, Array] :only
-      #   group(s) to include which will cause any sources marked as a member of the
-      #   group to be installed and all others to be ignored
-      # @option cookbooks [String, Array] :cookbooks
-      #   games of the cookbooks to retrieve sources for
-      #
-      # @raise [Berkshelf::ArgumentError]
-      #   if a value for both :except and :only is provided
-      #
-      # @return [Array<Berkshelf::CookbookSource>]
-      #   the list of cookbook sources that match the given options
-      def filter(sources = [], options = {})
-        cookbooks = Array(options.fetch(:cookbooks, nil))
-        except    = Array(options.fetch(:except, nil)).collect(&:to_sym)
-        only      = Array(options.fetch(:only, nil)).collect(&:to_sym)
-
-        case
-        when !except.empty? && !only.empty?
-          raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
-        when !cookbooks.empty?
-          if !except.empty? && !only.empty?
-            Berkshelf.ui.warn "Cookbooks were specified, ignoring :except and :only"
-          end
-          sources.select { |source| options[:cookbooks].include?(source.name) }
-        when !except.empty?
-          sources.select { |source| (except & source.groups).empty? }
-        when !only.empty?
-          sources.select { |source| !(only & source.groups).empty? }
-        else
-          sources
-        end
-      end
 
       # Determine if any cookbooks were specified that aren't in our shelf.
       #

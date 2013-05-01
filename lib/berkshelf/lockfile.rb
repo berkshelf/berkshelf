@@ -124,14 +124,12 @@ module Berkshelf
     #   if the provided source does not exist
     def remove(source)
       unless has_source?(source)
-        raise Berkshelf::CookbookNotFound,
-          "'#{cookbook_name(source)}' does not exist in this lockfile!"
+        raise Berkshelf::CookbookNotFound, "'#{cookbook_name(source)}' does not exist in this lockfile!"
       end
 
       @sources.delete(cookbook_name(source))
     end
     alias_method :unlock, :remove
-
 
     # @return [String]
     #   the string representation of the lockfile
