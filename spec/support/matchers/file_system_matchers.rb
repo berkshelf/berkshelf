@@ -3,7 +3,7 @@
 module Berkshelf
   module RSpec
     module FileSystemMatchers
-      class File < ::File
+      class FileMatcher
         def initialize(name, &block)
           @contents = []
           @negative_contents = []
@@ -27,7 +27,7 @@ module Berkshelf
             throw :failure, root.join(@name)
           end
 
-          contents = ::File.read(root.join(@name))
+          contents = File.read(root.join(@name))
 
           @contents.each do |string|
             unless contents.include?(string)
@@ -43,7 +43,7 @@ module Berkshelf
         end
       end
 
-      class Directory
+      class DirectoryMatcher
         attr_reader :tree
 
         def initialize(root = nil, &block)
@@ -54,12 +54,12 @@ module Berkshelf
         end
 
         def directory(name, &block)
-          @tree[name] = block_given? && Directory.new(location(name), &block)
+          @tree[name] = block_given? && DirectoryMatcher.new(location(name), &block)
         end
 
         def file(name, &block)
           silence_warnings do
-            @tree[name] = Berkshelf::RSpec::FileSystemMatchers::File.new(location(name), &block)
+            @tree[name] = FileMatcher.new(location(name), &block)
           end
         end
 
@@ -92,7 +92,7 @@ module Berkshelf
         end
       end
 
-      class Root < Directory
+      class RootMatcher < DirectoryMatcher
         def failure_message
           if @failure.is_a?(Array) && @failure[0] == :not
             if @failure[2]
@@ -125,7 +125,7 @@ module Berkshelf
       end
 
       def have_structure(&block)
-        Root.new(&block)
+        RootMatcher.new(&block)
       end
     end
   end

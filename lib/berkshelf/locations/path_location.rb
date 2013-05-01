@@ -57,8 +57,23 @@ module Berkshelf
       super.merge(value: self.path)
     end
 
+    # The string representation of this PathLocation. If the path
+    # is the default cookbook store, just leave it out, because
+    # it's probably just cached.
+    #
+    # @example
+    #   loc.to_s #=> artifact (1.4.0)
+    #
+    # @example
+    #   loc.to_s #=> artifact (1.4.0) at path: '/Users/Seth/Dev/artifact'
+    #
+    # @return [String]
     def to_s
-      "#{self.class.location_key}: '#{path}'"
+      if path.to_s.include?(Berkshelf.berkshelf_path.to_s)
+        "#{self.class.location_key}"
+      else
+        "#{self.class.location_key}: '#{path}'"
+      end
     end
   end
 end
