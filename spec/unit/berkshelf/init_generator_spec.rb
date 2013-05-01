@@ -46,7 +46,7 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
   context "with a metadata entry in the Berksfile" do
     before(:each) do
       Dir.mkdir target
-      ::File.open(target.join("metadata.rb"), 'w+') do |f|
+      File.open(target.join("metadata.rb"), 'w+') do |f|
         f.write ""
       end
 

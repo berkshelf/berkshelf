@@ -5,6 +5,7 @@ module Berkshelf
 
     # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
+
     # @return [Solve::Graph]
     attr_reader :graph
 
@@ -14,7 +15,7 @@ module Berkshelf
     # @option options [Array<CookbookSource>, CookbookSource] sources
     def initialize(berksfile, options = {})
       @berksfile  = berksfile
-      @downloader = @berksfile.downloader
+      @downloader = berksfile.downloader
       @graph      = Solve::Graph.new
       @sources    = Hash.new
 
