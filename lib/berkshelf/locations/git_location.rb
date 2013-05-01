@@ -20,6 +20,7 @@ module Berkshelf
     attr_accessor :uri
     attr_accessor :branch
     attr_accessor :rel
+    attr_accessor :branch_name
     attr_reader :options
 
     alias_method :ref, :branch
@@ -43,8 +44,10 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
       @uri                = options[:git]
-      @branch             = options[:branch] || options[:ref] || options[:tag]
+      @branch             = options[:branch] || options[:ref] || options[:tag] || "master"
       @rel                = options[:rel]
+      @branch_name        = @branch.gsub("-", "_")
+      @branch_name.gsub!("/", "__")  # In case the remote is specified
 
       Git.validate_uri!(@uri)
     end
@@ -61,21 +64,23 @@ module Berkshelf
       end
 
       tmp_path = rel ? File.join(clone, rel) : clone
+      puts "File.chef_cookbook?(tmp_path): #{File.chef_cookbook?(tmp_path)}"
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
-
-      cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(clone)}")
+      
+      cb_path = File.join(destination, "#{name}-#{branch_name}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
-
+      
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
 
       set_downloaded_status(true)
+      puts "cached.class: #{cached.class}"
       cached
     end
 
@@ -121,7 +126,7 @@ module Berkshelf
 
       def revision_path(destination)
         return unless branch
-        File.join(destination, "#{name}-#{branch}")
+        File.join(destination, "#{name}-#{branch_name}")
       end
   end
 end
