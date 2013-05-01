@@ -260,14 +260,14 @@ module Berkshelf
       desc: "Lock dependent cookbook(s).",
       default: false,
       aliases: "-a"
-    desc "lock ENVIRONMENT_NAME", "Set the cookbook version locks in ENVIRONMENT to match the Berkshelf resolution."
-    def lock(environment_name)
+    desc "apply ENVIRONMENT", "Apply cookbook locks of your Berksfile.lock to the target Chef environment."
+    def apply(environment_name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      
-      lock_options = Hash[options].symbolize_keys
+
+      lock_options                     = Hash[options].symbolize_keys
       lock_options[:skip_dependencies] = !lock_options.delete(:include_dependencies)
 
-      berksfile.lock(environment_name, lock_options)
+      berksfile.apply(environment_name, lock_options)
     end
 
     method_option :berksfile,

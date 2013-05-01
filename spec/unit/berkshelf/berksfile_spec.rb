@@ -518,15 +518,33 @@ EOF
     end
   end
 
-  describe "#lock" do
-    it "should throw a ChefConnectionError when Ridley returns an error" do
-      subject.stub(:ridley_connection).and_raise(Ridley::Errors::RidleyError)
+  describe "#apply" do
+    let(:env_name) { "berkshelf-test" }
+    let(:ridley) { double('connection', alive?: nil, terminate: nil) }
 
-      lambda {
-        quietly do
-          subject.lock("env")
-        end
-      }.should raise_error(Berkshelf::ChefConnectionError)
+    before { subject.stub(ridley_connection: ridley) }
+
+    context "when the environment does not exist" do
+      before do
+        ridley.stub_chain(:environment, :find).with(env_name).
+          and_raise(Berkshelf::EnvironmentNotFound.new(env_name))
+      end
+
+      it "raises an EnvironmentNotFound error" do
+        expect {
+          subject.apply(env_name)
+        }.to raise_error(Berkshelf::EnvironmentNotFound)
+      end
+    end
+
+    context "when Ridley throw an exception" do
+      before { ridley.stub_chain(:environment, :find).and_raise(Ridley::Errors::RidleyError) }
+
+      it "raises a ChefConnectionError" do
+        expect {
+          subject.apply(env_name)
+        }.to raise_error(Berkshelf::ChefConnectionError)
+      end
     end
   end
 end

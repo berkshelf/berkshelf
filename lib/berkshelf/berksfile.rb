@@ -562,6 +562,11 @@ module Berkshelf
       conn.terminate if conn && conn.alive?
     end
 
+    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
+    # target Chef environment
+    #
+    # @param [String] environment_name
+    #
     # @option options [Symbol, Array] :except
     #   Group(s) to exclude which will cause any sources marked as a member of the
     #   group to not be installed
@@ -573,10 +578,12 @@ module Berkshelf
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
     #
+    # @raise [EnvironmentNotFound] if the target environment was not found
     # @raise [ChefConnectionError] if you are locking cookbooks with an invalid or not-specified client configuration
-    def lock(environment_name, options = {})
-      conn = ridley_connection(options)
-      environment = Ridley::Search.new(conn, :environment, "name:#{environment_name}").run.first
+    def apply(environment_name, options = {})
+      conn        = ridley_connection(options)
+      environment = conn.environment.find(environment_name)
+
       if environment
         solution = resolve(options)
         cookbook_versions = solution.inject({}) { |versions, cb| versions.merge(cb.cookbook_name => cb.version) }
@@ -586,7 +593,6 @@ module Berkshelf
         raise EnvironmentNotFound.new(environment_name)
       end
     rescue Ridley::Errors::RidleyError => ex
-      log_exception(ex)
       raise ChefConnectionError, ex
     ensure
       conn.terminate if conn && conn.alive?

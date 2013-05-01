@@ -10,7 +10,7 @@ Feature: lock cookbook versions on the server
       """
       cookbook "mysql", "1.2.4"
       """
-    When I successfully run the lock command on "berkshelf_lock_test"
+    When I successfully run the apply command on "berkshelf_lock_test"
     Then the version locks in "berkshelf_lock_test" should be:
     | cookbook        | version_lock |
     | mysql           |        1.2.4 |
@@ -22,7 +22,7 @@ Feature: lock cookbook versions on the server
       """
       cookbook "mysql", "1.2.4"
       """
-    When I successfully run the lock command on "berkshelf_lock_test" with flags:
+    When I successfully run the apply command on "berkshelf_lock_test" with flags:
     | --include_dependencies |
     Then the version locks in "berkshelf_lock_test" should be:
     | cookbook        | version_lock |
@@ -36,7 +36,7 @@ Feature: lock cookbook versions on the server
       """
       cookbook "mysql", "1.2.4"
       """
-    When I successfully run the lock command on "berkshelf_lock_test" with flags:
+    When I successfully run the apply command on "berkshelf_lock_test" with flags:
     | -a   |
     Then the version locks in "berkshelf_lock_test" should be:
     | cookbook        | version_lock |
@@ -50,7 +50,7 @@ Feature: lock cookbook versions on the server
       """
       cookbook "mysql", "1.2.4"
       """
-    When I run the lock command on "berkshelf_lock_test"
+    When I run the apply command on "berkshelf_lock_test"
     Then the output should contain:
       """
       The environment "berkshelf_lock_test" does not exist.
