@@ -2,6 +2,11 @@ Given /^pending\s+"([^\"]+)"$/ do |msg|
   pending
 end
 
+Given(/^the BERKSHELF_EDITOR and VISUAL environment variables are not set$/) do
+  set_env "BERKSHELF_EDITOR", nil
+  set_env "VISUAL", nil
+end
+
 Given /^the environment variable (.+) is nil$/ do |variable|
   set_env variable, nil
 end
