@@ -110,11 +110,26 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Git location
     Given I write to "Berksfile" with:
       """
+      cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git"
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+      | artifact | 1.5.0 | master |
+    And the output should contain:
+      """
+      Installing artifact (1.5.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
+      """
+    And the exit status should be 0
+
+
+  Scenario: installing a Berksfile that contains a Git location with a ref
+    Given I write to "Berksfile" with:
+      """
       cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.9.8"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 |
+      | artifact | 0.9.8 | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.9.8'
@@ -128,7 +143,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 |
+      | artifact | 0.9.8 | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8'
@@ -142,7 +157,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 |
+      | artifact | 0.9.8 | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8' over protocol: 'git'
@@ -156,7 +171,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 |
+      | artifact | 0.9.8 | 0.9.8 |
     And the output should contain:
       """
       Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8' over protocol: '<protocol>'
@@ -338,7 +353,7 @@ Feature: install cookbooks from a Berksfile
     Then the output should contain:
       """
       Installing ohai (1.1.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      Failed to download 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf'
+      Failed to download 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf' with branch: 'master'
       An error occured during Git execution:
       """
       And the CLI should exit with the status code for error "GitError"
