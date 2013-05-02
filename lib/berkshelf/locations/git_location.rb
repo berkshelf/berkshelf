@@ -20,6 +20,7 @@ module Berkshelf
     attr_accessor :uri
     attr_accessor :branch
     attr_accessor :rel
+    attr_accessor :branch_name
     attr_reader :options
 
     alias_method :ref, :branch
@@ -43,8 +44,9 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
       @uri                = options[:git]
-      @branch             = options[:branch] || options[:ref] || options[:tag]
+      @branch             = options[:branch] || options[:ref] || options[:tag] || "master"
       @rel                = options[:rel]
+      @branch_name        = @branch.gsub("-", "_").gsub("/", "__")  # In case the remote is specified
 
       Git.validate_uri!(@uri)
     end
@@ -67,8 +69,8 @@ module Berkshelf
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
-
-      cb_path = File.join(destination, "#{self.name}-#{Git.rev_parse(clone)}")
+      
+      cb_path = File.join(destination, "#{name}-#{branch_name}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 
@@ -121,7 +123,7 @@ module Berkshelf
 
       def revision_path(destination)
         return unless branch
-        File.join(destination, "#{name}-#{branch}")
+        File.join(destination, "#{name}-#{branch_name}")
       end
   end
 end
