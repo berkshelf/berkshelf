@@ -66,41 +66,52 @@ module Berkshelf
       end
     end
 
-    extend Forwardable
+    DEFAULT_CONSTRAINT = '>= 0.0.0'
 
+    # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
+    # @return [String]
     attr_reader :name
-    attr_reader :options
-    attr_reader :version_constraint
+    # @return [Array<String,Symbol>]
+    attr_reader :groups
+    # @return [Berkshelf::Location]
+    attr_reader :location
+    # @return [Solve::Constraint]
+    attr_accessor :version_constraint
+    # @return [Berkshelf::CachedCookbook]
     attr_accessor :cached_cookbook
 
-    #  @param [String] name
-    #  @param [Hash] options
+    # @param [Berkshelf::Berksfile] berksfile
+    #   the berksfile this source belongs to
+    # @param [String] name
+    #   the name of source
     #
-    #  @option options [String, Solve::Constraint] constraint
-    #    version constraint to resolve for this source
-    #  @option options [String] :git
-    #    the Git URL to clone
-    #  @option options [String] :site
-    #    a URL pointing to a community API endpoint
-    #  @option options [String] :path
-    #    a filepath to the cookbook on your local disk
-    #  @option options [Symbol, Array] :group
-    #    the group or groups that the cookbook belongs to
-    #  @option options [String] :ref
-    #    the commit hash or an alias to a commit hash to clone
-    #  @option options [String] :branch
-    #    same as ref
-    #  @option options [String] :tag
-    #    same as tag
-    #  @option options [String] :locked_version
+    # @option options [String, Solve::Constraint] :constraint
+    #   version constraint to resolve for this source
+    # @option options [String] :git
+    #   the Git URL to clone
+    # @option options [String] :site
+    #   a URL pointing to a community API endpoint
+    # @option options [String] :path
+    #   a filepath to the cookbook on your local disk
+    # @option options [Symbol, Array] :group
+    #   the group or groups that the cookbook belongs to
+    # @option options [String] :ref
+    #   the commit hash or an alias to a commit hash to clone
+    # @option options [String] :branch
+    #   same as ref
+    # @option options [String] :tag
+    #   same as tag
+    # @option options [String] :locked_version
     def initialize(berksfile, name, options = {})
+      @options = options
+
       self.class.validate_options(options)
 
       @berksfile          = berksfile
       @name               = name
       @locked_version     = Solve::Version.new(options[:locked_version]) if options[:locked_version]
-      @version_constraint = Solve::Constraint.new(options[:locked_version] || options[:constraint] || ">= 0.0.0")
+      @version_constraint = Solve::Constraint.new(options[:constraint] || DEFAULT_CONSTRAINT)
 
       @cached_cookbook, @location = cached_and_location(options)
 
@@ -168,17 +179,40 @@ module Berkshelf
     end
 
     def to_s
-      msg = "#{self.name} (#{self.version_constraint}) groups: #{self.groups}"
-      msg << " location: #{self.location}" if self.location
-      msg
+      "#<Berkshelf::CookbookSource: #{name} (#{version_constraint})>"
+    end
+
+    def inspect
+      '#<Berkshelf::CookbookSource: ' << [
+        "#{name} (#{version_constraint})",
+        "locked_version: #{locked_version.inspect}",
+        "groups: #{groups}",
+        "location: #{location || 'default'}>"
+      ].join(', ')
     end
 
     def to_hash
       {}.tap do |h|
-        h[:name]           = self.name
-        h[:locked_version] = self.locked_version
-        h[:location]       = self.location.to_hash if self.location
-      end
+        h[:locked_version]  = locked_version.to_s
+
+        unless version_constraint.to_s == DEFAULT_CONSTRAINT
+          h[:constraint] = version_constraint.to_s
+        end
+
+        if location.kind_of?(SiteLocation) && location.api_uri != CommunityREST::V1_API
+          h[:site] = location.api_uri
+        end
+
+        if location.kind_of?(GitLocation)
+          h[:git] = location.uri
+          h[:ref] = location.ref
+        end
+
+        # Path is intentionally left relative here for cross-team compatibility
+        if @options[:path]
+          h[:path] = @options[:path].to_s
+        end
+      end.reject { |k,v| v.blank? }
     end
 
     def to_json

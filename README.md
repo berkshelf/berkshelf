@@ -37,6 +37,26 @@ And make sure you have this in your bash/zsh profile:
 
     [ -f `brew --prefix`/etc/bash_completion ] && source `brew --prefix`/etc/bash_completion
 
+Plugins
+-------
+Please see [Plugins page](https://github.com/RiotGames/berkshelf/blob/master/PLUGINS.md) for more information.
+
+SSL Errors
+----------
+
+If you have trouble getting Berkshelf to successfully talk to an SSL Chef server, you can try making sure you
+have a certificate bundle available to your shell. `export SSL_CERT_FILE=...path/to/cert/file...`
+
+If you need to disable SSL, you can in `~/.berkshelf/config.json` like so:
+
+```
+{
+  "ssl": {
+    "verify": false
+  }
+}
+```
+
 Authors
 -------
 - Jamie Winsor (<reset@riotgames.com>)

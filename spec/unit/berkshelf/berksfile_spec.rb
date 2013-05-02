@@ -17,7 +17,7 @@ EOF
       let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
 
       it "reads a Berksfile and returns an instance Berksfile" do
-        subject.from_file(cookbook_file).should be_a(Berkshelf::Berksfile)
+        subject.from_file(cookbook_file).should be_a(described_class)
       end
 
       context "when Berksfile does not exist at given path" do
@@ -40,14 +40,20 @@ EOF
       end
 
       context "with a chefignore" do
+        before(:each) do
+          File.stub(:exists?).and_return(true)
+          Berkshelf::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
+        end
+
         it "finds a chefignore file" do
-          Berkshelf::Chef::Cookbook::Chefignore.should_receive(:find_relative_to).and_return(File.expand_path('chefignore'))
+          Berkshelf::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
           subject.vendor(cached_cookbooks, tmpdir)
         end
 
-        it "ignores files specified by a chefignore if a chefignore is present" do
-          Berkshelf::Chef::Cookbook::Chefignore.should_receive(:find_relative_to).and_return(File.expand_path('chefignore'))
-          Berkshelf::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
+        it "removes files in chefignore" do
+          cached_cookbooks = [ Berkshelf::CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
+          FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
+          FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
           subject.vendor(cached_cookbooks, tmpdir)
         end
       end
@@ -248,72 +254,72 @@ EOF
 
   describe "#resolve" do
     let(:resolver) { double('resolver') }
-    before(:each) { Berkshelf::Resolver.stub(:new) { resolver } }
+    let(:sources) { [source_one, source_two] }
+    let(:cached) { [double('cached_one'), double('cached_two')] }
+
+    before do
+      Berkshelf::Resolver.stub(:new).and_return(resolver)
+    end
 
     it "resolves the Berksfile" do
-      resolver.should_receive(:resolve).and_return([double('cached_cookbook_one'), double('cached_cookbook_two')])
-      solution = subject.resolve
-      solution.should have(2).items
+      resolver.should_receive(:resolve).and_return(cached)
+      resolver.should_receive(:sources).and_return(sources)
+
+      expect(subject.resolve).to eq({ solution: cached, sources: sources })
     end
   end
 
   describe "#install" do
     let(:resolver) { double('resolver') }
-    before(:each) { Berkshelf::Resolver.stub(:new) { resolver } }
+    let(:lockfile) { double('lockfile') }
+
+    let(:cached_cookbooks) { [double('cached_one'), double('cached_two')] }
+    let(:sources) { [source_one, source_two] }
+
+    before do
+      Berkshelf::Resolver.stub(:new).and_return(resolver)
+      Berkshelf::Lockfile.stub(:new).and_return(lockfile)
+
+      subject.stub(:sha).and_return('abc123')
+
+      lockfile.stub(:sources).and_return([])
+      lockfile.stub(:sha).and_return('xyz456')
+
+      resolver.stub(:sources).and_return([])
+      lockfile.stub(:update)
+    end
 
     context "when a lockfile is not present" do
-      before(:each) do
-        subject.should_receive(:lockfile_present?).and_return(false)
-        resolver.should_receive(:sources).and_return([])
-      end
-
-      let(:cached_cookbooks) do
-        [
-          double('cached_one'),
-          double('cached_two')
-        ]
-      end
-
       it "returns the result from sending the message resolve to resolver" do
         resolver.should_receive(:resolve).and_return(cached_cookbooks)
-
-        subject.install.should eql(cached_cookbooks)
+        expect(subject.install).to eql(cached_cookbooks)
       end
 
       it "sets a value for self.cached_cookbooks equivalent to the return value" do
         resolver.should_receive(:resolve).and_return(cached_cookbooks)
         subject.install
 
-        subject.cached_cookbooks.should eql(cached_cookbooks)
+        expect(subject.cached_cookbooks).to eql(cached_cookbooks)
       end
 
       it "creates a new resolver and finds a solution by calling resolve on the resolver" do
         resolver.should_receive(:resolve)
-
         subject.install
       end
 
       it "writes a lockfile with the resolvers sources" do
         resolver.should_receive(:resolve)
-        subject.should_receive(:write_lockfile).with([])
-
-        subject.install
-      end
-    end
-
-    context "when a lockfile is present" do
-      before(:each) { subject.should_receive(:lockfile_present?).and_return(true) }
-
-      it "does not write a new lock file" do
-        resolver.should_receive(:resolve)
-        subject.should_not_receive(:write_lockfile)
+        lockfile.should_receive(:update).with([], sha: 'abc123')
 
         subject.install
       end
     end
 
     context "when a value for :path is given" do
-      before(:each) { resolver.should_receive(:resolve) }
+      before do
+        resolver.should_receive(:resolve)
+        resolver.should_receive(:sources).and_return([])
+      end
 
       it "sends the message 'vendor' to Berksfile with the value for :path" do
         path = double('path')
@@ -324,24 +330,29 @@ EOF
     end
 
     context "when a value for :except is given" do
-      before(:each) { resolver.should_receive(:resolve) }
+      before do
+        resolver.should_receive(:resolve)
+        resolver.should_receive(:sources).and_return([])
+        subject.stub(:sources).and_return(sources)
+        subject.stub(:apply_lockfile).and_return(sources)
+      end
 
       it "filters the sources and gives the results to the Resolver initializer" do
-        filtered = double('sources')
-        subject.should_receive(:sources).with(except: [:skip_me]).and_return(filtered)
-        Berkshelf::Resolver.should_receive(:new).with(anything, sources: filtered)
-
+        subject.should_receive(:sources).with(except: [:skip_me]).and_return(sources)
         subject.install(except: [:skip_me])
       end
     end
 
     context "when a value for :only is given" do
-      before(:each) { resolver.should_receive(:resolve) }
+      before(:each) do
+        resolver.should_receive(:resolve)
+        resolver.should_receive(:sources).and_return([])
+        subject.stub(:sources).and_return(sources)
+        subject.stub(:apply_lockfile).and_return(sources)
+      end
 
       it "filters the sources and gives the results to the Resolver initializer" do
-        filtered = double('sources')
-        subject.should_receive(:sources).with(only: [:skip_me]).and_return(filtered)
-
+        subject.should_receive(:sources).with(only: [:skip_me]).and_return(sources)
         subject.install(only: [:skip_me])
       end
     end
@@ -402,6 +413,104 @@ EOF
   end
 
   describe "#upload" do
-    pending
+    let(:upload) { subject.upload(options) }
+    let(:options) { Hash.new }
+    let(:ssl) { double('ssl', verify: true) }
+    let(:chef) {
+      double('chef',
+        node_name: "fake-client",
+        client_key: "client-key",
+        chef_server_url: "http://configured-chef-server/")
+    }
+    let(:berkshelf_config) { double('berks', ssl: ssl, chef: chef) }
+    let(:default_ridley_options) {
+      {
+        client_name: "fake-client",
+        client_key: "client-key",
+        ssl: {
+          verify: true
+        }
+      }
+    }
+
+    before do
+      Berkshelf::Config.stub(:instance).and_return(berkshelf_config)
+      subject.stub(:resolve).and_return(solution: [], sources: [])
+    end
+
+    context "when there is no :server_url" do
+      let(:chef) {
+        double('chef',
+          node_name: "fake-client",
+          client_key: "client-key",
+          chef_server_url: nil)
+      }
+      let(:message) { "Missing required attribute in your Berkshelf configuration: chef.server_url" }
+
+      it "raises an error" do
+        expect {
+          upload
+        }.to raise_error(Berkshelf::UploadFailure, message)
+      end
+    end
+
+    context "when there is no :client_name" do
+      let(:chef) {
+        double('chef',
+          node_name: nil,
+          client_key: "client-key",
+          chef_server_url: "http://configured-chef-server/")
+      }
+      let(:message) { "Missing required attribute in your Berkshelf configuration: chef.node_name" }
+
+      it "raises an error" do
+        expect {
+          upload
+        }.to raise_error(Berkshelf::UploadFailure, message)
+      end
+    end
+
+    context "when there is no :client_key" do
+      let(:chef) {
+        double('chef',
+          node_name: "fake-client",
+          client_key: nil,
+          chef_server_url: "http://configured-chef-server/")
+      }
+      let(:message) { "Missing required attribute in your Berkshelf configuration: chef.client_key" }
+
+      it "raises an error" do
+        expect {
+          upload
+        }.to raise_error(Berkshelf::UploadFailure, message)
+      end
+    end
+
+    context "when a Chef Server url is not passed as an option" do
+      let(:ridley_options) do
+        {server_url: "http://configured-chef-server/"}.merge(default_ridley_options)
+      end
+
+      it "uses Berkshelf::Config configured server_url" do
+        Ridley.should_receive(:new).with(ridley_options)
+        upload
+      end
+    end
+
+    context "when a Chef Server url is passed as an option" do
+      let(:options) {
+        {
+          server_url: "http://fake-chef-server.com/"
+        }
+      }
+      let(:ridley_options) {
+        {server_url: "http://fake-chef-server.com/"}.merge(default_ridley_options)
+      }
+
+      it "uses the passed in :server_url" do
+        Ridley.should_receive(:new).with(ridley_options)
+        upload
+      end
+    end
   end
 end

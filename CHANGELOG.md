@@ -1,3 +1,9 @@
+# 1.4.1
+
+- Berksfile#upload will now honor the given server_url option
+- Add validation to shortnames of 'site' in Berksfile
+- Fix init generator issue by locking to the appropriate version of Rubygems
+
 # 1.4.0
 
 - Add ability to freeze cookbooks. Cookbooks are frozen on upload by default

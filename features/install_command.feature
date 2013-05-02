@@ -3,6 +3,30 @@ Feature: install cookbooks from a Berksfile
   I want to be able to run knife berkshelf install to install my cookbooks
   So that I don't have to download my cookbooks and their dependencies manually
 
+  Scenario: installing with the old lockfile format
+    Given I write to "Berksfile" with:
+      """
+      cookbook "artifact", "0.10.0"
+      """
+    Given I write to "Berksfile.lock" with:
+      """
+      cookbook 'artifact', :locked_version => '0.10.0'
+      """
+    When I successfully run `berks install`
+    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "sha":"9b860e9aa6b54c75fd223dae626ac78ed0480356",
+        "sources":{
+          "artifact":{
+            "locked_version":"0.10.0",
+            "constraint":"= 0.10.0"
+          }
+        }
+      }
+      """
+
   Scenario: installing a Berksfile that contains a source with a default location
     Given I write to "Berksfile" with:
       """
@@ -318,3 +342,15 @@ Feature: install cookbooks from a Berksfile
       An error occured during Git execution:
       """
       And the CLI should exit with the status code for error "GitError"
+
+  Scenario: invalid site symbol
+    Given I write to "Berksfile" with:
+      """
+      site :somethingabsurd
+      cookbook "ohai"
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Unknown site shortname: :somethingabsurd. Supported shortnames are: :opscode
+      """
