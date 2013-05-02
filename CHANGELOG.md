@@ -1,3 +1,8 @@
+# 1.4.2
+
+- Fix git caching bug for huge speedups in Berksfiles with lots of git
+  paths. Thanks to @tylerflint and @jasondunsmore.
+
 # 1.4.1
 
 - Berksfile#upload will now honor the given server_url option
