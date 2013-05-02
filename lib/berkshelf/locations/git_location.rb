@@ -78,7 +78,6 @@ module Berkshelf
       validate_cached(cached)
 
       set_downloaded_status(true)
-      puts "cached.class: #{cached.class}"
       cached
     end
 
