@@ -46,8 +46,7 @@ module Berkshelf
       @uri                = options[:git]
       @branch             = options[:branch] || options[:ref] || options[:tag] || "master"
       @rel                = options[:rel]
-      @branch_name        = @branch.gsub("-", "_")
-      @branch_name.gsub!("/", "__")  # In case the remote is specified
+      @branch_name        = @branch.gsub("-", "_").gsub("/", "__")  # In case the remote is specified
 
       Git.validate_uri!(@uri)
     end
