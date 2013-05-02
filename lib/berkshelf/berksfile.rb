@@ -585,9 +585,12 @@ module Berkshelf
       environment = conn.environment.find(environment_name)
 
       if environment
-        solution = resolve(options)
-        cookbook_versions = solution.inject({}) { |versions, cb| versions.merge(cb.cookbook_name => cb.version) }
-        environment.cookbook_versions = cookbook_versions
+        install
+
+        environment.cookbook_versions = {}.tap do |cookbook_versions|
+          lockfile.sources.each { |source| cookbook_versions[source.name] = source.locked_version }
+        end
+
         environment.save
       else
         raise EnvironmentNotFound.new(environment_name)

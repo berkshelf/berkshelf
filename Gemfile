@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
+  gem 'chef-zero'
   gem 'coolline'
   gem 'guard', '>= 1.5.0'
   gem 'guard-cane'

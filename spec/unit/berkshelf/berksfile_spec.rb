@@ -63,7 +63,11 @@ EOF
   let(:source_one) { double('source_one', name: "nginx") }
   let(:source_two) { double('source_two', name: "mysql") }
 
-  subject { described_class.new(tmp_path.join("Berksfile")) }
+  subject do
+    berksfile_path = tmp_path.join("Berksfile").to_s
+    FileUtils.touch(berksfile_path)
+    described_class.new(berksfile_path)
+  end
 
   describe "#cookbook" do
     let(:name) { "artifact" }
@@ -519,17 +523,47 @@ EOF
   end
 
   describe "#apply" do
-    let(:env_name) { "berkshelf-test" }
-    let(:ridley) { double('connection', alive?: nil, terminate: nil) }
+    let(:env_name)    { "berkshelf-test" }
+    let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
+    let(:client_name) { "reset" }
+    let(:client_key)  { fixtures_path.join('reset.pem').to_s }
+    let(:ridley)      { Ridley.new(server_url: server_url, client_name: client_name, client_key: client_key) }
 
-    before { subject.stub(ridley_connection: ridley) }
+    before do
+      subject.stub(:ridley_connection).and_return(ridley)
+      subject.add_source("nginx", ">= 0.1.2", chef_api: server_url, node_name: client_name, client_key: client_key)
+      subject.stub(install: nil)
+    end
 
-    context "when the environment does not exist" do
-      before do
-        ridley.stub_chain(:environment, :find).with(env_name).
-          and_raise(Berkshelf::EnvironmentNotFound.new(env_name))
+    context "when the chef environment exists" do
+      let(:sources) do
+        [
+          double(name: "nginx", locked_version: "1.2.3"),
+          double(name: "artifact", locked_version: "1.4.0")
+        ]
       end
 
+      before do
+        chef_environment("berkshelf")
+        subject.lockfile.stub(:sources).and_return(sources)
+      end
+
+      it "installs the Berksfile" do
+        subject.should_receive(:install)
+        subject.apply("berkshelf")
+      end
+
+      it "applys the locked_versions of the Lockfile's sources to the given Chef environment" do
+        subject.apply("berkshelf")
+
+        environment = MultiJson.decode(chef_server.data["environments"]["berkshelf"])
+        environment["cookbook_versions"].should have(2).items
+        environment["cookbook_versions"]["nginx"].should eql("1.2.3")
+        environment["cookbook_versions"]["artifact"].should eql("1.4.0")
+      end
+    end
+
+    context "when the environment does not exist" do
       it "raises an EnvironmentNotFound error" do
         expect {
           subject.apply(env_name)
