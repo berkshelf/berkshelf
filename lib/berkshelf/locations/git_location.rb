@@ -63,7 +63,6 @@ module Berkshelf
       end
 
       tmp_path = rel ? File.join(clone, rel) : clone
-      puts "File.chef_cookbook?(tmp_path): #{File.chef_cookbook?(tmp_path)}"
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
@@ -74,7 +73,7 @@ module Berkshelf
       cb_path = File.join(destination, "#{name}-#{branch_name}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
-      
+
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
 
