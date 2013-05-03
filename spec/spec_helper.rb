@@ -24,19 +24,32 @@ Spork.prefork do
     config.cassette_library_dir = 'spec/fixtures/cassettes'
     config.hook_into :webmock
     config.default_cassette_options = { record: :new_episodes }
+    config.ignore_localhost = true
   end
 
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
     config.include JsonSpec::Helpers
     config.include Berkshelf::RSpec::ChefAPI
+    config.include Berkshelf::RSpec::ChefServer
 
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
 
+    config.before(:all) do
+      Berkshelf::RSpec::ChefServer.start
+      WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
+    end
+
+    config.after(:all) do
+      Berkshelf::RSpec::ChefServer.stop
+    end
+
     config.before(:each) do
+      Celluloid.shutdown
+      Celluloid.boot
       clean_tmp_path
       Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
       Berkshelf.ui.mute!

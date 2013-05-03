@@ -526,32 +526,13 @@ module Berkshelf
       options = options.reverse_merge(
         force: false,
         freeze: true,
-        ssl_verify: Berkshelf::Config.instance.ssl.verify,
         skip_dependencies: false,
         halt_on_frozen: false
       )
 
-      ridley_options               = options.slice(:ssl)
-      ridley_options[:server_url]  = options[:server_url] || Berkshelf::Config.instance.chef.chef_server_url
-      ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
-      ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
-      ridley_options[:ssl]         = { verify: options[:ssl_verify] }
-
-      unless ridley_options[:server_url].present?
-        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.server_url"
-      end
-
-      unless ridley_options[:client_name].present?
-        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.node_name"
-      end
-
-      unless ridley_options[:client_key].present?
-        raise UploadFailure, "Missing required attribute in your Berkshelf configuration: chef.client_key"
-      end
-
       solution    = resolve(sources(options), options)[:solution]
       upload_opts = options.slice(:force, :freeze)
-      conn        = Ridley.new(ridley_options)
+      conn        = ridley_connection(options)
 
       solution.each do |cb|
         Berkshelf.formatter.upload(cb.cookbook_name, cb.version, conn.server_url)
@@ -576,7 +557,38 @@ module Berkshelf
       end
     rescue Ridley::Errors::RidleyError => ex
       log_exception(ex)
-      raise UploadFailure, ex
+      raise ChefConnectionError, ex # todo implement
+    ensure
+      conn.terminate if conn && conn.alive?
+    end
+
+    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
+    # target Chef environment
+    #
+    # @param [String] environment_name
+    #
+    # @option options [Hash] :ssl_verify (true)
+    #   Disable/Enable SSL verification during uploads
+    #
+    # @raise [EnvironmentNotFound] if the target environment was not found
+    # @raise [ChefConnectionError] if you are locking cookbooks with an invalid or not-specified client configuration
+    def apply(environment_name, options = {})
+      conn        = ridley_connection(options)
+      environment = conn.environment.find(environment_name)
+
+      if environment
+        install
+
+        environment.cookbook_versions = {}.tap do |cookbook_versions|
+          lockfile.sources.each { |source| cookbook_versions[source.name] = source.locked_version }
+        end
+
+        environment.save
+      else
+        raise EnvironmentNotFound.new(environment_name)
+      end
+    rescue Ridley::Errors::RidleyError => ex
+      raise ChefConnectionError, ex
     ensure
       conn.terminate if conn && conn.alive?
     end
@@ -629,6 +641,33 @@ module Berkshelf
     end
 
     private
+
+      def ridley_connection(options = {})
+        ridley_options               = options.slice(:ssl)
+        ridley_options[:server_url]  = options[:server_url] || Berkshelf::Config.instance.chef.chef_server_url
+        ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
+        ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
+        ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
+
+        unless ridley_options[:server_url].present?
+          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.server_url"
+        end
+
+        unless ridley_options[:client_name].present?
+          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
+        end
+
+        unless ridley_options[:client_key].present?
+          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
+        end
+
+        Ridley.new(ridley_options)
+      end
+
+      def descendant_directory?(candidate, parent)
+        hack = FileUtils::Entry_.new('/tmp')
+        hack.send(:descendant_diretory?, candidate, parent)
+      end
 
       # Determine if any cookbooks were specified that aren't in our shelf.
       #
