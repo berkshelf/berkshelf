@@ -27,12 +27,9 @@ Then /^the Chef server should not have the cookbooks:$/ do |cookbooks|
 end
 
 Given(/^I have an environment named "(.*?)"$/) do |environment_name|
-  begin 
-    create_environment(environment_name) unless environment_exists? environment_name
-  rescue Ridley::Errors::HTTPConflict => e
-    # Environment exists and we hit an eventual consistency error on a replicated chef server cluster. Ignore.
-  end
-  environment(environment_name).should_not be_nil
+  begin
+    create_environment(environment_name)
+  rescue Ridley::Errors::HTTPConflict; end
 end
 
 Then(/^the version locks in "(.*?)" should be:$/) do |environment_name, version_locks|
