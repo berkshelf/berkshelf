@@ -236,36 +236,20 @@ module Berkshelf
       berksfile.upload(upload_options)
     end
 
-
     method_option :berksfile,
       type: :string,
       default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    method_option :except,
-      type: :array,
-      desc: "Exclude cookbooks that are in these groups.",
-      aliases: "-e"
-    method_option :only,
-      type: :array,
-      desc: "Only cookbooks that are in these groups.",
-      aliases: "-o"
     method_option :ssl_verify,
       type: :boolean,
       default: nil,
       desc: "Disable/Enable SSL verification when locking cookbooks."
-    method_option :include_dependencies,
-      type: :boolean,
-      desc: "Lock dependent cookbook(s).",
-      default: false,
-      aliases: "-a"
     desc "apply ENVIRONMENT", "Apply cookbook locks of your Berksfile.lock to the target Chef environment."
     def apply(environment_name)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-
-      lock_options                     = Hash[options].symbolize_keys
-      lock_options[:skip_dependencies] = !lock_options.delete(:include_dependencies)
+      berksfile    = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      lock_options = Hash[options].symbolize_keys
 
       berksfile.apply(environment_name, lock_options)
     end

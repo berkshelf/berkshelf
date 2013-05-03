@@ -567,14 +567,6 @@ module Berkshelf
     #
     # @param [String] environment_name
     #
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any sources marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any sources marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option options [Boolean] :skip_dependencies (false)
-    #   Skip uploading dependent cookbook(s).
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
     #

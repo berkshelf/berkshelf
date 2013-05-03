@@ -87,7 +87,7 @@ EOF
         File.open(cookbook_path.join("metadata.rb"), 'w+') do |f|
           f.write metadata
         end
-        
+
         cookbook_path
       end
 
@@ -100,7 +100,7 @@ EOF
       end
 
       def environment(environment_name)
-        Ridley::Search.new(ridley, :environment, "name:#{environment_name}").run.first
+        ridley.environment.find(environment_name)
       end
 
       def environment_exists?(environment_name)

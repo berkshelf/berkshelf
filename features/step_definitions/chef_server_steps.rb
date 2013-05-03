@@ -27,6 +27,7 @@ Then /^the Chef server should not have the cookbooks:$/ do |cookbooks|
 end
 
 Given(/^I have an environment named "(.*?)"$/) do |environment_name|
+  delete_environment(environment_name)
   begin
     create_environment(environment_name)
   rescue Ridley::Errors::HTTPConflict; end
