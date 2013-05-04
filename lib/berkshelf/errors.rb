@@ -147,7 +147,32 @@ module Berkshelf
   class ValidationFailed < BerkshelfError; status_code(121); end
   class InvalidVersionConstraint < BerkshelfError; status_code(122); end
   class CommunitySiteError < BerkshelfError; status_code(123); end
-  class CookbookValidationFailure < BerkshelfError; status_code(124); end
+
+  class CookbookValidationFailure < BerkshelfError
+    status_code(124)
+
+    # @param [Berkshelf::Location] location
+    #   the location (or any subclass) raising this validation error
+    # @param [Berkshelf::CachedCookbook] cached_cookbook
+    #   the cached_cookbook that does not satisfy the constraint
+    def initialize(location, cached_cookbook)
+      @location = location
+      @cached_cookbook = cached_cookbook
+    end
+
+    def to_s
+      [
+        "The cookbook downloaded from #{@location.to_s}:",
+        "  #{@cached_cookbook.cookbook_name} (#{@cached_cookbook.version})",
+        "",
+        "does not satisfy the version constraint:",
+        "  #{@cached_cookbook.cookbook_name} (#{@location.version_constraint})",
+        "",
+        "This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`."
+      ].join("\n")
+    end
+  end
+
   class ClientKeyFileNotFound < BerkshelfError; status_code(125); end
 
   class UploadFailure < BerkshelfError; end
