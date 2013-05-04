@@ -20,10 +20,9 @@ module Berkshelf
     attr_accessor :uri
     attr_accessor :branch
     attr_accessor :rel
-    attr_accessor :branch_name
+    attr_accessor :ref
     attr_reader :options
 
-    alias_method :ref, :branch
     alias_method :tag, :branch
 
     # @param [#to_s] name
@@ -44,9 +43,9 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
       @uri                = options[:git]
-      @branch             = options[:branch] || options[:ref] || options[:tag] || "master"
+      @branch             = options[:branch] || options[:tag] || 'master'
+      @ref                = options[:ref]
       @rel                = options[:rel]
-      @branch_name        = @branch.gsub("-", "_").gsub("/", "__")  # In case the remote is specified
 
       Git.validate_uri!(@uri)
     end
@@ -55,22 +54,24 @@ module Berkshelf
     #
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
-      return local_revision(destination) if cached?(destination)
-
-      ::Berkshelf::Git.checkout(clone, branch) if branch
-      unless branch
-        self.branch = ::Berkshelf::Git.rev_parse(clone)
+      if cached?(destination)
+        @ref = Berkshelf::Git.rev_parse(revision_path(destination))
+        return local_revision(destination)
       end
+
+      Berkshelf::Git.checkout(clone, ref || branch) if ref || branch
+      @ref = Berkshelf::Git.rev_parse(clone)
 
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
+        msg << " with ref '#{ref}'" if ref
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
-      
-      cb_path = File.join(destination, "#{name}-#{branch_name}")
+
+      cb_path = File.join(destination, "#{name}-#{ref}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 
@@ -91,6 +92,7 @@ module Berkshelf
     def to_s
       s = "#{self.class.location_key}: '#{uri}'"
       s << " with branch: '#{branch}'" if branch
+      s << " at ref: '#{ref}'" if ref
       s
     end
 
@@ -122,8 +124,8 @@ module Berkshelf
       end
 
       def revision_path(destination)
-        return unless branch
-        File.join(destination, "#{name}-#{branch_name}")
+        return unless ref
+        File.join(destination, "#{name}-#{ref}")
       end
   end
 end
