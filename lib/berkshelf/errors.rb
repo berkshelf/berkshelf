@@ -5,7 +5,6 @@ module Berkshelf
       # @param [Integer] code
       def status_code=(code)
         define_singleton_method(:status_code) { code }
-        define_method(:status_code) { code }
       end
 
       def status_code
@@ -14,7 +13,7 @@ module Berkshelf
     end
 
     def status_code
-      DEFAULT_STATUS_CODE
+      self.class.status_code
     end
 
     alias_method :message, :to_s
