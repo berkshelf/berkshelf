@@ -168,8 +168,8 @@ module Berkshelf
       }
     end
 
-    def to_json
-      MultiJson.dump(self.to_hash, pretty: true)
+    def to_json(options = {})
+       JSON.pretty_generate(to_hash, options)
     end
 
     private

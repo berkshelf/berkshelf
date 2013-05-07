@@ -36,8 +36,8 @@ module Berkshelf
       contents = File.read(filepath)
 
       begin
-        hash = MultiJson.load(contents, symbolize_keys: true)
-      rescue MultiJson::DecodeError
+        hash = JSON.parse(contents, symbolize_names: true)
+      rescue JSON::ParserError
         if contents =~ /^cookbook ["'](.+)["']/
           Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
           hash = LockfileLegacy.parse(contents)
@@ -162,8 +162,8 @@ module Berkshelf
     #
     # @return [String]
     #   the JSON representation of this lockfile
-    def to_json
-      MultiJson.dump(to_hash, pretty: true)
+    def to_json(options = {})
+       JSON.pretty_generate(to_hash, options)
     end
 
     private
