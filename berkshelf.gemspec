@@ -29,7 +29,6 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.8.0"
 
   s.add_dependency 'celluloid', '>= 0.13.0'
-  s.add_dependency 'yajl-ruby'
   s.add_dependency 'activesupport', '>= 3.2.0'
   s.add_dependency 'mixlib-shellout', '~> 1.1'
   s.add_dependency 'mixlib-config', '~> 1.1'
@@ -38,8 +37,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'chozo', '>= 0.6.1'
   s.add_dependency 'hashie', '>= 2.0.2'
   s.add_dependency 'minitar'
-  s.add_dependency 'json', '>= 1.5.0'
-  s.add_dependency 'multi_json', '~> 1.5'
   s.add_dependency 'solve', '>= 0.4.4'
   s.add_dependency 'thor', '~> 0.18.0'
   s.add_dependency 'retryable'
