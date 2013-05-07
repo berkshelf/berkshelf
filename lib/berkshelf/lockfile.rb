@@ -163,7 +163,7 @@ module Berkshelf
     # @return [String]
     #   the JSON representation of this lockfile
     def to_json(options = {})
-       JSON.pretty_generate(to_hash, options)
+      JSON.pretty_generate(to_hash, options)
     end
 
     private

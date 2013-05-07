@@ -169,7 +169,7 @@ module Berkshelf
     end
 
     def to_json(options = {})
-       JSON.pretty_generate(to_hash, options)
+      JSON.pretty_generate(to_hash, options)
     end
 
     private
