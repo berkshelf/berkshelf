@@ -135,8 +135,8 @@ describe Berkshelf::Lockfile do
     end
 
     describe '#to_json' do
-      it 'dumps the #to_hash to MultiJson' do
-        MultiJson.should_receive(:dump).with(subject.to_hash, pretty: true)
+      it 'dumps the #to_hash to JSON' do
+        JSON.should_receive(:pretty_generate).with(subject.to_hash, {})
         subject.to_json
       end
     end
