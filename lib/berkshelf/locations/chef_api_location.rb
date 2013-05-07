@@ -180,7 +180,7 @@ module Berkshelf
 
       if @target_cookbook.nil?
         msg = "Cookbook '#{name}' found at #{self}"
-        msg << " that would satisfy constraint (#{version_constraint}" if version_constraint
+        msg << " that would satisfy constraint (#{version_constraint})" if version_constraint
         raise CookbookNotFound, msg
       end
 

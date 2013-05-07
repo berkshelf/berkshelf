@@ -87,8 +87,24 @@ EOF
         File.open(cookbook_path.join("metadata.rb"), 'w+') do |f|
           f.write metadata
         end
-        
+
         cookbook_path
+      end
+
+      def create_environment(environment_name)
+        ridley.environment.create(name: environment_name)
+      end
+
+      def delete_environment(environment_name)
+        ridley.environment.delete(environment_name)
+      end
+
+      def environment(environment_name)
+        ridley.environment.find(environment_name)
+      end
+
+      def environment_exists?(environment_name)
+        !environment(environment_name).nil?
       end
 
       private

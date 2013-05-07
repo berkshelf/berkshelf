@@ -25,3 +25,21 @@ Then /^the Chef server should not have the cookbooks:$/ do |cookbooks|
     server_has_cookbook?(name, version).should be_false
   end
 end
+
+Given(/^I have an environment named "(.*?)"$/) do |environment_name|
+  delete_environment(environment_name)
+  begin
+    create_environment(environment_name)
+  rescue Ridley::Errors::HTTPConflict; end
+end
+
+Then(/^the version locks in "(.*?)" should be:$/) do |environment_name, version_locks|
+  environment_cookbook_versions = environment(environment_name).cookbook_versions
+  version_locks.hashes.each do |hash|
+    environment_cookbook_versions[hash['cookbook']].should == hash['version_lock']
+  end
+end
+
+Given(/^I do not have an environment named "(.*?)"$/) do |environment_name|
+  delete_environment(environment_name) if environment_exists? environment_name
+end

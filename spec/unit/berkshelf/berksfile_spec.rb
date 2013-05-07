@@ -63,7 +63,11 @@ EOF
   let(:source_one) { double('source_one', name: "nginx") }
   let(:source_two) { double('source_two', name: "mysql") }
 
-  subject { described_class.new(tmp_path.join("Berksfile")) }
+  subject do
+    berksfile_path = tmp_path.join("Berksfile").to_s
+    FileUtils.touch(berksfile_path)
+    described_class.new(berksfile_path)
+  end
 
   describe "#cookbook" do
     let(:name) { "artifact" }
@@ -420,7 +424,8 @@ EOF
       double('chef',
         node_name: "fake-client",
         client_key: "client-key",
-        chef_server_url: "http://configured-chef-server/")
+        chef_server_url: "http://configured-chef-server/"
+      )
     }
     let(:berkshelf_config) { double('berks', ssl: ssl, chef: chef) }
     let(:default_ridley_options) {
@@ -439,56 +444,59 @@ EOF
     end
 
     context "when there is no :server_url" do
-      let(:chef) {
+      let(:chef) do
         double('chef',
           node_name: "fake-client",
           client_key: "client-key",
-          chef_server_url: nil)
-      }
+          chef_server_url: nil
+        )
+      end
       let(:message) { "Missing required attribute in your Berkshelf configuration: chef.server_url" }
 
       it "raises an error" do
         expect {
           upload
-        }.to raise_error(Berkshelf::UploadFailure, message)
+        }.to raise_error(Berkshelf::ChefConnectionError, message)
       end
     end
 
     context "when there is no :client_name" do
-      let(:chef) {
+      let(:chef) do
         double('chef',
           node_name: nil,
           client_key: "client-key",
-          chef_server_url: "http://configured-chef-server/")
-      }
+          chef_server_url: "http://configured-chef-server/"
+        )
+      end
       let(:message) { "Missing required attribute in your Berkshelf configuration: chef.node_name" }
 
       it "raises an error" do
         expect {
           upload
-        }.to raise_error(Berkshelf::UploadFailure, message)
+        }.to raise_error(Berkshelf::ChefConnectionError, message)
       end
     end
 
     context "when there is no :client_key" do
-      let(:chef) {
+      let(:chef) do
         double('chef',
           node_name: "fake-client",
           client_key: nil,
-          chef_server_url: "http://configured-chef-server/")
-      }
+          chef_server_url: "http://configured-chef-server/"
+        )
+      end
       let(:message) { "Missing required attribute in your Berkshelf configuration: chef.client_key" }
 
       it "raises an error" do
         expect {
           upload
-        }.to raise_error(Berkshelf::UploadFailure, message)
+        }.to raise_error(Berkshelf::ChefConnectionError, message)
       end
     end
 
     context "when a Chef Server url is not passed as an option" do
       let(:ridley_options) do
-        {server_url: "http://configured-chef-server/"}.merge(default_ridley_options)
+        { server_url: "http://configured-chef-server/" }.merge(default_ridley_options)
       end
 
       it "uses Berkshelf::Config configured server_url" do
@@ -498,18 +506,78 @@ EOF
     end
 
     context "when a Chef Server url is passed as an option" do
-      let(:options) {
+      let(:options) do
         {
           server_url: "http://fake-chef-server.com/"
         }
-      }
-      let(:ridley_options) {
-        {server_url: "http://fake-chef-server.com/"}.merge(default_ridley_options)
-      }
+      end
+      let(:ridley_options) do
+        { server_url: "http://fake-chef-server.com/"}.merge(default_ridley_options)
+      end
 
       it "uses the passed in :server_url" do
         Ridley.should_receive(:new).with(ridley_options)
         upload
+      end
+    end
+  end
+
+  describe "#apply" do
+    let(:env_name)    { "berkshelf-test" }
+    let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
+    let(:client_name) { "reset" }
+    let(:client_key)  { fixtures_path.join('reset.pem').to_s }
+    let(:ridley)      { Ridley.new(server_url: server_url, client_name: client_name, client_key: client_key) }
+
+    before do
+      subject.stub(:ridley_connection).and_return(ridley)
+      subject.add_source("nginx", ">= 0.1.2", chef_api: server_url, node_name: client_name, client_key: client_key)
+      subject.stub(install: nil)
+    end
+
+    context "when the chef environment exists" do
+      let(:sources) do
+        [
+          double(name: "nginx", locked_version: "1.2.3"),
+          double(name: "artifact", locked_version: "1.4.0")
+        ]
+      end
+
+      before do
+        chef_environment("berkshelf")
+        subject.lockfile.stub(:sources).and_return(sources)
+      end
+
+      it "installs the Berksfile" do
+        subject.should_receive(:install)
+        subject.apply("berkshelf")
+      end
+
+      it "applys the locked_versions of the Lockfile's sources to the given Chef environment" do
+        subject.apply("berkshelf")
+
+        environment = MultiJson.decode(chef_server.data["environments"]["berkshelf"])
+        environment["cookbook_versions"].should have(2).items
+        environment["cookbook_versions"]["nginx"].should eql("1.2.3")
+        environment["cookbook_versions"]["artifact"].should eql("1.4.0")
+      end
+    end
+
+    context "when the environment does not exist" do
+      it "raises an EnvironmentNotFound error" do
+        expect {
+          subject.apply(env_name)
+        }.to raise_error(Berkshelf::EnvironmentNotFound)
+      end
+    end
+
+    context "when Ridley throw an exception" do
+      before { ridley.stub_chain(:environment, :find).and_raise(Ridley::Errors::RidleyError) }
+
+      it "raises a ChefConnectionError" do
+        expect {
+          subject.apply(env_name)
+        }.to raise_error(Berkshelf::ChefConnectionError)
       end
     end
   end
