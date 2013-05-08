@@ -1,17 +1,25 @@
 module Berkshelf
   class BerkshelfError < StandardError
+    DEFAULT_STATUS_CODE = -1
     class << self
       # @param [Integer] code
-      def status_code(code)
-        define_method(:status_code) { code }
+      def status_code=(code)
         define_singleton_method(:status_code) { code }
       end
+
+      def status_code
+        DEFAULT_STATUS_CODE
+      end
+    end
+
+    def status_code
+      self.class.status_code
     end
 
     alias_method :message, :to_s
   end
 
-  class InternalError < BerkshelfError; status_code(99); end
+  class InternalError < BerkshelfError; status_code = 99; end
   class ArgumentError < InternalError; end
   class AbstractFunction < InternalError
     def to_s
@@ -19,12 +27,12 @@ module Berkshelf
     end
   end
 
-  class BerksfileNotFound < BerkshelfError; status_code(100); end
-  class NoVersionForConstraints < BerkshelfError; status_code(101); end
-  class DuplicateLocationDefined < BerkshelfError; status_code(102); end
-  class CookbookNotFound < BerkshelfError; status_code(103); end
+  class BerksfileNotFound < BerkshelfError; status_code = 100; end
+  class NoVersionForConstraints < BerkshelfError; status_code = 101; end
+  class DuplicateLocationDefined < BerkshelfError; status_code = 102; end
+  class CookbookNotFound < BerkshelfError; status_code = 103; end
   class GitError < BerkshelfError
-    status_code(104)
+    status_code = 104
     attr_reader :stderr
 
     def initialize(stderr)
@@ -62,13 +70,13 @@ module Berkshelf
     end
   end
 
-  class DuplicateSourceDefined < BerkshelfError; status_code(105); end
-  class NoSolution < BerkshelfError; status_code(106); end
-  class CookbookSyntaxError < BerkshelfError; status_code(107); end
-  class BerksConfigNotFound < BerkshelfError; status_code(109); end
+  class DuplicateSourceDefined < BerkshelfError; status_code = 105; end
+  class NoSolution < BerkshelfError; status_code = 106; end
+  class CookbookSyntaxError < BerkshelfError; status_code = 107; end
+  class BerksConfigNotFound < BerkshelfError; status_code = 109; end
 
   class InvalidGitURI < BerkshelfError
-    status_code(110)
+    status_code = 110
     attr_reader :uri
 
     # @param [String] uri
@@ -82,7 +90,7 @@ module Berkshelf
   end
 
   class UnknownGitHubProtocol < BerkshelfError
-    status_code(110)
+    status_code = 110
     attr_reader :protocol
 
     # @param [String] protocol
@@ -96,31 +104,31 @@ module Berkshelf
   end
 
   class GitNotFound < BerkshelfError
-    status_code(110)
+    status_code = 110
 
     def to_s
       "Could not find a Git executable in your path. Please add it and try again."
     end
   end
 
-  class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
-  class InvalidChefAPILocation < BerkshelfError; status_code(112); end
+  class ConstraintNotSatisfied < BerkshelfError; status_code = 111; end
+  class InvalidChefAPILocation < BerkshelfError; status_code = 112; end
   class BerksfileReadError < BerkshelfError
     def initialize(original_error)
       @original_error = original_error
     end
 
-    status_code(113)
+    status_code = 113
 
     def status_code
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
     end
   end
 
-  class AmbiguousCookbookName < BerkshelfError; status_code(114); end
+  class AmbiguousCookbookName < BerkshelfError; status_code = 114; end
 
   class InvalidConfiguration < BerkshelfError
-    status_code(115)
+    status_code = 115
 
     def initialize(errors)
       @errors = errors
@@ -139,21 +147,21 @@ module Berkshelf
     end
   end
 
-  class ConfigExists < BerkshelfError; status_code(116); end
-  class ConfigurationError < BerkshelfError; status_code(117); end
-  class CommandUnsuccessful < BerkshelfError; status_code(118); end
-  class InsufficientPrivledges < BerkshelfError; status_code(119); end
-  class ExplicitCookbookNotFound < BerkshelfError; status_code(120); end
-  class ValidationFailed < BerkshelfError; status_code(121); end
-  class InvalidVersionConstraint < BerkshelfError; status_code(122); end
-  class CommunitySiteError < BerkshelfError; status_code(123); end
-  class CookbookValidationFailure < BerkshelfError; status_code(124); end
-  class ClientKeyFileNotFound < BerkshelfError; status_code(125); end
+  class ConfigExists < BerkshelfError; status_code = 116; end
+  class ConfigurationError < BerkshelfError; status_code = 117; end
+  class CommandUnsuccessful < BerkshelfError; status_code = 118; end
+  class InsufficientPrivledges < BerkshelfError; status_code = 119; end
+  class ExplicitCookbookNotFound < BerkshelfError; status_code = 120; end
+  class ValidationFailed < BerkshelfError; status_code = 121; end
+  class InvalidVersionConstraint < BerkshelfError; status_code = 122; end
+  class CommunitySiteError < BerkshelfError; status_code = 123; end
+  class CookbookValidationFailure < BerkshelfError; status_code = 124; end
+  class ClientKeyFileNotFound < BerkshelfError; status_code = 125; end
 
-  class UploadFailure < BerkshelfError; end
-  class FrozenCookbook < UploadFailure; status_code(126); end
+  class UploadFailure < BerkshelfError; status_code = 128; end
+  class FrozenCookbook < UploadFailure; status_code = 126; end
   class InvalidSiteShortnameError < BerkshelfError
-    status_code(127)
+    status_code = 127
 
     # @param [String,Symbol] shortname
     #   the shortname for the site (see SiteLocation::SHORTNAMES)
@@ -167,7 +175,7 @@ module Berkshelf
   end
 
   class OutdatedCookbookSource < BerkshelfError
-    status_code(128)
+    status_code = 128
 
     # @return [Berkshelf::CookbookSource]
     attr_reader :locked_source, :source
