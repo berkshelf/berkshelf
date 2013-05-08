@@ -20,3 +20,10 @@ Then /^the output should be the same as \`(.+)\`$/ do |command|
   output = output_from(command)
   expect(all_output).to include(output)
 end
+
+# The built-in regex matcher does not support multi-line matching :(
+# @author Seth Vargo <sethvargo@gmail.com>
+Then /^the output should match multiline:$/ do |expected|
+  regex = Regexp.new(expected.strip, Regexp::MULTILINE)
+  expect(regex).to match(all_output)
+end
