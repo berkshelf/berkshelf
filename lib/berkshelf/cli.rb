@@ -291,6 +291,9 @@ module Berkshelf
       end
     end
 
+    method_option :cookbook_templates,
+      type: :string,
+      desc: "Path to user customized cookbook templates"
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
@@ -403,6 +406,9 @@ module Berkshelf
       Berkshelf.formatter.msg license
     end
 
+    method_option :cookbook_templates,
+      type: :string,
+      desc: "Path to user customized cookbook templates"
     method_option :foodcritic,
       type: :boolean,
       desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"

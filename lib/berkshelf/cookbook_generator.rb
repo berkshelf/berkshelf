@@ -41,6 +41,10 @@ module Berkshelf
       type: :string,
       default: Berkshelf::Config.instance.cookbook.email
 
+    class_option :cookbook_templates,
+      type: :string,
+      default: Berkshelf::Config.instance.cookbook_templates
+
     def generate
       empty_directory target.join("files/default")
       empty_directory target.join("templates/default")
@@ -50,6 +54,12 @@ module Berkshelf
       empty_directory target.join("providers")
       empty_directory target.join("recipes")
       empty_directory target.join("resources")
+
+      if options[:cookbook_templates]
+        unless source_paths.include?(options[:cookbook_templates])
+          source_paths.unshift(File.expand_path(options[:cookbook_templates]))
+        end
+      end
 
       template "default_recipe.erb", target.join("recipes/default.rb")
       template "metadata.rb.erb", target.join("metadata.rb")
