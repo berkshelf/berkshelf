@@ -414,7 +414,6 @@ module Berkshelf
       desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"
     method_option :license,
       type: :string,
-      default: "reserved",
       desc: "License for cookbook (apachev2, gplv2, gplv3, mit, reserved)",
       aliases: "-L"
     method_option :maintainer,
