@@ -22,7 +22,7 @@ module Berkshelf
           output[:cookbooks] << details
         end
 
-        print MultiJson.dump(output)
+        print ::JSON.pretty_generate(output)
       end
 
       # Add a Cookbook installation entry to delayed output

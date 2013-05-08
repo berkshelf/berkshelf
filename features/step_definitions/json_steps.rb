@@ -13,8 +13,8 @@ Then /^the output should be JSON$/ do
 end
 
 Then /^the file "(.*?)" should contain JSON:$/ do |file, data|
-  target = MultiJson.encode(MultiJson.decode(data).sort_by_key, pretty: true)
-  actual = MultiJson.encode(MultiJson.decode(File.read(File.join(current_dir, file))).sort_by_key, pretty: true)
+  target = JSON.pretty_generate(JSON.parse(data).sort_by_key)
+  actual = JSON.pretty_generate(JSON.parse(File.read(File.join(current_dir, file))).sort_by_key)
 
   expect(actual).to eq(target)
 end
