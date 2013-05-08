@@ -176,14 +176,72 @@ Feature: Berksfile.lock
       "sources":{
         "sudo":{
           "git":"git://github.com/opscode-cookbooks/sudo.git",
-          "ref":"f7ada1e95",
+          "ref":"f7ada1e95d2f20262de288dda018a5e94d805ecc",
           "locked_version":"2.0.4"
         }
       }
     }
     """
 
-  Scenario: Updating a Berksfile.lock with a git location
+  # This spec will break if artifact cookbook master is pushed/changed
+  Scenario: Updating a Berksfile.lock with a git location and a branch
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'artifact', git: 'git://github.com/RiotGames/artifact-cookbook.git', branch: 'master'
+    """
+  When I successfully run `berks install`
+  Then the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "10a1c4ec894b8a6bed81b8c01c682b70b644030b",
+      "sources":{
+        "artifact":{
+          "git":"git://github.com/RiotGames/artifact-cookbook.git",
+          "ref":"abe7073c528f1f57dc7bc85e6fabc3e7abb86a04",
+          "locked_version":"1.5.0"
+        },
+        "chef_handler": {
+          "locked_version": "1.1.4"
+        },
+        "windows": {
+          "constraint": "~> 1.8.0",
+          "locked_version": "1.8.10"
+        }
+      }
+    }
+    """
+
+  # This spec will break if artifact cookbook tag is pushed/changed
+  Scenario: Updating a Berksfile.lock with a git location and a branch
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'artifact', git: 'git://github.com/RiotGames/artifact-cookbook.git', tag: '1.5.0'
+    """
+  When I successfully run `berks install`
+  Then the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "feae39a78644be4fcec5238cc280f6463e21d992",
+      "sources":{
+        "artifact":{
+          "git":"git://github.com/RiotGames/artifact-cookbook.git",
+          "ref":"864b5db7b05e87ca4d9161ac628788d2f9837ebf",
+          "locked_version":"1.5.0"
+        },
+        "chef_handler": {
+          "locked_version": "1.1.4"
+        },
+        "windows": {
+          "constraint": "~> 1.8.0",
+          "locked_version": "1.8.10"
+        }
+      }
+    }
+    """
+
+  Scenario: Updating a Berksfile.lock with a GitHub location
   Given I write to "Berksfile" with:
     """
     site :opscode
@@ -197,7 +255,7 @@ Feature: Berksfile.lock
       "sources":{
         "sudo":{
           "git":"git://github.com/opscode-cookbooks/sudo.git",
-          "ref":"f7ada1e95",
+          "ref":"f7ada1e95d2f20262de288dda018a5e94d805ecc",
           "locked_version":"2.0.4"
         }
       }

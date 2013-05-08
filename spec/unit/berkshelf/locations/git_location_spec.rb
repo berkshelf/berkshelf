@@ -28,6 +28,7 @@ describe Berkshelf::GitLocation do
       let(:cached) { double('cached') }
 
       before do
+        Berkshelf::Git.stub(:rev_parse).and_return('abcd1234')
         Berkshelf::GitLocation.any_instance.stub(:cached?).and_return(true)
         Berkshelf::GitLocation.any_instance.stub(:validate_cached).with(cached).and_return(cached)
         Berkshelf::CachedCookbook.stub(:from_store_path).with(any_args()).and_return(cached)
@@ -44,10 +45,10 @@ describe Berkshelf::GitLocation do
 
     it "downloads the cookbook to the given destination" do
       cached_cookbook = subject.download(tmp_path)
-      branch_name = subject.branch_name
+      ref = subject.ref
 
       tmp_path.should have_structure {
-        directory "#{cached_cookbook.cookbook_name}-#{branch_name}" do
+        directory "#{cached_cookbook.cookbook_name}-#{ref}" do
           file "metadata.rb"
         end
       }
@@ -111,22 +112,41 @@ describe Berkshelf::GitLocation do
       end
     end
 
-    context "given a value for ref that is a tag or branch and not a commit hash" do
-      let(:ref) { "0.9.8" }
+    context "given a value for tag" do
+      let(:tag) { "0.9.8" }
 
       subject do
         described_class.new("nginx",
           complacent_constraint,
           git: "git://github.com/opscode-cookbooks/nginx.git",
-          ref: ref
+          tag: tag
         )
       end
-      let(:cached_cookbook) { subject.download(tmp_path) }
-      let(:commit_hash) { "d7be334b094f497f5cce4169a8b3012bf7b27bc3" }
-      let(:expected_path) { tmp_path.join("#{cached_cookbook.cookbook_name}-#{ref}") }
+      let(:cached) { subject.download(tmp_path) }
+      let(:sha) { subject.ref }
+      let(:expected_path) { tmp_path.join("#{cached.cookbook_name}-#{sha}") }
 
-      it "returns a cached cookbook with a path that contains the ref and not the commit hash it is pointing to" do
-        cached_cookbook.path.should eql(expected_path)
+      it "returns a cached cookbook with a path that contains the ref" do
+        cached.path.should eql(expected_path)
+      end
+    end
+
+    context 'give a value for branch' do
+      let(:branch) { 'master' }
+
+      subject do
+        described_class.new('nginx',
+          complacent_constraint,
+          git: 'git://github.com/opscode-cookbooks/nginx.git',
+          branch: branch
+        )
+      end
+      let(:cached) { subject.download(tmp_path) }
+      let(:sha) { subject.ref }
+      let(:expected_path) { tmp_path.join("#{cached.cookbook_name}-#{sha}") }
+
+      it 'returns a cached cookbook with a path that contains the ref' do
+        cached.path.should eql(expected_path)
       end
     end
   end
