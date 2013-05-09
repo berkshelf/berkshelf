@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 describe Berkshelf::Lockfile do
-  let(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
+  let!(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
   let(:berksfile) { Berkshelf::Berksfile.new('Berksfile') }
 
   before do
-    content
     File.stub(:read).and_return(content)
   end
 
