@@ -20,7 +20,7 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
 
   #
   # Class Methods
-  #
+  # -------------------------
 
   # Berkshelf::Resolver.initialize
   describe '.initialize' do
@@ -42,7 +42,7 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
 
   #
   # Instance Methods
-  #
+  # -------------------------
 
   subject { Berkshelf::Resolver.new(berksfile) }
 
