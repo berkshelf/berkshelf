@@ -1,3 +1,7 @@
+# 1.4.3
+
+- Bump Ridley dependency to 0.11, bringing in many bugfixes.
+
 # 1.4.2
 
 - Fix git caching bug for huge speedups in Berksfiles with lots of git
