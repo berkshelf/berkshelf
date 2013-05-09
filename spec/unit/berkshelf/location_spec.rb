@@ -151,12 +151,14 @@ describe Berkshelf::Location do
     Class.new { include Berkshelf::Location }.new(name, constraint)
   end
 
+  # Berkshelf::Location#downloaded?
   describe 'downloaded?' do
     it 'starts as false' do
       expect(subject.downloaded?).to be_false
     end
   end
 
+  # Berkshelf::Location#download
   describe '#download' do
     it 'raises a AbstractFunction if not defined' do
       expect {
@@ -165,6 +167,7 @@ describe Berkshelf::Location do
     end
   end
 
+  # Berkshelf::Location#validate_cached
   describe '#validate_cached' do
     let(:cached) { double('cached-cb', cookbook_name: name, version: '0.1.0') }
 
