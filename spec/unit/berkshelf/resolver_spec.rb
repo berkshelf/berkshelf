@@ -43,6 +43,7 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
   #
   # Instance Methods
   #
+
   subject { Berkshelf::Resolver.new(berksfile) }
 
   # Berkshelf::Resolver#add_source
