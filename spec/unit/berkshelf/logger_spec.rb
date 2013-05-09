@@ -1,29 +1,45 @@
 require 'spec_helper'
 
 describe Berkshelf::Logger do
-  subject { described_class }
-
-  it "responds to :info" do
-    subject.should respond_to(:info)
+  # Berkshelf::Logger#info
+  context '#info' do
+    it 'responds' do
+      expect(Berkshelf::Logger).to respond_to(:info)
+    end
   end
 
-  it "responds to :warn" do
-    subject.should respond_to(:warn)
+  # Berkshelf::Logger#warn
+  context '#warn' do
+    it 'responds' do
+      expect(Berkshelf::Logger).to respond_to(:warn)
+    end
   end
 
-  it "responds to :error" do
-    subject.should respond_to(:error)
+  # Berkshelf::Logger#error
+  context '#error' do
+    it 'responds' do
+      expect(Berkshelf::Logger).to respond_to(:error)
+    end
   end
 
-  it "responds to :fatal" do
-    subject.should respond_to(:fatal)
+  # Berkshelf::Logger#fatal
+  context '#fatal' do
+    it 'responds' do
+      expect(Berkshelf::Logger).to respond_to(:fatal)
+    end
   end
 
-  it "responds to :debug" do
-    subject.should respond_to(:debug)
+  # Berkshelf::Logger#debug
+  context '#debug' do
+    it 'responds' do
+      expect(Berkshelf::Logger).to respond_to(:debug)
+    end
   end
 
-  it "responds to :deprecate" do
-    subject.should respond_to(:deprecate)
+  # Berkshelf::Logger#deprecate
+  context '#deprecate' do
+    it 'responds' do
+      expect(Berkshelf::Logger).to respond_to(:deprecate)
+    end
   end
 end
