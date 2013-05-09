@@ -18,63 +18,64 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     )
   end
 
-  describe "ClassMethods" do
-    subject { described_class }
+  #
+  # Class Methods
+  #
 
-    describe "::initialize" do
-      it "adds the specified sources to the sources hash" do
-        resolver = subject.new(berksfile, sources: [source], skip_dependencies: true)
+  # Berkshelf::Resolver.initialize
+  describe '.initialize' do
+    it 'adds the specified sources to the sources hash' do
+      resolver = Berkshelf::Resolver.new(berksfile, sources: [source], skip_dependencies: true)
+      expect(resolver).to have_source(source.name)
+    end
 
-        resolver.should have_source(source.name)
-      end
+    it 'does not add dependencies if skipped' do
+      resolver = Berkshelf::Resolver.new(berksfile, sources: [source], skip_dependencies: true)
+      expect(resolver).to_not have_source('nginx')
+    end
 
-      it "should not add dependencies if requested" do
-        resolver = subject.new(berksfile, sources: [source], skip_dependencies: true)
-
-        resolver.should_not have_source("nginx")
-      end
-
-      it "adds the dependencies of the source as sources" do
-        resolver = subject.new(berksfile, sources: [source])
-
-        resolver.should have_source("nginx")
-      end
+    it 'adds the dependencies of the source as sources' do
+      resolver = Berkshelf::Resolver.new(berksfile, sources: [source])
+      expect(resolver).to have_source('nginx')
     end
   end
 
-  subject { described_class.new(berksfile) }
+  #
+  # Instance Methods
+  #
+  subject { Berkshelf::Resolver.new(berksfile) }
 
-  describe "#add_source" do
+  # Berkshelf::Resolver#add_source
+  describe '#add_source' do
     let(:package_version) { double('package-version', dependencies: Array.new) }
 
-    it "adds the source to the instance of resolver" do
+    it 'adds the source to the instance of resolver' do
       subject.add_source(source, false)
-
-      subject.sources.should include(source)
+      expect(subject.sources).to include(source)
     end
 
-    it "adds an artifact of the same name of the source to the graph" do
+    it 'adds an artifact of the same name of the source to the graph' do
       subject.graph.should_receive(:artifacts).with(source.name, source.cached_cookbook.version)
 
       subject.add_source(source, false)
     end
 
-    it "adds the dependencies of the source as packages to the graph" do
+    it 'adds the dependencies of the source as packages to the graph' do
       subject.should_receive(:add_source_dependencies).with(source)
 
       subject.add_source(source)
     end
 
-    it "raises a DuplicateSourceDefined exception if a source of the same name is added" do
+    it 'raises a DuplicateSourceDefined exception if a source of the same name is added' do
       subject.should_receive(:has_source?).with(source).and_return(true)
 
-      lambda {
+      expect {
         subject.add_source(source)
-      }.should raise_error(Berkshelf::DuplicateSourceDefined)
+      }.to raise_error(Berkshelf::DuplicateSourceDefined)
     end
 
-    context "when include_dependencies is false" do
-      it "does not try to include_dependencies" do
+    context 'when include_dependencies is false' do
+      it 'does not try to include_dependencies' do
         subject.should_not_receive(:add_source_dependencies)
 
         subject.add_source(source, false)
@@ -82,21 +83,27 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     end
   end
 
-  describe "#get_source" do
+  # Berkshelf::Resolver#get_source
+  describe '#get_source' do
     before { subject.add_source(source, false) }
 
-    context "given a string representation of the source to retrieve" do
-      it "returns the source of the same name" do
-        subject.get_source(source.name).should eql(source)
+    context 'given a string representation of the source to retrieve' do
+      it 'returns the source of the same name' do
+        expect(subject.get_source(source.name)).to eq(source)
       end
     end
   end
 
-  describe "#has_source?" do
+  # Berkshelf::Resolver#has_source?
+  describe '#has_source?' do
     before { subject.add_source(source, false) }
 
-    it "returns the source of the given name" do
-      subject.has_source?(source.name).should be_true
+    it 'returns true if the source exists' do
+      expect(subject.has_source?(source.name)).to be_true
+    end
+
+    it 'returns false if the source does not exist' do
+      expect(subject.has_source?('non-existent')).to be_false
     end
   end
 end
