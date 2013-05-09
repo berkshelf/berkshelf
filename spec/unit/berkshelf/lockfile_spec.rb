@@ -1,15 +1,24 @@
 require 'spec_helper'
 
 describe Berkshelf::Lockfile do
+  let(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
+  let(:berksfile) { Berkshelf::Berksfile.new('Berksfile') }
+
+  before do
+    content
+    File.stub(:read).and_return(content)
+  end
+
+  #
+  # Class Methods
+  # -------------------------
+
+  # Berkshelf::Lockfile.new
   describe '.initialize' do
-    let(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
-    let(:berksfile) { Berkshelf::Berksfile.new('Berksfile') }
-
-    subject { Berkshelf::Lockfile.new(berksfile) }
-
-    before do
-      content
-      File.stub(:read).and_return(content)
+    it 'does not throw an exception' do
+      expect {
+        Berkshelf::Lockfile.new(berksfile)
+      }.to_not raise_error
     end
 
     it 'has the correct sha' do
@@ -20,163 +29,183 @@ describe Berkshelf::Lockfile do
       expect(subject).to have_source 'build-essential'
       expect(subject).to have_source 'chef-client'
     end
+  end
 
-    describe '#reset_sha!' do
-      it 'sets the sha to nil' do
-        expect { subject.reset_sha! }.to change { subject.sha }.to nil
-      end
+  #
+  # Instance Methods
+  # -------------------------
+
+  subject { Berkshelf::Lockfile.new(berksfile) }
+
+  # Berkshelf::Lockfile#reset_sha!
+  describe '#reset_sha!' do
+    it 'sets the sha to nil' do
+      expect { subject.reset_sha! }.to change { subject.sha }.to nil
+    end
+  end
+
+  # Berkshelf::Lockfile#sources
+  describe '#sources' do
+    it 'returns an array' do
+      expect(subject.sources).to be_a(Array)
+    end
+  end
+
+  # Berkshelf::Lockfile#find
+  describe '#find' do
+    it 'returns a matching cookbook' do
+      expect(subject.find('build-essential').name).to eq 'build-essential'
     end
 
-    describe '#sources' do
-      it 'returns an array' do
-        expect(subject.sources).to be_a(Array)
-      end
+    it 'returns nil for a missing cookbook' do
+      expect(subject.find('foo')).to be_nil
+    end
+  end
+
+  # Berkshelf::Lockfile#has_source?
+  describe '#has_source?' do
+    it 'returns true if a matching cookbook is found' do
+      expect(subject.has_source?('build-essential')).to be_true
     end
 
-    describe '#find' do
-      it 'returns a matching cookbook' do
-        expect(subject.find('build-essential').name).to eq 'build-essential'
-      end
+    it 'returns false if no matching cookbook is found' do
+      expect(subject.has_source?('foo')).to be_false
+    end
+  end
 
-      it 'returns nil for a missing cookbook' do
-        expect(subject.find('foo')).to be_nil
-      end
+  # Berkshelf::Lockfile#update
+  describe '#update' do
+    it 'resets the sources' do
+      subject.should_receive(:reset_sources!).once
+      subject.update([])
     end
 
-    describe '#has_source?' do
-      it 'returns true if a matching cookbook is found' do
-        expect(subject.has_source?('build-essential')).to be_true
-      end
-
-      it 'returns false if no matching cookbook is found' do
-        expect(subject.has_source?('foo')).to be_false
-      end
-    end
-
-    describe '#update' do
-      it 'resets the sources' do
-        subject.should_receive(:reset_sources!).once
+    it 'updates the sha' do
+      expect {
         subject.update([])
-      end
-
-      it 'updates the sha' do
-        expect {
-          subject.update([])
-        }.to change { subject.sha }
-      end
-
-      it 'appends each of the sources' do
-        source = double('source')
-        subject.should_receive(:append).with(source).once
-        subject.update([source])
-      end
-
-      it 'saves the file' do
-        subject.should_receive(:save).once
-        subject.update([])
-      end
+      }.to change { subject.sha }
     end
 
-    describe '#add' do
-      let(:source) { double('source', name: 'build-essential') }
-
-      it 'adds the new source to the @sources instance variable' do
-        subject.add(source)
-        expect(subject).to have_source(source)
-      end
-
-      it 'does not add duplicate sources' do
-        5.times { subject.add(source) }
-        expect(subject).to have_source(source)
-      end
+    it 'appends each of the sources' do
+      source = double('source')
+      subject.should_receive(:append).with(source).once
+      subject.update([source])
     end
 
-    describe '#remove' do
-      let(:source) { double('source', name: 'build-essential') }
+    it 'saves the file' do
+      subject.should_receive(:save).once
+      subject.update([])
+    end
+  end
 
-      before do
-        subject.add(source)
-      end
+  # Berkshelf::Lockfile#add
+  describe '#add' do
+    let(:source) { double('source', name: 'build-essential') }
 
-      it 'removes the source' do
-        subject.remove(source)
-        expect(subject).to_not have_source(source)
-      end
-
-      it 'raises an except if the source does not exist' do
-        expect {
-          subject.remove(nil)
-        }.to raise_error Berkshelf::CookbookNotFound
-      end
+    it 'adds the new source to the @sources instance variable' do
+      subject.add(source)
+      expect(subject).to have_source(source)
     end
 
-    describe '#to_s' do
-      it 'returns a pretty-formatted string' do
-        expect(subject.to_s).to eq '#<Berkshelf::Lockfile Berksfile.lock>'
-      end
+    it 'does not add duplicate sources' do
+      5.times { subject.add(source) }
+      expect(subject).to have_source(source)
+    end
+  end
+
+  # Berkshelf::Lockfile#remove
+  describe '#remove' do
+    let(:source) { double('source', name: 'build-essential') }
+
+    before do
+      subject.add(source)
     end
 
-    describe '#inspect' do
-      it 'returns a pretty-formatted, detailed string' do
-        expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>'
-      end
+    it 'removes the source' do
+      subject.remove(source)
+      expect(subject).to_not have_source(source)
     end
 
-    describe '#to_hash' do
-      let(:hash) { subject.to_hash }
+    it 'raises an except if the source does not exist' do
+      expect {
+        subject.remove(nil)
+      }.to raise_error Berkshelf::CookbookNotFound
+    end
+  end
 
-      it 'has the `:sha` key' do
-        expect(hash).to have_key(:sha)
-      end
+  # Berkshelf::Lockfile#to_s
+  describe '#to_s' do
+    it 'returns a pretty-formatted string' do
+      expect(subject.to_s).to eq '#<Berkshelf::Lockfile Berksfile.lock>'
+    end
+  end
 
-      it 'has the `:sources` key' do
-        expect(hash).to have_key(:sources)
-      end
+  # Berkshelf::Lockfile#inspect
+  describe '#inspect' do
+    it 'returns a pretty-formatted, detailed string' do
+      expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>'
+    end
+  end
+
+  # Berkshelf::Lockfile#to_hash
+  describe '#to_hash' do
+    let(:hash) { subject.to_hash }
+
+    it 'has the `:sha` key' do
+      expect(hash).to have_key(:sha)
     end
 
-    describe '#to_json' do
-      it 'dumps the #to_hash to JSON' do
-        JSON.should_receive(:pretty_generate).with(subject.to_hash, {})
-        subject.to_json
-      end
+    it 'has the `:sources` key' do
+      expect(hash).to have_key(:sources)
+    end
+  end
+
+  # Berkshelf::Lockfile#to_json
+  describe '#to_json' do
+    it 'dumps the #to_hash to JSON' do
+      JSON.should_receive(:pretty_generate).with(subject.to_hash, {})
+      subject.to_json
+    end
+  end
+
+  # Berkshelf::Lockfile#save
+  describe '#save' do
+    before { Berkshelf::Lockfile.send(:public, :save) }
+    let(:file) { double('file') }
+
+    before(:each) do
+      File.stub(:open).with('Berksfile.lock', 'w')
     end
 
-    describe '#save' do
-      before { Berkshelf::Lockfile.send(:public, :save) }
-      let(:file) { double('file') }
+    it 'saves itself to a file on disk' do
+      File.should_receive(:open).with(/(.+)\/Berksfile\.lock/, 'w').and_yield(file)
+      file.should_receive(:write).once
+      subject.save
+    end
+  end
 
-      before(:each) do
-        File.stub(:open).with('Berksfile.lock', 'w')
-      end
+  # Berkshelf::Lockfile#reset_sources!
+  describe '#reset_sources!' do
+    before { Berkshelf::Lockfile.send(:public, :reset_sources!) }
 
-      it 'saves itself to a file on disk' do
-        File.should_receive(:open).with(/(.+)\/Berksfile\.lock/, 'w').and_yield(file)
-        file.should_receive(:write).once
-        subject.save
-      end
+    it 'sets the sources to an empty hash' do
+      expect {
+        subject.reset_sources!
+      }.to change { subject.sources }.to([])
+    end
+  end
+
+  # Berkshelf::Lockfile#cookbook_name
+  describe '#cookbook_name' do
+    before { Berkshelf::Lockfile.send(:public, :cookbook_name) }
+
+    it 'accepts a cookbook source' do
+      source = double('source', name: 'build-essential', is_a?: true)
+      expect(subject.cookbook_name(source)).to eq 'build-essential'
     end
 
-    describe '#reset_sources!' do
-      before { Berkshelf::Lockfile.send(:public, :reset_sources!) }
-
-      it 'sets the sources to an empty hash' do
-        expect {
-          subject.reset_sources!
-        }.to change { subject.sources }.to([])
-      end
-    end
-
-    describe '#cookbook_name' do
-      before { Berkshelf::Lockfile.send(:public, :cookbook_name) }
-
-      it 'accepts a cookbook source' do
-        source = double('source', name: 'build-essential', is_a?: true)
-        expect(subject.cookbook_name(source)).to eq 'build-essential'
-      end
-
-      it 'accepts a string' do
-        expect(subject.cookbook_name('build-essential')).to eq 'build-essential'
-      end
+    it 'accepts a string' do
+      expect(subject.cookbook_name('build-essential')).to eq 'build-essential'
     end
   end
 end
