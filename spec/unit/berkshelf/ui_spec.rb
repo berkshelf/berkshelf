@@ -10,7 +10,7 @@ describe Thor::Shell::Color do
   end
 
   # Thor::Shell::Color#mute!
-  context '#mute!' do
+  describe '#mute!' do
     it 'sets @mute to true' do
       subject.mute!
       expect(subject.instance_variable_get(:@mute)).to be_true
@@ -18,7 +18,7 @@ describe Thor::Shell::Color do
   end
 
   # Thor::Shell::Color#unmute!
-  context '#unmute!' do
+  describe '#unmute!' do
     it 'sets @mute to false' do
       subject.unmute!
       expect(subject.instance_variable_get(:@mute)).to be_false
@@ -26,7 +26,7 @@ describe Thor::Shell::Color do
   end
 
   # Thor::Shell::Color#say
-  context '#say' do
+  describe '#say' do
     context 'when quiet?' do
       before do
         subject.stub(:quiet?).and_return(true)
@@ -52,7 +52,7 @@ describe Thor::Shell::Color do
   end
 
   # Thor::Shell::Color#say_status
-  context '#say_status' do
+  describe '#say_status' do
     context 'when quiet?' do
       before do
         subject.stub(:quiet?).and_return(true)
@@ -78,7 +78,7 @@ describe Thor::Shell::Color do
   end
 
   # Thor::Shell::Color#warn
-  context '#warn' do
+  describe '#warn' do
     context 'when quiet?' do
       before do
         subject.stub(:quiet?).and_return(true)
@@ -105,7 +105,7 @@ describe Thor::Shell::Color do
   end
 
   # Thor::Shell::Color#deprecated
-  context '#deprecated' do
+  describe '#deprecated' do
     it 'prefixes the message with "[DEPRECATED]"' do
       subject.should_receive(:warn).with('[DEPRECATION] That was deprecated!')
       subject.deprecated 'That was deprecated!'
