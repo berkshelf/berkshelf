@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe "berkshelf errors" do
+describe Berkshelf::BerkshelfError do
   pending
 end
