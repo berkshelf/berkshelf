@@ -27,6 +27,45 @@ Feature: install cookbooks from a Berksfile
       }
       """
 
+  @slow_process @focus
+  Scenario: installing with the old lockfile format without locked versions
+    Given I write to "Berksfile" with:
+      """
+      cookbook "minitest-handler", ">= 0.1.5"
+      cookbook "memcached", :git => "git://github.com/hectcastro/chef-memcached.git"
+      """
+    Given I write to "Berksfile.lock" with:
+      """
+      cookbook 'minitest-handler', :locked_version => '0.1.7'
+      cookbook 'memcached', :git => 'git://github.com/hectcastro/chef-memcached.git', :ref => '66c99cf1536785ccadef25c350ad936786809de6'
+      cookbook 'chef_handler', :locked_version => '1.1.4'
+      """
+    When I successfully run `berks install`
+    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+       "sha": "0f3277b52089ff6a8a956a238aa7a1f458335d64",
+       "sources": {
+          "chef_handler": {
+            "locked_version": "1.1.4"
+          },
+          "logrotate": {
+            "locked_version": "1.2.0"
+          },
+          "memcached": {
+            "git": "git://github.com/hectcastro/chef-memcached.git",
+            "locked_version": "0.2.0",
+            "ref": "66c99cf1536785ccadef25c350ad936786809de6"
+          },
+          "minitest-handler": {
+            "constraint": ">= 0.1.5",
+            "locked_version": "0.1.7"
+          }
+        }
+      }
+      """
+
   Scenario: installing a Berksfile that contains a source with a default location
     Given I write to "Berksfile" with:
       """
@@ -163,7 +202,6 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
-  @focus
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I write to "Berksfile" with:
       """
