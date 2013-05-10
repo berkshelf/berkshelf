@@ -4,7 +4,7 @@ module Berkshelf
     class << self
       # @return [Proc]
       def finalizer
-        proc { conn.terminate if conn && conn.alive? }
+        proc { conn.terminate if defined?(conn) && conn.alive? }
       end
 
       # @param [String] node_name
