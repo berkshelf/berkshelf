@@ -25,9 +25,6 @@ module Berkshelf
             File.exists?(path)
           end
 
-          p Berkshelf.berkshelf_path
-          p DEFAULT_LOCATION
-
           File.expand_path(location || DEFAULT_LOCATION)
         end
       end
