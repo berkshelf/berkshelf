@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with: :json } do
+  #
+  # Class Methods
+  # -------------------------
+
+  # Berkshelf::CommunityRest.unpack
   describe '.unpack' do
     let(:target) { '/foo/bar' }
     let(:destination) { '/destination/bar' }
@@ -19,52 +24,59 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
       Zlib::GzipReader.should_receive(:new).with(file)
       Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
 
-      expect(described_class.unpack(target, destination)).to eq(destination)
+      expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
     end
   end
 
+  # Berkshelf::CommunityRest.uri_escape_version
   describe '.uri_escape_version' do
     it 'returns a string' do
-      expect(described_class.uri_escape_version(nil)).to be_a(String)
+      expect(Berkshelf::CommunityREST.uri_escape_version(nil)).to be_a(String)
     end
 
     it 'converts a version to it\'s underscored version' do
-      expect(described_class.uri_escape_version('1.1.2')).to eq('1_1_2')
+      expect(Berkshelf::CommunityREST.uri_escape_version('1.1.2')).to eq('1_1_2')
     end
 
     it 'works when the version has more than three points' do
-      expect(described_class.uri_escape_version('1.1.1.2')).to eq('1_1_1_2')
+      expect(Berkshelf::CommunityREST.uri_escape_version('1.1.1.2')).to eq('1_1_1_2')
     end
 
     it 'works when the version has less than three points' do
-      expect(described_class.uri_escape_version('1.2')).to eq('1_2')
+      expect(Berkshelf::CommunityREST.uri_escape_version('1.2')).to eq('1_2')
     end
   end
 
+  # Berkshelf::CommunityRest.version_from_uri
   describe '.version_from_uri' do
     it 'returns a string' do
-      expect(described_class.version_from_uri(nil)).to be_a(String)
+      expect(Berkshelf::CommunityREST.version_from_uri(nil)).to be_a(String)
     end
 
     it 'extracts the version from the URL' do
-      expect(described_class.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_2')).to eq('1.1.2')
+      expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_2')).to eq('1.1.2')
     end
 
     it 'works when the version has more than three points' do
-      expect(described_class.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_1_2')).to eq('1.1.1.2')
+      expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_1_2')).to eq('1.1.1.2')
     end
 
     it 'works when the version has less than three points' do
-      expect(described_class.version_from_uri('/api/v1/cookbooks/nginx/versions/1_2')).to eq('1.2')
+      expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_2')).to eq('1.2')
     end
   end
 
-  let(:api_uri) { described_class::V1_API }
+  #
+  # Instance Methods
+  # -------------------------
+
+  let(:api_uri) { Berkshelf::CommunityREST::V1_API }
 
   subject do
-    described_class.new(api_uri)
+    Berkshelf::CommunityREST.new(api_uri)
   end
 
+  # Berkshelf::CommunityRest.download
   describe '#download' do
     let(:archive) { double('archive', path: '/foo/bar', unlink: true) }
 
@@ -81,6 +93,7 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
+  # Berkshelf::CommunityRest.find
   describe '#find' do
     it 'returns the cookbook and version information' do
       result = subject.find('nginx', '1.4.0')
@@ -110,9 +123,10 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
+  # Berkshelf::CommunityRest.latest_version
   describe '#latest_version' do
     it 'returns the version number of the latest version of the cookbook' do
-      subject.latest_version('nginx').should eql('1.4.0')
+      expect(subject.latest_version('nginx')).to eq('1.4.0')
     end
 
     it 'raises a CookbookNotFound error on a 404 response' do
@@ -130,9 +144,10 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
+  # Berkshelf::CommunityRest.versions
   describe '#versions' do
     it 'returns an array containing an item for each version' do
-      subject.versions('nginx').should have(24).versions
+      expect(subject.versions('nginx')).to have(24).versions
     end
 
     it 'raises a CookbookNotFound error on a 404 response' do
@@ -150,12 +165,14 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
+  # Berkshelf::CommunityRest.satisfy
   describe '#satisfy' do
     it 'returns the version number of the best solution' do
-      subject.satisfy('nginx', '= 1.1.0').should eql('1.1.0')
+      expect(subject.satisfy('nginx', '= 1.1.0')).to eq('1.1.0')
     end
   end
 
+  # Berkshelf::CommunityRest.stream
   describe '#stream' do
     pending
   end
