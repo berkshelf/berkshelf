@@ -26,7 +26,7 @@ describe Berkshelf::GitLocation do
   # Instance Methods
   # -------------------------
 
-  subject { described_class.new('nginx', complacent_constraint, git: 'git://github.com/opscode-cookbooks/nginx.git') }
+  subject { Berkshelf::GitLocation.new('nginx', complacent_constraint, git: 'git://github.com/opscode-cookbooks/nginx.git') }
 
   # Berkshelf::GitLocation#download
   describe '#download' do
@@ -66,7 +66,7 @@ describe Berkshelf::GitLocation do
     end
 
     context 'given no ref/branch/tag options is given' do
-      subject { described_class.new('nginx', complacent_constraint, git: 'git://github.com/opscode-cookbooks/nginx.git') }
+      subject { Berkshelf::GitLocation.new('nginx', complacent_constraint, git: 'git://github.com/opscode-cookbooks/nginx.git') }
 
       it 'sets the branch attribute to the HEAD revision of the cloned repo' do
         subject.download(tmp_path)
@@ -75,7 +75,7 @@ describe Berkshelf::GitLocation do
     end
 
     context 'given a git repo that does not exist' do
-      subject { described_class.new('doesnot_exist', complacent_constraint, git: 'git://github.com/RiotGames/thisrepo_does_not_exist.git') }
+      subject { Berkshelf::GitLocation.new('doesnot_exist', complacent_constraint, git: 'git://github.com/RiotGames/thisrepo_does_not_exist.git') }
 
       it 'raises a GitError' do
         Berkshelf::Git.stub(:git).and_raise(Berkshelf::GitError.new(''))
@@ -87,7 +87,7 @@ describe Berkshelf::GitLocation do
 
     context 'given a git repo that does not contain a cookbook' do
       let(:fake_remote) { local_git_origin_path_for('not_a_cookbook') }
-      subject { described_class.new('doesnot_exist', complacent_constraint, git: 'file://#{fake_remote}.git') }
+      subject { Berkshelf::GitLocation.new('doesnot_exist', complacent_constraint, git: 'file://#{fake_remote}.git') }
 
       it 'raises a CookbookNotFound error' do
         subject.stub(:clone).and_return {
@@ -103,7 +103,7 @@ describe Berkshelf::GitLocation do
 
     context 'given the content at the Git repo does not satisfy the version constraint' do
       subject do
-        described_class.new('nginx',
+        Berkshelf::GitLocation.new('nginx',
           double('constraint', satisfies?: false),
           git: 'git://github.com/opscode-cookbooks/nginx.git'
         )
@@ -120,7 +120,7 @@ describe Berkshelf::GitLocation do
       let(:tag) { '0.9.8' }
 
       subject do
-        described_class.new('nginx',
+        Berkshelf::GitLocation.new('nginx',
           complacent_constraint,
           git: 'git://github.com/opscode-cookbooks/nginx.git',
           tag: tag
@@ -139,7 +139,7 @@ describe Berkshelf::GitLocation do
       let(:branch) { 'master' }
 
       subject do
-        described_class.new('nginx',
+        Berkshelf::GitLocation.new('nginx',
           complacent_constraint,
           git: 'git://github.com/opscode-cookbooks/nginx.git',
           branch: branch
