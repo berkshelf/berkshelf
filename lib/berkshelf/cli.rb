@@ -1,9 +1,5 @@
 require 'berkshelf'
 
-if ENV['BERKS_TEST_KITCHEN'] == "1"
-  require 'kitchen/cli'
-end
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
@@ -54,10 +50,6 @@ module Berkshelf
     map 'ls'   => :list
     map 'book' => :cookbook
     map ['ver', '-v', '--version'] => :version
-
-    if ENV['BERKS_TEST_KITCHEN'] == "1"
-      register(Kitchen::CLI, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook')
-    end
 
     default_task :install
 
@@ -454,3 +446,8 @@ module Berkshelf
       end
   end
 end
+
+Dir["#{File.dirname(__FILE__)}/cli_commands/*.rb"].sort.each do |path|
+  require "berkshelf/cli_commands/#{File.basename(path, '.rb')}"
+end
+
