@@ -3,6 +3,7 @@ Feature: contingent command
   I want a way to the cookbooks that depend on another
   So that I can better understand my infrastructure
 
+  @slow_process
   Scenario: Running the contingent command against a cookbook
     Given I write to "Berksfile" with:
       """
