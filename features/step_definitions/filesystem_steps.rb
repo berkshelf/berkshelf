@@ -32,6 +32,11 @@ Given /^I do not have a Berkshelf config file$/ do
   remove_file Berkshelf::Config.path if ::File.exists? Berkshelf::Config.path
 end
 
+Given /^I do not have a Berkshelf config file at "(.+)"$/ do |path|
+  remove_file(path) if File.exists?(path)
+end
+
+
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
   write_file(::File.join(cookbook_name, file_name), content)
 end

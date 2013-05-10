@@ -59,3 +59,35 @@ Feature: configure command
       A configuration file already exists. Re-run with the --force flag if you wish to overwrite it.
       """
     And the CLI should exit with the status code for error "ConfigExists"
+
+  @focus
+  Scenario Outline: Generating a local Berkshelf config
+    Given I do not have a Berkshelf config file at "<path>"
+    When I run the "configure --path <path>" command interactively
+    And I type "https://api.opscode.com/organizations/vialstudios"
+    And I type "node_name"
+    And I type "client_key"
+    And I type "reset"
+    And I type "/Users/reset/.chef/reset.pem"
+    And I type "Berkshelf-minimal"
+    And I type "https://dl.dropbox.com/Berkshelf.box"
+    Then the output should contain:
+      """
+      Config written to:
+      """
+    And the exit status should be 0
+    And a Berkshelf config file should exist at "<path>" and contain:
+      | chef.chef_server_url        | https://api.opscode.com/organizations/vialstudios |
+      | chef.validation_client_name | reset                                             |
+      | chef.node_name              | node_name                                         |
+      | chef.client_key             | client_key                                        |
+      | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
+      | vagrant.vm.box              | Berkshelf-minimal                                 |
+      | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
+
+    Examples:
+      |       path      |
+      | .berkshelf/config.json |
+      | berkshelf/config.json  |
+      | berkshelf-config.json  |
+      | config.json            |
