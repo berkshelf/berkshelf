@@ -40,7 +40,7 @@ Spork.prefork do
 
   Before('@slow_process') do
     @aruba_timeout_seconds = 60
-    @aruba_io_wait_seconds = 10
+    @aruba_io_wait_seconds = 30
   end
 
   def cookbook_store
