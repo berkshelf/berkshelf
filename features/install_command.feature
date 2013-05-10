@@ -163,25 +163,25 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
+  @focus
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I write to "Berksfile" with:
       """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-feature", tag: "v0.2.0", protocol: "<protocol>"
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v1.0.0", protocol: "<protocol>"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
+      | berkshelf-cookbook-fixture | 1.0.0 | b4f968c9001ad8de30f564a2107fab9cfa91f771 |
     And the output should contain:
       """
-      Installing berkshelf-cookbook-fixture (0.2.0) from github: 'RiotGames/berkshelf-cookbook-feature' with branch: '0.2.0' over protocol: '<protocol>'
+      Installing berkshelf-cookbook-fixture (1.0.0) from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v1.0.0' over protocol: '<protocol>'
       """
     And the exit status should be 0
 
     Examples:
       | protocol |
-      # GitHub over ssh requires push authorization. Nonpushers will
-      # get a test failure here.
-      # | ssh   |
+      # | ssh   | # GitHub over ssh requires push authorization. Nonpushers will get a test failure here.
+      | git |
       | https |
 
   Scenario: installing a Berksfile that contains a Github location and an unsupported protocol
