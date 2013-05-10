@@ -227,7 +227,7 @@ Then /^the cookbook "(.*?)" should not have the following files:$/ do |name, fil
 end
 
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|
-  expectPathname.new(current_dir).join(cookbook_name)).to have_structure {
+  expect(Pathname.new(current_dir).join(cookbook_name)).to have_structure {
     file "Berksfile" do
       contains content
     end
