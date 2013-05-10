@@ -48,7 +48,7 @@ end
 
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    cookbook_store.should have_structure {
+    expect(cookbook_store).to have_structure {
       directory "#{name}-#{version}" do
         file "metadata.rb" do
           contains version
@@ -60,7 +60,7 @@ end
 
 Then /^the cookbook store should have the git cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha1|
-    cookbook_store.should have_structure {
+    expect(cookbook_store).to have_structure {
       directory "#{name}-#{sha1}" do
         file "metadata.rb" do
           contains version
@@ -72,19 +72,19 @@ end
 
 Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    cookbook_store.should_not have_structure {
+    expect(cookbook_store).to_not have_structure {
       directory "#{name}-#{version}"
     }
   end
 end
 
 Then /^I should have the cookbook "(.*?)"$/ do |name|
-  Pathname.new(current_dir).join(name).should be_cookbook
+  expect(Pathname.new(current_dir).join(name)).to be_cookbook
 end
 
 Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
   cb_path = Pathname.new(current_dir).join(name)
-  cb_path.should have_structure {
+  expect(cb_path).to have_structure {
     directory "attributes"
     directory "definitions"
     directory "files" do
@@ -119,7 +119,7 @@ Then /^I should have a new cookbook skeleton "(.*?)" with Chef-Minitest support$
   steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
 
   cb_path = Pathname.new(current_dir).join(name)
-  cb_path.should have_structure {
+  expect(cb_path).to have_structure {
     file "Berksfile" do
       contains "cookbook \"minitest-handler\""
     end
@@ -151,7 +151,7 @@ Then /^I should have a new cookbook skeleton "(.*?)" with Foodcritic support$/ d
   steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
 
   cb_path = Pathname.new(current_dir).join(name)
-  cb_path.should have_structure {
+  expect(cb_path).to have_structure {
     file "Gemfile" do
       contains "gem 'thor-foodcritic'"
     end
@@ -165,7 +165,7 @@ Then /^I should have a new cookbook skeleton "(.*?)" with SCMVersion support$/ d
   steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
 
   cb_path = Pathname.new(current_dir).join(name)
-  cb_path.should have_structure {
+  expect(cb_path).to have_structure {
     file "Gemfile" do
       contains "gem 'thor-scmversion'"
     end
@@ -177,7 +177,7 @@ end
 
 Then /^I should have a new cookbook skeleton "(.*?)" with no Bundler support$/ do |name|
   cb_path = Pathname.new(current_dir).join(name)
-  cb_path.should have_structure {
+  expect(cb_path).to have_structure {
     directory "attributes"
     directory "definitions"
     directory "files" do
@@ -204,13 +204,13 @@ Then /^I should have a new cookbook skeleton "(.*?)" with no Bundler support$/ d
 end
 
 Then /^I should have a new cookbook skeleton "(.*?)" with no Git support$/ do |name|
-  Pathname.new(current_dir).join(name).should have_structure {
+  expect(Pathname.new(current_dir).join(name)).to have_structure {
     no_file ".gitignore"
   }
 end
 
 Then /^I should have a new cookbook skeleton "(.*?)" with no Vagrant support$/ do |name|
-  Pathname.new(current_dir).join(name).should have_structure {
+  expect(Pathname.new(current_dir).join(name)).to have_structure {
     file "Gemfile" do
       does_not_contain "gem 'vagrant'"
     end
@@ -227,7 +227,7 @@ Then /^the cookbook "(.*?)" should not have the following files:$/ do |name, fil
 end
 
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|
-  Pathname.new(current_dir).join(cookbook_name).should have_structure {
+  expectPathname.new(current_dir).join(cookbook_name)).to have_structure {
     file "Berksfile" do
       contains content
     end
@@ -236,7 +236,7 @@ Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name,
 end
 
 Then /^the resulting "(.+)" Vagrantfile should contain:$/ do |cookbook_name, content|
-  Pathname.new(current_dir).join(cookbook_name).should have_structure {
+  expect(Pathname.new(current_dir).join(cookbook_name)).to have_structure {
     file "Vagrantfile" do
       content.respond_to?(:raw) ?
         content.raw.flatten.each { |string| contains string } :
