@@ -15,14 +15,14 @@ Feature: --format json
       {
         "cookbooks": [
           {
+            "name": "mysql",
             "version": "1.2.4",
-            "name": "mysql"
-            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'",
+            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'"
           },
           {
-            "name": "openssl"
+            "name": "openssl",
             "version": "1.0.2",
-            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'",
+            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'"
           }
         ],
         "errors": [
@@ -48,8 +48,8 @@ Feature: --format json
       {
         "cookbooks": [
           {
-            "version": "1.2.4",
-            "name": "mysql"
+            "name": "mysql",
+            "version": "1.2.4"
           }
         ],
         "errors": [
@@ -74,10 +74,10 @@ Feature: --format json
       {
         "cookbooks": [
           {
+            "name": "example_cookbook",
             "version": "0.5.0",
             "location": "path: '<%= File.expand_path(File.join(fixtures_path, 'cookbooks', 'example_cookbook-0.5.0')) %>'",
-            "uploaded_to": "http://localhost:4000/",
-            "name": "example_cookbook"
+            "uploaded_to": "http://localhost:4000/"
           }
         ],
         "errors": [
