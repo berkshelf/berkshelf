@@ -1,14 +1,12 @@
 require 'spec_helper'
 
 describe Berkshelf::CookbookGenerator do
-  subject { described_class }
-
-  let(:name) { "sparkle_motion" }
+  let(:name) { 'sparkle_motion' }
   let(:target) { tmp_path.join(name) }
 
-  context "with default options" do
+  context 'with default options' do
     before do
-      capture(:stdout) { subject.new([target, name]).invoke_all }
+      capture(:stdout) { Berkshelf::CookbookGenerator.new([target, name]).invoke_all }
     end
 
     specify do
@@ -59,18 +57,16 @@ describe Berkshelf::CookbookGenerator do
 
   context "given a 'maintainer_email' option" do
     before do
-      @email = "jamie@vialstudios.com"
       capture(:stdout) {
-        described_class.new([target, name], maintainer_email: @email).invoke_all
+        Berkshelf::CookbookGenerator.new([target, name], maintainer_email: 'jamie@vialstudios.com').invoke_all
       }
     end
 
     it "generates a metadata.rb with the 'maintainer_email' value set" do
-      email = @email
-
+      email = email
       expect(target).to have_structure {
         file 'metadata.rb' do
-          contains "maintainer_email \"#{email}\""
+          contains 'maintainer_email "jamie@vialstudios.com"'
         end
       }
     end
