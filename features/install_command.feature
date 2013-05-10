@@ -27,7 +27,7 @@ Feature: install cookbooks from a Berksfile
       }
       """
 
-  @slow_process @focus
+  @slow_process
   Scenario: installing with the old lockfile format without locked versions
     Given I write to "Berksfile" with:
       """
