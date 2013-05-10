@@ -42,16 +42,20 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)
-      [].tap do |cookbooks|
-        storage_path.each_child do |p|
-          cached_cookbook = CachedCookbook.from_store_path(p)
+      cookbooks = []
+
+      storage_path.each_child.map do |path|
+        Celluloid::Future.new do
+          cached_cookbook = CachedCookbook.from_store_path(path)
 
           next unless cached_cookbook
           next if filter && cached_cookbook.cookbook_name != filter
 
           cookbooks << cached_cookbook
         end
-      end
+      end.each(&:value)
+
+      cookbooks
     end
 
     # Returns an expanded path to the location on disk where the Cookbook
