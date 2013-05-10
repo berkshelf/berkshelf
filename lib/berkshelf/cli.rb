@@ -79,9 +79,13 @@ module Berkshelf
       type: :boolean,
       default: false,
       desc: "create a new configuration file even if one already exists."
+    method_option :path,
+      type: :string,
+      default: Berkshelf::Config.path,
+      desc: 'The path to save the configuration file'
     desc "configure", "Create a new configuration file to customize Berkshelf's behavior"
-    def configure(path = Berkshelf::Config.path)
-      path = File.expand_path(path)
+    def configure
+      path = File.expand_path(options[:path])
 
       if File.exist?(path) && !options[:force]
         raise Berkshelf::ConfigExists, "A configuration file already exists. Re-run with the --force flag if you wish to overwrite it."
