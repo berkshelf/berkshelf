@@ -107,75 +107,73 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
-  # These git scenarios are very fragile. If artifact is changed, all these break. We should consider mocking a
-  # git server or something to fully control this universe.
   Scenario: installing a Berksfile that contains a Git location
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git"
+      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 1.5.0 | abe7073c528f1f57dc7bc85e6fabc3e7abb86a04 |
+      | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     And the output should contain:
       """
-      Installing artifact (1.5.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
+      Installing berkshelf-cookbook-fixture (1.0.0) from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
       """
     And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", tag: "0.9.8"
+      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Installing artifact (0.9.8) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.9.8'
+      Installing berkshelf-cookbook-fixture (0.2.0) from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
       """
     And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a GitHub location
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", github: "RiotGames/artifact-cookbook", tag: "0.9.8"
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8'
+      Installing berkshelf-cookbook-fixture (0.2.0) from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v0.2.0'
       """
     And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a Github location and the default protocol
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", github: "RiotGames/artifact-cookbook", tag: "0.9.8"
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8' over protocol: 'git'
+      Installing berkshelf-cookbook-fixture (0.2.0) from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v0.2.0' over protocol: 'git'
       """
     And the exit status should be 0
 
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", github: "RiotGames/artifact-cookbook", tag: "0.9.8", protocol: "<protocol>"
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-feature", tag: "v0.2.0", protocol: "<protocol>"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 0.9.8 | c0a0b456a4716a81645bef1369f5fd1a4e62ce6d |
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Installing artifact (0.9.8) from github: 'RiotGames/artifact-cookbook' with branch: '0.9.8' over protocol: '<protocol>'
+      Installing berkshelf-cookbook-fixture (0.2.0) from github: 'RiotGames/berkshelf-cookbook-feature' with branch: '0.2.0' over protocol: '<protocol>'
       """
     And the exit status should be 0
 
@@ -189,7 +187,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Github location and an unsupported protocol
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", github: "RiotGames/artifact-cookbook", tag: "0.9.8", protocol: "somethingabsurd"
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "somethingabsurd"
       """
     When I run `berks install`
     Then the output should contain:
@@ -279,16 +277,16 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing when a git source defines a branch that does not satisfy the version constraint
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", "= 0.9.8", git: "git://github.com/RiotGames/artifact-cookbook.git", tag: "0.10.0"
+      cookbook "berkshelf-cookbook-fixture", "= 1.0.0", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I run `berks install`
     Then the output should match multiline:
       """
-      The cookbook downloaded from git: 'git://github\.com/RiotGames/artifact-cookbook\.git' with branch: '0\.10\.0' at ref: '.+':
-        artifact \(.+\)
+      The cookbook downloaded from git: 'git://github\.com/RiotGames/berkshelf-cookbook-fixture\.git' with branch: 'v0\.2\.0' at ref: '.+':
+        berkshelf-cookbook-fixture \(.+\)
 
       does not satisfy the version constraint:
-        artifact \(= 0.9.8\)
+        berkshelf-cookbook-fixture \(= 1.0.0\)
 
       This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`\.
       """
@@ -297,21 +295,21 @@ Feature: install cookbooks from a Berksfile
   Scenario: when a git location source is defined and a cookbook of the same name is already cached in the cookbook store
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", tag: "0.10.0"
+      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v1.0.0"
       """
     And the cookbook store has the cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: '0.10.0' at ref:
+      Installing berkshelf-cookbook-fixture (1.0.0) from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v1.0.0' at ref:
       """
     And the exit status should be 0
 
   Scenario: with a cookbook definition containing an invalid option
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", whatisthis: "I don't even know", anotherwat: "isthat"
+      cookbook "berkshelf-cookbook-fixture", whatisthis: "I don't even know", anotherwat: "isthat"
       """
     When I run `berks install`
     Then the output should contain:
@@ -340,7 +338,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a chef_api source location specifying :config when a Berkshelf config is not found at the given path
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", chef_api: :config
+      cookbook "berkshelf-cookbook-fixture", chef_api: :config
       """
     When I run the install command with flags:
       | -c /tmp/notthere.lol |
