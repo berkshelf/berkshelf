@@ -53,7 +53,7 @@ module Berkshelf
 
           cookbooks << cached_cookbook
         end
-      end.each { |future| future.value }.compact
+      end.each(&:value)
 
       cookbooks
     end
