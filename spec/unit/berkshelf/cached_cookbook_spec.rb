@@ -44,9 +44,9 @@ describe Berkshelf::CachedCookbook do
 
       context 'given path does not exist' do
         it 'raises an Errno::ENOENT error' do
-          lambda {
+          expect {
             Berkshelf::CachedCookbook.checksum(fixtures_path.join('notexisting.file'))
-          }.should raise_error(Errno::ENOENT)
+          }.to raise_error(Errno::ENOENT)
         end
       end
     end
