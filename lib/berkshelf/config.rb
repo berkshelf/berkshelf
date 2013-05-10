@@ -4,12 +4,32 @@ module Berkshelf
   # @author Justin Campbell <justin.campbell@riotgames.com>
   # @author Jamie Winsor <reset@riotgames.com>
   class Config < Chozo::Config::JSON
-    FILENAME = "config.json".freeze
+    # The default location for the berkshelf config
+    DEFAULT_LOCATION = File.join(Berkshelf.berkshelf_path, 'config.json').freeze
+
+    # A list of common locations to search for a berkshelf config
+    LOCATIONS = [
+      File.join('.', '.berkshelf', 'config.json').freeze,
+      File.join('.',  'berkshelf', 'config.json').freeze,
+      File.join('.',  'berkshelf-config.json').freeze,
+      File.join('.',  'config.json').freeze,
+      DEFAULT_LOCATION
+    ].freeze
 
     class << self
       # @return [String]
       def path
-        @path || File.join(Berkshelf.berkshelf_path, FILENAME)
+        @path ||= begin
+          location = LOCATIONS.find do |file|
+            path = File.expand_path(file)
+            File.exists?(path)
+          end
+
+          p Berkshelf.berkshelf_path
+          p DEFAULT_LOCATION
+
+          File.expand_path(location || DEFAULT_LOCATION)
+        end
       end
 
       # @param [String] new_path
