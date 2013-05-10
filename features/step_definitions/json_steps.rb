@@ -16,7 +16,7 @@ Then /^the file "(.*?)" should contain JSON:$/ do |file, data|
 end
 
 Then /^the output should contain JSON:$/ do |data|
-  target = JSON.pretty_generate(JSON.parse(data).sort_by_key)
+  target = JSON.pretty_generate(JSON.parse(ERB.new(data).result(binding)).sort_by_key)
   actual = JSON.pretty_generate(JSON.parse(all_output).sort_by_key)
 
   expect(actual).to eq(target)

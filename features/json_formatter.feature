@@ -69,7 +69,22 @@ Feature: --format json
       | example_cookbook | 0.5.0 |
     When I run the upload command with flags:
       | --format json |
-    Then the output should contain exactly:
+    Then the output should contain JSON:
       """
-      foo
+      {
+        "cookbooks": [
+          {
+            "version": "0.5.0",
+            "location": "path: '<%= File.expand_path(File.join(fixtures_path, 'cookbooks', 'example_cookbook-0.5.0')) %>'",
+            "uploaded_to": "http://localhost:4000/",
+            "name": "example_cookbook"
+          }
+        ],
+        "errors": [
+
+        ],
+        "messages": [
+
+        ]
+      }
       """
