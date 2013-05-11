@@ -9,7 +9,6 @@ describe Thor::Shell::Color do
     Thor::Shell::Basic.any_instance.stub(:stderr).and_return(stderr)
   end
 
-  # Thor::Shell::Color#mute!
   describe '#mute!' do
     it 'sets @mute to true' do
       subject.mute!
@@ -17,7 +16,6 @@ describe Thor::Shell::Color do
     end
   end
 
-  # Thor::Shell::Color#unmute!
   describe '#unmute!' do
     it 'sets @mute to false' do
       subject.unmute!
@@ -25,7 +23,6 @@ describe Thor::Shell::Color do
     end
   end
 
-  # Thor::Shell::Color#say
   describe '#say' do
     context 'when quiet?' do
       before do
@@ -51,7 +48,6 @@ describe Thor::Shell::Color do
     end
   end
 
-  # Thor::Shell::Color#say_status
   describe '#say_status' do
     context 'when quiet?' do
       before do
@@ -77,7 +73,6 @@ describe Thor::Shell::Color do
     end
   end
 
-  # Thor::Shell::Color#warn
   describe '#warn' do
     context 'when quiet?' do
       before do
@@ -104,7 +99,6 @@ describe Thor::Shell::Color do
     end
   end
 
-  # Thor::Shell::Color#deprecated
   describe '#deprecated' do
     it 'prefixes the message with "[DEPRECATED]"' do
       subject.should_receive(:warn).with('[DEPRECATION] That was deprecated!')
