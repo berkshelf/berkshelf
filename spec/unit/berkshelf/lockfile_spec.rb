@@ -8,11 +8,6 @@ describe Berkshelf::Lockfile do
     File.stub(:read).and_return(content)
   end
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::Lockfile.new
   describe '.initialize' do
     it 'does not throw an exception' do
       expect {
@@ -30,27 +25,22 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   subject { Berkshelf::Lockfile.new(berksfile) }
 
-  # Berkshelf::Lockfile#reset_sha!
   describe '#reset_sha!' do
     it 'sets the sha to nil' do
       expect { subject.reset_sha! }.to change { subject.sha }.to nil
     end
   end
 
-  # Berkshelf::Lockfile#sources
   describe '#sources' do
     it 'returns an array' do
       expect(subject.sources).to be_a(Array)
     end
   end
 
-  # Berkshelf::Lockfile#find
   describe '#find' do
     it 'returns a matching cookbook' do
       expect(subject.find('build-essential').name).to eq 'build-essential'
@@ -61,7 +51,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#has_source?
   describe '#has_source?' do
     it 'returns true if a matching cookbook is found' do
       expect(subject.has_source?('build-essential')).to be_true
@@ -72,7 +61,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#update
   describe '#update' do
     it 'resets the sources' do
       subject.should_receive(:reset_sources!).once
@@ -97,7 +85,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#add
   describe '#add' do
     let(:source) { double('source', name: 'build-essential') }
 
@@ -112,7 +99,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#remove
   describe '#remove' do
     let(:source) { double('source', name: 'build-essential') }
 
@@ -132,21 +118,18 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#to_s
   describe '#to_s' do
     it 'returns a pretty-formatted string' do
       expect(subject.to_s).to eq '#<Berkshelf::Lockfile Berksfile.lock>'
     end
   end
 
-  # Berkshelf::Lockfile#inspect
   describe '#inspect' do
     it 'returns a pretty-formatted, detailed string' do
       expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>'
     end
   end
 
-  # Berkshelf::Lockfile#to_hash
   describe '#to_hash' do
     let(:hash) { subject.to_hash }
 
@@ -159,7 +142,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#to_json
   describe '#to_json' do
     it 'dumps the #to_hash to JSON' do
       JSON.should_receive(:pretty_generate).with(subject.to_hash, {})
@@ -167,7 +149,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#save
   describe '#save' do
     before { Berkshelf::Lockfile.send(:public, :save) }
     let(:file) { double('file') }
@@ -183,7 +164,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#reset_sources!
   describe '#reset_sources!' do
     before { Berkshelf::Lockfile.send(:public, :reset_sources!) }
 
@@ -194,7 +174,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  # Berkshelf::Lockfile#cookbook_name
   describe '#cookbook_name' do
     before { Berkshelf::Lockfile.send(:public, :cookbook_name) }
 
