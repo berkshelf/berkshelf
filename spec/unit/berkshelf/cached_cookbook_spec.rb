@@ -1,11 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf::CachedCookbook do
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::CachedCookbook.from_store_path
   describe '.from_store_path' do
     let(:path) { fixtures_path.join('cookbooks', 'example_cookbook-0.5.0') }
     let(:cached) { Berkshelf::CachedCookbook.from_path(path) }
@@ -35,7 +30,6 @@ describe Berkshelf::CachedCookbook do
       end
     end
 
-    # Berkshelf::CachedCookbook.checksum
     describe '#checksum' do
       it 'returns a checksum of the given filepath' do
         path = fixtures_path.join('cookbooks', 'example_cookbook-0.5.0', 'README.md')
@@ -50,29 +44,25 @@ describe Berkshelf::CachedCookbook do
         end
       end
     end
+  end
 
-    #
-    # Instance Methods
-    # -------------------------
 
-    # Berkshelf::CachedCookbook#dependencies
-    describe '#dependencies' do
-      let(:dependencies) { { 'mysql' => '= 1.2.0', 'ntp' => '>= 0.0.0' } }
-      let(:recommendations) { { 'database' => '>= 0.0.0' } }
+  describe '#dependencies' do
+    let(:dependencies) { { 'mysql' => '= 1.2.0', 'ntp' => '>= 0.0.0' } }
+    let(:recommendations) { { 'database' => '>= 0.0.0' } }
 
-      let(:path) do
-        generate_cookbook(Berkshelf.cookbook_store.storage_path, 'sparkle', '0.1.0', dependencies: dependencies, recommendations: recommendations)
-      end
+    let(:path) do
+      generate_cookbook(Berkshelf.cookbook_store.storage_path, 'sparkle', '0.1.0', dependencies: dependencies, recommendations: recommendations)
+    end
 
-      subject { Berkshelf::CachedCookbook.from_store_path(path) }
+    subject { Berkshelf::CachedCookbook.from_store_path(path) }
 
-      it 'contains depends from the cookbook metadata' do
-        expect(subject.dependencies).to include(dependencies)
-      end
+    it 'contains depends from the cookbook metadata' do
+      expect(subject.dependencies).to include(dependencies)
+    end
 
-      it 'contains recommendations from the cookbook metadata' do
-        expect(subject.dependencies).to include(recommendations)
-      end
+    it 'contains recommendations from the cookbook metadata' do
+      expect(subject.dependencies).to include(recommendations)
     end
   end
 end
