@@ -337,9 +337,9 @@ module Berkshelf
     def list
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      Berkshelf.ui.say "Cookbooks installed by your Berksfile:"
+      Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
       Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
-        Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+        Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
       end
     end
 
@@ -359,7 +359,7 @@ module Berkshelf
       }
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
-      Berkshelf.ui.say(cookbook.path)
+      Berkshelf.formatter.msg(cookbook.path)
     end
 
     method_option :version,
@@ -375,7 +375,7 @@ module Berkshelf
       end
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" if cookbook.nil?
-      Berkshelf.ui.say(cookbook.pretty_print)
+      Berkshelf.formatter.msg(cookbook.pretty_print)
     end
 
     method_option :berksfile,
@@ -388,10 +388,10 @@ module Berkshelf
     def contingent(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      Berkshelf.ui.say "Cookbooks contingent upon #{name}:"
+      Berkshelf.formatter.msg "Cookbooks contingent upon #{name}:"
       sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
         if cookbook.dependencies.include?(name)
-          Berkshelf.ui.say "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+          Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
         end
       end
     end
