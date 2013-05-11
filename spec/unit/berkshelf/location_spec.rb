@@ -1,14 +1,9 @@
 require 'spec_helper'
 
 describe Berkshelf::Location do
-  #
-  # Class Methods
-  # -------------------------
-
   # Since this is a module, we need to test the implementation via a class
   let(:klass) { Class.new { include Berkshelf::Location } }
 
-  # Berkshelf::Location.set_location_key
   describe '.set_location_key' do
     before do
       @original = Berkshelf::CookbookSource.class_variable_get :@@location_keys
@@ -28,7 +23,6 @@ describe Berkshelf::Location do
     end
   end
 
-  # Berkshelf::Location.location_key
   describe '.location_key' do
     before do
       @original = Berkshelf::CookbookSource.class_variable_get :@@location_keys
@@ -45,7 +39,6 @@ describe Berkshelf::Location do
     end
   end
 
-  # Berkshelf::Location.set_valid_options
   describe '.set_valid_options' do
     before do
       @original = Berkshelf::CookbookSource.class_variable_get :@@valid_options
@@ -72,7 +65,6 @@ describe Berkshelf::Location do
     end
   end
 
-  # Berkshelf::Location.solve_for_constraint
   describe '.solve_for_constraint' do
     let(:constraint) { '~> 0.101.2' }
     let(:versions) do
@@ -106,7 +98,6 @@ describe Berkshelf::Location do
     end
   end
 
-  # Berkshelf::Location.init
   describe ';init' do
     let(:name) { 'artifact' }
     let(:constraint) { double('constraint') }
@@ -140,9 +131,7 @@ describe Berkshelf::Location do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   let(:name) { 'nginx' }
   let(:constraint) { double('constraint') }
@@ -151,14 +140,12 @@ describe Berkshelf::Location do
     Class.new { include Berkshelf::Location }.new(name, constraint)
   end
 
-  # Berkshelf::Location#downloaded?
   describe 'downloaded?' do
     it 'starts as false' do
       expect(subject.downloaded?).to be_false
     end
   end
 
-  # Berkshelf::Location#download
   describe '#download' do
     it 'raises a AbstractFunction if not defined' do
       expect {
@@ -167,7 +154,6 @@ describe Berkshelf::Location do
     end
   end
 
-  # Berkshelf::Location#validate_cached
   describe '#validate_cached' do
     let(:cached) { double('cached-cb', cookbook_name: name, version: '0.1.0') }
 
