@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe FileUtils do
-  # FileUtils#mv
   describe '#mv' do
     let(:src) { double('src') }
     let(:dest) { double('dest') }
