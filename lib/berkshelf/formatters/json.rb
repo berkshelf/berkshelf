@@ -7,6 +7,8 @@ module Berkshelf
       register_formatter :json
 
       def initialize
+        Berkshelf.ui.mute!
+
         @output = {
           cookbooks: Array.new,
           errors: Array.new,
