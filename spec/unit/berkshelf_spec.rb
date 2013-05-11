@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf do
-  # Berkshelf.find_metadata
   describe '.find_metadata' do
     let(:metadata_path) { fixtures_path.join('cookbooks', 'example_cookbook', 'metadata.rb') }
 
@@ -27,7 +26,6 @@ describe Berkshelf do
     end
   end
 
-  # Berkshelf.formatter
   describe '.formatter' do
     context 'with default formatter' do
       it 'should be human readable' do
@@ -55,7 +53,6 @@ describe Berkshelf do
     end
   end
 
-  # Berkshelf.log
   describe '.log' do
     it 'returns Berkshelf::Logger' do
       expect(Berkshelf.log).to eq(Berkshelf::Logger)
