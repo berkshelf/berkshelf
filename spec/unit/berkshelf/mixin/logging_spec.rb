@@ -5,7 +5,6 @@ describe Berkshelf::Mixin::Logging do
     Class.new { include Berkshelf::Mixin::Logging }.new
   end
 
-  # Berkshelf::MixinLogging#log
   describe '#log' do
     it 'returns the Berkshelf::Logger' do
       expect(subject.log).to eq(Berkshelf::Logger)
