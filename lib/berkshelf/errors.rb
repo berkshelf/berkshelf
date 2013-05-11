@@ -117,8 +117,6 @@ module Berkshelf
     end
   end
 
-  class AmbiguousCookbookName < BerkshelfError; status_code(114); end
-
   class InvalidConfiguration < BerkshelfError
     status_code(115)
 
