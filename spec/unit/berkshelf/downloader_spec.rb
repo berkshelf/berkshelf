@@ -16,11 +16,6 @@ describe Berkshelf::Downloader do
     ]
   end
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::Downloader.new
   describe '.initialize' do
     context 'when no value for locations is given' do
       it 'sets the @locations instance variable to a blank array' do
@@ -40,14 +35,11 @@ describe Berkshelf::Downloader do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   let!(:cookbook_store) { Berkshelf::CookbookStore.new(tmp_path) }
   subject { Berkshelf::Downloader.new(cookbook_store) }
 
-  # Berkshelf::Downloader#download
   describe '#download' do
     let(:source) { double('source', name: 'artifact', version_constraint: '= 0.10.0') }
     let(:location) { double('location') }
@@ -89,7 +81,6 @@ describe Berkshelf::Downloader do
     end
   end
 
-  # Berkshelf::Downloader.locations
   describe '#locations' do
     let(:type) { :site }
     let(:value) { double('value') }
@@ -124,7 +115,6 @@ describe Berkshelf::Downloader do
     end
   end
 
-  # Berkshelf::Downloader#add_location
   describe '#add_location' do
     let(:type) { :site }
     let(:value) { double('value') }
@@ -184,7 +174,6 @@ describe Berkshelf::Downloader do
     end
   end
 
-  # Berkshelf::Download#has_location?
   describe '#has_location?' do
     let(:type) { :site }
     let(:value) { double('value') }
