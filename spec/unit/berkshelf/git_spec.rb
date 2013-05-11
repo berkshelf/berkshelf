@@ -3,11 +3,6 @@ require 'spec_helper'
 describe Berkshelf::Git do
   let(:git) { Berkshelf::Git }
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::Git.find_git
   describe '.find_git' do
     it 'finds git' do
       expect(Berkshelf::Git.find_git).to_not be_nil
@@ -22,7 +17,6 @@ describe Berkshelf::Git do
     end
   end
 
-  # Berkshelf::Git.clone
   describe '.clone' do
     let(:target) { clone_target_for('nginx') }
 
@@ -35,7 +29,6 @@ describe Berkshelf::Git do
     end
   end
 
-  # Berkshelf::Git.checkout
   describe '.checkout' do
     let(:repo_path) { clone_target_for('nginx') }
     let(:repo) {
@@ -97,7 +90,6 @@ describe Berkshelf::Git do
     end
   end
 
-  # Berkshelf::Git.rev_parse
   describe '.rev_parse' do
     let(:repo_path) { clone_target_for('nginx') }
     before(:each) do |example|
@@ -114,7 +106,6 @@ describe Berkshelf::Git do
     end
   end
 
-  # Berkshelf::Git.show_ref
   describe '.show_ref' do
     let(:repo_path) { clone_target_for('nginx') }
     let(:tags) { ['1.0.1'] }
@@ -149,7 +140,6 @@ describe Berkshelf::Git do
     end
   end
 
-  # Berkshelf::Git.revision_from_ref
   describe '.revision_from_ref' do
     let(:repo_path) { clone_target_for('nginx') }
     let(:tags) { ['1.0.1'] }
@@ -198,7 +188,6 @@ describe Berkshelf::Git do
   let(:http_uri) { 'http://github.com/reset/solve.git' }
   let(:invalid_uri) { '/something/on/disk' }
 
-  # Berkshelf::Git.validate_uri
   describe '.validate_uri' do
     context 'given a valid Git read-only URI' do
       it 'returns true' do
@@ -273,7 +262,6 @@ describe Berkshelf::Git do
     end
   end
 
-  # Berkshelf::Git.validate_uri!
   describe '.validate_uri!' do
     context 'given a valid Git read-only URI' do
       it 'returns true' do
