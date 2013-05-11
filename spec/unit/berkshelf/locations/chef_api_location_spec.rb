@@ -9,11 +9,6 @@ describe Berkshelf::ChefAPILocation, :chef_server do
   let(:invalid_uri) { 'notauri' }
   let(:constraint) { double('constraint') }
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::CheAPILocation.new
   describe '.initialize' do
     subject do
       Berkshelf::ChefAPILocation.new('nginx',
@@ -83,7 +78,6 @@ describe Berkshelf::ChefAPILocation, :chef_server do
     end
   end
 
-  # Berkshelf::ChefAPILocation.validate_uri
   describe '.validate_uri' do
     it 'returns false if the given URI is invalid' do
       expect(Berkshelf::ChefAPILocation.validate_uri(invalid_uri)).to be_false
@@ -94,7 +88,6 @@ describe Berkshelf::ChefAPILocation, :chef_server do
     end
   end
 
-  # Berkshelf::ChefAPILocation.validate_uri!
   describe '.validate_uri!' do
     it 'raises Berkshelf::InvalidChefAPILocation if the given URI is invalid' do
       expect {
@@ -107,9 +100,6 @@ describe Berkshelf::ChefAPILocation, :chef_server do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
 
 
   subject do
