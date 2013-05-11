@@ -1,9 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf::Chef::Cookbook::Chefignore do
-  #
-  # Class Methods
-  # -------------------------
   describe '.find_relative_to' do
     let(:path) { tmp_path.join('chefignore-test') }
     before(:each) { FileUtils.mkdir_p(path) }
