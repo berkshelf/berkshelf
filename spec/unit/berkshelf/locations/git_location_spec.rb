@@ -3,11 +3,6 @@ require 'spec_helper'
 describe Berkshelf::GitLocation do
   let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::GitLocation.new
   describe '.initialize' do
     it 'raises InvalidGitURI if given an invalid Git URI for options[:git]' do
       expect {
@@ -22,13 +17,10 @@ describe Berkshelf::GitLocation do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   subject { Berkshelf::GitLocation.new('berkshelf-cookbook-fixture', complacent_constraint, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 
-  # Berkshelf::GitLocation#download
   describe '#download' do
     context 'when a local revision is present' do
       let(:cached) { double('cached') }
