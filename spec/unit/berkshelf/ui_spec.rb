@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe Thor::Shell::Color do
+describe Thor::Base.shell do
   let(:stdout) { double('stdout') }
   let(:stderr) { double('stderr') }
 
   before do
-    Thor::Shell::Basic.any_instance.stub(:stdout).and_return(stdout)
-    Thor::Shell::Basic.any_instance.stub(:stderr).and_return(stderr)
+    described_class.any_instance.stub(:stdout).and_return(stdout)
+    described_class.any_instance.stub(:stderr).and_return(stderr)
   end
 
   describe '#mute!' do
