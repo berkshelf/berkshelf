@@ -95,6 +95,14 @@ module Berkshelf
 
     private
 
+      # The berkshelf configuration (used in the Vagrantfile template)
+      #
+      # @return [Berkshelf::Config]
+      #   an instance of the current configuration
+      def berkshelf_config
+        @berkshelf_config ||= Berkshelf::Config.instance
+      end
+
       # Read the cookbook name from the metadata.rb
       #
       # @return [String]
@@ -127,7 +135,6 @@ module Berkshelf
         assert_option_supported(:foodcritic) &&
         assert_option_supported(:scmversion, 'thor-scmversion') &&
         assert_default_supported(:no_bundler, 'bundler')
-        # Vagrant is a dependency of Berkshelf; it will always appear available to the Berkshelf process.
       end
 
       # Warn if the supporting gem for an option is not installed
