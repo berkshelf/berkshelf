@@ -33,7 +33,6 @@ describe Berkshelf::Config do
     Berkshelf::Config::LOCATIONS.each do |location|
       context "with '#{location}' as the config file" do
         let(:path) { File.expand_path(location) }
-
         before { File.stub(:exists?).with(path).and_return(true) }
 
         it "returns '#{location}' as the path" do
@@ -42,13 +41,9 @@ describe Berkshelf::Config do
       end
     end
 
-    context "when ENV['BERKSHELF_PATH'] is used", focus: true do
+    context "when ENV['BERKSHELF_PATH'] is used" do
       before do
         ENV.stub(:[]).with('BERKSHELF_PATH').and_return('/tmp')
-
-        # Need to explicitly reload the config because the constant is cached
-        load 'lib/berkshelf/config.rb'
-
         File.stub(:exists?).with('/tmp').and_return(true)
       end
 
