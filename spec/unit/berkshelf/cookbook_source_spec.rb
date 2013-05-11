@@ -4,11 +4,6 @@ describe Berkshelf::CookbookSource do
   let(:cookbook_name) { 'nginx' }
   let(:berksfile) { double('berksfile', filepath: fixtures_path.join('Berksfile').to_s) }
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::CookbookSource.new
   describe '.initialize' do
     let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name) }
 
@@ -91,7 +86,6 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-  # Berkshelf::CookbookSource.add_valid_options
   describe '.add_valid_option' do
     before do
       @original = Berkshelf::CookbookSource.class_variable_get :@@valid_options
@@ -117,7 +111,6 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-  # Berkshelf::CookbookSource.add_location_key
   describe '.add_location_key' do
     before do
       @original = Berkshelf::CookbookSource.class_variable_get :@@location_keys
@@ -197,13 +190,9 @@ describe Berkshelf::CookbookSource do
   end
 
 
-  #
-  # Instance Methods
-  # -------------------------
 
   subject { Berkshelf::CookbookSource.new(berksfile, cookbook_name) }
 
-  # Berkshelf::CookbookSource#add_group
   describe '#add_group' do
     it 'stores strings as symbols' do
       subject.add_group 'foo'
@@ -228,7 +217,6 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-  # Berkshelf::CookbookSource#cached_and_location
   describe '#cached_and_location' do
     let(:options) { Hash.new }
 
@@ -250,7 +238,6 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-  # Berkshelf::CookbookSource#downloaded?
   describe '#downloaded?' do
     it 'returns true if self.cached_cookbook is not nil' do
       subject.stub(:cached_cookbook) { double('cb') }
@@ -263,7 +250,6 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-  # Berkshelf::CookbookSource#to_hash
   describe '#to_hash' do
     let(:hash) { subject.to_hash }
 
@@ -326,7 +312,6 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-  # Berkshelf::CookbookSource#to_s
   describe '#to_s' do
     it 'contains the name, constraint, and groups' do
       source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0')
@@ -341,7 +326,6 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-  # Berkshelf::CookbookSource#inspect
   describe '#inspect' do
     it 'contains the name, constraint, and groups' do
       source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0')
