@@ -4,10 +4,8 @@ module Berkshelf
   # @author Justin Campbell <justin.campbell@riotgames.com>
   # @author Jamie Winsor <reset@riotgames.com>
   class Config < Chozo::Config::JSON
-    # The default location for the berkshelf config
     DEFAULT_LOCATION = File.join(Berkshelf.berkshelf_path, 'config.json').freeze
 
-    # A list of common locations to search for a berkshelf config
     LOCATIONS = [
       File.join('.', '.berkshelf', 'config.json').freeze,
       File.join('.',  'berkshelf', 'config.json').freeze,
