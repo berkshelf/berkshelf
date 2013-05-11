@@ -170,30 +170,20 @@ describe Berkshelf::Location do
       expect(subject.validate_cached(cached)).to be_true
     end
 
-    context 'when the cached_cookbooks satisfies the version constraint' do
-      it 'returns true if the name of the cached_cookbook matches the name of the location' do
+    context "when the cached_cookbooks satisfies the version constraint" do
+      it "returns true if the name of the cached_cookbook matches the name of the location" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
         cached.stub(:name) { name }
-
         expect(subject.validate_cached(cached)).to be_true
       end
 
-      context "when the cached_cookbooks satisfies the version constraint" do
-        it "returns true if the name of the cached_cookbook matches the name of the location" do
-          constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
-          cached.stub(:name) { name }
+      it "warns about the MismatchedCookbookName if the cached_cookbook's name does not match the location's" do
+        constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
+        cached.stub(:cookbook_name) { "artifact" }
+        msg = Berkshelf::MismatchedCookbookName.new(subject, cached).to_s
 
-          subject.validate_cached(cached).should be_true
-        end
-
-        it "warns about the MismatchedCookbookName if the cached_cookbook's name does not match the location's" do
-          constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
-          cached.stub(:cookbook_name) { "artifact" }
-          msg = Berkshelf::MismatchedCookbookName.new(subject, cached).to_s
-
-          Berkshelf.ui.should_receive(:warn).with(msg)
-          subject.validate_cached(cached)
-        end
+        Berkshelf.ui.should_receive(:warn).with(msg)
+        subject.validate_cached(cached)
       end
     end
   end
