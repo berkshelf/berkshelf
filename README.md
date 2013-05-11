@@ -41,6 +41,22 @@ Plugins
 -------
 Please see [Plugins page](https://github.com/RiotGames/berkshelf/blob/master/PLUGINS.md) for more information.
 
+Configuration
+-------------
+Berkshelf will search in specific locations for a configuration file. In order:
+
+```text
+$PWD/.berkshelf/config.json
+$PWD/berkshelf/config.json
+$PWD/berkshelf-config.json
+$PWD/config.json
+~/.berkshelf/config.json
+```
+
+You are encouraged to keep project-specific configuration in the `$PWD/.berkshelf` directory. You can generate a project-configuration file by running:
+
+    $ berks configure --path ./.berkshelf/config.json
+
 SSL Errors
 ----------
 

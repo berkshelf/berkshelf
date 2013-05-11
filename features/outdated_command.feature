@@ -3,7 +3,6 @@ Feature: outdated command
   I want to know what cookbooks are outdated before I run update
   So that I can decide whether to update everything at once
 
-  @focus
   Scenario: Running berks outdated with no version constraints
     Given I write to "Berksfile" with:
       """
