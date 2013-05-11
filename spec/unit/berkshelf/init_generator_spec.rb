@@ -26,7 +26,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # berks cookbook --chefignore
   context 'with a chefignore' do
     before(:each) do
       capture(:stdout) {
@@ -42,7 +41,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  #
   context 'with a metadata entry in the Berksfile' do
     before(:each) do
       Dir.mkdir target
@@ -64,7 +62,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # berks cookbook --foodcritic
   context 'with the foodcritic option true' do
     before(:each) do
       capture(:stdout) {
@@ -84,7 +81,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # berks cookbook --scmversion
   context 'with the scmversion option true' do
     before(:each) do
       capture(:stdout) {
@@ -104,7 +100,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # berks cookbook --bundler
   context 'with the bundler option true' do
     before(:each) do
       capture(:stdout) {
@@ -119,7 +114,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  #
   context 'given a value for the cookbook_name option' do
     it 'sets the value of cookbook_name attribute to the specified option' do
       generator = Berkshelf::InitGenerator.new([target], cookbook_name: 'nautilus')
@@ -129,7 +123,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  #
   context 'when no value for cookbook_name option is specified' do
     it 'infers the name of the cookbook from the directory name' do
       generator = Berkshelf::InitGenerator.new([target])
@@ -139,7 +132,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # berks cookbook --skip-git
   context 'when skipping git' do
     before(:each) do
       generator = Berkshelf::InitGenerator.new([target], skip_git: true)
@@ -153,7 +145,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # berks cookbook --skip-vagrant
   context 'when skipping vagrant' do
     before(:each) do
       capture(:stdout) {
@@ -168,7 +159,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # berks cookbook --chef-minitest
   context 'with the chef_minitest option true' do
     before(:each) do
         Berkshelf::Resolver.stub(:resolve) { resolver }
