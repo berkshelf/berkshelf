@@ -1,11 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf::CookbookStore do
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::CookbookStore.initialize
   describe '#initialize' do
     it 'creates the storage_path' do
       storage_path = tmp_path.join('random_storage')
@@ -15,9 +10,7 @@ describe Berkshelf::CookbookStore do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   subject { Berkshelf::CookbookStore.new(tmp_path.join("cbstore_rspec")) }
 
@@ -39,7 +32,6 @@ describe Berkshelf::CookbookStore do
     end
   end
 
-  # Berkshelf::CookbookStore#satsify
   describe '#satisfy' do
     let(:name) { 'nginx' }
     let(:version) { '0.101.4' }
@@ -78,7 +70,6 @@ describe Berkshelf::CookbookStore do
     end
   end
 
-  # Berkshelf::CookbookStore#cookbook
   describe '#cookbook' do
     subject { Berkshelf::CookbookStore.new(fixtures_path.join('cookbooks')) }
 
@@ -91,7 +82,6 @@ describe Berkshelf::CookbookStore do
     end
   end
 
-  # Berkshelf::CookbookStore#cookbooks
   describe '#cookbooks' do
     before do
       generate_cookbook(subject.storage_path, 'nginx', '0.101.2')
