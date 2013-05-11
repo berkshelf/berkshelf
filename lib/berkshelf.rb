@@ -56,9 +56,10 @@ module Berkshelf
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
 
-    # @return [::Thor::Shell::Color]
+    # @return [Thor::Shell::Color, Thor::Shell::Basic]
+    #   A basic shell on Windows, colored everywhere else
     def ui
-      @ui ||= ::Thor::Shell::Color.new
+      @ui ||= Thor::Base.shell.new
     end
 
     # Returns the filepath to the location Berskhelf will use for
