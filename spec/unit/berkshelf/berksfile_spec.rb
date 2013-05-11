@@ -1,11 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf::Berksfile do
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::Berksfile.from_file
   describe '.from_file' do
     let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
 
@@ -24,7 +19,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile.vendor
   describe '.vendor' do
     let(:cached_cookbooks) { [] }
     let(:tmpdir) { Dir.mktmpdir(nil, tmp_path) }
@@ -53,9 +47,7 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   let(:source_one) { double('source_one', name: 'nginx') }
   let(:source_two) { double('source_two', name: 'mysql') }
@@ -66,7 +58,6 @@ describe Berkshelf::Berksfile do
     Berkshelf::Berksfile.new(berksfile_path)
   end
 
-  # Berkshelf::Berksfile#cookbook
   describe '#cookbook' do
     let(:name) { 'artifact' }
     let(:constraint) { double('constraint') }
@@ -102,7 +93,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#group
   describe '#group' do
     let(:name) { 'artifact' }
     let(:group) { 'production' }
@@ -116,7 +106,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#metadata
   describe '#metadata' do
     let(:path) { fixtures_path.join('cookbooks/example_cookbook') }
     subject { Berkshelf::Berksfile.new(path.join('Berksfile')) }
@@ -129,7 +118,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#site
   describe '#site' do
     let(:uri) { 'http://opscode/v1' }
 
@@ -146,7 +134,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#chef_api
   describe '#chef_api' do
     let(:uri) { 'http://chef:8080/' }
 
@@ -169,7 +156,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#sources
   describe '#sources' do
     let(:groups) do
       [
@@ -228,7 +214,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#groups
   describe '#groups' do
     before do
       subject.stub(:sources) { [source_one, source_two] }
@@ -249,7 +234,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#resolve
   describe '#resolve' do
     let(:resolver) { double('resolver') }
     let(:sources) { [source_one, source_two] }
@@ -267,7 +251,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#install
   describe '#install' do
     let(:resolver) { double('resolver') }
     let(:lockfile) { double('lockfile') }
@@ -357,16 +340,15 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#load
   describe '#load' do
-      let(:content) do
-        <<-EOF.strip
-        cookbook 'ntp', '<= 1.0.0'
-        cookbook 'mysql'
-        cookbook 'nginx', '< 0.101.2'
-        cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
-        EOF
-      end
+    let(:content) do
+      <<-EOF.strip
+      cookbook 'ntp', '<= 1.0.0'
+      cookbook 'mysql'
+      cookbook 'nginx', '< 0.101.2'
+      cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
+      EOF
+    end
 
     it 'reads the content of a Berksfile and adds the sources to the Shelf' do
       subject.load(content)
@@ -381,7 +363,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#add_source
   describe '#add_source' do
     let(:name) { 'cookbook_one' }
     let(:constraint) { '= 1.2.0' }
@@ -410,7 +391,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#add_location
   describe '#add_location' do
     let(:type) { :site }
     let(:value) { double('value') }
@@ -422,7 +402,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#upload
   describe '#upload' do
     let(:upload) { subject.upload(options) }
     let(:options) { Hash.new }
@@ -529,7 +508,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # Berkshelf::Berksfile#apply
   describe '#apply' do
     let(:env_name)    { 'berkshelf-test' }
     let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
