@@ -18,11 +18,6 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     )
   end
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::Resolver.initialize
   describe '.initialize' do
     it 'adds the specified sources to the sources hash' do
       resolver = Berkshelf::Resolver.new(berksfile, sources: [source], skip_dependencies: true)
@@ -40,13 +35,10 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   subject { Berkshelf::Resolver.new(berksfile) }
 
-  # Berkshelf::Resolver#add_source
   describe '#add_source' do
     let(:package_version) { double('package-version', dependencies: Array.new) }
 
@@ -84,7 +76,6 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     end
   end
 
-  # Berkshelf::Resolver#get_source
   describe '#get_source' do
     before { subject.add_source(source, false) }
 
@@ -95,7 +86,6 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     end
   end
 
-  # Berkshelf::Resolver#has_source?
   describe '#has_source?' do
     before { subject.add_source(source, false) }
 
