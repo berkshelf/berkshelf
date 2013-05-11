@@ -12,7 +12,7 @@ end
 
 Then /^a file named "(.*?)" should exist in the current directory$/ do |filename|
   in_current_dir do
-    File.exists?(filename).should be_true # not sure why Aruba's
+    expect(File.exists?(filename)).to be_true # not sure why Aruba's
                                           # #check_file_presence
                                           # doesn't work here. It
                                           # looks in the wrong
@@ -22,7 +22,7 @@ end
 
 Then /^the file "(.*?)" should contain in the current directory:$/ do |filename, string|
   in_current_dir do
-    File.read(filename).should match(Regexp.new(string))
+    expect(File.read(filename)).to match(Regexp.new(string))
   end
 end
 

@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe Thor::Shell::Color do
   let(:stdout) { double('stdout') }
   let(:stderr) { double('stderr') }
@@ -10,21 +9,21 @@ describe Thor::Shell::Color do
     Thor::Shell::Basic.any_instance.stub(:stderr).and_return(stderr)
   end
 
-  context '#mute!' do
+  describe '#mute!' do
     it 'sets @mute to true' do
       subject.mute!
       expect(subject.instance_variable_get(:@mute)).to be_true
     end
   end
 
-  context '#unmute!' do
+  describe '#unmute!' do
     it 'sets @mute to false' do
       subject.unmute!
       expect(subject.instance_variable_get(:@mute)).to be_false
     end
   end
 
-  context '#say' do
+  describe '#say' do
     context 'when quiet?' do
       before do
         subject.stub(:quiet?).and_return(true)
@@ -49,7 +48,7 @@ describe Thor::Shell::Color do
     end
   end
 
-  context '#say_status' do
+  describe '#say_status' do
     context 'when quiet?' do
       before do
         subject.stub(:quiet?).and_return(true)
@@ -74,7 +73,7 @@ describe Thor::Shell::Color do
     end
   end
 
-  context '#warn' do
+  describe '#warn' do
     context 'when quiet?' do
       before do
         subject.stub(:quiet?).and_return(true)
@@ -100,7 +99,7 @@ describe Thor::Shell::Color do
     end
   end
 
-  context '#deprecated' do
+  describe '#deprecated' do
     it 'prefixes the message with "[DEPRECATED]"' do
       subject.should_receive(:warn).with('[DEPRECATION] That was deprecated!')
       subject.deprecated 'That was deprecated!'

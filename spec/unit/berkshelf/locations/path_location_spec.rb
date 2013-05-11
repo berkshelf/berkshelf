@@ -2,65 +2,63 @@ require 'spec_helper'
 
 describe Berkshelf::PathLocation do
   let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
-  let(:path) { fixtures_path.join("cookbooks", "example_cookbook").to_s }
+  let(:path) { fixtures_path.join('cookbooks', 'example_cookbook').to_s }
 
-  describe "ClassMethods" do
-    describe "::new" do
-      it "assigns the value of :path to @path" do
-        obj = described_class.new("nginx", complacent_constraint, path: path)
-
-        obj.path.should eql(path)
-      end
+  describe '.new' do
+    it 'assigns the value of :path to @path' do
+      location = Berkshelf::PathLocation.new('nginx', complacent_constraint, path: path)
+      expect(location.path).to eq(path)
     end
   end
 
-  subject { described_class.new("nginx", complacent_constraint, path: path) }
 
-  describe "#download" do
-    it "returns an instance of CachedCookbook" do
-      subject.download(tmp_path).should be_a(Berkshelf::CachedCookbook)
+
+  subject { Berkshelf::PathLocation.new('nginx', complacent_constraint, path: path) }
+
+  describe '#download' do
+    it 'returns an instance of CachedCookbook' do
+      expect(subject.download(tmp_path)).to be_a(Berkshelf::CachedCookbook)
     end
 
-    it "sets the downloaded status to true" do
+    it 'sets the downloaded status to true' do
       subject.download(tmp_path)
-
-      subject.should be_downloaded
+      expect(subject).to be_downloaded
     end
 
-    context "given a path that does not exist" do
-      subject { described_class.new("doesnot_exist", complacent_constraint, path: tmp_path.join("doesntexist_noway")) }
+    context 'given a path that does not exist' do
+      subject { Berkshelf::PathLocation.new('doesnot_exist', complacent_constraint, path: tmp_path.join('doesntexist_noway')) }
 
-      it "raises a CookbookNotFound error" do
-        lambda {
+      it 'raises a CookbookNotFound error' do
+        expect {
           subject.download(tmp_path)
-        }.should raise_error(Berkshelf::CookbookNotFound)
+        }.to raise_error(Berkshelf::CookbookNotFound)
       end
     end
 
-    context "given a path that does not contain a cookbook" do
-      subject { described_class.new("doesnot_exist", complacent_constraint, path: fixtures_path) }
+    context 'given a path that does not contain a cookbook' do
+      subject { Berkshelf::PathLocation.new('doesnot_exist', complacent_constraint, path: fixtures_path) }
 
-      it "raises a CookbookNotFound error" do
-        lambda {
+      it 'raises a CookbookNotFound error' do
+        expect {
           subject.download(tmp_path)
-        }.should raise_error(Berkshelf::CookbookNotFound)
+        }.to raise_error(Berkshelf::CookbookNotFound)
       end
     end
 
-    context "given the content at path does not satisfy the version constraint" do
-      subject { described_class.new("nginx", double('constraint', satisfies?: false), path: path) }
+    context 'given the content at path does not satisfy the version constraint' do
+      subject { Berkshelf::PathLocation.new('nginx', double('constraint', satisfies?: false), path: path) }
 
-      it "raises a CookbookValidationFailure error" do
-        lambda {
+      it 'raises a CookbookValidationFailure error' do
+        expect {
           subject.download(double('path'))
-        }.should raise_error(Berkshelf::CookbookValidationFailure)
+        }.to raise_error(Berkshelf::CookbookValidationFailure)
       end
     end
   end
 
   describe '#to_s' do
     context 'for a remote path' do
-      subject { described_class.new('nginx', complacent_constraint, path: path) }
+      subject { Berkshelf::PathLocation.new('nginx', complacent_constraint, path: path) }
 
       it 'includes the path information' do
         expect(subject.to_s).to match(/path\:.+example_cookbook/)
@@ -68,7 +66,7 @@ describe Berkshelf::PathLocation do
     end
 
     context 'for a store path' do
-      subject { described_class.new('nginx', complacent_constraint, path: File.join(Berkshelf.berkshelf_path, 'cookbooks/example_cookbook')) }
+      subject { Berkshelf::PathLocation.new('nginx', complacent_constraint, path: File.join(Berkshelf.berkshelf_path, 'cookbooks/example_cookbook')) }
 
       it 'does not include the path information' do
         expect(subject.to_s).to_not match(/path\:.+/)

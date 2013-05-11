@@ -6,28 +6,60 @@ Feature: --format json
   Scenario: JSON output installing a cookbook from the default location
     Given I write to "Berksfile" with:
       """
-      cookbook "mysql", "= 1.2.4"
+      cookbook "mysql", "1.2.4"
       """
     When I run the install command with flags:
       | --format json |
-    Then the output should be JSON
-    And the JSON at "cookbooks" should have 2 cookbooks
-    And the JSON at "cookbooks/0/version" should be "1.2.4"
-    And the JSON at "cookbooks/0/location" should be "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'"
+    Then the output should contain JSON:
+      """
+      {
+        "cookbooks": [
+          {
+            "name": "mysql",
+            "version": "1.2.4",
+            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'"
+          },
+          {
+            "name": "openssl",
+            "version": "1.0.2",
+            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'"
+          }
+        ],
+        "errors": [
+
+        ],
+        "messages": [
+
+        ]
+      }
+      """
 
   Scenario: JSON output installing a cookbook we already have
     Given the cookbook store has the cookbooks:
       | mysql   | 1.2.4 |
     And I write to "Berksfile" with:
       """
-      cookbook "mysql", "= 1.2.4"
+      cookbook "mysql", "1.2.4"
       """
     When I run the install command with flags:
       | --format json |
-    Then the output should be JSON
-    And the JSON at "cookbooks" should have 1 cookbook
-    And the JSON at "cookbooks/0/version" should be "1.2.4"
-    And the JSON should not have "cookbooks/0/location"
+    Then the output should contain JSON:
+      """
+      {
+        "cookbooks": [
+          {
+            "name": "mysql",
+            "version": "1.2.4"
+          }
+        ],
+        "errors": [
+
+        ],
+        "messages": [
+
+        ]
+      }
+      """
 
   @chef_server
   Scenario: JSON output when running the upload command
@@ -37,9 +69,22 @@ Feature: --format json
       | example_cookbook | 0.5.0 |
     When I run the upload command with flags:
       | --format json |
-    Then the output should be JSON
-    And the JSON at "cookbooks" should have 1 cookbook
-    And the JSON at "cookbooks/0/version" should be "0.5.0"
-    And the JSON should have "cookbooks/0/uploaded_to"
-    And the Chef server should have the cookbooks:
-      | example_cookbook | 0.5.0 |
+    Then the output should contain JSON:
+      """
+      {
+        "cookbooks": [
+          {
+            "name": "example_cookbook",
+            "version": "0.5.0",
+            "location": "path: '<%= File.expand_path(File.join(fixtures_path, 'cookbooks', 'example_cookbook-0.5.0')) %>'",
+            "uploaded_to": "http://localhost:4000/"
+          }
+        ],
+        "errors": [
+
+        ],
+        "messages": [
+
+        ]
+      }
+      """

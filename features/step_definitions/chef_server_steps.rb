@@ -16,13 +16,13 @@ end
 
 Then /^the Chef server should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    server_has_cookbook?(name, version).should be_true
+    expect(server_has_cookbook?(name, version)).to be_true
   end
 end
 
 Then /^the Chef server should not have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    server_has_cookbook?(name, version).should be_false
+    expect(server_has_cookbook?(name, version)).to be_false
   end
 end
 
@@ -36,7 +36,7 @@ end
 Then(/^the version locks in "(.*?)" should be:$/) do |environment_name, version_locks|
   environment_cookbook_versions = environment(environment_name).cookbook_versions
   version_locks.hashes.each do |hash|
-    environment_cookbook_versions[hash['cookbook']].should == hash['version_lock']
+    expect(environment_cookbook_versions[hash['cookbook']]).to eq(hash['version_lock'])
   end
 end
 

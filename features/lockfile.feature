@@ -23,6 +23,7 @@ Feature: Berksfile.lock
       }
       """
 
+  @slow_process
   Scenario: Installing a cookbook with dependencies
   Given I write to "Berksfile" with:
     """
@@ -166,76 +167,60 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'sudo', git: 'git://github.com/opscode-cookbooks/sudo.git', ref: 'f7ada1e95'
+    cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', ref: '919afa0c4'
     """
   When I successfully run `berks install`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha": "d8fff7d2d491eb5ad9b15edfdf0a8a4da513f33a",
+      "sha": "b8e06c891c824b3e3481df024eb241e1c02572a6",
       "sources":{
-        "sudo":{
-          "git":"git://github.com/opscode-cookbooks/sudo.git",
-          "ref":"f7ada1e95d2f20262de288dda018a5e94d805ecc",
-          "locked_version":"2.0.4"
+        "berkshelf-cookbook-fixture":{
+          "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+          "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
+          "locked_version":"1.0.0"
         }
       }
     }
     """
 
-  # This spec will break if artifact cookbook master is pushed/changed
   Scenario: Updating a Berksfile.lock with a git location and a branch
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'artifact', git: 'git://github.com/RiotGames/artifact-cookbook.git', branch: 'master'
+    cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', branch: 'master'
     """
   When I successfully run `berks install`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha": "10a1c4ec894b8a6bed81b8c01c682b70b644030b",
+      "sha": "310f95bb86ba76b47eef28abc621d0e8de19bbb6",
       "sources":{
-        "artifact":{
-          "git":"git://github.com/RiotGames/artifact-cookbook.git",
-          "ref":"abe7073c528f1f57dc7bc85e6fabc3e7abb86a04",
-          "locked_version":"1.5.0"
-        },
-        "chef_handler": {
-          "locked_version": "1.1.4"
-        },
-        "windows": {
-          "constraint": "~> 1.8.0",
-          "locked_version": "1.8.10"
+        "berkshelf-cookbook-fixture":{
+          "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+          "ref":"a97b9447cbd41a5fe58eee2026e48ccb503bd3bc",
+          "locked_version":"1.0.0"
         }
       }
     }
     """
 
-  # This spec will break if artifact cookbook tag is pushed/changed
   Scenario: Updating a Berksfile.lock with a git location and a branch
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'artifact', git: 'git://github.com/RiotGames/artifact-cookbook.git', tag: '1.5.0'
+    cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', tag: 'v0.2.0'
     """
   When I successfully run `berks install`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha": "feae39a78644be4fcec5238cc280f6463e21d992",
+      "sha": "ade51e222f569cc299f34ec1100d321f3b230c36",
       "sources":{
-        "artifact":{
-          "git":"git://github.com/RiotGames/artifact-cookbook.git",
-          "ref":"864b5db7b05e87ca4d9161ac628788d2f9837ebf",
-          "locked_version":"1.5.0"
-        },
-        "chef_handler": {
-          "locked_version": "1.1.4"
-        },
-        "windows": {
-          "constraint": "~> 1.8.0",
-          "locked_version": "1.8.10"
+        "berkshelf-cookbook-fixture":{
+          "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+          "ref":"70a527e17d91f01f031204562460ad1c17f972ee",
+          "locked_version":"0.2.0"
         }
       }
     }
@@ -245,18 +230,18 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'sudo', github: 'opscode-cookbooks/sudo', ref: 'f7ada1e95'
+    cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', ref: '919afa0c4'
     """
   When I successfully run `berks install`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha": "3232c5ae6f54aee3efc5fdcfce69249a2526822b",
+      "sha": "3ac97aa503bcebb2b393410aebc176c3c5bed2d4",
       "sources":{
-        "sudo":{
-          "git":"git://github.com/opscode-cookbooks/sudo.git",
-          "ref":"f7ada1e95d2f20262de288dda018a5e94d805ecc",
-          "locked_version":"2.0.4"
+        "berkshelf-cookbook-fixture":{
+          "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+          "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
+          "locked_version":"1.0.0"
         }
       }
     }

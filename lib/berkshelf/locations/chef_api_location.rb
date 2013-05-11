@@ -4,7 +4,7 @@ module Berkshelf
     class << self
       # @return [Proc]
       def finalizer
-        proc { conn.terminate if conn.alive? }
+        proc { conn.terminate if defined?(conn) && conn.alive? }
       end
 
       # @param [String] node_name
@@ -150,7 +150,7 @@ module Berkshelf
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
       berks_path = File.join(destination, "#{name}-#{target_cookbook.version}")
-      
+
       temp_path = target_cookbook.download
       FileUtils.mv(temp_path, berks_path)
 
