@@ -60,7 +60,6 @@ Feature: configure command
       """
     And the CLI should exit with the status code for error "ConfigExists"
 
-  @focus
   Scenario Outline: Generating a local Berkshelf config
     Given I do not have a Berkshelf config file at "<path>"
     When I run the "configure --path <path>" command interactively
