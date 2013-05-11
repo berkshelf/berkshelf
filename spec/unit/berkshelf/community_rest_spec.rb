@@ -1,11 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with: :json } do
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf::CommunityRest.unpack
   describe '.unpack' do
     let(:target) { '/foo/bar' }
     let(:destination) { '/destination/bar' }
@@ -28,7 +23,6 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # Berkshelf::CommunityRest.uri_escape_version
   describe '.uri_escape_version' do
     it 'returns a string' do
       expect(Berkshelf::CommunityREST.uri_escape_version(nil)).to be_a(String)
@@ -47,7 +41,6 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # Berkshelf::CommunityRest.version_from_uri
   describe '.version_from_uri' do
     it 'returns a string' do
       expect(Berkshelf::CommunityREST.version_from_uri(nil)).to be_a(String)
@@ -66,9 +59,7 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   let(:api_uri) { Berkshelf::CommunityREST::V1_API }
 
@@ -76,7 +67,6 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     Berkshelf::CommunityREST.new(api_uri)
   end
 
-  # Berkshelf::CommunityRest.download
   describe '#download' do
     let(:archive) { double('archive', path: '/foo/bar', unlink: true) }
 
@@ -93,7 +83,6 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # Berkshelf::CommunityRest.find
   describe '#find' do
     it 'returns the cookbook and version information' do
       result = subject.find('nginx', '1.4.0')
@@ -123,7 +112,6 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # Berkshelf::CommunityRest.latest_version
   describe '#latest_version' do
     it 'returns the version number of the latest version of the cookbook' do
       expect(subject.latest_version('nginx')).to eq('1.4.0')
@@ -144,7 +132,6 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # Berkshelf::CommunityRest.versions
   describe '#versions' do
     it 'returns an array containing an item for each version' do
       expect(subject.versions('nginx')).to have(24).versions
@@ -165,14 +152,12 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
   end
 
-  # Berkshelf::CommunityRest.satisfy
   describe '#satisfy' do
     it 'returns the version number of the best solution' do
       expect(subject.satisfy('nginx', '= 1.1.0')).to eq('1.1.0')
     end
   end
 
-  # Berkshelf::CommunityRest.stream
   describe '#stream' do
     pending
   end
