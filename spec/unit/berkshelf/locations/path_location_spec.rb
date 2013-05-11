@@ -4,11 +4,6 @@ describe Berkshelf::PathLocation do
   let(:complacent_constraint) { double('comp-vconstraint', satisfies?: true) }
   let(:path) { fixtures_path.join('cookbooks', 'example_cookbook').to_s }
 
-  #
-  # Class Methods
-  # -------------------------
-
-  # Berkshelf:PathLocation.new
   describe '.new' do
     it 'assigns the value of :path to @path' do
       location = Berkshelf::PathLocation.new('nginx', complacent_constraint, path: path)
@@ -16,13 +11,10 @@ describe Berkshelf::PathLocation do
     end
   end
 
-  #
-  # Instance Methods
-  # -------------------------
+
 
   subject { Berkshelf::PathLocation.new('nginx', complacent_constraint, path: path) }
 
-  # Berkshelf::PathLocation#download
   describe '#download' do
     it 'returns an instance of CachedCookbook' do
       expect(subject.download(tmp_path)).to be_a(Berkshelf::CachedCookbook)
