@@ -10,14 +10,9 @@ describe Berkshelf::Formatters do
     Berkshelf::Formatters.class_variable_set :@@formatters, @original
   end
 
-  #
-  # Class Methods
-  # -------------------------
-
   let(:format_id) { :rspec }
   let(:format_klass) { Class.new { include Berkshelf::Formatters::AbstractFormatter } }
 
-  # Berkshelf::Formatters.register
   describe '.register' do
     it 'adds the class of the includer to the list of registered formatters with the id' do
       Berkshelf::Formatters.register(format_id, format_klass)
@@ -46,7 +41,6 @@ describe Berkshelf::Formatters do
     end
   end
 
-  # Berkshelf::Formatters.formatters
   describe '.formatters' do
     before do
       Berkshelf::Formatters.register(format_id, format_klass)
@@ -60,7 +54,6 @@ describe Berkshelf::Formatters do
     end
   end
 
-  # Berkshelf::Formatters.get
   describe '.get' do
     before { Berkshelf::Formatters.register(format_id, format_klass) }
 
@@ -75,15 +68,7 @@ describe Berkshelf::Formatters do
     end
   end
 
-  #
-  # Berkshelf::Formatters::AbstractFormatter
-  #
   describe Berkshelf::Formatters::AbstractFormatter do
-    #
-    # Class Methods
-    # -------------------------
-
-    # Berkshelf::Formatters.register_formatter
     describe '.register_formatter' do
       it 'delegates to Formatters' do
         Berkshelf::Formatters.should_receive(:register).with(:rspec, format_klass)
@@ -92,9 +77,7 @@ describe Berkshelf::Formatters do
       end
     end
 
-    #
-    # Instance Methods
-    # -------------------------
+
 
     subject do
       Class.new { include Berkshelf::Formatters::AbstractFormatter }.new
@@ -125,6 +108,5 @@ describe Berkshelf::Formatters do
         subject.error('whoa this is bad')
       }.to raise_error(Berkshelf::AbstractFunction)
     end
-
   end
 end
