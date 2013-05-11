@@ -58,7 +58,7 @@ module Berkshelf
 
     # @return [::Thor::Shell::Color]
     def ui
-      @ui ||= ::Thor::Shell::Color.new
+      @ui ||= Thor::Base.shell.new
     end
 
     # Returns the filepath to the location Berskhelf will use for
