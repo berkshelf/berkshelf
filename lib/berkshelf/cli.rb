@@ -492,3 +492,7 @@ module Berkshelf
       end
   end
 end
+
+Dir["#{File.dirname(__FILE__)}/commands/*.rb"].sort.each do |path|
+  require "berkshelf/commands/#{File.basename(path, '.rb')}"
+end
