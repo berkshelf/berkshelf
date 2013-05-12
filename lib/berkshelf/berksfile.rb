@@ -593,6 +593,55 @@ module Berkshelf
       conn.terminate if conn && conn.alive?
     end
 
+    # Package the given cookbook for distribution outside of berkshelf
+    #
+    # @param [String] name
+    #   the name of the cookbook to package
+    # @param [Hash] options
+    #   a list of options
+    #
+    # @option options [String] :output
+    #   the path to output the tarball
+    # @option options [Boolean] :skip_dependencies
+    #   package cookbook dependencies as well
+    #
+    # @return [String]
+    #   the path to the package
+    def package(name, options = {})
+      tar_name = "#{name}.tar.gz"
+      output = File.expand_path(File.join(options[:output], tar_name))
+
+      source = self.find(name)
+      raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile" unless source
+
+      package = Berkshelf.ui.mute {
+        self.resolve(source, options)[:solution]
+      }
+
+      Dir.mktmpdir do |tmp|
+        package.each do |cached_cookbook|
+          path = cached_cookbook.path.to_s
+          destination = File.join(tmp, cached_cookbook.cookbook_name)
+
+          FileUtils.cp_r(path, destination)
+
+          git = File.join(destination, '.git')
+          FileUtils.rm_r(git) if File.exists?(git)
+        end
+
+        FileUtils.mkdir_p(options[:output])
+
+        Dir.chdir(tmp) do |dir|
+          tgz = Zlib::GzipWriter.new(File.open(output, 'wb'))
+          Archive::Tar::Minitar.pack('.', tgz)
+        end
+      end
+
+      Berkshelf.ui.say "Cookbook '#{name}' saved to #{output}!"
+
+      output
+    end
+
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
     #
     # @param [Array<Berkshelf::CookbookSource>] sources

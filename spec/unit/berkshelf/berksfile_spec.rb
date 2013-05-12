@@ -567,4 +567,36 @@ describe Berkshelf::Berksfile do
       end
     end
   end
+
+  describe '#package' do
+    context 'when the source does not exist' do
+      it 'raises a CookbookNotFound exception' do
+        expect {
+          subject.package('non-existent', output: '/tmp')
+        }.to raise_error(Berkshelf::CookbookNotFound)
+      end
+    end
+
+    context 'when the source exists' do
+      let(:source) { double('source') }
+      let(:cached) { double('cached', path: '/foo/bar', cookbook_name: 'cookbook') }
+      let(:options) { { output: '/tmp' } }
+
+      before do
+        FileUtils.stub(:cp_r)
+        FileUtils.stub(:mkdir_p)
+        subject.stub(:find).with('non-existent').and_return(source)
+        subject.stub(:resolve).with(source, options).and_return({ solution: [cached], sources: [source] })
+      end
+
+      it 'resolves the sources' do
+        subject.should_receive(:resolve).with(source, options)
+        subject.package('non-existent', options)
+      end
+
+      it 'returns the output path' do
+        expect(subject.package('non-existent', options)).to eq('/tmp/non-existent.tar.gz')
+      end
+    end
+  end
 end

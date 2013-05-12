@@ -400,6 +400,29 @@ module Berkshelf
       end
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    method_option :output,
+      type: :string,
+      default: Dir.pwd,
+      desc: "Path to output the tarball",
+      aliases: "-o",
+      banner: "PATH"
+    method_option :skip_dependencies,
+      type: :boolean,
+      desc: "Skip packaging dependent cookbook(s).",
+      default: false,
+      aliases: "-D"
+    desc "package COOKBOOK", "Package this cookbook and all it's dependencies in a tarball"
+    def package(name)
+      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile.package(name, options)
+    end
+
     desc "version", "Display version and copyright information"
     def version
       Berkshelf.formatter.msg version_header
