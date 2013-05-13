@@ -145,16 +145,17 @@ module Berkshelf
     #
     # @raise [CookbookValidationFailure] if given CachedCookbook does not satisfy the constraint of the location
     #
+    # @todo Change MismatchedCookbookName to raise instead of warn
+    #
     # @return [Boolean]
     def validate_cached(cached_cookbook)
       unless version_constraint.satisfies?(cached_cookbook.version)
         raise CookbookValidationFailure.new(self, cached_cookbook)
       end
 
-      # JW TODO: Safe to uncomment when when Opscode makes the 'name' a required attribute in Cookbook metadata
-      # unless self.name == cached_cookbook.cookbook_name
-      #   raise AmbiguousCookbookName, "Expected a cookbook at #{self} to be named '#{self.name}'. Did you set the 'name' attribute in your Cookbooks metadata? If you didn't, the name of the directory will be used as the name of your Cookbook (awful, right?)."
-      # end
+      unless self.name == cached_cookbook.cookbook_name
+        Berkshelf.ui.warn(MismatchedCookbookName.new(self, cached_cookbook).to_s)
+      end
 
       true
     end

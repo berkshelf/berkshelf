@@ -117,7 +117,39 @@ module Berkshelf
     end
   end
 
-  class AmbiguousCookbookName < BerkshelfError; status_code(114); end
+  # @author Seth Vargo <sethvargo@gmail.com>
+  class MismatchedCookbookName < BerkshelfError
+    status_code(114)
+
+    # @return [Berkshelf::Location]
+    attr_reader :location
+
+    # @return [Berkshelf::CachedCookbook]
+    attr_reader :cached_cookbook
+
+    # @param [Berkshelf::Location] location
+    #   the location that is mismatched
+    # @param [Berkshelf::CachedCookbook] cached_cookbook
+    #   the cached_cookbook that is mismatched
+    def initialize(location, cached_cookbook)
+      @location = location
+      @cached_cookbook = cached_cookbook
+    end
+
+    def to_s
+      [
+        "In your Berksfile, you have:",
+        "",
+        "  cookbook '#{location.name}'",
+        "",
+        "But that cookbook is actually named '#{cached_cookbook.cookbook_name}'.",
+        "",
+        "This can cause potentially unwanted side-effects in the future.",
+        "",
+        "NOTE: If you don't explicitly set the `name` attribute in the metadata, the name of the directory will be used!"
+      ].join("\n")
+    end
+  end
 
   class InvalidConfiguration < BerkshelfError
     status_code(115)

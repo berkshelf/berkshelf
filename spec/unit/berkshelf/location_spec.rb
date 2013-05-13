@@ -170,23 +170,20 @@ describe Berkshelf::Location do
       expect(subject.validate_cached(cached)).to be_true
     end
 
-    context 'when the cached_cookbooks satisfies the version constraint' do
-      it 'returns true if the name of the cached_cookbook matches the name of the location' do
+    context "when the cached_cookbooks satisfies the version constraint" do
+      it "returns true if the name of the cached_cookbook matches the name of the location" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
         cached.stub(:name) { name }
-
         expect(subject.validate_cached(cached)).to be_true
       end
 
-      it "raises an AmbiguousCookbookName error if the cached_cookbook's name does not match the location's" do
-        pending "Implement when Opscode makes the 'name' a required attribute in Cookbook metadata"
-
+      it "warns about the MismatchedCookbookName if the cached_cookbook's name does not match the location's" do
         constraint.should_receive(:satisfies?).with(cached.version).and_return(true)
-        cached.stub(:cookbook_name) { 'artifact' }
+        cached.stub(:cookbook_name) { "artifact" }
+        msg = Berkshelf::MismatchedCookbookName.new(subject, cached).to_s
 
-        expect {
-          subject.validate_cached(cached)
-        }.to raise_error(Berkshelf::AmbiguousCookbookName)
+        Berkshelf.ui.should_receive(:warn).with(msg)
+        subject.validate_cached(cached)
       end
     end
   end
