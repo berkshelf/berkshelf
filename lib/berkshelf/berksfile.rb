@@ -593,7 +593,9 @@ module Berkshelf
       conn.terminate if conn && conn.alive?
     end
 
-    # Package the given cookbook for distribution outside of berkshelf
+    # Package the given cookbook for distribution outside of berkshelf. If the
+    # name attribute is not given, all cookbooks in the Berksfile will be
+    # packaged.
     #
     # @param [String] name
     #   the name of the cookbook to package
@@ -607,16 +609,22 @@ module Berkshelf
     #
     # @return [String]
     #   the path to the package
-    def package(name, options = {})
-      tar_name = "#{name}.tar.gz"
+    def package(name = nil, options = {})
+      tar_name = "#{name || 'package'}.tar.gz"
       output = File.expand_path(File.join(options[:output], tar_name))
 
-      source = self.find(name)
-      raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile" unless source
+      unless name.nil?
+        source = self.find(name)
+        raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile" unless source
 
-      package = Berkshelf.ui.mute {
-        self.resolve(source, options)[:solution]
-      }
+        package = Berkshelf.ui.mute {
+          self.resolve(source, options)[:solution]
+        }
+      else
+        package = Berkshelf.ui.mute {
+          self.resolve(sources, options)[:solution]
+        }
+      end
 
       Dir.mktmpdir do |tmp|
         package.each do |cached_cookbook|

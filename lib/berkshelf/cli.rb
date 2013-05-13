@@ -417,8 +417,8 @@ module Berkshelf
       desc: "Skip packaging dependent cookbook(s).",
       default: false,
       aliases: "-D"
-    desc "package COOKBOOK", "Package this cookbook and all it's dependencies in a tarball"
-    def package(name)
+    desc "package [COOKBOOK]", "Package this cookbook and all it's dependencies in a tarball"
+    def package(name = nil)
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.package(name, options)
     end
