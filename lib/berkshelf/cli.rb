@@ -415,8 +415,11 @@ module Berkshelf
     method_option :skip_dependencies,
       type: :boolean,
       desc: "Skip packaging dependent cookbook(s).",
-      default: false,
-      aliases: "-D"
+      default: false
+    method_option :ignore_chefignore,
+      type: :boolean,
+      desc: "Do not apply the chefignore to the packaged contents",
+      default: false
     desc "package [COOKBOOK]", "Package this cookbook and all it's dependencies in a tarball"
     def package(name = nil)
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])

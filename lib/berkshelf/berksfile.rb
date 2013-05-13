@@ -606,6 +606,8 @@ module Berkshelf
     #   the path to output the tarball
     # @option options [Boolean] :skip_dependencies
     #   package cookbook dependencies as well
+    # @option options [Boolean] :ignore_chefignore
+    #   do not apply the chefignore file to the packed cookbooks
     #
     # @return [String]
     #   the path to the package
@@ -626,6 +628,8 @@ module Berkshelf
         }
       end
 
+      root_chefignore = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)
+
       Dir.mktmpdir do |tmp|
         package.each do |cached_cookbook|
           path = cached_cookbook.path.to_s
@@ -633,8 +637,11 @@ module Berkshelf
 
           FileUtils.cp_r(path, destination)
 
-          git = File.join(destination, '.git')
-          FileUtils.rm_r(git) if File.exists?(git)
+          unless options[:ignore_chefignore]
+            ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(path) || root_chefignore
+            chefignore  = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file) unless ignore_file.nil?
+            chefignore.remove_ignores_from(destination) if chefignore
+          end
         end
 
         FileUtils.mkdir_p(options[:output])
