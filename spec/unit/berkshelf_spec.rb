@@ -28,6 +28,8 @@ describe Berkshelf do
 
   describe '.formatter' do
     context 'with default formatter' do
+      before { Berkshelf.instance_variable_set(:@formatter, nil) }
+
       it 'should be human readable' do
         expect(Berkshelf.formatter).to be_an_instance_of(Berkshelf::Formatters::HumanReadable)
       end

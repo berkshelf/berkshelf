@@ -60,6 +60,15 @@ module Berkshelf
         cookbooks[cookbook][:uploaded_to] = chef_api_url
       end
 
+      # Add a Cookbook package entry to delayed output
+      #
+      # @param [String] cookbook
+      # @param [String] destination
+      def package(cookbook, destination)
+        cookbooks[cookbook] ||= {}
+        cookbooks[cookbook][:destination] = destination
+      end
+
       # Add a generic message entry to delayed output
       #
       # @param [String] message

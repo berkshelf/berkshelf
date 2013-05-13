@@ -645,7 +645,7 @@ module Berkshelf
         end
       end
 
-      Berkshelf.ui.say "Cookbook '#{name}' saved to #{output}!"
+      Berkshelf.formatter.package(name, output)
 
       output
     end

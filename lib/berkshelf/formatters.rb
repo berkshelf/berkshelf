@@ -73,24 +73,8 @@ module Berkshelf
         # run after the task is finished
       end
 
-      def install(cookbook, version, location)
-        raise AbstractFunction, "#install must be implemented on #{self.class}"
-      end
-
-      def use(cookbook, version, path = nil)
-        raise AbstractFunction, "#install must be implemented on #{self.class}"
-      end
-
-      def upload(cookbook, version, chef_server_url)
-        raise AbstractFunction, "#upload must be implemented on #{self.class}"
-      end
-
-      def msg(message)
-        raise AbstractFunction, "#msg must be implemented on #{self.class}"
-      end
-
-      def error(message)
-        raise AbstractFunction, "#error must be implemented on #{self.class}"
+      def method_missing(meth, *args, &block)
+        raise AbstractFunction, "##{meth} must be implemented on #{self.class}"
       end
 
       private
