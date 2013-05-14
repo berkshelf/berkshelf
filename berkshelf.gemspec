@@ -28,12 +28,12 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = ">= 1.9.1"
   s.required_rubygems_version = ">= 1.8.0"
 
-  s.add_dependency 'celluloid', '>= 0.13.0'
+  s.add_dependency 'celluloid', '>= 0.14.0'
   s.add_dependency 'activesupport', '>= 3.2.0'
   s.add_dependency 'mixlib-shellout', '~> 1.1'
   s.add_dependency 'mixlib-config', '~> 1.1'
   s.add_dependency 'faraday', '>= 0.8.5'
-  s.add_dependency 'ridley', '~> 0.11.0'
+  s.add_dependency 'ridley', '~> 0.12.1'
   s.add_dependency 'chozo', '>= 0.6.1'
   s.add_dependency 'hashie', '>= 2.0.2'
   s.add_dependency 'minitar'
