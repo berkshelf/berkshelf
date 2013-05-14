@@ -628,8 +628,6 @@ module Berkshelf
         }
       end
 
-      root_chefignore = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)
-
       Dir.mktmpdir do |tmp|
         package.each do |cached_cookbook|
           path = cached_cookbook.path.to_s
@@ -638,9 +636,10 @@ module Berkshelf
           FileUtils.cp_r(path, destination)
 
           unless options[:ignore_chefignore]
-            ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(path) || root_chefignore
-            chefignore  = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file) unless ignore_file.nil?
-            chefignore.remove_ignores_from(destination) if chefignore
+            if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(path)
+              chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
+              chefignore.remove_ignores_from(destination) if chefignore
+            end
           end
         end
 
