@@ -1,3 +1,7 @@
+# 1.4.4
+
+- Bump Ridley dependency to 0.12, bringing in many bugfixes.
+
 # 1.4.3
 
 - Bump Ridley dependency to 0.11, bringing in many bugfixes.
