@@ -7,61 +7,43 @@ Feature: Berksfile.lock
     Given I write to "Berksfile" with:
       """
       site :opscode
-      cookbook 'ntp', '1.1.8'
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install`
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"23150cfe61b7b86882013c8664883058560b899d",
+        "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
         "sources":{
-          "ntp":{
-            "constraint":"= 1.1.8",
-            "locked_version":"1.1.8"
+          "berkshelf-cookbook-fixture":{
+            "constraint":"= 1.0.0",
+            "locked_version":"1.0.0"
           }
         }
       }
       """
 
-  @slow_process
   Scenario: Installing a cookbook with dependencies
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'database', '1.3.12'
+    cookbook 'berkshelf-cookbook-fixture', '1.0.0', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'deps'
     """
   When I successfully run `berks install`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha":"4efd21c0060d2a827a9258a72fa38c78fbd06d1a",
+      "sha":"572a911ad3fda64121835ae842141b1d711f71fc",
       "sources":{
-        "database":{
-          "constraint":"= 1.3.12",
-          "locked_version":"1.3.12"
+        "berkshelf-cookbook-fixture":{
+          "constraint":"= 1.0.0",
+          "locked_version":"1.0.0",
+          "git": "git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+          "ref":"f080e8a74dcb1948780389f45cd2862091f8a0b6"
         },
-        "mysql":{
-          "constraint":">= 1.3.0",
-          "locked_version":"3.0.0"
-        },
-        "openssl":{
-          "locked_version":"1.0.2"
-        },
-        "build-essential":{
-          "locked_version":"1.4.0"
-        },
-        "postgresql":{
-          "constraint":">= 1.0.0",
-          "locked_version":"2.4.0"
-        },
-        "apt":{
-          "locked_version":"1.9.2"
-        },
-        "aws":{
-          "locked_version":"0.100.6"
-        },
-        "xfs":{
-          "locked_version":"1.1.0"
+        "hostsfile":{
+          "constraint":"= 1.0.1",
+          "locked_version":"1.0.1"
         }
       }
     }
@@ -71,16 +53,16 @@ Feature: Berksfile.lock
     Given I write to "Berksfile" with:
       """
       site :opscode
-      cookbook 'ntp', '~> 1.1.0'
+      cookbook 'berkshelf-cookbook-fixture', '~> 1.0.0'
       """
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"f11aa63004577ab13f1476c16a35e2e3ff9266aa",
+        "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
         "sources":{
-          "ntp":{
-            "constraint":"~> 1.1.0",
-            "locked_version":"1.1.8"
+          "berkshelf-cookbook-fixture":{
+            "constraint":"~> 1.0.0",
+            "locked_version":"1.0.0"
           }
         }
       }
@@ -89,11 +71,11 @@ Feature: Berksfile.lock
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"7403c97a9321beb8060dde3fdc8702ad1b623f4b",
+        "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
         "sources":{
-          "ntp":{
-            "constraint":"~> 1.1.0",
-            "locked_version":"1.1.8"
+          "berkshelf-cookbook-fixture":{
+            "constraint":"~> 1.0.0",
+            "locked_version":"1.0.0"
           }
         }
       }
@@ -103,29 +85,29 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'ntp', '~> 1.3.0'
+    cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
     """
   And I write to "Berksfile.lock" with:
     """
     {
       "sha":"3dced4fcd9c3f72b68e746190aaa1140bdc6cc3d",
       "sources":{
-        "ntp":{
-          "constraint":"~> 1.3.0",
-          "locked_version":"1.3.0"
+        "berkshelf-cookbook-fixture":{
+          "constraint":"~> 0.1",
+          "locked_version":"0.1.0"
         }
       }
     }
     """
-  When I successfully run `berks update ntp`
+  When I successfully run `berks update berkshelf-cookbook-fixture`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha":"3dced4fcd9c3f72b68e746190aaa1140bdc6cc3d",
+      "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
       "sources":{
-        "ntp":{
-          "constraint":"~> 1.3.0",
-          "locked_version":"1.3.2"
+        "berkshelf-cookbook-fixture":{
+          "constraint":"~> 0.1",
+          "locked_version":"0.2.0"
         }
       }
     }
@@ -135,29 +117,29 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'ntp', '1.3.0'
+    cookbook 'berkshelf-cookbook-fixture', '1.0.0'
     """
   And I write to "Berksfile.lock" with:
     """
     {
       "sha":"7d07c22eca03bf6da5aaf38ae81cb9a8a439c692",
       "sources":{
-        "ntp":{
-          "constraint":"= 1.3.0",
-          "locked_version":"1.3.0"
+        "berkshelf-cookbook-fixture":{
+          "constraint":"= 1.0.0",
+          "locked_version":"1.0.0"
         }
       }
     }
     """
-  When I successfully run `berks update ntp`
+  When I successfully run `berks update berkshelf-cookbook-fixture`
   Then the file "Berksfile.lock" should contain JSON:
     """
     {
-      "sha":"7d07c22eca03bf6da5aaf38ae81cb9a8a439c692",
+      "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
       "sources":{
-        "ntp":{
-          "constraint":"= 1.3.0",
-          "locked_version":"1.3.0"
+        "berkshelf-cookbook-fixture":{
+          "constraint":"= 1.0.0",
+          "locked_version":"1.0.0"
         }
       }
     }
@@ -292,24 +274,24 @@ Feature: Berksfile.lock
   Given I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'ntp', '1.1.8'
+    cookbook 'berkshelf-cookbook-fixture', '1.0.0'
     """
   And I successfully run `berks install`
   And I write to "Berksfile" with:
     """
     site :opscode
-    cookbook 'ntp', '~> 1.3.0'
+    cookbook 'berkshelf-cookbook-fixture', '~> 1.3.0'
     """
   When I run `berks install`
   Then the output should contain:
     """
-    Berkshelf could not find compatible versions for cookbook 'ntp':
+    Berkshelf could not find compatible versions for cookbook 'berkshelf-cookbook-fixture':
       In Berksfile:
-        ntp (1.1.8)
+        berkshelf-cookbook-fixture (1.0.0)
 
       In Berksfile.lock:
-        ntp (~> 1.3.0)
+        berkshelf-cookbook-fixture (~> 1.3.0)
 
-    Try running `berks update ntp, which will try to find  'ntp' matching '~> 1.3.0'.
+    Try running `berks update berkshelf-cookbook-fixture, which will try to find  'berkshelf-cookbook-fixture' matching '~> 1.3.0'.
     """
   And the CLI should exit with the status code for error "OutdatedCookbookSource"

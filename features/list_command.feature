@@ -3,23 +3,17 @@ Feature: list command
   I want a way to show all my cookbooks and their versions without opening my Berksfile
   So that I can be more productive
 
-  @slow_process
   Scenario: Running the list command
     Given I write to "Berksfile" with:
       """
-      cookbook "build-essential", "1.2.0"
-      cookbook "chef-client", "1.2.0"
-      cookbook "mysql", "1.2.4"
-      cookbook "openssl", "1.0.0"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      cookbook 'hostsfile', '1.0.1'
       """
-    And I successfully run `berks install`
-    When I run `berks list`
+    When I successfully run `berks list`
     Then the output should contain:
       """
       Cookbooks installed by your Berksfile:
-        * build-essential (1.2.0)
-        * chef-client (1.2.0)
-        * mysql (1.2.4)
-        * openssl (1.0.0)
+        * berkshelf-cookbook-fixture (1.0.0)
+        * hostsfile (1.0.1)
       """
     And the exit status should be 0

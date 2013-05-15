@@ -8,10 +8,8 @@ Feature: outdated command
       """
       site :opscode
 
-      cookbook "artifact"
-      cookbook "build-essential"
+      cookbook 'berkshelf-cookbook-fixture'
       """
-    And I successfully run `berks install`
     When I successfully run `berks outdated`
     Then the output should contain:
       """
@@ -27,8 +25,7 @@ Feature: outdated command
       """
       site :opscode
 
-      cookbook "artifact", ">= 0.11.0"
-      cookbook "build-essential", ">= 1.0.0"
+      cookbook 'berkshelf-cookbook-fixture', '>= 0.1'
       """
     When I run `berks outdated`
     Then the output should contain:
@@ -45,8 +42,7 @@ Feature: outdated command
       """
       site :opscode
 
-      cookbook "artifact", "~> 0.9.0"
-      cookbook "build-essential", "~> 0.7.0"
+      cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
     When I run `berks outdated`
     Then the output should contain:
@@ -55,9 +51,5 @@ Feature: outdated command
       """
     And the output should contain:
       """
-      Cookbook 'artifact (~> 0.9.0)' is outdated
-      """
-    And the output should contain:
-      """
-      Cookbook 'build-essential (~> 0.7.0)' is outdated
+      Cookbook 'berkshelf-cookbook-fixture (~> 0.1)' is outdated
       """

@@ -6,23 +6,17 @@ Feature: --format json
   Scenario: JSON output installing a cookbook from the default location
     Given I write to "Berksfile" with:
       """
-      cookbook "mysql", "1.2.4"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
-    When I run the install command with flags:
-      | --format json |
+    When I successfully run `berks install --format json`
     Then the output should contain JSON:
       """
       {
         "cookbooks": [
           {
-            "name": "mysql",
-            "version": "1.2.4",
-            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'"
-          },
-          {
-            "name": "openssl",
-            "version": "1.0.2",
-            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'"
+            "version": "1.0.0",
+            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'",
+            "name": "berkshelf-cookbook-fixture"
           }
         ],
         "errors": [
@@ -36,20 +30,19 @@ Feature: --format json
 
   Scenario: JSON output installing a cookbook we already have
     Given the cookbook store has the cookbooks:
-      | mysql   | 1.2.4 |
+      | berkshelf-cookbook-fixture   | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      cookbook "mysql", "1.2.4"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
-    When I run the install command with flags:
-      | --format json |
+    When I successfully run `berks install --format json`
     Then the output should contain JSON:
       """
       {
         "cookbooks": [
           {
-            "name": "mysql",
-            "version": "1.2.4"
+            "name": "berkshelf-cookbook-fixture",
+            "version": "1.0.0"
           }
         ],
         "errors": [
@@ -67,8 +60,7 @@ Feature: --format json
       | example_cookbook | example_cookbook-0.5.0 |
     And the Chef server does not have the cookbooks:
       | example_cookbook | 0.5.0 |
-    When I run the upload command with flags:
-      | --format json |
+    When I successfully run `berks upload --format json`
     Then the output should contain JSON:
       """
       {
