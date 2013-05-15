@@ -57,6 +57,7 @@ Spork.prefork do
       Celluloid.boot
       clean_tmp_path
       Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
+      Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end
 
