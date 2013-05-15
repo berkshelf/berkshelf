@@ -28,7 +28,7 @@ Feature: Berksfile default locations
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is not satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
-      # chef_api :config
+      chef_api :config
       site :opscode
 
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
