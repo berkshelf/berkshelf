@@ -279,7 +279,7 @@ module Berkshelf
     end
 
     def to_s
-      "The file at '#{@destination}' is not a known file type!"
+      "The file at '#{@destination}' is not a known compression type!"
     end
 
   end
