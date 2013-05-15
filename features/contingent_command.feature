@@ -7,13 +7,12 @@ Feature: contingent command
   Scenario: Running the contingent command against a cookbook
     Given I write to "Berksfile" with:
       """
-      cookbook "database", "1.3.12"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'deps'
       """
-    And I successfully run `berks install`
-    When I run `berks contingent mysql`
+    And I successfully run `berks contingent hostsfile`
     Then the output should contain:
       """
-      Cookbooks contingent upon mysql:
-        * database (1.3.12)
+      Cookbooks contingent upon hostsfile:
+        * berkshelf-cookbook-fixture (1.0.0)
       """
     And the exit status should be 0
