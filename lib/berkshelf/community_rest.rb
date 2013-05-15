@@ -17,6 +17,8 @@ module Berkshelf
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
         elsif is_tar_file(target)
           Archive::Tar::Minitar.unpack(target, destination)
+        else
+          raise Berkshelf::UnknownCompressionType.new(target)
         end
         destination
       end
@@ -43,7 +45,7 @@ module Berkshelf
         end
 
         def is_tar_file(path)
-          IO.binread(path, 8, 257) == "ustar  \0"
+          IO.binread(path, 8, 257).to_s == "ustar\x0000"
         end
     end
 
@@ -89,6 +91,7 @@ module Berkshelf
     #
     # @return [String]
     def download(name, version)
+      p find(name, version)[:file]
       archive = stream(find(name, version)[:file])
       self.class.unpack(archive.path)
     ensure
