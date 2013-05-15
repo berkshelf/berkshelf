@@ -24,7 +24,7 @@ Feature: Berksfile default locations
       | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
-  @chef_server @focus
+  @chef_server
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is not satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
