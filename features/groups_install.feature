@@ -39,10 +39,10 @@ Feature: installing groups
       """
     When I successfully run `berks install --only takeme`
     Then the cookbook store should have the cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
+      | hostsfile | 1.0.1 |
     And the cookbook store should not have the cookbooks:
       | nginx     | 0.101.2 |
-      | hostsfile | 1.0.1 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
   Scenario: attempting to provide an only and except option
