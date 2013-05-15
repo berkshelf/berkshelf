@@ -6,61 +6,22 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing with the old lockfile format
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact", "0.10.0"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     Given I write to "Berksfile.lock" with:
       """
-      cookbook 'artifact', :locked_version => '0.10.0'
+      cookbook 'berkshelf-cookbook-fixture', :locked_version => '1.0.0'
       """
     When I successfully run `berks install`
     Then the output should contain "You are using the old lockfile format. Attempting to convert..."
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"9b860e9aa6b54c75fd223dae626ac78ed0480356",
+        "sha":"bfb1de046fdc2a0c38cd5bbaddddce8bc1cd3c24",
         "sources":{
-          "artifact":{
-            "locked_version":"0.10.0",
-            "constraint":"= 0.10.0"
-          }
-        }
-      }
-      """
-
-  @slow_process
-  Scenario: installing with the old lockfile format without locked versions
-    Given I write to "Berksfile" with:
-      """
-      cookbook "minitest-handler", ">= 0.1.5"
-      cookbook "memcached", :git => "git://github.com/hectcastro/chef-memcached.git"
-      """
-    Given I write to "Berksfile.lock" with:
-      """
-      cookbook 'minitest-handler', :locked_version => '0.1.7'
-      cookbook 'memcached', :git => 'git://github.com/hectcastro/chef-memcached.git', :ref => '66c99cf1536785ccadef25c350ad936786809de6'
-      cookbook 'chef_handler', :locked_version => '1.1.4'
-      """
-    When I successfully run `berks install`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
-    Then the file "Berksfile.lock" should contain JSON:
-      """
-      {
-       "sha": "0f3277b52089ff6a8a956a238aa7a1f458335d64",
-       "sources": {
-          "chef_handler": {
-            "locked_version": "1.1.4"
-          },
-          "logrotate": {
-            "locked_version": "1.2.0"
-          },
-          "memcached": {
-            "git": "git://github.com/hectcastro/chef-memcached.git",
-            "locked_version": "0.2.0",
-            "ref": "66c99cf1536785ccadef25c350ad936786809de6"
-          },
-          "minitest-handler": {
-            "constraint": ">= 0.1.5",
-            "locked_version": "0.1.7"
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"1.0.0",
+            "constraint":"= 1.0.0"
           }
         }
       }
@@ -69,70 +30,61 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a source with a default location
     Given I write to "Berksfile" with:
       """
-      cookbook "mysql", "1.2.4"
-      cookbook "openssl", "1.0.0"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install`
     Then the cookbook store should have the cookbooks:
-      | mysql   | 1.2.4 |
-      | openssl | 1.0.0 |
+      | berkshelf-cookbook-fixture   | 1.0.0 |
     And the output should contain:
       """
-      Installing mysql (1.2.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      Installing openssl (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the exit status should be 0
 
   Scenario: installing a Berksfile that contains the cookbook explicitly desired by a source
     Given the cookbook store has the cookbooks:
-      | mysql   | 1.2.4 |
+      | berkshelf-cookbook-fixture   | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      cookbook "mysql", "= 1.2.4"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using mysql (1.2.4)
+      Using berkshelf-cookbook-fixture (1.0.0)
       """
     And the exit status should be 0
 
   Scenario: installing a Berksfile that has multiple cookbooks in different groups
     Given the cookbook store has the cookbooks:
-      | build-essential   | 1.1.2 |
+      | berkshelf-cookbook-fixture   | 1.0.0 |
     And I write to "Berksfile" with:
       """
       group :a do
-        cookbook "build-essential", "1.1.2"
+        cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       end
 
       group :b do
-        cookbook "build-essential", "1.1.2"
+        cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       end
       """
     When I successfully run `berks install`
-    Then the output should contain "Using build-essential (1.1.2)"
+    Then the output should contain "Using berkshelf-cookbook-fixture (1.0.0)"
     And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a source with dependencies, all of which already have been installed
-    Given the cookbook store contains a cookbook "mysql" "1.2.4" with dependencies:
-      | openssl      | = 1.0.0 |
-      | windows      | = 1.3.0 |
-      | chef_handler | = 1.0.6 |
+    Given the cookbook store contains a cookbook "berkshelf-cookbook-fixture" "1.0.0" with dependencies:
+      | hostsfile    | = 1.0.1 |
     And the cookbook store has the cookbooks:
-      | openssl      | 1.0.0 |
-      | windows      | 1.3.0 |
+      | hostsfile    | 1.0.1 |
     And I write to "Berksfile" with:
       """
-      cookbook "mysql", "~> 1.2.0"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'deps'
       """
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using mysql (1.2.4)
-      Using openssl (1.0.0)
-      Using windows (1.3.0)
-      Installing chef_handler (1.0.6) from site:
+      Using hostsfile (1.0.1)
       """
     And the exit status should be 0
 
@@ -237,17 +189,14 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains an explicit site location
     Given I write to "Berksfile" with:
       """
-      cookbook "mysql", "1.2.4", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
-      cookbook "openssl", "1.0.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     When I successfully run `berks install`
     Then the cookbook store should have the cookbooks:
-      | mysql   | 1.2.4 |
-      | openssl | 1.0.0 |
+      | berkshelf-cookbook-fixture   | 1.0.0 |
     And the output should contain:
       """
-      Installing mysql (1.2.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      Installing openssl (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the exit status should be 0
 
@@ -278,7 +227,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: running install when the Cookbook is not found on the remote site
     Given I write to "Berksfile" with:
       """
-      cookbook "doesntexist"
+      cookbook 'doesntexist'
       """
     And I run `berks install`
     Then the output should contain:
@@ -290,7 +239,7 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
     Given I write to "Berksfile" with:
       """
-      cookbook "nginx", git: "/something/on/disk"
+      cookbook 'nginx', git: '/something/on/disk'
       """
     When I run `berks install`
     Then the output should contain:
@@ -302,13 +251,13 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing when there are sources with duplicate names defined in the same group
     Given I write to "Berksfile" with:
       """
-      cookbook "artifact"
-      cookbook "artifact"
+      cookbook 'berkshelf-cookbook-fixture'
+      cookbook 'berkshelf-cookbook-fixture'
       """
     When I run `berks install`
     Then the output should contain:
       """
-      Berksfile contains multiple sources named 'artifact'. Use only one, or put them in different groups.
+      Berksfile contains multiple sources named 'berkshelf-cookbook-fixture'. Use only one, or put them in different groups.
       """
     And the CLI should exit with the status code for error "DuplicateSourceDefined"
 
@@ -360,23 +309,23 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a cookbook definition containing a chef_api source location
     Given I write to "Berksfile" with:
       """
-      cookbook "cuke-test", "= 1.0.0", chef_api: :config
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0', chef_api: :config
       """
     And the Chef server has cookbooks:
-      | cuke-test | 1.0.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing cuke-test (1.0.0) from chef_api:
+      Installing berkshelf-cookbook-fixture (1.0.0) from chef_api:
       """
     And the cookbook store should have the cookbooks:
-      | cuke-test | 1.0.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
   Scenario: with a chef_api source location specifying :config when a Berkshelf config is not found at the given path
     Given I write to "Berksfile" with:
       """
-      cookbook "berkshelf-cookbook-fixture", chef_api: :config
+      cookbook 'berkshelf-cookbook-fixture', chef_api: :config
       """
     When I run the install command with flags:
       | -c /tmp/notthere.lol |
@@ -389,13 +338,13 @@ Feature: install cookbooks from a Berksfile
   Scenario: with a git error during download
     Given I write to "Berksfile" with:
       """
-      cookbook "ohai", "1.1.4"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       cookbook "doesntexist", git: "git://github.com/asdjhfkljashflkjashfakljsf"
       """
     When I run `berks install`
     Then the output should contain:
       """
-      Installing ohai (1.1.4) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       Failed to download 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf' with branch: 'master'
       An error occured during Git execution:
       """
@@ -405,7 +354,7 @@ Feature: install cookbooks from a Berksfile
     Given I write to "Berksfile" with:
       """
       site :somethingabsurd
-      cookbook "ohai"
+      cookbook 'berkshelf-cookbook-fixture'
       """
     When I run `berks install`
     Then the output should contain:
