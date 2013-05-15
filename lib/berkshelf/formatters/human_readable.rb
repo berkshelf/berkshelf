@@ -33,6 +33,14 @@ module Berkshelf
         Berkshelf.ui.info "Uploading #{cookbook} (#{version}) to: '#{chef_api_url}'"
       end
 
+      # Output a Cookbook package message using {Berkshelf.ui}
+      #
+      # @param [String] cookbook
+      # @param [String] destination
+      def package(cookbook, destination)
+        Berkshelf.ui.info "Cookbook '#{cookbook}' saved to #{destination}!"
+      end
+
       # Output a generic message using {Berkshelf.ui}
       #
       # @param [String] message

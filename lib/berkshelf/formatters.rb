@@ -69,28 +69,22 @@ module Berkshelf
         end
       end
 
+      class << self
+        private
+
+        def formatter_methods(*args)
+          args.each do |meth|
+            define_method(meth.to_sym) do |*args|
+              raise AbstractFunction, "##{meth} must be implemented on #{self.class}"
+            end unless respond_to?(meth.to_sym)
+          end
+        end
+      end
+
+      formatter_methods :install, :use, :upload, :msg, :error, :package
+
       def cleanup_hook
         # run after the task is finished
-      end
-
-      def install(cookbook, version, location)
-        raise AbstractFunction, "#install must be implemented on #{self.class}"
-      end
-
-      def use(cookbook, version, path = nil)
-        raise AbstractFunction, "#install must be implemented on #{self.class}"
-      end
-
-      def upload(cookbook, version, chef_server_url)
-        raise AbstractFunction, "#upload must be implemented on #{self.class}"
-      end
-
-      def msg(message)
-        raise AbstractFunction, "#msg must be implemented on #{self.class}"
-      end
-
-      def error(message)
-        raise AbstractFunction, "#error must be implemented on #{self.class}"
       end
 
       private
