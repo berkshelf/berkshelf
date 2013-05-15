@@ -9,59 +9,59 @@ Feature: Berksfile default locations
     Given I write to "Berksfile" with:
       """
       chef_api :config
-      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      site :opscode
 
-      cookbook "artifact", "= 0.10.0"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     And the Chef server has cookbooks:
-      | artifact | 0.10.0 |
-    When I run the install command
+      | berkshelf-cookbook-fixture | 1.0.0 |
+    When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from chef_api:
+      Installing berkshelf-cookbook-fixture (1.0.0) from chef_api:
       """
     And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
-  @chef_server
+  @chef_server @focus
   Scenario: with a default chef_api(1) and site(2) location with a cookbook source that is not satisfied by the chef_api(1) location
     Given I write to "Berksfile" with:
       """
-      chef_api :config
-      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      # chef_api :config
+      site :opscode
 
-      cookbook "artifact", "= 0.10.0"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     And the Chef server does not have the cookbooks:
-      | artifact | 0.10.0 |
-    When I run the install command
+      | berkshelf-cookbook-fixture | 1.0.0 |
+    When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
   @chef_server
   Scenario: with a default site(1) and chef_api(2) location with a cookbook source that is satisfied by the site(1) location
     Given I write to "Berksfile" with:
       """
-      site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      site :opscode
       chef_api :config
 
-      cookbook "artifact", "= 0.10.0"
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     And the Chef server has cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     When I run the install command
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
   @chef_server
@@ -70,17 +70,17 @@ Feature: Berksfile default locations
       """
       chef_api :config
 
-      cookbook 'artifact', '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the Chef server has cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     When I run the install command
     Then the output should contain:
       """
-      Installing artifact (0.10.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
       """
     And the cookbook store should have the cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
   @chef_server
@@ -89,14 +89,14 @@ Feature: Berksfile default locations
       """
       chef_api :config
 
-      cookbook 'artifact', '= 0.10.0'
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     And the Chef server does not have the cookbooks:
-      | artifact | 0.10.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     When I run the install command
     Then the output should contain:
       """
-      Cookbook 'artifact' not found in any of the default locations
+      Cookbook 'berkshelf-cookbook-fixture' not found in any of the default locations
       """
     And the CLI should exit with the status code for error "CookbookNotFound"
 
@@ -106,7 +106,7 @@ Feature: Berksfile default locations
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
 
-      cookbook 'artifact', '= 0.10.0'
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I run the install command
     Then the output should contain:
@@ -121,7 +121,7 @@ Feature: Berksfile default locations
       site 'http://cookbooks.opscode.com/api/v1/cookbooks'
       site 'http://cookbooks.opscode.com/api/v2/cookbooks'
 
-      cookbook 'artifact', '= 0.10.0'
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I run the install command
     Then the exit status should be 0
