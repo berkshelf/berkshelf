@@ -91,7 +91,6 @@ module Berkshelf
     #
     # @return [String]
     def download(name, version)
-      p find(name, version)[:file]
       archive = stream(find(name, version)[:file])
       self.class.unpack(archive.path)
     ensure
