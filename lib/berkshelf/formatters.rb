@@ -69,12 +69,22 @@ module Berkshelf
         end
       end
 
-      def cleanup_hook
-        # run after the task is finished
+      class << self
+        private
+
+        def formatter_methods(*args)
+          args.each do |meth|
+            define_method(meth.to_sym) do |*args|
+              raise AbstractFunction, "##{meth} must be implemented on #{self.class}"
+            end unless respond_to?(meth.to_sym)
+          end
+        end
       end
 
-      def method_missing(meth, *args, &block)
-        raise AbstractFunction, "##{meth} must be implemented on #{self.class}"
+      formatter_methods :install, :use, :upload, :msg, :error, :package
+
+      def cleanup_hook
+        # run after the task is finished
       end
 
       private
