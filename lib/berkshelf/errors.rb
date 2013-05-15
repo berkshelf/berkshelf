@@ -269,4 +269,18 @@ module Berkshelf
       "There was an error connecting to the chef server."
     end
   end
+
+  # @author Seth Vargo <sethvargo@gmail.com>
+  class UnknownCompressionType < BerkshelfError
+    status_code(131)
+
+    def initialize(destination)
+      @destination = destination
+    end
+
+    def to_s
+      "The file at '#{@destination}' is not a known file type!"
+    end
+
+  end
 end
