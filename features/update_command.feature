@@ -1,4 +1,4 @@
-Feature: update
+Feature: update command
   As a user
   I want a way to update the versions without clearing out the files I've downloaded
   So that I can update faster than a clean install
@@ -7,22 +7,22 @@ Feature: update
     Given I write to "Berksfile" with:
       """
       site :opscode
-      cookbook "apt", "~> 1.8.0"
+      cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
     Given I write to "Berksfile.lock" with:
       """
-      cookbook 'apt', :locked_version => '1.8.2'
+      cookbook 'berkshelf-cookbook-fixture', :locked_version => '0.1.0'
       """
     When I successfully run `berks update`
     Then the output should contain "You are using the old lockfile format. Attempting to convert..."
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"d8e287b0c8138a31b664a912217b06ffd4cfde88",
+        "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
         "sources":{
-          "apt":{
-            "locked_version":"1.8.4",
-            "constraint":"~> 1.8.0"
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"0.2.0",
+            "constraint":"~> 0.1"
           }
         }
       }
@@ -32,21 +32,21 @@ Feature: update
     Given I write to "Berksfile" with:
       """
       site :opscode
-      cookbook "artifact", "0.10.0"
-      cookbook "build-essential", "~> 1.1.0"
+      cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
+      cookbook 'hostsfile', '~> 1.0.0'
       """
     Given I write to "Berksfile.lock" with:
       """
       {
         "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
         "sources":{
-          "artifact":{
-            "locked_version":"0.10.0",
-            "constraint":"= 0.10.0"
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"0.1.0",
+            "constraint":"~> 0.1"
           },
-          "build-essential":{
-            "locked_version":"1.1.0",
-            "constraint":"~> 1.1.0"
+          "hostsfile":{
+            "locked_version":"1.0.1",
+            "constraint":"= 1.0.1"
           }
         }
       }
@@ -55,15 +55,15 @@ Feature: update
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
-          "artifact":{
-            "locked_version":"0.10.0",
-            "constraint":"= 0.10.0"
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"0.2.0",
+            "constraint":"~> 0.1"
           },
-          "build-essential":{
-            "locked_version":"1.1.2",
-            "constraint":"~> 1.1.0"
+          "hostsfile":{
+            "locked_version":"1.0.1",
+            "constraint":"~> 1.0.0"
           }
         }
       }
@@ -73,38 +73,38 @@ Feature: update
     Given I write to "Berksfile" with:
       """
       site :opscode
-      cookbook "artifact", "0.10.0"
-      cookbook "build-essential", "~> 1.3.0"
+      cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
+      cookbook 'hostsfile', '~> 1.0.0'
       """
-    Given I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"62352d72ce9bcb0b3f4af65962b64805b9540f6d",
+        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
         "sources":{
-          "artifact":{
-            "locked_version":"0.10.0",
-            "constraint":"= 0.10.0"
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"0.1.0",
+            "constraint":"~> 0.1"
           },
-          "build-essential":{
-            "locked_version":"1.3.0",
-            "constraint":"~> 1.3.0"
+          "hostsfile":{
+            "locked_version":"1.0.0",
+            "constraint":"~> 1.0.0"
           }
         }
       }
       """
-    And I successfully run `berks update build-essential`
+    And I successfully run `berks update berkshelf-cookbook-fixture`
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"62352d72ce9bcb0b3f4af65962b64805b9540f6d",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
-          "artifact":{
-            "locked_version":"0.10.0",
-            "constraint":"= 0.10.0"
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"0.2.0",
+            "constraint":"~> 0.1"
           },
-          "build-essential":{
-            "locked_version":"1.3.4",
-            "constraint":"~> 1.3.0"
+          "hostsfile":{
+            "locked_version":"1.0.0",
+            "constraint":"~> 1.0.0"
           }
         }
       }
@@ -114,16 +114,16 @@ Feature: update
     Given I write to "Berksfile" with:
       """
       site :opscode
-      cookbook "artifact", "0.10.0"
+      cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
     Given I write to "Berksfile.lock" with:
       """
       {
         "sha":"23150cfe61b7b86882013c8664883058560b899d",
         "sources":{
-          "artifact":{
-            "locked_version":"0.10.0",
-            "constraint":"= 0.10.0"
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"0.1.0",
+            "constraint":"~> 0.1"
           }
         }
       }
