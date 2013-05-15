@@ -27,7 +27,7 @@ module Berkshelf
       #
       # @return [String]
       #   expanded filepath to the vendor directory
-      def vendor(cookbooks, path)
+      def vendor(cookbooks, path = Berkshelf::Config.instance.berkshelf.vendor_path)
         chefignore = nil
         path       = File.expand_path(path)
         scratch    = Berkshelf.mktmpdir
@@ -412,6 +412,8 @@ module Berkshelf
     # @option options [String] :path
     #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
     #   is a technique for packaging all cookbooks resolved by a Berksfile.
+    # @option options [Boolean] :vendor
+    #   vendor the cookbooks in the location specified in the Berkshelf config
     #
     # @raise [Berkshelf::OutdatedCookbookSource]
     #   if the lockfile constraints do not satisfy the Berskfile constraints
@@ -431,6 +433,7 @@ module Berkshelf
       local_sources     = resolver[:sources]
 
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
+      self.class.vendor(@cached_cookbooks) if options[:vendor]
 
       lockfile.update(local_sources, sha: self.sha)
 

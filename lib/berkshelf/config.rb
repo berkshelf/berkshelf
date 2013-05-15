@@ -92,6 +92,9 @@ module Berkshelf
     attribute 'cookbook.license',
       type: String,
       default: Berkshelf::Chef::Config.instance[:cookbook_license]
+    attribute 'berkshelf.vendor_path',
+      type: String,
+      default: File.expand_path(File.join(Dir.pwd, 'vendor', 'cookbooks'))
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
