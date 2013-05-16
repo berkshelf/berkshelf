@@ -281,6 +281,35 @@ module Berkshelf
     def to_s
       "The file at '#{@destination}' is not a known compression type!"
     end
+  end
 
+  # @author Seth Vargo <sethvargo@gmail.com>
+  class MissingGemDependencyError < BerkshelfError
+    status_code(133)
+
+    # @return [String]
+    attr_reader :gem_name
+
+    # @return [String]
+    attr_reader :version
+
+    # @param [String] gem_name
+    #   the name of the unmet gem
+    # @param [String] version
+    #   the version or version constraint that is not satisfied
+    def initialize(gem_name, version)
+      @gem_name = gem_name
+      @version = version
+    end
+
+    def to_s
+      [
+        "Could not find gem '#{gem_name}' (#{version}) in your Gemfile. Please add:",
+        "",
+        "  gem '#{gem_name}', '#{version}'",
+        "",
+        "to your Gemfile and run the `bundle` command to install."
+      ].join("\n")
+    end
   end
 end
