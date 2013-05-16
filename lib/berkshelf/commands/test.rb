@@ -9,10 +9,12 @@ begin
     end
   end
 
-  Berkshelf::Cli.send(
-    :register, Berkshelf::Command::Test,
+  Berkshelf::Cli.register(
+    Berkshelf::Command::Test,
     'test', 'test [COMMAND]', 'Testing task for your cookbook'
   )
+
+  Berkshelf::Cli.tasks['test'].options = ::Kitchen::CLI.class_options
 
   Berkshelf::InitGenerator.class_option(
     :skip_test_kitchen,
