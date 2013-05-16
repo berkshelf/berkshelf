@@ -29,7 +29,6 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.8.0"
 
   s.add_dependency 'celluloid', '>= 0.14.0'
-  s.add_dependency 'test-kitchen', '>= 1.0.0.alpha6'
   s.add_dependency 'activesupport', '>= 3.2.0'
   s.add_dependency 'mixlib-shellout', '~> 1.1'
   s.add_dependency 'mixlib-config', '~> 1.1'
