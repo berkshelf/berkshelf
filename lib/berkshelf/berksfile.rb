@@ -52,8 +52,9 @@ module Berkshelf
           FileUtils.cp_r(files, dest)
         end
 
-        FileUtils.remove_dir(path, force: true)
-        FileUtils.mv(scratch, path)
+        FileUtils.rm_r Dir.glob("#{path}/*"), force: true, secure: true
+        FileUtils.mv Dir.glob("#{scratch}/*"), path
+        FileUtils.remove_dir(scratch, force: true)
 
         path
       end
