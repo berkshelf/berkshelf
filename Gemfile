@@ -10,7 +10,6 @@ group :development do
   gem 'guard-rspec'
   gem 'guard-spork'
   gem 'guard-yard'
-  gem 'redcarpet'
   gem 'yard'
 
   require 'rbconfig'
