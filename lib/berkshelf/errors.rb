@@ -304,11 +304,11 @@ module Berkshelf
 
     def to_s
       [
-        "Could not find gem '#{gem_name}' (#{version}) in your Gemfile. Please add:",
+        "Could not find gem '#{gem_name}' (#{version}). Please install it:",
         "",
-        "  gem '#{gem_name}', '#{version}'",
+        "  gem install #{gem_name} --version='#{version}'",
         "",
-        "to your Gemfile and run the `bundle` command to install."
+        "or add it to your Gemfile and run the `bundle` command to install."
       ].join("\n")
     end
   end
