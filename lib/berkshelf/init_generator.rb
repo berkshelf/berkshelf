@@ -19,15 +19,18 @@ module Berkshelf
 
     class_option :skip_vagrant,
       type: :boolean,
-      default: false
+      default: false,
+      desc: "Skips adding a Vagrantfile and adding supporting gems to the Gemfile"
 
     class_option :skip_git,
       type: :boolean,
-      default: false
+      default: false,
+      desc: "Skips adding a .gitignore and running git init in the cookbook directory"
 
     class_option :foodcritic,
       type: :boolean,
-      default: false
+      default: false,
+      desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
 
     class_option :chef_minitest,
       type: :boolean,
@@ -35,20 +38,22 @@ module Berkshelf
 
     class_option :scmversion,
       type: :boolean,
-      default: false
+      default: false,
+      desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"
 
     class_option :no_bundler,
       type: :boolean,
-      default: false
+      default: false,
+      desc: "Skips generation of a Gemfile and other Bundler specific support"
 
     class_option :cookbook_name,
       type: :string
 
-    class_option :berkshelf_config,
-      type: :hash,
-      default: Config.instance
+    class_option :skip_test_kitchen,
+      type: :boolean,
+      default: false,
+      desc: "Skip adding a testing environment to your cookbook"
 
-    # Generate the cookbook
     def generate
       validate_configuration
       check_option_support
@@ -87,6 +92,10 @@ module Berkshelf
         template "Gemfile.erb", target.join("Gemfile")
       end
 
+      unless options[:skip_test_kitchen]
+        Kitchen::Generator::Init.new([], options).invoke_all
+      end
+
       unless options[:skip_vagrant]
         template "Vagrantfile.erb", target.join("Vagrantfile")
         ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile")).invoke(:install)
@@ -95,12 +104,8 @@ module Berkshelf
 
     private
 
-      # The berkshelf configuration (used in the Vagrantfile template)
-      #
-      # @return [Berkshelf::Config]
-      #   an instance of the current configuration
       def berkshelf_config
-        @berkshelf_config ||= Berkshelf::Config.instance
+        Berkshelf::Config.instance
       end
 
       # Read the cookbook name from the metadata.rb
@@ -126,7 +131,6 @@ module Berkshelf
           raise InvalidConfiguration.new Config.instance.errors
         end
       end
-
 
       # Check for supporting gems for provided options
       #

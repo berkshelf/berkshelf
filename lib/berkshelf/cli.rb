@@ -295,27 +295,6 @@ module Berkshelf
       end
     end
 
-    method_option :foodcritic,
-      type: :boolean,
-      desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
-    method_option :scmversion,
-      type: :boolean,
-      desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"
-    method_option :no_bundler,
-      type: :boolean,
-      desc: "Skips generation of a Gemfile and other Bundler specific support"
-    method_option :vagrant,
-      type: :boolean,
-      hide: true
-    method_option :skip_vagrant,
-      type: :boolean,
-      desc: "Skips adding a Vagrantfile and adding supporting gems to the Gemfile"
-    method_option :git,
-      type: :boolean,
-      hide: true
-    method_option :skip_git,
-      type: :boolean,
-      desc: "Skips adding a .gitignore and running git init in the cookbook directory"
     desc "init [PATH]", "Prepare a local path to have its Cookbook dependencies managed by Berkshelf"
     def init(path = Dir.pwd)
       Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
@@ -330,6 +309,7 @@ module Berkshelf
 
       ::Berkshelf.formatter.msg "Successfully initialized"
     end
+    tasks['init'].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
@@ -494,5 +474,5 @@ module Berkshelf
 end
 
 Dir["#{File.dirname(__FILE__)}/commands/*.rb"].sort.each do |path|
-  require "berkshelf/commands/#{File.basename(path, '.rb')}"
+  require_relative "commands/#{File.basename(path, '.rb')}"
 end
