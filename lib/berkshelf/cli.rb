@@ -309,7 +309,7 @@ module Berkshelf
 
       ::Berkshelf.formatter.msg "Successfully initialized"
     end
-    tasks["init"].options = Berkshelf::InitGenerator.class_options
+    tasks['init'].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
@@ -473,7 +473,6 @@ module Berkshelf
   end
 end
 
-Dir["#{File.dirname(__FILE__)}/cli_commands/*.rb"].sort.each do |path|
-  require "berkshelf/cli_commands/#{File.basename(path, '.rb')}"
+Dir["#{File.dirname(__FILE__)}/commands/*.rb"].sort.each do |path|
+  require_relative "commands/#{File.basename(path, '.rb')}"
 end
-

@@ -92,8 +92,10 @@ module Berkshelf
         template "Gemfile.erb", target.join("Gemfile")
       end
 
-      unless options[:skip_test_kitchen]
-        Kitchen::Generator::Init.new([], options).invoke_all
+      if defined?(Kitchen)
+        unless options[:skip_test_kitchen]
+          Kitchen::Generator::Init.new([], options).invoke_all
+        end
       end
 
       unless options[:skip_vagrant]
