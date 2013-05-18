@@ -163,4 +163,92 @@ module Berkshelf
       "Unknown site shortname: #{@shortname.inspect}. Supported shortnames are: #{SiteLocation::SHORTNAMES.keys.map(&:inspect).join(',')}"
     end
   end
+
+  class OutdatedCookbookSource < BerkshelfError
+    status_code(128)
+
+    # @return [Berkshelf::CookbookSource]
+    attr_reader :locked_source, :source
+
+    # @param [Berkshelf::CookbookSource] source
+    #   the cookbook source that is outdated
+    def initialize(locked_source, source)
+      @locked_source = locked_source
+      @source = source
+    end
+
+    def to_s
+      [
+        "Berkshelf could not find compatible versions for cookbook '#{source.name}':",
+        "  In Berksfile:",
+        "    #{locked_source.name} (#{locked_source.locked_version})",
+        "",
+        "  In Berksfile.lock:",
+        "    #{source.name} (#{source.version_constraint})",
+        "",
+        "Try running `berks update #{source.name}, which will try to find  '#{source.name}' matching '#{source.version_constraint}'."
+      ].join("\n")
+    end
+  end
+
+  class EnvironmentNotFound < BerkshelfError
+    status_code(129)
+
+    def initialize(environment_name)
+      @environment_name = environment_name
+    end
+
+    def to_s
+      %Q[The environment "#{@environment_name}" does not exist.]
+    end
+  end
+
+  class ChefConnectionError < BerkshelfError
+    status_code(130)
+
+    def to_s
+      "There was an error connecting to the chef server."
+    end
+  end
+
+  # @author Seth Vargo <sethvargo@gmail.com>
+  class UnknownCompressionType < BerkshelfError
+    status_code(131)
+
+    def initialize(destination)
+      @destination = destination
+    end
+
+    def to_s
+      "The file at '#{@destination}' is not a known compression type!"
+    end
+  end
+
+  # @author Seth Vargo <sethvargo@gmail.com>
+  #
+  # Raised when a cookbook or its recipes contain a space or invalid
+  # character in the path.
+  #
+  # @param [Berkshelf::CachedCookbook] cookbook
+  #   the cookbook that failed validation
+  # @param [Array<#to_s>] files
+  #   the list of files that were not valid
+  class InvalidCookbookFiles < BerkshelfError
+    status_code(132)
+
+    def initialize(cookbook, files)
+      @cookbook = cookbook
+      @files = files
+    end
+
+    def to_s
+      [
+        "The cookbook '#{@cookbook.cookbook_name} has invalid filenames:",
+        "",
+        "  " + @files.map(&:to_s).join("\n  "),
+        "",
+        "Please note, spaces are not a valid character in filenames."
+      ].join("\n")
+    end
+  end
 end
