@@ -250,6 +250,32 @@ Feature: Berksfile.lock
     }
     """
 
+  Scenario: Lockfile when `metadata` is specified
+  Given I write to "metadata.rb" with:
+    """
+    name 'fake'
+    version '1.0.0'
+    """
+  And I write to "Berksfile" with:
+    """
+    site :opscode
+    metadata
+    """
+  When I successfully run `berks install`
+  Then the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
+      "sources":{
+        "fake":{
+          "path":".",
+          "locked_version":"1.0.0",
+          "constraint":"= 1.0.0"
+        }
+      }
+    }
+    """
+
   Scenario: Updating a Berksfile.lock with a different site location
   Given pending we have a reliable non-opscode site to test
   # Given I write to "Berksfile" with:
