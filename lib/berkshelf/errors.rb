@@ -281,6 +281,33 @@ module Berkshelf
     def to_s
       "The file at '#{@destination}' is not a known compression type!"
     end
+  end
 
+  # @author Seth Vargo <sethvargo@gmail.com>
+  #
+  # Raised when a cookbook or its recipes contain a space or invalid
+  # character in the path.
+  #
+  # @param [Berkshelf::CachedCookbook] cookbook
+  #   the cookbook that failed validation
+  # @param [Array<#to_s>] files
+  #   the list of files that were not valid
+  class InvalidCookbookFiles < BerkshelfError
+    status_code(132)
+
+    def initialize(cookbook, files)
+      @cookbook = cookbook
+      @files = files
+    end
+
+    def to_s
+      [
+        "The cookbook '#{@cookbook.cookbook_name} has invalid filenames:",
+        "",
+        "  " + @files.map(&:to_s).join("\n  "),
+        "",
+        "Please note, spaces are not a valid character in filenames."
+      ].join("\n")
+    end
   end
 end
