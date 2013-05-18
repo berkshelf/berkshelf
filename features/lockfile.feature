@@ -229,6 +229,29 @@ Feature: Berksfile.lock
     }
     """
 
+  @focus
+  Scenario: Updating a Berksfile.lock when a git location with :rel
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
+    """
+  When I successfully run `berks install`
+  Then the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "f0b5a9c0230a3ff384badb0c40af1058cde75bee",
+      "sources":{
+        "berkshelf-cookbook-fixture":{
+          "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+          "ref":"93f5768b7d14df45e10d16c8bf6fe98ba3ff809a",
+          "rel":"cookbooks/berkshelf-cookbook-fixture",
+          "locked_version":"1.0.0"
+        }
+      }
+    }
+    """
+
   Scenario: Updating a Berksfile.lock with a path location
   Given I write to "Berksfile" with:
     """
