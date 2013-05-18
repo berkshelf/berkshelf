@@ -109,7 +109,9 @@ module Berkshelf
           begin
             cached_cookbook = location.download(storage_path)
             break
-          rescue Berkshelf::CookbookNotFound
+          rescue Berkshelf::CookbookNotFound,
+                 Ridley::Errors::ResourceNotFound,
+                 Ridley::Errors::HTTPNotFound
             cached_cookbook, location = nil
             next
           end
