@@ -24,7 +24,8 @@ module Berkshelf
         else
           ridley.cookbook.delete(name, version)
         end
-      rescue Ridley::Errors::HTTPNotFound
+      rescue Ridley::Errors::HTTPNotFound,
+             Ridley::Errors::ResourceNotFound
         true
       end
 
@@ -36,7 +37,8 @@ module Berkshelf
         else
           !versions.find { |ver| ver == version }.nil?
         end
-      rescue Ridley::Errors::HTTPNotFound
+      rescue Ridley::Errors::HTTPNotFound,
+             Ridley::Errors::ResourceNotFound
         false
       end
 
