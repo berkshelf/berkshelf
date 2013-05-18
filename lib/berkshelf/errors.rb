@@ -302,7 +302,7 @@ module Berkshelf
 
     def to_s
       [
-        "The cookbook '#{@cookbook.cookbook_name} has invalid filenames:",
+        "The cookbook '#{@cookbook.cookbook_name}' has invalid filenames:",
         "",
         "  " + @files.map(&:to_s).join("\n  "),
         "",

@@ -216,3 +216,17 @@ Feature: upload command
       | ntp |
       | vim |
     And the exit status should be 0
+
+  Scenario: Raise exception uploading an invalid cookbook
+    Given a cookbook named "cookbook with spaces"
+    And I write to "Berksfile" with:
+      """
+      cookbook 'cookbook with spaces', path: './cookbook with spaces'
+      """
+    When I run `berks upload`
+    Then the output should contain:
+      """
+      The cookbook 'cookbook with spaces' has invalid filenames:
+      """
+    And the CLI should exit with the status code for error "InvalidCookbookFiles"
+
