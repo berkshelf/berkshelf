@@ -174,7 +174,8 @@ module Berkshelf
         else
           conn.cookbook.latest_version(name)
         end
-      rescue Ridley::Errors::HTTPNotFound
+      rescue Ridley::Errors::HTTPNotFound,
+             Ridley::Errors::ResourceNotFound
         @target_cookbook = nil
       end
 
