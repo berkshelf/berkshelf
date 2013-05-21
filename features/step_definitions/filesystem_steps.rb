@@ -3,6 +3,15 @@ require 'aruba/api'
 World(Aruba::Api)
 World(Berkshelf::RSpec::ChefAPI)
 
+Given /^I dynamically write to "(.+)" with:$/ do |file, contents|
+  steps %{
+    Given I write to "#{file}" with:
+      """
+      #{ERB.new(contents).result(binding)}
+      """
+  }
+end
+
 Given /^a cookbook named "(.*?)"$/ do |name|
   steps %{
     Given a directory named "#{name}"

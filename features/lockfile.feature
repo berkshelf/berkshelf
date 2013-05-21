@@ -23,6 +23,56 @@ Feature: Berksfile.lock
       }
       """
 
+  Scenario: Wiring the Berksfile.lock when an old lockfile is present
+    Given I write to "Berksfile" with:
+      """
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      cookbook 'berkshelf-cookbook-fixture', :locked_version => '1.0.0'
+      """
+    When I successfully run `berks install`
+    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "sha":"bfb1de046fdc2a0c38cd5bbaddddce8bc1cd3c24",
+        "sources":{
+          "berkshelf-cookbook-fixture":{
+            "locked_version":"1.0.0",
+            "constraint":"= 1.0.0"
+          }
+        }
+      }
+      """
+
+  Scenario: Writing the Berksfile.lock when an old lockfile is present and contains a full path
+    Given a cookbook named "fake"
+    And I write to "Berksfile" with:
+      """
+      cookbook 'fake', '0.0.0', path: './fake'
+      """
+    And I dynamically write to "Berksfile.lock" with:
+      """
+      cookbook 'fake', :locked_version => '0.0.0', path: '<%= File.expand_path('tmp/aruba/fake') %>'
+      """
+    When I successfully run `berks install`
+    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "sha":"4b614de85168d72fda4b255fc31796b4c474c3fc",
+        "sources":{
+          "fake":{
+            "locked_version":"0.0.0",
+            "constraint":"= 0.0.0",
+            "path":"./fake"
+          }
+        }
+      }
+      """
+
   Scenario: Installing a cookbook with dependencies
   Given I write to "Berksfile" with:
     """
@@ -229,6 +279,28 @@ Feature: Berksfile.lock
     }
     """
 
+  Scenario: Updating a Berksfile.lock when a git location with :rel
+  Given I write to "Berksfile" with:
+    """
+    site :opscode
+    cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
+    """
+  When I successfully run `berks install`
+  Then the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "f0b5a9c0230a3ff384badb0c40af1058cde75bee",
+      "sources":{
+        "berkshelf-cookbook-fixture":{
+          "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+          "ref":"93f5768b7d14df45e10d16c8bf6fe98ba3ff809a",
+          "rel":"cookbooks/berkshelf-cookbook-fixture",
+          "locked_version":"1.0.0"
+        }
+      }
+    }
+    """
+
   Scenario: Updating a Berksfile.lock with a path location
   Given I write to "Berksfile" with:
     """
@@ -245,6 +317,32 @@ Feature: Berksfile.lock
         "fake":{
           "path":"./fake",
           "locked_version":"0.0.0"
+        }
+      }
+    }
+    """
+
+  Scenario: Lockfile when `metadata` is specified
+  Given I write to "metadata.rb" with:
+    """
+    name 'fake'
+    version '1.0.0'
+    """
+  And I write to "Berksfile" with:
+    """
+    site :opscode
+    metadata
+    """
+  When I successfully run `berks install`
+  Then the file "Berksfile.lock" should contain JSON:
+    """
+    {
+      "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
+      "sources":{
+        "fake":{
+          "path":".",
+          "locked_version":"1.0.0",
+          "constraint":"= 1.0.0"
         }
       }
     }

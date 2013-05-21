@@ -293,7 +293,7 @@ describe Berkshelf::CookbookSource do
     end
 
     it 'includes the git url and ref' do
-      location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234')
+      location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234', rel: nil)
       location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)
@@ -302,6 +302,18 @@ describe Berkshelf::CookbookSource do
       expect(hash[:git]).to eq('git://github.com/foo/bar.git')
       expect(hash).to have_key(:ref)
       expect(hash[:ref]).to eq('abcd1234')
+    end
+
+    it 'includes the git url and rel' do
+      location = double('git', uri: 'git://github.com/foo/bar.git', ref: nil, rel: 'cookbooks/foo')
+      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(false)
+      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
+      subject.stub(:location).and_return(location)
+
+      expect(hash).to have_key(:git)
+      expect(hash[:git]).to eq('git://github.com/foo/bar.git')
+      expect(hash).to have_key(:rel)
+      expect(hash[:rel]).to eq('cookbooks/foo')
     end
 
     it 'includes a relative path' do
