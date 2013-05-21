@@ -40,7 +40,7 @@ module Berkshelf
       rescue JSON::ParserError
         if contents =~ /^cookbook ["'](.+)["']/
           Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
-          hash = LockfileLegacy.parse(contents)
+          hash = LockfileLegacy.parse(berksfile, contents)
         else
           raise
         end
@@ -197,17 +197,21 @@ module Berkshelf
       # @author Seth Vargo <sethvargo@gmail.com>
       # @todo Remove this class in the next major release.
       class LockfileLegacy
+        require 'pathname'
+
         class << self
           # Read the old lockfile content and instance eval in context.
           #
+          # @param [Berkshelf::Berksfile] berksfile
+          #   the associated berksfile
           # @param [String] content
           #   the string content read from a legacy lockfile
-          def parse(content)
+          def parse(berksfile, content)
             sources = {}.tap do |hash|
               content.split("\n").each do |line|
                 next if line.empty?
 
-                source = self.new(line)
+                source = self.new(berksfile, line)
                 hash[source.name] = source.options
               end
             end
@@ -227,11 +231,16 @@ module Berkshelf
         #   the name of this cookbook
         attr_reader :name
 
+        # @return [Berkshelf::Berksfile]
+        #   the berksfile
+        attr_reader :berksfile
+
         # Create a new legacy lockfile for processing
         #
         # @param [String] content
         #   the content to parse out and convert to a hash
-        def initialize(content)
+        def initialize(berksfile, content)
+          @berksfile = berksfile
           instance_eval(content).to_hash
         end
 
@@ -244,8 +253,17 @@ module Berkshelf
         #   the locked version of this cookbook
         def cookbook(name, options = {})
           @name = name
-          @options = options
+          @options = manipulate(options)
         end
+
+        private
+          # Perform various manipulations on the hash.
+          #
+          # @param [Hash] options
+          def manipulate(options = {})
+            options[:path] = berksfile.find(name).instance_variable_get(:@options)[:path] || options[:path]
+            options
+          end
       end
   end
 end

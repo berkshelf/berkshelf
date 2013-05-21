@@ -206,6 +206,7 @@ module Berkshelf
         if location.kind_of?(GitLocation)
           h[:git] = location.uri
           h[:ref] = location.ref
+          h[:rel] = location.rel if location.rel
         end
 
         # Path is intentionally left relative here for cross-team compatibility
