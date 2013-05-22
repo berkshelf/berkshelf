@@ -319,7 +319,7 @@ module Berkshelf
       banner: "PATH"
     desc "list", "Show all of the cookbooks in the current Berkshelf"
     def list
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
 
       Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
       Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
