@@ -41,6 +41,13 @@ module Berkshelf
         Berkshelf.ui.info "Package saved to #{destination}!"
       end
 
+      # Output a Cookbook info message using {Berkshelf.ui}
+      #
+      # @param [CachedCookbook] cookbook
+      def info(cookbook)
+        Berkshelf.ui.info(cookbook.pretty_print)
+      end
+
       # Output a generic message using {Berkshelf.ui}
       #
       # @param [String] message

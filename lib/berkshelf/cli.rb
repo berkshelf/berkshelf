@@ -349,20 +349,33 @@ module Berkshelf
       Berkshelf.formatter.msg(cookbook.path)
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :version,
       type: :string,
       desc: 'The version of the cookbook to display.',
       aliases: '-v'
     desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def info(name)
-      if options[:version]
-        cookbook = Berkshelf.cookbook_store.cookbook(name, options[:version])
+      version = options[:version]
+      berksfile = Berksfile.from_file(options[:berksfile])
+
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }
+      cookbooks = sources.select { |c| c.cookbook_name == name }
+
+      if version
+        cookbook = cookbooks.find { |c| c.version.to_s == version.to_s }
+        raise CookbookNotFound, "Cookbook '#{name} (#{version})' is not installed by your Berksfile." unless cookbook
       else
-        cookbook = Berkshelf.cookbook_store.cookbooks(name).sort_by(&:version).last
+        cookbook = cookbooks.sort_by(&:version).last
+        raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile" unless cookbook
       end
 
-      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" if cookbook.nil?
-      Berkshelf.formatter.msg(cookbook.pretty_print)
+      Berkshelf.formatter.info(cookbook)
     end
 
     method_option :berksfile,

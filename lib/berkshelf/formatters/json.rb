@@ -69,6 +69,14 @@ module Berkshelf
         cookbooks[cookbook][:destination] = destination
       end
 
+      # Output a Cookbook info entry to delayed output
+      #
+      # @param [CachedCookbook] cookbook
+      def info(cookbook)
+        cookbooks[cookbook.cookbook_name] ||= {}
+        cookbooks[cookbook.cookbook_name] = cookbook.pretty_hash
+      end
+
       # Add a generic message entry to delayed output
       #
       # @param [String] message
