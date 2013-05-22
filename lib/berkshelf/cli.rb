@@ -372,11 +372,14 @@ module Berkshelf
     def contingent(name)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      Berkshelf.formatter.msg "Cookbooks contingent upon #{name}:"
-      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
-        if cookbook.dependencies.include?(name)
-          Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
-        end
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
+      dependencies = sources.select { |cookbook| cookbook.dependencies.include?(name) }
+
+      if dependencies.empty?
+        Berkshelf.formatter.msg "There are no cookbooks contingent upon '#{name}' defined in this Berksfile"
+      else
+        Berkshelf.formatter.msg "Cookbooks in this Berksfile contingent upon #{name}:"
+        print_list(dependencies)
       end
     end
 
@@ -469,6 +472,17 @@ module Berkshelf
 
       def license
         File.read(Berkshelf.root.join('LICENSE'))
+      end
+
+      # Print a list of the given cookbooks. This is used by various
+      # methods like {list} and {contingent}.
+      #
+      # @param [Array<CachedCookbook>] cookbooks
+      #
+      def print_list(cookbooks)
+        Array(cookbooks).each do |cookbook|
+          Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+        end
       end
   end
 end
