@@ -320,10 +320,13 @@ module Berkshelf
     desc "list", "Show all of the cookbooks in the current Berkshelf"
     def list
       berksfile = Berksfile.from_file(options[:berksfile])
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
 
-      Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
-      Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
-        Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+      if sources.empty?
+        Berkshelf.formatter.msg "There are no cookbooks installed by your Berksfile"
+      else
+        Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
+        print_list(sources)
       end
     end
 
