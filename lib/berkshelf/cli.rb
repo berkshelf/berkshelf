@@ -124,12 +124,21 @@ module Berkshelf
       Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: Berkshelf::DEFAULT_FILENAME,
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     desc "open NAME", "Opens the source directory of an installed cookbook"
     def open(name)
-      editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
+      editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.blank? }
       raise ArgumentError, "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR" unless editor
 
-      cookbook = Berkshelf.cookbook_store.cookbooks(name).last
+      berksfile = Berksfile.from_file(options[:berksfile])
+      source = berksfile.find(name)
+
+      cookbook = Berkshelf.ui.mute { berksfile.resolve(source)[:solution].first }
       raise CookbookNotFound, "Cookbook '#{name}' not found in any of the sources!" unless cookbook
 
       Dir.chdir(cookbook.path) do
