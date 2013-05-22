@@ -405,7 +405,7 @@ module Berkshelf
       default: false
     desc "package [COOKBOOK]", "Package this cookbook and all it's dependencies in a tarball"
     def package(name = nil)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
       berksfile.package(name, options)
     end
 
