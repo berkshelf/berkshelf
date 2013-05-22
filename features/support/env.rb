@@ -6,6 +6,7 @@ Spork.prefork do
   require 'rspec'
   require 'pp'
   require 'aruba/cucumber'
+  require 'chef_zero/server'
 
   APP_ROOT = File.expand_path('../../../', __FILE__)
 
@@ -40,6 +41,14 @@ Spork.prefork do
   Before('@slow_process') do
     @aruba_timeout_seconds = 60
     @aruba_io_wait_seconds = 30
+  end
+
+  # Chef Zero
+  @server = ChefZero::Server.new(port: 4000)
+  @server.start_background
+
+  at_exit do
+    @server.stop if @server
   end
 
   def cookbook_store
