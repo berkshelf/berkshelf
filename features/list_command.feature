@@ -17,3 +17,12 @@ Feature: list command
         * hostsfile (1.0.1)
       """
     And the exit status should be 0
+
+  Scenario: Running the list command with no sources defined
+    Given an empty file named "Berksfile"
+    When I successfully run `berks list`
+    Then the output should contain:
+      """
+      There are no cookbooks installed by your Berksfile
+      """
+    And the exit status should be 0
