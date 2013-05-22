@@ -370,7 +370,7 @@ module Berkshelf
       banner: "PATH"
     desc "contingent COOKBOOK", "Display a list of cookbooks that depend on the given cookbook"
     def contingent(name)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
 
       sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
       dependencies = sources.select { |cookbook| cookbook.dependencies.include?(name) }
