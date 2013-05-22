@@ -4,39 +4,46 @@ Feature: info command
   So that I can troubleshoot bugs or satisfy my own curiosity
 
   Scenario: Running the info command
-    Given I write to "Berksfile" with:
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
       """
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      cookbook 'fake', '1.0.0'
       """
-    When I successfully run `berks info berkshelf-cookbook-fixture`
+    When I successfully run `berks info fake`
     Then the output should contain:
       """
-              Name: berkshelf-cookbook-fixture
+              Name: fake
            Version: 1.0.0
-       Description: Installs/Configures berkshelf-cookbook-fixture
-            Author: Michael D. Ivey
-             Email: ivey@gweezlebur.com
-           License: All rights reserved
+       Description: A fabulous new cookbook
+            Author: YOUR_COMPANY_NAME
+             Email: YOUR_EMAIL
+           License: none
       """
 
   Scenario: Running the info command with a version flag
-    Given I write to "Berksfile" with:
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
       """
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      cookbook 'fake', '1.0.0'
       """
-    When I successfully run `berks info berkshelf-cookbook-fixture --version 1.0.0`
+    When I successfully run `berks info fake --version 1.0.0`
     Then the output should contain:
       """
-              Name: berkshelf-cookbook-fixture
+              Name: fake
            Version: 1.0.0
-       Description: Installs/Configures berkshelf-cookbook-fixture
-            Author: Michael D. Ivey
-             Email: ivey@gweezlebur.com
-           License: All rights reserved
+       Description: A fabulous new cookbook
+            Author: YOUR_COMPANY_NAME
+             Email: YOUR_EMAIL
+           License: none
       """
 
   Scenario: Running the info command for a cookbook that is not defined in the Berksfile
     Given an empty file named "Berksfile"
-    When I run `berks info berkshelf-cookbook-fixture`
-    Then the output should contain "Cookbook 'berkshelf-cookbook-fixture' is not installed by your Berksfile"
+    When I run `berks info fake`
+    Then the output should contain "Cookbook 'fake' is not installed by your Berksfile"
     And the CLI should exit with the status code for error "CookbookNotFound"
+
+
+# 7.66
