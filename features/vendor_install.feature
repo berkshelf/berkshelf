@@ -4,16 +4,15 @@ Feature: install cookbooks to a given vendor path
   So I vendor my cookbooks and package them with my application
 
   Scenario: default
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
     Given I write to "Berksfile" with:
       """
-      site :opscode
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      cookbook 'fake', '1.0.0'
       """
     When I run the install command with flags:
       | --path vendor/cookbooks |
-    Then the cookbook store should have the cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
     Then the following directories should exist:
       | vendor/cookbooks          |
-      | vendor/cookbooks/berkshelf-cookbook-fixture |
+      | vendor/cookbooks/fake |
     And the exit status should be 0
