@@ -14,7 +14,7 @@ Spork.prefork do
 
   APP_ROOT = File.expand_path('../../', __FILE__)
   ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "spec", "tmp", "berkshelf")
-  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "knife.rb")
+  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "support", "chef", "knife.rb")
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 

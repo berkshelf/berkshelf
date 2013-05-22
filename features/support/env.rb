@@ -12,7 +12,7 @@ Spork.prefork do
 
   ENV['RUBY_ENV'] = 'test'
   ENV['BERKSHELF_PATH'] = File.join(APP_ROOT, 'tmp', 'berkshelf')
-  ENV['BERKSHELF_CHEF_CONFIG'] = File.join(APP_ROOT, 'spec', 'knife.rb')
+  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, 'spec', 'support', 'chef', 'knife.rb')
 
   # Workaround for RSA Fingerprint prompt in Travis CI
   git_ssh_path = '/tmp/git_ssh.sh'
