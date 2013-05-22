@@ -14,15 +14,14 @@ module Berkshelf::RSpec
       end
 
       def server
-        @server ||= ChefZero::Server.new(port: PORT, signals: false, log_requests: true)
+        @server ||= ChefZero::Server.new(port: PORT)
       end
 
       def server_url
-        "http://localhost:#{PORT}"
+        (@server && @server.url) || "http://localhost:#{PORT}"
       end
 
       def start
-        Thin::Logging.silent = true
         server.start_background
         server.on_response do |request, response|
           request_log << [ request, response ]
@@ -33,7 +32,7 @@ module Berkshelf::RSpec
       end
 
       def stop
-        @server.stop if @server
+        @server.stop if running?
       end
 
       def running?
