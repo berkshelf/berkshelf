@@ -38,7 +38,7 @@ module Berkshelf
       # @param [String] cookbook
       # @param [String] destination
       def package(cookbook, destination)
-        Berkshelf.ui.info "Cookbook '#{cookbook}' saved to #{destination}!"
+        Berkshelf.ui.info "Package saved to #{destination}!"
       end
 
       # Output a generic message using {Berkshelf.ui}
