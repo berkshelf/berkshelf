@@ -338,7 +338,7 @@ module Berkshelf
       banner: "PATH"
     desc "show COOKBOOK", "Display the source path on the local file system for the given cookbook"
     def show(name)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
       source = berksfile.find(name)
 
       cookbook = Berkshelf.ui.mute {
