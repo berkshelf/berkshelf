@@ -341,9 +341,7 @@ module Berkshelf
       berksfile = Berksfile.from_file(options[:berksfile])
       source = berksfile.find(name)
 
-      cookbook = Berkshelf.ui.mute {
-        berksfile.resolve(source)[:solution].first
-      }
+      cookbook = Berkshelf.ui.mute { berksfile.resolve(source)[:solution].first }
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.formatter.msg(cookbook.path)
@@ -363,9 +361,9 @@ module Berkshelf
     def info(name)
       version = options[:version]
       berksfile = Berksfile.from_file(options[:berksfile])
+      source = berksfile.find(name)
 
-      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }
-      cookbooks = sources.select { |c| c.cookbook_name == name }
+      cookbooks = Berkshelf.ui.mute { berksfile.resolve(source)[:solution] }
 
       if version
         cookbook = cookbooks.find { |c| c.version.to_s == version.to_s }
