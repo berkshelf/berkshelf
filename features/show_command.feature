@@ -8,7 +8,6 @@ Feature: show command
       | berkshelf-cookbook-fixture | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks show berkshelf-cookbook-fixture`
@@ -18,7 +17,6 @@ Feature: show command
   Scenario: Running the show command with a not installed cookbook name
     Given I write to "Berksfile" with:
       """
-      site :opscode
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I run `berks show build-essential`
