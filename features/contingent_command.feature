@@ -10,7 +10,7 @@ Feature: contingent command
       | dep | ~> 1.0.0 |
     And the cookbook store contains a cookbook "ekaf" "1.0.0" with dependencies:
       | dep | ~> 1.0.0 |
-    Given I write to "Berksfile" with:
+    And I write to "Berksfile" with:
       """
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '1.0.0'
