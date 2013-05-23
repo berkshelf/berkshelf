@@ -5,7 +5,6 @@ Feature: configure command
   So I can quickly get up and running with the least amount of resistance
 
   Scenario: generating a new config file
-    Given I do not have a Berkshelf config file
     When I run `berks configure` interactively
     And I type "https://api.opscode.com/organizations/vialstudios"
     And I type "node_name"
@@ -30,7 +29,6 @@ Feature: configure command
 
   Scenario: generating a config with default values
     Given I have a default Chef config
-    And I do not have a Berkshelf config file
     When I run `berks configure` interactively
     And I type ""
     And I type ""

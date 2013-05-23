@@ -1,5 +1,5 @@
-Given /^I have the default Chef config$/ do
-  path = File.join('spec', 'config', 'knife.rb').to_s
+Given /^I have a default Chef config$/ do
+  path = File.join(tmp_path, 'knife.rb')
   contents = [
     'chef_server_url          "http://localhost:4000"',
     'validation_key           "/etc/chef/validation.pem"',
@@ -9,7 +9,7 @@ Given /^I have the default Chef config$/ do
 
   File.open(path, 'w+') { |f| f.write(contents) }
 
-  Berkshelf::Chef::Config.from_file(path)
+  Berkshelf::Chef::Config.path = path
 end
 
 Given /^I do not have a Chef config$/ do

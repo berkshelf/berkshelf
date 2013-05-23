@@ -129,6 +129,9 @@ module Berkshelf
       ].each do |attribute|
         default = config.get_attribute(attribute)
 
+        STDOUT.puts config.inspect
+        STDOUT.puts default.inspect
+
         message = "Enter value for #{attribute}"
         message << " (default: '#{default}')" if default
         message << ": "
