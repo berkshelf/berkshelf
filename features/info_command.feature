@@ -44,6 +44,3 @@ Feature: info command
     When I run `berks info fake`
     Then the output should contain "Cookbook 'fake' is not installed by your Berksfile"
     And the CLI should exit with the status code for error "CookbookNotFound"
-
-
-# 7.66

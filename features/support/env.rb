@@ -1,6 +1,6 @@
-# require 'spork'
+require 'spork'
 
-# Spork.prefork do
+Spork.prefork do
   # These must be set BEFORE any require 'berkshelf' calls are made!
   ENV['RUBY_ENV']              = 'test'
   ENV['BERKSHELF_PATH']        = File.expand_path(File.join('tmp', 'berkshelf'))
@@ -33,8 +33,8 @@
 
     purge_store_and_configs!
 
-    @aruba_io_wait_seconds = 5
-    @aruba_timeout_seconds = 16
+    @aruba_io_wait_seconds = Cucumber::JRUBY ? 10 :15
+    @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15
   end
 
   Before('@spawn') do
@@ -42,8 +42,8 @@
   end
 
   Before('@slow_process') do
-    @aruba_timeout_seconds = 60
-    @aruba_io_wait_seconds = 30
+    @aruba_io_wait_seconds = Cucumber::JRUBY ? 70 : 30
+    @aruba_timeout_seconds = Cucumber::JRUBY ? 140 : 60
   end
 
   # Chef Zero
@@ -74,8 +74,8 @@
   def fixtures_path
     File.expand_path(File.join('spec', 'fixtures'))
   end
-# end
+end
 
-# Spork.each_run do
-#   require 'berkshelf'
-# end
+Spork.each_run do
+  require 'berkshelf'
+end
