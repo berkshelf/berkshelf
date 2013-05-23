@@ -1,10 +1,13 @@
-Feature: lock cookbook versions on the server
+Feature: Apply cookbook versions to a Chef Environment
   As a berks user
   I want to push my berks resolved cookbook versions to my environment
   So that I can avoid manual configuration of my environments
 
   @chef_server
-  Scenario: locking cookbook versions
+  Scenario: Locking a cookbook version with dependencies
+    Given the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 1.0.0 |
+      | hostsfile                  | 1.0.1 |
     Given I have an environment named "berkshelf_lock_test"
     And I write to "Berksfile" with:
       """
@@ -18,7 +21,7 @@ Feature: lock cookbook versions on the server
     And the exit status should be 0
 
   @chef_server
-  Scenario: locking cookbook versions to an environment that does not exist
+  Scenario: Locking cookbook versions to a non-existent Chef Environment
     Given I do not have an environment named "berkshelf_lock_test"
     And I write to "Berksfile" with:
       """
