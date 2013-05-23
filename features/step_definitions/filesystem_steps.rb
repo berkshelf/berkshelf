@@ -32,9 +32,10 @@ Given /^I have a default Berkshelf config file$/ do
 end
 
 Given /^I have a Berkshelf config file containing:$/ do |contents|
-  ::File.open(Berkshelf::Config.path, 'w+') do |f|
+  File.open(Berkshelf::Config.path, 'w+') do |f|
     f.write(contents)
   end
+  Berkshelf::Config.reload
 end
 
 Given /^I do not have a Berkshelf config file$/ do
