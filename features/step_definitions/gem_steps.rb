@@ -1,6 +1,9 @@
 Given /^the gem "(.*)" is not installed$/ do |gem_name|
   # @see berkshelf/test.rb
   set_env 'MISSING_GEMS', [ENV['MISSING_GEMS'], gem_name].compact.join(',')
+
+  # For in-process tests
+  Gem::Specification.stub(:find_by_name).with(gem_name).and_raise(Gem::LoadError)
 end
 
 Then /^the output should contain a warning to suggest supporting the option "(.*?)" by installing "(.*?)"$/ do |option, gem_name|
