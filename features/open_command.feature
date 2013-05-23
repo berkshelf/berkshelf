@@ -10,7 +10,8 @@ Feature: open command
     When I run `berks open mysql` interactively
     Then the output should contain "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR"
 
-  @spawn # For some reason, we need to spawn here
+  # For some reason, we need to spawn here
+  @spawn
   Scenario: Running berks open with an $EDITOR
     Given the environment variable EDITOR is "ls"
     And I write to "Berksfile" with:
