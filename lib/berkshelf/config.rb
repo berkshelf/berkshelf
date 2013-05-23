@@ -31,6 +31,7 @@ module Berkshelf
 
       # @param [String] new_path
       def path=(new_path)
+        @instance = nil
         @path = File.expand_path(new_path)
       end
 
@@ -57,6 +58,15 @@ module Berkshelf
       # @return [Config]
       def reload
         @instance = nil
+        self.instance
+      end
+
+      # Completely reset this configuration
+      #
+      # @return [Config]
+      def reset!
+        @instance = nil
+        @path = nil
         self.instance
       end
     end

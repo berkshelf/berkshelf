@@ -57,6 +57,15 @@ module Berkshelf::Chef
         @path     = value
       end
 
+      # Completely reset this configuration
+      #
+      # @return [Config]
+      def reset!
+        @instance = nil
+        @path = nil
+        self.instance
+      end
+
       private
 
         def working_dir

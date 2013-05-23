@@ -1,4 +1,3 @@
-@no_run
 Feature: cookbook creation with a config file
   As a Cookbook author
   I want to quickly generate a cookbook with my own customizations

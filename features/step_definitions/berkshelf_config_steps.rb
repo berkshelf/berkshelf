@@ -3,10 +3,9 @@ Given /^I have a default Berkshelf config file$/ do
 end
 
 Given /^I have a Berkshelf config file containing:$/ do |contents|
-  File.open(Berkshelf::Config.path, 'w+') do |f|
-    f.write(contents)
-  end
-  Berkshelf::Config.reload
+  path = File.join(tmp_path, 'config.json')
+  File.open(path, 'w+') { |f| f.write(contents) }
+  Berkshelf::Config.path = path
 end
 
 Given /^I do not have a Berkshelf config file$/ do

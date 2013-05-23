@@ -367,7 +367,6 @@ Feature: Berksfile.lock
       }
       """
 
-  @no_run
   Scenario: Updating a Berksfile.lock with a different site location
   Given pending we have a reliable non-opscode site to test
   # Given I write to "Berksfile" with:

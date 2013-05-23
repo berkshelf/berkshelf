@@ -1,4 +1,4 @@
-@spawn @no_run
+@spawn
 Feature: configure command
   As CLI user of Berkshelf
   I want a command to generate a Berkshelf configuration file based on my input
@@ -29,6 +29,7 @@ Feature: configure command
 
   Scenario: generating a config with default values
     Given I have a default Chef config
+    And I do not have a Berkshelf config
     When I run `berks configure` interactively
     And I type ""
     And I type ""
