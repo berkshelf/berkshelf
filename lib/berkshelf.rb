@@ -15,6 +15,7 @@ require 'zlib'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 require 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
+require 'berkshelf/util'
 require 'berkshelf/version'
 require 'thor/monkies'
 

@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'chozo',             '>= 0.6.1'
   s.add_dependency 'faraday',           '>= 0.8.5'
   s.add_dependency 'minitar'
-  s.add_dependency 'mixlib-shellout',   '~> 1.1'
   s.add_dependency 'mixlib-config',     '~> 1.1'
   s.add_dependency 'retryable'
   s.add_dependency 'ridley',            '~> 0.12.1'
