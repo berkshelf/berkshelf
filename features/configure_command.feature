@@ -1,3 +1,4 @@
+@spawn
 Feature: configure command
   As CLI user of Berkshelf
   I want a command to generate a Berkshelf configuration file based on my input
@@ -5,7 +6,7 @@ Feature: configure command
 
   Scenario: generating a new config file
     Given I do not have a Berkshelf config file
-    When I run the "configure" command interactively
+    When I run `berks configure` interactively
     And I type "https://api.opscode.com/organizations/vialstudios"
     And I type "node_name"
     And I type "client_key"
@@ -28,9 +29,9 @@ Feature: configure command
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
 
   Scenario: generating a config with default values
-    Given I do not have a Berkshelf config file
-    And I have a default Chef config
-    When I run the "configure" command interactively
+    Given I have a default Chef config
+    And I do not have a Berkshelf config file
+    When I run `berks configure` interactively
     And I type ""
     And I type ""
     And I type ""
@@ -53,7 +54,7 @@ Feature: configure command
 
   Scenario: attempting to generate a new config when one already exists
     Given I have a default Berkshelf config file
-    When I run the "configure" command interactively
+    When I run `berks configure` interactively
     Then the output should contain:
       """
       A configuration file already exists. Re-run with the --force flag if you wish to overwrite it.
@@ -62,7 +63,7 @@ Feature: configure command
 
   Scenario Outline: Generating a local Berkshelf config
     Given I do not have a Berkshelf config file at "<path>"
-    When I run the "configure --path <path>" command interactively
+    When I run `berks configure --path <path>` interactively
     And I type "https://api.opscode.com/organizations/vialstudios"
     And I type "node_name"
     And I type "client_key"

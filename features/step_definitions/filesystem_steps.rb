@@ -27,26 +27,6 @@ Given /^I do not have a Berksfile\.lock$/ do
   in_current_dir { FileUtils.rm_f("#{Berkshelf::DEFAULT_FILENAME}.lock") }
 end
 
-Given /^I have a default Berkshelf config file$/ do
-  Berkshelf::Config.new.save
-end
-
-Given /^I have a Berkshelf config file containing:$/ do |contents|
-  File.open(Berkshelf::Config.path, 'w+') do |f|
-    f.write(contents)
-  end
-  Berkshelf::Config.reload
-end
-
-Given /^I do not have a Berkshelf config file$/ do
-  remove_file Berkshelf::Config.path if ::File.exists? Berkshelf::Config.path
-end
-
-Given /^I do not have a Berkshelf config file at "(.+)"$/ do |path|
-  remove_file(path) if File.exists?(path)
-end
-
-
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
   write_file(::File.join(cookbook_name, file_name), content)
 end
