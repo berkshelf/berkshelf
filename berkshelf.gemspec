@@ -3,30 +3,30 @@ require File.expand_path('../lib/berkshelf/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.authors               = [
-    "Jamie Winsor",
-    "Josiah Kiehl",
-    "Michael Ivey",
-    "Justin Campbell"
+    'Jamie Winsor',
+    'Josiah Kiehl',
+    'Michael Ivey',
+    'Justin Campbell'
   ]
   s.email                 = [
-    "reset@riotgames.com",
-    "jkiehl@riotgames.com",
-    "michael.ivey@riotgames.com",
-    "justin.campbell@riotgames.com"
+    'reset@riotgames.com',
+    'jkiehl@riotgames.com',
+    'michael.ivey@riotgames.com',
+    'justin.campbell@riotgames.com'
   ]
 
   s.description               = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
   s.summary                   = s.description
-  s.homepage                  = "http://berkshelf.com"
-  s.license                   = "Apache 2.0"
+  s.homepage                  = 'http://berkshelf.com'
+  s.license                   = 'Apache 2.0'
   s.files                     = `git ls-files`.split($\)
   s.executables               = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   s.test_files                = s.files.grep(%r{^(test|spec|features)/})
-  s.name                      = "berkshelf"
-  s.require_paths             = ["lib"]
+  s.name                      = 'berkshelf'
+  s.require_paths             = ['lib']
   s.version                   = Berkshelf::VERSION
-  s.required_ruby_version     = ">= 1.9.1"
-  s.required_rubygems_version = ">= 1.8.0"
+  s.required_ruby_version     = '>= 1.9.1'
+  s.required_rubygems_version = '>= 1.8.0'
 
   s.add_dependency 'addressable'
   s.add_dependency 'activesupport',     '>= 3.2.0'
