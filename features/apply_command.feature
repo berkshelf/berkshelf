@@ -10,7 +10,7 @@ Feature: lock cookbook versions on the server
       """
       cookbook 'berkshelf-cookbook-fixture', '1.0.0', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'deps'
       """
-    When I successfully run the apply command on "berkshelf_lock_test"
+    When I successfully run `berks apply berkshelf_lock_test`
     Then the version locks in "berkshelf_lock_test" should be:
     | cookbook                     | version_lock |
     | berkshelf-cookbook-fixture   |        1.0.0 |
