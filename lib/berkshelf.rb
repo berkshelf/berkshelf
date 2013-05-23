@@ -69,7 +69,15 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
+      @berkshelf_path ||= ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
+    end
+
+    # Set the Berkshelf path programatically.
+    #
+    # @param [#to_s] path
+    #   the path to use
+    def berkshelf_path=(path)
+      @berkshelf_path = File.expand_path(path.to_s)
     end
 
     # @return [Logger]
