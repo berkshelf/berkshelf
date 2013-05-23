@@ -14,7 +14,7 @@ Feature: package command
     Then a file named "fake.tar.gz" should exist
     And the output should contain:
       """
-      Package saved to
+      Cookbook(s) packaged to
       """
     And the exit status should be 0
 
