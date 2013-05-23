@@ -19,14 +19,6 @@ Given /^a cookbook named "(.*?)"$/ do |name|
   }
 end
 
-Given /^I do not have a Berksfile$/ do
-  in_current_dir { FileUtils.rm_f(Berkshelf::DEFAULT_FILENAME) }
-end
-
-Given /^I do not have a Berksfile\.lock$/ do
-  in_current_dir { FileUtils.rm_f("#{Berkshelf::DEFAULT_FILENAME}.lock") }
-end
-
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
   write_file(::File.join(cookbook_name, file_name), content)
 end

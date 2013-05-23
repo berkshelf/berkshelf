@@ -6,3 +6,11 @@ Given /^a Berksfile with path location sources to fixtures:$/ do |cookbooks|
   end
   write_file("Berksfile", lines.join("\n"))
 end
+
+Given /^I do not have a Berksfile$/ do
+  in_current_dir { FileUtils.rm_f(Berkshelf::DEFAULT_FILENAME) }
+end
+
+Given /^I do not have a Berksfile\.lock$/ do
+  in_current_dir { FileUtils.rm_f("#{Berkshelf::DEFAULT_FILENAME}.lock") }
+end
