@@ -1,4 +1,4 @@
-@spawn
+@spawn @no_run
 Feature: configure command
   As CLI user of Berkshelf
   I want a command to generate a Berkshelf configuration file based on my input
@@ -27,7 +27,6 @@ Feature: configure command
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
 
-  @focus @no_run
   Scenario: generating a config with default values
     Given I have a default Chef config
     When I run `berks configure` interactively
