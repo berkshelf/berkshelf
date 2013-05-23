@@ -10,7 +10,6 @@ Feature: open command
     When I run `berks open mysql` interactively
     Then the output should contain "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR"
 
-  # For some reason, we need to spawn here
   @spawn
   Scenario: Running berks open with an $EDITOR
     Given the environment variable EDITOR is "ls"
@@ -20,7 +19,7 @@ Feature: open command
       """
     And the cookbook store has the cookbooks:
       | fake | 1.0.0 |
-    When I run `berks open fake` interactively
+    When I successfully run `berks open fake`
     Then the output should contain "metadata.rb"
 
   Scenario: Running berks open with a missing EDITOR
