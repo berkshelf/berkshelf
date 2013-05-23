@@ -27,6 +27,7 @@ Feature: configure command
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
 
+  @focus @no_run
   Scenario: generating a config with default values
     Given I have a default Chef config
     When I run `berks configure` interactively
