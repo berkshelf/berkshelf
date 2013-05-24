@@ -314,17 +314,20 @@ module Berkshelf
   #
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
-  class ChefConfigNotFound < BerkshelfError
+  class ConfigNotFound < BerkshelfError
     status_code(133)
 
+    # @param [String] type
+    #   the type of config that was not found (Berkshelf, Chef, etc)
     # @param [#to_s] path
     #   the path to the specified Chef config that did not exist
-    def initialize(path)
+    def initialize(type, path)
+      @type = type.to_s
       @path = path
     end
 
     def to_s
-      "No Chef config file found at: '#{path}'!"
+      "No #{@typ} config file found at: '#{path}'!"
     end
   end
 end
