@@ -1,3 +1,5 @@
+require 'json'
+
 module Berkshelf
   module Mixin
     module Config
@@ -80,6 +82,7 @@ module Berkshelf
         #
         # @return [Berkshelf::Mixin::Config]
         def load
+          configuration # Need to call this to make sure it's populated
           self.instance_eval(IO.read(path), path, 1) if path && File.exists?(path)
           self
         end
@@ -107,6 +110,18 @@ module Berkshelf
           else
             configuration[m.to_sym]
           end
+        end
+
+        # Save the contents of the file to the originally-supplied path.
+        def save
+          File.open(path, 'w+') { |f| f.write(to_rb + "\n") }
+        end
+
+        # Convert the file back to Ruby.
+        #
+        # @return [String]
+        def to_rb
+          configuration.map { |k,v| "#{k}(#{v.inspect})" }.join("\n")
         end
 
         private

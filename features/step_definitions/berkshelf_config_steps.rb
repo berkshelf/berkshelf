@@ -11,6 +11,7 @@ end
 
 Given /^I do not have a Berkshelf config file$/ do
   path = File.join(berkshelf_path, 'config.json')
+  load 'berkshelf/config.rb'
 
   remove_file(Berkshelf::Config.path) if File.exists?(Berkshelf::Config.path)
   remove_file(path) if File.exists?(path)

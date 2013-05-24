@@ -53,7 +53,7 @@ Spork.prefork do
     Berkshelf.chef_config = Berkshelf::Chef::Config.from_file(chef_config_path)
 
     FileUtils.mkdir_p(Berkshelf.cookbooks_dir)
-    load 'berkshelf/config.rb'
+    load 'berkshelf/config.rb' # <-- This is super fucking annoying...
   end
 
   def cookbook_store

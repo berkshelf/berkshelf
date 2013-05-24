@@ -29,7 +29,7 @@ Feature: configure command
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
 
   Scenario: generating a config with default values
-    Given I have a default Chef config
+    Given I have a default Chef config file
     And I do not have a Berkshelf config file
     When I run `berks configure` interactively
     And I type ""
