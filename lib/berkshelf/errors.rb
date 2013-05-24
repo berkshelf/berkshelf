@@ -287,14 +287,13 @@ module Berkshelf
   #
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
-  #
-  # @param [Berkshelf::CachedCookbook] cookbook
-  #   the cookbook that failed validation
-  # @param [Array<#to_s>] files
-  #   the list of files that were not valid
   class InvalidCookbookFiles < BerkshelfError
     status_code(132)
 
+    # @param [Berkshelf::CachedCookbook] cookbook
+    #   the cookbook that failed validation
+    # @param [Array<#to_s>] files
+    #   the list of files that were not valid
     def initialize(cookbook, files)
       @cookbook = cookbook
       @files = files
@@ -308,6 +307,24 @@ module Berkshelf
         "",
         "Please note, spaces are not a valid character in filenames."
       ].join("\n")
+    end
+  end
+
+  # @author Seth Vargo <sethvargo@gmail.com>
+  #
+  # Raised when a cookbook or its recipes contain a space or invalid
+  # character in the path.
+  class ChefConfigNotFound < BerkshelfError
+    status_code(133)
+
+    # @param [#to_s] path
+    #   the path to the specified Chef config that did not exist
+    def initialize(path)
+      @path = path
+    end
+
+    def to_s
+      "No Chef config file found at: '#{path}'!"
     end
   end
 end

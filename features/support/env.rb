@@ -56,8 +56,8 @@ Spork.prefork do
   end
 
   def purge_store_and_configs!
-    Berkshelf::Chef::Config.reset!
-    Berkshelf::Config.reset!
+    # Berkshelf::Chef::Config.reset!
+    # Berkshelf::Config.reset!
 
     FileUtils.rm_rf(Berkshelf.berkshelf_path)
     FileUtils.mkdir_p(Berkshelf.cookbooks_dir)

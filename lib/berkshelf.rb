@@ -81,6 +81,14 @@ module Berkshelf
       @berkshelf_path = File.expand_path(path.to_s)
     end
 
+    def chef_config
+      @chef_config ||= Berkshelf::Chef::Config.load
+    end
+
+    def chef_config=(config)
+      @chef_config = config
+    end
+
     # @return [Logger]
     def logger
       Celluloid.logger

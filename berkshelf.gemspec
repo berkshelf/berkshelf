@@ -33,7 +33,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'chozo',             '>= 0.6.1'
   s.add_dependency 'faraday',           '>= 0.8.5'
   s.add_dependency 'minitar',           '~> 0.5.4'
-  s.add_dependency 'mixlib-config',     '~> 1.1'
   s.add_dependency 'ridley',            '~> 0.12.1'
   s.add_dependency 'solve',             '>= 0.4.4'
   s.add_dependency 'test-kitchen',      '>= 1.0.0.alpha6'

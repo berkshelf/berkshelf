@@ -113,9 +113,9 @@ EOF
 
         def ridley
           @ridley ||= Ridley.new(
-            server_url:   Berkshelf::Chef::Config.instance[:chef_server_url],
-            client_name:  Berkshelf::Chef::Config.instance[:node_name],
-            client_key:   Berkshelf::Chef::Config.instance[:client_key],
+            server_url:   Berkshelf.chef_config[:chef_server_url],
+            client_name:  Berkshelf.chef_config[:node_name],
+            client_key:   Berkshelf.chef_config[:client_key],
             ssl: { verify: false }
           )
         end
