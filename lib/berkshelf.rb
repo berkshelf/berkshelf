@@ -70,7 +70,7 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      @berkshelf_path ||= ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
+      @berkshelf_path || ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
 
     # Set the Berkshelf path programatically.
@@ -85,8 +85,16 @@ module Berkshelf
       @chef_config ||= Berkshelf::Chef::Config.load
     end
 
-    def chef_config=(config)
-      @chef_config = config
+    def chef_config=(new_config)
+      @chef_config = new_config
+    end
+
+    def config
+      @config ||= Berkshelf::Config.load
+    end
+
+    def config=(new_config)
+      @config = new_config
     end
 
     # @return [Logger]

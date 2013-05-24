@@ -9,7 +9,7 @@ module Berkshelf
       File.join('.',  'berkshelf', 'config.json').freeze,
       File.join('.',  'berkshelf-config.json').freeze,
       File.join('.',  'config.json').freeze
-    ].freeze
+    ].freeze unless defined?(LOCATIONS)
 
     class << self
       # @return [String]
@@ -58,15 +58,6 @@ module Berkshelf
       # @return [Config]
       def reload
         @instance = nil
-        self.instance
-      end
-
-      # Completely reset this configuration
-      #
-      # @return [Config]
-      def reset!
-        @instance = nil
-        @path = nil
         self.instance
       end
     end

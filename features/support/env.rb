@@ -1,26 +1,12 @@
 require 'spork'
 
 Spork.prefork do
-  # These must be set BEFORE any require 'berkshelf' calls are made!
+  # This must be set BEFORE any require 'berkshelf' calls are made!
   ENV['RUBY_ENV']              = 'test'
-  ENV['BERKSHELF_PATH']        = File.expand_path(File.join('tmp', 'berkshelf'))
-  ENV['BERKSHELF_CHEF_CONFIG'] = File.expand_path(File.join('spec', 'config', 'knife.rb'))
 
   require 'aruba/cucumber'
   require 'aruba/in_process'
   require 'aruba/spawn_process'
-
-  module Aruba
-    class InProcess
-      def stdin
-        @stdin
-      end
-
-      def output
-        stdout + stderr
-      end
-    end
-  end
 
   require 'berkshelf'
   require 'berkshelf/cli'
@@ -39,6 +25,10 @@ Spork.prefork do
 
   Before('@spawn') do
     Aruba.process = Aruba::SpawnProcess
+
+    # Legacy ENV variables until we can move over to all in-process
+    set_env('BERKSHELF_PATH', berkshelf_path)
+    set_env('BERKSHELF_CHEF_CONFIG', chef_config_path)
   end
 
   Before('@slow_process') do
@@ -56,11 +46,14 @@ Spork.prefork do
   end
 
   def purge_store_and_configs!
-    # Berkshelf::Chef::Config.reset!
-    # Berkshelf::Config.reset!
-
+    FileUtils.rm_rf(tmp_path)
     FileUtils.rm_rf(Berkshelf.berkshelf_path)
+
+    Berkshelf.berkshelf_path = berkshelf_path
+    Berkshelf.chef_config = Berkshelf::Chef::Config.from_file(chef_config_path)
+
     FileUtils.mkdir_p(Berkshelf.cookbooks_dir)
+    load 'berkshelf/config.rb'
   end
 
   def cookbook_store
@@ -71,8 +64,16 @@ Spork.prefork do
     File.expand_path(File.join('tmp'))
   end
 
+  def berkshelf_path
+    File.expand_path(File.join(tmp_path, 'berkshelf'))
+  end
+
   def fixtures_path
     File.expand_path(File.join('spec', 'fixtures'))
+  end
+
+  def chef_config_path
+    File.expand_path(File.join('spec', 'config', 'knife.rb'))
   end
 end
 
