@@ -29,7 +29,7 @@ Feature: configure command
 
   Scenario: generating a config with default values
     Given I have a default Chef config
-    And I do not have a Berkshelf config
+    And I do not have a Berkshelf config file
     When I run `berks configure` interactively
     And I type ""
     And I type ""
