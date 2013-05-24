@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = '>= 1.9.1'
   s.required_rubygems_version = '>= 1.8.0'
 
-  s.add_dependency 'addressable'
   s.add_dependency 'activesupport',     '>= 3.2.0'
   s.add_dependency 'celluloid',         '>= 0.14.0'
   s.add_dependency 'chozo',             '>= 0.6.1'
