@@ -41,12 +41,12 @@ Spork.prefork do
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
 
-    config.before(:all) do
+    config.before(:suite) do
       Berkshelf::RSpec::ChefServer.start
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
     end
 
-    config.after(:all) do
+    config.after(:suite) do
       Berkshelf::RSpec::ChefServer.stop
     end
 
