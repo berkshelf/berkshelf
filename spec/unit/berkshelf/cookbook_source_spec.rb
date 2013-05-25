@@ -138,7 +138,7 @@ describe Berkshelf::CookbookSource do
     end
 
     context 'given a location key :site' do
-      let(:url) { 'http://path_to_api/v1' }
+      let(:url) { 'http://community.opscode.com/v1' }
       let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name, site: url) }
 
       before do

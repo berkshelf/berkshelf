@@ -1,6 +1,4 @@
 require 'open-uri'
-require 'retryable'
-require 'addressable/uri'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
@@ -69,7 +67,7 @@ module Berkshelf
     #   how often we should pause between retries
     def initialize(uri = V1_API, options = {})
       options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
-      @api_uri        = Addressable::URI.parse(uri)
+      @api_uri        = uri
       @retries        = options[:retries]
       @retry_interval = options[:retry_interval]
 
@@ -164,7 +162,7 @@ module Berkshelf
       local = Tempfile.new('community-rest-stream')
       local.binmode
 
-      retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
+      Berkshelf::Util.retry(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
         open(target, 'rb', headers) do |remote|
           local.write(remote.read)
         end

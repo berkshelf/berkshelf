@@ -28,6 +28,7 @@ describe Berkshelf::Config do
 
     after do
       Berkshelf::Config.instance_variable_set(:@path, nil)
+      Berkshelf.instance_variable_set(:@berkshelf_path, nil)
     end
 
     Berkshelf::Config::LOCATIONS.each do |location|

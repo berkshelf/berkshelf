@@ -10,14 +10,14 @@ module Berkshelf
       @mute = false
     end
 
-    def say(message = '', color = nil, force_new_line = nil)
+    def say(message = '', color = nil, force_new_line=(message.to_s !~ /( |\t)\Z/))
       return if quiet?
 
       super(message, color, force_new_line)
     end
 
     # @see {say}
-    def info(message = '', color = nil, force_new_line = nil)
+    def info(message = '', color = nil, force_new_line=(message.to_s !~ /( |\t)\Z/))
       say(message, color, force_new_line)
     end
 

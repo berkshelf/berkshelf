@@ -1,6 +1,31 @@
 require 'berkshelf'
 
 module Berkshelf
+  class Main
+    def initialize(argv, stdin=STDIN, stdout=STDOUT, stderr=STDERR, kernel=Kernel)
+      @argv, @stdin, @stdout, @stderr, @kernel = argv, stdin, stdout, stderr, kernel
+    end
+
+    def execute!
+      begin
+        $stdin  = @stdin
+        $stdout = @stdout
+        $stderr = @stderr
+
+        Berkshelf::Cli.start(@argv)
+        @kernel.exit(0)
+      rescue Berkshelf::BerkshelfError => e
+        Berkshelf.ui.error e
+        Berkshelf.ui.error"\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        @kernel.exit(e.status_code)
+      rescue Ridley::Errors::RidleyError => e
+        Berkshelf.ui.error "#{e.class} #{e}"
+        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        @kernel.exit(47)
+      end
+    end
+  end
+
   # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
     class << self
@@ -91,7 +116,7 @@ module Berkshelf
         raise Berkshelf::ConfigExists, "A configuration file already exists. Re-run with the --force flag if you wish to overwrite it."
       end
 
-      @config = Berkshelf::Config.new(path)
+      config = Berkshelf::Config.new(path)
 
       [
         "chef.chef_server_url",
@@ -102,7 +127,7 @@ module Berkshelf
         "vagrant.vm.box",
         "vagrant.vm.box_url",
       ].each do |attribute|
-        default = @config.get_attribute(attribute)
+        default = config.get_attribute(attribute)
 
         message = "Enter value for #{attribute}"
         message << " (default: '#{default}')" if default
@@ -111,25 +136,34 @@ module Berkshelf
         input = Berkshelf.ui.ask(message)
 
         if input.present?
-          @config.set_attribute(attribute, input)
+          config.set_attribute(attribute, input)
         end
       end
 
-      unless @config.valid?
-        raise InvalidConfiguration.new(@config.errors)
+      unless config.valid?
+        raise InvalidConfiguration.new(config.errors)
       end
 
-      @config.save
+      config.save
 
       Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: Berkshelf::DEFAULT_FILENAME,
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     desc "open NAME", "Opens the source directory of an installed cookbook"
     def open(name)
-      editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
+      editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find { |e| !e.blank? }
       raise ArgumentError, "To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR" unless editor
 
-      cookbook = Berkshelf.cookbook_store.cookbooks(name).last
+      berksfile = Berksfile.from_file(options[:berksfile])
+      source = berksfile.find(name)
+
+      cookbook = Berkshelf.ui.mute { berksfile.resolve(source)[:solution].first }
       raise CookbookNotFound, "Cookbook '#{name}' not found in any of the sources!" unless cookbook
 
       Dir.chdir(cookbook.path) do
@@ -166,7 +200,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -191,7 +225,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -242,7 +276,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -260,7 +294,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -313,82 +347,99 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
     desc "list", "Show all of the cookbooks in the current Berkshelf"
     def list
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
 
-      Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
-      Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
-        Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+      if sources.empty?
+        Berkshelf.formatter.msg "There are no cookbooks installed by your Berksfile"
+      else
+        Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
+        print_list(sources)
       end
     end
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
     desc "show COOKBOOK", "Display the source path on the local file system for the given cookbook"
     def show(name)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
       source = berksfile.find(name)
 
-      cookbook = Berkshelf.ui.mute {
-        berksfile.resolve(source)[:solution].first
-      }
+      cookbook = Berkshelf.ui.mute { berksfile.resolve(source)[:solution].first }
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.formatter.msg(cookbook.path)
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: Berkshelf::DEFAULT_FILENAME,
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :version,
       type: :string,
       desc: 'The version of the cookbook to display.',
       aliases: '-v'
     desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def info(name)
-      if options[:version]
-        cookbook = Berkshelf.cookbook_store.cookbook(name, options[:version])
+      version = options[:version]
+      berksfile = Berksfile.from_file(options[:berksfile])
+      source = berksfile.find(name)
+
+      cookbooks = Berkshelf.ui.mute { berksfile.resolve(source)[:solution] }
+
+      if version
+        cookbook = cookbooks.find { |c| c.version.to_s == version.to_s }
+        raise CookbookNotFound, "Cookbook '#{name} (#{version})' is not installed by your Berksfile." unless cookbook
       else
-        cookbook = Berkshelf.cookbook_store.cookbooks(name).sort_by(&:version).last
+        cookbook = cookbooks.sort_by(&:version).last
+        raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile" unless cookbook
       end
 
-      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" if cookbook.nil?
-      Berkshelf.formatter.msg(cookbook.pretty_print)
+      Berkshelf.formatter.info(cookbook)
     end
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
     desc "contingent COOKBOOK", "Display a list of cookbooks that depend on the given cookbook"
     def contingent(name)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
 
-      Berkshelf.formatter.msg "Cookbooks contingent upon #{name}:"
-      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
-        if cookbook.dependencies.include?(name)
-          Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
-        end
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
+      dependencies = sources.select { |cookbook| cookbook.dependencies.include?(name) }
+
+      if dependencies.empty?
+        Berkshelf.formatter.msg "There are no cookbooks contingent upon '#{name}' defined in this Berksfile"
+      else
+        Berkshelf.formatter.msg "Cookbooks in this Berksfile contingent upon #{name}:"
+        print_list(dependencies)
       end
     end
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
     method_option :output,
       type: :string,
-      default: Dir.pwd,
+      default: '.',
       desc: "Path to output the tarball",
       aliases: "-o",
       banner: "PATH"
@@ -402,7 +453,7 @@ module Berkshelf
       default: false
     desc "package [COOKBOOK]", "Package this cookbook and all it's dependencies in a tarball"
     def package(name = nil)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
       berksfile.package(name, options)
     end
 
@@ -469,6 +520,17 @@ module Berkshelf
 
       def license
         File.read(Berkshelf.root.join('LICENSE'))
+      end
+
+      # Print a list of the given cookbooks. This is used by various
+      # methods like {list} and {contingent}.
+      #
+      # @param [Array<CachedCookbook>] cookbooks
+      #
+      def print_list(cookbooks)
+        Array(cookbooks).each do |cookbook|
+          Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+        end
       end
   end
 end

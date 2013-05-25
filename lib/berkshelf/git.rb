@@ -1,5 +1,4 @@
 require 'uri'
-require 'mixlib/shellout'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
@@ -16,19 +15,19 @@ module Berkshelf
       #
       #   @param [Array<String>]
       #
+      #   @raise [GitError]
+      #     if a git error occurs
+      #
       #   @return [String]
       #     the output of the execution of the Git command
       def git(*command)
         command.unshift(git_cmd)
         command_str = command.map { |p| quote_cmd_arg(p) }.join(' ')
-        cmd = Mixlib::ShellOut.new(command_str)
-        cmd.run_command
+        result = Berkshelf::Util.shell_out(command_str)
 
-        unless cmd.exitstatus == 0
-          raise GitError.new(cmd.stderr)
-        end
+        raise GitError.new(result.stderr) unless result.success?
 
-        cmd.stdout.chomp
+        result.stdout
       end
 
       # Clone a remote Git repository to disk
@@ -41,7 +40,7 @@ module Berkshelf
       # @return [String]
       #   the destination the URI was cloned to
       def clone(uri, destination = Dir.mktmpdir)
-        git("clone", uri, destination.to_s)
+        git('clone', uri, destination.to_s)
 
         destination
       end
@@ -54,14 +53,14 @@ module Berkshelf
       #   reference to checkout
       def checkout(repo_path, ref)
         Dir.chdir repo_path do
-          git("checkout", "-qf", revision_from_ref(repo_path, ref))
+          git('checkout', '-qf', revision_from_ref(repo_path, ref))
         end
       end
 
       # @param [String] repo_path
       def rev_parse(repo_path)
         Dir.chdir repo_path do
-          git("rev-parse", "HEAD")
+          git('rev-parse', 'HEAD')
         end
       end
 
@@ -121,7 +120,7 @@ module Berkshelf
       # @raise [GitNotFound] if executable is not found in system path
       def find_git
         git_path = nil
-        ENV["PATH"].split(::File::PATH_SEPARATOR).each do |path|
+        ENV['PATH'].split(::File::PATH_SEPARATOR).each do |path|
           git_path = detect_git_path(path)
           break if git_path
         end

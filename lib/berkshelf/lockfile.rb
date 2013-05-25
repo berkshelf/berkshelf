@@ -261,7 +261,10 @@ module Berkshelf
           #
           # @param [Hash] options
           def manipulate(options = {})
-            options[:path] = berksfile.find(name).instance_variable_get(:@options)[:path] || options[:path]
+            if options[:path]
+              options[:path] = berksfile.find(name).instance_variable_get(:@options)[:path] || options[:path]
+            end
+
             options
           end
       end

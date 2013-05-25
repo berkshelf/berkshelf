@@ -1,71 +1,82 @@
-require 'rubygems'
-require 'bundler'
 require 'spork'
 
 Spork.prefork do
-  require 'rspec'
-  require 'pp'
+  # This must be set BEFORE any require 'berkshelf' calls are made!
+  ENV['RUBY_ENV']              = 'test'
+
   require 'aruba/cucumber'
+  require 'aruba/in_process'
+  require 'aruba/spawn_process'
 
-  APP_ROOT = File.expand_path('../../../', __FILE__)
+  require 'berkshelf'
+  require 'berkshelf/cli'
 
-  ENV['RUBY_ENV'] = 'test'
-  ENV['BERKSHELF_PATH'] = File.join(APP_ROOT, 'tmp', 'berkshelf')
-  ENV['BERKSHELF_CHEF_CONFIG'] = File.join(APP_ROOT, 'spec', 'knife.rb')
-
-  # Workaround for RSA Fingerprint prompt in Travis CI
-  git_ssh_path = '/tmp/git_ssh.sh'
-  unless File.exist? git_ssh_path
-    git_ssh = File.new(git_ssh_path, 'w+')
-    git_ssh.puts 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $1 $2'
-    git_ssh.chmod 0775
-    git_ssh.flush
-    git_ssh.close
-  end
-
-  ENV['GIT_SSH'] = git_ssh_path
-
-  Dir[File.join(APP_ROOT, 'spec/support/**/*.rb')].each {|f| require f}
-
-  World(Berkshelf::TestGenerators)
+  Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
   Before do
-    set_env 'RUBY_ENV', 'test'
-    clean_cookbook_store
-    generate_berks_config(File.join(ENV['BERKSHELF_PATH'], 'config.json'))
-    @aruba_io_wait_seconds = 5
-    @aruba_timeout_seconds = 16
+    Aruba::InProcess.main_class = Berkshelf::Main
+    Aruba.process = Aruba::InProcess
+
+    purge_store_and_configs!
+
+    @aruba_io_wait_seconds = Cucumber::JRUBY ? 10 :15
+    @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15
+  end
+
+  Before('@spawn') do
+    Aruba.process = Aruba::SpawnProcess
+
+    # Legacy ENV variables until we can move over to all in-process
+    set_env('BERKSHELF_PATH', berkshelf_path)
+    set_env('BERKSHELF_CHEF_CONFIG', chef_config_path)
   end
 
   Before('@slow_process') do
-    @aruba_timeout_seconds = 60
-    @aruba_io_wait_seconds = 30
+    @aruba_io_wait_seconds = Cucumber::JRUBY ? 70 : 30
+    @aruba_timeout_seconds = Cucumber::JRUBY ? 140 : 60
+  end
+
+  # Chef Zero
+  require 'chef_zero/server'
+  @server = ChefZero::Server.new(port: 4000)
+  @server.start_background
+
+  at_exit do
+    @server.stop if @server && @server.running?
+  end
+
+  def purge_store_and_configs!
+    FileUtils.rm_rf(tmp_path)
+    FileUtils.rm_rf(Berkshelf.berkshelf_path)
+
+    Berkshelf.berkshelf_path = berkshelf_path
+    Berkshelf.chef_config = Berkshelf::Chef::Config.from_file(chef_config_path)
+
+    FileUtils.mkdir_p(Berkshelf.cookbooks_dir)
+    load 'berkshelf/config.rb' # <-- This is super fucking annoying...
   end
 
   def cookbook_store
-    Pathname.new(File.join(ENV['BERKSHELF_PATH'], 'cookbooks'))
-  end
-
-  def clean_cookbook_store
-    FileUtils.rm_rf(cookbook_store)
-    FileUtils.mkdir_p(cookbook_store)
-  end
-
-  def app_root_path
-    Pathname.new(APP_ROOT)
+    Pathname.new(Berkshelf.cookbooks_dir)
   end
 
   def tmp_path
-    app_root_path.join('spec/tmp')
+    File.expand_path(File.join('tmp'))
+  end
+
+  def berkshelf_path
+    File.expand_path(File.join(tmp_path, 'berkshelf'))
   end
 
   def fixtures_path
-    app_root_path.join('spec/fixtures')
+    File.expand_path(File.join('spec', 'fixtures'))
+  end
+
+  def chef_config_path
+    File.expand_path(File.join('spec', 'config', 'knife.rb'))
   end
 end
 
 Spork.each_run do
-  Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
-
   require 'berkshelf'
 end

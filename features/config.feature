@@ -30,7 +30,7 @@ Feature: cookbook creation with a config file
       }
     }
     """
-    When I run the cookbook command to create "sparkle_motion"
+    When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
@@ -52,7 +52,7 @@ Feature: cookbook creation with a config file
       }
     }
     """
-    When I run the cookbook command to create "sparkle_motion"
+    When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
     And the exit status should be 0
@@ -68,7 +68,7 @@ Feature: cookbook creation with a config file
       }
     }
     """
-    When I run the cookbook command to create "sparkle_motion"
+    When I run `berks cookbook sparkle_motion`
     Then the output should contain "Invalid configuration"
     And the output should contain "vagrant.vm.box Expected attribute: 'vagrant.vm.box' to be a type of: 'String'"
     And the CLI should exit with the status code for error "InvalidConfiguration"
@@ -89,7 +89,7 @@ Feature: cookbook creation with a config file
       }
     }
     """
-    When I run the cookbook command to create "sparkle_motion"
+    When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.provision :chef_client                    |
       | chef.chef_server_url        = "localhost:4000"      |

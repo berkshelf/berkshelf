@@ -7,7 +7,6 @@ require 'bundler'
 require 'spork'
 
 Spork.prefork do
-  require 'json_spec'
   require 'pp'
   require 'rspec'
   require 'webmock/rspec'
@@ -15,7 +14,7 @@ Spork.prefork do
 
   APP_ROOT = File.expand_path('../../', __FILE__)
   ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "spec", "tmp", "berkshelf")
-  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "knife.rb")
+  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "config", "knife.rb")
 
   Dir[File.join(APP_ROOT, "spec/support/**/*.rb")].each {|f| require f}
 
@@ -29,7 +28,6 @@ Spork.prefork do
 
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
-    config.include JsonSpec::Helpers
     config.include Berkshelf::RSpec::ChefAPI
     config.include Berkshelf::RSpec::ChefServer
 
@@ -43,12 +41,12 @@ Spork.prefork do
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
 
-    config.before(:all) do
+    config.before(:suite) do
       Berkshelf::RSpec::ChefServer.start
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
     end
 
-    config.after(:all) do
+    config.after(:suite) do
       Berkshelf::RSpec::ChefServer.stop
     end
 
@@ -174,8 +172,6 @@ Spork.prefork do
   def run(cmd)
     `#{cmd}`
   end
-
-  Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
 end
 
 Spork.each_run do

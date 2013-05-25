@@ -1,48 +1,52 @@
-Feature: installing groups
+Feature: Installing specific groups
   As a user
   I want to be able specify groups of cookbooks to include or exclude
   So I don't install cookbooks that are part of a group that I do not want to install
 
-  Scenario: except groups
+  Scenario: when the --except option is used
+    Given the cookbook store has the cookbooks:
+      | default  | 1.0.0 |
+      | takeme   | 1.0.0 |
     Given I write to "Berksfile" with:
       """
       group :notme do
-        cookbook 'nginx', '= 0.101.2'
+        cookbook 'notme', '1.0.0'
       end
 
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      cookbook 'default', '1.0.0'
 
       group :takeme do
-        cookbook 'hostsfile', '1.0.1'
+        cookbook 'takeme', '1.0.0'
       end
       """
     When I successfully run `berks install --except notme`
-    Then the cookbook store should have the cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
-      | hostsfile | 1.0.1 |
-    And the cookbook store should not have the cookbooks:
-      | nginx | 0.101.2 |
+    Then the output should contain:
+      """
+      Using default (1.0.0)
+      Using takeme (1.0.0)
+      """
+    And the output should not contain "Using notme (1.0.0)"
     And the exit status should be 0
 
-  Scenario: only groups
+  Scenario: when the --only option is used
+    Given the cookbook store has the cookbooks:
+      | takeme   | 1.0.0 |
     Given I write to "Berksfile" with:
       """
       group :notme do
-        cookbook 'nginx', '= 0.101.2'
+        cookbook 'notme', '1.0.0'
       end
 
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      cookbook 'default', '1.0.0'
 
       group :takeme do
-        cookbook 'hostsfile', '1.0.1'
+        cookbook 'takeme', '1.0.0'
       end
       """
     When I successfully run `berks install --only takeme`
-    Then the cookbook store should have the cookbooks:
-      | hostsfile | 1.0.1 |
-    And the cookbook store should not have the cookbooks:
-      | nginx     | 0.101.2 |
-      | berkshelf-cookbook-fixture | 1.0.0 |
+    Then the output should contain "Using takeme (1.0.0)"
+    Then the output should not contain "Using notme (1.0.0)"
+    Then the output should not contain "Using default (1.0.0)"
     And the exit status should be 0
 
   Scenario: attempting to provide an only and except option

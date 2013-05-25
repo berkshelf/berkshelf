@@ -3,7 +3,6 @@ require 'archive/tar/minitar'
 require 'celluloid'
 require 'chozo/core_ext'
 require 'forwardable'
-require 'hashie'
 require 'json'
 require 'pathname'
 require 'ridley'
@@ -16,6 +15,7 @@ require 'zlib'
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
 require 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
+require 'berkshelf/util'
 require 'berkshelf/version'
 require 'thor/monkies'
 
@@ -70,7 +70,31 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
+      @berkshelf_path || ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
+    end
+
+    # Set the Berkshelf path programatically.
+    #
+    # @param [#to_s] path
+    #   the path to use
+    def berkshelf_path=(path)
+      @berkshelf_path = File.expand_path(path.to_s)
+    end
+
+    def chef_config
+      @chef_config ||= Berkshelf::Chef::Config.load
+    end
+
+    def chef_config=(new_config)
+      @chef_config = new_config
+    end
+
+    def config
+      @config ||= Berkshelf::Config.load
+    end
+
+    def config=(new_config)
+      @config = new_config
     end
 
     # @return [Logger]
