@@ -47,7 +47,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'aruba'
   s.add_development_dependency 'cane'
-  s.add_development_dependency 'json_spec'
   s.add_development_dependency 'rake', '>= 0.9.2.2'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'simplecov'
