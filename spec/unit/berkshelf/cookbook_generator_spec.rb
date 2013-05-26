@@ -3,6 +3,12 @@ require 'spec_helper'
 describe Berkshelf::CookbookGenerator do
   let(:name) { 'sparkle_motion' }
   let(:target) { tmp_path.join(name) }
+  let(:kitchen_generator) { double('kitchen-generator') }
+
+  before do
+    Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
+    kitchen_generator.should_receive(:invoke_all).once
+  end
 
   context 'with default options' do
     before do
@@ -57,6 +63,7 @@ describe Berkshelf::CookbookGenerator do
 
   context "given a 'maintainer_email' option" do
     before do
+      Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
       capture(:stdout) {
         Berkshelf::CookbookGenerator.new([target, name], maintainer_email: 'jamie@vialstudios.com').invoke_all
       }
