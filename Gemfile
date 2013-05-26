@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
-
 gemspec
 
 group :development do
@@ -33,13 +32,4 @@ group :development do
     gem 'wdm', require: false
     gem 'win32console', require: false
   end
-end
-
-group :test do
-  gem 'fuubar'
-  gem 'json_spec'
-  gem 'rake', '>= 0.9.2.2'
-  gem 'rspec'
-  gem 'thor'
-  gem 'webmock'
 end
