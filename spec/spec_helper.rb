@@ -119,7 +119,7 @@ Spork.prefork do
     path = ''
     capture(:stdout) do
       Dir.chdir(remote_bucket) do
-        Berkshelf::Cli.new.invoke(:cookbook, [name], skip_vagrant: true, force: true)
+        Berkshelf::Cli.new.invoke(:cookbook, [name], skip_vagrant: true, skip_test_kitchen: true, force: true)
       end
 
       Dir.chdir(path = remote_bucket.join(name)) do
