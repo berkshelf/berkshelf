@@ -36,6 +36,15 @@ Spork.prefork do
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
 
+    config.before(:suite) do
+      Berkshelf::RSpec::ChefServer.start
+      WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
+    end
+
+    config.after(:suite) do
+      Berkshelf::RSpec::ChefServer.stop
+    end
+
     config.before(:each) do
       clean_tmp_path
       Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
