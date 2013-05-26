@@ -1,5 +1,3 @@
-require 'kitchen/generator/init'
-
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   # @author Josiah Kiehl <jkiehl@riotgames.com>
