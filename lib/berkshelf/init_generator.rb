@@ -1,4 +1,4 @@
-require 'kitchen'
+require 'kitchen/generator/init'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
