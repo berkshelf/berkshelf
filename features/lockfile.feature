@@ -23,7 +23,6 @@ Feature: Berksfile.lock
       }
       """
 
-  @focus
   Scenario: Wiring the Berksfile.lock when an old lockfile is present
     Given I write to "Berksfile" with:
       """
