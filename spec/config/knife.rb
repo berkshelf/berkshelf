@@ -1,0 +1,12 @@
+current_dir = File.expand_path(File.dirname(__FILE__))
+
+log_level                :info
+log_location             STDOUT
+node_name                "berkshelf"
+client_key               "#{current_dir}/berkshelf.pem"
+validation_client_name   "validator"
+validation_key           "#{current_dir}/validator.pem"
+chef_server_url          "http://localhost:4000"
+cache_type               'BasicFile'
+cache_options( :path => "#{ENV['HOME']}/.chef/checksums" )
+cookbook_path            []
