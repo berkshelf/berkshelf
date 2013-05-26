@@ -3,11 +3,10 @@ require 'spec_helper'
 describe Berkshelf::CookbookGenerator do
   let(:name) { 'sparkle_motion' }
   let(:target) { tmp_path.join(name) }
-  let(:kitchen_generator) { double('kitchen-generator') }
+  let(:kitchen_generator) { double('kitchen-generator', invoke_all: nil) }
 
   before do
     Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
-    kitchen_generator.should_receive(:invoke_all).once
   end
 
   context 'with default options' do

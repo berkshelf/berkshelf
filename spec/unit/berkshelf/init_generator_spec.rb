@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with: :json } do
   let(:target) { tmp_path.join("some_cookbook") }
   let(:resolver) { double('resolver') }
-  let(:kitchen_generator) { double('kitchen-generator') }
+  let(:kitchen_generator) { double('kitchen-generator', invoke_all: nil) }
 
   before do
     Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
@@ -11,7 +11,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
 
   context 'with default options' do
     before do
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target]).invoke_all
       }
@@ -34,7 +33,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
 
   context 'with a chefignore' do
     before(:each) do
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target], chefignore: true).invoke_all
       }
@@ -55,7 +53,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
         f.write ''
       end
 
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target], metadata_entry: true).invoke_all
       }
@@ -72,7 +69,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
 
   context 'with the foodcritic option true' do
     before(:each) do
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target], foodcritic: true).invoke_all
       }
@@ -92,7 +88,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
 
   context 'with the scmversion option true' do
     before(:each) do
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target], scmversion: true).invoke_all
       }
@@ -112,7 +107,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
 
   context 'with the bundler option true' do
     before(:each) do
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target], no_bundler: true).invoke_all
       }
@@ -146,7 +140,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
   context 'when skipping git' do
     before(:each) do
       generator = Berkshelf::InitGenerator.new([target], skip_git: true)
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) { generator.invoke_all }
     end
 
@@ -159,7 +152,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
 
   context 'when skipping vagrant' do
     before(:each) do
-      kitchen_generator.should_receive(:invoke_all)
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target], skip_vagrant: true).invoke_all
       }
@@ -176,7 +168,6 @@ describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with:
     before(:each) do
         Berkshelf::Resolver.stub(:resolve) { resolver }
         pending 'Runs fine with no mock for the HTTP call on the first pass, subsequent passes throw errors'
-        kitchen_generator.should_receive(:invoke_all)
         capture(:stdout) {
           Berkshelf::InitGenerator.new([target], chef_minitest: true).invoke_all
         }
