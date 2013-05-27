@@ -68,14 +68,14 @@ module Berkshelf::Chef
     extend Mixlib::Config
 
     node_name               Socket.gethostname
-    chef_server_url         "http://localhost:4000"
-    client_key              platform_specific_path("/etc/chef/client.pem")
-    validation_key          platform_specific_path("/etc/chef/validation.pem")
-    validation_client_name  "chef-validator"
+    chef_server_url         'http://localhost:4000'
+    client_key              platform_specific_path('/etc/chef/client.pem')
+    validation_key          platform_specific_path('/etc/chef/validation.pem')
+    validation_client_name  'chef-validator'
 
-    cookbook_copyright      "YOUR_NAME"
-    cookbook_email          "YOUR_EMAIL"
-    cookbook_license        "reserved"
+    cookbook_copyright      'YOUR_NAME'
+    cookbook_email          'YOUR_EMAIL'
+    cookbook_license        'reserved'
 
     knife                   Hash.new
 
