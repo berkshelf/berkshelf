@@ -2,10 +2,14 @@ require 'berkshelf'
 require_relative 'config'
 require_relative 'init_generator'
 
+require 'berkshelf/commands/test_command'
+require 'berkshelf/commands/shelf'
+
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
     class << self
+
       def dispatch(meth, given_args, given_opts, config)
         unless (given_args & ['-h', '--help']).empty?
           if given_args.length == 1
@@ -469,6 +473,11 @@ module Berkshelf
       ::Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end
 
+    register(Berkshelf::TestCommand, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook')
+
+    desc 'shelf SUBCOMMAND', 'Interact with the cookbook store'
+    subcommand 'shelf', Berkshelf::Shelf
+
     private
 
       def version_header
@@ -491,8 +500,3 @@ module Berkshelf
       end
   end
 end
-
-Dir["#{File.dirname(__FILE__)}/cli_commands/*.rb"].sort.each do |path|
-  require "berkshelf/cli_commands/#{File.basename(path, '.rb')}"
-end
-
