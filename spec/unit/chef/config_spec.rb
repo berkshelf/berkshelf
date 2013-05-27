@@ -1,32 +1,31 @@
 require 'spec_helper'
 
 describe Berkshelf::Chef::Config do
-  describe '.path' do
+  describe '.location' do
     let(:path) { '/fake/path/for/.chef' }
     let(:config) { File.join(path, 'knife.rb') }
+    let(:location) { Berkshelf::Chef::Config.send(:location) }
 
     before do
       ENV.stub(:[]).and_return(nil)
 
       File.stub(:exists?).with(any_args()).and_return(false)
       File.stub(:exists?).with(config).and_return(true)
-
-      Berkshelf::Chef::Config.instance_variable_set(:@path, nil)
     end
 
     it 'uses $BERKSHELF_CHEF_CONFIG' do
       ENV.stub(:[]).with('BERKSHELF_CHEF_CONFIG').and_return(config)
-      expect(Berkshelf::Chef::Config.path).to eq(config)
+      expect(location).to eq(config)
     end
 
     it 'uses $KNIFE_HOME' do
       ENV.stub(:[]).with('KNIFE_HOME').and_return(path)
-      expect(Berkshelf::Chef::Config.path).to eq(config)
+      expect(location).to eq(config)
     end
 
     it 'uses ::working_dir' do
       Berkshelf::Chef::Config.stub(:working_dir).and_return(path)
-      expect(Berkshelf::Chef::Config.path).to eq(config)
+      expect(location).to eq(config)
     end
 
     context 'an ascending search' do
@@ -41,7 +40,7 @@ describe Berkshelf::Chef::Config do
         end
 
         it 'chooses the closest path' do
-          expect(Berkshelf::Chef::Config.path).to eq('/fake/.chef/path/with/multiple/.chef/knife.rb')
+          expect(location).to eq('/fake/.chef/path/with/multiple/.chef/knife.rb')
         end
       end
 
@@ -55,7 +54,7 @@ describe Berkshelf::Chef::Config do
         end
 
         it 'uses the current directory' do
-          expect(Berkshelf::Chef::Config.path).to eq('/fake/.chef/knife.rb')
+          expect(location).to eq('/fake/.chef/knife.rb')
         end
       end
 
@@ -69,14 +68,14 @@ describe Berkshelf::Chef::Config do
         end
 
         it 'uses the top-level directory' do
-          expect(Berkshelf::Chef::Config.path).to eq('/.chef/knife.rb')
+          expect(location).to eq('/.chef/knife.rb')
         end
       end
     end
 
     it 'uses $HOME' do
       ENV.stub(:[]).with('HOME').and_return(File.join(path, '..'))
-      expect(Berkshelf::Chef::Config.path).to eq(config)
+      expect(location).to eq(config)
     end
   end
 end
