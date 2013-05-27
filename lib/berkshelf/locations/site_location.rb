@@ -15,6 +15,9 @@ module Berkshelf
     # @param [Solve::Constraint] version_constraint
     # @param [Hash] options
     #
+    # @raise [InvalidSiteShortnameError]
+    #   if the given shortname is not defined
+    #
     # @option options [String, Symbol] :site
     #   a URL pointing to a community API endpoint. Alternatively the symbol :opscode can
     #   be provided to initialize a SiteLocation pointing to the Opscode Community Site.
@@ -22,10 +25,8 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
 
-      api_uri = if options[:site].nil? || SHORTNAMES.has_key?(options[:site])
-        SHORTNAMES[options[:site]]
-      elsif options[:site].kind_of?(Symbol)
-        raise InvalidSiteShortnameError.new(options[:site])
+      api_uri = if options[:site].nil?
+        SHORTNAMES[options[:site]] || raise(InvalidSiteShortnameError.new(options[:site]))
       else
         options[:site]
       end
