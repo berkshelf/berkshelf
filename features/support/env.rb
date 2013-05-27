@@ -11,7 +11,7 @@ Spork.prefork do
 
   ENV['RUBY_ENV'] = 'test'
   ENV['BERKSHELF_PATH'] = File.join(APP_ROOT, 'tmp', 'berkshelf')
-  ENV['BERKSHELF_CHEF_CONFIG'] = File.join(APP_ROOT, 'spec', 'knife.rb')
+  ENV['BERKSHELF_CHEF_CONFIG'] = File.join(APP_ROOT, 'spec', 'config', 'knife.rb')
 
   # Workaround for RSA Fingerprint prompt in Travis CI
   git_ssh_path = '/tmp/git_ssh.sh'
@@ -34,12 +34,21 @@ Spork.prefork do
     clean_cookbook_store
     generate_berks_config(File.join(ENV['BERKSHELF_PATH'], 'config.json'))
     @aruba_io_wait_seconds = 5
-    @aruba_timeout_seconds = 16
+    @aruba_timeout_seconds = 30
   end
 
   Before('@slow_process') do
     @aruba_timeout_seconds = 60
     @aruba_io_wait_seconds = 30
+  end
+
+  # Chef Zero
+  require 'chef_zero/server'
+  @server = ChefZero::Server.new(port: 4000)
+  @server.start_background
+
+  at_exit do
+    @server.stop if @server && @server.running?
   end
 
   def cookbook_store
@@ -65,7 +74,5 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  Berkshelf::RSpec::Knife.load_knife_config(File.join(APP_ROOT, 'spec/knife.rb'))
-
   require 'berkshelf'
 end
