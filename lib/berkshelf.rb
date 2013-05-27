@@ -14,36 +14,14 @@ require 'uri'
 require 'zlib'
 
 require 'berkshelf/core_ext'
+require 'berkshelf/mixin'
 require 'berkshelf/errors'
-require 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
-require 'berkshelf/version'
 require 'thor/monkies'
 
 JSON.create_id = nil
 
 module Berkshelf
   DEFAULT_FILENAME = 'Berksfile'.freeze
-
-  autoload :BaseGenerator, 'berkshelf/base_generator'
-  autoload :Berksfile, 'berkshelf/berksfile'
-  autoload :CachedCookbook, 'berkshelf/cached_cookbook'
-  autoload :Chef, 'berkshelf/chef'
-  autoload :Cli, 'berkshelf/cli'
-  autoload :CommunityREST, 'berkshelf/community_rest'
-  autoload :Config, 'berkshelf/config'
-  autoload :CookbookGenerator, 'berkshelf/cookbook_generator'
-  autoload :CookbookSource, 'berkshelf/cookbook_source'
-  autoload :CookbookStore, 'berkshelf/cookbook_store'
-  autoload :Downloader, 'berkshelf/downloader'
-  autoload :Git, 'berkshelf/git'
-  autoload :InitGenerator, 'berkshelf/init_generator'
-  autoload :Lockfile, 'berkshelf/lockfile'
-  autoload :Logger, 'berkshelf/logger'
-  autoload :Mixin, 'berkshelf/mixin'
-  autoload :Resolver, 'berkshelf/resolver'
-  autoload :UI, 'berkshelf/ui'
-
-  require 'berkshelf/location'
 
   class << self
     include Berkshelf::Mixin::Logging
@@ -149,4 +127,24 @@ module Berkshelf
   end
 end
 
-require 'berkshelf/formatters'
+require_relative 'berkshelf/base_generator'
+require_relative 'berkshelf/berksfile'
+require_relative 'berkshelf/cached_cookbook'
+require_relative 'berkshelf/chef'
+require_relative 'berkshelf/cli'
+require_relative 'berkshelf/community_rest'
+require_relative 'berkshelf/cookbook_generator'
+require_relative 'berkshelf/cookbook_source'
+require_relative 'berkshelf/cookbook_store'
+require_relative 'berkshelf/config'
+require_relative 'berkshelf/downloader'
+require_relative 'berkshelf/formatters'
+require_relative 'berkshelf/git'
+require_relative 'berkshelf/init_generator'
+require_relative 'berkshelf/location'
+require_relative 'berkshelf/lockfile'
+require_relative 'berkshelf/logger'
+require_relative 'berkshelf/resolver'
+require_relative 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
+require_relative 'berkshelf/ui'
+require_relative 'berkshelf/version'

@@ -4,6 +4,8 @@ module Berkshelf
     OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
 
     module ClassMethods
+      require_relative 'cookbook_source'
+
       # Returns the location identifier key for the class
       #
       # @return [Symbol]
@@ -179,5 +181,5 @@ module Berkshelf
 end
 
 Dir["#{File.dirname(__FILE__)}/locations/*.rb"].sort.each do |path|
-  require "berkshelf/locations/#{File.basename(path, '.rb')}"
+  require_relative "locations/#{File.basename(path, '.rb')}"
 end

@@ -1,6 +1,8 @@
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
+    require_relative 'mixin/logging'
+
     extend Forwardable
     include Berkshelf::Mixin::Logging
 

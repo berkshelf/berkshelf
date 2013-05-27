@@ -18,7 +18,7 @@ module Berkshelf
     include Thor::Actions
 
     private
-    
+
       def target
         @target ||= Pathname.new(File.expand_path(path))
       end
