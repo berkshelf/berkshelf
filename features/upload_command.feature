@@ -1,117 +1,125 @@
-Feature: upload command
+Feature: Uploading cookbooks to a Chef Server
   As a Berkshelf CLI user
   I need a way to upload cookbooks to a Chef server that I have installed into my Bookshelf
   So they are available to Chef clients
 
-  @no_run @chef_server
-  Scenario: running the upload command when the Sources in the Berksfile are already installed
-    Given I write to "Berksfile" with:
-      """
-      cookbook "mysql", "1.2.4"
-      """
-    And the Chef server does not have the cookbooks:
-      | mysql   | 1.2.4 |
-      | openssl | 1.0.0 |
-    And I run the install command
-    When I run the upload command
-    Then the output should not contain "Using mysql (1.2.4)"
-    And the output should not contain "Using openssl (1.0.0)"
-    And the output should contain "Uploading mysql (1.2.4) to:"
-    And the output should contain "Uploading openssl (1.0.0) to:"
-    And the Chef server should have the cookbooks:
-      | mysql   | 1.2.4 |
-      | openssl | 1.0.0 |
-    And the exit status should be 0
-
   @chef_server @slow_process
-  Scenario: running the upload command when the Sources in the Berksfile have not been installed
-    Given I write to "Berksfile" with:
+  Scenario: With no arguments
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+    And I write to "Berksfile" with:
       """
-      cookbook "mysql", "1.2.4"
-      cookbook "openssl", "= 1.0.0"
+      cookbook 'fake', '1.0.0'
+      cookbook 'ekaf', '2.0.0'
       """
     And the Chef server does not have the cookbooks:
-      | mysql   | 1.2.4 |
-      | openssl | 1.0.0 |
-    When I run the upload command
-    Then the output should contain "Installing mysql (1.2.4) from site:"
-    And the output should contain "Installing openssl (1.0.0) from site:"
-    And the output should contain "Uploading mysql (1.2.4) to:"
-    And the output should contain "Uploading openssl (1.0.0) to:"
+      | fake   | 1.0.0 |
+      | ekaf   | 2.0.0 |
+    When I successfully run `berks upload`
+    Then the output should contain:
+      """
+      Uploading fake (1.0.0) to: 'http://localhost:4000/'
+      Uploading ekaf (2.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
-      | mysql   | 1.2.4 |
-      | openssl | 1.0.0 |
+      | fake   | 1.0.0 |
+      | ekaf   | 2.0.0 |
     And the exit status should be 0
 
   @chef_server
-  Scenario: running the upload command with a Berksfile containing a source that has a path location
-    Given a Berksfile with path location sources to fixtures:
-      | example_cookbook | example_cookbook-0.5.0 |
+  Scenario: With a path location in the Berksfile
+    Given a cookbook named "fake"
+    And I write to "Berksfile" with:
+      """
+      cookbook 'fake', path: './fake'
+      """
     And the Chef server does not have the cookbooks:
-      | example_cookbook | 0.5.0 |
-    When I run the upload command
-    Then the output should contain "Using example_cookbook (0.5.0) at path:"
-    And the output should contain "Uploading example_cookbook (0.5.0) to:"
+      | fake | 0.0.0 |
+    When I successfully run `berks upload`
+    Then the output should contain:
+      """
+      Uploading fake (0.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
-      | example_cookbook | 0.5.0 |
+      | fake | 0.0.0 |
     And the exit status should be 0
 
   @chef_server
-  Scenario: running the upload command with a Berksfile containing a source that has a Git location
-    Given I write to "Berksfile" with:
+  Scenario: With a git location in the Berksfile
+    Given the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 0.1.0 |
+    And I write to "Berksfile" with:
       """
-      cookbook "artifact", git: "git://github.com/RiotGames/artifact-cookbook.git", ref: "0.9.8"
+      cookbook 'berkshelf-cookbook-fixture', ref: 'v0.1.0'
       """
     And the Chef server does not have the cookbooks:
-      | artifact | 0.9.8 |
-    When I run the upload command
-    Then the output should contain "Installing artifact (0.9.8) from git:"
-    And the output should contain "Uploading artifact (0.9.8) to:"
+      | berkshelf-cookbook-fixture | 0.1.0 |
+    When I successfully run `berks upload`
+    Then the output should contain:
+      """
+      Uploading berkshelf-cookbook-fixture (0.1.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
-      | artifact | 0.9.8 |
+      | berkshelf-cookbook-fixture | 0.1.0 |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: Running the upload command for a single cookbook
-    Given I write to "Berksfile" with:
+  Scenario: With a single cookbook
+    Given the cookbook store has the cookbooks:
+      | fake  | 1.0.0 |
+      | ekaf  | 2.0.0 |
+    And the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
+      | fake | ~> 1.0.0 |
+    And I write to "Berksfile" with:
       """
-      cookbook "build-essential", "1.2.0"
-      cookbook "mysql", "1.2.4"
-      cookbook "openssl", "= 1.0.0"
+      cookbook 'fake', '1.0.0'
+      cookbook 'ekaf', '2.0.0'
+      cookbook 'reset', '3.4.5'
       """
-    And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | mysql           | 1.2.4 |
-      | openssl         | 1.0.0 |
-      | build-essential | 1.2.0 |
-    When I run `berks upload mysql`
-    Then the output should contain "Uploading mysql (1.2.4)"
-    And the output should contain "Uploading openssl (1.0.0)"
-    And the output should not contain "Uploading build-essential (1.2.0)"
+      | fake  | 1.0.0 |
+      | ekaf  | 2.0.0 |
+      | reset | 3.4.5 |
+    When I successfully run `berks upload reset`
+    Then the output should contain:
+      """
+      Uploading reset (3.4.5) to: 'http://localhost:4000/'
+      Uploading fake (1.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
-      | mysql | 1.2.4 |
-      | openssl | 1.0.0 |
+      | reset | 3.4.5 |
+      | fake  | 1.0.0 |
     And the Chef server should not have the cookbooks:
-      | build-essential | 1.2.0 |
+      | ekaf  | 2.0.0 |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: explicitly specifying multiple cookbooks to upload
+  Scenario: With multiple cookbooks
+    Given the cookbook store has the cookbooks:
+      | ntp  | 1.0.0 |
+      | vim  | 1.0.0 |
+      | apt  | 1.0.0 |
     Given I write to "Berksfile" with:
       """
-      cookbook "ntp"
-      cookbook "vim"
-      cookbook "apt"
+      cookbook 'ntp', '1.0.0'
+      cookbook 'vim', '1.0.0'
+      cookbook 'apt', '1.0.0'
       """
-    And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
       | ntp |
       | vim |
       | apt |
-    When I run `berks upload ntp vim`
-    Then the output should contain "Uploading ntp"
-    And the output should contain "Uploading vim"
-    And the output should not contain "Uploading apt"
+    When I successfully run `berks upload ntp vim`
+    Then the output should contain:
+      """
+      Uploading ntp (1.0.0) to: 'http://localhost:4000/'
+      Uploading vim (1.0.0) to: 'http://localhost:4000/'
+      """
+    And the output should not contain:
+      """
+      Uploading apt (1.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
       | ntp |
       | vim |
@@ -120,104 +128,130 @@ Feature: upload command
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: uploading a single group of cookbooks with the --only flag
+  Scenario: With the --only flag
+    Given the cookbook store has the cookbooks:
+      | core    | 1.0.0 |
+      | system  | 1.0.0 |
     Given I write to "Berksfile" with:
       """
-      group :core do
-        cookbook "ntp"
+      group :group_a do
+        cookbook 'core', '1.0.0'
       end
 
-      group :system do
-        cookbook "vim"
+      group :group_b do
+        cookbook 'system', '1.0.0'
       end
       """
-    And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | ntp |
-      | vim |
-    When I run `berks upload --only core`
-    Then the output should contain "Uploading ntp"
-    And the output should not contain "Uploading vim"
+      | core   | 1.0.0 |
+      | system | 1.0.0 |
+    When I successfully run `berks upload --only group_a`
+    Then the output should contain:
+      """
+      Uploading core (1.0.0) to: 'http://localhost:4000/'
+      """
+    And the output should not contain:
+      """
+      Uploading system (1.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
-      | ntp |
+      | core | 1.0.0 |
     And the Chef server should not have the cookbooks:
-      | vim |
+      | system | 1.0.0 |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: uploading multiple groups of cookbooks with the --only flag
+  Scenario: With the --only flag specifying multiple groups
+    Given the cookbook store has the cookbooks:
+      | core    | 1.0.0 |
+      | system  | 1.0.0 |
     Given I write to "Berksfile" with:
       """
-      group :core do
-        cookbook "ntp"
+      group :group_a do
+        cookbook 'core', '1.0.0'
       end
 
-      group :system do
-        cookbook "vim"
+      group :group_b do
+        cookbook 'system', '1.0.0'
       end
       """
-    And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | ntp |
-      | vim |
-    When I run `berks upload --only core system`
-    Then the output should contain "Uploading ntp"
-    And the output should contain "Uploading vim"
+      | core   | 1.0.0 |
+      | system | 1.0.0 |
+    When I successfully run `berks upload --only group_a group_b`
+    Then the output should contain:
+      """
+      Uploading core (1.0.0) to: 'http://localhost:4000/'
+      Uploading system (1.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
-      | ntp |
-      | vim |
+      | core   | 1.0.0 |
+      | system | 1.0.0 |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: skip uploading one group of cookbooks with the --except flag
+  Scenario: With the --except flag
+    Given the cookbook store has the cookbooks:
+      | core    | 1.0.0 |
+      | system  | 1.0.0 |
     Given I write to "Berksfile" with:
       """
-      group :core do
-        cookbook "ntp"
+      group :group_a do
+        cookbook 'core', '1.0.0'
       end
 
-      group :system do
-        cookbook "vim"
+      group :group_b do
+        cookbook 'system', '1.0.0'
       end
       """
-    And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | ntp |
-      | vim |
-    When I run `berks upload --except core`
-    Then the output should not contain "Uploading ntp"
-    And the output should contain "Uploading vim"
-    And the Chef server should not have the cookbooks:
-      | ntp |
+      | core   | 1.0.0 |
+      | system | 1.0.0 |
+    When I successfully run `berks upload --except group_b`
+    Then the output should contain:
+      """
+      Uploading core (1.0.0) to: 'http://localhost:4000/'
+      """
+    And the output should not contain:
+      """
+      Uploading system (1.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should have the cookbooks:
-      | vim |
+      | core | 1.0.0 |
+    And the Chef server should not have the cookbooks:
+      | system | 1.0.0 |
     And the exit status should be 0
 
   @chef_server @slow_process
-  Scenario: skip uploading multiple groups of cookbooks with the --except flag
+  Scenario: With the --except flag specifying multiple groups
+    Given the cookbook store has the cookbooks:
+      | core    | 1.0.0 |
+      | system  | 1.0.0 |
     Given I write to "Berksfile" with:
       """
-      group :core do
-        cookbook "ntp"
+      group :group_a do
+        cookbook 'core', '1.0.0'
       end
 
-      group :system do
-        cookbook "vim"
+      group :group_b do
+        cookbook 'system', '1.0.0'
       end
       """
-    And I successfully run `berks install`
     And the Chef server does not have the cookbooks:
-      | ntp |
-      | vim |
-    When I run `berks upload --except core system`
-    Then the output should not contain "Uploading ntp"
-    And the output should not contain "Uploading vim"
+      | core   | 1.0.0 |
+      | system | 1.0.0 |
+    When I successfully run `berks upload --except group_a group_b`
+    Then the output should not contain:
+      """
+      Uploading core (1.0.0) to: 'http://localhost:4000/'
+      Uploading system (1.0.0) to: 'http://localhost:4000/'
+      """
     And the Chef server should not have the cookbooks:
-      | ntp |
-      | vim |
+      | core   | 1.0.0 |
+      | system | 1.0.0 |
     And the exit status should be 0
 
-  Scenario: Raise exception uploading an invalid cookbook
+  Scenario: With an invalid cookbook
     Given a cookbook named "cookbook with spaces"
     And I write to "Berksfile" with:
       """
@@ -229,4 +263,3 @@ Feature: upload command
       The cookbook 'cookbook with spaces' has invalid filenames:
       """
     And the CLI should exit with the status code for error "InvalidCookbookFiles"
-
