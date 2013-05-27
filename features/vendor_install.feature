@@ -8,6 +8,7 @@ Feature: Vendoring cookbooks to a specific path
       | fake | 1.0.0 |
     Given I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'fake', '1.0.0'
       """
     When I run the install command with flags:
