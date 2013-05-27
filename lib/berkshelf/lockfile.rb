@@ -41,7 +41,7 @@ module Berkshelf
         hash = JSON.parse(contents, symbolize_names: true)
       rescue JSON::ParserError
         if contents =~ /^cookbook ["'](.+)["']/
-          Berkshelf.ui.warn "You are using the old lockfile format. Attempting to convert..."
+          Berkshelf.ui.warn 'You are using the old lockfile format. Attempting to convert...'
           hash = LockfileLegacy.parse(berksfile, contents)
         else
           raise
