@@ -41,12 +41,12 @@ module Berkshelf
         end
 
         cookbooks.each do |cb|
-          dest = File.join(scratch, cb.cookbook_name, "/")
+          dest = File.join(scratch, cb.cookbook_name, '/')
           FileUtils.mkdir_p(dest)
 
           # Dir.glob does not support backslash as a File separator
           src = cb.path.to_s.gsub('\\', '/')
-          files = Dir.glob(File.join(src, "*"))
+          files = Dir.glob(File.join(src, '*'))
 
           # Filter out files using chefignore
           files = chefignore.remove_ignores_from(files) if chefignore
@@ -237,8 +237,8 @@ module Berkshelf
     #   chef_api :config
     #
     # @example using a URL, node_name, and client_key to add a Chef API default location
-    #   chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "reset",
-    #     client_key: "/Users/reset/.chef/knife.rb"
+    #   chef_api 'https://api.opscode.com/organizations/vialstudios', node_name: 'reset',
+    #     client_key: '/Users/reset/.chef/knife.rb'
     #
     # @param [String, Symbol] value
     # @param [Hash] options
@@ -319,10 +319,10 @@ module Berkshelf
 
       case
       when !except.empty? && !only.empty?
-        raise Berkshelf::ArgumentError, "Cannot specify both :except and :only"
+        raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only'
       when !cookbooks.empty?
         if !except.empty? && !only.empty?
-          Berkshelf.ui.warn "Cookbooks were specified, ignoring :except and :only"
+          Berkshelf.ui.warn 'Cookbooks were specified, ignoring :except and :only'
         end
         l_sources.select { |source| cookbooks.include?(source.name) }
       when !except.empty?
@@ -351,11 +351,11 @@ module Berkshelf
     #   Example:
     #     {
     #       nautilus: [
-    #         #<Berkshelf::CookbookSource @name="nginx">,
-    #         #<Berkshelf::CookbookSource @name="mysql">,
+    #         #<Berkshelf::CookbookSource: nginx (~> 1.0.0)>,
+    #         #<Berkshelf::CookbookSource: mysql (~> 1.2.4)>
     #       ],
     #       skarner: [
-    #         #<Berkshelf::CookbookSource @name="nginx">
+    #         #<Berkshelf::CookbookSource: nginx (~> 1.0.0)>
     #       ]
     #     }
     def groups
@@ -477,7 +477,7 @@ module Berkshelf
     #
     # @example
     #   berksfile.outdated => {
-    #     <#CachedCookbook name="artifact"> => "0.11.2"
+    #     #<CachedCookbook name="artifact"> => "0.11.2"
     #   }
     def outdated(options = {})
       outdated = Hash.new
@@ -717,15 +717,15 @@ module Berkshelf
         ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
 
         unless ridley_options[:server_url].present?
-          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.server_url"
+          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
         end
 
         unless ridley_options[:client_name].present?
-          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
+          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
         end
 
         unless ridley_options[:client_key].present?
-          raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
+          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
         end
 
         Ridley.new(ridley_options)
