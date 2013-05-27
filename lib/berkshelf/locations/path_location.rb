@@ -12,7 +12,7 @@ module Berkshelf
       # @return [String]
       def normalize_path(path)
         path = path.to_s
-        if (path[0] == "~") || Pathname.new(path).absolute?
+        if (path[0] == '~') || Pathname.new(path).absolute?
           File.expand_path(path)
         else
           path
