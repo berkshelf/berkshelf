@@ -7,7 +7,6 @@ require 'bundler'
 require 'spork'
 
 Spork.prefork do
-  require 'json_spec'
   require 'pp'
   require 'rspec'
   require 'webmock/rspec'
@@ -29,7 +28,6 @@ Spork.prefork do
 
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
-    config.include JsonSpec::Helpers
     config.include Berkshelf::RSpec::ChefAPI
     config.include Berkshelf::RSpec::ChefServer
 
