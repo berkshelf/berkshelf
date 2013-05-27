@@ -1,9 +1,9 @@
-Feature: update command
+Feature: Updating a cookbook defined by a Berksfile
   As a user
   I want a way to update the versions without clearing out the files I've downloaded
   So that I can update faster than a clean install
 
-  Scenario: updating with the old lockfile format
+  Scenario: With the old lockfile format
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
     And I write to "Berksfile" with:
@@ -30,7 +30,7 @@ Feature: update command
       }
       """
 
-  Scenario: Updating all cookbooks
+  Scenario: Without a cookbook specified
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
       | berkshelf-cookbook-fixture | 0.2.0 |
@@ -75,7 +75,7 @@ Feature: update command
       }
       """
 
-  Scenario: Updating a single cookbook
+  Scenario: With a single cookbook specified
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
       | berkshelf-cookbook-fixture | 0.2.0 |
@@ -120,7 +120,7 @@ Feature: update command
       }
       """
 
-  Scenario: Update a cookbook that doesn't exist
+  Scenario: With a cookbook that does not exist
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
     Given I write to "Berksfile" with:
