@@ -6,6 +6,7 @@ Feature: Displaying outdated cookbooks
   Scenario: Running berks outdated with no version constraints
     Given I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'berkshelf-cookbook-fixture'
       """
     When I successfully run `berks outdated`
@@ -21,6 +22,7 @@ Feature: Displaying outdated cookbooks
   Scenario: Running berks outdated with satisfied version constraints
     Given I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'berkshelf-cookbook-fixture', '>= 0.1'
       """
     When I run `berks outdated`
@@ -36,6 +38,7 @@ Feature: Displaying outdated cookbooks
   Scenario: Running berks outdated with unsatisfied version constraints
     Given I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
     When I run `berks outdated`
