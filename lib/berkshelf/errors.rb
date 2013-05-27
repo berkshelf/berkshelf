@@ -15,7 +15,7 @@ module Berkshelf
   class ArgumentError < InternalError; end
   class AbstractFunction < InternalError
     def to_s
-      "Function must be implemented on includer"
+      'Function must be implemented on includer'
     end
   end
 
@@ -25,40 +25,58 @@ module Berkshelf
   class CookbookNotFound < BerkshelfError; status_code(103); end
   class GitError < BerkshelfError
     status_code(104)
-    attr_reader :stderr
 
+    # @param [#to_s] stderr
+    #   the error that came from stderr
     def initialize(stderr)
-      @stderr = stderr
+      @stderr = stderr.to_s
+    end
+
+    # A common header for all git errors. The #to_s method should
+    # use this before outputting any specific errors.
+    #
+    # @return [String]
+    def header
+      'An error occurred during Git execution:'
     end
 
     def to_s
-      out = "An error occured during Git execution:\n"
-      out << stderr.prepend_each("\n", "\t")
+      [
+        header,
+        "",
+        "  " + @stderr.join("\n  "),
+        ""
+      ].join("\n")
     end
   end
-  class PrivateGitRepo < GitError; end
+
   class AmbiguousGitRef < GitError
-    attr_reader :ref
-
     def initialize(ref)
       @ref = ref
     end
 
     def to_s
-      out = "An error occurred during Git execution:\n"
-      out << "Ambiguous Git ref: #{ref}"
+      [
+        header,
+        "",
+        "  Ambiguous Git ref: '#{@ref}'",
+        "",
+      ].join("\n")
     end
   end
-  class InvalidGitRef < GitError
-    attr_reader :ref
 
+  class InvalidGitRef < GitError
     def initialize(ref)
       @ref = ref
     end
 
     def to_s
-      out = "An error occurred during Git execution:\n"
-      out << "Invalid Git ref: #{ref}"
+      [
+        header,
+        "",
+        "  Invalid Git ref: '#{@ref}'",
+        "",
+      ].join("\n")
     end
   end
 
@@ -69,7 +87,6 @@ module Berkshelf
 
   class InvalidGitURI < BerkshelfError
     status_code(110)
-    attr_reader :uri
 
     # @param [String] uri
     def initialize(uri)
@@ -77,13 +94,12 @@ module Berkshelf
     end
 
     def to_s
-      "'#{uri}' is not a valid Git URI."
+      "'#{@uri}' is not a valid Git URI"
     end
   end
 
   class UnknownGitHubProtocol < BerkshelfError
     status_code(110)
-    attr_reader :protocol
 
     # @param [String] protocol
     def initialize(protocol)
@@ -91,7 +107,7 @@ module Berkshelf
     end
 
     def to_s
-      "'#{self.protocol}' is not a supported Git protocol for the 'github' location key. Please use 'git' instead."
+      "'#{@protocol}' is not supported for the 'github' location key - please use 'git' instead"
     end
   end
 
@@ -99,13 +115,14 @@ module Berkshelf
     status_code(110)
 
     def to_s
-      "Could not find a Git executable in your path. Please add it and try again."
+      'Could not find a Git executable in your path - please add it and try again'
     end
   end
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
   class InvalidChefAPILocation < BerkshelfError; status_code(112); end
   class BerksfileReadError < BerkshelfError
+    # @param [#status_code] original_error
     def initialize(original_error)
       @original_error = original_error
     end
@@ -121,12 +138,6 @@ module Berkshelf
   class MismatchedCookbookName < BerkshelfError
     status_code(114)
 
-    # @return [Berkshelf::Location]
-    attr_reader :location
-
-    # @return [Berkshelf::CachedCookbook]
-    attr_reader :cached_cookbook
-
     # @param [Berkshelf::Location] location
     #   the location that is mismatched
     # @param [Berkshelf::CachedCookbook] cached_cookbook
@@ -140,13 +151,13 @@ module Berkshelf
       [
         "In your Berksfile, you have:",
         "",
-        "  cookbook '#{location.name}'",
+        "  cookbook '#{@location.name}'",
         "",
-        "But that cookbook is actually named '#{cached_cookbook.cookbook_name}'.",
+        "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'",
         "",
-        "This can cause potentially unwanted side-effects in the future.",
+        "This can cause potentially unwanted side-effects in the future",
         "",
-        "NOTE: If you don't explicitly set the `name` attribute in the metadata, the name of the directory will be used!"
+        "NOTE: If you don't explicitly set the `name` attribute in the metadata, the name of the directory will be used!",
       ].join("\n")
     end
   end
@@ -159,15 +170,10 @@ module Berkshelf
     end
 
     def to_s
-      strings = ["Invalid configuration:"]
-
-      @errors.each do |key, errors|
-        errors.each do |error|
-          strings << "  #{key} #{error}"
-        end
-      end
-
-      strings.join "\n"
+      [
+        'Invalid configuration:',
+        @errors.map { |key, errors| errors.map { |error| "  #{key} #{error}" } },
+      ].join("\n")
     end
   end
 
@@ -200,7 +206,7 @@ module Berkshelf
         "does not satisfy the version constraint:",
         "  #{@cached_cookbook.cookbook_name} (#{@location.version_constraint})",
         "",
-        "This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`."
+        "This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`",
       ].join("\n")
     end
   end
@@ -219,15 +225,17 @@ module Berkshelf
     end
 
     def to_s
-      "Unknown site shortname: #{@shortname.inspect}. Supported shortnames are: #{SiteLocation::SHORTNAMES.keys.map(&:inspect).join(',')}"
+      shortnames = SiteLocation::SHORTNAMES.keys.map { |key| "'#{key}'" }.join(', ')
+      [
+        "Unknown site shortname '#{@shortname}' - supported shortnames are:",
+        "",
+        "  " + shortnames.keys.join("\n  "),
+      ].join("\n")
     end
   end
 
   class OutdatedCookbookSource < BerkshelfError
     status_code(128)
-
-    # @return [Berkshelf::CookbookSource]
-    attr_reader :locked_source, :source
 
     # @param [Berkshelf::CookbookSource] source
     #   the cookbook source that is outdated
@@ -238,14 +246,14 @@ module Berkshelf
 
     def to_s
       [
-        "Berkshelf could not find compatible versions for cookbook '#{source.name}':",
+        "Berkshelf could not find compatible versions for cookbook '#{@source.name}':",
         "  In Berksfile:",
-        "    #{locked_source.name} (#{locked_source.locked_version})",
+        "    #{@locked_source.name} (#{@locked_source.locked_version})",
         "",
         "  In Berksfile.lock:",
-        "    #{source.name} (#{source.version_constraint})",
+        "    #{@source.name} (#{@source.version_constraint})",
         "",
-        "Try running `berks update #{source.name}, which will try to find  '#{source.name}' matching '#{source.version_constraint}'."
+        "Try running `berks update #{@source.name}, which will try to find  '#{@source.name}' matching '#{source.version_constraint}'.",
       ].join("\n")
     end
   end
@@ -258,7 +266,7 @@ module Berkshelf
     end
 
     def to_s
-      %Q[The environment "#{@environment_name}" does not exist.]
+      "The environment '#{@environment_name}' does not exist"
     end
   end
 
@@ -266,7 +274,7 @@ module Berkshelf
     status_code(130)
 
     def to_s
-      "There was an error connecting to the chef server."
+      'There was an error connecting to the Chef Server'
     end
   end
 
@@ -279,7 +287,7 @@ module Berkshelf
     end
 
     def to_s
-      "The file at '#{@destination}' is not a known compression type!"
+      "The file at '#{@destination}' is not a known compression type"
     end
   end
 
@@ -306,7 +314,7 @@ module Berkshelf
         "",
         "  " + @files.map(&:to_s).join("\n  "),
         "",
-        "Please note, spaces are not a valid character in filenames."
+        "Please note, spaces are not a valid character in filenames",
       ].join("\n")
     end
   end
