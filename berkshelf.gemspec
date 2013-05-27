@@ -57,6 +57,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'yard',          '~> 0.8'
 
   # Guard extensions for development
+  s.add_development_dependency 'coolline',      '~> 0.4.2' # readline for guard on MRI
   s.add_development_dependency 'guard',         '~> 1.8'
   s.add_development_dependency 'guard-cane'
   s.add_development_dependency 'guard-cucumber'
