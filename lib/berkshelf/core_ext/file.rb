@@ -7,7 +7,7 @@ class File
     #
     # @return [Boolean]
     def cookbook?(path)
-      File.exists?(File.join(path, "metadata.rb"))
+      File.exists?(File.join(path, 'metadata.rb'))
     end
     alias_method :chef_cookbook?, :cookbook?
   end
