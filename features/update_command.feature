@@ -1,15 +1,17 @@
-Feature: update command
+Feature: Updating a cookbook defined by a Berksfile
   As a user
   I want a way to update the versions without clearing out the files I've downloaded
   So that I can update faster than a clean install
 
-  Scenario: updating with the old lockfile format
-    Given I write to "Berksfile" with:
+  Scenario: With the old lockfile format
+    Given the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 0.1.0 |
+    And I write to "Berksfile" with:
       """
       site :opscode
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
-    Given I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       cookbook 'berkshelf-cookbook-fixture', :locked_version => '0.1.0'
       """
@@ -21,21 +23,25 @@ Feature: update command
         "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.2.0",
+            "locked_version":"0.1.0",
             "constraint":"~> 0.1"
           }
         }
       }
       """
 
-  Scenario: Updating all cookbooks
-    Given I write to "Berksfile" with:
+  Scenario: Without a cookbook specified
+    Given the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 0.1.0 |
+      | berkshelf-cookbook-fixture | 0.2.0 |
+      | hostsfile                  | 1.0.1 |
+    And I write to "Berksfile" with:
       """
       site :opscode
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       cookbook 'hostsfile', '~> 1.0.0'
       """
-    Given I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       {
         "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
@@ -69,7 +75,11 @@ Feature: update command
       }
       """
 
-  Scenario: Updating a single cookbook
+  Scenario: With a single cookbook specified
+    Given the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 0.1.0 |
+      | berkshelf-cookbook-fixture | 0.2.0 |
+      | hostsfile                  | 1.0.1 |
     Given I write to "Berksfile" with:
       """
       site :opscode
@@ -110,7 +120,9 @@ Feature: update command
       }
       """
 
-  Scenario: Update a cookbook that doesn't exist
+  Scenario: With a cookbook that does not exist
+    Given the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 0.1.0 |
     Given I write to "Berksfile" with:
       """
       site :opscode
