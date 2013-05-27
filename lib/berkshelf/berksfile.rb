@@ -691,7 +691,7 @@ module Berkshelf
       begin
         instance_eval(content)
       rescue => e
-        raise BerksfileReadError.new(e), "An error occurred while reading the Berksfile: #{e.to_s}"
+        raise BerksfileReadError.new(e)
       end
       self
     end

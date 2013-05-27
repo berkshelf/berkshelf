@@ -44,7 +44,7 @@ module Berkshelf
       [
         header,
         "",
-        "  " + @stderr.join("\n  "),
+        "  " + @stderr.to_s.split("\n").map(&:strip).join("\n  "),
         ""
       ].join("\n")
     end
@@ -131,6 +131,14 @@ module Berkshelf
 
     def status_code
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
+    end
+
+    def to_s
+      [
+        "An error occurred while reading the Berksfile:",
+        "",
+        "  " +  @original_error.to_s.split("\n").map(&:strip).join("\n  "),
+      ].join("\n")
     end
   end
 
@@ -225,11 +233,10 @@ module Berkshelf
     end
 
     def to_s
-      shortnames = SiteLocation::SHORTNAMES.keys.map { |key| "'#{key}'" }.join(', ')
       [
         "Unknown site shortname '#{@shortname}' - supported shortnames are:",
         "",
-        "  " + shortnames.keys.join("\n  "),
+        "  * " + SiteLocation::SHORTNAMES.keys.join("\n  * "),
       ].join("\n")
     end
   end
