@@ -7,7 +7,6 @@ Feature: install cookbooks to a given vendor path
     Given I write to "Berksfile" with:
       """
       site :opscode
-
       cookbook "artifact", "0.10.0"
       """
     When I run the install command with flags:
