@@ -260,7 +260,7 @@ module Berkshelf
         "  In Berksfile.lock:",
         "    #{@source.name} (#{@source.version_constraint})",
         "",
-        "Try running `berks update #{@source.name}, which will try to find  '#{@source.name}' matching '#{source.version_constraint}'.",
+        "Try running `berks update #{@source.name}, which will try to find  '#{@source.name}' matching '#{@source.version_constraint}'.",
       ].join("\n")
     end
   end
