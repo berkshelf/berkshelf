@@ -342,7 +342,7 @@ module Berkshelf
     end
 
     def to_s
-      "No #{@type.capitalize} config file found at: '#{path}'!"
+      "No #{@type.capitalize} config file found at: '#{@path}'!"
     end
   end
 end
