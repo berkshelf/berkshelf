@@ -1,6 +1,6 @@
 require 'socket'
 require 'tmpdir'
-require 'berkshelf/mixin'
+require 'berkshelf/util'
 require 'mixlib/config'
 
 module Berkshelf::Chef

@@ -1,5 +1,7 @@
 require 'uri'
 
+require 'berkshelf/util'
+
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Git
