@@ -49,7 +49,7 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV["BERKSHELF_PATH"] || File.expand_path("~/.berkshelf")
+      ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
 
     # @return [Logger]
@@ -59,7 +59,7 @@ module Berkshelf
 
     # @return [String]
     def tmp_dir
-      File.join(berkshelf_path, "tmp")
+      File.join(berkshelf_path, 'tmp')
     end
 
     # Creates a temporary directory within the Berkshelf path
@@ -72,7 +72,7 @@ module Berkshelf
     end
 
     def cookbooks_dir
-      File.join(berkshelf_path, "cookbooks")
+      File.join(berkshelf_path, 'cookbooks')
     end
 
     # @return [Berkshelf::CookbookStore]
