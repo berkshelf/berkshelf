@@ -25,8 +25,8 @@ Gem::Specification.new do |s|
   s.name                      = 'berkshelf'
   s.require_paths             = ['lib']
   s.version                   = Berkshelf::VERSION
-  s.required_ruby_version     = ">= 1.9.1"
-  s.required_rubygems_version = ">= 1.8.0"
+  s.required_ruby_version     = '>= 1.9.1'
+  s.required_rubygems_version = '>= 1.8.0'
 
   s.add_dependency 'activesupport',     '>= 3.2.0'
   s.add_dependency 'addressable',       '~> 2.3.4'
