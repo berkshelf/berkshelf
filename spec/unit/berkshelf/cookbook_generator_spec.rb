@@ -44,11 +44,11 @@ describe Berkshelf::CookbookGenerator do
           contains 'Author:: YOUR_NAME (<YOUR_EMAIL>)'
         end
         file 'metadata.rb' do
-          contains 'name             "sparkle_motion"'
-          contains 'maintainer       "YOUR_NAME"'
-          contains 'maintainer_email "YOUR_EMAIL"'
-          contains 'license          "All rights reserved"'
-          contains 'description      "Installs/Configures sparkle_motion"'
+          contains "name             'sparkle_motion'"
+          contains "maintainer       'YOUR_NAME'"
+          contains "maintainer_email 'YOUR_EMAIL'"
+          contains "license          'All rights reserved'"
+          contains "description      'Installs/Configures sparkle_motion'"
         end
         file 'Berksfile' do
           contains 'site :opscode'
@@ -72,7 +72,7 @@ describe Berkshelf::CookbookGenerator do
       email = email
       expect(target).to have_structure {
         file 'metadata.rb' do
-          contains 'maintainer_email "jamie@vialstudios.com"'
+          contains "maintainer_email 'jamie@vialstudios.com'"
         end
       }
     end
