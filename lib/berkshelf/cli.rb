@@ -329,18 +329,16 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
     desc "show COOKBOOK", "Display the source path on the local file system for the given cookbook"
     def show(name)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
       source = berksfile.find(name)
 
-      cookbook = Berkshelf.ui.mute {
-        berksfile.resolve(source)[:solution].first
-      }
+      cookbook = Berkshelf.ui.mute { berksfile.resolve(source)[:solution].first }
 
       raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
       Berkshelf.formatter.msg(cookbook.path)
