@@ -5,6 +5,8 @@ module Berkshelf
   #
   # @author Seth Vargo <sethvargo@gmail.com>
   class Lockfile
+    require_relative 'cookbook_source'
+
     # @return [Pathname]
     #   the path to this Lockfile
     attr_reader :filepath

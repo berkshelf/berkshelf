@@ -95,5 +95,5 @@ module Berkshelf
 end
 
 Dir["#{File.dirname(__FILE__)}/formatters/*.rb"].sort.each do |path|
-  require "berkshelf/formatters/#{File.basename(path, '.rb')}"
+  require_relative "formatters/#{File.basename(path, '.rb')}"
 end

@@ -1,4 +1,6 @@
 require 'berkshelf'
+require_relative 'config'
+require_relative 'init_generator'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
