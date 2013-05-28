@@ -1,5 +1,5 @@
 # encoding: utf-8
-$:.unshift File.expand_path("../lib", __FILE__)
+$:.unshift File.expand_path('../lib', __FILE__)
 
 require 'bundler'
 require 'thor/rake_compat'
@@ -36,7 +36,9 @@ class Spec < Thor
   desc 'ci', 'Run tests on Travis'
   def ci
     ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
-    all
+    unless run_unit('--tag ~chef_server') && run_acceptance('--tags ~@chef_server') && run_quality
+      exit 1
+    end
   end
 
   def unit
