@@ -8,6 +8,7 @@ Feature: Showing the path to a cookbook defined by a Berksfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'fake', '1.0.0'
       """
     When I successfully run `berks show fake`
