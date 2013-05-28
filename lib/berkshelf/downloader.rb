@@ -1,6 +1,9 @@
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Downloader
+    require_relative 'cookbook_source'
+    require_relative 'location'
+
     extend Forwardable
 
     DEFAULT_LOCATIONS = [
