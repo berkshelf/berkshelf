@@ -11,7 +11,7 @@ module Berkshelf
       module ClassMethods
         # Load a Chef configuration from the given path.
         #
-        # @raise [Berkshelf::ChefConfigNotFound]
+        # @raise [Berkshelf::ConfigNotFound]
         #   if the specified path does not exist on the system
         def from_file(filepath)
           self.new(filepath)
