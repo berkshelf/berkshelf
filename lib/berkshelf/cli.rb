@@ -315,17 +315,20 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
     desc "list", "Show all of the cookbooks in the current Berkshelf"
     def list
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_file(options[:berksfile])
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
 
-      Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
-      Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort.each do |cookbook|
-        Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
+      if sources.empty?
+        Berkshelf.formatter.msg "There are no cookbooks installed by your Berksfile"
+      else
+        Berkshelf.formatter.msg "Cookbooks installed by your Berksfile:"
+        print_list(sources)
       end
     end
 
