@@ -297,8 +297,6 @@ module Berkshelf
     end
   end
 
-  # @author Seth Vargo <sethvargo@gmail.com>
-  #
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   #
@@ -325,8 +323,6 @@ module Berkshelf
     end
   end
 
-  # @author Seth Vargo <sethvargo@gmail.com>
-  #
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   class ConfigNotFound < BerkshelfError
