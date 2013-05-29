@@ -542,7 +542,7 @@ describe Berkshelf::Berksfile do
       it 'applys the locked_versions of the Lockfile sources to the given Chef environment' do
         subject.apply('berkshelf')
 
-        environment = ::JSON.parse(chef_server.data['environments']['berkshelf'])
+        environment = ::JSON.parse(chef_server.data_store.get(['environments', 'berkshelf']))
         expect(environment['cookbook_versions']).to have(2).items
         expect(environment['cookbook_versions']['nginx']).to eq('1.2.3')
         expect(environment['cookbook_versions']['artifact']).to eq('1.4.0')
