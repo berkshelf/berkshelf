@@ -9,8 +9,13 @@ Feature: Installing cookbooks with specific licenses
     And I write to "Berksfile" with:
       """
       site :opscode
-      licenses 'mit'
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
+      """
+    And I have a Berkshelf config file containing:
+      """
+      {
+        "allowed_licenses": ["mit"]
+      }
       """
     When I successfully run `berks install`
     Then the output should not contain:
@@ -25,8 +30,13 @@ Feature: Installing cookbooks with specific licenses
     And I write to "Berksfile" with:
       """
       site :opscode
-      licenses 'apache2'
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
+      """
+    And I have a Berkshelf config file containing:
+      """
+      {
+        "allowed_licenses": ["apache2"]
+      }
       """
     When I successfully run `berks install`
     Then the output should contain:
@@ -35,14 +45,20 @@ Feature: Installing cookbooks with specific licenses
       """
     And the exit status should be 0
 
-  Scenario: With licenses! defined
+  Scenario: With raise_license_exception defined
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 | mit |
     And I write to "Berksfile" with:
       """
       site :opscode
-      licenses! 'mit'
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
+      """
+    And I have a Berkshelf config file containing:
+      """
+      {
+        "allowed_licenses": ["mit"],
+        "raise_license_exception": true
+      }
       """
     When I successfully run `berks install`
     Then the output should not contain:
@@ -57,8 +73,14 @@ Feature: Installing cookbooks with specific licenses
     And I write to "Berksfile" with:
       """
       site :opscode
-      licenses! 'apache2'
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
+      """
+    And I have a Berkshelf config file containing:
+      """
+      {
+        "allowed_licenses": ["apache2"],
+        "raise_license_exception": true
+      }
       """
     When I run `berks install`
     Then the output should contain:
