@@ -114,4 +114,12 @@ module Berkshelf
       end
     end
   end
+
+  # Add the subcommand to the CLI.
+  #
+  # @author Seth Vargo <sethvargo@gmail.com>
+  class Cli < Thor
+    desc 'shelf SUBCOMMAND', 'Interact with the cookbook store'
+    subcommand 'shelf', Berkshelf::Shelf
+  end
 end

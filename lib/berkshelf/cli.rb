@@ -473,11 +473,6 @@ module Berkshelf
       ::Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end
 
-    register(Berkshelf::TestCommand, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook')
-
-    desc 'shelf SUBCOMMAND', 'Interact with the cookbook store'
-    subcommand 'shelf', Berkshelf::Shelf
-
     private
 
       def version_header
