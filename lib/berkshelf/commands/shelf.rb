@@ -64,7 +64,7 @@ module Berkshelf
       #   array!
       def find(name, version = nil)
         cookbooks = if version
-          [store.cookbook(name, version)]
+          [store.cookbook(name, version)].compact
         else
           store.cookbooks(name).sort
         end
