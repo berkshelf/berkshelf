@@ -2,6 +2,9 @@ require 'berkshelf'
 require_relative 'config'
 require_relative 'init_generator'
 
+require 'berkshelf/commands/test_command'
+require 'berkshelf/commands/shelf'
+
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
@@ -491,8 +494,3 @@ module Berkshelf
       end
   end
 end
-
-Dir["#{File.dirname(__FILE__)}/cli_commands/*.rb"].sort.each do |path|
-  require "berkshelf/cli_commands/#{File.basename(path, '.rb')}"
-end
-
