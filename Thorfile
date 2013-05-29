@@ -36,9 +36,7 @@ class Spec < Thor
   desc 'ci', 'Run tests on Travis'
   def ci
     ENV['CI'] = 'true' # Travis-CI also sets this, but set it here for local testing
-    unless run_unit('--tag ~chef_server') && run_acceptance('--tags ~@chef_server') && run_quality
-      exit 1
-    end
+    all
   end
 
   desc 'unit', 'Run unit tests'
