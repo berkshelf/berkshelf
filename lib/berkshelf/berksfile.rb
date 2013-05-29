@@ -178,6 +178,27 @@ module Berkshelf
       @@active_group = nil
     end
 
+    # Specify a list of licenses to accept when installing cookbooks.
+    #
+    # @param [Array<String>] args
+    #   the list of licenses to allow
+    #
+    # @return [Array<String>]
+    #   the licenses, if any were specified
+    def licenses(*args)
+      if args.empty?
+        @licenses || []
+      else
+        @licenses = args.dup
+      end
+    end
+
+    # See {licenses}, but forces an exception instead of a warning.
+    def licenses!(*args)
+      @raise_license_exception = true
+      licenses(*args)
+    end
+
     # Use a Cookbook metadata file to determine additional cookbook sources to retrieve. All
     # sources found in the metadata will use the default locations set in the Berksfile (if any are set)
     # or the default locations defined by Berkshelf.
@@ -431,6 +452,8 @@ module Berkshelf
       resolver          = resolve(local_sources)
       @cached_cookbooks = resolver[:solution]
       local_sources     = resolver[:sources]
+
+      verify_licenses!
 
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
 
@@ -809,6 +832,35 @@ module Berkshelf
         end
 
         raise Berkshelf::InvalidCookbookFiles.new(cookbook, files) unless files.empty?
+      end
+
+      # Decide if the Berkshelf should raise an exception if the license
+      # is not in the {licenses} list.
+      #
+      # @param [Boolean]
+      #   true if the user used {licenses!}, false otherwise
+      def raise_license_exception?
+        !!@raise_license_exception
+      end
+
+      # Verify that the licenses of all the cached cookbooks fall in the realm of
+      # allowed licenses from the Berksfile.
+      #
+      # @raise
+      def verify_licenses!
+        return if licenses.empty?
+
+        @cached_cookbooks.each do |cached|
+          unless licenses.include?(cached.metadata.license)
+            if raise_license_exception?
+              FileUtils.rm_rf(cached.path)
+              raise Berkshelf::LicenseNotAllowed.new(cached)
+            else
+              Berkshelf.ui.warn "'#{cached.cookbook_name}' has a license of '#{cached.metadata.license}', but" +
+                                " '#{cached.metadata.license}' is not in your list of allowed licenses"
+            end
+          end
+        end
       end
   end
 end
