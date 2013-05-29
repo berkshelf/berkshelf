@@ -73,7 +73,6 @@ module Berkshelf
       #
       # @param [CachedCookbook] cookbook
       def info(cookbook)
-        cookbooks[cookbook.cookbook_name] ||= {}
         cookbooks[cookbook.cookbook_name] = cookbook.pretty_hash
       end
 
