@@ -67,6 +67,7 @@ module Berkshelf::RSpec
     private
 
       def load_data(key, name, hash)
+        ChefServer.server.clear_data
         ChefServer.server.load_data({ key.to_s => { name => MultiJson.encode(hash) }})
       end
   end
