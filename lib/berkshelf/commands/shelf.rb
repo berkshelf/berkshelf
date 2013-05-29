@@ -1,5 +1,5 @@
 module Berkshelf
-  # All tasks taht operate on the Berkshelf shelf
+  # All tasks that operate on the Berkshelf shelf.
   #
   # @author Seth Vargo <sethvargo@gmail.com>
   class Shelf < Thor
