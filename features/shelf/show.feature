@@ -40,7 +40,7 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
     When I successfully run `berks shelf show fake --version 1.0.0`
     Then the output should contain:
       """
-      Displaying all versions of 'fake' in the Berkshelf shelf:
+      Displaying 'fake' (1.0.0) in the Berkshelf shelf:
               Name: fake
            Version: 1.0.0
        Description: A fabulous new cookbook
@@ -61,7 +61,7 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
     When I run `berks shelf show fake --version 1.2.3`
     Then the output should contain:
       """
-      Cookbook 'fake' is not in the Berkshelf shelf
+      Cookbook 'fake' (1.2.3) is not in the Berkshelf shelf
       """
     And the CLI should exit with the status code for error "CookbookNotFound"
 
@@ -114,7 +114,7 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
     When I successfully run `berks shelf show fake --version 1.0.0`
     Then the output should contain:
       """
-      Displaying all versions of 'fake' in the Berkshelf shelf:
+      Displaying 'fake' (1.0.0) in the Berkshelf shelf:
               Name: fake
            Version: 1.0.0
        Description: A fabulous new cookbook
