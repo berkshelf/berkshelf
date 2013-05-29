@@ -9,7 +9,6 @@ module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
     class << self
-
       def dispatch(meth, given_args, given_opts, config)
         unless (given_args & ['-h', '--help']).empty?
           if given_args.length == 1
