@@ -72,7 +72,7 @@ module Berkshelf
       @retry_interval = options[:retry_interval]
 
       builder = Faraday::Builder.new do |b|
-        b.response :json
+        b.response :parse_json
         b.request :retry,
           max: @retries,
           interval: @retry_interval,
