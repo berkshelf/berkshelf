@@ -851,14 +851,17 @@ module Berkshelf
         return if licenses.empty?
 
         @cached_cookbooks.each do |cached|
-          unless licenses.include?(cached.metadata.license)
+          begin
+            unless licenses.include?(cached.metadata.license)
+              raise Berkshelf::LicenseNotAllowed.new(cached)
+            end
+          rescue Berkshelf::LicenseNotAllowed => e
             if raise_license_exception?
               FileUtils.rm_rf(cached.path)
-              raise Berkshelf::LicenseNotAllowed.new(cached)
-            else
-              Berkshelf.ui.warn "'#{cached.cookbook_name}' has a license of '#{cached.metadata.license}', but" +
-                                " '#{cached.metadata.license}' is not in your list of allowed licenses"
+              raise
             end
+
+            Berkshelf.ui.warn(e.to_s)
           end
         end
       end

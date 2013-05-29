@@ -321,24 +321,24 @@ module Berkshelf
         "Please note, spaces are not a valid character in filenames",
       ].join("\n")
     end
+  end
 
-    # Raised when a CachedCookbook has a license file that isn't allowed
-    # by the Berksfile.
-    #
-    # @param [Berkshelf::CachedCookbook] cookbook
-    #   the cookbook that failed license validation
-    class LicenseNotAllowed < BerkshelfError
-      status_code(133)
+  # Raised when a CachedCookbook has a license file that isn't allowed
+  # by the Berksfile.
+  #
+  # @param [Berkshelf::CachedCookbook] cookbook
+  #   the cookbook that failed license validation
+  class LicenseNotAllowed < BerkshelfError
+    status_code(133)
 
-      def initialize(cookbook)
-        @cookbook = cookbook
-      end
+    def initialize(cookbook)
+      @cookbook = cookbook
+    end
 
-      def to_s
-        msg =  "'#{cookbook.cookbook_name}' has a license of '#{cookbook.metadata.license}', but"
-        msg << " '#{cookbook.metadata.license}' is not in your list of allowed licenses"
-        msg
-      end
+    def to_s
+      msg =  "'#{@cookbook.cookbook_name}' has a license of '#{@cookbook.metadata.license}', but"
+      msg << " '#{@cookbook.metadata.license}' is not in your list of allowed licenses"
+      msg
     end
   end
 
