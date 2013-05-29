@@ -822,7 +822,10 @@ module Berkshelf
         licenses = Array(Berkshelf::Config.instance.allowed_licenses)
         return if licenses.empty?
 
-        @cached_cookbooks.each do |cached|
+        sources.each do |source|
+          next if source.location.is_a?(Berkshelf::PathLocation)
+          cached = source.cached_cookbook
+
           begin
             unless licenses.include?(cached.metadata.license)
               raise Berkshelf::LicenseNotAllowed.new(cached)

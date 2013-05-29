@@ -88,3 +88,25 @@ Feature: Installing cookbooks with specific licenses
       'mit' is not in your list of allowed licenses
       """
     And the CLI should exit with the status code for error "LicenseNotAllowed"
+
+  Scenario: With a :path location
+    Given the cookbook store has the cookbooks:
+      | fake | 0.1.0 | mit |
+    And I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', path: '../berkshelf/cookbooks/fake-0.1.0'
+      """
+    And I have a Berkshelf config file containing:
+      """
+      {
+        "allowed_licenses": ["apache2"],
+        "raise_license_exception": true
+      }
+      """
+    When I run `berks install`
+    Then the output should not contain:
+      """
+      'mit' is not in your list of allowed licenses
+      """
+    And the exit status should be 0
