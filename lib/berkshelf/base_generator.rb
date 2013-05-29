@@ -5,7 +5,7 @@ module Berkshelf
   class BaseGenerator < Thor::Group
     class << self
       def source_root
-        Berkshelf.root.join("generator_files")
+        Berkshelf.root.join('generator_files')
       end
     end
 

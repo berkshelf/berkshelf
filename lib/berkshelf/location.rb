@@ -33,14 +33,14 @@ module Berkshelf
       # version of the Cookbook can be downloaded from
       #
       # @example:
-      #   constraint = Solve::Constraint.new("~> 0.101.2")
+      #   constraint = Solve::Constraint.new('~> 0.101.2')
       #   versions = {
-      #     "1.0.0" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_0_0",
-      #     "2.0.0" => "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/2_0_0"
+      #     '1.0.0' => 'http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/1_0_0',
+      #     '2.0.0' => 'http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/2_0_0'
       #   }
       #
       #   subject.solve_for_constraint(versions, constraint) =>
-      #     [ "2.0.0", "http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/2_0_0" ]
+      #     [ '2.0.0', 'http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/2_0_0' ]
       #
       # @param [String, Solve::Constraint] constraint
       #   version constraint to solve for
@@ -73,19 +73,19 @@ module Berkshelf
       # instantiated.
       #
       # @example
-      #   Location.init("nginx", ">= 0.0.0", git: "git://github.com/RiotGames/artifact-cookbook.git") =>
+      #   Location.init('nginx', '>= 0.0.0', git: 'git://github.com/RiotGames/artifact-cookbook.git') =>
       #     instantiates a GitLocation
       #
-      #   Location.init("nginx", ">= 0.0.0", path: "/Users/reset/code/nginx-cookbook") =>
+      #   Location.init('nginx', '>= 0.0.0', path: '/Users/reset/code/nginx-cookbook') =>
       #     instantiates a PathLocation
       #
-      #   Location.init("nginx", ">= 0.0.0", site: "http://cookbooks.opscode.com/api/v1/cookbooks") =>
+      #   Location.init('nginx', '>= 0.0.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks') =>
       #     instantiates a SiteLocation
       #
-      #   Location.init("nginx", ">= 0.0.0", chef_api: "https://api.opscode.com/organizations/vialstudios") =>
+      #   Location.init('nginx', '>= 0.0.0', chef_api: 'https://api.opscode.com/organizations/vialstudios') =>
       #     instantiates a ChefAPILocation
       #
-      #   Location.init("nginx", ">= 0.0.0") =>
+      #   Location.init('nginx', '>= 0.0.0') =>
       #     instantiates a SiteLocation
       #
       # @param [String] name

@@ -41,7 +41,7 @@ module Berkshelf
       # @return [String]
       #   the destination the URI was cloned to
       def clone(uri, destination = Dir.mktmpdir)
-        git("clone", uri, destination.to_s)
+        git('clone', uri, destination.to_s)
 
         destination
       end
@@ -54,14 +54,14 @@ module Berkshelf
       #   reference to checkout
       def checkout(repo_path, ref)
         Dir.chdir repo_path do
-          git("checkout", "-qf", revision_from_ref(repo_path, ref))
+          git('checkout', '-qf', revision_from_ref(repo_path, ref))
         end
       end
 
       # @param [String] repo_path
       def rev_parse(repo_path)
         Dir.chdir repo_path do
-          git("rev-parse", "HEAD")
+          git('rev-parse', 'HEAD')
         end
       end
 
@@ -121,7 +121,7 @@ module Berkshelf
       # @raise [GitNotFound] if executable is not found in system path
       def find_git
         git_path = nil
-        ENV["PATH"].split(::File::PATH_SEPARATOR).each do |path|
+        ENV['PATH'].split(::File::PATH_SEPARATOR).each do |path|
           git_path = detect_git_path(path)
           break if git_path
         end
@@ -138,11 +138,11 @@ module Berkshelf
       # SSH protocol, or HTTPS protocol.
       #
       # @example Valid Git protocol URI
-      #   "git://github.com/reset/thor-foodcritic.git"
+      #   'git://github.com/reset/thor-foodcritic.git'
       # @example Valid HTTPS URI
-      #   "https://github.com/reset/solve.git"
+      #   'https://github.com/reset/solve.git'
       # @example Valid SSH protocol URI
-      #   "git@github.com:reset/solve.git"
+      #   'git@github.com:reset/solve.git'
       #
       # @param [String] uri
       #
@@ -188,7 +188,7 @@ module Berkshelf
         end
 
         def detect_git_path(base_dir)
-          %w{ git git.exe git.cmd }.each do |git_cmd|
+          %w(git git.exe git.cmd).each do |git_cmd|
             potential_path = File.join(base_dir, git_cmd)
             if File.executable?(potential_path)
               return potential_path

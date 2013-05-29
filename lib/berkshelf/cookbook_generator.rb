@@ -44,19 +44,19 @@ module Berkshelf
       default: Berkshelf::Config.instance.cookbook.email
 
     def generate
-      empty_directory target.join("files/default")
-      empty_directory target.join("templates/default")
-      empty_directory target.join("attributes")
-      empty_directory target.join("definitions")
-      empty_directory target.join("libraries")
-      empty_directory target.join("providers")
-      empty_directory target.join("recipes")
-      empty_directory target.join("resources")
+      empty_directory target.join('files/default')
+      empty_directory target.join('templates/default')
+      empty_directory target.join('attributes')
+      empty_directory target.join('definitions')
+      empty_directory target.join('libraries')
+      empty_directory target.join('providers')
+      empty_directory target.join('recipes')
+      empty_directory target.join('resources')
 
-      template "default_recipe.erb", target.join("recipes/default.rb")
-      template "metadata.rb.erb", target.join("metadata.rb")
-      template license_file, target.join("LICENSE")
-      template "README.md.erb", target.join("README.md")
+      template 'default_recipe.erb', target.join('recipes/default.rb')
+      template 'metadata.rb.erb', target.join('metadata.rb')
+      template license_file, target.join('LICENSE')
+      template 'README.md.erb', target.join('README.md')
 
       Berkshelf::InitGenerator.new([target], options.merge(default_options)).invoke_all
     end
@@ -69,11 +69,11 @@ module Berkshelf
 
       def license_name
         case options[:license]
-        when "apachev2"; "Apache 2.0"
-        when "gplv2"; "GNU Public License 2.0"
-        when "gplv3"; "GNU Public License 3.0"
-        when "mit"; "MIT"
-        when "reserved"; "All rights reserved"
+        when 'apachev2'; 'Apache 2.0'
+        when 'gplv2'; 'GNU Public License 2.0'
+        when 'gplv3'; 'GNU Public License 3.0'
+        when 'mit'; 'MIT'
+        when 'reserved'; 'All rights reserved'
         else
           raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
         end
@@ -85,11 +85,11 @@ module Berkshelf
 
       def license_file
         case options[:license]
-        when "apachev2"; "licenses/apachev2.erb"
-        when "gplv2"; "licenses/gplv2.erb"
-        when "gplv3"; "licenses/gplv3.erb"
-        when "mit"; "licenses/mit.erb"
-        when "reserved"; "licenses/reserved.erb"
+        when 'apachev2'; 'licenses/apachev2.erb'
+        when 'gplv2'; 'licenses/gplv2.erb'
+        when 'gplv3'; 'licenses/gplv3.erb'
+        when 'mit'; 'licenses/mit.erb'
+        when 'reserved'; 'licenses/reserved.erb'
         else
           raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
         end

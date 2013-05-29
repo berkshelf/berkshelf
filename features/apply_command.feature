@@ -33,6 +33,6 @@ Feature: Applying cookbook versions to a Chef Environment
     When I run the apply command on "berkshelf_lock_test"
     Then the output should contain:
       """
-      The environment "berkshelf_lock_test" does not exist.
+      The environment 'berkshelf_lock_test' does not exist
       """
     And the CLI should exit with the status code for error "EnvironmentNotFound"

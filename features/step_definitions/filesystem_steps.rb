@@ -135,7 +135,7 @@ Then /^I should have a new cookbook skeleton "(.*?)" with Chef-Minitest support$
   cb_path = Pathname.new(current_dir).join(name)
   expect(cb_path).to have_structure {
     file "Berksfile" do
-      contains "cookbook \"minitest-handler\""
+      contains "cookbook 'minitest-handler'"
     end
     file "Vagrantfile" do
       contains "recipe[minitest-handler::default]"

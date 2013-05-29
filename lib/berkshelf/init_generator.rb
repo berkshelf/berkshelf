@@ -22,17 +22,17 @@ module Berkshelf
     class_option :skip_vagrant,
       type: :boolean,
       default: false,
-      desc: "Skips adding a Vagrantfile and adding supporting gems to the Gemfile"
+      desc: 'Skips adding a Vagrantfile and adding supporting gems to the Gemfile'
 
     class_option :skip_git,
       type: :boolean,
       default: false,
-      desc: "Skips adding a .gitignore and running git init in the cookbook directory"
+      desc: 'Skips adding a .gitignore and running git init in the cookbook directory'
 
     class_option :foodcritic,
       type: :boolean,
       default: false,
-      desc: "Creates a Thorfile with Foodcritic support to lint test your cookbook"
+      desc: 'Creates a Thorfile with Foodcritic support to lint test your cookbook'
 
     class_option :chef_minitest,
       type: :boolean,
@@ -41,12 +41,12 @@ module Berkshelf
     class_option :scmversion,
       type: :boolean,
       default: false,
-      desc: "Creates a Thorfile with SCMVersion support to manage versions for continuous integration"
+      desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
 
     class_option :no_bundler,
       type: :boolean,
       default: false,
-      desc: "Skips generation of a Gemfile and other Bundler specific support"
+      desc: 'Skips generation of a Gemfile and other Bundler specific support'
 
     class_option :cookbook_name,
       type: :string
@@ -54,44 +54,44 @@ module Berkshelf
     class_option :skip_test_kitchen,
       type: :boolean,
       default: false,
-      desc: "Skip adding a testing environment to your cookbook"
+      desc: 'Skip adding a testing environment to your cookbook'
 
     def generate
       validate_configuration
       check_option_support
 
-      template "Berksfile.erb", target.join("Berksfile")
+      template 'Berksfile.erb', target.join('Berksfile')
 
       if options[:chefignore]
-        copy_file "chefignore", target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
+        copy_file 'chefignore', target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
       end
 
       unless options[:skip_git]
-        template "gitignore.erb", target.join(".gitignore")
+        template 'gitignore.erb', target.join('.gitignore')
 
-        unless File.exists?(target.join(".git"))
+        unless File.exists?(target.join('.git'))
           inside target do
-            run "git init", capture: true
+            run 'git init', capture: true
           end
         end
       end
 
       if options[:foodcritic] || options[:scmversion]
-        template "Thorfile.erb", target.join("Thorfile")
+        template 'Thorfile.erb', target.join('Thorfile')
       end
 
       if options[:chef_minitest]
-        empty_directory target.join("files/default/tests/minitest/support")
-        template "default_test.rb.erb", target.join("files/default/tests/minitest/default_test.rb")
-        template "helpers.rb.erb", target.join("files/default/tests/minitest/support/helpers.rb")
+        empty_directory target.join('files/default/tests/minitest/support')
+        template 'default_test.rb.erb', target.join('files/default/tests/minitest/default_test.rb')
+        template 'helpers.rb.erb', target.join('files/default/tests/minitest/support/helpers.rb')
       end
 
       if options[:scmversion]
-        create_file target.join("VERSION"), "0.1.0"
+        create_file target.join('VERSION'), '0.1.0'
       end
 
       unless options[:no_bundler]
-        template "Gemfile.erb", target.join("Gemfile")
+        template 'Gemfile.erb', target.join('Gemfile')
       end
 
       unless options[:skip_test_kitchen]
@@ -99,8 +99,8 @@ module Berkshelf
       end
 
       unless options[:skip_vagrant]
-        template "Vagrantfile.erb", target.join("Vagrantfile")
-        ::Berkshelf::Cli.new([], berksfile: target.join("Berksfile")).invoke(:install)
+        template 'Vagrantfile.erb', target.join('Vagrantfile')
+        ::Berkshelf::Cli.new([], berksfile: target.join('Berksfile')).invoke(:install)
       end
     end
 
@@ -116,7 +116,7 @@ module Berkshelf
       #   name of the cookbook
       def cookbook_name
         @cookbook_name ||= begin
-          metadata = Ridley::Chef::Cookbook::Metadata.from_file(target.join("metadata.rb").to_s)
+          metadata = Ridley::Chef::Cookbook::Metadata.from_file(target.join('metadata.rb').to_s)
           metadata.name.empty? ? File.basename(target) : metadata.name
         rescue CookbookNotFound, IOError
           File.basename(target)
