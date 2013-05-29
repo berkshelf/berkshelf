@@ -1,7 +1,7 @@
 site :opscode
 <% if options[:chef_minitest] -%>
 group :integration do
-  cookbook "minitest-handler"
+  cookbook 'minitest-handler'
 end
 <% end -%>
 <% if options[:metadata_entry] -%>

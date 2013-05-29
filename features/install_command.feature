@@ -158,7 +158,7 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      'somethingabsurd' is not a supported Git protocol for the 'github' location key. Please use 'git' instead.
+      'somethingabsurd' is not supported for the 'github' location key - please use 'git' instead
       """
     And the exit status should be 110
 
@@ -220,7 +220,7 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      '/something/on/disk' is not a valid Git URI.
+      '/something/on/disk' is not a valid Git URI
       """
     And the CLI should exit with the status code for error "InvalidGitURI"
 
@@ -251,7 +251,7 @@ Feature: install cookbooks from a Berksfile
       does not satisfy the version constraint:
         berkshelf-cookbook-fixture \(= 1.0.0\)
 
-      This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`\.
+      This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`
       """
     And the CLI should exit with the status code for error "CookbookValidationFailure"
 
@@ -320,9 +320,10 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      Failed to download 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf' with branch: 'master'
-      An error occured during Git execution:
+      An error occurred during Git execution:
+
+        fatal: remote error:
+        Repository not found.
       """
       And the CLI should exit with the status code for error "GitError"
 
@@ -335,5 +336,5 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      Unknown site shortname: :somethingabsurd. Supported shortnames are: :opscode
+      Unknown site shortname 'somethingabsurd' - supported shortnames are:
       """

@@ -30,7 +30,7 @@ module Berkshelf::Chef::Cookbook
       end
     end
 
-    FILENAME                = "chefignore".freeze
+    FILENAME                = 'chefignore'.freeze
     COMMENTS_AND_WHITESPACE = /^\s*(?:#.*)?$/
 
     attr_reader :ignores
