@@ -20,7 +20,7 @@ module Berkshelf
       end
     end
 
-    method_option :version, :aliases => '-v', :type => :string, :desc => 'Version to show'
+    method_option :version, aliases: '-v', type: :string, desc: 'Version to show'
     desc 'show', 'Display information about a cookbook in the Berkshelf shelf'
     def show(name)
       cookbooks = find(name, options[:version])
@@ -31,8 +31,8 @@ module Berkshelf
       end
     end
 
-    method_option :version, :aliases => '-v', :type => :string,  :desc => 'Version to remove'
-    method_option :force,   :aliases => '-f', :type => :boolean, :desc => 'Force removal, even if other cookbooks are contingent', :default => false
+    method_option :version, aliases: '-v', type: :string,  desc: 'Version to remove'
+    method_option :force,   aliases: '-f', type: :boolean, desc: 'Force removal, even if other cookbooks are contingent', default: false
     desc 'uninstall', 'Remove a cookbook from the Berkshelf shelf'
     def uninstall(name)
       cookbooks = find(name, options[:version])
