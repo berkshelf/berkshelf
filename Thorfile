@@ -41,6 +41,7 @@ class Spec < Thor
     end
   end
 
+  desc 'unit', 'Run unit tests'
   def unit
     exit(units_command)
   end
