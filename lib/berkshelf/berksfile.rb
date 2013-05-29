@@ -533,69 +533,6 @@ module Berkshelf
       conn.terminate if conn && conn.alive?
     end
 
-    # Package the given cookbook for distribution outside of berkshelf. If the
-    # name attribute is not given, all cookbooks in the Berksfile will be
-    # packaged.
-    #
-    # @param [String] name
-    #   the name of the cookbook to package
-    # @param [Hash] options
-    #   a list of options
-    #
-    # @option options [String] :output
-    #   the path to output the tarball
-    # @option options [Boolean] :skip_dependencies
-    #   package cookbook dependencies as well
-    # @option options [Boolean] :ignore_chefignore
-    #   do not apply the chefignore file to the packed cookbooks
-    #
-    # @return [String]
-    #   the path to the package
-    def package(name = nil, options = {})
-      tar_name = "#{name || 'package'}.tar.gz"
-      output = File.expand_path(File.join(options[:output], tar_name))
-
-      unless name.nil?
-        source = self.find(name)
-        raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile" unless source
-
-        package = Berkshelf.ui.mute {
-          self.resolve(source, options)[:solution]
-        }
-      else
-        package = Berkshelf.ui.mute {
-          self.resolve(sources, options)[:solution]
-        }
-      end
-
-      Dir.mktmpdir do |tmp|
-        package.each do |cached_cookbook|
-          path = cached_cookbook.path.to_s
-          destination = File.join(tmp, cached_cookbook.cookbook_name)
-
-          FileUtils.cp_r(path, destination)
-
-          unless options[:ignore_chefignore]
-            if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(path)
-              chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
-              chefignore.remove_ignores_from(destination) if chefignore
-            end
-          end
-        end
-
-        FileUtils.mkdir_p(options[:output])
-
-        Dir.chdir(tmp) do |dir|
-          tgz = Zlib::GzipWriter.new(File.open(output, 'wb'))
-          Archive::Tar::Minitar.pack('.', tgz)
-        end
-      end
-
-      Berkshelf.formatter.package(name, output)
-
-      output
-    end
-
     # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
     #
     # @option options [Symbol, Array] :except
