@@ -51,8 +51,8 @@ Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, fil
 end
 
 Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
-  cookbooks.raw.each do |name, version|
-    generate_cookbook(cookbook_store, name, version)
+  cookbooks.raw.each do |name, version, license|
+    generate_cookbook(cookbook_store, name, version, license: license)
   end
 end
 

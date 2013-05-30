@@ -69,10 +69,13 @@ module Berkshelf
           FileUtils.touch(cookbook_path.join(file))
         end
 
-        metadata = <<-EOF
-name "#{name}"
-version "#{version}"
-EOF
+        metadata = [].tap do |a|
+          a << "name     '#{name}'"
+          a << "version  '#{version}'"
+          a << "license  '#{options[:license]}'" if options[:license]
+          a << "" # ensure newline
+        end.join("\n")
+
 
         if options[:dependencies]
           options[:dependencies].each do |name, constraint|

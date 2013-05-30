@@ -432,6 +432,8 @@ module Berkshelf
       @cached_cookbooks = resolver[:solution]
       local_sources     = resolver[:sources]
 
+      verify_licenses!
+
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
 
       lockfile.update(local_sources, sha: self.sha)
@@ -809,6 +811,34 @@ module Berkshelf
         end
 
         raise Berkshelf::InvalidCookbookFiles.new(cookbook, files) unless files.empty?
+      end
+
+      # Verify that the licenses of all the cached cookbooks fall in the realm of
+      # allowed licenses from the Berkshelf Config.
+      #
+      # @raise [Berkshelf::LicenseNotAllowed]
+      #   if the license is not permitted and `raise_license_exception` is true
+      def verify_licenses!
+        licenses = Array(Berkshelf::Config.instance.allowed_licenses)
+        return if licenses.empty?
+
+        sources.each do |source|
+          next if source.location.is_a?(Berkshelf::PathLocation)
+          cached = source.cached_cookbook
+
+          begin
+            unless licenses.include?(cached.metadata.license)
+              raise Berkshelf::LicenseNotAllowed.new(cached)
+            end
+          rescue Berkshelf::LicenseNotAllowed => e
+            if Berkshelf::Config.instance.raise_license_exception
+              FileUtils.rm_rf(cached.path)
+              raise
+            end
+
+            Berkshelf.ui.warn(e.to_s)
+          end
+        end
       end
   end
 end
