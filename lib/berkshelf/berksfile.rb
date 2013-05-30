@@ -632,6 +632,10 @@ module Berkshelf
         }
       end
 
+      package.each do |cookbook|
+        validate_files!(cookbook)
+      end
+
       Dir.mktmpdir do |tmp|
         package.each do |cached_cookbook|
           path = cached_cookbook.path.to_s
