@@ -4,8 +4,8 @@ module Berkshelf
   module Chef
     # @author Seth Vargo <sethvargo@gmail.com>
     class Config
+      require 'berkshelf/mixin/config'
       include Berkshelf::Mixin::Config
-      extend Berkshelf::Mixin::PathHelpers
 
       class << self
         private
