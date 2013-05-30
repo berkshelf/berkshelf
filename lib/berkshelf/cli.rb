@@ -30,7 +30,7 @@ module Berkshelf
 
       if @options[:config]
         unless File.exist?(@options[:config])
-          raise BerksConfigNotFound, "You specified a path to a configuration file that did not exist: '#{@options[:config]}'"
+          raise ConfigNotFound.new(:berkshelf, @options[:config])
         end
         Berkshelf::Config.path = @options[:config]
       end

@@ -307,9 +307,9 @@ Feature: install cookbooks from a Berksfile
       | -c /tmp/notthere.lol |
     Then the output should contain:
       """
-      You specified a path to a configuration file that did not exist: '/tmp/notthere.lol'
+      No Berkshelf config file found at: '/tmp/notthere.lol'!
       """
-    And the CLI should exit with the status code for error "BerksConfigNotFound"
+    And the CLI should exit with the status code for error "ConfigNotFound"
 
   Scenario: with a git error during download
     Given I write to "Berksfile" with:

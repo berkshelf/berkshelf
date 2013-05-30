@@ -52,6 +52,19 @@ module Berkshelf
       ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
 
+    # The Chef configuration file.
+    #
+    # @return [Berkshelf::Chef::Config]
+    def chef_config
+      @chef_config ||= Berkshelf::Chef::Config.load
+    end
+
+    # Set the Chef configuration file.
+    #
+    # @param [Berkshelf::Chef::Config] new_config
+    #   the new configuration file to use
+    attr_writer :chef_config
+
     # @return [Logger]
     def logger
       Celluloid.logger
