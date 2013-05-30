@@ -15,7 +15,6 @@ require 'uri'
 require 'zlib'
 
 require 'berkshelf/core_ext'
-require 'berkshelf/mixin'
 require 'berkshelf/errors'
 require 'thor/monkies'
 
@@ -25,6 +24,7 @@ module Berkshelf
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
+    require 'berkshelf/mixin/logging'
     include Berkshelf::Mixin::Logging
 
     attr_accessor :ui
