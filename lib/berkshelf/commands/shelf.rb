@@ -25,7 +25,12 @@ module Berkshelf
     def show(name)
       cookbooks = find(name, options[:version])
 
-      Berkshelf.formatter.msg "Displaying all versions of '#{name}' in the Berkshelf shelf:"
+      if options[:version]
+        Berkshelf.formatter.msg "Displaying '#{name}' (#{options[:version]}) in the Berkshelf shelf:"
+      else
+        Berkshelf.formatter.msg "Displaying all versions of '#{name}' in the Berkshelf shelf:"
+      end
+
       cookbooks.each do |cookbook|
         Berkshelf.formatter.msg(cookbook.pretty_print + "\n\n")
       end
@@ -64,13 +69,17 @@ module Berkshelf
       #   array!
       def find(name, version = nil)
         cookbooks = if version
-          [store.cookbook(name, version)]
+          [store.cookbook(name, version)].compact
         else
           store.cookbooks(name).sort
         end
 
         if cookbooks.empty?
-          raise Berkshelf::CookbookNotFound, "Cookbook '#{name}' is not in the Berkshelf shelf"
+          if version
+            raise Berkshelf::CookbookNotFound, "Cookbook '#{name}' (#{version}) is not in the Berkshelf shelf"
+          else
+            raise Berkshelf::CookbookNotFound, "Cookbook '#{name}' is not in the Berkshelf shelf"
+          end
         end
 
         cookbooks
