@@ -37,6 +37,23 @@ module Berkshelf
       end.join("\n")
     end
 
+    def pretty_json
+      pretty_hash.to_json
+    end
+
+    def pretty_hash
+      {}.tap do |h|
+        h[:name]          = cookbook_name unless name.blank?
+        h[:version]       = version unless version.blank?
+        h[:description]   = metadata.description unless metadata.description.blank?
+        h[:author]        = metadata.maintainer unless metadata.maintainer.blank?
+        h[:email]         = metadata.maintainer_email unless metadata.maintainer_email.blank?
+        h[:license]       = metadata.license unless metadata.license.blank?
+        h[:platforms]     = metadata.platforms.to_hash unless metadata.platforms.blank?
+        h[:dependencies]  = dependencies.to_hash unless dependencies.blank?
+      end
+    end
+
     private
       def pretty_map(hash, padding)
         hash.map { |k,v| "#{k} (#{v})" }.join("\n" + ' '*padding)
