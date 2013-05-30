@@ -1,9 +1,4 @@
 require 'socket'
-<<<<<<< HEAD
-require 'tmpdir'
-require 'mixlib/config'
-=======
->>>>>>> Remove mixlib-config as a dependency
 
 module Berkshelf
   module Chef
