@@ -92,6 +92,12 @@ module Berkshelf
     attribute 'cookbook.license',
       type: String,
       default: Berkshelf.chef_config[:cookbook_license]
+    attribute 'allowed_licenses',
+      type: Array,
+      default: Array.new
+    attribute 'raise_license_exception',
+      type: Boolean,
+      default: false
     attribute 'vagrant.vm.box',
       type: String,
       default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
