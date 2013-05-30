@@ -1,6 +1,5 @@
 require 'socket'
 require 'tmpdir'
-require 'berkshelf/mixin'
 require 'mixlib/config'
 
 module Berkshelf::Chef
@@ -64,6 +63,7 @@ module Berkshelf::Chef
         end
     end
 
+    require 'berkshelf/mixin/path_helpers'
     extend Berkshelf::Mixin::PathHelpers
     extend Mixlib::Config
 

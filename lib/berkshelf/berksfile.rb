@@ -1,10 +1,10 @@
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
-    require_relative 'mixin/logging'
+    require 'berkshelf/mixin/logging'
+    include Berkshelf::Mixin::Logging
 
     extend Forwardable
-    include Berkshelf::Mixin::Logging
 
     class << self
       # @param [String] file
