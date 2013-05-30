@@ -4,8 +4,7 @@ module Berkshelf
   module Mixin
     module Config
       def self.included(base)
-        base.send(:include, InstanceMethods)
-        base.send(:extend,  ClassMethods)
+        base.send(:extend, ClassMethods)
       end
 
       module ClassMethods
