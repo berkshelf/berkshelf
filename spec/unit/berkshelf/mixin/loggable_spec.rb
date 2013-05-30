@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe Berkshelf::Mixin::Logging do
+describe Berkshelf::Loggable do
   subject do
-    Class.new { include Berkshelf::Mixin::Logging }.new
+    Class.new { include Berkshelf::Loggable }.new
   end
 
   describe '#log' do
-    it 'returns the Berkshelf::Logger' do
-      expect(subject.log).to eq(Berkshelf::Logger)
+    it 'returns the Celluloid::Logger' do
+      expect(subject.log).to eq(Celluloid::Logger)
     end
   end
 

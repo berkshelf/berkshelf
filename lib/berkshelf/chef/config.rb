@@ -1,6 +1,5 @@
 require 'socket'
 require 'tmpdir'
-require 'berkshelf/util'
 require 'mixlib/config'
 
 module Berkshelf::Chef
@@ -8,6 +7,9 @@ module Berkshelf::Chef
   #
   # Inspired by and a dependency-free replacement for {https://raw.github.com/opscode/chef/11.4.0/lib/chef/config.rb}
   class Config
+    require 'berkshelf/mixin/convertable'
+    include Berkshelf::Convertable
+
     class << self
       # Load and return a Chef::Config for Berkshelf. The location of the configuration to be loaded
       # can be configured by setting a value for {Berkshelf::Chef::Config.path=}
@@ -68,8 +70,8 @@ module Berkshelf::Chef
 
     node_name               Socket.gethostname
     chef_server_url         'http://localhost:4000'
-    client_key              Berkshelf::Util.platform_specific_path('/etc/chef/client.pem')
-    validation_key          Berkshelf::Util.platform_specific_path('/etc/chef/validation.pem')
+    client_key              platform_specific_path('/etc/chef/client.pem')
+    validation_key          platform_specific_path('/etc/chef/validation.pem')
     validation_client_name  'chef-validator'
 
     cookbook_copyright      'YOUR_NAME'

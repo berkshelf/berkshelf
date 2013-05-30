@@ -15,7 +15,6 @@ require 'uri'
 require 'zlib'
 
 require 'berkshelf/core_ext'
-require 'berkshelf/mixin'
 require 'berkshelf/errors'
 require 'thor/monkies'
 
@@ -25,7 +24,8 @@ module Berkshelf
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
-    include Berkshelf::Mixin::Logging
+    require 'berkshelf/mixin/loggable'
+    include Berkshelf::Loggable
 
     attr_accessor :ui
     attr_writer :cookbook_store
@@ -148,5 +148,4 @@ require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
 require_relative 'berkshelf/ui'
-require_relative 'berkshelf/util'
 require_relative 'berkshelf/version'
