@@ -129,21 +129,6 @@ module Berkshelf
       Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
 
-    desc 'open NAME', 'Open the source directory of the cookbook'
-    def open(name)
-      editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
-      raise ArgumentError, 'To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR' unless editor
-
-      cookbook = Berkshelf.cookbook_store.cookbooks(name).last
-      raise CookbookNotFound, "Cookbook '#{name}' not found in any of the sources!" unless cookbook
-
-      Dir.chdir(cookbook.path) do
-        command = "#{editor} #{cookbook.path}"
-        success = system(command)
-        raise CommandUnsuccessful, "Could not run `#{command}`" unless success
-      end
-    end
-
     method_option :except,
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
@@ -338,28 +323,11 @@ module Berkshelf
     method_option :berksfile,
       type: :string,
       default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    desc 'show COOKBOOK', 'Display the source path on the local file system for the given cookbook'
-    def show(name)
-      berksfile = Berksfile.from_file(options[:berksfile])
-      source = berksfile.find(name)
-
-      cookbook = Berkshelf.ui.mute { berksfile.resolve(source)[:solution].first }
-
-      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
-      Berkshelf.formatter.msg(cookbook.path)
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
-    def info(name)
+    desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
+    def show(name)
       berksfile = Berksfile.from_file(options[:berksfile])
 
       cookbook = Berkshelf.ui.mute {
@@ -368,7 +336,7 @@ module Berkshelf
 
       raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile" unless cookbook
 
-      Berkshelf.formatter.info(cookbook)
+      Berkshelf.formatter.show(cookbook)
     end
 
     method_option :berksfile,
