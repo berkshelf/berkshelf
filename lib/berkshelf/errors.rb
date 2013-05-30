@@ -83,7 +83,6 @@ module Berkshelf
   class DuplicateSourceDefined < BerkshelfError; status_code(105); end
   class NoSolution < BerkshelfError; status_code(106); end
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
-  class BerksConfigNotFound < BerkshelfError; status_code(109); end
 
   class InvalidGitURI < BerkshelfError
     status_code(110)
@@ -298,8 +297,6 @@ module Berkshelf
     end
   end
 
-  # @author Seth Vargo <sethvargo@gmail.com>
-  #
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   #
@@ -323,6 +320,25 @@ module Berkshelf
         "",
         "Please note, spaces are not a valid character in filenames",
       ].join("\n")
+    end
+  end
+
+  # Raised when a cookbook or its recipes contain a space or invalid
+  # character in the path.
+  class ConfigNotFound < BerkshelfError
+    status_code(133)
+
+    # @param [String] type
+    #   the type of config that was not found (Berkshelf, Chef, etc)
+    # @param [#to_s] path
+    #   the path to the specified Chef config that did not exist
+    def initialize(type, path)
+      @type = type.to_s
+      @path = path
+    end
+
+    def to_s
+      "No #{@type.capitalize} config file found at: '#{@path}'!"
     end
   end
 end
