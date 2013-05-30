@@ -67,7 +67,7 @@ Feature: Installing cookbooks with specific licenses
       """
     And the exit status should be 0
 
-  Scenario: With a license! that is not listed
+  Scenario: With a license that is not listed
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 | mit |
     And I write to "Berksfile" with:
