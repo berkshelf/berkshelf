@@ -63,7 +63,7 @@ module Berkshelf
     #
     # @param [Berkshelf::Chef::Config] new_config
     #   the new configuration file to use
-    attr_writer :chef_configs
+    attr_writer :chef_config
 
     # @return [Logger]
     def logger
