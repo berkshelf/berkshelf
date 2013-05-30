@@ -1,9 +1,11 @@
 require 'uri'
-require 'mixlib/shellout'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class Git
+    require 'berkshelf/mixin/shellable'
+    extend Berkshelf::Shellable
+
     GIT_REGEXP = URI.regexp(%w(http https ssh git+ssh git rsync))
     SCP_REGEXP = /^(.+@)?[\w\d\.-]+:.*$/
 
@@ -21,14 +23,13 @@ module Berkshelf
       def git(*command)
         command.unshift(git_cmd)
         command_str = command.map { |p| quote_cmd_arg(p) }.join(' ')
-        cmd = Mixlib::ShellOut.new(command_str)
-        cmd.run_command
+        result = shell_out(command_str)
 
-        unless cmd.exitstatus == 0
-          raise GitError.new(cmd.stderr)
+        unless result.success?
+          raise GitError.new(result.stderr)
         end
 
-        cmd.stdout.chomp
+        result.stdout
       end
 
       # Clone a remote Git repository to disk

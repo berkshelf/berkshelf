@@ -36,8 +36,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'hashie',            '>= 2.0.2'
   s.add_dependency 'minitar',           '~> 0.5.4'
   s.add_dependency 'mixlib-config',     '~> 1.1'
-  s.add_dependency 'mixlib-shellout',   '~> 1.1'
-  s.add_dependency 'retryable',         '~> 1.3.3'
   s.add_dependency 'ridley',            '~> 0.12.4'
   s.add_dependency 'solve',             '>= 0.4.4'
   s.add_dependency 'test-kitchen',      '>= 1.0.0.alpha6'

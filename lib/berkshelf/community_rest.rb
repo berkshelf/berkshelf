@@ -1,10 +1,12 @@
 require 'open-uri'
-require 'retryable'
 require 'addressable/uri'
 
 module Berkshelf
   # @author Jamie Winsor <reset@riotgames.com>
   class CommunityREST < Faraday::Connection
+    require 'berkshelf/mixin/retryable'
+    include Berkshelf::Retryable
+
     class << self
       # @param [String] target
       #   file path to the tar.gz archive on disk

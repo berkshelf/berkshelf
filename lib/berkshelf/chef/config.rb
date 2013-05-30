@@ -1,6 +1,5 @@
 require 'socket'
 require 'tmpdir'
-require 'berkshelf/mixin'
 require 'mixlib/config'
 
 module Berkshelf::Chef
@@ -8,6 +7,9 @@ module Berkshelf::Chef
   #
   # Inspired by and a dependency-free replacement for {https://raw.github.com/opscode/chef/11.4.0/lib/chef/config.rb}
   class Config
+    require 'berkshelf/mixin/convertable'
+    include Berkshelf::Convertable
+
     class << self
       # Load and return a Chef::Config for Berkshelf. The location of the configuration to be loaded
       # can be configured by setting a value for {Berkshelf::Chef::Config.path=}
@@ -64,7 +66,6 @@ module Berkshelf::Chef
         end
     end
 
-    extend Berkshelf::Mixin::PathHelpers
     extend Mixlib::Config
 
     node_name               Socket.gethostname

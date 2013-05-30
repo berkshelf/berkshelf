@@ -1,6 +1,5 @@
-module Berkshelf::Mixin
-  # @author Jamie Winsor <reset@riotgames.com>
-  module PathHelpers
+module Berkshelf
+  module Convertable
     # Converts a path to a path usable for your current platform
     #
     # @param [String] path
