@@ -93,7 +93,7 @@ Feature: install cookbooks from a Berksfile
       | artifact | 1.6.0 | master |
     And the output should contain:
       """
-      Installing artifact (1.5.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
+      Installing artifact (1.6.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
       """
     And the exit status should be 0
 
