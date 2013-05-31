@@ -22,7 +22,9 @@ module Berkshelf
       @name               = name
       @version_constraint = version_constraint
 
-      api_uri = if options[:site].nil? || SHORTNAMES.has_key?(options[:site])
+      api_uri = if options[:site].nil?
+        SHORTNAMES[:opscode]
+      elsif SHORTNAMES.has_key?(options[:site])
         SHORTNAMES[options[:site]]
       elsif options[:site].kind_of?(Symbol)
         raise InvalidSiteShortnameError.new(options[:site])
