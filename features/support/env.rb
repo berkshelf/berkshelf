@@ -45,15 +45,6 @@ Spork.prefork do
 
   # Chef Zero
   require 'chef_zero/server'
-  @server = ChefZero::Server.new(port: 4000)
-  @server.start_background
-
-  at_exit do
-    @server.stop if @server && @server.running?
-  end
-
-  # Chef Zero
-  require 'chef_zero/server'
   @server = ChefZero::Server.new(port: 4000, generate_real_keys: false)
   @server.start_background
 
