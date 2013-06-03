@@ -79,7 +79,7 @@ module Berkshelf
       # @raise [AmbiguousGitRef] if the ref could refer to more than one revision
       def show_ref(repo_path, ref)
         Dir.chdir repo_path do
-          lines = git('show-ref', "'#{ref}'").lines.to_a
+          lines = git('show-ref', ref).lines.to_a
 
           raise AmbiguousGitRef, ref if lines.size > 1
 
