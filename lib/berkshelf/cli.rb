@@ -433,6 +433,54 @@ module Berkshelf
     end
     tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
 
+    method_option :foodcritic,
+      type: :boolean,
+      desc: 'Creates a Thorfile with Foodcritic support to lint test your cookbook'
+    method_option :chef_minitest,
+      type: :boolean,
+      desc: 'Creates chef-minitest support files and directories, adds minitest-handler cookbook to run_list of Vagrantfile'
+    method_option :scmversion,
+      type: :boolean,
+      desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
+    method_option :license,
+      type: :string,
+      desc: 'License for cookbook (apachev2, gplv2, gplv3, mit, reserved)',
+      aliases: '-L'
+    method_option :maintainer,
+      type: :string,
+      desc: 'Name of cookbook maintainer',
+      aliases: '-m'
+    method_option :maintainer_email,
+      type: :string,
+      desc: 'Email address of cookbook maintainer',
+      aliases: '-e'
+    method_option :no_bundler,
+      type: :boolean,
+      desc: 'Skips generation of a Gemfile and other Bundler specific support'
+    method_option :vagrant,
+      type: :boolean,
+      hide: true
+    method_option :skip_vagrant,
+      type: :boolean,
+      desc: 'Skips adding a Vagrantfile and adding supporting gems to the Gemfile'
+    method_option :git,
+      type: :boolean,
+      hide: true
+    method_option :skip_git,
+      type: :boolean,
+      desc: 'Skips adding a .gitignore and running git init in the cookbook directory'
+    method_option :namespace,
+      type: :string,
+      desc: 'Adds a namespace to prevent cookbook name collisions'
+    desc 'wrap NAME', 'Wrap an existing cookbook with a new cookbok'
+    def wrap(name)
+      unless Config.instance.valid?
+        raise InvalidConfiguration.new(Config.instance.errors)
+      end
+
+      ::Berkshelf::WrapGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
+    end
+
     private
 
       def version_header
