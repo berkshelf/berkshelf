@@ -305,6 +305,21 @@ Feature: install cookbooks from a Berksfile
       | cuke-test | 1.0.0 |
     And the exit status should be 0
 
+  @focus
+  Scenario: when the :site is not defined
+    Given I write to "Berksfile" with:
+      """
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0', site: nil
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Installing berkshelf-cookbook-fixture (1.0.0) from site:
+      """
+    And the cookbook store should have the cookbooks:
+      | berkshelf-cookbook-fixture | 1.0.0 |
+    And the exit status should be 0
+
   Scenario: with a chef_api source location specifying :config when a Berkshelf config is not found at the given path
     Given I write to "Berksfile" with:
       """
