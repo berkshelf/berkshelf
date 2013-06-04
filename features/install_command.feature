@@ -298,7 +298,6 @@ Feature: install cookbooks from a Berksfile
       | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
-  @focus
   Scenario: when the :site is not defined
     Given I write to "Berksfile" with:
       """
