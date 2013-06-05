@@ -6,6 +6,6 @@ module Berkshelf
   end
 
   class Cli < Thor
-    register(Berkshelf::TestCommand, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook')
+    register(Berkshelf::TestCommand, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook', hide: true)
   end
 end
