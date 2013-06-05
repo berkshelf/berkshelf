@@ -146,6 +146,22 @@ module Berkshelf
         configuration.map { |k,v| "#{k}(#{v.inspect})" }.join("\n")
       end
 
+      # The string representation of the Config.
+      #
+      # @return [String]
+      def to_s
+        "#<#{self.class} #{path || '(new)'}>"
+      end
+
+      # The detailed string representation of the Config.
+      #
+      # @return [String]
+      def inspect
+        "#<#{self.class} #{path || '(new)'} " +
+          "configuration: #{configuration.inspect}" +
+        ">"
+      end
+
       private
         def configuration
           @configuration ||= self.class.default_options.dup

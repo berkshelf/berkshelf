@@ -86,6 +86,23 @@ module Berkshelf
       [cached_cookbook, location]
     end
 
+    # The string representation of the Downloader.
+    #
+    # @return [String]
+    def to_s
+      '#<Berkshelf::Downloader>'
+    end
+
+    # The detailed string representation of the Downloader.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::Downloader " +
+        "cookbook_store: #{cookbook_store.storage_path}, " +
+        "locations: [#{locations.map { |h| h[:value] }.join(', ')}]" +
+      ">"
+    end
+
     private
 
       # Searches locations for a CookbookSource. If the source does not contain a

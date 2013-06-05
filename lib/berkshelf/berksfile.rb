@@ -709,6 +709,23 @@ module Berkshelf
       @lockfile ||= Berkshelf::Lockfile.new(self)
     end
 
+    # The string representation of the Berksfile.
+    #
+    # @return [String]
+    def to_s
+      "#<Berkshelf::Berksfile #{filepath}>"
+    end
+
+    # The detailed string representation of the Berksfile.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::Berksfile #{filepath}, " +
+        "sources: [#{sources.map(&:name_and_version).join(', ')}], " +
+        "cached_cookbooks: [#{(cached_cookbooks || []).map(&:name_and_version).join(', ')}]" +
+      ">"
+    end
+
     private
 
       def ridley_connection(options = {})
