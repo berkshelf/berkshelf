@@ -79,6 +79,7 @@ Authors
 - Josiah Kiehl (<jkiehl@riotgames.com>)
 - Michael Ivey (<michael.ivey@riotgames.com>)
 - Justin Campbell (<justin.campbell@riotgames.com>)
+- Seth Vargo (<sethvargo@gmail.com>)
 
 Thank you to all of our [Contributors](https://github.com/RiotGames/berkshelf/graphs/contributors), testers, and users.
 
