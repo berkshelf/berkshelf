@@ -86,6 +86,22 @@ module Berkshelf
       nil
     end
 
+    # The string representation of the CookbookStore.
+    #
+    # @return [String]
+    def to_s
+      "#<#{self.class} #{storage_path}>"
+    end
+
+    # The detailed string representation of the CookbookStore.
+    #
+    # @return [String]
+    def inspect
+      "#<#{self.class} #{storage_path}, " +
+        "cookbooks: [#{cookbooks.map(&:name_and_version).join(', ')}]" +
+      ">"
+    end
+
     private
 
       def initialize_filesystem

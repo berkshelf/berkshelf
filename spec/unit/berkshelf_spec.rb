@@ -35,4 +35,23 @@ describe Berkshelf do
       expect(Berkshelf.log).to eq(Berkshelf::Logger)
     end
   end
+
+  describe '#to_s' do
+    before { Berkshelf.stub(:berkshelf_path).and_return('/foo/bar') }
+
+    it 'includes the berkshelf path' do
+      expect(Berkshelf.to_s).to eq("#<Berkshelf #{subject.berkshelf_path}>")
+    end
+  end
+
+  describe '#inspect' do
+    before do
+      Berkshelf.stub(:berkshelf_path).and_return('/foo/bar')
+      Berkshelf.stub(:cookbooks_dir).and_return('/zip/zap/cookbooks')
+    end
+
+    it 'includes the cookbooks directory' do
+      expect(Berkshelf.inspect).to eq("#<Berkshelf #{subject.berkshelf_path}, cookbooks_dir: #{subject.cookbooks_dir}>")
+    end
+  end
 end

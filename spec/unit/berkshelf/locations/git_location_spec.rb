@@ -141,4 +141,22 @@ describe Berkshelf::GitLocation do
       end
     end
   end
+
+  describe '#to_s' do
+    before { subject.stub(:uri).and_return('git://github.com/RiotGames/artifact.git') }
+
+    it 'includes the git uri' do
+      expect(subject.to_s).to eq("#<#{described_class} #{subject.uri}>")
+    end
+  end
+
+  describe '#inspect' do
+    before do
+      subject.stub(:uri).and_return('git://github.com/RiotGames/artifact.git')
+    end
+
+    it 'includes the git location' do
+      expect(subject.inspect).to eq("#<#{described_class} #{subject.uri}, name: berkshelf-cookbook-fixture, branch: master>")
+    end
+  end
 end

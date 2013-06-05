@@ -96,8 +96,24 @@ module Berkshelf
       raise CookbookNotFound, "Cookbook '#{dependency.name}' not found in any of the default locations"
     end
 
-    private
+    # The string representation of the Downloader.
+    #
+    # @return [String]
+    def to_s
+      "#<#{self.class}>"
+    end
 
+    # The detailed string representation of the Downloader.
+    #
+    # @return [String]
+    def inspect
+      "#<#{self.class} " +
+        "cookbook_store: #{cookbook_store.storage_path}, " +
+        "locations: [#{locations.map { |h| h[:value] }.join(', ')}]" +
+      ">"
+    end
+
+    private
       # Attempt to download the dependency from the given location. If the dependency does
       # not explicity specify a location to retrieve it from, the downloader will attempt to
       # retrieve the dependency from each of the default locations until it is found.
