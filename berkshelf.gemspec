@@ -6,13 +6,15 @@ Gem::Specification.new do |s|
     'Jamie Winsor',
     'Josiah Kiehl',
     'Michael Ivey',
-    'Justin Campbell'
+    'Justin Campbell',
+    'Seth Vargo'
   ]
   s.email                 = [
     'reset@riotgames.com',
     'jkiehl@riotgames.com',
     'michael.ivey@riotgames.com',
-    'justin.campbell@riotgames.com'
+    'justin.campbell@riotgames.com',
+    'sethvargo@gmail.com'
   ]
 
   s.description               = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
