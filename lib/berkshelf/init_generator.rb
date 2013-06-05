@@ -59,6 +59,7 @@ module Berkshelf
       check_option_support
 
       template 'Berksfile.erb', target.join('Berksfile')
+      template 'Thorfile.erb', target.join('Thorfile')
 
       if options[:chefignore]
         copy_file 'chefignore', target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
@@ -72,10 +73,6 @@ module Berkshelf
             run 'git init', capture: true
           end
         end
-      end
-
-      if options[:foodcritic] || options[:scmversion]
-        template 'Thorfile.erb', target.join('Thorfile')
       end
 
       if options[:chef_minitest]
@@ -93,7 +90,7 @@ module Berkshelf
       end
 
       unless options[:skip_test_kitchen]
-        Kitchen::Generator::Init.new([], options).invoke_all
+        Kitchen::Generator::Init.new([], options, destination_root: target).invoke_all
       end
 
       unless options[:skip_vagrant]
