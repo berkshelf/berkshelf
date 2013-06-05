@@ -1,7 +1,6 @@
 require 'uri'
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class Git
     require 'berkshelf/mixin/shellout'
     extend Berkshelf::Mixin::Shellout

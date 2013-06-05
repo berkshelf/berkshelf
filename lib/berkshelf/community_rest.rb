@@ -3,7 +3,6 @@ require 'retryable'
 require 'addressable/uri'
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class CommunityREST < Faraday::Connection
     class << self
       # @param [String] target

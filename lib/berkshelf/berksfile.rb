@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class Berksfile
     require 'berkshelf/mixin/logging'
     include Berkshelf::Mixin::Logging

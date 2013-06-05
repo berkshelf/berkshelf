@@ -1,7 +1,6 @@
 require 'hashie'
 
 module Berkshelf
-  # @author Seth Vargo <sethvargo@gmail.com>
   module Mixin
     module Shellout
       # Perform a cross-platform shell command, returning the process result.

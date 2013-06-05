@@ -1,8 +1,6 @@
 require 'chozo/config'
 
 module Berkshelf
-  # @author Justin Campbell <justin.campbell@riotgames.com>
-  # @author Jamie Winsor <reset@riotgames.com>
   class Config < Chozo::Config::JSON
     LOCATIONS = [
       File.join('.', '.berkshelf', 'config.json').freeze,
