@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class CookbookSource
     class << self
       @@valid_options = [:constraint, :locations, :group, :locked_version]

@@ -2,8 +2,6 @@ module Berkshelf
   # The object representation of the Berkshelf lockfile. The lockfile is useful
   # when working in teams where the same cookbook versions are desired across
   # multiple workstations.
-  #
-  # @author Seth Vargo <sethvargo@gmail.com>
   class Lockfile
     require_relative 'cookbook_source'
 
@@ -196,8 +194,7 @@ module Berkshelf
 
       # Legacy support for old lockfiles
       #
-      # @author Seth Vargo <sethvargo@gmail.com>
-      # @todo Remove this class in the next major release.
+      # @todo Remove this class in Berkshelf 3.0.0
       class LockfileLegacy
         require 'pathname'
 

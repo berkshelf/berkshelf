@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class ChefAPILocation
     class << self
       # @return [Proc]

@@ -3,8 +3,6 @@ module Berkshelf
   # stubs across a run (See RiotGames/berkshelf#208). As a work-around, we pass
   # "special" mocks and stubs into the TEST environment variable. This class
   # parses and then requires the appropriate mocks during the run.
-  #
-  # @author Seth Vargo <sethvargo@gmail.com>
   class Mocks
     require 'rspec/mocks/standalone'
 

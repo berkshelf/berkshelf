@@ -1,7 +1,5 @@
 module Berkshelf
   # All tasks that operate on the Berkshelf shelf.
-  #
-  # @author Seth Vargo <sethvargo@gmail.com>
   class Shelf < Thor
     desc 'list', 'List all cookbooks and their versions'
     def list

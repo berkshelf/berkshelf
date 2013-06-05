@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class Resolver
     require_relative 'cookbook_source'
     require_relative 'locations/git_location'

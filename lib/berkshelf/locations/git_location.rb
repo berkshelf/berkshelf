@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class GitLocation
     class << self
       # Create a temporary directory for the cloned repository within Berkshelf's

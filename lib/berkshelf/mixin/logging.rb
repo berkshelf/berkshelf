@@ -1,6 +1,5 @@
 module Berkshelf
   module Mixin
-    # @author Jamie Winsor <reset@riotgames.com>
     module Logging
       def log
         Berkshelf::Logger
