@@ -126,6 +126,23 @@ module Berkshelf
       !get_dependency(dependency).nil?
     end
 
+    # The string representation of the Resolver.
+    #
+    # @return [String]
+    def to_s
+      "#<#{self.class} berksfile: #{berksfile.filepath}>"
+    end
+
+    # The detailed string representation of the Resolver.
+    #
+    # @return [String]
+    def inspect
+      "#<#{self.class} " +
+        "berksfile: #{berksfile.filepath}, " +
+        "sources: [#{dependencies.map(&:name_and_version).join(', ')}]" +
+      ">"
+    end
+
     private
 
       attr_reader :downloader

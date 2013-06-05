@@ -11,7 +11,7 @@ module Berkshelf
       AbstractFormatter.instance_methods.each do |meth|
         define_method(meth) do |*args|
           # intentionally do nothing
-        end
+        end unless %w(to_s inspect).include?(meth.to_s)
       end
 
       def method_missing(meth, *args, &block)

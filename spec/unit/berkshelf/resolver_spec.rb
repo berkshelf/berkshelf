@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
   let(:downloader ) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
-  let(:berksfile) { double(downloader: downloader) }
+  let(:berksfile) { double(downloader: downloader, filepath: '/foo/bar') }
   let(:dependency) do
     double('dependency',
       name: 'mysql',
@@ -93,6 +93,20 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
 
     it 'returns false if the dependency does not exist' do
       expect(subject.has_dependency?('non-existent')).to be_false
+    end
+  end
+
+  describe '#to_s' do
+    it 'includes the berksfile path' do
+      expect(subject.to_s).to eq("#<#{described_class} berksfile: #{subject.berksfile.filepath}>")
+    end
+  end
+
+  describe '#inspect' do
+    before { subject.stub(:dependencies).and_return([double(name_and_version: 'foo (~> 1.0.0)'), double(name_and_version: 'bar (< 1.0.0)')]) }
+
+    it 'includes the dependencies' do
+      expect(subject.inspect).to eq("#<#{described_class} berksfile: #{subject.berksfile.filepath}, sources: [#{subject.dependencies.map(&:name_and_version).join(', ')}]>")
     end
   end
 end

@@ -328,36 +328,19 @@ describe Berkshelf::Dependency do
 
   describe '#to_s' do
     it 'contains the name, constraint, and groups' do
-      source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0')
-      expect(source.to_s).to eq("#<#{described_class}: artifact (= 0.10.0)>")
+      expect(subject.to_s).to eq("#<#{described_class} #{subject.name_and_version}>")
     end
 
     context 'given a Berkshelf::Dependency with an explicit location' do
       it 'contains the name, constraint, groups, and location' do
-        source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
-        expect(source.to_s).to eq("#<#{described_class}: artifact (= 0.10.0)>")
+        expect(subject.to_s).to eq("#<#{described_class} #{subject.name_and_version}>")
       end
     end
   end
 
   describe '#inspect' do
     it 'contains the name, constraint, and groups' do
-      source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0')
-      expect(source.inspect).to eq("#<#{described_class}: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: default>")
-    end
-
-    context 'given a Berkshelf::Dependency with an explicit location' do
-      it 'contains the name, constraint, groups, and location' do
-        source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
-        expect(source.inspect).to eq("#<#{described_class}: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
-      end
-    end
-
-    context 'given an explicitly locked version' do
-      it 'includes the locked_version' do
-        source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks', locked_version: '1.2.3')
-        expect(source.inspect).to eq("#<#{described_class}: artifact (= 0.10.0), locked_version: 1.2.3, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
-      end
+      expect(subject.inspect).to eq("#<#{described_class} #{subject.name_and_version}, locked_version: #{subject.locked_version || 'nil'}, version_constraint: #{subject.version_constraint}, groups: [#{subject.groups.map(&:to_s).join(', ')}], location: #{subject.location && subject.location.class.location_key || 'default'}>")
     end
   end
 end

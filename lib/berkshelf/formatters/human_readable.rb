@@ -11,7 +11,7 @@ module Berkshelf
       # @param [String] version
       # @param [~Location] location
       def install(cookbook, version, location)
-        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location}"
+        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location.info}"
       end
 
       # Output a Cookbook use message using {Berkshelf.ui}

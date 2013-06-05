@@ -123,13 +123,15 @@ module Berkshelf
     # @return [String]
     #   the string representation of the lockfile
     def to_s
-      "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}>"
+      "#<#{self.class} #{filepath}>"
     end
 
     # @return [String]
     #   the detailed string representation of the lockfile
     def inspect
-      "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}, dependencies: #{dependencies.inspect}>"
+      "#<#{self.class} #{filepath}, " +
+        "dependencies: [#{dependencies.map(&:name_and_version).join(', ')}]" +
+      ">"
     end
 
     # Write the current lockfile to a hash
