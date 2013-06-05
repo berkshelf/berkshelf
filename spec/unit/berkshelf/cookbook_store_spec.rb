@@ -104,4 +104,23 @@ describe Berkshelf::CookbookStore do
       end
     end
   end
+
+  describe '#to_s' do
+    before { subject.stub(:storage_path).and_return('/foo/bar') }
+
+    it 'includes the storage path' do
+      expect(subject.to_s).to eq("#<Berkshelf::CookbookStore /foo/bar>")
+    end
+  end
+
+  describe '#inspect' do
+    before do
+      subject.stub(:storage_path).and_return('/foo/bar')
+      subject.stub(:cookbooks).and_return([double(name_and_version: 'foo'), double(name_and_version: 'bar')])
+    end
+
+    it 'includes the cookbooks directory' do
+      expect(subject.inspect).to eq("#<Berkshelf::CookbookStore /foo/bar, cookbooks: [foo, bar]>")
+    end
+  end
 end

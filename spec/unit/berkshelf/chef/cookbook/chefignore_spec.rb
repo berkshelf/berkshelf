@@ -16,4 +16,18 @@ describe Berkshelf::Chef::Cookbook::Chefignore do
       Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(path)
     end
   end
+
+  subject { described_class.new('/foo/bar') }
+
+  describe '#to_s' do
+    it 'includes the berkshelf path' do
+      expect(subject.to_s).to eq("#<Berkshelf::Chef::Cookbook::Chefignore /foo/bar/chefignore>")
+    end
+  end
+
+  describe '#inspect' do
+    it 'includes the cookbooks directory' do
+      expect(subject.inspect).to eq("#<Berkshelf::Chef::Cookbook::Chefignore /foo/bar/chefignore, ignores: []>")
+    end
+  end
 end

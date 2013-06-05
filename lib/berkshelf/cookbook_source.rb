@@ -129,6 +129,13 @@ module Berkshelf
       end
     end
 
+    # The name and version constraint pretty printed.
+    #
+    # @return [String]
+    def name_and_version
+      "#{name} (#{version_constraint})"
+    end
+
     # Determine the CachedCookbook and Location information from the given options.
     #
     # @return [Array<CachedCookbook, Location>]
@@ -179,17 +186,23 @@ module Berkshelf
       @groups ||= []
     end
 
+    # The string representation of the CookbookSource.
+    #
+    # @return [String]
     def to_s
-      "#<Berkshelf::CookbookSource: #{name} (#{version_constraint})>"
+      "#<Berkshelf::CookbookSource #{name_and_version}>"
     end
 
+    # The detailed string representation of the CookbookSource.
+    #
+    # @return [String]
     def inspect
-      '#<Berkshelf::CookbookSource: ' << [
-        "#{name} (#{version_constraint})",
-        "locked_version: #{locked_version.inspect}",
-        "groups: #{groups}",
-        "location: #{location || 'default'}>"
-      ].join(', ')
+      "#<Berkshelf::CookbookSource #{name_and_version}, " +
+        "locked_version: #{locked_version || 'nil'}, " +
+        "version_constraint: #{version_constraint}, " +
+        "groups: [#{groups.join(', ')}], " +
+        "location: #{location && location.class.location_key || 'default'}" +
+      ">"
     end
 
     def to_hash

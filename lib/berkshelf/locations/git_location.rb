@@ -87,7 +87,24 @@ module Berkshelf
       end
     end
 
+    # The string representation of the GitLocation.
+    #
+    # @return [String]
     def to_s
+      "#<Berkshelf::GitLocation #{uri}>"
+    end
+
+    # The detailed string representation of the GitLocation.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::GitLocation #{uri}, " +
+        "name: #{name}, " +
+        "branch: #{branch}" +
+      ">"
+    end
+
+    def info
       s = "#{self.class.location_key}: '#{uri}'"
       s << " with branch: '#{branch}'" if branch
       s << " at ref: '#{ref}'" if ref

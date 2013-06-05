@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
-  let(:downloader ) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
-  let(:berksfile) { double(downloader: downloader) }
+  let(:downloader) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
+  let(:berksfile) { double(downloader: downloader, path: '/foo/bar') }
   let(:source) do
     double('source',
       name: 'mysql',
@@ -95,6 +95,20 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
 
     it 'returns false if the source does not exist' do
       expect(subject.has_source?('non-existent')).to be_false
+    end
+  end
+
+  describe '#to_s' do
+    it 'includes the berksfile path' do
+      expect(subject.to_s).to eq("#<Berkshelf::Resolver berksfile: /foo/bar>")
+    end
+  end
+
+  describe '#inspect' do
+    before { subject.stub(:sources).and_return([double(name_and_version: 'foo (~> 1.0.0)'), double(name_and_version: 'bar (< 1.0.0)')]) }
+
+    it 'includes the sources' do
+      expect(subject.inspect).to eq("#<Berkshelf::Resolver berksfile: /foo/bar, sources: [foo (~> 1.0.0), bar (< 1.0.0)]>")
     end
   end
 end
