@@ -1,9 +1,8 @@
 module Berkshelf
   # This superclass is responsible for handling common command methods and options.
-  #
-  # @author Seth Vargo <sethvargo@gmail.com>
   module Command
     # Initialize a new instance of the parent class
+    #
     # @param [Hash] options
     #   the list of options to pass to the installer
     def initialize(options = {})

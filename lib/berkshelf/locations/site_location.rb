@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class SiteLocation
     extend Forwardable
     include Location

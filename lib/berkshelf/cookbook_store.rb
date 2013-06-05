@@ -1,7 +1,6 @@
 require 'fileutils'
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class CookbookStore
     # @return [String]
     #   filepath to where cookbooks are stored

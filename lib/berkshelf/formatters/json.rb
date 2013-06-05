@@ -1,6 +1,5 @@
 module Berkshelf
   module Formatters
-    # @author Michael Ivey <michael.ivey@riotgames.com>
     class JSON
       include AbstractFormatter
 

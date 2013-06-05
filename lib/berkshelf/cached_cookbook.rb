@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class CachedCookbook < Ridley::Chef::Cookbook
     class << self
       # @param [#to_s] path

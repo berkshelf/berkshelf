@@ -1,6 +1,4 @@
 module Berkshelf
-  # @author Michael Ivey <michael.ivey@riotgames.com>
-  # @author Jamie Winsor <reset@riotgames.com>
   module Formatters
     class << self
       @@formatters = Hash.new
@@ -47,8 +45,6 @@ module Berkshelf
       alias_method :[], :get
     end
 
-    # @author Michael Ivey <michael.ivey@riotgames.com>
-    #
     # @abstract Include and override {#install} {#use} {#upload}
     #   {#msg} {#error} to implement.
     #

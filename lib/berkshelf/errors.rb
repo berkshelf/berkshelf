@@ -141,7 +141,6 @@ module Berkshelf
     end
   end
 
-  # @author Seth Vargo <sethvargo@gmail.com>
   class MismatchedCookbookName < BerkshelfError
     status_code(114)
 
@@ -284,7 +283,6 @@ module Berkshelf
     end
   end
 
-  # @author Seth Vargo <sethvargo@gmail.com>
   class UnknownCompressionType < BerkshelfError
     status_code(131)
 
