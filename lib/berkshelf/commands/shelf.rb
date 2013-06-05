@@ -32,7 +32,8 @@ module Berkshelf
       end
 
       cookbooks.each do |cookbook|
-        Berkshelf.formatter.msg(cookbook.pretty_print + "\n\n")
+        Berkshelf.formatter.show(cookbook)
+        Berkshelf.formatter.msg("\n")
       end
     end
 
