@@ -14,6 +14,14 @@ module Berkshelf
         end
       end
 
+    # The string representation of the Null Formatter.
+    #
+    # @return [String]
+    def to_s
+      "#<Berkshelf::Formatters::Null>"
+    end
+    alias_method :inspect, :to_s
+
       def method_missing(meth, *args, &block)
         # intentionally do nothing
       end

@@ -187,4 +187,21 @@ describe Berkshelf::Downloader do
       expect(subject.has_location?(type, value)).to be_false
     end
   end
+
+  describe '#to_s' do
+    it 'includes the class name' do
+      expect(subject.to_s).to eq("#<Berkshelf::Downloader>")
+    end
+  end
+
+  describe '#inspect' do
+    before do
+      subject.stub(:cookbook_store).and_return(double(storage_path: '/zip/zap/cookbooks'))
+      subject.stub(:locations).and_return([{ value: 'example.com' }])
+    end
+
+    it 'includes the cookbook store and locations' do
+      expect(subject.inspect).to eq("#<Berkshelf::Downloader cookbook_store: /zip/zap/cookbooks, locations: [example.com]>")
+    end
+  end
 end

@@ -327,13 +327,13 @@ describe Berkshelf::CookbookSource do
   describe '#to_s' do
     it 'contains the name, constraint, and groups' do
       source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0')
-      expect(source.to_s).to eq('#<Berkshelf::CookbookSource: artifact (= 0.10.0)>')
+      expect(source.to_s).to eq('#<Berkshelf::CookbookSource artifact (= 0.10.0)>')
     end
 
     context 'given a CookbookSource with an explicit location' do
       it 'contains the name, constraint, groups, and location' do
         source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
-        expect(source.to_s).to eq('#<Berkshelf::CookbookSource: artifact (= 0.10.0)>')
+        expect(source.to_s).to eq('#<Berkshelf::CookbookSource artifact (= 0.10.0)>')
       end
     end
   end
@@ -341,20 +341,20 @@ describe Berkshelf::CookbookSource do
   describe '#inspect' do
     it 'contains the name, constraint, and groups' do
       source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0')
-      expect(source.inspect).to eq('#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: default>')
+      expect(source.inspect).to eq('#<Berkshelf::CookbookSource artifact (= 0.10.0), locked_version: nil, version_constraint: = 0.10.0, groups: [default], location: default>')
     end
 
     context 'given a CookbookSource with an explicit location' do
       it 'contains the name, constraint, groups, and location' do
         source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
-        expect(source.inspect).to eq("#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
+        expect(source.inspect).to eq("#<Berkshelf::CookbookSource artifact (= 0.10.0), locked_version: nil, version_constraint: = 0.10.0, groups: [default], location: site>")
       end
     end
 
     context 'given an explicitly locked version' do
       it 'includes the locked_version' do
         source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks', locked_version: '1.2.3')
-        expect(source.inspect).to eq("#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: 1.2.3, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
+        expect(source.inspect).to eq("#<Berkshelf::CookbookSource artifact (= 0.10.0), locked_version: 1.2.3, version_constraint: = 0.10.0, groups: [default], location: site>")
       end
     end
   end

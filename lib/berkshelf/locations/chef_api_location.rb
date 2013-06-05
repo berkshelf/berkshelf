@@ -191,7 +191,24 @@ module Berkshelf
       super.merge(value: self.uri)
     end
 
+    # The string representation of the ChefApiLocation.
+    #
+    # @return [String]
     def to_s
+      "#<Berkshelf::ChefAPILocation #{uri}>"
+    end
+
+    # The detailed string representation of the ChefApiLocation.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::ChefAPILocation #{uri}, " +
+        "node_name: #{node_name}, " +
+        "client_key: #{client_key}" +
+      ">"
+    end
+
+    def info
       "#{self.class.location_key}: '#{uri}'"
     end
 

@@ -126,6 +126,23 @@ module Berkshelf
       !get_source(source).nil?
     end
 
+    # The string representation of the Resolver.
+    #
+    # @return [String]
+    def to_s
+      "#<Berkshelf::Resolver berksfile: #{berksfile.path}>"
+    end
+
+    # The detailed string representation of the Resolver.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::Resolver " +
+        "berksfile: #{berksfile.path}, " +
+        "sources: [#{sources.map(&:name_and_version).join(', ')}]" +
+      ">"
+    end
+
     private
 
       attr_reader :downloader
