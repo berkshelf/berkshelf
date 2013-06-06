@@ -15,13 +15,14 @@ Feature: Creating a new cookbook
     And the exit status should be 0
 
   Examples:
-    | option        | feature       |
-    | foodcritic    | Foodcritic    |
-    | chef-minitest | Chef-Minitest |
-    | scmversion    | SCMVersion    |
-    | no-bundler    | no Bundler    |
-    | skip-git      | no Git        |
-    | skip-vagrant  | no Vagrant    |
+    | option            | feature         |
+    | foodcritic        | Foodcritic      |
+    | chef-minitest     | Chef-Minitest   |
+    | scmversion        | SCMVersion      |
+    | no-bundler        | no Bundler      |
+    | skip-git          | no Git          |
+    | skip-vagrant      | no Vagrant      |
+    | skip-test-kitchen | no Test Kitchen |
 
   Scenario Outline: When a required supporting gem is not installed
     Given the gem "<gem>" is not installed
