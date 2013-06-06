@@ -318,6 +318,7 @@ module Berkshelf
 
       Berkshelf.formatter.msg 'Successfully initialized'
     end
+    tasks['init'].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
@@ -415,11 +416,49 @@ module Berkshelf
 
     desc 'version', 'Display version and copyright information'
     def version
-      Berkshelf.formatter.msg version_header
+      Berkshelf.formatter.msg "******************"
+      Berkshelf.ui.info(version_header, color = :magenta)
+      Berkshelf.formatter.msg "******************"
       Berkshelf.formatter.msg "\n"
       Berkshelf.formatter.msg license
     end
 
+    method_option :foodcritic,
+      type: :boolean,
+      desc: 'Creates a Thorfile with Foodcritic support to lint test your cookbook'
+    method_option :chef_minitest,
+      type: :boolean,
+      desc: 'Creates chef-minitest support files and directories, adds minitest-handler cookbook to run_list of Vagrantfile'
+    method_option :scmversion,
+      type: :boolean,
+      desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
+    method_option :license,
+      type: :string,
+      desc: 'License for cookbook (apachev2, gplv2, gplv3, mit, reserved)',
+      aliases: '-L'
+    method_option :maintainer,
+      type: :string,
+      desc: 'Name of cookbook maintainer',
+      aliases: '-m'
+    method_option :maintainer_email,
+      type: :string,
+      desc: 'Email address of cookbook maintainer',
+      aliases: '-e'
+    method_option :no_bundler,
+      type: :boolean,
+      desc: 'Skips generation of a Gemfile and other Bundler specific support'
+    method_option :vagrant,
+      type: :boolean,
+      hide: true
+    method_option :skip_vagrant,
+      type: :boolean,
+      desc: 'Skips adding a Vagrantfile and adding supporting gems to the Gemfile'
+    method_option :git,
+      type: :boolean,
+      hide: true
+    method_option :skip_git,
+      type: :boolean,
+      desc: 'Skips adding a .gitignore and running git init in the cookbook directory'
     desc 'cookbook NAME', 'Create a skeleton for a new cookbook'
     def cookbook(name)
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
@@ -427,7 +466,6 @@ module Berkshelf
 
       Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end
-    tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
 
     private
 
