@@ -23,7 +23,7 @@ module Berkshelf
           output[:cookbooks] << details
         end
 
-        Berkshelf.ui.info(::JSON.pretty_generate(output))
+        puts ::JSON.pretty_generate(output)
       end
 
       # Add a Cookbook installation entry to delayed output
@@ -34,7 +34,7 @@ module Berkshelf
       def install(cookbook, version, location)
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
-        cookbooks[cookbook][:location] = location.to_s
+        cookbooks[cookbook][:location] = location.info
       end
 
       # Add a Cookbook use entry to delayed output

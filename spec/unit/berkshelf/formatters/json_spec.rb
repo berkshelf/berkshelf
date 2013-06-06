@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 describe Berkshelf::Formatters::JSON do
-  before { Berkshelf.set_format(:null) }
+  before do
+    Berkshelf.set_format(:null)
+    $stdout.stub(:puts) # We use puts for JSON instead of the UI
+  end
 
   Berkshelf::Formatters::AbstractFormatter.instance_methods.each do |meth|
     it "does not raise an error for :#{meth}" do
