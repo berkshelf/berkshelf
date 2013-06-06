@@ -95,7 +95,6 @@ module Berkshelf
 
       unless options[:skip_vagrant]
         template 'Vagrantfile.erb', target.join('Vagrantfile')
-        ::Berkshelf::Cli.new([], berksfile: target.join('Berksfile')).invoke(:install)
       end
     end
 
