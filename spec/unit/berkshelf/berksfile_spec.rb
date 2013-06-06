@@ -340,6 +340,38 @@ describe Berkshelf::Berksfile do
     end
   end
 
+  describe '#update', focus: true do
+    let(:lockfile) { double('lockfile', reset_sha!: nil) }
+
+    before do
+      subject.stub(:install)
+      subject.stub(:validate_cookbook_names!)
+      subject.stub(:lockfile) { lockfile }
+    end
+
+    it 'validates the cookbook names' do
+      subject.should_receive(:validate_cookbook_names!).once
+      subject.update
+    end
+
+    it 'updates the lockfile' do
+      subject.lockfile.should_receive(:reset_sha!)
+      subject.update
+    end
+
+    it 'delegates to the installer' do
+      subject.should_receive(:install)
+      subject.update
+    end
+
+    context 'with options' do
+      it 'only passes the :path option to the installer' do
+        subject.should_receive(:install).with({ path: '/foo/bar' })
+        subject.update(path: '/foo/bar', only: 'boo')
+      end
+    end
+  end
+
   describe '#load' do
     let(:content) do
       <<-EOF.strip
