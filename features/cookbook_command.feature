@@ -20,7 +20,9 @@ Feature: Creating a new cookbook
     | chef-minitest     | Chef-Minitest   |
     | scmversion        | SCMVersion      |
     | no-bundler        | no Bundler      |
-    | skip-git          | no Git          |
+    # Disable testing of skip git until Test Kitchen supports the skip_git flag in it's generator
+    # https://github.com/opscode/test-kitchen/issues/141
+    # | skip-git          | no Git          |
     | skip-vagrant      | no Vagrant      |
     | skip-test-kitchen | no Test Kitchen |
 
