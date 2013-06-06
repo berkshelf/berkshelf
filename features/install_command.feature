@@ -90,13 +90,12 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 1.5.0 | master |
+      | artifact | 1.7.0 | master |
     And the output should contain:
       """
-      Installing artifact (1.5.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
+      Installing artifact (1.7.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
       """
     And the exit status should be 0
-
 
   Scenario: installing a Berksfile that contains a Git location with a ref
     Given I write to "Berksfile" with:
@@ -304,6 +303,20 @@ Feature: install cookbooks from a Berksfile
       """
     And the cookbook store should have the cookbooks:
       | cuke-test | 1.0.0 |
+    And the exit status should be 0
+
+  Scenario: when the :site is not defined
+    Given I write to "Berksfile" with:
+      """
+      cookbook 'berkshelf-cookbook-fixture', '1.0.0', site: nil
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Installing berkshelf-cookbook-fixture (1.0.0) from site:
+      """
+    And the cookbook store should have the cookbooks:
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And the exit status should be 0
 
   Scenario: with a chef_api source location specifying :config when a Berkshelf config is not found at the given path

@@ -1,9 +1,8 @@
 source 'https://rubygems.org'
-
 gemspec
 
 group :development do
-  gem 'chef-zero', '>= 0.9.9'
+  gem 'chef-zero', '~> 1.1'
   gem 'coolline'
   gem 'guard', '>= 1.5.0'
   gem 'guard-cane'
@@ -33,13 +32,4 @@ group :development do
     gem 'wdm', require: false
     gem 'win32console', require: false
   end
-end
-
-group :test do
-  gem 'fuubar'
-  gem 'json_spec'
-  gem 'rake', '>= 0.9.2.2'
-  gem 'rspec'
-  gem 'thor'
-  gem 'webmock'
 end

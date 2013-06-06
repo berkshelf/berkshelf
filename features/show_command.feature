@@ -6,6 +6,7 @@ Feature: show command
   Scenario: Running the show command with an installed cookbook name
     Given I write to "Berksfile" with:
       """
+      site :opscode
       cookbook "build-essential", "1.2.0"
       cookbook "chef-client", "1.2.0"
       cookbook "mysql", "1.2.4"
