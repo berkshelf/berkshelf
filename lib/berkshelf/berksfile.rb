@@ -498,6 +498,8 @@ module Berkshelf
       outdated
     end
 
+    # Upload the cookbooks installed by this Berksfile
+    #
     # @option options [Boolean] :force (false)
     #   Upload the Cookbook even if the version already exists and is frozen on the
     #   target Chef Server
@@ -521,29 +523,24 @@ module Berkshelf
     # @option options [String] :server_url
     #   An overriding Chef Server to upload the cookbooks to
     #
-    # @raise [UploadFailure] if you are uploading cookbooks with an invalid or not-specified client key
+    # @raise [UploadFailure]
+    #   if you are uploading cookbooks with an invalid or not-specified client key
     # @raise [Berkshelf::FrozenCookbook]
     #   if an attempt to upload a cookbook which has been frozen on the target server is made
     #   and the :halt_on_frozen option was true
     def upload(options = {})
-      options = options.reverse_merge(
-        force: false,
-        freeze: true,
-        skip_dependencies: false,
-        halt_on_frozen: false
-      )
+      options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false)
 
-      solution    = resolve(sources(options), options)[:solution]
-      upload_opts = options.slice(:force, :freeze)
-      conn        = ridley_connection(options)
+      cached_cookbooks = install(options)
+      upload_opts      = options.slice(:force, :freeze)
+      conn             = ridley_connection(options)
 
-      solution.each do |cb|
-        Berkshelf.formatter.upload(cb.cookbook_name, cb.version, conn.server_url)
-
-        validate_files!(cb)
+      cached_cookbooks.each do |cookbook|
+        Berkshelf.formatter.upload(cookbook.cookbook_name, cookbook.version, conn.server_url)
+        validate_files!(cookbook)
 
         begin
-          conn.cookbook.upload(cb.path, upload_opts.merge(name: cb.cookbook_name))
+          conn.cookbook.upload(cookbook.path, upload_opts.merge(name: cookbook.cookbook_name))
         rescue Ridley::Errors::FrozenCookbook => ex
           if options[:halt_on_frozen]
             raise Berkshelf::FrozenCookbook, ex
