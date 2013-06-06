@@ -90,10 +90,10 @@ Feature: install cookbooks from a Berksfile
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | artifact | 1.6.0 | master |
+      | artifact | 1.7.0 | master |
     And the output should contain:
       """
-      Installing artifact (1.6.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
+      Installing artifact (1.7.0) from git: 'git://github.com/RiotGames/artifact-cookbook.git' with branch: 'master'
       """
     And the exit status should be 0
 
