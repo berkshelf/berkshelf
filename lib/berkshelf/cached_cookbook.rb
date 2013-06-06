@@ -54,6 +54,7 @@ module Berkshelf
     end
 
     private
+
       def pretty_map(hash, padding)
         hash.map { |k,v| "#{k} (#{v})" }.join("\n" + ' '*padding)
       end

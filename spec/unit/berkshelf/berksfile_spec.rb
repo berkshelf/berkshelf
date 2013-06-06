@@ -403,18 +403,16 @@ describe Berkshelf::Berksfile do
   end
 
   describe '#upload' do
-    let(:upload) { subject.upload(options) }
     let(:options) { Hash.new }
-    let(:ssl) { double('ssl', verify: true) }
-    let(:chef) {
-      double('chef',
+    let(:chef_config) do
+      double('chef-config',
         node_name: 'fake-client',
         client_key: 'client-key',
         chef_server_url: 'http://configured-chef-server/'
       )
-    }
-    let(:berkshelf_config) { double('berks', ssl: ssl, chef: chef) }
-    let(:default_ridley_options) {
+    end
+    let(:berkshelf_config) { double('berkshelf-config', ssl: double(verify: true), chef: chef_config) }
+    let(:default_ridley_options) do
       {
         client_name: 'fake-client',
         client_key: 'client-key',
@@ -422,55 +420,36 @@ describe Berkshelf::Berksfile do
           verify: true
         }
       }
-    }
+    end
+    let(:installed_cookbooks) { Array.new }
+
+    let(:upload) { subject.upload(options) }
 
     before do
       Berkshelf::Config.stub(:instance).and_return(berkshelf_config)
-      subject.stub(:resolve).and_return(solution: [], sources: [])
+      subject.should_receive(:install).and_return(installed_cookbooks)
     end
 
-    context 'when there is no :server_url' do
-      let(:chef) do
-        double('chef',
-          node_name: 'fake-client',
-          client_key: 'client-key',
-          chef_server_url: nil
-        )
-      end
+    context 'when there is no value for :chef_server_url' do
+      before { chef_config.stub(chef_server_url: nil) }
       let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.server_url' }
 
       it 'raises an error' do
-        expect {
-          upload
-        }.to raise_error(Berkshelf::ChefConnectionError, message)
+        expect { upload }.to raise_error(Berkshelf::ChefConnectionError, message)
       end
     end
 
-    context 'when there is no :client_name' do
-      let(:chef) do
-        double('chef',
-          node_name: nil,
-          client_key: 'client-key',
-          chef_server_url: 'http://configured-chef-server/'
-        )
-      end
+    context 'when there is no value for :client_name' do
+      before { chef_config.stub(node_name: nil) }
       let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.node_name' }
 
       it 'raises an error' do
-        expect {
-          upload
-        }.to raise_error(Berkshelf::ChefConnectionError, message)
+        expect { upload }.to raise_error(Berkshelf::ChefConnectionError, message)
       end
     end
 
-    context 'when there is no :client_key' do
-      let(:chef) do
-        double('chef',
-          node_name: 'fake-client',
-          client_key: nil,
-          chef_server_url: 'http://configured-chef-server/'
-        )
-      end
+    context 'when there is no value for :client_key' do
+      before { chef_config.stub(client_key: nil) }
       let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.client_key' }
 
       it 'raises an error' do
