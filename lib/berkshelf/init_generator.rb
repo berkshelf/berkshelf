@@ -90,7 +90,7 @@ module Berkshelf
       end
 
       unless options[:skip_test_kitchen]
-        Kitchen::Generator::Init.new([], options, destination_root: target).invoke_all
+        Kitchen::Generator::Init.new([], {}, destination_root: target).invoke_all
       end
 
       unless options[:skip_vagrant]
