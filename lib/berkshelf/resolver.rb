@@ -184,7 +184,7 @@ module Berkshelf
           get_source(source).cached_cookbook = cached
         end
 
-        path = source.location.is_a?(PathLocation) ? source.location.to_s : nil
+        path = source.location.is_a?(PathLocation) ? source.location.info : nil
         Berkshelf.formatter.use(cached.cookbook_name, cached.version, path)
 
         true

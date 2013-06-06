@@ -206,7 +206,7 @@ module Berkshelf
 
     def to_s
       [
-        "The cookbook downloaded from #{@location.to_s}:",
+        "The cookbook downloaded from #{@location.info}:",
         "  #{@cached_cookbook.cookbook_name} (#{@cached_cookbook.version})",
         "",
         "does not satisfy the version constraint:",
