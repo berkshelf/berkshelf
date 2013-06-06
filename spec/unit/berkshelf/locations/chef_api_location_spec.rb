@@ -144,10 +144,14 @@ describe Berkshelf::ChefAPILocation, :chef_server do
   end
 
   describe '#inspect' do
-    before { subject.stub(:uri).and_return('git://github.com/RiotGames/artifact.git') }
+    before do
+      subject.stub(:uri).and_return('git://github.com/RiotGames/artifact.git')
+      subject.stub(:node_name).and_return('reset')
+      subject.stub(:client_key).and_return('/path/to/client.pem')
+    end
 
     it 'includes the path' do
-      expect(subject.inspect).to eq('#<Berkshelf::ChefAPILocation git://github.com/RiotGames/artifact.git, node_name: reset, client_key: /Users/sethvargo/Development/berkshelf/spec/fixtures/reset.pem>')
+      expect(subject.inspect).to eq('#<Berkshelf::ChefAPILocation git://github.com/RiotGames/artifact.git, node_name: reset, client_key: /path/to/client.pem>')
     end
   end
 
