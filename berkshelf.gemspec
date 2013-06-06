@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'retryable',         '~> 1.3.3'
   s.add_dependency 'ridley',            '~> 0.12.4'
   s.add_dependency 'solve',             '>= 0.4.4'
-  s.add_dependency 'test-kitchen',      '>= 1.0.0.alpha6'
+  s.add_dependency 'test-kitchen',      '>= 1.0.0.alpha7'
   s.add_dependency 'thor',              '~> 0.18.0'
 
   s.add_development_dependency 'aruba',         '~> 0.5'
