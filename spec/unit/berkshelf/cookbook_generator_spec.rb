@@ -77,4 +77,14 @@ describe Berkshelf::CookbookGenerator do
       }
     end
   end
+
+  context "given an invalid option for :license" do
+    subject(:run) do
+      capture(:stdout) { described_class.new([target, name], license: 'not-there').invoke_all }
+    end
+
+    it "raises a LicenseNotFound error" do
+      expect { run }.to raise_error(Berkshelf::LicenseNotFound)
+    end
+  end
 end
