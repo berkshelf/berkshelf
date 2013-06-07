@@ -253,10 +253,10 @@ module Berkshelf
       [
         "Berkshelf could not find compatible versions for cookbook '#{@source.name}':",
         "  In Berksfile:",
-        "    #{@locked_source.name} (#{@locked_source.locked_version})",
+        "    #{@source.name} (#{@source.version_constraint})",
         "",
         "  In Berksfile.lock:",
-        "    #{@source.name} (#{@source.version_constraint})",
+        "    #{@locked_source.name} (#{@locked_source.locked_version})",
         "",
         "Try running `berks update #{@source.name}, which will try to find  '#{@source.name}' matching '#{@source.version_constraint}'.",
       ].join("\n")
