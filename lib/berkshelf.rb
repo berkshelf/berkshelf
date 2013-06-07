@@ -28,6 +28,7 @@ module Berkshelf
     include Berkshelf::Mixin::Logging
 
     attr_accessor :ui
+    attr_accessor :logger
     attr_writer :cookbook_store
 
     # @return [Pathname]
@@ -64,11 +65,6 @@ module Berkshelf
     # @param [Berkshelf::Chef::Config] new_config
     #   the new configuration file to use
     attr_writer :chef_config
-
-    # @return [Logger]
-    def logger
-      Celluloid.logger
-    end
 
     # @return [String]
     def tmp_dir
@@ -162,3 +158,6 @@ require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
+
+Ridley.logger = Celluloid.logger = Berkshelf.logger = Logger.new(STDOUT)
+Berkshelf.logger.level = Logger::WARN
