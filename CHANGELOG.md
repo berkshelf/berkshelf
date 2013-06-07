@@ -1,3 +1,9 @@
+# 2.0.1
+
+* Improve performance of `berks upload`. It will now properly respect the Lockfile
+* Fix debug/verbose logging
+* You can now specify an alternate configuration with -c once again
+
 # 2.0.0
 
 * Huge improvements to the Lockfile
