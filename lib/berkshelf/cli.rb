@@ -32,7 +32,7 @@ module Berkshelf
         unless File.exist?(@options[:config])
           raise ConfigNotFound.new(:berkshelf, @options[:config])
         end
-        Berkshelf::Config.path = @options[:config]
+        Berkshelf::Config.set_path(@options[:config])
       end
 
       if @options[:debug]
