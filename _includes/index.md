@@ -3,7 +3,7 @@
 If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a breeze.
 
     $ gem install berkshelf
-    Successfully installed berkshelf-1.3.0
+    Successfully installed berkshelf-2.0.0
     1 gem installed
 
 Specify your dependencies in a Berksfile in your cookbook's root
@@ -110,18 +110,21 @@ You will only be prompted to fill in the most travelled configuration options. L
 
 ### Configurable options
 
-* `chef.chef_server_url` - URL to a Chef Server API endpoint. This will automatically be filled in by your Knife configuration if you have one.
-* `chef.node_name` - your Chef API client name. This will automatically be filled in by your Knife configuration if you have one.
-* `chef.client_key` - filepath to your Chef API client key. This will automatically be filled in by your Knife configuration if you have one.
-* `chef.validation_client_name` - your Chef API's validation client name. This will automatically be filled in by your Knife configuration if you have one.
-* `chef.validation_key_path` - filepath to your Chef API's validation key. This will automatically be filled in by your knife configuration if you have one.
-* `vagrant.vm.box` - name of the VirtualBox box to use when provisioning Vagrant virtual machines.
-* `vagrant.vm.box_url` - URL to the VirtualBox box
+* `chef.chef_server_url` - URL to a Chef Server API endpoint. (default: whatever is in your Knife file if you have one)
+* `chef.node_name` - your Chef API client name. (default: whatever is in your Knife file if you have one)
+* `chef.client_key` - filepath to your Chef API client key. (default: whatever is in your Knife file if you have one)
+* `chef.validation_client_name` - your Chef API's validation client name. (default: whatever is in your Knife file if you have one)
+* `chef.validation_key_path` - filepath to your Chef API's validation key. (default: whatever is in your Knife file if you have one)
+* `vagrant.vm.box` - name of the VirtualBox box to use when provisioning Vagrant virtual machines. (default: Berkshelf-CentOS-6.3-x86_64-minimal)
+* `vagrant.vm.box_url` - URL to the VirtualBox box (default: https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box)
 * `vagrant.vm.forward_port` - a Hash of ports to forward where the key is the port to forward to on the guest and value is the host port which forwards to the guest on your host.
 * `vagrant.vm.network.bridged` - use a bridged connection to connect to your virtual machine?
-* `vagrant.vm.network.hostonly` - use a hostonly network for your virtual machine?
-* `vagrant.vm.provision` - use the `chef_solo` or `chef_client` provisioner?
-* `ssl.verify` - should we verify all SSL http connections?
+* `vagrant.vm.network.hostonly` - use a hostonly network for your virtual machine? (default: 33.33.33.10)
+* `vagrant.vm.provision` - use the `chef_solo` or `chef_client` provisioner? (default: chef_solo)
+* `ssl.verify` - should we verify all SSL http connections? (default: true)
+* `cookbook.copyright` - the copyright information should be included when you generate new cookbooks. (default: whatever is in your Knife file if you have one)
+* `cookbook.email` - the email address to include when you generate new cookbooks. (default: whatever is in your Knife file if you have one)
+* `cookbook.license` - the license to use when you generate new cookbooks. (default: whatever is in your Knife file if you have one)
 
 > The configuration values are notated in 'dotted path' format. These translate to a nested JSON structure.
 
