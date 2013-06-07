@@ -2,5 +2,5 @@
 * Josiah Kiehl (<jkiehl@riotgames.com>)
 * Michael Ivey (<michael.ivey@riotgames.com>)
 * Justin Campbell (<justin.campbell@riotgames.com>)
-* Thanks to [All our contributors](https://github.com/RiotGames/berkshelf/graphs/contributors)
-* Special [Cake Thanks](./cakethanks.html) to [@RiotSorrmi](https://twitter.com/RiotSorrmi)
+* Seth Vargo (<sethvargo@gmail.com>)
+* And [All our contributors](https://github.com/RiotGames/berkshelf/graphs/contributors)
