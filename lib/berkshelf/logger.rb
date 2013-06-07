@@ -1,5 +1,5 @@
 module Berkshelf
-  Logger = Celluloid::Logger
+  Logger = Celluloid::Logger.dup
 
   Logger.module_eval do
     def self.fatal(string)
