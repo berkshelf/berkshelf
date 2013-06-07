@@ -37,6 +37,46 @@ Want to start a new cookbook for a new application or supporting application?
 
     $ berks cookbook new_application
 
+## Getting Help
+
+If at anytime you are stuck or if you're just curious about what Berkshelf can do, just type the help command
+
+    $ berks help
+
+    Commands:
+      berks apply ENVIRONMENT     # Apply the cookbook version locks from Berksfile.lock to a Chef environment
+      berks configure             # Create a new Berkshelf configuration file
+      berks contingent COOKBOOK   # List all cookbooks that depend on the given cookbook
+      berks cookbook NAME         # Create a skeleton for a new cookbook
+      berks help [COMMAND]        # Describe available commands or one specific command
+      berks init [PATH]           # Initialize Berkshelf in the given directory
+      berks install               # Install the cookbooks specified in the Berksfile
+      berks list                  # List all cookbooks (and dependencies) specified in the Berksfile
+      berks outdated [COOKBOOKS]  # Show outdated cookbooks (from the community site)
+      berks package [COOKBOOK]    # Package a cookbook (and dependencies) as a tarball
+      berks shelf SUBCOMMAND      # Interact with the cookbook store
+      berks show [COOKBOOK]       # Display name, author, copyright, and dependency information about a cookbook
+      berks update [COOKBOOKS]    # Update the cookbooks (and dependencies) specified in the Berksfile
+      berks upload [COOKBOOKS]    # Upload the cookbook specified in the Berksfile to the Chef Server
+      berks version               # Display version and copyright information
+
+    Options:
+      -c, [--config=PATH]    # Path to Berkshelf configuration to use.
+      -F, [--format=FORMAT]  # Output format to use.
+                             # Default: human
+      -q, [--quiet]          # Silence all informational output.
+      -d, [--debug]          # Output debug information
+
+You can get more detailed information about a command, or a sub command, but asking it for help
+
+    $ berks shelf help
+
+    Commands:
+      berks shelf help [COMMAND]  # Describe subcommands or one specific subcommand
+      berks shelf list            # List all cookbooks and their versions
+      berks shelf show            # Display information about a cookbook in the Berkshelf shelf
+      berks shelf uninstall       # Remove a cookbook from the Berkshelf shelf
+
 ## The Berkshelf
 
 > After running `berks install` you may ask yourself, "Where did my cookbooks go?". They were added to The Berkshelf.
@@ -400,39 +440,3 @@ Now you have access to common Berkshelf tasks without shelling out
     $ thor berkshelf:update       # Update all Cookbooks and their depende...
     $ thor berkshelf:upload       # Upload the Cookbooks specified by a Be...
     $ thor berkshelf:version      # Display version and copyright informat...
-
-## CLI Reference
-
-### install
-
-Install the Cookbooks defined by sources in your Berksfile and their dependencies, recursively, to your Berkshelf.
-
-    $ berks install
-
-A Berksfile.lock will be generated if one does not already exist that will contain the dependency solution.
-
-If a Berksfile.lock is present when the install command is run, the locked sources in the Lockfile will take precedence over any sources defined in the Berksfile.
-
-### upload
-
-Upload the Cookbooks specified by a Berksfile or a Berksfile.lock to a Chef Server.
-
-    $ berks upload
-
-### update
-
-This will still perform an install on your Berksfile, but it will skip a Lockfile if it is present and install fresh
-
-    $ berks update
-
-### init
-
-Prepares a local path to have its Cookbook dependencies managed by Berkshelf. If the target path is a Cookbook itself, additional Berkshelf support files will be generated to get you started.
-
-    $ berks init nginx-cookbook
-
-### Cookbook
-
-Creates a new cookbook with a number of helpful supporting tools to help you iterate quickly and develop reliable cookbooks.
-
-    $ berks cookbook my_face
