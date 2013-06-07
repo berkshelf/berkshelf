@@ -2,6 +2,14 @@ module Berkshelf
   class CookbookGenerator < BaseGenerator
     require_relative 'config'
 
+    LICENSES = [
+      "apachev2",
+      "gplv2",
+      "gplv3",
+      "mit",
+      "reserved"
+    ].freeze
+
     argument :name,
       type: :string,
       required: true
@@ -79,7 +87,7 @@ module Berkshelf
         when 'mit'; 'MIT'
         when 'reserved'; 'All rights reserved'
         else
-          raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
+          raise Berkshelf::LicenseNotFound.new(options[:license])
         end
       end
 
@@ -95,7 +103,7 @@ module Berkshelf
         when 'mit'; 'licenses/mit.erb'
         when 'reserved'; 'licenses/reserved.erb'
         else
-          raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
+          raise Berkshelf::LicenseNotFound.new(options[:license])
         end
       end
 
