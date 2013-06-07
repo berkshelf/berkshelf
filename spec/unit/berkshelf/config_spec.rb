@@ -52,4 +52,13 @@ describe Berkshelf::Config do
       end
     end
   end
+
+  describe "::set_path" do
+    subject(:set_path) { described_class.set_path("/tmp/other_path.json") }
+
+    it "sets the #instance to nil" do
+      set_path
+      expect(described_class.instance_variable_get(:@instance)).to be_nil
+    end
+  end
 end

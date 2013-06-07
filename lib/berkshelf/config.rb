@@ -28,8 +28,9 @@ module Berkshelf
       end
 
       # @param [String] new_path
-      def path=(new_path)
-        @path = File.expand_path(new_path)
+      def set_path(new_path)
+        @instance = nil
+        @path     = File.expand_path(new_path)
       end
 
       # @return [String, nil]
