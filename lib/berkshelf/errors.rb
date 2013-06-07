@@ -342,6 +342,17 @@ module Berkshelf
 
   class LicenseNotFound < BerkshelfError
     status_code(134)
+
+    attr_reader :license
+
+    def initialize(license)
+      @license = license
+    end
+
+    def to_s
+      "Unknown license: '#{license}'\n" +
+      "Available licenses: #{Berkshelf::CookbookGenerator::LICENSES.join(', ')}"
+    end
   end
 
   # Raised when a cookbook or its recipes contain a space or invalid

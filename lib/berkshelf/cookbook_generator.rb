@@ -87,8 +87,7 @@ module Berkshelf
         when 'mit'; 'MIT'
         when 'reserved'; 'All rights reserved'
         else
-          raise Berkshelf::LicenseNotFound, "Unknown license: '#{options[:license]}'\n" +
-            "Available licenses: #{LICENSES.join(', ')}"
+          raise Berkshelf::LicenseNotFound.new(options[:license])
         end
       end
 
@@ -104,8 +103,7 @@ module Berkshelf
         when 'mit'; 'licenses/mit.erb'
         when 'reserved'; 'licenses/reserved.erb'
         else
-          raise Berkshelf::LicenseNotFound, "Unknown license: '#{options[:license]}'\n" +
-            "Available licenses: #{LICENSES.join(', ')}"
+          raise Berkshelf::LicenseNotFound.new(options[:license])
         end
       end
 
