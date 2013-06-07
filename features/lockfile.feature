@@ -406,10 +406,10 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       Berkshelf could not find compatible versions for cookbook 'berkshelf-cookbook-fixture':
         In Berksfile:
-          berkshelf-cookbook-fixture (1.0.0)
+          berkshelf-cookbook-fixture (~> 1.3.0)
 
         In Berksfile.lock:
-          berkshelf-cookbook-fixture (~> 1.3.0)
+          berkshelf-cookbook-fixture (1.0.0)
 
       Try running `berks update berkshelf-cookbook-fixture, which will try to find  'berkshelf-cookbook-fixture' matching '~> 1.3.0'
       """
