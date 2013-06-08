@@ -340,10 +340,25 @@ module Berkshelf
     end
   end
 
+  class LicenseNotFound < BerkshelfError
+    status_code(134)
+
+    attr_reader :license
+
+    def initialize(license)
+      @license = license
+    end
+
+    def to_s
+      "Unknown license: '#{license}'\n" +
+      "Available licenses: #{Berkshelf::CookbookGenerator::LICENSES.join(', ')}"
+    end
+  end
+
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   class ConfigNotFound < BerkshelfError
-    status_code(133)
+    status_code(135)
 
     # @param [String] type
     #   the type of config that was not found (Berkshelf, Chef, etc)
