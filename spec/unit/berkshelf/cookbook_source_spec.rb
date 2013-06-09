@@ -273,10 +273,19 @@ describe Berkshelf::CookbookSource do
       expect(hash[:locked_version]).to eq('1.2.3')
     end
 
+    it 'does not include a metadata in the sources' do
+      location = double('metadata', path: '.')
+      location.stub(:kind_of?).and_return(false)
+      location.stub(:kind_of?).with(Berkshelf::MetadataLocation).and_return(true)
+      subject.stub(:location).and_return(location)
+
+      expect(hash).to_not have_key(:locked_version)
+    end
+
     it 'does not include the site if it is the default' do
       location = double('site', api_uri: Berkshelf::CommunityREST::V1_API)
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
-      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
       subject.stub(:location).and_return(location)
 
       expect(hash).to_not have_key(:site)
@@ -284,8 +293,8 @@ describe Berkshelf::CookbookSource do
 
     it 'includes the site' do
       location = double('site', api_uri: 'www.example.com')
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
-      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
       subject.stub(:location).and_return(location)
 
       expect(hash).to have_key(:site)
@@ -294,7 +303,7 @@ describe Berkshelf::CookbookSource do
 
     it 'includes the git url and ref' do
       location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234', rel: nil)
-      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(false)
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)
 
@@ -306,7 +315,7 @@ describe Berkshelf::CookbookSource do
 
     it 'includes the git url and rel' do
       location = double('git', uri: 'git://github.com/foo/bar.git', ref: nil, rel: 'cookbooks/foo')
-      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(false)
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)
 

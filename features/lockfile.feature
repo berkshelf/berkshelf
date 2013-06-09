@@ -341,6 +341,62 @@ Feature: Creating and reading the Berkshelf lockfile
       }
       """
 
+  Scenario: Installing a Berksfile with a metadata location
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      site :opscode
+      metadata
+      """
+    When I cd to "fake"
+    And I successfully run `berks install`
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
+        "sources":{
+          "fake":{
+            "metadata": ".",
+            "constraint": "= 0.0.0"
+          }
+        }
+      }
+      """
+
+  Scenario: Install a Berksfile.lock with a metadata location
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      site :opscode
+      metadata
+      """
+    And the cookbook "fake" has the file "Berksfile.lock" with:
+      """
+      {
+        "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
+        "sources":{
+          "fake":{
+            "metadata": ".",
+            "constraint": "= 0.0.0"
+          }
+        }
+      }
+      """
+    When I cd to "fake"
+    And I successfully run `berks install`
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
+        "sources":{
+          "fake":{
+            "metadata": ".",
+            "constraint": "= 0.0.0"
+          }
+        }
+      }
+      """
+
   Scenario: Lockfile when `metadata` is specified
     Given I write to "metadata.rb" with:
       """

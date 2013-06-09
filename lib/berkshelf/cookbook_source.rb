@@ -93,6 +93,8 @@ module Berkshelf
     #   a URL pointing to a community API endpoint
     # @option options [String] :path
     #   a filepath to the cookbook on your local disk
+    # @option options [String] :metadata
+    #   use the metadata at the given pat
     # @option options [Symbol, Array] :group
     #   the group or groups that the cookbook belongs to
     # @option options [String] :ref
@@ -192,7 +194,11 @@ module Berkshelf
 
     def to_hash
       {}.tap do |h|
-        h[:locked_version]  = locked_version.to_s
+        if location.kind_of?(MetadataLocation)
+          h[:metadata] = location.path
+        else
+          h[:locked_version] = locked_version.to_s
+        end
 
         unless version_constraint.to_s == DEFAULT_CONSTRAINT
           h[:constraint] = version_constraint.to_s
@@ -221,11 +227,32 @@ module Berkshelf
 
     private
 
+      # Attempt to load a CachedCookbook from metadata (if the :metadata option
+      # was given). If the metadata is found, the location and cached_cookbook
+      # is updated. Otherwise, this method will raise a CookbookNotFound
+      # exception.
+      #
+      # @raise [Berkshelf::CookbookNotFound]
+      #   if no CachedCookbook exists at the given path
+      #
+      # @return [Berkshelf::CachedCookbook]
+      def from_metadata(options = {})
+        return nil unless options[:metadata]
+
+        path     = File.expand_path(File.join('..', options[:metadata]))
+        location = MetadataLocation.new(name, '>= 0.0.0', path: path)
+        cached   = CachedCookbook.from_path(location.path)
+
+        [ cached, location ]
+      rescue IOError => ex
+        raise Berkshelf::CookbookNotFound, ex
+      end
+
       # Attempt to load a CachedCookbook from a local file system path (if the :path
       # option was given). If one is found, the location and cached_cookbook is
       # updated. Otherwise, this method will raise a CookbookNotFound exception.
       #
-      # @raises [Berkshelf::CookbookNotFound]
+      # @raise [Berkshelf::CookbookNotFound]
       #   if no CachedCookbook exists at the given path
       #
       # @return [Berkshelf::CachedCookbook]
