@@ -240,7 +240,7 @@ module Berkshelf
         return nil unless options[:metadata]
 
         path     = File.expand_path(File.join('..', options[:metadata]))
-        location = MetadataLocation.new(name, '>= 0.0.0', path: path)
+        location = MetadataLocation.new(name, version_constraint, path: path)
         cached   = CachedCookbook.from_path(location.path)
 
         [ cached, location ]
