@@ -100,7 +100,6 @@ Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
   cb_path = Pathname.new(current_dir).join(name)
   expect(cb_path).to have_structure {
     directory "attributes"
-    directory "definitions"
     directory "files" do
       directory "default"
     end

@@ -59,7 +59,6 @@ module Berkshelf
       empty_directory target.join('files/default')
       empty_directory target.join('templates/default')
       empty_directory target.join('attributes')
-      empty_directory target.join('definitions')
       empty_directory target.join('libraries')
       empty_directory target.join('providers')
       empty_directory target.join('recipes')
