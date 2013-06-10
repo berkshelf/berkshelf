@@ -48,7 +48,7 @@ module Berkshelf
 
         if location && location.is_a?(PathLocation)
           cookbooks[cookbook][:metadata] = true if location.metadata?
-          cookbooks[cookbook][:location] = location.path
+          cookbooks[cookbook][:location] = location.relative_path
         end
       end
 
