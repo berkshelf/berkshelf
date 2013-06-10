@@ -187,13 +187,14 @@ module Berkshelf
     #   path to the metadata file
     def metadata(options = {})
       path = options[:path] || File.dirname(filepath)
+
       metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
       metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
 
       name = metadata.name.presence || File.basename(File.expand_path(path))
       constraint = "= #{metadata.version}"
 
-      add_source(name, constraint, metadata: path)
+      add_source(name, constraint, path: path, metadata: true)
     end
 
     # Add a 'Site' default location which will be used to resolve cookbook sources that do not

@@ -41,7 +41,7 @@ describe Berkshelf::Downloader do
   subject { Berkshelf::Downloader.new(cookbook_store) }
 
   describe '#download' do
-    let(:source) { double('source', name: 'artifact', version_constraint: '= 0.10.0') }
+    let(:source) { double('source', name: 'artifact', version_constraint: '= 0.10.0', locked_version: '0.10.0') }
     let(:location) { double('location') }
     let(:cached_cookbook) { double('cached') }
 

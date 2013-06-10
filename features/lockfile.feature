@@ -18,7 +18,7 @@ Feature: Creating and reading the Berkshelf lockfile
         "sources":{
           "fake":{
             "constraint":"= 1.0.0",
-            "locked_version":"1.0.0"
+            "locked_version": "1.0.0"
           }
         }
       }
@@ -29,6 +29,7 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'fake', '1.0.0'
       """
     And I write to "Berksfile.lock" with:
@@ -36,14 +37,13 @@ Feature: Creating and reading the Berkshelf lockfile
       cookbook 'fake', :locked_version => '1.0.0'
       """
     When I successfully run `berks install`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the output should contain "You are using the old lockfile format. Attempting to convert..."x
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
         "sha":"80396ed07db133e0192593adebb360c27eed88c2",
         "sources":{
           "fake":{
-            "locked_version":"1.0.0",
             "constraint":"= 1.0.0"
           }
         }
@@ -68,7 +68,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"4b614de85168d72fda4b255fc31796b4c474c3fc",
         "sources":{
           "fake":{
-            "locked_version":"0.0.0",
             "constraint":"= 0.0.0",
             "path":"./fake"
           }
@@ -334,8 +333,7 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha": "42a13f91f1ba19ce8c6776fe267e74510dee27ce",
         "sources":{
           "fake":{
-            "path":"./fake",
-            "locked_version":"0.0.0"
+            "path":"./fake"
           }
         }
       }
@@ -356,7 +354,7 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
         "sources":{
           "fake":{
-            "metadata": ".",
+            "path": ".",
             "constraint": "= 0.0.0"
           }
         }
@@ -376,7 +374,7 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
         "sources":{
           "fake":{
-            "metadata": ".",
+            "path": ".",
             "constraint": "= 0.0.0"
           }
         }
@@ -390,34 +388,8 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
         "sources":{
           "fake":{
-            "metadata": ".",
+            "path": ".",
             "constraint": "= 0.0.0"
-          }
-        }
-      }
-      """
-
-  Scenario: Lockfile when `metadata` is specified
-    Given I write to "metadata.rb" with:
-      """
-      name 'fake'
-      version '1.0.0'
-      """
-    And I write to "Berksfile" with:
-      """
-      site :opscode
-      metadata
-      """
-    When I successfully run `berks install`
-    Then the file "Berksfile.lock" should contain JSON:
-      """
-      {
-        "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
-        "sources":{
-          "fake":{
-            "path":".",
-            "locked_version":"1.0.0",
-            "constraint":"= 1.0.0"
           }
         }
       }
