@@ -3,6 +3,7 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
+  - jruby-19mode
 env:
   - TEST_SUITE=unit CI=true
   - TEST_SUITE=acceptance CI=true
