@@ -549,7 +549,7 @@ module Berkshelf
       end
 
       if options[:skip_dependencies]
-        missing_cookbooks = options.fetch(:cookbooks, nil) - solution.map(&:cookbook_name)
+        missing_cookbooks = options.fetch(:cookbooks, nil) - cached_cookbooks.map(&:cookbook_name)
         unless missing_cookbooks.empty?
           msg = "Unable to upload cookbooks: #{missing_cookbooks.sort.join(', ')}\n"
           msg << "Specified cookbooks must be defined within the Berkshelf file when using the"
