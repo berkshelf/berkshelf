@@ -18,7 +18,7 @@ Feature: Creating and reading the Berkshelf lockfile
         "sources":{
           "fake":{
             "constraint":"= 1.0.0",
-            "locked_version": "1.0.0"
+            "locked_version":"1.0.0"
           }
         }
       }
