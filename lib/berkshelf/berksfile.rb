@@ -762,11 +762,10 @@ module Berkshelf
       # @param [Berkshelf::CachedCookbook] cookbook
       #  the Cookbook to validate
       def validate_files!(cookbook)
-        path = cookbook.path
+        path = cookbook.path.to_s
 
         files = Dir.glob(File.join(path, '**', '*.rb')).select do |f|
-          f = Pathname.new(f).relative_path_from(path.dirname)
-          f.to_s =~ /[[:space:]]/
+          f.gsub(path, '') =~ /[[:space:]]/
         end
 
         raise Berkshelf::InvalidCookbookFiles.new(cookbook, files) unless files.empty?
