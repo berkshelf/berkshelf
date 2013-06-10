@@ -17,12 +17,14 @@ module Berkshelf
 
       module ClassMethods
         def clean_room
-          exposed_methods = self.exposed_methods
+          @clean_room ||= begin
+            exposed_methods = self.exposed_methods
 
-          @clean_room ||= Class.new(DSLEval::CleanRoom) do
-            exposed_methods.each do |exposed_method|
-              define_method(exposed_method) do |*args|
-                instance.send(exposed_method, *args)
+            Class.new(DSLEval::CleanRoom) do
+              exposed_methods.each do |exposed_method|
+                define_method(exposed_method) do |*args|
+                  instance.send(exposed_method, *args)
+                end
               end
             end
           end
