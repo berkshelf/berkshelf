@@ -39,9 +39,19 @@ module Berkshelf
         end
       end
 
+      # @return [Object]
       def dsl_eval(&block)
         self.class.clean_room.new(self).instance_eval(&block)
         self
+      end
+
+      # @param [String] filepath
+      #
+      # @return [Object]
+      def dsl_eval_file(filepath)
+        filepath = filepath.to_s
+        contents = File.read(filepath)
+        dsl_eval { eval(contents, binding, filepath, 1) }
       end
     end
   end

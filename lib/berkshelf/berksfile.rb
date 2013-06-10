@@ -6,8 +6,7 @@ module Berkshelf
       #
       # @return [Berksfile]
       def from_file(file)
-        contents = File.read(file.to_s)
-        object   = new(file).dsl_eval { eval(contents, binding, file.to_s, 1) }
+        new(file).dsl_eval_file(file)
       rescue Errno::ENOENT => ex
         raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
       rescue => ex

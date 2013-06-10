@@ -41,4 +41,15 @@ describe Berkshelf::Mixin::DSLEval do
       expect(subject).to be_a(klass)
     end
   end
+
+  describe "#dsl_eval_file" do
+    let(:filepath) { tmp_path.join('somefile') }
+    before { FileUtils.touch(filepath) }
+
+    subject { klass.new.dsl_eval_file(filepath) }
+
+    it "returns an instance of the including class" do
+      expect(subject).to be_a(klass)
+    end
+  end
 end
