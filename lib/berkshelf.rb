@@ -16,7 +16,7 @@ require 'zlib'
 
 require 'berkshelf/core_ext'
 require 'berkshelf/errors'
-require 'thor/monkies'
+require_relative 'berkshelf/thor_ext'
 
 JSON.create_id = nil
 
