@@ -456,8 +456,8 @@ module Berkshelf
 
       lockfile.reset_sha!
 
-      # NOTE: We intentionally do NOT pass options to the installer
-      self.install
+      # NOTE: We intentionally do NOT pass most options to the installer
+      self.install(path: options[:path])
     end
 
     # Get a list of all the cookbooks which have newer versions found on the community
