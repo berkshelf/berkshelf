@@ -765,7 +765,8 @@ module Berkshelf
         path = cookbook.path.to_s
 
         files = Dir.glob(File.join(path, '**', '*.rb')).select do |f|
-          f.gsub(path, '') =~ /[[:space:]]/
+          parent = Pathname.new(path).dirname.to_s
+          f.gsub(parent, '') =~ /[[:space:]]/
         end
 
         raise Berkshelf::InvalidCookbookFiles.new(cookbook, files) unless files.empty?
