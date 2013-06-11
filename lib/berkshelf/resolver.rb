@@ -15,80 +15,80 @@ module Berkshelf
     # @param [Berkshelf::Berksfile] berksfile
     # @param [Hash] options
     #
-    # @option options [Array<Berkshelf::Dependency>, Berkshelf::Dependency] sources
+    # @option options [Array<Berkshelf::Dependency>, Berkshelf::Dependency] dependencies
     def initialize(berksfile, options = {})
-      @berksfile  = berksfile
-      @downloader = berksfile.downloader
-      @graph      = Solve::Graph.new
-      @sources    = Hash.new
+      @berksfile    = berksfile
+      @downloader   = berksfile.downloader
+      @graph        = Solve::Graph.new
+      @dependencies = Hash.new
 
-      # Dependencies need to be added AFTER the sources. If they are
-      # not, then one of the dependencies of a source that is added
-      # may take precedence over an explicitly set source that appears
+      # Dependencies need to be added AFTER the dependencies. If they are
+      # not, then one of the dependencies of a dependency that is added
+      # may take precedence over an explicitly set dependency that appears
       # later in the iterator.
-      Array(options[:sources]).each do |source|
-        add_source(source, false)
+      Array(options[:dependencies]).each do |dependency|
+        add_dependency(dependency, false)
       end
 
       unless options[:skip_dependencies]
-        Array(options[:sources]).each do |source|
-          add_source_dependencies(source)
+        Array(options[:dependencies]).each do |dependency|
+          add_recursive_dependencies(dependency)
         end
       end
     end
 
-    # Add the given source to the collection of sources for this instance
-    # of Resolver. By default the dependencies of the given source will also
-    # be added as sources to the collection.
+    # Add the given dependency to the collection of dependencies for this instance
+    # of Resolver. By default the dependencies of the given dependency will also
+    # be added as dependencies to the collection.
     #
-    # @param [Berkshelf::Dependency] source
-    #   source to add
+    # @param [Berkshelf::Dependency] dependency
+    #   dependency to add
     # @param [Boolean] include_dependencies
-    #   adds the dependencies of the given source as sources to the collection of
+    #   adds the dependencies of the given dependency as dependencies to the collection of
     #   if true. Dependencies will be ignored if false.
     #
     # @return [Array<Berkshelf::Dependency>]
-    def add_source(source, include_dependencies = true)
-      if has_source?(source)
-        raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
+    def add_dependency(dependency, include_dependencies = true)
+      if has_dependency?(dependency)
+        raise DuplicateSourceDefined, "A dependency named '#{dependency.name}' is already present."
       end
 
-      @sources[source.name] = source
-      use_source(source) || install_source(source)
+      @dependencies[dependency.name] = dependency
+      use_dependency(dependency) || install_dependency(dependency)
 
-      graph.artifacts(source.name, source.cached_cookbook.version)
+      graph.artifacts(dependency.name, dependency.cached_cookbook.version)
 
       if include_dependencies
-        add_source_dependencies(source)
+        add_recursive_dependencies(dependency)
       end
 
-      sources
+      dependencies
     end
 
-    # Add the dependencies of the given source as sources in the collection of sources
-    # on this instance of Resolver. Any dependencies which already have a source in the
-    # collection of sources of the same name will not be added to the collection a second
+    # Add the dependencies of the given dependency as dependencies in the collection of dependencies
+    # on this instance of Resolver. Any dependencies which already have a dependency in the
+    # collection of dependencies of the same name will not be added to the collection a second
     # time.
     #
-    # @param [Berkshelf::Dependency] source
-    #   source to convert dependencies into sources
+    # @param [Berkshelf::Dependency] dependency
+    #   dependency to convert dependencies into dependencies
     #
     # @return [Array<Berkshelf::Dependency>]
-    def add_source_dependencies(source)
-      source.cached_cookbook.dependencies.each do |name, constraint|
-        next if has_source?(name)
+    def add_recursive_dependencies(dependency)
+      dependency.cached_cookbook.dependencies.each do |name, constraint|
+        next if has_dependency?(name)
 
-        add_source(Berkshelf::Dependency.new(berksfile, name, constraint: constraint))
+        add_dependency(Berkshelf::Dependency.new(berksfile, name, constraint: constraint))
       end
     end
 
     # @return [Array<Berkshelf::Dependency>]
     #   an array of Berkshelf::Dependencys that are currently added to this resolver
-    def sources
-      @sources.collect { |name, source| source }
+    def dependencies
+      @dependencies.collect { |name, dependency| dependency }
     end
 
-    # Finds a solution for the currently added sources and their dependencies and
+    # Finds a solution for the currently added dependencies and their dependencies and
     # returns an array of CachedCookbooks.
     #
     # @return [Array<Berkshelf::CachedCookbook>]
@@ -103,48 +103,48 @@ module Berkshelf
 
       [].tap do |cached_cookbooks|
         solution.each do |name, version|
-          cached_cookbooks << get_source(name).cached_cookbook
+          cached_cookbooks << get_dependency(name).cached_cookbook
         end
       end
     end
 
-    # @param [Berkshelf::Dependency, #to_s] source
-    #   name of the source to return
+    # @param [Berkshelf::Dependency, #to_s] dependency
+    #   name of the dependency to return
     #
     # @return [Berkshelf::Dependency]
-    def [](source)
-      if source.is_a?(Berkshelf::Dependency)
-        source = source.name
+    def [](dependency)
+      if dependency.is_a?(Berkshelf::Dependency)
+        dependency = dependency.name
       end
-      @sources[source.to_s]
+      @dependencies[dependency.to_s]
     end
-    alias_method :get_source, :[]
+    alias_method :get_dependency, :[]
 
-    # @param [CoobookSource, #to_s] source
-    #   the source to test if the resolver has added
-    def has_source?(source)
-      !get_source(source).nil?
+    # @param [CoobookSource, #to_s] dependency
+    #   the dependency to test if the resolver has added
+    def has_dependency?(dependency)
+      !get_dependency(dependency).nil?
     end
 
     private
 
       attr_reader :downloader
 
-      # @param [Berkshelf::Dependency] source
+      # @param [Berkshelf::Dependency] dependency
       #
       # @return [Boolean]
-      def install_source(source)
-        cached_cookbook, location = downloader.download(source)
-        Berkshelf.formatter.install(source.name, cached_cookbook.version, location)
+      def install_dependency(dependency)
+        cached_cookbook, location = downloader.download(dependency)
+        Berkshelf.formatter.install(dependency.name, cached_cookbook.version, location)
       end
 
-      # Use the given source to create a constraint solution if the source has been downloaded or can
+      # Use the given dependency to create a constraint solution if the dependency has been downloaded or can
       # be satisfied by a cached cookbook that is already present in the cookbook store.
       #
-      # @note Git location sources which have not yet been downloaded will not be satisfied by a
+      # @note Git location dependencies which have not yet been downloaded will not be satisfied by a
       #   cached cookbook from the cookbook store.
       #
-      # @param [Berkshelf::Dependency] source
+      # @param [Berkshelf::Dependency] dependency
       #
       # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
       #   this instance of Location.
@@ -152,13 +152,13 @@ module Berkshelf
       #   Berkshelf::Dependency.
       #
       # @return [Boolean]
-      def use_source(source)
-        name       = source.name
-        constraint = source.version_constraint
-        location   = source.location
+      def use_dependency(dependency)
+        name       = dependency.name
+        constraint = dependency.version_constraint
+        location   = dependency.location
 
-        if source.downloaded?
-          cached = source.cached_cookbook
+        if dependency.downloaded?
+          cached = dependency.cached_cookbook
           location.validate_cached(cached)
           Berkshelf.formatter.use(name, cached.version, location)
           true
@@ -168,7 +168,7 @@ module Berkshelf
           cached = downloader.cookbook_store.satisfy(name, constraint)
 
           if cached
-            get_source(source).cached_cookbook = cached
+            get_dependency(dependency).cached_cookbook = cached
             Berkshelf.formatter.use(name, cached.version)
             true
           else
