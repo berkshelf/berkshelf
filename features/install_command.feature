@@ -80,11 +80,52 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
+    Then the cookbook store should have the cookbooks installed by git:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     And the output should contain:
       """
       Installing berkshelf-cookbook-fixture (1.0.0) from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
+      """
+    And the exit status should be 0
+
+  Scenario: installing a Berksfile that contains a Git location that has already been downloaded
+    Given I write to "Berksfile" with:
+      """
+      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
+      """
+    And the cookbook store has the cookbooks installed by git:
+      | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
+    And I successfully run `berks install`
+    When I successfully run `berks install`
+    Then the exit status should be 0
+
+  Scenario: installing a Berksfile that contains a Git location with a rel
+    Given I write to "Berksfile" with:
+      """
+      cookbook "berkshelf-cookbook-fixture", github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the cookbooks installed by git:
+      | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
+    And the output should contain:
+      """
+      Installing berkshelf-cookbook-fixture (1.0.0)
+      """
+    And the exit status should be 0
+
+  Scenario: installing a Berksfile that contains a Git location with a rel that has already been downloaded
+    Given I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
+      """
+    And the cookbook store has the cookbooks installed by git:
+      | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
+    And I successfully run `berks install`
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Installing berkshelf-cookbook-fixture (1.0.0)
       """
     And the exit status should be 0
 
@@ -94,7 +135,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
+    Then the cookbook store should have the cookbooks installed by git:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
@@ -108,7 +149,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
+    Then the cookbook store should have the cookbooks installed by git:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
@@ -122,7 +163,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
+    Then the cookbook store should have the cookbooks installed by git:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
@@ -136,7 +177,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v1.0.0", protocol: "<protocol>"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
+    Then the cookbook store should have the cookbooks installed by git:
       | berkshelf-cookbook-fixture | 1.0.0 | b4f968c9001ad8de30f564a2107fab9cfa91f771 |
     And the output should contain:
       """
@@ -251,6 +292,39 @@ Feature: install cookbooks from a Berksfile
       Berksfile contains multiple sources named 'berkshelf-cookbook-fixture'. Use only one, or put them in different groups.
       """
     And the CLI should exit with the status code for error "DuplicateSourceDefined"
+
+  Scenario: When a version constraint in the metadata exists, but does not satisfy
+    Given a cookbook named "fake"
+    And I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', path: './fake'
+      """
+    And the cookbook "fake" has the file "metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.0'
+
+      depends 'berkshelf-cookbook-fixture', '~> 0.2.0'
+      """
+    And the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 0.2.0 |
+    And I successfully run `berks install`
+    And the cookbook "fake" has the file "metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.0'
+
+      depends 'berkshelf-cookbook-fixture', '~> 1.0.0'
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Installing berkshelf-cookbook-fixture (1.0.0)
+      """
+    And the cookbook store should have the cookbooks:
+      | berkshelf-cookbook-fixture | 1.0.0 |
+    And the exit status should be 0
 
   Scenario: installing when a git source defines a branch that does not satisfy the version constraint
     Given I write to "Berksfile" with:

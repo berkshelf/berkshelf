@@ -2,10 +2,27 @@ require 'spec_helper'
 
 describe Berkshelf::Berksfile do
   describe '.from_file' do
-    let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
+    let(:content) do
+      <<-EOF.strip
+      cookbook 'ntp', '<= 1.0.0'
+      cookbook 'mysql'
+      cookbook 'nginx', '< 0.101.2'
+      cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
+      EOF
+    end
+    let(:berksfile) { tmp_path.join('Berksfile') }
 
-    it 'reads a Berksfile and returns an instance Berksfile' do
-      expect(Berkshelf::Berksfile.from_file(cookbook_file)).to be_a(Berkshelf::Berksfile)
+    before { File.open(berksfile, 'w+') { |f| f.write(content) } }
+    subject(:from_file) { described_class.from_file(berksfile) }
+
+    it "reads the content of the Berksfile and binds them to a new instance" do
+      %w(ntp mysql nginx ssh_known_hosts2).each do |name|
+        expect(subject).to have_source(name)
+      end
+    end
+
+    it "returns an instance of Berkshelf::Berksfile" do
+      expect(subject).to be_a(described_class)
     end
 
     context 'when Berksfile does not exist at given path' do
@@ -262,10 +279,7 @@ describe Berkshelf::Berksfile do
       Berkshelf::Resolver.stub(:new).and_return(resolver)
       Berkshelf::Lockfile.stub(:new).and_return(lockfile)
 
-      subject.stub(:sha).and_return('abc123')
-
       lockfile.stub(:sources).and_return([])
-      lockfile.stub(:sha).and_return('xyz456')
 
       resolver.stub(:sources).and_return([])
       lockfile.stub(:update)
@@ -291,7 +305,7 @@ describe Berkshelf::Berksfile do
 
       it 'writes a lockfile with the resolvers sources' do
         resolver.should_receive(:resolve)
-        lockfile.should_receive(:update).with([], sha: 'abc123')
+        lockfile.should_receive(:update).with([])
 
         subject.install
       end
@@ -337,29 +351,6 @@ describe Berkshelf::Berksfile do
         subject.should_receive(:sources).with(only: [:skip_me]).and_return(sources)
         subject.install(only: [:skip_me])
       end
-    end
-  end
-
-  describe '#load' do
-    let(:content) do
-      <<-EOF.strip
-      cookbook 'ntp', '<= 1.0.0'
-      cookbook 'mysql'
-      cookbook 'nginx', '< 0.101.2'
-      cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
-      EOF
-    end
-
-    it 'reads the content of a Berksfile and adds the sources to the Shelf' do
-      subject.load(content)
-
-      %w(ntp mysql nginx ssh_known_hosts2).each do |name|
-        expect(subject).to have_source(name)
-      end
-    end
-
-    it 'returns an instance of Berksfile' do
-      expect(subject.load(content)).to be_a(Berkshelf::Berksfile)
     end
   end
 

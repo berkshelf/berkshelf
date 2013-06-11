@@ -1,3 +1,14 @@
+# 2.0.3
+
+* Fix issue where groups defined in the Berksfile would not be evaluated
+
+# 2.0.2
+
+* Fix issue with shellout on Windows. This would effect uploads and downloads of cookbooks using the Git location.
+* The Berksfile DSL now evaluates in a clean room to prevent end-users from calling restricted methods.
+* Fix issue with `berks upload -D` not properly skipping dependencies
+* Added friendly error message when an unknown license is chosen during cookbook generation
+
 # 2.0.1
 
 * Improve performance of `berks upload`. It will now properly respect the Lockfile

@@ -263,3 +263,34 @@ Feature: Uploading cookbooks to a Chef Server
       The cookbook 'cookbook with spaces' has invalid filenames:
       """
     And the CLI should exit with the status code for error "InvalidCookbookFiles"
+
+    @chef_server @slow_process
+  Scenario: With the --skip-dependencies flag
+    Given the cookbook store has the cookbooks:
+      | fake  | 1.0.0 |
+      | ekaf  | 2.0.0 |
+    And the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
+      | fake | ~> 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      cookbook 'fake', '1.0.0'
+      cookbook 'ekaf', '2.0.0'
+      cookbook 'reset', '3.4.5'
+      """
+    And the Chef server does not have the cookbooks:
+      | fake  | 1.0.0 |
+      | ekaf  | 2.0.0 |
+      | reset | 3.4.5 |
+    When I successfully run `berks upload reset -D`
+    Then the output should contain:
+      """
+      Uploading reset (3.4.5) to: 'http://localhost:4000/'
+      Uploading fake (1.0.0) to: 'http://localhost:4000/'
+      """
+    And the Chef server should have the cookbooks:
+      | reset | 3.4.5 |
+      | fake  | 1.0.0 |
+    And the Chef server should not have the cookbooks:
+      | ekaf  | 2.0.0 |
+    And the exit status should be 0
+
