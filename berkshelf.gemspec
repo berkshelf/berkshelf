@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve',             '>= 0.4.4'
   s.add_dependency 'test-kitchen',      '>= 1.0.0.alpha7'
   s.add_dependency 'thor',              '~> 0.18.0'
+  s.add_dependency 'rbzip2',            '~> 0.2.0'
 
   s.add_development_dependency 'aruba',         '~> 0.5'
   s.add_development_dependency 'cane',          '~> 2.5'

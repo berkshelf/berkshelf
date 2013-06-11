@@ -16,6 +16,8 @@ module Berkshelf
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
         elsif is_tar_file(target)
           Archive::Tar::Minitar.unpack(target, destination)
+        elsif is_bzip2_file(target)
+          Archive::Tar::Minitar.unpack(RBzip2::Decompressor.new(File.open(target, 'rb')), destination)
         else
           raise Berkshelf::UnknownCompressionType.new(target)
         end
@@ -45,6 +47,10 @@ module Berkshelf
 
         def is_tar_file(path)
           IO.binread(path, 8, 257).to_s == "ustar\x0000"
+        end
+
+        def is_bzip2_file(path)
+          IO.binread(path, 3) == 'BZh'
         end
     end
 
