@@ -569,6 +569,12 @@ describe Berkshelf::Berksfile do
   end
 
   describe "#remove_dependency" do
-    pending
+    let(:dependency) { "nginx" }
+    before { subject.add_dependency(dependency) }
+
+    it "removes a dependencies from the list" do
+      subject.remove_dependency(dependency)
+      expect(subject.dependencies).to have(0).items
+    end
   end
 end
