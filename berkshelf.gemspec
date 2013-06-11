@@ -3,30 +3,30 @@ require File.expand_path('../lib/berkshelf/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.authors               = [
-    "Jamie Winsor",
-    "Josiah Kiehl",
-    "Michael Ivey",
-    "Justin Campbell"
+    'Jamie Winsor',
+    'Josiah Kiehl',
+    'Michael Ivey',
+    'Justin Campbell'
   ]
   s.email                 = [
-    "reset@riotgames.com",
-    "jkiehl@riotgames.com",
-    "michael.ivey@riotgames.com",
-    "justin.campbell@riotgames.com"
+    'reset@riotgames.com',
+    'jkiehl@riotgames.com',
+    'michael.ivey@riotgames.com',
+    'justin.campbell@riotgames.com'
   ]
 
   s.description               = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
   s.summary                   = s.description
-  s.homepage                  = "http://berkshelf.com"
-  s.license                   = "Apache 2.0"
+  s.homepage                  = 'http://berkshelf.com'
+  s.license                   = 'Apache 2.0'
   s.files                     = `git ls-files`.split($\)
   s.executables               = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   s.test_files                = s.files.grep(%r{^(test|spec|features)/})
-  s.name                      = "berkshelf"
-  s.require_paths             = ["lib"]
+  s.name                      = 'berkshelf'
+  s.require_paths             = ['lib']
   s.version                   = Berkshelf::VERSION
-  s.required_ruby_version     = ">= 1.9.1"
-  s.required_rubygems_version = ">= 1.8.0"
+  s.required_ruby_version     = '>= 1.9.1'
+  s.required_rubygems_version = '>= 1.8.0'
 
   s.add_dependency 'celluloid', '>= 0.14.0'
   s.add_dependency 'yajl-ruby'
@@ -45,14 +45,23 @@ Gem::Specification.new do |s|
   s.add_dependency 'retryable'
   s.add_dependency 'addressable'
 
-  s.add_development_dependency 'aruba'
-  s.add_development_dependency 'cane'
-  s.add_development_dependency 'json_spec'
-  s.add_development_dependency 'rake', '>= 0.9.2.2'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'spork'
-  s.add_development_dependency 'thor'
-  s.add_development_dependency 'webmock'
-  s.add_development_dependency 'vcr', '~> 2.4.0'
+  s.add_development_dependency 'aruba',         '~> 0.5'
+  s.add_development_dependency 'cane',          '~> 2.5'
+  s.add_development_dependency 'chef-zero',     '~> 1.0'
+  s.add_development_dependency 'fuubar',        '~> 1.1'
+  s.add_development_dependency 'json_spec',     '~> 1.1'
+  s.add_development_dependency 'rake',          '~> 0.9'
+  s.add_development_dependency 'rspec',         '~> 2.13'
+  s.add_development_dependency 'spork',         '~> 0.9'
+  s.add_development_dependency 'vcr',           '~> 2.4'
+  s.add_development_dependency 'webmock',       '~> 1.11'
+  s.add_development_dependency 'yard',          '~> 0.8'
+
+  # Guard extensions for development
+  s.add_development_dependency 'guard',         '~> 1.8'
+  s.add_development_dependency 'guard-cane'
+  s.add_development_dependency 'guard-cucumber'
+  s.add_development_dependency 'guard-rspec'
+  s.add_development_dependency 'guard-spork'
+  s.add_development_dependency 'guard-yard'
 end

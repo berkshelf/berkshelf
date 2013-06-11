@@ -506,6 +506,8 @@ module Berkshelf
       solution.each do |cb|
         Berkshelf.formatter.upload(cb.cookbook_name, cb.version, conn.server_url)
 
+        validate_files!(cb)
+
         begin
           conn.cookbook.upload(cb.path, upload_opts.merge(name: cb.cookbook_name))
         rescue Ridley::Errors::FrozenCookbook => ex
@@ -601,6 +603,21 @@ module Berkshelf
 
       def update_lockfile(sources)
         Berkshelf::Lockfile.update!(sources)
+      end
+
+      # Validate that the given cookbook does not have "bad" files. Currently
+      # this means including spaces in filenames (such as recipes)
+      #
+      # @param [Berkshelf::CachedCookbook] cookbook
+      #  the Cookbook to validate
+      def validate_files!(cookbook)
+        path = cookbook.path.to_s
+
+        files = Dir.glob(File.join(path, '**', '*.rb')).select do |f|
+          f =~ /[[:space:]]/
+        end
+
+        raise Berkshelf::InvalidCookbookFiles.new(cookbook, files) unless files.empty?
       end
   end
 end

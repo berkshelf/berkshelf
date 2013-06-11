@@ -10,12 +10,16 @@ module Berkshelf
       @mute = false
     end
 
-    def say(message = "", color = nil, force_new_line = nil)
+    def say(message = '', color = nil, force_new_line = (message.to_s !~ /( |\t)\Z/))
       return if quiet?
 
-      super(message, color)
+      super(message, color, force_new_line)
     end
-    alias_method :info, :say
+
+    # @see {say}
+    def info(message = '', color = nil, force_new_line = (message.to_s !~ /( |\t)\Z/))
+      say(message, color, force_new_line)
+    end
 
     def say_status(status, message, log_status = true)
       return if quiet?
@@ -25,7 +29,7 @@ module Berkshelf
 
     def warn(message, color = :yellow)
       return if quiet?
-      
+
       say(message, color)
     end
 

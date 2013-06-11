@@ -29,7 +29,7 @@
 
 # 1.3.1
 - Support for Vagrant 1.1.x
-- Move Berkshelf Vagrant plugin into it's [own repository](https://github.com/RiotGames/berkshelf-vagrant)
+- Move Berkshelf Vagrant plugin into it's [own repository](https://github.com/RiotGames/vagrant-berkshelf)
 - Added -d flag to output debug information in berks command
 - Various bug fixes in uploading cookbooks
 
