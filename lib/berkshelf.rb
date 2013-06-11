@@ -124,6 +124,20 @@ module Berkshelf
       @formatter = Formatters[format_id].new
     end
 
+    # The string representation of Berkshelf.
+    #
+    # @return [String]
+    def to_s
+      "#<Berkshelf #{berkshelf_path}>"
+    end
+
+    # The detailed string representation of Berkshelf.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf #{berkshelf_path}, cookbooks_dir: #{cookbooks_dir}>"
+    end
+
     private
 
       def null_stream

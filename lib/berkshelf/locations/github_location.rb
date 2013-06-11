@@ -43,7 +43,24 @@ module Berkshelf
       end
     end
 
+    # The string representation of the Resolver.
+    #
+    # @return [String]
     def to_s
+      "#<Berkshelf::GithubLocation #{repo_identifier}>"
+    end
+
+    # The detailed string representation of the Resolver.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::GithubLocation #{repo_identifier}@#{branch}, " +
+        "name: #{name}, " +
+        "protocol: #{protocol}" +
+      ">"
+    end
+
+    def info
       s = "#{self.class.location_key}: '#{repo_identifier}'"
       s << " with branch: '#{branch}'" if branch
       s << " over protocol: '#{protocol}'"

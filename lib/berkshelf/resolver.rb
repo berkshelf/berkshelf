@@ -126,6 +126,23 @@ module Berkshelf
       !get_source(source).nil?
     end
 
+    # The string representation of the Resolver.
+    #
+    # @return [String]
+    def to_s
+      "#<Berkshelf::Resolver berksfile: #{berksfile.path}>"
+    end
+
+    # The detailed string representation of the Resolver.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::Resolver " +
+        "berksfile: #{berksfile.path}, " +
+        "sources: [#{sources.map(&:name_and_version).join(', ')}]" +
+      ">"
+    end
+
     private
 
       attr_reader :downloader
@@ -167,7 +184,7 @@ module Berkshelf
           get_source(source).cached_cookbook = cached
         end
 
-        path = source.location.is_a?(PathLocation) ? source.location.to_s : nil
+        path = source.location.is_a?(PathLocation) ? source.location.info : nil
         Berkshelf.formatter.use(cached.cookbook_name, cached.version, path)
 
         true

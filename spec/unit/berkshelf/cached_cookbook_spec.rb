@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe Berkshelf::CachedCookbook do
-  describe '.from_store_path' do
-    let(:path) { fixtures_path.join('cookbooks', 'example_cookbook-0.5.0') }
-    let(:cached) { Berkshelf::CachedCookbook.from_path(path) }
+  let(:path) { fixtures_path.join('cookbooks', 'example_cookbook-0.5.0') }
+  let(:cached) { Berkshelf::CachedCookbook.from_path(path) }
 
+  describe '.from_store_path' do
     it 'returns a CachedCookbook' do
       expect(cached).to be_a(Berkshelf::CachedCookbook)
     end
@@ -46,6 +46,7 @@ describe Berkshelf::CachedCookbook do
     end
   end
 
+  subject { cached }
 
   describe '#dependencies' do
     let(:dependencies) { { 'mysql' => '= 1.2.0', 'ntp' => '>= 0.0.0' } }
@@ -63,6 +64,18 @@ describe Berkshelf::CachedCookbook do
 
     it 'contains recommendations from the cookbook metadata' do
       expect(subject.dependencies).to include(recommendations)
+    end
+  end
+
+  describe '#to_s' do
+    it 'includes the name and version' do
+      expect(subject.to_s).to eq("#<Berkshelf::CachedCookbook example_cookbook (0.5.0)>")
+    end
+  end
+
+  describe '#inspect' do
+    it 'includes the metadata information' do
+      expect(subject.inspect).to eq("#<Berkshelf::CachedCookbook example_cookbook (0.5.0), description: Installs/Configures example_cookbook, author: Josiah Kiehl, email: jkiehl@riotgames.com, license: DO WHAT YOU WANT CAUSE A PIRATE IS FREE, platforms: {}, dependencies: {}>")
     end
   end
 end
