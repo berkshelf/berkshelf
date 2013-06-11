@@ -1,4 +1,5 @@
 require 'uri'
+require 'mixin/shell_out'
 
 module Berkshelf
   class Git
@@ -9,7 +10,7 @@ module Berkshelf
     HAS_SPACE_RE = %r{\s}.freeze
 
     class << self
-      include Ridley::Mixin::ShellOut
+      include ::Mixin::ShellOut
 
       # @overload git(commands)
       #   Shellout to the Git executable on your system with the given commands.
