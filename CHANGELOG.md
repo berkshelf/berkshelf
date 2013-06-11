@@ -1,3 +1,7 @@
+# 1.4.6
+
+- Backport bug fixes from 2.0.2
+
 # 1.4.4
 
 - Bump Ridley dependency to 0.12, bringing in many bugfixes.
