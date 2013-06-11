@@ -237,7 +237,6 @@ Feature: install cookbooks from a Berksfile
       """
     And the CLI should exit with the status code for error "DuplicateSourceDefined"
 
-  # @see #103, #494
   Scenario: When a version constraint in the metadata exists, but does not satisfy
     Given a cookbook named "fake"
     And I write to "Berksfile" with:
