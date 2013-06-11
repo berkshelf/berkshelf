@@ -278,6 +278,39 @@ Feature: install cookbooks from a Berksfile
       """
     And the CLI should exit with the status code for error "DuplicateSourceDefined"
 
+  Scenario: When a version constraint in the metadata exists, but does not satisfy
+    Given a cookbook named "fake"
+    And I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', path: './fake'
+      """
+    And the cookbook "fake" has the file "metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.0'
+
+      depends 'berkshelf-cookbook-fixture', '~> 0.2.0'
+      """
+    And the cookbook store has the cookbooks:
+      | berkshelf-cookbook-fixture | 0.2.0 |
+    And I successfully run `berks install`
+    And the cookbook "fake" has the file "metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.0'
+
+      depends 'berkshelf-cookbook-fixture', '~> 1.0.0'
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Installing berkshelf-cookbook-fixture (1.0.0)
+      """
+    And the cookbook store should have the cookbooks:
+      | berkshelf-cookbook-fixture | 1.0.0 |
+    And the exit status should be 0
+
   Scenario: installing when a git source defines a branch that does not satisfy the version constraint
     Given I write to "Berksfile" with:
       """
