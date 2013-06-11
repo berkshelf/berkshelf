@@ -22,8 +22,8 @@ module Berkshelf
 
             Class.new(DSLEval::CleanRoom) do
               exposed_methods.each do |exposed_method|
-                define_method(exposed_method) do |*args|
-                  instance.send(exposed_method, *args)
+                define_method(exposed_method) do |*args, &block|
+                  instance.send(exposed_method, *args, &block)
                 end
               end
             end
