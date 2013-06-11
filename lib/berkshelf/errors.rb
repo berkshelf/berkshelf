@@ -11,6 +11,7 @@ module Berkshelf
     alias_method :message, :to_s
   end
 
+  class DeprecatedError < BerkshelfError; status_code(10); end
   class InternalError < BerkshelfError; status_code(99); end
   class ArgumentError < InternalError; end
   class AbstractFunction < InternalError
