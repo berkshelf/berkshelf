@@ -268,7 +268,7 @@ module Berkshelf
     #
     # @return [Berkshelf::Dependency]
     def remove_dependency(dependency)
-      @dependenciesz.delete(dependency.to_s)
+      @dependencies.delete(dependency.to_s)
     end
 
     # @param [#to_s] dependency
@@ -333,7 +333,7 @@ module Berkshelf
     end
 
     # @return [Hash]
-    #   a hash containing group names as keys and an array of Berkshelf::Dependencys
+    #   a hash containing group names as keys and an array of Berkshelf::Dependencies
     #   that are a member of that group as values
     #
     #   Example:
