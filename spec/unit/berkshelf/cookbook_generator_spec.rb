@@ -17,7 +17,6 @@ describe Berkshelf::CookbookGenerator do
     specify do
       expect(target).to have_structure {
         directory 'attributes'
-        directory 'definitions'
         directory 'files' do
           directory 'default'
         end
