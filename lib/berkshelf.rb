@@ -14,8 +14,9 @@ require 'tmpdir'
 require 'uri'
 require 'zlib'
 
-require 'berkshelf/core_ext'
-require 'berkshelf/errors'
+require_relative 'berkshelf/core_ext'
+require_relative 'berkshelf/errors'
+require_relative 'berkshelf/mixin'
 require_relative 'berkshelf/thor_ext'
 
 JSON.create_id = nil
@@ -24,7 +25,6 @@ module Berkshelf
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
-    require 'berkshelf/mixin/logging'
     include Berkshelf::Mixin::Logging
 
     attr_accessor :ui

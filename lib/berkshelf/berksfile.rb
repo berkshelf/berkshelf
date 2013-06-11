@@ -1,21 +1,16 @@
 module Berkshelf
   class Berksfile
-    require 'berkshelf/mixin/logging'
-    include Berkshelf::Mixin::Logging
-
-    extend Forwardable
-
     class << self
-      # @param [String] file
+      # @param [#to_s] file
       #   a path on disk to a Berksfile to instantiate from
       #
       # @return [Berksfile]
       def from_file(file)
-        content = File.read(file)
-        object = new(file)
-        object.load(content)
-      rescue Errno::ENOENT => e
+        new(file).dsl_eval_file(file)
+      rescue Errno::ENOENT => ex
         raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
+      rescue => ex
+        raise BerksfileReadError.new(ex)
       end
 
       # Copy all cached_cookbooks to the given directory. Each cookbook will be contained in
@@ -59,6 +54,16 @@ module Berkshelf
         path
       end
     end
+
+    include Berkshelf::Mixin::Logging
+    include Berkshelf::Mixin::DSLEval
+    extend Forwardable
+
+    expose_method :metadata
+    expose_method :group
+    expose_method :site
+    expose_method :chef_api
+    expose_method :cookbook
 
     @@active_group = nil
 
@@ -679,23 +684,6 @@ module Berkshelf
       )
 
       { solution: resolver.resolve, sources: resolver.sources }
-    end
-
-    # Reload this instance of Berksfile with the given content. The content
-    # is a string that may contain terms from the included DSL.
-    #
-    # @param [String] content
-    #
-    # @raise [BerksfileReadError] if Berksfile contains bad content
-    #
-    # @return [Berksfile]
-    def load(content)
-      begin
-        instance_eval(content)
-      rescue => e
-        raise BerksfileReadError.new(e)
-      end
-      self
     end
 
     # Get the lockfile corresponding to this Berksfile. This is necessary because
