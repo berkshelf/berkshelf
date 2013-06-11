@@ -1,10 +1,10 @@
+require_relative 'dependency'
+
 module Berkshelf
   # The object representation of the Berkshelf lockfile. The lockfile is useful
   # when working in teams where the same cookbook versions are desired across
   # multiple workstations.
   class Lockfile
-    require_relative 'cookbook_source'
-
     # @return [Pathname]
     #   the path to this Lockfile
     attr_reader :filepath
@@ -43,13 +43,13 @@ module Berkshelf
       end
 
       hash[:sources].each do |name, options|
-        add(CookbookSource.new(berksfile, name.to_s, options))
+        add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
       end
     end
 
     # The list of sources constrained in this lockfile.
     #
-    # @return [Array<Berkshelf::CookbookSource>]
+    # @return [Array<Berkshelf::Dependency>]
     #   the list of sources in this lockfile
     def sources
       @sources.values
@@ -59,9 +59,9 @@ module Berkshelf
     # attribute which may either be the name of a cookbook (String) or an
     # actual cookbook source.
     #
-    # @param [String, Berkshelf::CookbookSource] source
+    # @param [String, Berkshelf::Dependency] source
     #   the cookbook source/name to find
-    # @return [CookbookSource, nil]
+    # @return [Berkshelf::Dependency, nil]
     #   the cookbook source from this lockfile or nil if one was not found
     def find(source)
       @sources[cookbook_name(source).to_s]
@@ -69,7 +69,7 @@ module Berkshelf
 
     # Determine if this lockfile contains the given source.
     #
-    # @param [String, Berkshelf::CookbookSource] source
+    # @param [String, Berkshelf::Dependency] source
     #   the cookbook source/name to determine existence of
     # @return [Boolean]
     #   true if the source exists, false otherwise
@@ -80,7 +80,7 @@ module Berkshelf
     # Replace the current list of sources with `sources`. This method does
     # not write out the lockfile - it only changes the state of the object.
     #
-    # @param [Array<Berkshelf::CookbookSource>] sources
+    # @param [Array<Berkshelf::Dependency>] sources
     #   the list of sources to update
     def update(sources)
       reset_sources!
@@ -90,7 +90,7 @@ module Berkshelf
 
     # Add the given source to the `sources` list, if it doesn't already exist.
     #
-    # @param [Berkshelf::CookbookSource] source
+    # @param [Berkshelf::Dependency] source
     #   the source to append to the sources list
     def add(source)
       @sources[cookbook_name(source)] = source
@@ -101,7 +101,7 @@ module Berkshelf
     # attribute which may either be the name of a cookbook (String) or an
     # actual cookbook source.
     #
-    # @param [String, Berkshelf::CookbookSource] source
+    # @param [String, Berkshelf::Dependency] source
     #   the cookbook source/name to remove
     #
     # @raise [Berkshelf::CookbookNotFound]
@@ -165,13 +165,13 @@ module Berkshelf
       # Return the name of this cookbook (because it's the key in our
       # table).
       #
-      # @param [Berkshelf::CookbookSource, #to_s] source
+      # @param [Berkshelf::Dependency, #to_s] source
       #   the source to find the name from
       #
       # @return [String]
       #   the name of the cookbook
       def cookbook_name(source)
-        source.is_a?(CookbookSource) ? source.name : source.to_s
+        source.is_a?(Berkshelf::Dependency) ? source.name : source.to_s
       end
 
       # Legacy support for old lockfiles

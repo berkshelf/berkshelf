@@ -1,9 +1,9 @@
+require_relative 'dependency'
+require_relative 'locations/git_location'
+require_relative 'locations/path_location'
+
 module Berkshelf
   class Resolver
-    require_relative 'cookbook_source'
-    require_relative 'locations/git_location'
-    require_relative 'locations/path_location'
-
     extend Forwardable
 
     # @return [Berkshelf::Berksfile]
@@ -15,7 +15,7 @@ module Berkshelf
     # @param [Berkshelf::Berksfile] berksfile
     # @param [Hash] options
     #
-    # @option options [Array<CookbookSource>, CookbookSource] sources
+    # @option options [Array<Berkshelf::Dependency>, Berkshelf::Dependency] sources
     def initialize(berksfile, options = {})
       @berksfile  = berksfile
       @downloader = berksfile.downloader
@@ -41,13 +41,13 @@ module Berkshelf
     # of Resolver. By default the dependencies of the given source will also
     # be added as sources to the collection.
     #
-    # @param [Berkshelf::CookbookSource] source
+    # @param [Berkshelf::Dependency] source
     #   source to add
     # @param [Boolean] include_dependencies
     #   adds the dependencies of the given source as sources to the collection of
     #   if true. Dependencies will be ignored if false.
     #
-    # @return [Array<CookbookSource>]
+    # @return [Array<Berkshelf::Dependency>]
     def add_source(source, include_dependencies = true)
       if has_source?(source)
         raise DuplicateSourceDefined, "A source named '#{source.name}' is already present."
@@ -70,20 +70,20 @@ module Berkshelf
     # collection of sources of the same name will not be added to the collection a second
     # time.
     #
-    # @param [CookbookSource] source
+    # @param [Berkshelf::Dependency] source
     #   source to convert dependencies into sources
     #
-    # @return [Array<CookbookSource>]
+    # @return [Array<Berkshelf::Dependency>]
     def add_source_dependencies(source)
       source.cached_cookbook.dependencies.each do |name, constraint|
         next if has_source?(name)
 
-        add_source(CookbookSource.new(berksfile, name, constraint: constraint))
+        add_source(Berkshelf::Dependency.new(berksfile, name, constraint: constraint))
       end
     end
 
-    # @return [Array<Berkshelf::CookbookSource>]
-    #   an array of CookbookSources that are currently added to this resolver
+    # @return [Array<Berkshelf::Dependency>]
+    #   an array of Berkshelf::Dependencys that are currently added to this resolver
     def sources
       @sources.collect { |name, source| source }
     end
@@ -108,12 +108,12 @@ module Berkshelf
       end
     end
 
-    # @param [CookbookSource, #to_s] source
+    # @param [Berkshelf::Dependency, #to_s] source
     #   name of the source to return
     #
-    # @return [Berkshelf::CookbookSource]
+    # @return [Berkshelf::Dependency]
     def [](source)
-      if source.is_a?(CookbookSource)
+      if source.is_a?(Berkshelf::Dependency)
         source = source.name
       end
       @sources[source.to_s]
@@ -130,7 +130,7 @@ module Berkshelf
 
       attr_reader :downloader
 
-      # @param [Berkshelf::CookbookSource] source
+      # @param [Berkshelf::Dependency] source
       #
       # @return [Boolean]
       def install_source(source)
@@ -144,12 +144,12 @@ module Berkshelf
       # @note Git location sources which have not yet been downloaded will not be satisfied by a
       #   cached cookbook from the cookbook store.
       #
-      # @param [Berkshelf::CookbookSource] source
+      # @param [Berkshelf::Dependency] source
       #
       # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
       #   this instance of Location.
       #   contain a cookbook that satisfies the given version constraint of this instance of
-      #   CookbookSource.
+      #   Berkshelf::Dependency.
       #
       # @return [Boolean]
       def use_source(source)

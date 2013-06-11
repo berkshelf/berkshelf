@@ -21,8 +21,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-
-
   subject { Berkshelf::Lockfile.new(berksfile) }
 
   describe '#sources' do
@@ -110,7 +108,7 @@ describe Berkshelf::Lockfile do
 
   describe '#inspect' do
     it 'returns a pretty-formatted, detailed string' do
-      expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>'
+      expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::Dependency: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::Dependency: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>'
     end
   end
 

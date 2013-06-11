@@ -1,8 +1,8 @@
+require_relative 'dependency'
+require_relative 'location'
+
 module Berkshelf
   class Downloader
-    require_relative 'cookbook_source'
-    require_relative 'location'
-
     extend Forwardable
 
     DEFAULT_LOCATIONS = [
@@ -60,9 +60,9 @@ module Berkshelf
       @locations.select { |loc| loc[:type] == type && loc[:value] == value }.any?
     end
 
-    # Download the given CookbookSource.
+    # Download the given Berkshelf::Dependency.
     #
-    # @param [CookbookSource] source
+    # @param [Berkshelf::Dependency] source
     #   the source to download
     #
     # @return [Array]
@@ -98,14 +98,21 @@ module Berkshelf
 
     private
 
-      # Attempt to download the the given source from the given location, #
-      # raising an error if `raise_if_not_found` is specified.
+      # Attempt to download the dependency from the given location. If the dependency does
+      # not explicity specify a location to retrieve it from, the downloader will attempt to
+      # retrieve the dependency from each of the default locations until it is found.
+      #
+      # @note
+      #   a dependency is said to have an explicit location if it has a value for {#location}
+      #
+      # @note
+      #   an error will be raised if `raise_if_not_found` is specified.
       #
       # @raise [Bershelf::CookbookNotFound]
       #   if `raise_if_not_found` is true and the source could not be
       #   downloaded
       #
-      # @param [Berkshelf::CookbookSource] source
+      # @param [Berkshelf::Dependency] source
       #   the source to download
       # @param [~Berkshelf::Location] location
       #   the location to download from

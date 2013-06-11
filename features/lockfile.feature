@@ -422,4 +422,4 @@ Feature: Creating and reading the Berkshelf lockfile
 
       Try running `berks update berkshelf-cookbook-fixture, which will try to find  'berkshelf-cookbook-fixture' matching '~> 1.3.0'
       """
-    And the CLI should exit with the status code for error "OutdatedCookbookSource"
+    And the CLI should exit with the status code for error "OutdatedDependency"

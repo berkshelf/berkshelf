@@ -181,7 +181,7 @@ describe Berkshelf::Berksfile do
       ]
     end
 
-    it 'returns all CookbookSources added to the instance of Berksfile' do
+    it 'returns all Berkshelf::Dependencys added to the instance of Berksfile' do
       subject.add_source(source_one.name)
       subject.add_source(source_two.name)
 
@@ -245,7 +245,7 @@ describe Berkshelf::Berksfile do
       expect(subject.groups).to have_key(:riven)
     end
 
-    it 'returns an Array of CookbookSources who are members of the group for value' do
+    it 'returns an Array of Berkshelf::Dependencys who are members of the group for value' do
       expect(subject.groups[:nautilus]).to have(2).items
       expect(subject.groups[:riven]).to have(1).item
     end
