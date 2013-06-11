@@ -1,3 +1,7 @@
+# 2.0.3
+
+* Fix issue where groups defined in the Berksfile would not be evaluated
+
 # 2.0.2
 
 * Fix issue with shellout on Windows. This would effect uploads and downloads of cookbooks using the Git location.
