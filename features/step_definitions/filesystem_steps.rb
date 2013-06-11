@@ -56,6 +56,19 @@ Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
   end
 end
 
+Given /^the cookbook store has the git cookbooks:$/ do |cookbooks|
+  cookbooks.raw.each do |name, version, sha|
+    folder   = "#{name}-#{sha}"
+    metadata = File.join(folder, 'metadata.rb')
+
+    create_dir(folder)
+    write_file(metadata, [
+      "name '#{name}'",
+      "version '#{version}'"
+    ].join("\n"))
+  end
+end
+
 Given /^the cookbook store contains a cookbook "(.*?)" "(.*?)" with dependencies:$/ do |name, version, dependencies|
   generate_cookbook(cookbook_store, name, version, dependencies: dependencies.raw)
 end
