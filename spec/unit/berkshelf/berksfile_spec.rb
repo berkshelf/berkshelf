@@ -279,10 +279,7 @@ describe Berkshelf::Berksfile do
       Berkshelf::Resolver.stub(:new).and_return(resolver)
       Berkshelf::Lockfile.stub(:new).and_return(lockfile)
 
-      subject.stub(:sha).and_return('abc123')
-
       lockfile.stub(:sources).and_return([])
-      lockfile.stub(:sha).and_return('xyz456')
 
       resolver.stub(:sources).and_return([])
       lockfile.stub(:update)
@@ -308,7 +305,7 @@ describe Berkshelf::Berksfile do
 
       it 'writes a lockfile with the resolvers sources' do
         resolver.should_receive(:resolve)
-        lockfile.should_receive(:update).with([], sha: 'abc123')
+        lockfile.should_receive(:update).with([])
 
         subject.install
       end

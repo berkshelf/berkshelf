@@ -89,12 +89,6 @@ module Berkshelf
       @cached_cookbooks = nil
     end
 
-    # @return [String]
-    #   the shasum for the Berksfile
-    def sha
-      @sha ||= Digest::SHA1.hexdigest File.read(filepath.to_s)
-    end
-
     # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recursively retrieved
     # and resolved.
     #
@@ -389,20 +383,16 @@ module Berkshelf
     #    sources are considered to be "unlocked". If a lockfile is specified, a
     #    definition is created via the following algorithm:
     #
-    #    - Compare the SHA of the current Berksfile with the last-known SHA.
-    #    - If the SHAs match, the Berksfile has not been updated, so we rely
-    #      solely on the locked sources.
-    #    - If the SHAs don't match, then the Berksfile has diverged from the
-    #      lockfile, which means some sources are outdated. For each unlocked
-    #      source, see if there exists a locked version that still satisfies
-    #      the version constraint in the Berksfile. If there exists such a
-    #      source, remove it from the list of unlocked sources. If not, then
-    #      either a version constraint has changed, or a new source has been
-    #      added to the Berksfile. In the event that a locked_source exists,
-    #      but it no longer satisfies the constraint, this method will raise
-    #      a {Berkshelf::OutdatedCookbookSource}, and inform the user to run
-    #      <tt>berks update COOKBOOK</tt> to remedy the issue.
-    #    - Remove any locked sources that no longer exist in the Berksfile
+    #    For each unlocked source, see if there exists a locked version that
+    #    still satisfies the version constraint in the Berksfile. If there
+    #    exists such a source, remove it from the list of unlocked sources. If
+    #    not, then either a version constraint has changed, or a new source has
+    #    been added to the Berksfile. In the event that a locked_source exists,
+    #    but it no longer satisfies the constraint, this method will raise a
+    #    {Berkshelf::OutdatedCookbookSource}, and inform the user to run
+    #    <tt>berks update COOKBOOK</tt> to remedy the issue.
+    #
+    #    Remove any locked sources that no longer exist in the Berksfile
     #      (i.e. a cookbook source was removed from the Berksfile).
     #
     # 2. Resolve the collection of locked and unlocked sources.
@@ -426,11 +416,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      if self.sha == lockfile.sha
-        local_sources = locked_sources
-      else
-        local_sources = apply_lockfile(sources(options))
-      end
+      local_sources = apply_lockfile(sources(options))
 
       resolver          = resolve(local_sources)
       @cached_cookbooks = resolver[:solution]
@@ -440,7 +426,7 @@ module Berkshelf
 
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
 
-      lockfile.update(local_sources, sha: self.sha)
+      lockfile.update(local_sources)
 
       self.cached_cookbooks
     end
@@ -458,8 +444,6 @@ module Berkshelf
 
       # Unlock any/all specified cookbooks
       sources(options).each { |source| lockfile.unlock(source) }
-
-      lockfile.reset_sha!
 
       # NOTE: We intentionally do NOT pass options to the installer
       self.install
