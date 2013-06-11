@@ -56,7 +56,7 @@ Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
   end
 end
 
-Given /^the cookbook store has the git cookbooks:$/ do |cookbooks|
+Given /^the cookbook store has the cookbooks installed by git:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha|
     folder   = "#{name}-#{sha}"
     metadata = File.join(folder, 'metadata.rb')
@@ -85,7 +85,7 @@ Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   end
 end
 
-Then /^the cookbook store should have the git cookbooks:$/ do |cookbooks|
+Then /^the cookbook store should have the cookbooks installed by git:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha1|
     expect(cookbook_store).to have_structure {
       directory "#{name}-#{sha1}" do
