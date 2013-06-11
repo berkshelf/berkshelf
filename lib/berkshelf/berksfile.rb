@@ -254,7 +254,7 @@ module Berkshelf
         groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
         if !(@dependencies[name].groups & groups).empty?
           raise DuplicateSourceDefined,
-            "Berksfile contains multiple dependencies named '#{name}'. Use only one, or put them in different groups."
+            "Berksfile contains multiple entries named '#{name}'. Use only one, or put them in different groups."
         end
       end
 
@@ -711,8 +711,8 @@ module Berkshelf
         missing = (Array(options[:cookbooks]) - dependencies.map(&:name))
         unless missing.empty?
           raise Berkshelf::CookbookNotFound,
-            "Could not find cookbooks #{missing.collect{ |c| "'#{c}'" }.join(', ')} " +
-            "in any of the dependencies. #{missing.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+            "Could not find cookbook(s) #{missing.collect{ |c| "'#{c}'" }.join(', ')} " +
+            "in any of the configured sources. #{missing.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
         end
       end
 
