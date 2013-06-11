@@ -14,7 +14,7 @@ module Berkshelf
     ]
 
     # @return [String]
-    #   a filepath to download cookbook sources to
+    #   a filepath to download dependencies to
     attr_reader :cookbook_store
 
     def_delegators :@cookbook_store, :storage_path
@@ -27,7 +27,7 @@ module Berkshelf
 
     # @return [Array<Hash>]
     #   an Array of Hashes representing each default location that can be used to attempt
-    #   to download cookbook sources which do not have an explicit location. An array of default locations will
+    #   to download dependencies which do not have an explicit location. An array of default locations will
     #   be used if no locations are explicitly added by the {#add_location} function.
     def locations
       @locations.any? ? @locations : DEFAULT_LOCATIONS
@@ -62,38 +62,38 @@ module Berkshelf
 
     # Download the given Berkshelf::Dependency.
     #
-    # @param [Berkshelf::Dependency] source
-    #   the source to download
+    # @param [Berkshelf::Dependency] dependency
+    #   the dependency to download
     #
     # @return [Array]
     #   an array containing the downloaded CachedCookbook and the Location used
     #   to download the cookbook
-    def download(source)
-      if source.location
+    def download(dependency)
+      if dependency.location
         begin
-          location = source.location
-          cached   = download_location(source, location, true)
-          source.cached_cookbook = cached
+          location = dependency.location
+          cached   = download_location(dependency, location, true)
+          dependency.cached_cookbook = cached
 
           return [cached, location]
         rescue => e
           raise if e.kind_of?(CookbookValidationFailure)
-          Berkshelf.formatter.error "Failed to download '#{source.name}' from #{source.location}"
+          Berkshelf.formatter.error "Failed to download '#{dependency.name}' from #{dependency.location}"
         end
       else
         locations.each do |loc|
           options = loc[:options].merge(loc[:type] => loc[:value])
-          location = Location.init(source.name, source.version_constraint, options)
+          location = Location.init(dependency.name, dependency.version_constraint, options)
 
-          cached = download_location(source, location)
+          cached = download_location(dependency, location)
           if cached
-            source.cached_cookbook = cached
+            dependency.cached_cookbook = cached
             return [cached, location]
           end
         end
       end
 
-      raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
+      raise CookbookNotFound, "Cookbook '#{dependency.name}' not found in any of the default locations"
     end
 
     private
