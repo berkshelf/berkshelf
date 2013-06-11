@@ -5,21 +5,59 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     let(:target) { '/foo/bar' }
     let(:destination) { '/destination/bar' }
     let(:file) { double('file') }
-    let(:gzip_reader) { double('gzip_reader') }
 
-    before do
-      File.stub(:open).with(target, 'rb').and_return(file)
-      Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
-      Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
+    describe 'a tar.gz file' do
+      let(:gzip_reader) { double('gzip_reader') }
+
+      before do
+        File.stub(:open).with(target, 'rb').and_return(file)
+        Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
+        Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
+      end
+
+      it 'unpacks the file' do
+        File.should_receive(:open).with(target, 'rb')
+        ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
+        Zlib::GzipReader.should_receive(:new).with(file)
+        Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
+
+        expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
+      end
     end
 
-    it 'unpacks the tar' do
-      File.should_receive(:open).with(target, 'rb')
-      ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
-      Zlib::GzipReader.should_receive(:new).with(file)
-      Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
+    describe 'a tar file' do
+      before do
+        File.stub(:open).with(target, 'rb').and_return(file)
+        Archive::Tar::Minitar.stub(:unpack).with(target, destination)
+      end
 
-      expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
+      it 'unpacks the file' do
+        ::IO.should_receive(:binread).once
+        ::IO.should_receive(:binread).with(target, 8, 257).and_return("ustar\x0000")
+        Archive::Tar::Minitar.should_receive(:unpack).with(target, destination)
+
+        expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
+      end
+    end
+
+    describe 'a tar.bz2 file' do
+      let(:bzip2_reader) { double('bzip2_reader') }
+
+      before do
+        File.stub(:open).with(target, 'rb').and_return(file)
+        RBzip2::Decompressor.stub(:new).with(file).and_return(bzip2_reader)
+        Archive::Tar::Minitar.stub(:unpack).with(bzip2_reader, destination)
+      end
+
+      it 'unpacks the file' do
+        File.should_receive(:open).with(target, 'rb')
+        ::IO.should_receive(:binread).twice
+        ::IO.should_receive(:binread).with(target, 3).and_return('BZh')
+        RBzip2::Decompressor.should_receive(:new).with(file)
+        Archive::Tar::Minitar.should_receive(:unpack).with(bzip2_reader, destination)
+
+        expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
+      end
     end
   end
 

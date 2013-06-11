@@ -13,6 +13,7 @@ require 'thor'
 require 'tmpdir'
 require 'uri'
 require 'zlib'
+require 'rbzip2'
 
 require_relative 'berkshelf/core_ext'
 require_relative 'berkshelf/errors'
