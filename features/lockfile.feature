@@ -41,6 +41,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "sha": "374a3d22920abae4a6d620a14a32b90d8babda8f",
         "dependencies": {
           "fake": {
             "constraint": "= 1.0.0",
@@ -50,7 +51,6 @@ Feature: Creating and reading the Berkshelf lockfile
       }
       """
 
-  @focus
   Scenario: Wiring the Berksfile.lock when a 2.0 lockfile is present
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -63,7 +63,7 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       {
         "sha": "374a3d22920abae4a6d620a14a32b90d8babda8f",
-        "dependencies": {
+        "sources": {
           "fake": {
             "constraint": "= 1.0.0",
             "locked_version": "1.0.0"
@@ -76,6 +76,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "sha": "374a3d22920abae4a6d620a14a32b90d8babda8f",
         "dependencies": {
           "fake": {
             "constraint": "= 1.0.0",
