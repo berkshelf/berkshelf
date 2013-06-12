@@ -604,7 +604,5 @@ describe Berkshelf::Berksfile do
         subject.validate_files!(cookbook)
       }.to_not raise_error
     end
-
-    it 'raises an exception '
   end
 end
