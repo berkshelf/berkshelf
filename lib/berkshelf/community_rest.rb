@@ -179,5 +179,22 @@ module Berkshelf
     ensure
       local.close(false) unless local.nil?
     end
+
+    # The string representation of the CommunityREST.
+    #
+    # @return [String]
+    def to_s
+      "#<Berkshelf::CommunityREST #{api_uri}>"
+    end
+
+    # The detailed string representation of the CommunityREST.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::CommunityREST #{api_uri}, " +
+        "retries: #{retries}, " +
+        "retry_interval: #{retry_interval}" +
+      ">"
+    end
   end
 end

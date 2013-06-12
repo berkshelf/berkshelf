@@ -96,6 +96,23 @@ module Berkshelf
       raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
     end
 
+    # The string representation of the Downloader.
+    #
+    # @return [String]
+    def to_s
+      '#<Berkshelf::Downloader>'
+    end
+
+    # The detailed string representation of the Downloader.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::Downloader " +
+        "cookbook_store: #{cookbook_store.storage_path}, " +
+        "locations: [#{locations.map { |h| h[:value] }.join(', ')}]" +
+      ">"
+    end
+
     private
 
       # Attempt to download the the given source from the given location, #

@@ -11,7 +11,7 @@ module Berkshelf
       # @param [String] version
       # @param [~Location] location
       def install(cookbook, version, location)
-        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location}"
+        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location.info}"
       end
 
       # Output a Cookbook use message using {Berkshelf.ui}
@@ -74,6 +74,14 @@ module Berkshelf
       def deprecation(message)
         Berkshelf.ui.info "DEPRECATED: #{message}"
       end
+
+      # The string representation of the Human Readable Formatter.
+      #
+      # @return [String]
+      def to_s
+        "#<Berkshelf::Formatters::HumanReadable>"
+      end
+      alias_method :inspect, :to_s
     end
   end
 end

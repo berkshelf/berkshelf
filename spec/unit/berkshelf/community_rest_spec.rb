@@ -199,4 +199,24 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
   describe '#stream' do
     pending
   end
+
+  describe '#to_s' do
+    before { subject.stub(:api_uri).and_return('http://cookbooks.example.com') }
+
+    it 'includes the API url' do
+      expect(subject.to_s).to eq("#<Berkshelf::CommunityREST http://cookbooks.example.com>")
+    end
+  end
+
+  describe '#inspect' do
+    before do
+      subject.stub(:api_uri).and_return('http://cookbooks.example.com')
+      subject.stub(:retries).and_return(5)
+      subject.stub(:retry_interval).and_return(10)
+    end
+
+    it 'includes the retries and retry interval' do
+      expect(subject.inspect).to eq("#<Berkshelf::CommunityREST http://cookbooks.example.com, retries: 5, retry_interval: 10>")
+    end
+  end
 end

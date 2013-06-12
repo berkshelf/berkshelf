@@ -81,7 +81,24 @@ module Berkshelf
       super.merge(value: self.api_uri)
     end
 
+    # The string representation of the SiteLocation.
+    #
+    # @return [String]
     def to_s
+      "#<Berkshelf::SiteLocation #{api_uri}>"
+    end
+
+    # The detailed string representation of the SiteLocation.
+    #
+    # @return [String]
+    def inspect
+      "#<Berkshelf::SiteLocation #{api_uri}, " +
+        "name: #{name}, " +
+        "version_constraint: #{version_constraint}" +
+      ">"
+    end
+
+    def info
       "#{self.class.location_key}: '#{api_uri}'"
     end
 
