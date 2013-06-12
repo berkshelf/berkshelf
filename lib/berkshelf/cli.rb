@@ -267,7 +267,7 @@ module Berkshelf
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       Berkshelf.formatter.msg 'Listing outdated cookbooks with newer versions available...'
       Berkshelf.formatter.msg 'BETA: this feature will only pull differences from the community site and will'
-      Berkshelf.formatter.msg 'BETA: ignore all other sources you may have defined'
+      Berkshelf.formatter.msg 'BETA: ignore all other dependencies you may have defined'
       Berkshelf.formatter.msg ''
 
       outdated_options = {
@@ -291,7 +291,7 @@ module Berkshelf
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
 
       if File.chef_cookbook?(path)
-        options[:chefignore] = true
+        options[:chefignore]     = true
         options[:metadata_entry] = true
       end
 
@@ -306,16 +306,16 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    desc 'list', 'List all cookbooks (and dependencies) specified in the Berksfile'
+    desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
     def list
-      berksfile = Berksfile.from_file(options[:berksfile])
-      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
+      berksfile    = Berksfile.from_file(options[:berksfile])
+      dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
 
-      if sources.empty?
+      if dependencies.empty?
         Berkshelf.formatter.msg 'There are no cookbooks installed by your Berksfile'
       else
         Berkshelf.formatter.msg 'Cookbooks installed by your Berksfile:'
-        print_list(sources)
+        print_list(dependencies)
       end
     end
 
@@ -348,8 +348,8 @@ module Berkshelf
     def contingent(name)
       berksfile = Berksfile.from_file(options[:berksfile])
 
-      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
-      dependencies = sources.select { |cookbook| cookbook.dependencies.include?(name) }
+      dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
+      dependencies = dependencies.select { |cookbook| cookbook.dependencies.include?(name) }
 
       if dependencies.empty?
         Berkshelf.formatter.msg "There are no cookbooks contingent upon '#{name}' defined in this Berksfile"
@@ -379,7 +379,7 @@ module Berkshelf
       type: :boolean,
       desc: 'Do not apply the chefignore to the packaged contents',
       default: false
-    desc 'package [COOKBOOK]', 'Package a cookbook (and dependencies) as a tarball'
+    desc "package [COOKBOOK]", "Package a cookbook and it's dependencies as a tarball"
     def package(name = nil)
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.package(name, options)

@@ -15,19 +15,17 @@ describe Berkshelf::Lockfile do
       }.to_not raise_error
     end
 
-    it 'has the correct sources' do
-      expect(subject).to have_source 'build-essential'
-      expect(subject).to have_source 'chef-client'
+    it 'has the correct dependencies' do
+      expect(subject).to have_dependency 'build-essential'
+      expect(subject).to have_dependency 'chef-client'
     end
   end
 
-
-
   subject { Berkshelf::Lockfile.new(berksfile) }
 
-  describe '#sources' do
+  describe '#dependencies' do
     it 'returns an array' do
-      expect(subject.sources).to be_a(Array)
+      expect(subject.dependencies).to be_a(Array)
     end
   end
 
@@ -41,26 +39,26 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  describe '#has_source?' do
+  describe '#has_dependency?' do
     it 'returns true if a matching cookbook is found' do
-      expect(subject.has_source?('build-essential')).to be_true
+      expect(subject.has_dependency?('build-essential')).to be_true
     end
 
     it 'returns false if no matching cookbook is found' do
-      expect(subject.has_source?('foo')).to be_false
+      expect(subject.has_dependency?('foo')).to be_false
     end
   end
 
   describe '#update' do
-    it 'resets the sources' do
-      subject.should_receive(:reset_sources!).once
+    it 'resets the dependencies' do
+      subject.should_receive(:reset_dependencies!).once
       subject.update([])
     end
 
-    it 'appends each of the sources' do
-      source = double('source')
-      subject.should_receive(:append).with(source).once
-      subject.update([source])
+    it 'appends each of the dependencies' do
+      dependency = double('dependency')
+      subject.should_receive(:append).with(dependency).once
+      subject.update([dependency])
     end
 
     it 'saves the file' do
@@ -70,32 +68,32 @@ describe Berkshelf::Lockfile do
   end
 
   describe '#add' do
-    let(:source) { double('source', name: 'build-essential') }
+    let(:dependency) { double('dependency', name: 'build-essential') }
 
-    it 'adds the new source to the @sources instance variable' do
-      subject.add(source)
-      expect(subject).to have_source(source)
+    it 'adds the new dependency to the @dependencies instance variable' do
+      subject.add(dependency)
+      expect(subject).to have_dependency(dependency)
     end
 
-    it 'does not add duplicate sources' do
-      5.times { subject.add(source) }
-      expect(subject).to have_source(source)
+    it 'does not add duplicate dependencies' do
+      5.times { subject.add(dependency) }
+      expect(subject).to have_dependency(dependency)
     end
   end
 
   describe '#remove' do
-    let(:source) { double('source', name: 'build-essential') }
+    let(:dependency) { double('dependency', name: 'build-essential') }
 
     before do
-      subject.add(source)
+      subject.add(dependency)
     end
 
-    it 'removes the source' do
-      subject.remove(source)
-      expect(subject).to_not have_source(source)
+    it 'removes the dependency' do
+      subject.remove(dependency)
+      expect(subject).to_not have_dependency(dependency)
     end
 
-    it 'raises an except if the source does not exist' do
+    it 'raises an except if the dependency does not exist' do
       expect {
         subject.remove(nil)
       }.to raise_error Berkshelf::CookbookNotFound
@@ -110,7 +108,7 @@ describe Berkshelf::Lockfile do
 
   describe '#inspect' do
     it 'returns a pretty-formatted, detailed string' do
-      expect(subject.inspect).to eq '#<Berkshelf::Lockfile Berksfile.lock, sources: [#<Berkshelf::CookbookSource: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::CookbookSource: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>'
+      expect(subject.inspect).to eq("#<#{described_class} Berksfile.lock, dependencies: [#<Berkshelf::Dependency: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::Dependency: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>")
     end
   end
 
@@ -144,22 +142,22 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  describe '#reset_sources!' do
-    before { Berkshelf::Lockfile.send(:public, :reset_sources!) }
+  describe '#reset_dependencies!' do
+    before { Berkshelf::Lockfile.send(:public, :reset_dependencies!) }
 
-    it 'sets the sources to an empty hash' do
+    it 'sets the dependencies to an empty hash' do
       expect {
-        subject.reset_sources!
-      }.to change { subject.sources }.to([])
+        subject.reset_dependencies!
+      }.to change { subject.dependencies }.to([])
     end
   end
 
   describe '#cookbook_name' do
     before { Berkshelf::Lockfile.send(:public, :cookbook_name) }
 
-    it 'accepts a cookbook source' do
-      source = double('source', name: 'build-essential', is_a?: true)
-      expect(subject.cookbook_name(source)).to eq 'build-essential'
+    it 'accepts a cookbook dependency' do
+      dependency = double('dependency', name: 'build-essential', is_a?: true)
+      expect(subject.cookbook_name(dependency)).to eq 'build-essential'
     end
 
     it 'accepts a string' do

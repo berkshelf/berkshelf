@@ -289,7 +289,7 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      Berksfile contains multiple sources named 'berkshelf-cookbook-fixture'. Use only one, or put them in different groups.
+      Berksfile contains multiple entries named 'berkshelf-cookbook-fixture'. Use only one, or put them in different groups.
       """
     And the CLI should exit with the status code for error "DuplicateSourceDefined"
 

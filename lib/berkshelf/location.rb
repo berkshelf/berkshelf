@@ -1,29 +1,29 @@
+require_relative 'dependency'
+
 module Berkshelf
   module Location
     OPSCODE_COMMUNITY_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
 
     module ClassMethods
-      require_relative 'cookbook_source'
-
       # Returns the location identifier key for the class
       #
       # @return [Symbol]
       attr_reader :location_key
 
-      # Register the location key for the including source location with CookbookSource
+      # Register the location key for the including source location with Berkshelf::Dependency
       #
       # @param [Symbol] key
       def set_location_key(key)
-        CookbookSource.add_location_key(key, self)
+        Berkshelf::Dependency.add_location_key(key, self)
         @location_key = key
       end
 
-      # Register a valid option or multiple options with the CookbookSource class
+      # Register a valid option or multiple options with the Berkshelf::Dependency class
       #
       # @param [Symbol] opts
       def set_valid_options(*opts)
         Array(opts).each do |opt|
-          CookbookSource.add_valid_option(opt)
+          Berkshelf::Dependency.add_valid_option(opt)
         end
       end
 
@@ -66,7 +66,7 @@ module Berkshelf
       # Creates a new instance of a Class implementing Location with the given name and
       # constraint. Which Class to instantiated is determined by the values in the given
       # options Hash. Source Locations have an associated location_key registered with
-      # CookbookSource. If your options Hash contains a key matching one of these location_keys
+      # Berkshelf::Dependency. If your options Hash contains a key matching one of these location_keys
       # then the Class who registered that location_key will be instantiated. If you do not
       # provide an option with a matching location_key a SiteLocation class will be
       # instantiated.
@@ -101,16 +101,16 @@ module Berkshelf
       private
 
         def klass_from_options(options)
-          location_keys = (options.keys & CookbookSource.location_keys.keys)
+          location_keys = (options.keys & Berkshelf::Dependency.location_keys.keys)
           if location_keys.length > 1
             location_keys.collect! { |opt| "'#{opt}'" }
-            raise InternalError, "Only one location key (#{CookbookSource.location_keys.keys.join(', ')}) may be specified. You gave #{location_keys.join(', ')}."
+            raise InternalError, "Only one location key (#{Berkshelf::Dependency.location_keys.keys.join(', ')}) may be specified. You gave #{location_keys.join(', ')}."
           end
 
           if location_keys.empty?
             SiteLocation
           else
-            CookbookSource.location_keys[location_keys.first]
+            Berkshelf::Dependency.location_keys[location_keys.first]
           end
         end
     end

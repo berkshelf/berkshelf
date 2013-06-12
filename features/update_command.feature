@@ -137,6 +137,6 @@ Feature: Updating a cookbook defined by a Berksfile
     When I run `berks update non-existent-cookbook`
     Then the output should contain:
       """
-      Could not find cookbooks 'non-existent-cookbook' in any of the sources. Is it in your Berksfile?
+      Could not find cookbook(s) 'non-existent-cookbook' in any of the configured sources. Is it in your Berksfile?
       """
     And the CLI should exit with the status code for error "CookbookNotFound"

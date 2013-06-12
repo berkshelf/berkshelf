@@ -1,5 +1,5 @@
 module Berkshelf
-  class CookbookSource
+  class Dependency
     class << self
       @@valid_options = [:constraint, :locations, :group, :locked_version]
       @@location_keys = Hash.new
@@ -13,7 +13,7 @@ module Berkshelf
 
       # Returns an array of the registered source location keys. Every source
       # location is identified by a key (symbol) to differentiate which class
-      # to instantiate for the location of a CookbookSource at initialization.
+      # to instantiate for the location of a Dependency at initialization.
       #
       # @return [Array<Symbol>]
       def location_keys
@@ -31,7 +31,7 @@ module Berkshelf
         @@valid_options
       end
 
-      # Register a location key with the CookbookSource class
+      # Register a location key with the Dependency class
       # @see #location_keys
       #
       # @param [Symbol] location
@@ -81,12 +81,12 @@ module Berkshelf
     attr_accessor :cached_cookbook
 
     # @param [Berkshelf::Berksfile] berksfile
-    #   the berksfile this source belongs to
+    #   the berksfile this dependency belongs to
     # @param [String] name
-    #   the name of source
+    #   the name of dependency
     #
     # @option options [String, Solve::Constraint] :constraint
-    #   version constraint to resolve for this source
+    #   version constraint for this dependency
     # @option options [String] :git
     #   the Git URL to clone
     # @option options [String] :site
@@ -136,15 +136,15 @@ module Berkshelf
       from_path(options) || from_default(options)
     end
 
-    # Returns true if the cookbook source has already been downloaded. A cookbook
-    # source is downloaded when a cached cookbook is present.
+    # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
+    # cached cookbook is present.
     #
     # @return [Boolean]
     def downloaded?
       !self.cached_cookbook.nil?
     end
 
-    # Returns true if this CookbookSource has the given group.
+    # Returns true if this dependency has the given group.
     #
     # @return [Boolean]
     def has_group?(group)
@@ -163,7 +163,7 @@ module Berkshelf
       @locked_version ||= cached_cookbook.try(:version)
     end
 
-    # The location for this CookbookSource, such as a remote Chef Server, the
+    # The location for this dependency, such as a remote Chef Server, the
     # community API, :git, or a :path location. By default, this will be the
     # community API.
     #
@@ -172,7 +172,7 @@ module Berkshelf
       @location
     end
 
-    # The list of groups this CookbookSource belongs to.
+    # The list of groups this dependency belongs to.
     #
     # @return [Array<Symbol>]
     def groups
@@ -180,11 +180,11 @@ module Berkshelf
     end
 
     def to_s
-      "#<Berkshelf::CookbookSource: #{name} (#{version_constraint})>"
+      "#<Berkshelf::Dependency: #{name} (#{version_constraint})>"
     end
 
     def inspect
-      '#<Berkshelf::CookbookSource: ' << [
+      '#<Berkshelf::Dependency: ' << [
         "#{name} (#{version_constraint})",
         "locked_version: #{locked_version.inspect}",
         "groups: #{groups}",
