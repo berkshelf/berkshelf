@@ -20,9 +20,9 @@ module Berkshelf
     # @param berksfile [Berkshelf::Berksfile]
     #   the Berksfile associated with this Lockfile
     def initialize(berksfile)
-      @berksfile = berksfile
-      @filepath  = File.expand_path("#{berksfile.filepath}.lock")
-      @dependencies   = {}
+      @berksfile    = berksfile
+      @filepath     = File.expand_path("#{berksfile.filepath}.lock")
+      @dependencies = {}
 
       load! if File.exists?(@filepath)
     end
