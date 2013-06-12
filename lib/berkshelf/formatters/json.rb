@@ -41,11 +41,15 @@ module Berkshelf
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [String] path
-      def use(cookbook, version, path = nil)
+      # @param [~Location] location
+      def use(cookbook, version, location = nil)
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
-        cookbooks[cookbook][:location] = path if path
+
+        if location && location.is_a?(PathLocation)
+          cookbooks[cookbook][:metadata] = true if location.metadata?
+          cookbooks[cookbook][:location] = location.relative_path
+        end
       end
 
       # Add a Cookbook upload entry to delayed output

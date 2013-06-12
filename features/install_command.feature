@@ -70,7 +70,7 @@ Feature: install cookbooks from a Berksfile
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using example_cookbook (0.5.0) at path:
+      Using example_cookbook (0.5.0) at '
       """
     And the exit status should be 0
 
@@ -225,9 +225,24 @@ Feature: install cookbooks from a Berksfile
       """
     When I cd to "sparkle_motion"
     And I successfully run `berks install`
-    Then the output should contain:
+    Then the output should contain exactly:
       """
-      Using sparkle_motion (0.0.0) at path:
+      Using sparkle_motion (0.0.0) from metadata
+
+      """
+    And the exit status should be 0
+
+  Scenario: running install when current project is a cookbook and the 'metadata' is specified with a path
+    Given a cookbook named "fake"
+    And I write to "Berksfile" with:
+      """
+      metadata path: './fake'
+      """
+    When I successfully run `berks install`
+    Then the output should contain exactly:
+      """
+      Using fake (0.0.0) from metadata at './fake'
+
       """
     And the exit status should be 0
 
@@ -408,12 +423,9 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      An error occurred during Git execution:
-
-        fatal: remote error:
-        Repository not found.
+      Failed to download 'doesntexist' from git:
       """
-      And the CLI should exit with the status code for error "GitError"
+      And the CLI should exit with the status code for error "CookbookNotFound"
 
   Scenario: invalid site symbol
     Given I write to "Berksfile" with:

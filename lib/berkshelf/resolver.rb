@@ -153,24 +153,28 @@ module Berkshelf
       #
       # @return [Boolean]
       def use_source(source)
+        name       = source.name
+        constraint = source.version_constraint
+        location   = source.location
+
         if source.downloaded?
           cached = source.cached_cookbook
-          source.location.validate_cached(cached)
+          location.validate_cached(cached)
+          Berkshelf.formatter.use(name, cached.version, location)
+          true
+        elsif location.is_a?(GitLocation)
+          false
         else
-          if source.location.is_a?(GitLocation)
-            return false
+          cached = downloader.cookbook_store.satisfy(name, constraint)
+
+          if cached
+            get_source(source).cached_cookbook = cached
+            Berkshelf.formatter.use(name, cached.version)
+            true
+          else
+            false
           end
-
-          cached = downloader.cookbook_store.satisfy(source.name, source.version_constraint)
-          return false if cached.nil?
-
-          get_source(source).cached_cookbook = cached
         end
-
-        path = source.location.is_a?(PathLocation) ? source.location.to_s : nil
-        Berkshelf.formatter.use(cached.cookbook_name, cached.version, path)
-
-        true
       end
   end
 end
