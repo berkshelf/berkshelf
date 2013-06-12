@@ -28,6 +28,7 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'fake', '1.0.0'
       """
     And I write to "Berksfile.lock" with:
@@ -39,10 +40,10 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
-          "fake":{
-            "locked_version":"1.0.0",
-            "constraint":"= 1.0.0"
+        "sources": {
+          "fake": {
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
           }
         }
       }
@@ -65,7 +66,6 @@ Feature: Creating and reading the Berkshelf lockfile
       {
         "sources":{
           "fake":{
-            "locked_version":"0.0.0",
             "constraint":"= 0.0.0",
             "path":"./fake"
           }
@@ -318,33 +318,60 @@ Feature: Creating and reading the Berkshelf lockfile
       {
         "sources":{
           "fake":{
-            "path":"./fake",
-            "locked_version":"0.0.0"
+            "path":"./fake"
           }
         }
       }
       """
 
-  Scenario: Lockfile when `metadata` is specified
-    Given I write to "metadata.rb" with:
-      """
-      name 'fake'
-      version '1.0.0'
-      """
-    And I write to "Berksfile" with:
+  Scenario: Installing a Berksfile with a metadata location
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "Berksfile" with:
       """
       site :opscode
       metadata
       """
-    When I successfully run `berks install`
+    When I cd to "fake"
+    And I successfully run `berks install`
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "sources": {
+          "fake": {
+            "path": ".",
+            "constraint": "= 0.0.0"
+          }
+        }
+      }
+      """
+
+  Scenario: Install a Berksfile.lock with a metadata location
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      site :opscode
+      metadata
+      """
+    And the cookbook "fake" has the file "Berksfile.lock" with:
+      """
+      {
+        "sources": {
+          "fake": {
+            "path": ".",
+            "constraint": "= 0.0.0"
+          }
+        }
+      }
+      """
+    When I cd to "fake"
+    And I successfully run `berks install`
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
         "sources":{
           "fake":{
-            "path":".",
-            "locked_version":"1.0.0",
-            "constraint":"= 1.0.0"
+            "path": ".",
+            "constraint": "= 0.0.0"
           }
         }
       }

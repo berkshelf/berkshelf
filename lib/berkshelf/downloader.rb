@@ -60,7 +60,7 @@ module Berkshelf
       @locations.select { |loc| loc[:type] == type && loc[:value] == value }.any?
     end
 
-    # Downloads the given CookbookSource.
+    # Download the given CookbookSource.
     #
     # @param [CookbookSource] source
     #   the source to download
@@ -69,69 +69,78 @@ module Berkshelf
     #   an array containing the downloaded CachedCookbook and the Location used
     #   to download the cookbook
     def download(source)
-      cached_cookbook, location = if source.location
+      if source.location
         begin
-          [source.location.download(storage_path), source.location]
-        rescue CookbookValidationFailure; raise
-        rescue
+          location = source.location
+          cached   = download_location(source, location, true)
+          source.cached_cookbook = cached
+
+          return [cached, location]
+        rescue => e
+          raise if e.kind_of?(CookbookValidationFailure)
           Berkshelf.formatter.error "Failed to download '#{source.name}' from #{source.location}"
-          raise
         end
       else
-        search_locations(source)
+        locations.each do |loc|
+          options = loc[:options].merge(loc[:type] => loc[:value])
+          location = Location.init(source.name, source.version_constraint, options)
+
+          cached = download_location(source, location)
+          if cached
+            source.cached_cookbook = cached
+            return [cached, location]
+          end
+        end
       end
 
-      source.cached_cookbook = cached_cookbook
-
-      [cached_cookbook, location]
+      raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
     end
 
     private
 
-      # Searches locations for a CookbookSource. If the source does not contain a
-      # value for {CookbookSource#location}, the default locations of this
-      # downloader will be used to attempt to retrieve the source.
+      # Attempt to download the the given source from the given location, #
+      # raising an error if `raise_if_not_found` is specified.
       #
-      # @param [CookbookSource] source
+      # @raise [Bershelf::CookbookNotFound]
+      #   if `raise_if_not_found` is true and the source could not be
+      #   downloaded
+      #
+      # @param [Berkshelf::CookbookSource] source
       #   the source to download
+      # @param [~Berkshelf::Location] location
+      #   the location to download from
+      # @param [Boolean] raise_if_not_found
+      #   raise a {Berkshelf::CookbookNotFound} error if true, otherwise,
+      #   return nil
       #
-      # @return [Array]
-      #   an array containing the downloaded CachedCookbook and the Location used
-      #   to download the cookbook
-      def search_locations(source)
-        cached_cookbook = nil
-        location = nil
-
-        locations.each do |loc|
-          location = Location.init(
-            source.name,
-            source.version_constraint,
-            loc[:options].merge(loc[:type] => loc[:value])
-          )
-          begin
-            cached_cookbook = location.download(storage_path)
-            break
-          rescue Berkshelf::CookbookNotFound
-            cached_cookbook, location = nil
-            next
-          end
-        end
-
-        if cached_cookbook.nil?
-          raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
-        end
-
-        [ cached_cookbook, location ]
+      # @return [Berkshelf::CachedCookbook, nil]
+      #   the downloaded cached cookbook, or nil if one was not found
+      def download_location(source, location, raise_if_not_found = false)
+        from_cache(source) || location.download(storage_path)
+      rescue Berkshelf::CookbookNotFound
+        raise if raise_if_not_found
+        nil
       end
 
+      # Load the cached cookbook from the cookbook store.
+      #
+      # @param [Berkshelf::CookbookSource] source
+      #   the source to find in the cache
+      #
+      # @return [Berkshelf::CachedCookbook, nil]
+      def from_cache(source)
+        # Can't safely read a git location from cache
+        return nil if source.location.kind_of?(Berkshelf::GitLocation)
 
-      # Validates that a source is an instance of CookbookSource
-      #
-      # @param [CookbookSource] source
-      #
-      # @return [Boolean]
-      def validate_source(source)
-        source.is_a?(Berkshelf::CookbookSource)
+        if source.locked_version
+          cookbook = cookbook_store.cookbook_path(source.name, source.locked_version)
+          path = File.expand_path(File.join(storage_path, cookbook))
+
+          return nil unless File.exists?(path)
+          return Berkshelf::CachedCookbook.from_path(path, name: source.name)
+        end
+
+        cookbook_store.satisfy(source.name, source.version_constraint)
       end
   end
 end

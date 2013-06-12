@@ -134,11 +134,6 @@ module Berkshelf
       raise AbstractFunction
     end
 
-    # @return [Boolean]
-    def downloaded?
-      @downloaded_status
-    end
-
     # Ensure the retrieved CachedCookbook is valid
     #
     # @param [CachedCookbook] cached_cookbook
@@ -170,15 +165,10 @@ module Berkshelf
     def to_json(options = {})
       JSON.pretty_generate(to_hash, options)
     end
-
-    private
-
-      def set_downloaded_status(state)
-        @downloaded_status = state
-      end
   end
 end
 
-Dir["#{File.dirname(__FILE__)}/locations/*.rb"].sort.each do |path|
-  require_relative "locations/#{File.basename(path, '.rb')}"
-end
+require_relative 'locations/chef_api_location'
+require_relative 'locations/git_location'
+require_relative 'locations/github_location'
+require_relative 'locations/site_location'

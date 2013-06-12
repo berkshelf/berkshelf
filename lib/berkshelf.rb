@@ -90,21 +90,6 @@ module Berkshelf
       @cookbook_store ||= CookbookStore.new(cookbooks_dir)
     end
 
-    # Ascend the directory structure from the given path to find a
-    # metadata.rb file of a Chef Cookbook. If no metadata.rb file
-    # was found, nil is returned.
-    #
-    # @return [Pathname]
-    #   path to metadata.rb
-    def find_metadata(path = Dir.pwd)
-      path = Pathname.new(path)
-      path.ascend do |potential_root|
-        if potential_root.entries.collect(&:to_s).include?('metadata.rb')
-          return potential_root.join('metadata.rb')
-        end
-      end
-    end
-
     # Get the appropriate Formatter object based on the formatter
     # classes that have been registered.
     #

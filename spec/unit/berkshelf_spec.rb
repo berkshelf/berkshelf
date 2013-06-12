@@ -1,31 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf do
-  describe '.find_metadata' do
-    let(:metadata_path) { fixtures_path.join('cookbooks', 'example_cookbook', 'metadata.rb') }
-
-    context 'given a path containing a metadata.rb file' do
-      it 'returns the path to the metadata.rb file' do
-        metadata = Berkshelf.find_metadata(fixtures_path.join('cookbooks', 'example_cookbook'))
-        expect(metadata).to eq(metadata_path)
-      end
-    end
-
-    context 'given a path where a parent path contains a metadata.rb file' do
-      it 'returns the path to the metadata.rb file' do
-        metadata = Berkshelf.find_metadata(fixtures_path.join('cookbooks', 'example_cookbook', 'recipes'))
-        expect(metadata).to eq(metadata_path)
-      end
-    end
-
-    context 'given a path that does not contain a metadata.rb file or a parent path that does' do
-      it 'returns nil' do
-        metadata = Berkshelf.find_metadata(tmp_path)
-        expect(metadata).to be_nil
-      end
-    end
-  end
-
   describe '.formatter' do
     context 'with default formatter' do
       before { Berkshelf.instance_variable_set(:@formatter, nil) }

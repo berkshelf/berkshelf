@@ -31,10 +31,6 @@ describe Berkshelf::ChefAPILocation, :chef_server do
       expect(subject.client_key).to eq(client_key)
     end
 
-    it 'sets the downloaded status to false' do
-      expect(subject).to_not be_downloaded
-    end
-
     context 'when an invalid Chef API URI is given' do
       it 'raises Berkshelf::InvalidChefAPILocation' do
         expect {
