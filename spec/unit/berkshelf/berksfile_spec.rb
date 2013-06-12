@@ -578,17 +578,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  # def validate_files!(cookbook)
-  #   path = cookbook.path.to_s
-
-  #   files = Dir.glob(File.join(path, '**', '*.rb')).select do |f|
-  #     parent = Pathname.new(path).dirname.to_s
-  #     f.gsub(parent, '') =~ /[[:space:]]/
-  #   end
-
-  #   raise Berkshelf::InvalidCookbookFiles.new(cookbook, files) unless files.empty?
-  # end
-
   describe '#validate_files!' do
     before { described_class.send(:public, :validate_files!) }
     let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path') }
