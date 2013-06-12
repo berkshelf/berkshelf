@@ -569,4 +569,42 @@ describe Berkshelf::Berksfile do
       end
     end
   end
+
+  describe "#remove_dependency" do
+    let(:dependency) { "nginx" }
+    before { subject.add_dependency(dependency) }
+
+    it "removes a dependencies from the list" do
+      subject.remove_dependency(dependency)
+      expect(subject.dependencies).to have(0).items
+    end
+  end
+
+  describe '#validate_files!' do
+    before { described_class.send(:public, :validate_files!) }
+    let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path') }
+
+    it 'raises an error when the cookbook has spaces in the files' do
+      Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
+      expect {
+        subject.validate_files!(cookbook)
+      }.to raise_error(Berkshelf::InvalidCookbookFiles)
+    end
+
+    it 'does not raise an error when the cookbook is valid' do
+      Dir.stub(:glob).and_return(['/there-are/no-spaces/in-this/recipes/default.rb'])
+      expect {
+        subject.validate_files!(cookbook)
+      }.to_not raise_error(Berkshelf::InvalidCookbookFiles)
+    end
+
+    it 'does not raise an exception with spaces in the path' do
+      Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
+      Pathname.any_instance.stub(:dirname).and_return('/there are/spaces/in this')
+
+      expect {
+        subject.validate_files!(cookbook)
+      }.to_not raise_error
+    end
+  end
 end

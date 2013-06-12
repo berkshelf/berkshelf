@@ -293,4 +293,3 @@ Feature: Uploading cookbooks to a Chef Server
     And the Chef server should not have the cookbooks:
       | ekaf  | 2.0.0 |
     And the exit status should be 0
-
