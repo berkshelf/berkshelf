@@ -251,13 +251,17 @@ module Berkshelf
     end
 
     def to_s
-      "Berkshelf could not find compatible versions for cookbook '#{@dependency.name}':\n" +
-      "  In Berksfile:\n" +
-      "    #{@dependency.name} (#{@dependency.version_constraint})\n\n" +
-      "  In Berksfile.lock:\n" +
-      "    #{@locked_dependency.name} (#{@locked_dependency.locked_version})\n\n" +
-      "Try running `berks update #{@dependency.name}, which will try to find '#{@dependency.name}' matching " +
-        "'#{@dependency.version_constraint}'."
+      [
+        "Berkshelf could not find compatible versions for cookbook '#{@dependency.name}':",
+        "  In Berksfile:",
+        "    #{@dependency.name} (#{@dependency.version_constraint})",
+        "",
+        "  In Berksfile.lock:",
+        "    #{@locked_dependency.name} (#{@locked_dependency.locked_version})",
+        "",
+        "Try running `berks update #{@dependency.name}, which will try to find " +
+          "'#{@dependency.name}' matching '#{@dependency.version_constraint}'.",
+      ].join("\n")
     end
   end
 
