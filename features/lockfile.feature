@@ -338,14 +338,13 @@ Feature: Creating and reading the Berkshelf lockfile
       {
         "sources": {
           "fake": {
-            "path": ".",
-            "constraint": "= 0.0.0"
+            "path": "."
           }
         }
       }
       """
 
-  Scenario: Install a Berksfile.lock with a metadata location
+  Scenario: Installing a Berksfile with a metadata location
     Given a cookbook named "fake"
     And the cookbook "fake" has the file "Berksfile" with:
       """
@@ -357,8 +356,7 @@ Feature: Creating and reading the Berkshelf lockfile
       {
         "sources": {
           "fake": {
-            "path": ".",
-            "constraint": "= 0.0.0"
+            "path": "."
           }
         }
       }
@@ -368,14 +366,14 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
-          "fake":{
-            "path": ".",
-            "constraint": "= 0.0.0"
+        "sources": {
+          "fake": {
+            "path": "."
           }
         }
       }
       """
+    And the exit status should be 0
 
   Scenario: Updating a Berksfile.lock with a different site location
   Given pending we have a reliable non-opscode site to test

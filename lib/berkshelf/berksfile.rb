@@ -191,9 +191,8 @@ module Berkshelf
       metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
 
       name = metadata.name.presence || File.basename(File.expand_path(path))
-      constraint = "= #{metadata.version}"
 
-      add_dependency(name, constraint, path: path, metadata: true)
+      add_dependency(name, nil, path: path, metadata: true)
     end
 
     # Add a 'Site' default location which will be used to resolve cookbook dependencies that do not
