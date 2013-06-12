@@ -36,13 +36,14 @@ Feature: Creating and reading the Berkshelf lockfile
       cookbook 'fake', :locked_version => '1.0.0'
       """
     When I successfully run `berks install`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."x
+    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
-          "fake":{
-            "constraint":"= 1.0.0"
+        "sources": {
+          "fake": {
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
           }
         }
       }
