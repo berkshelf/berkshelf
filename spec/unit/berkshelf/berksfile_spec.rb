@@ -129,8 +129,8 @@ describe Berkshelf::Berksfile do
 
     before { Dir.chdir(path) }
 
-    it 'sends the add_source message with an explicit version constraint and the path to the cookbook' do
-      subject.should_receive(:add_source).with('example_cookbook', '= 0.5.0', path: path.to_s, metadata: true)
+    it 'sends the add_source message with no version constraint, the path to the cookbook, and the metadata definition' do
+      subject.should_receive(:add_source).with('example_cookbook', nil, path: path.to_s, metadata: true)
       subject.metadata
     end
   end
