@@ -52,11 +52,6 @@ describe Berkshelf::GitLocation do
       }
     end
 
-    it 'sets the downloaded status to true' do
-      subject.download(tmp_path)
-      expect(subject).to be_downloaded
-    end
-
     context 'given no ref/branch/tag options is given' do
       subject { Berkshelf::GitLocation.new('berkshelf-cookbook-fixture', complacent_constraint, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 

@@ -77,7 +77,6 @@ module Berkshelf
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
 
-      set_downloaded_status(true)
       cached
     end
 

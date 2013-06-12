@@ -68,7 +68,7 @@ Feature: --format json
           {
             "name": "example_cookbook",
             "version": "0.5.0",
-            "location": "path: '<%= File.expand_path(File.join(fixtures_path, 'cookbooks', 'example_cookbook-0.5.0')) %>'",
+            "location": "../../spec/fixtures/cookbooks/example_cookbook-0.5.0",
             "uploaded_to": "http://localhost:4000/"
           }
         ],

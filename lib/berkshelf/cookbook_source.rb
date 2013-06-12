@@ -93,6 +93,8 @@ module Berkshelf
     #   a URL pointing to a community API endpoint
     # @option options [String] :path
     #   a filepath to the cookbook on your local disk
+    # @option options [String] :metadata
+    #   use the metadata at the given pat
     # @option options [Symbol, Array] :group
     #   the group or groups that the cookbook belongs to
     # @option options [String] :ref
@@ -131,7 +133,7 @@ module Berkshelf
     #
     # @return [Array<CachedCookbook, Location>]
     def cached_and_location(options = {})
-      from_path(options) || from_cache(options) || from_default(options)
+      from_path(options) || from_default(options)
     end
 
     # Returns true if the cookbook source has already been downloaded. A cookbook
@@ -192,25 +194,26 @@ module Berkshelf
 
     def to_hash
       {}.tap do |h|
-        h[:locked_version]  = locked_version.to_s
+        unless location.kind_of?(PathLocation)
+          h[:locked_version] = locked_version.to_s
+        end
 
         unless version_constraint.to_s == DEFAULT_CONSTRAINT
           h[:constraint] = version_constraint.to_s
         end
 
-        if location.kind_of?(SiteLocation) && location.api_uri != CommunityREST::V1_API
-          h[:site] = location.api_uri
+        if location.kind_of?(SiteLocation)
+          h[:site] = location.api_uri if location.api_uri != CommunityREST::V1_API
+        end
+
+        if location.kind_of?(PathLocation)
+          h[:path] = location.relative_path(berksfile.filepath)
         end
 
         if location.kind_of?(GitLocation)
           h[:git] = location.uri
           h[:ref] = location.ref
           h[:rel] = location.rel if location.rel
-        end
-
-        # Path is intentionally left relative here for cross-team compatibility
-        if @options[:path]
-          h[:path] = @options[:path].to_s
         end
       end.reject { |k,v| v.blank? }
     end
@@ -220,40 +223,22 @@ module Berkshelf
     end
 
     private
-
       # Attempt to load a CachedCookbook from a local file system path (if the :path
       # option was given). If one is found, the location and cached_cookbook is
       # updated. Otherwise, this method will raise a CookbookNotFound exception.
       #
-      # @raises [Berkshelf::CookbookNotFound]
+      # @raise [Berkshelf::CookbookNotFound]
       #   if no CachedCookbook exists at the given path
       #
       # @return [Berkshelf::CachedCookbook]
       def from_path(options = {})
         return nil unless options[:path]
 
-        path     = File.expand_path(PathLocation.normalize_path(options[:path]), File.dirname(berksfile.filepath))
-        location = PathLocation.new(name, version_constraint, path: path)
-        cached   = CachedCookbook.from_path(location.path)
+        location = PathLocation.new(name, version_constraint, options)
 
-        [ cached, location ]
+        [ location.cookbook, location ]
       rescue IOError => ex
         raise Berkshelf::CookbookNotFound, ex
-      end
-
-      # Attempt to load a CachedCookbook from the local CookbookStore. This will save
-      # the need to make an http request to download a cookbook we already have cached
-      # locally.
-      #
-      # @return [Berkshelf::CachedCookbook, nil]
-      def from_cache(options = {})
-        path = File.join(Berkshelf.cookbooks_dir, filename(options))
-        return nil unless File.exists?(path)
-
-        location = PathLocation.new(name, version_constraint, path: path)
-        cached   = CachedCookbook.from_path(path, name: name)
-
-        [ cached, location ]
       end
 
       # Use the default location, and a nil CachedCookbook. If there is no location
@@ -268,13 +253,6 @@ module Berkshelf
         end
 
         [ nil, location ]
-      end
-
-      # The hypothetical location of this CachedCookbook, if it were to exist.
-      #
-      # @return [String]
-      def filename(options = {})
-        "#{name}-#{options[:locked_version]}"
       end
   end
 end
