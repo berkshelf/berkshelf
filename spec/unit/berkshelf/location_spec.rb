@@ -140,12 +140,6 @@ describe Berkshelf::Location do
     Class.new { include Berkshelf::Location }.new(name, constraint)
   end
 
-  describe 'downloaded?' do
-    it 'starts as false' do
-      expect(subject.downloaded?).to be_false
-    end
-  end
-
   describe '#download' do
     it 'raises a AbstractFunction if not defined' do
       expect {
