@@ -1,10 +1,10 @@
+require_relative 'dependency'
+
 module Berkshelf
   # The object representation of the Berkshelf lockfile. The lockfile is useful
   # when working in teams where the same cookbook versions are desired across
   # multiple workstations.
   class Lockfile
-    require_relative 'cookbook_source'
-
     # @return [Pathname]
     #   the path to this Lockfile
     attr_reader :filepath
@@ -20,9 +20,9 @@ module Berkshelf
     # @param berksfile [Berkshelf::Berksfile]
     #   the Berksfile associated with this Lockfile
     def initialize(berksfile)
-      @berksfile = berksfile
-      @filepath  = File.expand_path("#{berksfile.filepath}.lock")
-      @sources   = {}
+      @berksfile    = berksfile
+      @filepath     = File.expand_path("#{berksfile.filepath}.lock")
+      @dependencies = {}
 
       load! if File.exists?(@filepath)
     end
@@ -43,75 +43,75 @@ module Berkshelf
       end
 
       hash[:sources].each do |name, options|
-        add(CookbookSource.new(berksfile, name.to_s, options))
+        add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
       end
     end
 
-    # The list of sources constrained in this lockfile.
+    # The list of dependencies constrained in this lockfile.
     #
-    # @return [Array<Berkshelf::CookbookSource>]
-    #   the list of sources in this lockfile
-    def sources
-      @sources.values
+    # @return [Array<Berkshelf::Dependency>]
+    #   the list of dependencies in this lockfile
+    def dependencies
+      @dependencies.values
     end
 
-    # Find the given source in this lockfile. This method accepts a source
+    # Find the given dependency in this lockfile. This method accepts a dependency
     # attribute which may either be the name of a cookbook (String) or an
-    # actual cookbook source.
+    # actual cookbook dependency.
     #
-    # @param [String, Berkshelf::CookbookSource] source
-    #   the cookbook source/name to find
-    # @return [CookbookSource, nil]
-    #   the cookbook source from this lockfile or nil if one was not found
-    def find(source)
-      @sources[cookbook_name(source).to_s]
+    # @param [String, Berkshelf::Dependency] dependency
+    #   the cookbook dependency/name to find
+    # @return [Berkshelf::Dependency, nil]
+    #   the cookbook dependency from this lockfile or nil if one was not found
+    def find(dependency)
+      @dependencies[cookbook_name(dependency).to_s]
     end
 
-    # Determine if this lockfile contains the given source.
+    # Determine if this lockfile contains the given dependency.
     #
-    # @param [String, Berkshelf::CookbookSource] source
-    #   the cookbook source/name to determine existence of
+    # @param [String, Berkshelf::Dependency] dependency
+    #   the cookbook dependency/name to determine existence of
     # @return [Boolean]
-    #   true if the source exists, false otherwise
-    def has_source?(source)
-      !find(source).nil?
+    #   true if the dependency exists, false otherwise
+    def has_dependency?(dependency)
+      !find(dependency).nil?
     end
 
-    # Replace the current list of sources with `sources`. This method does
+    # Replace the current list of dependencies with `dependencies`. This method does
     # not write out the lockfile - it only changes the state of the object.
     #
-    # @param [Array<Berkshelf::CookbookSource>] sources
-    #   the list of sources to update
-    def update(sources)
-      reset_sources!
-      sources.each { |source| append(source) }
+    # @param [Array<Berkshelf::Dependency>] dependencies
+    #   the list of dependencies to update
+    def update(dependencies)
+      reset_dependencies!
+      dependencies.each { |dependency| append(dependency) }
       save
     end
 
-    # Add the given source to the `sources` list, if it doesn't already exist.
+    # Add the given dependency to the `dependencies` list, if it doesn't already exist.
     #
-    # @param [Berkshelf::CookbookSource] source
-    #   the source to append to the sources list
-    def add(source)
-      @sources[cookbook_name(source)] = source
+    # @param [Berkshelf::Dependency] dependency
+    #   the dependency to append to the dependencies list
+    def add(dependency)
+      @dependencies[cookbook_name(dependency)] = dependency
     end
     alias_method :append, :add
 
-    # Remove the given source from this lockfile. This method accepts a source
+    # Remove the given dependency from this lockfile. This method accepts a dependency
     # attribute which may either be the name of a cookbook (String) or an
-    # actual cookbook source.
+    # actual cookbook dependency.
     #
-    # @param [String, Berkshelf::CookbookSource] source
-    #   the cookbook source/name to remove
+    # @param [String, Berkshelf::Dependency] dependency
+    #   the cookbook dependency/name to remove
     #
     # @raise [Berkshelf::CookbookNotFound]
-    #   if the provided source does not exist
-    def remove(source)
-      unless has_source?(source)
-        raise Berkshelf::CookbookNotFound, "'#{cookbook_name(source)}' does not exist in this lockfile!"
+    #   if the provided dependency does not exist
+    def remove(dependency)
+      unless has_dependency?(dependency)
+        raise Berkshelf::CookbookNotFound, "'#{cookbook_name(dependency)}' does not exist in this lockfile!"
       end
 
-      @sources.delete(cookbook_name(source))
+      @dependencies.delete(cookbook_name(dependency))
     end
     alias_method :unlock, :remove
 
@@ -124,17 +124,17 @@ module Berkshelf
     # @return [String]
     #   the detailed string representation of the lockfile
     def inspect
-      "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}, sources: #{sources.inspect}>"
+      "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}, dependencies: #{dependencies.inspect}>"
     end
 
     # Write the current lockfile to a hash
     #
     # @return [Hash]
     #   the hash representation of this lockfile
-    #   * :sources [Array<Berkshelf::CookbookSource>] the list of sources
+    #   * :dependencies [Array<Berkshelf::Dependency>] the list of dependencies
     def to_hash
       {
-        sources: @sources
+        sources: @dependencies
       }
     end
 
@@ -157,29 +157,26 @@ module Berkshelf
         end
       end
 
-      # Clear the sources array
-      def reset_sources!
-        @sources = {}
+      def reset_dependencies!
+        @dependencies = {}
       end
 
       # Return the name of this cookbook (because it's the key in our
       # table).
       #
-      # @param [Berkshelf::CookbookSource, #to_s] source
-      #   the source to find the name from
+      # @param [Berkshelf::Dependency, #to_s] dependency
+      #   the dependency to find the name from
       #
       # @return [String]
       #   the name of the cookbook
-      def cookbook_name(source)
-        source.is_a?(CookbookSource) ? source.name : source.to_s
+      def cookbook_name(dependency)
+        dependency.is_a?(Berkshelf::Dependency) ? dependency.name : dependency.to_s
       end
 
       # Legacy support for old lockfiles
       #
       # @todo Remove this class in Berkshelf 3.0.0
       class LockfileLegacy
-        require 'pathname'
-
         class << self
           # Read the old lockfile content and instance eval in context.
           #
@@ -188,17 +185,16 @@ module Berkshelf
           # @param [String] content
           #   the string content read from a legacy lockfile
           def parse(berksfile, content)
-            sources = {}.tap do |hash|
+            dependencies = {}.tap do |hash|
               content.split("\n").each do |line|
                 next if line.empty?
-
-                source = self.new(berksfile, line)
+                source            = new(berksfile, line)
                 hash[source.name] = source.options
               end
             end
 
             {
-              sources: sources
+              sources: dependencies
             }
           end
         end
@@ -224,19 +220,19 @@ module Berkshelf
           instance_eval(content).to_hash
         end
 
-        # Method defined in legacy lockfiles (since we are using
-        # instance_eval).
+        # Method defined in legacy lockfiles (since we are using instance_eval).
         #
         # @param [String] name
         #   the name of this cookbook
         # @option options [String] :locked_version
         #   the locked version of this cookbook
         def cookbook(name, options = {})
-          @name = name
+          @name    = name
           @options = manipulate(options)
         end
 
         private
+
           # Perform various manipulations on the hash.
           #
           # @param [Hash] options

@@ -6,31 +6,31 @@ describe Berkshelf::Location do
 
   describe '.set_location_key' do
     before do
-      @original = Berkshelf::CookbookSource.class_variable_get :@@location_keys
-      Berkshelf::CookbookSource.class_variable_set :@@location_keys, {}
+      @original = Berkshelf::Dependency.class_variable_get :@@location_keys
+      Berkshelf::Dependency.class_variable_set :@@location_keys, {}
     end
 
     after do
-      Berkshelf::CookbookSource.class_variable_set :@@location_keys, @original
+      Berkshelf::Dependency.class_variable_set :@@location_keys, @original
     end
 
-    it 'adds the given location key CookbookSource.location_keys' do
+    it 'adds the given location key Berkshelf::Dependency.location_keys' do
       klass.set_location_key(:reset)
 
-      expect(Berkshelf::CookbookSource.location_keys).to have(1).item
-      expect(Berkshelf::CookbookSource.location_keys).to include(:reset)
-      expect(Berkshelf::CookbookSource.location_keys[:reset]).to eq(klass)
+      expect(Berkshelf::Dependency.location_keys).to have(1).item
+      expect(Berkshelf::Dependency.location_keys).to include(:reset)
+      expect(Berkshelf::Dependency.location_keys[:reset]).to eq(klass)
     end
   end
 
   describe '.location_key' do
     before do
-      @original = Berkshelf::CookbookSource.class_variable_get :@@location_keys
-      Berkshelf::CookbookSource.class_variable_set :@@location_keys, {}
+      @original = Berkshelf::Dependency.class_variable_get :@@location_keys
+      Berkshelf::Dependency.class_variable_set :@@location_keys, {}
     end
 
     after do
-      Berkshelf::CookbookSource.class_variable_set :@@location_keys, @original
+      Berkshelf::Dependency.class_variable_set :@@location_keys, @original
     end
 
     it "returns the class' registered location key" do
@@ -41,27 +41,27 @@ describe Berkshelf::Location do
 
   describe '.set_valid_options' do
     before do
-      @original = Berkshelf::CookbookSource.class_variable_get :@@valid_options
-      Berkshelf::CookbookSource.class_variable_set :@@valid_options, []
+      @original = Berkshelf::Dependency.class_variable_get :@@valid_options
+      Berkshelf::Dependency.class_variable_set :@@valid_options, []
     end
 
     after do
-      Berkshelf::CookbookSource.class_variable_set :@@valid_options, @original
+      Berkshelf::Dependency.class_variable_set :@@valid_options, @original
     end
 
-    it 'adds the given symbol to the list of valid options on CookbookSource' do
+    it 'adds the given symbol to the list of valid options on Berkshelf::Dependency' do
       klass.set_valid_options(:mundo)
 
-      expect(Berkshelf::CookbookSource.valid_options).to have(1).item
-      expect(Berkshelf::CookbookSource.valid_options).to include(:mundo)
+      expect(Berkshelf::Dependency.valid_options).to have(1).item
+      expect(Berkshelf::Dependency.valid_options).to include(:mundo)
     end
 
-    it 'adds parameters to the list of valid options on the CookbookSource' do
+    it 'adds parameters to the list of valid options on the Berkshelf::Dependency' do
       klass.set_valid_options(:riot, :arenanet)
 
-      expect(Berkshelf::CookbookSource.valid_options).to have(2).items
-      expect(Berkshelf::CookbookSource.valid_options).to include(:riot)
-      expect(Berkshelf::CookbookSource.valid_options).to include(:arenanet)
+      expect(Berkshelf::Dependency.valid_options).to have(2).items
+      expect(Berkshelf::Dependency.valid_options).to include(:riot)
+      expect(Berkshelf::Dependency.valid_options).to include(:arenanet)
     end
   end
 
@@ -103,35 +103,33 @@ describe Berkshelf::Location do
     let(:constraint) { double('constraint') }
 
     it 'returns an instance of SiteLocation given a site: option key' do
-      result = Berkshelf::Location.init(name, constraint, site: 'http://site/value')
+      result = described_class.init(name, constraint, site: 'http://site/value')
       expect(result).to be_a(Berkshelf::SiteLocation)
     end
 
     it 'returns an instance of PathLocation given a path: option key' do
-      result = Berkshelf::Location.init(name, constraint, path: '/Users/reset/code')
+      result = described_class.init(name, constraint, path: '/Users/reset/code')
       expect(result).to be_a(Berkshelf::PathLocation)
     end
 
     it 'returns an instance of GitLocation given a git: option key' do
-      result = Berkshelf::Location.init(name, constraint, git: 'git://github.com/something.git')
+      result = described_class.init(name, constraint, git: 'git://github.com/something.git')
       expect(result).to be_a(Berkshelf::GitLocation)
     end
 
     it 'returns an instance of SiteLocation when no option key is given that matches a registered location_key' do
-      result = Berkshelf::Location.init(name, constraint)
+      result = described_class.init(name, constraint)
       expect(result).to be_a(Berkshelf::SiteLocation)
     end
 
     context 'given two location_keys' do
       it 'raises an InternalError' do
         expect {
-          Berkshelf::Location.init(name, constraint, git: :value, path: :value)
+          described_class.init(name, constraint, git: :value, path: :value)
         }.to raise_error(Berkshelf::InternalError)
       end
     end
   end
-
-
 
   let(:name) { 'nginx' }
   let(:constraint) { double('constraint') }

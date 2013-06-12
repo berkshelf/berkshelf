@@ -1,8 +1,8 @@
+require_relative 'dependency'
+require_relative 'location'
+
 module Berkshelf
   class Downloader
-    require_relative 'cookbook_source'
-    require_relative 'location'
-
     extend Forwardable
 
     DEFAULT_LOCATIONS = [
@@ -14,7 +14,7 @@ module Berkshelf
     ]
 
     # @return [String]
-    #   a filepath to download cookbook sources to
+    #   a filepath to download dependencies to
     attr_reader :cookbook_store
 
     def_delegators :@cookbook_store, :storage_path
@@ -27,7 +27,7 @@ module Berkshelf
 
     # @return [Array<Hash>]
     #   an Array of Hashes representing each default location that can be used to attempt
-    #   to download cookbook sources which do not have an explicit location. An array of default locations will
+    #   to download dependencies which do not have an explicit location. An array of default locations will
     #   be used if no locations are explicitly added by the {#add_location} function.
     def locations
       @locations.any? ? @locations : DEFAULT_LOCATIONS
@@ -60,53 +60,60 @@ module Berkshelf
       @locations.select { |loc| loc[:type] == type && loc[:value] == value }.any?
     end
 
-    # Download the given CookbookSource.
+    # Download the given Berkshelf::Dependency.
     #
-    # @param [CookbookSource] source
-    #   the source to download
+    # @param [Berkshelf::Dependency] dependency
+    #   the dependency to download
     #
     # @return [Array]
     #   an array containing the downloaded CachedCookbook and the Location used
     #   to download the cookbook
-    def download(source)
-      if source.location
+    def download(dependency)
+      if dependency.location
         begin
-          location = source.location
-          cached   = download_location(source, location, true)
-          source.cached_cookbook = cached
+          location = dependency.location
+          cached   = download_location(dependency, location, true)
+          dependency.cached_cookbook = cached
 
           return [cached, location]
         rescue => e
           raise if e.kind_of?(CookbookValidationFailure)
-          Berkshelf.formatter.error "Failed to download '#{source.name}' from #{source.location}"
+          Berkshelf.formatter.error "Failed to download '#{dependency.name}' from #{dependency.location}"
         end
       else
         locations.each do |loc|
           options = loc[:options].merge(loc[:type] => loc[:value])
-          location = Location.init(source.name, source.version_constraint, options)
+          location = Location.init(dependency.name, dependency.version_constraint, options)
 
-          cached = download_location(source, location)
+          cached = download_location(dependency, location)
           if cached
-            source.cached_cookbook = cached
+            dependency.cached_cookbook = cached
             return [cached, location]
           end
         end
       end
 
-      raise CookbookNotFound, "Cookbook '#{source.name}' not found in any of the default locations"
+      raise CookbookNotFound, "Cookbook '#{dependency.name}' not found in any of the default locations"
     end
 
     private
 
-      # Attempt to download the the given source from the given location, #
-      # raising an error if `raise_if_not_found` is specified.
+      # Attempt to download the dependency from the given location. If the dependency does
+      # not explicity specify a location to retrieve it from, the downloader will attempt to
+      # retrieve the dependency from each of the default locations until it is found.
+      #
+      # @note
+      #   a dependency is said to have an explicit location if it has a value for {#location}
+      #
+      # @note
+      #   an error will be raised if `raise_if_not_found` is specified.
       #
       # @raise [Bershelf::CookbookNotFound]
-      #   if `raise_if_not_found` is true and the source could not be
+      #   if `raise_if_not_found` is true and the dependency could not be
       #   downloaded
       #
-      # @param [Berkshelf::CookbookSource] source
-      #   the source to download
+      # @param [Berkshelf::Dependency] dependency
+      #   the dependency to download
       # @param [~Berkshelf::Location] location
       #   the location to download from
       # @param [Boolean] raise_if_not_found
@@ -115,8 +122,8 @@ module Berkshelf
       #
       # @return [Berkshelf::CachedCookbook, nil]
       #   the downloaded cached cookbook, or nil if one was not found
-      def download_location(source, location, raise_if_not_found = false)
-        from_cache(source) || location.download(storage_path)
+      def download_location(dependency, location, raise_if_not_found = false)
+        from_cache(dependency) || location.download(storage_path)
       rescue Berkshelf::CookbookNotFound
         raise if raise_if_not_found
         nil
@@ -124,23 +131,23 @@ module Berkshelf
 
       # Load the cached cookbook from the cookbook store.
       #
-      # @param [Berkshelf::CookbookSource] source
-      #   the source to find in the cache
+      # @param [Berkshelf::CookbookSource] dependency
+      #   the dependency to find in the cache
       #
       # @return [Berkshelf::CachedCookbook, nil]
-      def from_cache(source)
+      def from_cache(dependency)
         # Can't safely read a git location from cache
-        return nil if source.location.kind_of?(Berkshelf::GitLocation)
+        return nil if dependency.location.kind_of?(Berkshelf::GitLocation)
 
-        if source.locked_version
-          cookbook = cookbook_store.cookbook_path(source.name, source.locked_version)
+        if dependency.locked_version
+          cookbook = cookbook_store.cookbook_path(dependency.name, dependency.locked_version)
           path = File.expand_path(File.join(storage_path, cookbook))
 
           return nil unless File.exists?(path)
-          return Berkshelf::CachedCookbook.from_path(path, name: source.name)
+          return Berkshelf::CachedCookbook.from_path(path, name: dependency.name)
         end
 
-        cookbook_store.satisfy(source.name, source.version_constraint)
+        cookbook_store.satisfy(dependency.name, dependency.version_constraint)
       end
   end
 end

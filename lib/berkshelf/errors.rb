@@ -238,27 +238,26 @@ module Berkshelf
     end
   end
 
-  class OutdatedCookbookSource < BerkshelfError
+  class OutdatedDependency < BerkshelfError
     status_code(128)
 
-    # @param [Berkshelf::CookbookSource] source
-    #   the cookbook source that is outdated
-    def initialize(locked_source, source)
-      @locked_source = locked_source
-      @source = source
+    # @param [Berkshelf::Dependency] locked_dependency
+    #   the locked dependency
+    # @param [Berkshelf::Dependency] dependency
+    #   the dependency that is outdated
+    def initialize(locked_dependency, dependency)
+      @locked_dependency = locked_dependency
+      @dependency        = dependency
     end
 
     def to_s
-      [
-        "Berkshelf could not find compatible versions for cookbook '#{@source.name}':",
-        "  In Berksfile:",
-        "    #{@source.name} (#{@source.version_constraint})",
-        "",
-        "  In Berksfile.lock:",
-        "    #{@locked_source.name} (#{@locked_source.locked_version})",
-        "",
-        "Try running `berks update #{@source.name}, which will try to find  '#{@source.name}' matching '#{@source.version_constraint}'.",
-      ].join("\n")
+      "Berkshelf could not find compatible versions for cookbook '#{@dependency.name}':\n" +
+      "  In Berksfile:\n" +
+      "    #{@dependency.name} (#{@dependency.version_constraint})\n\n" +
+      "  In Berksfile.lock:\n" +
+      "    #{@locked_dependency.name} (#{@locked_dependency.locked_version})\n\n" +
+      "Try running `berks update #{@dependency.name}, which will try to find '#{@dependency.name}' matching " +
+        "'#{@dependency.version_constraint}'."
     end
   end
 

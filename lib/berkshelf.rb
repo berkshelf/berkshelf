@@ -14,14 +14,15 @@ require 'tmpdir'
 require 'uri'
 require 'zlib'
 
-require_relative 'berkshelf/core_ext'
-require_relative 'berkshelf/errors'
-require_relative 'berkshelf/mixin'
-require_relative 'berkshelf/thor_ext'
-
 JSON.create_id = nil
 
+require_relative 'berkshelf/core_ext'
+require_relative 'berkshelf/thor_ext'
+
 module Berkshelf
+  require_relative 'berkshelf/errors'
+  require_relative 'berkshelf/mixin'
+
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
@@ -129,9 +130,9 @@ require_relative 'berkshelf/chef'
 require_relative 'berkshelf/cli'
 require_relative 'berkshelf/community_rest'
 require_relative 'berkshelf/cookbook_generator'
-require_relative 'berkshelf/cookbook_source'
 require_relative 'berkshelf/cookbook_store'
 require_relative 'berkshelf/config'
+require_relative 'berkshelf/dependency'
 require_relative 'berkshelf/downloader'
 require_relative 'berkshelf/formatters'
 require_relative 'berkshelf/git'
