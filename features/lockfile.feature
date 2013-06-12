@@ -335,9 +335,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
-        "sources":{
-          "fake":{
+        "sources": {
+          "fake": {
             "path": ".",
             "constraint": "= 0.0.0"
           }
@@ -355,9 +354,8 @@ Feature: Creating and reading the Berkshelf lockfile
     And the cookbook "fake" has the file "Berksfile.lock" with:
       """
       {
-        "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
-        "sources":{
-          "fake":{
+        "sources": {
+          "fake": {
             "path": ".",
             "constraint": "= 0.0.0"
           }
