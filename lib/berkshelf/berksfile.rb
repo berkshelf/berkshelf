@@ -90,7 +90,7 @@ module Berkshelf
     end
 
     # @return [String]
-    #   the shasum for the Berksfile
+    #   the shasum for the sources in the Berksfile (or metadata/path locations)
     def sha
       @sha ||= Digest::SHA1.hexdigest(sources.to_json)
     end
@@ -378,10 +378,11 @@ module Berkshelf
     #    sources are considered to be "unlocked". If a lockfile is specified, a
     #    definition is created via the following algorithm:
     #
-    #    - Compare the SHA of the current Berksfile with the last-known SHA.
-    #    - If the SHAs match, the Berksfile has not been updated, so we rely
-    #      solely on the locked sources.
-    #    - If the SHAs don't match, then the Berksfile has diverged from the
+    #    - Compare the SHA of the current sources (as JSON) with the last-known
+    #      SHA of the sources.
+    #    - If the SHAs match, the sources have not been updated, so we can rely
+    #      solely on the locked ones.
+    #    - If the SHAs don't match, then the sources have diverged from the
     #      lockfile, which means some sources are outdated. For each unlocked
     #      source, see if there exists a locked version that still satisfies
     #      the version constraint in the Berksfile. If there exists such a
