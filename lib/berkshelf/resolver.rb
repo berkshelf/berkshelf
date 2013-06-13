@@ -85,7 +85,7 @@ module Berkshelf
     # @return [Array<Berkshelf::Dependency>]
     #   an array of Berkshelf::Dependencys that are currently added to this resolver
     def dependencies
-      @dependencies.collect { |name, dependency| dependency }
+      @dependencies.values
     end
 
     # Finds a solution for the currently added dependencies and their dependencies and
