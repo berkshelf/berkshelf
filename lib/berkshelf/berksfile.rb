@@ -92,7 +92,7 @@ module Berkshelf
     # @return [String]
     #   the shasum for the Berksfile
     def sha
-      @sha ||= Digest::SHA1.hexdigest File.read(filepath.to_s)
+      @sha ||= Digest::SHA1.hexdigest(sources.to_json)
     end
 
     # Add a cookbook source to the Berksfile to be retrieved and have it's dependencies recursively retrieved
