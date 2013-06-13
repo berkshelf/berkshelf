@@ -62,7 +62,8 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources": {
+        "sha": "374a3d22920abae4a6d620a14a32b90d8babda8f",
+        "dependencies": {
           "fake": {
             "constraint": "= 1.0.0",
             "locked_version": "1.0.0"
@@ -99,7 +100,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"4b614de85168d72fda4b255fc31796b4c474c3fc",
+        "sha":"ebf27d476739b5aba7e7e8a61de23b3330e20a7d",
         "dependencies":{
           "fake":{
             "constraint":"= 0.0.0",
@@ -216,7 +217,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"7d07c22eca03bf6da5aaf38ae81cb9a8a439c692",
+        "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
@@ -364,7 +365,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "42a13f91f1ba19ce8c6776fe267e74510dee27ce",
+        "sha": "a148a5a75397588393801a2fd55df1325080868c",
         "dependencies":{
           "fake":{
             "path":"./fake"
@@ -385,6 +386,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "sha": "a7371143bae509b849bf94e5d65987581bf93133",
         "dependencies": {
           "fake": {
             "path": "."
@@ -403,6 +405,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And the cookbook "fake" has the file "Berksfile.lock" with:
       """
       {
+        "sha": "a7371143bae509b849bf94e5d65987581bf93133",
         "dependencies": {
           "fake": {
             "path": "."
@@ -415,6 +418,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "sha": "a7371143bae509b849bf94e5d65987581bf93133",
         "dependencies": {
           "fake": {
             "path": "."

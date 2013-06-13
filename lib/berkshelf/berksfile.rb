@@ -92,7 +92,7 @@ module Berkshelf
     # @return [String]
     #   the shasum for the sources in the Berksfile (or metadata/path locations)
     def sha
-      @sha ||= Digest::SHA1.hexdigest File.read(filepath.to_s)
+      @sha ||= Digest::SHA1.hexdigest(shaable_contents.join("\n"))
     end
 
     # Add a cookbook dependency to the Berksfile to be retrieved and have it's dependencies recursively retrieved
@@ -196,6 +196,8 @@ module Berkshelf
       metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
       metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
 
+      shaable_contents << File.read(metadata_path)
+
       name = metadata.name.presence || File.basename(File.expand_path(path))
 
       add_dependency(name, nil, path: path, metadata: true)
@@ -261,6 +263,11 @@ module Berkshelf
           raise DuplicateDependencyDefined,
             "Berksfile contains multiple entries named '#{name}'. Use only one, or put them in different groups."
         end
+      end
+
+      if options[:path]
+        metadata_file = File.expand_path(File.join(options[:path], 'metadata.rb'))
+        shaable_contents << File.read(metadata_file)
       end
 
       options[:constraint] = constraint
@@ -814,6 +821,14 @@ module Berkshelf
             Berkshelf.ui.warn(e.to_s)
           end
         end
+      end
+
+      # The contents of the files that we want to SHA for caching against
+      # the lockfile.
+      #
+      # @return [Array<String>]
+      def shaable_contents
+        @shaable_contents ||= [File.read(self.filepath)]
       end
   end
 end

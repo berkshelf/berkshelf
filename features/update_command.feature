@@ -44,7 +44,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
@@ -89,7 +89,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
