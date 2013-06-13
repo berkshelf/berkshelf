@@ -573,16 +573,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe "#remove_dependency" do
-    let(:dependency) { "nginx" }
-    before { subject.add_dependency(dependency) }
-
-    it "removes a dependencies from the list" do
-      subject.remove_dependency(dependency)
-      expect(subject.dependencies).to have(0).items
-    end
-  end
-
   describe '#validate_files!' do
     before { described_class.send(:public, :validate_files!) }
     let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path') }
