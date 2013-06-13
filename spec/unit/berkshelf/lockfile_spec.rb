@@ -15,15 +15,35 @@ describe Berkshelf::Lockfile do
       }.to_not raise_error
     end
 
+<<<<<<< HEAD
     it 'has the correct dependencies' do
       expect(subject).to have_dependency 'build-essential'
       expect(subject).to have_dependency 'chef-client'
+=======
+    it 'has the correct sha' do
+      expect(subject.sha).to eq('6b76225554cc1f7c0aea0f8b3f10c6743aeba67e')
+    end
+
+    it 'has the correct sources' do
+      expect(subject).to have_source 'build-essential'
+      expect(subject).to have_source 'chef-client'
+>>>>>>> 5b9bbf6... Revert e84b189
     end
   end
 
   subject { Berkshelf::Lockfile.new(berksfile) }
 
+<<<<<<< HEAD
   describe '#dependencies' do
+=======
+  describe '#reset_sha!' do
+    it 'sets the sha to nil' do
+      expect { subject.reset_sha! }.to change { subject.sha }.to nil
+    end
+  end
+
+  describe '#sources' do
+>>>>>>> 5b9bbf6... Revert e84b189
     it 'returns an array' do
       expect(subject.dependencies).to be_a(Array)
     end
@@ -55,10 +75,23 @@ describe Berkshelf::Lockfile do
       subject.update([])
     end
 
+<<<<<<< HEAD
     it 'appends each of the dependencies' do
       dependency = double('dependency')
       subject.should_receive(:append).with(dependency).once
       subject.update([dependency])
+=======
+    it 'updates the sha' do
+      expect {
+        subject.update([])
+      }.to change { subject.sha }
+    end
+
+    it 'appends each of the sources' do
+      source = double('source')
+      subject.should_receive(:append).with(source).once
+      subject.update([source])
+>>>>>>> 5b9bbf6... Revert e84b189
     end
 
     it 'saves the file' do
@@ -115,8 +148,17 @@ describe Berkshelf::Lockfile do
   describe '#to_hash' do
     let(:hash) { subject.to_hash }
 
+<<<<<<< HEAD
     it 'has the `:dependencies` key' do
       expect(hash).to have_key(:dependencies)
+=======
+    it 'has the `:sha` key' do
+      expect(hash).to have_key(:sha)
+    end
+
+    it 'has the `:sources` key' do
+      expect(hash).to have_key(:sources)
+>>>>>>> 5b9bbf6... Revert e84b189
     end
   end
 

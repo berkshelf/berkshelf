@@ -20,7 +20,12 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+<<<<<<< HEAD
         "dependencies":{
+=======
+        "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
+        "sources":{
+>>>>>>> 5b9bbf6... Revert e84b189
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"
@@ -43,7 +48,12 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
+<<<<<<< HEAD
         "dependencies":{
+=======
+        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
+        "sources":{
+>>>>>>> 5b9bbf6... Revert e84b189
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"
@@ -59,7 +69,12 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+<<<<<<< HEAD
         "dependencies":{
+=======
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
+        "sources":{
+>>>>>>> 5b9bbf6... Revert e84b189
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
             "constraint":"~> 0.1"
@@ -86,7 +101,12 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
+<<<<<<< HEAD
         "dependencies":{
+=======
+        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
+        "sources":{
+>>>>>>> 5b9bbf6... Revert e84b189
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"
@@ -102,7 +122,12 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+<<<<<<< HEAD
         "dependencies":{
+=======
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
+        "sources":{
+>>>>>>> 5b9bbf6... Revert e84b189
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
             "constraint":"~> 0.1"
@@ -126,7 +151,12 @@ Feature: Updating a cookbook defined by a Berksfile
     Given I write to "Berksfile.lock" with:
       """
       {
+<<<<<<< HEAD
         "dependencies":{
+=======
+        "sha":"23150cfe61b7b86882013c8664883058560b899d",
+        "sources":{
+>>>>>>> 5b9bbf6... Revert e84b189
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"

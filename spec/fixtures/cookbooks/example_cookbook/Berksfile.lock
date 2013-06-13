@@ -1,4 +1,9 @@
 {
+<<<<<<< HEAD
   "dependencies": {
+=======
+  "sha": null,
+  "sources": {
+>>>>>>> 5b9bbf6... Revert e84b189
   }
 }
