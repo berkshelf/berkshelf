@@ -14,7 +14,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"cc2139907723c88a96c4797f84fc895c81ed50ca",
+        "sha":"80396ed07db133e0192593adebb360c27eed88c2",
         "sources":{
           "fake":{
             "constraint":"= 1.0.0",
@@ -41,7 +41,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "cc2139907723c88a96c4797f84fc895c81ed50ca",
+        "sha": "374a3d22920abae4a6d620a14a32b90d8babda8f",
         "sources": {
           "fake": {
             "constraint": "= 1.0.0",
@@ -66,7 +66,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"4983a379f87ccefcebc0194f4dc7cceab906d98b",
+        "sha":"ebf27d476739b5aba7e7e8a61de23b3330e20a7d",
         "sources":{
           "fake":{
             "constraint":"= 0.0.0",
@@ -89,7 +89,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"cc2139907723c88a96c4797f84fc895c81ed50ca",
+        "sha":"80396ed07db133e0192593adebb360c27eed88c2",
         "sources":{
           "fake":{
             "constraint":"= 1.0.0",
@@ -114,7 +114,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"566904fb88f310b2b46bf89b6579541098e2d4e6",
+        "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
@@ -127,7 +127,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"566904fb88f310b2b46bf89b6579541098e2d4e6",
+        "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
@@ -162,7 +162,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"e1bf5ef8d687b3eb2f834a2ba9c9918cceb456b2",
+        "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 0.1",
@@ -183,7 +183,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"7d07c22eca03bf6da5aaf38ae81cb9a8a439c692",
+        "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
@@ -196,7 +196,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"cc2139907723c88a96c4797f84fc895c81ed50ca",
+        "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
@@ -218,7 +218,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "6cc4af143f0527d0a70de8cd3fc0d778c8188186",
+        "sha": "b8e06c891c824b3e3481df024eb241e1c02572a6",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
@@ -241,7 +241,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "13b4ee46522a51505e13ed9a60f52ae3d2538993",
+        "sha": "310f95bb86ba76b47eef28abc621d0e8de19bbb6",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
@@ -264,7 +264,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "13b4ee46522a51505e13ed9a60f52ae3d2538993",
+        "sha": "ade51e222f569cc299f34ec1100d321f3b230c36",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
@@ -287,7 +287,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "6cc4af143f0527d0a70de8cd3fc0d778c8188186",
+        "sha": "3ac97aa503bcebb2b393410aebc176c3c5bed2d4",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
@@ -308,7 +308,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "325bed02a1096c3803c216dd18e7771242ccf90a",
+        "sha": "f0b5a9c0230a3ff384badb0c40af1058cde75bee",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
@@ -331,7 +331,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "b18322a843d407d9eb153f26764289b088698f0d",
+        "sha": "a148a5a75397588393801a2fd55df1325080868c",
         "sources":{
           "fake":{
             "path":"./fake"
@@ -352,7 +352,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "e40824ab18ab63fab62434bca30fcc5b6f5eb24d",
+        "sha": "a7371143bae509b849bf94e5d65987581bf93133",
         "sources": {
           "fake": {
             "path": "."
@@ -371,7 +371,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And the cookbook "fake" has the file "Berksfile.lock" with:
       """
       {
-        "sha": "e40824ab18ab63fab62434bca30fcc5b6f5eb24d",
+        "sha": "a7371143bae509b849bf94e5d65987581bf93133",
         "sources": {
           "fake": {
             "path": "."
@@ -384,7 +384,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "e40824ab18ab63fab62434bca30fcc5b6f5eb24d",
+        "sha": "a7371143bae509b849bf94e5d65987581bf93133",
         "sources": {
           "fake": {
             "path": "."

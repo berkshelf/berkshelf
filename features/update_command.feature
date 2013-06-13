@@ -20,7 +20,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"e1bf5ef8d687b3eb2f834a2ba9c9918cceb456b2",
+        "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
@@ -44,7 +44,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
@@ -61,7 +61,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"85f2d1005249d86f6708d7481c481506d4cd11ff",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
@@ -89,7 +89,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"9d10199aa2652f9e965149c4346db20c78e97553",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
@@ -106,7 +106,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"85f2d1005249d86f6708d7481c481506d4cd11ff",
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
