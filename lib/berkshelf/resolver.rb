@@ -85,7 +85,7 @@ module Berkshelf
     # @return [Array<Berkshelf::CookbookSource>]
     #   an array of CookbookSources that are currently added to this resolver
     def sources
-      @sources.collect { |name, source| source }
+      @sources.values
     end
 
     # Finds a solution for the currently added sources and their dependencies and
