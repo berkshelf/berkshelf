@@ -102,8 +102,8 @@ module Berkshelf
     # @param [Array<Berkshelf::Dependency>] dependencies
     #   the list of dependencies to update
     # @option options [String] :sha
-    #   the sha of the Berksfile updating the sources
-    def update(sources, options = {})
+    #   the sha of the Berksfile updating the dependencies
+    def update(dependencies, options = {})
       reset_dependencies!
       @sha = options[:sha]
 
