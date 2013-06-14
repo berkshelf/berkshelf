@@ -22,11 +22,6 @@ module Berkshelf
       type: :boolean,
       default: false
 
-    class_option :skip_test_kitchen,
-      type: :boolean,
-      default: false,
-      desc: 'Skip adding a testing environment to your cookbook'
-
     class_option :foodcritic,
       type: :boolean,
       default: false
