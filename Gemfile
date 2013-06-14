@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
+  gem 'test-kitchen', '>= 1.0.0.alpha7'
+
   require 'rbconfig'
 
   if RbConfig::CONFIG['target_os'] =~ /darwin/i
