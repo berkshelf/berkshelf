@@ -2,9 +2,8 @@ require 'berkshelf'
 require_relative 'config'
 require_relative 'init_generator'
 require_relative 'cookbook_generator'
-
-require 'berkshelf/commands/test_command'
-require 'berkshelf/commands/shelf'
+require_relative 'commands/shelf'
+require_relative 'commands/test_command'
 
 module Berkshelf
   class Cli < Thor
