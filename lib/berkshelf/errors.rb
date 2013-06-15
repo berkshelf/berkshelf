@@ -136,7 +136,7 @@ module Berkshelf
 
     alias_method :original_backtrace, :backtrace
     def backtrace
-      @error_backtrace + original_backtrace
+      Array(@error_backtrace) + Array(original_backtrace)
     end
 
     def to_s
