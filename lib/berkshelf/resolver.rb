@@ -50,7 +50,7 @@ module Berkshelf
     # @return [Array<Berkshelf::Dependency>]
     def add_dependency(dependency, include_dependencies = true)
       if has_dependency?(dependency)
-        raise DuplicateSourceDefined, "A dependency named '#{dependency.name}' is already present."
+        raise DuplicateDependencyDefined, "A dependency named '#{dependency.name}' is already present."
       end
 
       @dependencies[dependency.name] = dependency

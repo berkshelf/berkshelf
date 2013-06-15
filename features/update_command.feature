@@ -16,11 +16,11 @@ Feature: Updating a cookbook defined by a Berksfile
       cookbook 'berkshelf-cookbook-fixture', :locked_version => '0.1.0'
       """
     When I successfully run `berks update`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the output should warn about the old lockfile format
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"
@@ -43,7 +43,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"
@@ -59,7 +59,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
             "constraint":"~> 0.1"
@@ -86,7 +86,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"
@@ -102,7 +102,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
             "constraint":"~> 0.1"
@@ -126,7 +126,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Given I write to "Berksfile.lock" with:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
             "constraint":"~> 0.1"
@@ -137,6 +137,6 @@ Feature: Updating a cookbook defined by a Berksfile
     When I run `berks update non-existent-cookbook`
     Then the output should contain:
       """
-      Could not find cookbook(s) 'non-existent-cookbook' in any of the configured sources. Is it in your Berksfile?
+      Could not find cookbook(s) 'non-existent-cookbook' in any of the configured dependencies. Is it in your Berksfile?
       """
     And the CLI should exit with the status code for error "CookbookNotFound"
