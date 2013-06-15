@@ -243,7 +243,7 @@ module Berkshelf
     #   the constraint to lock the dependency to
     # @param [Hash] options
     #
-    # @raise [DuplicateSourceDefined] if a dependency is added whose name conflicts
+    # @raise [DuplicateDependencyDefined] if a dependency is added whose name conflicts
     #   with a dependency who has already been added.
     #
     # @return [Array<Berkshelf::Dependency]
@@ -252,7 +252,7 @@ module Berkshelf
         # Only raise an exception if the dependency is a true duplicate
         groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
         if !(@dependencies[name].groups & groups).empty?
-          raise DuplicateSourceDefined,
+          raise DuplicateDependencyDefined,
             "Berksfile contains multiple entries named '#{name}'. Use only one, or put them in different groups."
         end
       end
@@ -711,7 +711,7 @@ module Berkshelf
         unless missing.empty?
           raise Berkshelf::CookbookNotFound,
             "Could not find cookbook(s) #{missing.collect{ |c| "'#{c}'" }.join(', ')} " +
-            "in any of the configured sources. #{missing.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+            "in any of the configured dependencies. #{missing.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
         end
       end
 
