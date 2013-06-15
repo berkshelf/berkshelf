@@ -78,6 +78,12 @@ module Berkshelf
       desc: 'Output debug information',
       aliases: '-d',
       default: false
+    class_option :berksfile,
+      type: :string,
+      default: Berkshelf::DEFAULT_FILENAME,
+      desc: 'Path to a Berksfile to operate off of.',
+      aliases: '-b',
+      banner: 'PATH'
 
     method_option :force,
       type: :boolean,
@@ -136,12 +142,6 @@ module Berkshelf
       type: :array,
       desc: 'Only cookbooks that are in these groups.',
       aliases: '-o'
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     method_option :path,
       type: :string,
       desc: 'Path to install cookbooks to (i.e. vendor/cookbooks).',
@@ -149,16 +149,9 @@ module Berkshelf
       banner: 'PATH'
     desc 'install', 'Install the cookbooks specified in the Berksfile'
     def install
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     method_option :except,
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
@@ -169,8 +162,6 @@ module Berkshelf
       aliases: '-o'
     desc 'update [COOKBOOKS]', 'Update the cookbooks (and dependencies) specified in the Berksfile'
     def update(*cookbook_names)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
       update_options = {
         cookbooks: cookbook_names
       }.merge(options).symbolize_keys
@@ -178,12 +169,6 @@ module Berkshelf
       berksfile.update(update_options)
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     method_option :except,
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
@@ -220,8 +205,6 @@ module Berkshelf
       desc: 'Halt uploading and exit if the Chef Server has a frozen version of the cookbook(s).'
     desc 'upload [COOKBOOKS]', 'Upload the cookbook specified in the Berksfile to the Chef Server'
     def upload(*cookbook_names)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-
       upload_options             = Hash[options.except(:no_freeze, :berksfile)].symbolize_keys
       upload_options[:cookbooks] = cookbook_names
       upload_options[:freeze]    = false if options[:no_freeze]
@@ -229,30 +212,16 @@ module Berkshelf
       berksfile.upload(upload_options)
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     method_option :ssl_verify,
       type: :boolean,
       default: nil,
       desc: 'Disable/Enable SSL verification when locking cookbooks.'
     desc 'apply ENVIRONMENT', 'Apply the cookbook version locks from Berksfile.lock to a Chef environment'
     def apply(environment_name)
-      berksfile    = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       lock_options = Hash[options].symbolize_keys
-
       berksfile.apply(environment_name, lock_options)
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     method_option :except,
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
@@ -263,7 +232,6 @@ module Berkshelf
       aliases: '-o'
     desc 'outdated [COOKBOOKS]', 'Show outdated cookbooks (from the community site)'
     def outdated(*cookbook_names)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       Berkshelf.formatter.msg 'Listing outdated cookbooks with newer versions available...'
       Berkshelf.formatter.msg 'BETA: this feature will only pull differences from the community site and will'
       Berkshelf.formatter.msg 'BETA: ignore all other dependencies you may have defined'
@@ -294,20 +262,13 @@ module Berkshelf
         options[:metadata_entry] = true
       end
 
-      ::Berkshelf::InitGenerator.new([path], options).invoke_all
+      Berkshelf::InitGenerator.new([path], options).invoke_all
 
-      ::Berkshelf.formatter.msg 'Successfully initialized'
+      Berkshelf.formatter.msg 'Successfully initialized'
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
     def list
-      berksfile    = Berksfile.from_file(options[:berksfile])
       dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
 
       if dependencies.empty?
@@ -318,16 +279,8 @@ module Berkshelf
       end
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: "Path to a Berksfile to operate off of.",
-      aliases: "-b",
-      banner: "PATH"
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def show(name)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
       cookbook = Berkshelf.ui.mute {
         berksfile.resolve(berksfile.find(name))[:solution].first
       }
@@ -337,16 +290,8 @@ module Berkshelf
       Berkshelf.formatter.show(cookbook)
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook'
     def contingent(name)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
       dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
       dependencies = dependencies.select { |cookbook| cookbook.dependencies.include?(name) }
 
@@ -358,12 +303,6 @@ module Berkshelf
       end
     end
 
-    method_option :berksfile,
-      type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
     method_option :output,
       type: :string,
       default: Dir.pwd,
@@ -380,7 +319,6 @@ module Berkshelf
       default: false
     desc "package [COOKBOOK]", "Package a cookbook and it's dependencies as a tarball"
     def package(name = nil)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.package(name, options)
     end
 
@@ -400,7 +338,7 @@ module Berkshelf
         raise InvalidConfiguration.new(Config.instance.errors)
       end
 
-      ::Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
+      Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end
     tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
 
@@ -412,6 +350,13 @@ module Berkshelf
 
       def license
         File.read(Berkshelf.root.join('LICENSE'))
+      end
+
+      # The Berksfile to operate off of.
+      #
+      # @return [Berksfile]
+      def berksfile
+        Berkshelf::Berksfile.from_file(options[:berksfile])
       end
 
       # Print a list of the given cookbooks. This is used by various
