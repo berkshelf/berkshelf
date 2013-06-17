@@ -124,7 +124,7 @@ module Berkshelf
     # @param [#status_code] original_error
     def initialize(original_error)
       @original_error  = original_error
-      @error_message   = original_error.message
+      @error_message   = original_error.to_s
       @error_backtrace = original_error.backtrace
     end
 
