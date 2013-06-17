@@ -1,3 +1,10 @@
+# 2.0.4
+
+* Fix bug where community cookbooks compressed with bzip2 would not download and install
+* Fix bug regression in Git caching which was previously fixed in 1.4.4
+* Fix validation bug where a cookbook would be considered invalid if any spaces were present in the path to the directory containing the cookbook
+* Fix issues with uploading cookbooks on Windows
+
 # 2.0.3
 
 * Fix issue where groups defined in the Berksfile would not be evaluated
