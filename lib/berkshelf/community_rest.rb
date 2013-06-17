@@ -67,7 +67,11 @@ module Berkshelf
     # @option options [Float] :retry_interval (0.5)
     #   how often we should pause between retries
     def initialize(uri = V1_API, options = {})
-      options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
+      options = {
+        retries: 5,
+        retry_interval: 0.5,
+      }.merge(options)
+
       @api_uri        = Addressable::URI.parse(uri)
       @retries        = options[:retries]
       @retry_interval = options[:retry_interval]

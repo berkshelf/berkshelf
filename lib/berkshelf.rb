@@ -1,4 +1,3 @@
-require 'active_support/core_ext'
 require 'archive/tar/minitar'
 require 'celluloid'
 require 'chozo/core_ext'

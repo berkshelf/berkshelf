@@ -114,7 +114,7 @@ module Berkshelf
 
         input = Berkshelf.ui.ask(message)
 
-        if input.present?
+        unless input.to_s.strip.empty?
           @config.set_attribute(attribute, input)
         end
       end
@@ -170,12 +170,8 @@ module Berkshelf
     desc 'update [COOKBOOKS]', 'Update the cookbooks (and dependencies) specified in the Berksfile'
     def update(*cookbook_names)
       berksfile = Berksfile.from_file(options[:berksfile])
-
-      update_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.update(update_options)
+      options[:cookbooks] = cookbook_names
+      berksfile.update(options)
     end
 
     method_option :berksfile,
@@ -222,11 +218,10 @@ module Berkshelf
     def upload(*cookbook_names)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
 
-      upload_options             = Hash[options.except(:no_freeze, :berksfile)].symbolize_keys
-      upload_options[:cookbooks] = cookbook_names
-      upload_options[:freeze]    = false if options[:no_freeze]
+      options[:cookbooks] = cookbook_names
+      options[:freeze] = !!options[:no_freeze]
 
-      berksfile.upload(upload_options)
+      berksfile.upload(options)
     end
 
     method_option :berksfile,
@@ -242,9 +237,7 @@ module Berkshelf
     desc 'apply ENVIRONMENT', 'Apply the cookbook version locks from Berksfile.lock to a Chef environment'
     def apply(environment_name)
       berksfile    = ::Berkshelf::Berksfile.from_file(options[:berksfile])
-      lock_options = Hash[options].symbolize_keys
-
-      berksfile.apply(environment_name, lock_options)
+      berksfile.apply(environment_name, options)
     end
 
     method_option :berksfile,
@@ -269,11 +262,8 @@ module Berkshelf
       Berkshelf.formatter.msg 'BETA: ignore all other dependencies you may have defined'
       Berkshelf.formatter.msg ''
 
-      outdated_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      outdated = berksfile.outdated(outdated_options)
+      options[:cookbooks] = cookbook_names
+      outdated = berksfile.outdated(options)
 
       if outdated.empty?
         Berkshelf.formatter.msg 'All cookbooks up to date'
