@@ -123,7 +123,9 @@ module Berkshelf
   class BerksfileReadError < BerkshelfError
     # @param [#status_code] original_error
     def initialize(original_error)
-      @original_error = original_error
+      @original_error  = original_error
+      @error_message   = original_error.to_s
+      @error_backtrace = original_error.backtrace
     end
 
     status_code(113)
@@ -132,11 +134,16 @@ module Berkshelf
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
     end
 
+    alias_method :original_backtrace, :backtrace
+    def backtrace
+      Array(@error_backtrace) + Array(original_backtrace)
+    end
+
     def to_s
       [
         "An error occurred while reading the Berksfile:",
         "",
-        "  " +  @original_error.to_s.split("\n").map(&:strip).join("\n  "),
+        "  #{@error_message}",
       ].join("\n")
     end
   end
