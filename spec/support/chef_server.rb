@@ -1,4 +1,5 @@
 require 'chef_zero/server'
+require 'json'
 
 module Berkshelf::RSpec
   module ChefServer
@@ -67,7 +68,7 @@ module Berkshelf::RSpec
     private
 
       def load_data(key, name, hash)
-        ChefServer.server.load_data({ key.to_s => { name => MultiJson.encode(hash) }})
+        ChefServer.server.load_data({ key.to_s => { name => JSON.generate(hash) }})
       end
   end
 end
