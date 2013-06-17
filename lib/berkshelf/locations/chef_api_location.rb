@@ -92,11 +92,11 @@ module Berkshelf
     #   have a value for chef.client_key which points to a readable file containing a Chef
     #   client key.
     def initialize(name, version_constraint, options = {})
-      options = options.reverse_merge(
+      options = {
         client_key: Berkshelf::Config.instance.chef.client_key,
         node_name: Berkshelf::Config.instance.chef.node_name,
-        verify_ssl: Berkshelf::Config.instance.ssl.verify
-      )
+        verify_ssl: Berkshelf::Config.instance.ssl.verify,
+      }.merge(options)
 
       @name               = name
       @version_constraint = version_constraint
@@ -110,10 +110,8 @@ module Berkshelf
       validate_options!(options)
 
       if options[:chef_api] == :config
-        unless Berkshelf::Config.instance.chef.node_name.present? &&
-          Berkshelf::Config.instance.chef.client_key.present? &&
-          Berkshelf::Config.instance.chef.chef_server_url.present?
-
+        chef = Berkshelf::Config.instance.chef
+        if chef.node_name.nil? || chef.client_key.nil? || chef.chef_server_url.nil?
           msg = "A Berkshelf configuration is required with a 'chef.client_key', 'chef.chef_server_Url',"
           msg << " and 'chef.node_name' setting to install or upload cookbooks using 'chef_api :config'."
 

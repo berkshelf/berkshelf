@@ -50,7 +50,9 @@ module Berkshelf
     #
     #   Implement {#cleanup_hook} to run any steps required to run after the task is finished
     module AbstractFormatter
-      extend ActiveSupport::Concern
+      def self.included(base)
+        base.send(:extend, ClassMethods)
+      end
 
       module ClassMethods
         # @param [Symbol] id

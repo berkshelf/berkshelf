@@ -190,7 +190,8 @@ module Berkshelf
       metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
       metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
 
-      name = metadata.name.presence || File.basename(File.expand_path(path))
+      name = metadata.name.to_s.strip
+      name = File.basename(File.expand_path(path)) if name.empty?
 
       add_dependency(name, nil, path: path, metadata: true)
     end
@@ -507,10 +508,14 @@ module Berkshelf
     #   if an attempt to upload a cookbook which has been frozen on the target server is made
     #   and the :halt_on_frozen option was true
     def upload(options = {})
-      options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false)
+      options = {
+        force: false,
+        freeze: true,
+        skip_dependencies: false,
+        halt_on_frozen: false,
+      }.merge(options)
 
       cached_cookbooks = install(options)
-      upload_opts      = options.slice(:force, :freeze)
       conn             = ridley_connection(options)
 
       cached_cookbooks.each do |cookbook|
@@ -518,7 +523,7 @@ module Berkshelf
         validate_files!(cookbook)
 
         begin
-          conn.cookbook.upload(cookbook.path, upload_opts.merge(name: cookbook.cookbook_name))
+          conn.cookbook.upload(cookbook.path, options.merge(name: cookbook.cookbook_name))
         rescue Ridley::Errors::FrozenCookbook => ex
           if options[:halt_on_frozen]
             raise Berkshelf::FrozenCookbook, ex
@@ -673,22 +678,19 @@ module Berkshelf
     private
 
       def ridley_connection(options = {})
-        ridley_options               = options.slice(:ssl)
-        ridley_options[:server_url]  = options[:server_url] || Berkshelf::Config.instance.chef.chef_server_url
-        ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
-        ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
-        ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
+        ridley_options = {
+          ssl: {
+            verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify),
+          },
+          server_url: Berkshelf::Config.instance.chef.chef_server_url,
+          client_name: Berkshelf::Config.instance.chef.node_name,
+          client_key: Berkshelf::Config.instance.chef.client_key,
+        }.merge(options)
 
-        unless ridley_options[:server_url].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
-        end
-
-        unless ridley_options[:client_name].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
-        end
-
-        unless ridley_options[:client_key].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
+        [:server_url, :client_name, :client_key].each do |key|
+          if ridley_options[key].nil? || ridley_options[key].empty?
+            raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.#{key}"
+          end
         end
 
         Ridley.new(ridley_options)
