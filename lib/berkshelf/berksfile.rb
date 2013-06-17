@@ -510,7 +510,6 @@ module Berkshelf
       options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false)
 
       cached_cookbooks = install(options)
-      upload_opts      = options.slice(:force, :freeze)
       conn             = ridley_connection(options)
 
       cached_cookbooks.each do |cookbook|
@@ -518,7 +517,7 @@ module Berkshelf
         validate_files!(cookbook)
 
         begin
-          conn.cookbook.upload(cookbook.path, upload_opts.merge(name: cookbook.cookbook_name))
+          conn.cookbook.upload(cookbook.path, options.merge(name: cookbook.cookbook_name))
         rescue Ridley::Errors::FrozenCookbook => ex
           if options[:halt_on_frozen]
             raise Berkshelf::FrozenCookbook, ex
