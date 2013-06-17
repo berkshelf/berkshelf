@@ -35,14 +35,21 @@ module Berkshelf
         hash = JSON.parse(contents, symbolize_names: true)
       rescue JSON::ParserError
         if contents =~ /^cookbook ["'](.+)["']/
-          Berkshelf.ui.warn 'You are using the old lockfile format. Attempting to convert...'
+          LockfileLegacy.warn!
           hash = LockfileLegacy.parse(berksfile, contents)
         else
           raise
         end
       end
 
-      hash[:sources].each do |name, options|
+      # Legacy support for old lockfiles
+      # @todo Remove in 4.0
+      if hash[:sources]
+        LockfileLegacy.warn!
+        hash[:dependencies] = hash[:sources]
+      end
+
+      hash[:dependencies].each do |name, options|
         add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
       end
     end
@@ -134,7 +141,7 @@ module Berkshelf
     #   * :dependencies [Array<Berkshelf::Dependency>] the list of dependencies
     def to_hash
       {
-        sources: @dependencies
+        dependencies: @dependencies
       }
     end
 
@@ -194,9 +201,25 @@ module Berkshelf
             end
 
             {
-              sources: dependencies
+              dependencies: dependencies
             }
           end
+
+          # Warn the user they he/she is using an old Lockfile format.
+          #
+          # This automatically outputs to the {Berkshelf.ui}; nothing is
+          # returned.
+          #
+          # @return [nil]
+          def warn!
+            Berkshelf.ui.warn(warning_message)
+          end
+
+          private
+            # @return [String]
+            def warning_message
+              'You are using the old lockfile format. Attempting to convert...'
+            end
         end
 
         # @return [Hash]

@@ -80,7 +80,7 @@ module Berkshelf
     end
   end
 
-  class DuplicateSourceDefined < BerkshelfError; status_code(105); end
+  class DuplicateDependencyDefined < BerkshelfError; status_code(105); end
   class NoSolution < BerkshelfError; status_code(106); end
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
 

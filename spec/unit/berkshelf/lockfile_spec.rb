@@ -115,8 +115,8 @@ describe Berkshelf::Lockfile do
   describe '#to_hash' do
     let(:hash) { subject.to_hash }
 
-    it 'has the `:sources` key' do
-      expect(hash).to have_key(:sources)
+    it 'has the `:dependencies` key' do
+      expect(hash).to have_key(:dependencies)
     end
   end
 

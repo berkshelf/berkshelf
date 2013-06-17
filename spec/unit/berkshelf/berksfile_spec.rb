@@ -373,10 +373,10 @@ describe Berkshelf::Berksfile do
       expect(subject.dependencies.first.version_constraint.to_s).to eq(constraint)
     end
 
-    it 'raises DuplicateSourceDefined if multiple dependencies of the same name are found' do
+    it 'raises DuplicateDependencyDefined if multiple dependencies of the same name are found' do
       expect {
         subject.add_dependency(name)
-      }.to raise_error(Berkshelf::DuplicateSourceDefined)
+      }.to raise_error(Berkshelf::DuplicateDependencyDefined)
     end
   end
 

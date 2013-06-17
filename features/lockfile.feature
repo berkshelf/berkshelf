@@ -14,7 +14,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "fake":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -23,7 +23,7 @@ Feature: Creating and reading the Berkshelf lockfile
       }
       """
 
-  Scenario: Wiring the Berksfile.lock when an old lockfile is present
+  Scenario: Wiring the Berksfile.lock when a 1.0 lockfile is present
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
@@ -36,11 +36,45 @@ Feature: Creating and reading the Berkshelf lockfile
       cookbook 'fake', :locked_version => '1.0.0'
       """
     When I successfully run `berks install`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the output should warn about the old lockfile format
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "dependencies": {
+          "fake": {
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+
+  @focus
+  Scenario: Wiring the Berksfile.lock when a 2.0 lockfile is present
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
         "sources": {
+          "fake": {
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+    When I successfully run `berks install`
+    Then the output should warn about the old lockfile format
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "dependencies": {
           "fake": {
             "constraint": "= 1.0.0",
             "locked_version": "1.0.0"
@@ -60,11 +94,11 @@ Feature: Creating and reading the Berkshelf lockfile
       cookbook 'fake', :locked_version => '0.0.0', path: '<%= File.expand_path('tmp/aruba/fake') %>'
       """
     When I successfully run `berks install`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the output should warn about the old lockfile format
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "fake":{
             "constraint":"= 0.0.0",
             "path":"./fake"
@@ -86,7 +120,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "fake":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -110,7 +144,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
@@ -122,7 +156,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
@@ -143,7 +177,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 0.1",
             "locked_version":"0.1.0"
@@ -155,7 +189,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 0.1",
             "locked_version":"0.2.0"
@@ -175,7 +209,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -187,7 +221,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -208,7 +242,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
@@ -230,7 +264,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"a97b9447cbd41a5fe58eee2026e48ccb503bd3bc",
@@ -252,7 +286,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"70a527e17d91f01f031204562460ad1c17f972ee",
@@ -274,7 +308,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
@@ -294,7 +328,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"93f5768b7d14df45e10d16c8bf6fe98ba3ff809a",
@@ -316,7 +350,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "fake":{
             "path":"./fake"
           }
@@ -336,7 +370,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources": {
+        "dependencies": {
           "fake": {
             "path": "."
           }
@@ -354,7 +388,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And the cookbook "fake" has the file "Berksfile.lock" with:
       """
       {
-        "sources": {
+        "dependencies": {
           "fake": {
             "path": "."
           }
@@ -366,7 +400,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources": {
+        "dependencies": {
           "fake": {
             "path": "."
           }
@@ -385,7 +419,7 @@ Feature: Creating and reading the Berkshelf lockfile
   # Then the file "Berksfile.lock" should contain JSON:
   #   """
   #   {
-  #     "sources":{
+  #     "dependencies":{
   #       "sudo":{
   #         "site":"opscode",
   #         "locked_version":"2.0.4"

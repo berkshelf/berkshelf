@@ -291,7 +291,7 @@ Feature: install cookbooks from a Berksfile
       """
       Berksfile contains multiple entries named 'berkshelf-cookbook-fixture'. Use only one, or put them in different groups.
       """
-    And the CLI should exit with the status code for error "DuplicateSourceDefined"
+    And the CLI should exit with the status code for error "DuplicateDependencyDefined"
 
   Scenario: When a version constraint in the metadata exists, but does not satisfy
     Given a cookbook named "fake"

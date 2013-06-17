@@ -57,12 +57,12 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
       subject.add_dependency(dependency)
     end
 
-    it 'raises a DuplicateSourceDefined exception if a dependency of the same name is added' do
+    it 'raises a DuplicateDependencyDefined exception if a dependency of the same name is added' do
       subject.should_receive(:has_dependency?).with(dependency).and_return(true)
 
       expect {
         subject.add_dependency(dependency)
-      }.to raise_error(Berkshelf::DuplicateSourceDefined)
+      }.to raise_error(Berkshelf::DuplicateDependencyDefined)
     end
 
     context 'when include_dependencies is false' do
