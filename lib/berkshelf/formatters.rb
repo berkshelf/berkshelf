@@ -50,8 +50,6 @@ module Berkshelf
     #
     #   Implement {#cleanup_hook} to run any steps required to run after the task is finished
     module AbstractFormatter
-      extend ActiveSupport::Concern
-
       module ClassMethods
         # @param [Symbol] id
         #
@@ -66,15 +64,19 @@ module Berkshelf
       end
 
       class << self
+        def included(base)
+          base.send(:extend, ClassMethods)
+        end
+
         private
 
-        def formatter_methods(*args)
-          args.each do |meth|
-            define_method(meth.to_sym) do |*args|
-              raise AbstractFunction, "##{meth} must be implemented on #{self.class}"
-            end unless respond_to?(meth.to_sym)
+          def formatter_methods(*args)
+            args.each do |meth|
+              define_method(meth.to_sym) do |*args|
+                raise AbstractFunction, "##{meth} must be implemented on #{self.class}"
+              end unless respond_to?(meth.to_sym)
+            end
           end
-        end
       end
 
       formatter_methods :install, :use, :upload, :msg, :error, :package, :show

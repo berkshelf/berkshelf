@@ -18,6 +18,14 @@ module Berkshelf
 
     DIRNAME_REGEXP = /^(.+)-(.+)$/
 
+    extend Forwardable
+
+    def_delegator :metadata, :description
+    def_delegator :metadata, :maintainer
+    def_delegator :metadata, :maintainer_email
+    def_delegator :metadata, :license
+    def_delegator :metadata, :platforms
+
     # @return [Hash]
     def dependencies
       metadata.recommendations.merge(metadata.dependencies)
@@ -36,19 +44,25 @@ module Berkshelf
       end.join("\n")
     end
 
+    # High-level information about this cached cookbook in JSON format
+    #
+    # @return [String]
     def pretty_json
-      pretty_hash.to_json
+      JSON.pretty_generate(pretty_hash)
     end
 
+    # High-level information about this cached cookbook in Hash format
+    #
+    # @return [Hash]
     def pretty_hash
       {}.tap do |h|
-        h[:name]          = cookbook_name unless name.blank?
+        h[:name]          = cookbook_name unless cookbook_name.blank?
         h[:version]       = version unless version.blank?
-        h[:description]   = metadata.description unless metadata.description.blank?
-        h[:author]        = metadata.maintainer unless metadata.maintainer.blank?
-        h[:email]         = metadata.maintainer_email unless metadata.maintainer_email.blank?
-        h[:license]       = metadata.license unless metadata.license.blank?
-        h[:platforms]     = metadata.platforms.to_hash unless metadata.platforms.blank?
+        h[:description]   = description unless description.blank?
+        h[:author]        = maintainer unless maintainer.blank?
+        h[:email]         = maintainer_email unless maintainer_email.blank?
+        h[:license]       = license unless license.blank?
+        h[:platforms]     = platforms.to_hash unless platforms.blank?
         h[:dependencies]  = dependencies.to_hash unless dependencies.blank?
       end
     end
