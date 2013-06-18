@@ -58,7 +58,7 @@ module Berkshelf
 
         if (options.keys & [:site, :path, :git]).size > 1
           invalid = (options.keys & [:site, :path, :git]).map { |opt| "'#{opt}" }
-          raise InternalError, "Cannot specify #{invalid.to_sentence} for a Cookbook Source!"
+          raise InternalError, "Cannot specify #{invalid.join(' and ')} for a Cookbook Source!"
         end
 
         true
@@ -160,7 +160,7 @@ module Berkshelf
     # @return [Solve::Version, nil]
     #   the locked version of this cookbook
     def locked_version
-      @locked_version ||= cached_cookbook.try(:version)
+      @locked_version ||= cached_cookbook ? cached_cookbook.version : nil
     end
 
     # The location for this dependency, such as a remote Chef Server, the
