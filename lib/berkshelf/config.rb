@@ -1,7 +1,7 @@
-require 'chozo/config'
+require 'buff/config/json'
 
 module Berkshelf
-  class Config < Chozo::Config::JSON
+  class Config < Buff::Config::JSON
     LOCATIONS = [
       File.join('.', '.berkshelf', 'config.json').freeze,
       File.join('.',  'berkshelf', 'config.json').freeze,
@@ -62,7 +62,7 @@ module Berkshelf
 
     # @param [String] path
     # @param [Hash] options
-    #   @see {Chozo::Config::JSON}
+    #   @see {Buff::Config::JSON}
     def initialize(path = self.class.path, options = {})
       super(path, options)
     end
