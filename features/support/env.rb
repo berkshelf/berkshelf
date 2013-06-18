@@ -32,6 +32,7 @@ Spork.prefork do
   Before do
     set_env 'RUBY_ENV', 'test'
     clean_cookbook_store
+    clean_tmp_path
     generate_berks_config(File.join(ENV['BERKSHELF_PATH'], 'config.json'))
     @aruba_io_wait_seconds = 5
     @aruba_timeout_seconds = 30
@@ -58,6 +59,11 @@ Spork.prefork do
   def clean_cookbook_store
     FileUtils.rm_rf(cookbook_store)
     FileUtils.mkdir_p(cookbook_store)
+  end
+
+  def clean_tmp_path
+    FileUtils.rm_rf(tmp_path)
+    FileUtils.mkdir_p(tmp_path)
   end
 
   def app_root_path
