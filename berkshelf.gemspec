@@ -30,7 +30,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = '>= 1.9.1'
   s.required_rubygems_version = '>= 1.8.0'
 
-  s.add_dependency 'activesupport',     '>= 3.2.0'
   s.add_dependency 'addressable',       '~> 2.3.4'
   s.add_dependency 'buff-config',       '~> 0.1'
   s.add_dependency 'buff-extensions',   '~> 0.3'
