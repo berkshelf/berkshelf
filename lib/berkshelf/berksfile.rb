@@ -1,6 +1,10 @@
 module Berkshelf
   class Berksfile
     class << self
+      def default_sources
+        @default_sources ||= [ SourceURI.parse("http://api.berkshelf.com") ]
+      end
+
       # @param [#to_s] file
       #   a path on disk to a Berksfile to instantiate from
       #
@@ -59,6 +63,7 @@ module Berkshelf
     include Berkshelf::Mixin::DSLEval
     extend Forwardable
 
+    expose_method :source
     expose_method :site     # @todo remove in Berkshelf 4.0
     expose_method :chef_api # @todo remove in Berkshelf 4.0
     expose_method :metadata
@@ -87,6 +92,7 @@ module Berkshelf
       @dependencies     = Hash.new
       @downloader       = Downloader.new(Berkshelf.cookbook_store)
       @cached_cookbooks = nil
+      @sources          = Array.new
     end
 
     # Add a cookbook dependency to the Berksfile to be retrieved and have it's dependencies recursively retrieved
@@ -169,6 +175,30 @@ module Berkshelf
       name = metadata.name.presence || File.basename(File.expand_path(path))
 
       add_dependency(name, nil, path: path, metadata: true)
+    end
+
+    # Add a Berkshelf API source to use when building the index of known cookbooks. The indexes will be
+    # searched in the order they are added. If a cookbook is found in the first source then a cookbook
+    # in a second source would not be used.
+    #
+    # @example
+    #   source "http://api.berkshelf.com"
+    #   source "http://berks-api.riotgames.com"
+    #
+    # @param [String] api_url
+    #   url for the api to add
+    #
+    # @raise [Berkshelf::InvalidSourceURI]
+    #
+    # @return [Array<SourceURI>]
+    def source(api_url)
+      source_uri = SourceURI.parse(api_url)
+      @sources.push(source_uri) unless @sources.include?(source_uri)
+    end
+
+    # @return [Array<SourceURI>]
+    def sources
+      @sources | self.class.default_sources
     end
 
     # @todo remove in Berkshelf 4.0

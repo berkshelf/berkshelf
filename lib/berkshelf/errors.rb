@@ -396,4 +396,20 @@ module Berkshelf
       "Error reading the Berkshelf lockfile `#{@lockfile}` (#{@original.class})"
     end
   end
+
+  class InvalidSourceURI < BerkshelfError
+    status_code(137)
+
+    attr_reader :reason
+
+    def initialize(url, reason = nil)
+      @url    = url
+      @reason = reason
+    end
+
+    def to_s
+      msg = "'#{@url}' is not a valid Berkshelf source URI."
+      msg + " #{reason}." unless reason.nil?
+    end
+  end
 end

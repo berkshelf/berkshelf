@@ -1,65 +1,77 @@
 require 'spec_helper'
 
 describe Berkshelf::Berksfile do
-  describe '.from_file' do
-    let(:content) do
-      <<-EOF.strip
-      cookbook 'ntp', '<= 1.0.0'
-      cookbook 'mysql'
-      cookbook 'nginx', '< 0.101.2'
-      cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
-      EOF
-    end
-    let(:berksfile) { tmp_path.join('Berksfile') }
+  describe "ClassMethods" do
+    describe "::default_sources" do
+      subject { described_class.default_sources }
 
-    before { File.open(berksfile, 'w+') { |f| f.write(content) } }
-    subject(:from_file) { described_class.from_file(berksfile) }
-
-    it "reads the content of the Berksfile and binds them to a new instance" do
-      %w(ntp mysql nginx ssh_known_hosts2).each do |name|
-        expect(subject).to have_dependency(name)
+      it "returns an array including the default sources" do
+        expect(subject).to be_a(Array)
+        expect(subject).to have(1).item
+        expect(subject.map(&:to_s)).to include("http://api.berkshelf.com")
       end
     end
 
-    it "returns an instance of Berkshelf::Berksfile" do
-      expect(subject).to be_a(described_class)
-    end
-
-    context 'when Berksfile does not exist at given path' do
-      let(:bad_path) { tmp_path.join('thisdoesnotexist') }
-
-      it 'raises BerksfileNotFound' do
-        expect {
-          Berkshelf::Berksfile.from_file(bad_path)
-        }.to raise_error(Berkshelf::BerksfileNotFound)
+    describe '::from_file' do
+      let(:content) do
+        <<-EOF.strip
+        cookbook 'ntp', '<= 1.0.0'
+        cookbook 'mysql'
+        cookbook 'nginx', '< 0.101.2'
+        cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
+        EOF
       end
-    end
-  end
+      let(:berksfile) { tmp_path.join('Berksfile') }
 
-  describe '.vendor' do
-    let(:cached_cookbooks) { [] }
-    let(:tmpdir) { Dir.mktmpdir(nil, tmp_path) }
+      before { File.open(berksfile, 'w+') { |f| f.write(content) } }
+      subject(:from_file) { described_class.from_file(berksfile) }
 
-    it 'returns the expanded filepath of the vendor directory' do
-      expect(Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)).to eql(tmpdir)
-    end
-
-    context 'with a chefignore' do
-      before do
-        File.stub(:exists?).and_return(true)
-        Berkshelf::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
+      it "reads the content of the Berksfile and binds them to a new instance" do
+        %w(ntp mysql nginx ssh_known_hosts2).each do |name|
+          expect(subject).to have_dependency(name)
+        end
       end
 
-      it 'finds a chefignore file' do
-        Berkshelf::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
-        Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)
+      it "returns an instance of Berkshelf::Berksfile" do
+        expect(subject).to be_a(described_class)
       end
 
-      it 'removes files in chefignore' do
-        cached_cookbooks = [ Berkshelf::CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
-        FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
-        FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
-        Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)
+      context 'when Berksfile does not exist at given path' do
+        let(:bad_path) { tmp_path.join('thisdoesnotexist') }
+
+        it 'raises BerksfileNotFound' do
+          expect {
+            Berkshelf::Berksfile.from_file(bad_path)
+          }.to raise_error(Berkshelf::BerksfileNotFound)
+        end
+      end
+    end
+
+    describe '::vendor' do
+      let(:cached_cookbooks) { [] }
+      let(:tmpdir) { Dir.mktmpdir(nil, tmp_path) }
+
+      it 'returns the expanded filepath of the vendor directory' do
+        expect(Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)).to eql(tmpdir)
+      end
+
+      context 'with a chefignore' do
+        before do
+          File.stub(:exists?).and_return(true)
+          Berkshelf::Chef::Cookbook::Chefignore.any_instance.stub(:remove_ignores_from).and_return(['metadata.rb'])
+        end
+
+        it 'finds a chefignore file' do
+          Berkshelf::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
+          Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)
+        end
+
+        it 'removes files in chefignore' do
+          cached_cookbooks = [ Berkshelf::CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
+          FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
+          FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
+          Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)
+        end
       end
     end
   end
@@ -112,7 +124,7 @@ describe Berkshelf::Berksfile do
     let(:name) { 'artifact' }
     let(:group) { 'production' }
 
-    it 'sends the add_dependency message with an array of groups determined by the parameter passed to the group block' do
+    it 'sends the add_dependency message with an array of groups determined by the parameter to the group block' do
       subject.should_receive(:add_dependency).with(name, nil, group: [group])
 
       subject.group(group) do
@@ -130,6 +142,81 @@ describe Berkshelf::Berksfile do
     it 'sends the add_dependency message with an explicit version constraint and the path to the cookbook' do
       subject.should_receive(:add_dependency).with('example_cookbook', nil, path: path.to_s, metadata: true)
       subject.metadata
+    end
+  end
+
+  describe "#source" do
+    let(:new_source) { "http://berks.riotgames.com" }
+
+    it "adds a source to the sources" do
+      subject.source(new_source)
+      expect(subject.sources.map(&:to_s)).to include(new_source)
+    end
+
+    it "converts the string to a SourceURI" do
+      subject.source(new_source)
+      subject.sources.each do |source|
+        expect(source).to be_a(Berkshelf::SourceURI)
+      end
+    end
+
+    it "adds the source in a position before the default sources" do
+      subject.source(new_source)
+      expect(subject.sources[0].to_s).to eql(new_source)
+    end
+
+    it "adds each source in order they appear" do
+      subject.source(new_source)
+      subject.source("http://berks.other.com")
+      expect(subject.sources[0].to_s).to eql(new_source)
+      expect(subject.sources[1].to_s).to eql("http://berks.other.com")
+    end
+
+    it "does not add duplicate entries" do
+      subject.source(new_source)
+      subject.source(new_source)
+      expect(subject.sources[0].to_s).to eql(new_source)
+      expect(subject.sources[1].to_s).to_not eql(new_source)
+    end
+
+    context "when a default source is explicitly specified" do
+      let(:default_source) { described_class.default_sources.first }
+
+      it "does not appear twice" do
+        subject.source(default_source)
+        expect(subject.sources).to have(described_class.default_sources.length).items
+      end
+
+      it "does not appear out of the specified order" do
+        subject.source(default_source)
+        subject.source("http://berks.other.com")
+        expect(subject.sources[0]).to eql(default_source)
+        expect(subject.sources[1].to_s).to eql("http://berks.other.com")
+      end
+    end
+
+    context "adding an invalid source" do
+      let(:invalid_uri) { ".....$1233...." }
+
+      it "raises an InvalidSourceURI" do
+        expect { subject.source(invalid_uri) }.to raise_error(Berkshelf::InvalidSourceURI)
+      end
+    end
+  end
+
+  describe "#sources" do
+    it "returns an Array" do
+      expect(subject.sources).to be_a(Array)
+    end
+
+    it "contains a collection of SourceURIs" do
+      subject.sources.each do |source|
+        expect(source).to be_a(Berkshelf::SourceURI)
+      end
+    end
+
+    it "includes the default sources" do
+      expect(subject.sources).to include(*described_class.default_sources)
     end
   end
 
