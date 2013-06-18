@@ -3,6 +3,9 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
+env:
+  - TEST_SUITE=unit CI=true
+  - TEST_SUITE=acceptance CI=true
 notifications:
   irc:
     channels:
@@ -12,4 +15,4 @@ notifications:
 before_script:
   - git config --global user.email "ci@berkshelf.com"
   - git config --global user.name "Berkshelf"
-script: 'bundle exec thor spec:ci'
+script: 'bundle exec thor spec:$TEST_SUITE'
