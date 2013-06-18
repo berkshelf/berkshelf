@@ -1,4 +1,5 @@
 require 'active_support/core_ext'
+require 'buff/extensions'
 require 'archive/tar/minitar'
 require 'celluloid'
 require 'digest/md5'
