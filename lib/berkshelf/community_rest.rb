@@ -74,6 +74,7 @@ module Berkshelf
 
       builder = Faraday::Builder.new do |b|
         b.response :parse_json
+        b.response :gzip
         b.request :retry,
           max: @retries,
           interval: @retry_interval,
