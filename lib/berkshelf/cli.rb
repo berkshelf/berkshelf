@@ -446,7 +446,7 @@ module Berkshelf
       # Print a list of the given cookbooks. This is used by various
       # methods like {list} and {contingent}.
       #
-      # @param [Array<CachedCookbook>] cookbooks
+      # @param [Array<Cookbook>] cookbooks
       #
       def print_list(cookbooks)
         Array(cookbooks).each do |cookbook|

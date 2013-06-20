@@ -9,7 +9,7 @@ module Berkshelf
       end
 
       def upload_cookbook(path)
-        cached = CachedCookbook.from_store_path(path)
+        cached = Cookbook.from_store_path(path)
         ridley.cookbook.upload(cached.path, name: cached.cookbook_name)
       end
 

@@ -13,11 +13,11 @@ module Berkshelf
         raise BerksfileReadError.new(ex)
       end
 
-      # Copy all cached_cookbooks to the given directory. Each cookbook will be contained in
+      # Copy all cookbooks to the given directory. Each cookbook will be contained in
       # a directory named after the name of the cookbook.
       #
-      # @param [Array<CachedCookbook>] cookbooks
-      #   an array of CachedCookbooks to be copied to a vendor directory
+      # @param [Array<Cookbook>] cookbooks
+      #   an array of Cookbooks to be copied to a vendor directory
       # @param [String] path
       #   filepath to vendor cookbooks to
       #
@@ -74,8 +74,8 @@ module Berkshelf
     # @return [Berkshelf::Downloader]
     attr_reader :downloader
 
-    # @return [Array<Berkshelf::CachedCookbook>]
-    attr_reader :cached_cookbooks
+    # @return [Array<Berkshelf::Cookbook>]
+    attr_reader :cookbooks
 
     def_delegator :downloader, :add_location
     def_delegator :downloader, :locations
@@ -86,7 +86,7 @@ module Berkshelf
       @filepath         = path
       @dependencies     = Hash.new
       @downloader       = Downloader.new(Berkshelf.cookbook_store)
-      @cached_cookbooks = nil
+      @cookbooks = nil
     end
 
     # Add a cookbook dependency to the Berksfile to be retrieved and have it's dependencies recursively retrieved
@@ -398,7 +398,7 @@ module Berkshelf
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
     # @option options [String] :path
-    #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
+    #   a path to "vendor" the cookbooks resolved by the resolver. Vendoring
     #   is a technique for packaging all cookbooks resolved by a Berksfile.
     #
     # @raise [Berkshelf::OutdatedDependency]
@@ -406,21 +406,21 @@ module Berkshelf
     # @raise [Berkshelf::ArgumentError]
     #   if there are missing or conflicting options
     #
-    # @return [Array<Berkshelf::CachedCookbook>]
+    # @return [Array<Berkshelf::Cookbook>]
     def install(options = {})
       local_dependencies = apply_lockfile(dependencies(options))
 
       resolver           = resolve(local_dependencies)
-      @cached_cookbooks  = resolver[:solution]
+      @cookbooks  = resolver[:solution]
       local_dependencies = resolver[:dependencies]
 
       verify_licenses!
 
-      self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
+      self.class.vendor(@cookbooks, options[:path]) if options[:path]
 
       lockfile.update(local_dependencies)
 
-      self.cached_cookbooks
+      self.cookbooks
     end
 
     # @option options [Symbol, Array] :except
@@ -459,7 +459,7 @@ module Berkshelf
     #
     # @example
     #   berksfile.outdated => {
-    #     #<CachedCookbook name="artifact"> => "0.11.2"
+    #     #<Cookbook name="artifact"> => "0.11.2"
     #   }
     def outdated(options = {})
       outdated = Hash.new
@@ -512,11 +512,11 @@ module Berkshelf
     def upload(options = {})
       options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false)
 
-      cached_cookbooks = install(options)
+      cookbooks = install(options)
       upload_opts      = options.slice(:force, :freeze)
       conn             = ridley_connection(options)
 
-      cached_cookbooks.each do |cookbook|
+      cookbooks.each do |cookbook|
         Berkshelf.formatter.upload(cookbook.cookbook_name, cookbook.version, conn.server_url)
         validate_files!(cookbook)
 
@@ -530,7 +530,7 @@ module Berkshelf
       end
 
       if options[:skip_dependencies]
-        missing_cookbooks = options.fetch(:cookbooks, nil) - cached_cookbooks.map(&:cookbook_name)
+        missing_cookbooks = options.fetch(:cookbooks, nil) - cookbooks.map(&:cookbook_name)
         unless missing_cookbooks.empty?
           msg = "Unable to upload cookbooks: #{missing_cookbooks.sort.join(', ')}\n"
           msg << "Specified cookbooks must be defined within the Berkshelf file when using the"
@@ -616,9 +616,9 @@ module Berkshelf
       end
 
       Dir.mktmpdir do |tmp|
-        package.each do |cached_cookbook|
-          path = cached_cookbook.path.to_s
-          destination = File.join(tmp, cached_cookbook.cookbook_name)
+        package.each do |cookbook|
+          path = cookbook.path.to_s
+          destination = File.join(tmp, cookbook.cookbook_name)
 
           FileUtils.cp_r(path, destination)
 
@@ -643,7 +643,7 @@ module Berkshelf
       output
     end
 
-    # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
+    # Finds a solution for the Berksfile and returns an array of Cookbooks.
     #
     # @param [Array<Berkshelf::Dependency>] dependencies
     #   Array of cookbook dependencies to resolve
@@ -651,7 +651,7 @@ module Berkshelf
     # @option options [Boolean] :skip_dependencies
     #   Skip resolving of dependencies
     #
-    # @return [Array<Berkshelf::CachedCookbooks>]
+    # @return [Array<Berkshelf::Cookbooks>]
     def resolve(dependencies = [], options = {})
       resolver = Resolver.new(
         self,
@@ -761,7 +761,7 @@ module Berkshelf
       # Validate that the given cookbook does not have "bad" files. Currently
       # this means including spaces in filenames (such as recipes)
       #
-      # @param [Berkshelf::CachedCookbook] cookbook
+      # @param [Berkshelf::Cookbook] cookbook
       #  the Cookbook to validate
       def validate_files!(cookbook)
         path = cookbook.path.to_s
@@ -785,7 +785,7 @@ module Berkshelf
 
         dependencies.each do |dependency|
           next if dependency.location.is_a?(Berkshelf::PathLocation)
-          cached = dependency.cached_cookbook
+          cached = dependency.cookbook
 
           begin
             unless licenses.include?(cached.metadata.license)

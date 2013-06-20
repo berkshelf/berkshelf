@@ -77,8 +77,8 @@ module Berkshelf
     attr_reader :location
     # @return [Solve::Constraint]
     attr_accessor :version_constraint
-    # @return [Berkshelf::CachedCookbook]
-    attr_accessor :cached_cookbook
+    # @return [Berkshelf::Cookbook]
+    attr_accessor :cookbook
 
     # @param [Berkshelf::Berksfile] berksfile
     #   the berksfile this dependency belongs to
@@ -114,7 +114,7 @@ module Berkshelf
       @locked_version     = Solve::Version.new(options[:locked_version]) if options[:locked_version]
       @version_constraint = Solve::Constraint.new(options[:constraint] || DEFAULT_CONSTRAINT)
 
-      @cached_cookbook, @location = cached_and_location(options)
+      @cookbook, @location = cached_and_location(options)
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
@@ -129,9 +129,9 @@ module Berkshelf
       end
     end
 
-    # Determine the CachedCookbook and Location information from the given options.
+    # Determine the Cookbook and Location information from the given options.
     #
-    # @return [Array<CachedCookbook, Location>]
+    # @return [Array<Cookbook, Location>]
     def cached_and_location(options = {})
       from_path(options) || from_default(options)
     end
@@ -141,7 +141,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def downloaded?
-      !self.cached_cookbook.nil?
+      !self.cookbook.nil?
     end
 
     # Returns true if this dependency has the given group.
@@ -152,15 +152,15 @@ module Berkshelf
     end
 
     # Get the locked version of this cookbook. First check the instance variable
-    # and then resort to the cached_cookbook for the version.
+    # and then resort to the cookbook for the version.
     #
-    # This was formerly a delegator, but it would fail if the `@cached_cookbook`
+    # This was formerly a delegator, but it would fail if the `@cookbook`
     # was nil or undefined.
     #
     # @return [Solve::Version, nil]
     #   the locked version of this cookbook
     def locked_version
-      @locked_version ||= cached_cookbook ? cached_cookbook.version : nil
+      @locked_version ||= cookbook ? cookbook.version : nil
     end
 
     # The location for this dependency, such as a remote Chef Server, the
@@ -223,14 +223,14 @@ module Berkshelf
     end
 
     private
-      # Attempt to load a CachedCookbook from a local file system path (if the :path
-      # option was given). If one is found, the location and cached_cookbook is
+      # Attempt to load a Cookbook from a local file system path (if the :path
+      # option was given). If one is found, the location and cookbook is
       # updated. Otherwise, this method will raise a CookbookNotFound exception.
       #
       # @raise [Berkshelf::CookbookNotFound]
-      #   if no CachedCookbook exists at the given path
+      #   if no Cookbook exists at the given path
       #
-      # @return [Berkshelf::CachedCookbook]
+      # @return [Berkshelf::Cookbook]
       def from_path(options = {})
         return nil unless options[:path]
 
@@ -241,7 +241,7 @@ module Berkshelf
         raise Berkshelf::CookbookNotFound, ex
       end
 
-      # Use the default location, and a nil CachedCookbook. If there is no location
+      # Use the default location, and a nil Cookbook. If there is no location
       # specified,
       #
       # @return [Array<nil, Location>]

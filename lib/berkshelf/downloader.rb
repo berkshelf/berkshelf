@@ -66,14 +66,14 @@ module Berkshelf
     #   the dependency to download
     #
     # @return [Array]
-    #   an array containing the downloaded CachedCookbook and the Location used
+    #   an array containing the downloaded Cookbook and the Location used
     #   to download the cookbook
     def download(dependency)
       if dependency.location
         begin
           location = dependency.location
           cached   = download_location(dependency, location, true)
-          dependency.cached_cookbook = cached
+          dependency.cookbook = cached
 
           return [cached, location]
         rescue => e
@@ -87,7 +87,7 @@ module Berkshelf
 
           cached = download_location(dependency, location)
           if cached
-            dependency.cached_cookbook = cached
+            dependency.cookbook = cached
             return [cached, location]
           end
         end
@@ -120,7 +120,7 @@ module Berkshelf
       #   raise a {Berkshelf::CookbookNotFound} error if true, otherwise,
       #   return nil
       #
-      # @return [Berkshelf::CachedCookbook, nil]
+      # @return [Berkshelf::Cookbook, nil]
       #   the downloaded cached cookbook, or nil if one was not found
       def download_location(dependency, location, raise_if_not_found = false)
         from_cache(dependency) || location.download(storage_path)
@@ -134,7 +134,7 @@ module Berkshelf
       # @param [Berkshelf::CookbookSource] dependency
       #   the dependency to find in the cache
       #
-      # @return [Berkshelf::CachedCookbook, nil]
+      # @return [Berkshelf::Cookbook, nil]
       def from_cache(dependency)
         # Can't safely read a git location from cache
         return nil if dependency.location.kind_of?(Berkshelf::GitLocation)
@@ -144,7 +144,7 @@ module Berkshelf
           path = File.expand_path(File.join(storage_path, cookbook))
 
           return nil unless File.exists?(path)
-          return Berkshelf::CachedCookbook.from_path(path, name: dependency.name)
+          return Berkshelf::Cookbook.from_path(path, name: dependency.name)
         end
 
         cookbook_store.satisfy(dependency.name, dependency.version_constraint)

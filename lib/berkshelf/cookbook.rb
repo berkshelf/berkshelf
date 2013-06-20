@@ -1,11 +1,11 @@
 module Berkshelf
-  class CachedCookbook < Ridley::Chef::Cookbook
+  class Cookbook < Ridley::Chef::Cookbook
     class << self
       # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
       #
-      # @return [CachedCookbook]
-      #   an instance of CachedCookbook initialized by the contents found at the
+      # @return [Cookbook]
+      #   an instance of Cookbook initialized by the contents found at the
       #   given path.
       def from_store_path(path)
         path        = Pathname.new(path)

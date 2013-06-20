@@ -29,7 +29,7 @@ describe Berkshelf::GitLocation do
         Berkshelf::Git.stub(:rev_parse).and_return('abcd1234')
         Berkshelf::GitLocation.any_instance.stub(:cached?).and_return(true)
         Berkshelf::GitLocation.any_instance.stub(:validate_cached).with(cached).and_return(cached)
-        Berkshelf::CachedCookbook.stub(:from_store_path).with(any_args()).and_return(cached)
+        Berkshelf::Cookbook.stub(:from_store_path).with(any_args()).and_return(cached)
       end
 
       it 'returns the cached cookbook' do
@@ -37,16 +37,16 @@ describe Berkshelf::GitLocation do
       end
     end
 
-    it 'returns an instance of Berkshelf::CachedCookbook' do
-      expect(subject.download(tmp_path)).to be_a(Berkshelf::CachedCookbook)
+    it 'returns an instance of Berkshelf::Cookbook' do
+      expect(subject.download(tmp_path)).to be_a(Berkshelf::Cookbook)
     end
 
     it 'downloads the cookbook to the given destination' do
-      cached_cookbook = subject.download(tmp_path)
+      cookbook = subject.download(tmp_path)
       ref = subject.ref
 
       expect(tmp_path).to have_structure {
-        directory "#{cached_cookbook.cookbook_name}-#{ref}" do
+        directory "#{cookbook.cookbook_name}-#{ref}" do
           file 'metadata.rb'
         end
       }

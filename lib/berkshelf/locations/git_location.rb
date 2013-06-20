@@ -51,7 +51,7 @@ module Berkshelf
 
     # @param [#to_s] destination
     #
-    # @return [Berkshelf::CachedCookbook]
+    # @return [Berkshelf::Cookbook]
     def download(destination)
       if cached?(destination)
         @ref ||= Berkshelf::Git.rev_parse(revision_path(destination))
@@ -74,7 +74,7 @@ module Berkshelf
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 
-      cached = CachedCookbook.from_store_path(cb_path)
+      cached = Cookbook.from_store_path(cb_path)
       validate_cached(cached)
 
       cached
@@ -116,7 +116,7 @@ module Berkshelf
 
       def local_revision(destination)
         path = revision_path(destination)
-        cached = Berkshelf::CachedCookbook.from_store_path(path)
+        cached = Berkshelf::Cookbook.from_store_path(path)
         validate_cached(cached)
         return cached
       end

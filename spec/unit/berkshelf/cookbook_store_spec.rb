@@ -41,7 +41,7 @@ describe Berkshelf::CookbookStore do
 
     before { subject.stub(:cookbooks).and_return([cached_one, cached_two]) }
 
-    it 'gets and returns the the CachedCookbook best matching the name and constraint' do
+    it 'gets and returns the the Cookbook best matching the name and constraint' do
       subject.should_receive(:cookbook).with(name, version).and_return(cached_one)
       result = subject.satisfy(name, constraint)
 
@@ -73,8 +73,8 @@ describe Berkshelf::CookbookStore do
   describe '#cookbook' do
     subject { Berkshelf::CookbookStore.new(fixtures_path.join('cookbooks')) }
 
-    it 'returns a CachedCookbook if the specified cookbook version exists' do
-      expect(subject.cookbook('example_cookbook', '0.5.0')).to be_a(Berkshelf::CachedCookbook)
+    it 'returns a Cookbook if the specified cookbook version exists' do
+      expect(subject.cookbook('example_cookbook', '0.5.0')).to be_a(Berkshelf::Cookbook)
     end
 
     it 'returns nil if the specified cookbook version does not exist' do
@@ -88,18 +88,18 @@ describe Berkshelf::CookbookStore do
       generate_cookbook(subject.storage_path, 'mysql', '1.2.6')
     end
 
-    it 'returns a list of CachedCookbooks' do
+    it 'returns a list of Cookbooks' do
       subject.cookbooks.each do |cookbook|
-        expect(cookbook).to be_a(Berkshelf::CachedCookbook)
+        expect(cookbook).to be_a(Berkshelf::Cookbook)
       end
     end
 
-    it 'contains a CachedCookbook for every cookbook in the storage path' do
+    it 'contains a Cookbook for every cookbook in the storage path' do
       expect(subject.cookbooks).to have(2).items
     end
 
     context 'given a value for the filter parameter' do
-      it 'returns only the CachedCookbooks whose name match the filter' do
+      it 'returns only the Cookbooks whose name match the filter' do
         expect(subject.cookbooks('mysql')).to have(1).item
       end
     end

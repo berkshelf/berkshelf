@@ -8,7 +8,7 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
       name: 'mysql',
       version_constraint: Solve::Constraint.new('= 1.2.4'),
       downloaded?: true,
-      cached_cookbook: double('mysql-cookbook',
+      cookbook: double('mysql-cookbook',
         name: 'mysql-1.2.4',
         cookbook_name: 'mysql',
         version: '1.2.4',
@@ -46,7 +46,7 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     end
 
     it 'adds an artifact of the same name of the dependency to the graph' do
-      subject.graph.should_receive(:artifacts).with(dependency.name, dependency.cached_cookbook.version)
+      subject.graph.should_receive(:artifacts).with(dependency.name, dependency.cookbook.version)
 
       subject.add_dependency(dependency, false)
     end

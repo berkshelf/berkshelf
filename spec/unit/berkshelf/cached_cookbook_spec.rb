@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe Berkshelf::CachedCookbook do
+describe Berkshelf::Cookbook do
   describe "ClassMethods" do
     describe '::from_store_path' do
       let(:path) { fixtures_path.join('cookbooks', 'example_cookbook-0.5.0') }
       let(:cached) { described_class.from_path(path) }
 
-      it 'returns a CachedCookbook' do
+      it 'returns a Cookbook' do
         expect(cached).to be_a(described_class)
       end
 
@@ -24,7 +24,7 @@ describe Berkshelf::CachedCookbook do
         end
       end
 
-      context 'given a path that does not match the CachedCookbook dirname format' do
+      context 'given a path that does not match the Cookbook dirname format' do
         it 'returns nil' do
           path = fixtures_path.join('cookbooks', 'example_cookbook')
           expect(described_class.from_store_path(path)).to be_nil
@@ -55,7 +55,7 @@ describe Berkshelf::CachedCookbook do
       'sparkle', '0.1.0', dependencies: dependencies, recommendations: recommendations)
   end
 
-  subject { Berkshelf::CachedCookbook.from_store_path(path) }
+  subject { Berkshelf::Cookbook.from_store_path(path) }
 
   describe '#dependencies' do
     it 'contains depends from the cookbook metadata' do

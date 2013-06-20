@@ -73,7 +73,7 @@ module Berkshelf
 
       # Output Cookbook info entry to delayed output
       #
-      # @param [CachedCookbook] cookbook
+      # @param [Cookbook] cookbook
       def show(cookbook)
         cookbooks[cookbook.cookbook_name] = cookbook.pretty_hash
       end

@@ -17,7 +17,7 @@ module Berkshelf
       initialize_filesystem
     end
 
-    # Returns an instance of CachedCookbook representing the
+    # Returns an instance of Cookbook representing the
     # Cookbook of your given name and version.
     #
     # @param [String] name
@@ -25,32 +25,32 @@ module Berkshelf
     # @param [String] version
     #   version of the Cookbook you want to retrieve
     #
-    # @return [Berkshelf::CachedCookbook, nil]
+    # @return [Berkshelf::Cookbook, nil]
     def cookbook(name, version)
       path = cookbook_path(name, version)
       return nil unless path.cookbook?
 
-      CachedCookbook.from_store_path(path)
+      Cookbook.from_store_path(path)
     end
 
     # Returns an array of the Cookbooks that have been cached to the
     # storage_path of this instance of CookbookStore.
     #
     # @param [String] filter
-    #   return only the CachedCookbooks whose name match the given filter
+    #   return only the Cookbooks whose name match the given filter
     #
-    # @return [Array<Berkshelf::CachedCookbook>]
+    # @return [Array<Berkshelf::Cookbook>]
     def cookbooks(filter = nil)
       cookbooks = []
 
       storage_path.each_child.map do |path|
         Celluloid::Future.new do
-          cached_cookbook = CachedCookbook.from_store_path(path)
+          cookbook = Cookbook.from_store_path(path)
 
-          next unless cached_cookbook
-          next if filter && cached_cookbook.cookbook_name != filter
+          next unless cookbook
+          next if filter && cookbook.cookbook_name != filter
 
-          cookbooks << cached_cookbook
+          cookbooks << cookbook
         end
       end.each(&:value)
 
@@ -68,13 +68,13 @@ module Berkshelf
       storage_path.join("#{name}-#{version}")
     end
 
-    # Return a CachedCookbook matching the best solution for the given name and
-    # constraint. Nil is returned if no matching CachedCookbook is found.
+    # Return a Cookbook matching the best solution for the given name and
+    # constraint. Nil is returned if no matching Cookbook is found.
     #
     # @param [#to_s] name
     # @param [Solve::Constraint] constraint
     #
-    # @return [Berkshelf::CachedCookbook, nil]
+    # @return [Berkshelf::Cookbook, nil]
     def satisfy(name, constraint)
       graph = Solve::Graph.new
       cookbooks(name).each { |cookbook| graph.artifacts(name, cookbook.version) }

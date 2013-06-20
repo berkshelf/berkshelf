@@ -56,7 +56,7 @@ module Berkshelf
       @dependencies[dependency.name] = dependency
       use_dependency(dependency) || install_dependency(dependency)
 
-      graph.artifacts(dependency.name, dependency.cached_cookbook.version)
+      graph.artifacts(dependency.name, dependency.cookbook.version)
 
       if include_dependencies
         add_recursive_dependencies(dependency)
@@ -75,7 +75,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::Dependency>]
     def add_recursive_dependencies(dependency)
-      dependency.cached_cookbook.dependencies.each do |name, constraint|
+      dependency.cookbook.dependencies.each do |name, constraint|
         next if has_dependency?(name)
 
         add_dependency(Berkshelf::Dependency.new(berksfile, name, constraint: constraint))
@@ -89,9 +89,9 @@ module Berkshelf
     end
 
     # Finds a solution for the currently added dependencies and their dependencies and
-    # returns an array of CachedCookbooks.
+    # returns an array of Cookbooks.
     #
-    # @return [Array<Berkshelf::CachedCookbook>]
+    # @return [Array<Berkshelf::Cookbook>]
     def resolve
       demands = [].tap do |l_demands|
         graph.artifacts.each do |artifact|
@@ -101,9 +101,9 @@ module Berkshelf
 
       solution = Solve.it!(graph, demands)
 
-      [].tap do |cached_cookbooks|
+      [].tap do |cookbooks|
         solution.each do |name, version|
-          cached_cookbooks << get_dependency(name).cached_cookbook
+          cookbooks << get_dependency(name).cookbook
         end
       end
     end
@@ -134,8 +134,8 @@ module Berkshelf
       #
       # @return [Boolean]
       def install_dependency(dependency)
-        cached_cookbook, location = downloader.download(dependency)
-        Berkshelf.formatter.install(dependency.name, cached_cookbook.version, location)
+        cookbook, location = downloader.download(dependency)
+        Berkshelf.formatter.install(dependency.name, cookbook.version, location)
       end
 
       # Use the given dependency to create a constraint solution if the dependency has been downloaded or can
@@ -146,7 +146,7 @@ module Berkshelf
       #
       # @param [Berkshelf::Dependency] dependency
       #
-      # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
+      # @raise [ConstraintNotSatisfied] if the Cookbook does not satisfy the version constraint of
       #   this instance of Location.
       #   contain a cookbook that satisfies the given version constraint of this instance of
       #   Berkshelf::Dependency.
@@ -158,7 +158,7 @@ module Berkshelf
         location   = dependency.location
 
         if dependency.downloaded?
-          cached = dependency.cached_cookbook
+          cached = dependency.cookbook
           location.validate_cached(cached)
           Berkshelf.formatter.use(name, cached.version, location)
           true
@@ -168,7 +168,7 @@ module Berkshelf
           cached = downloader.cookbook_store.satisfy(name, constraint)
 
           if cached
-            get_dependency(dependency).cached_cookbook = cached
+            get_dependency(dependency).cookbook = cached
             Berkshelf.formatter.use(name, cached.version)
             true
           else
