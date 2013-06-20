@@ -411,7 +411,7 @@ module Berkshelf
       local_dependencies = apply_lockfile(dependencies(options))
 
       resolver           = resolve(local_dependencies)
-      @cookbooks  = resolver[:solution]
+      @cookbooks         = resolver[:solution]
       local_dependencies = resolver[:dependencies]
 
       verify_licenses!
@@ -512,9 +512,9 @@ module Berkshelf
     def upload(options = {})
       options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false)
 
-      cookbooks = install(options)
-      upload_opts      = options.slice(:force, :freeze)
-      conn             = ridley_connection(options)
+      cookbooks   = install(options)
+      upload_opts = options.slice(:force, :freeze)
+      conn        = ridley_connection(options)
 
       cookbooks.each do |cookbook|
         Berkshelf.formatter.upload(cookbook.cookbook_name, cookbook.version, conn.server_url)
