@@ -378,4 +378,21 @@ module Berkshelf
       "No #{@type.capitalize} config file found at: '#{@path}'!"
     end
   end
+
+  class LockfileParserError < BerkshelfError
+    status_code(136)
+
+    # @param [String] lockfile
+    #   the path to the Lockfile
+    # @param [~Exception] original
+    #   the original exception class
+    def initialize(lockfile, original)
+      @lockfile = Pathname.new(lockfile.to_s).basename.to_s
+      @original = original
+    end
+
+    def to_s
+      "Error reading the Berkshelf lockfile `#{@lockfile}` (#{@original.class})"
+    end
+  end
 end
