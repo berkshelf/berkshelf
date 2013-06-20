@@ -380,7 +380,6 @@ module Berkshelf
     end
   end
 
-  # Raised when the lockfile could not be parsed (for whatever reason)
   class LockfileParserError < BerkshelfError
     status_code(136)
 
@@ -394,7 +393,7 @@ module Berkshelf
     end
 
     def to_s
-      "Could not read the Berkshelf lockfile `#{@lockfile}` (#{@original.class})!"
+      "Error reading the Berkshelf lockfile `#{@lockfile}` (#{@original.class})"
     end
   end
 end
