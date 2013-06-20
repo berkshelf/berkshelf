@@ -116,31 +116,10 @@ module Berkshelf
       # @return [Berkshelf::CachedCookbook, nil]
       #   the downloaded cached cookbook, or nil if one was not found
       def download_location(source, location, raise_if_not_found = false)
-        from_cache(source) || location.download(storage_path)
+        location.download(storage_path)
       rescue Berkshelf::CookbookNotFound
         raise if raise_if_not_found
         nil
-      end
-
-      # Load the cached cookbook from the cookbook store.
-      #
-      # @param [Berkshelf::CookbookSource] source
-      #   the source to find in the cache
-      #
-      # @return [Berkshelf::CachedCookbook, nil]
-      def from_cache(source)
-        # Can't safely read a git location from cache
-        return nil if source.location.kind_of?(Berkshelf::GitLocation)
-
-        if source.locked_version
-          cookbook = cookbook_store.cookbook_path(source.name, source.locked_version)
-          path = File.expand_path(File.join(storage_path, cookbook))
-
-          return nil unless File.exists?(path)
-          return Berkshelf::CachedCookbook.from_path(path, name: source.name)
-        end
-
-        cookbook_store.satisfy(source.name, source.version_constraint)
       end
   end
 end

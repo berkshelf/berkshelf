@@ -1,3 +1,4 @@
+
 require 'spec_helper'
 
 describe Berkshelf::CookbookSource do
@@ -258,13 +259,6 @@ describe Berkshelf::CookbookSource do
       [:constraint, :locked_version, :site, :git, :ref, :path].each do |key|
         expect(hash).to_not have_key(key)
       end
-    end
-
-    it 'includes the constraint' do
-      subject.version_constraint = '~> 1.0.0'
-
-      expect(hash).to have_key(:constraint)
-      expect(hash[:constraint]).to eq('~> 1.0.0')
     end
 
     it 'includes the locked version' do

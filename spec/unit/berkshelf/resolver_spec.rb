@@ -7,6 +7,8 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
     double('source',
       name: 'mysql',
       version_constraint: Solve::Constraint.new('= 1.2.4'),
+      :version_constraint= => nil,
+      locked_version: '1.2.4',
       downloaded?: true,
       cached_cookbook: double('mysql-cookbook',
         name: 'mysql-1.2.4',

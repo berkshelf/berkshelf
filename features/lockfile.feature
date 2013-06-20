@@ -17,7 +17,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"80396ed07db133e0192593adebb360c27eed88c2",
         "sources":{
           "fake":{
-            "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
           }
         }
@@ -44,7 +43,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha": "374a3d22920abae4a6d620a14a32b90d8babda8f",
         "sources": {
           "fake": {
-            "constraint": "= 1.0.0",
             "locked_version": "1.0.0"
           }
         }
@@ -69,7 +67,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"ebf27d476739b5aba7e7e8a61de23b3330e20a7d",
         "sources":{
           "fake":{
-            "constraint":"= 0.0.0",
             "path":"./fake"
           }
         }
@@ -92,11 +89,9 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"80396ed07db133e0192593adebb360c27eed88c2",
         "sources":{
           "fake":{
-            "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
           },
           "dep":{
-            "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
           }
         }
@@ -117,7 +112,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
           }
         }
@@ -130,7 +124,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
           }
         }
@@ -152,7 +145,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"3dced4fcd9c3f72b68e746190aaa1140bdc6cc3d",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "constraint":"~> 0.1",
             "locked_version":"0.1.0"
           }
         }
@@ -165,7 +157,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "constraint":"~> 0.1",
             "locked_version":"0.2.0"
           }
         }
@@ -186,7 +177,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
           }
         }
@@ -199,7 +189,6 @@ Feature: Creating and reading the Berkshelf lockfile
         "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
           }
         }
