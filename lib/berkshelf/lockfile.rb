@@ -33,19 +33,9 @@ module Berkshelf
 
     # Load the lockfile from file system.
     def load!
-      contents = File.read(filepath)
+      contents = File.read(filepath).strip
 
-      begin
-        hash = JSON.parse(contents, symbolize_names: true)
-      rescue JSON::ParserError
-        if contents =~ /^cookbook ["'](.+)["']/
-          Berkshelf.ui.warn 'You are using the old lockfile format. Attempting to convert...'
-          hash = LockfileLegacy.parse(berksfile, contents)
-        else
-          raise
-        end
-      end
-
+      hash = parse(contents)
       @sha = hash[:sha]
 
       hash[:sources].each do |name, options|
@@ -167,6 +157,25 @@ module Berkshelf
     end
 
     private
+
+      # Parse the given string as JSON.
+      #
+      # @param [String] contents
+      #
+      # @return [Hash]
+      def parse(contents)
+        # Ruby's JSON.parse cannot handle an empty string/file
+        return { sha: nil, sources: [] } if contents.strip.empty?
+
+        JSON.parse(contents, symbolize_names: true)
+      rescue Exception => e
+        if e.class == JSON::ParserError && contents =~ /^cookbook ["'](.+)["']/
+          Berkshelf.ui.warn 'You are using the old lockfile format. Attempting to convert...'
+          return LockfileLegacy.parse(berksfile, contents)
+        else
+          raise Berkshelf::LockfileParserError.new(filepath, e)
+        end
+      end
 
       # Save the contents of the lockfile to disk.
       def save
