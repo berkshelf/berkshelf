@@ -46,7 +46,8 @@ module Berkshelf
         end
       end
 
-<<<<<<< HEAD
+      @sha = hash[:sha]
+
       # Legacy support for old lockfiles
       # @todo Remove in 4.0
       if hash[:sources]
@@ -59,15 +60,6 @@ module Berkshelf
       end
     end
 
-    # The list of dependencies constrained in this lockfile.
-=======
-      @sha = hash[:sha]
-
-      hash[:sources].each do |name, options|
-        add(CookbookSource.new(berksfile, name.to_s, options))
-      end
-    end
-
     # Set the sha value to nil to mark that the lockfile is not out of
     # sync with the Berksfile.
     def reset_sha!
@@ -75,7 +67,6 @@ module Berkshelf
     end
 
     # The list of sources constrained in this lockfile.
->>>>>>> 5b9bbf6... Revert e84b189
     #
     # @return [Array<Berkshelf::Dependency>]
     #   the list of dependencies in this lockfile
@@ -108,23 +99,15 @@ module Berkshelf
     # Replace the current list of dependencies with `dependencies`. This method does
     # not write out the lockfile - it only changes the state of the object.
     #
-<<<<<<< HEAD
     # @param [Array<Berkshelf::Dependency>] dependencies
     #   the list of dependencies to update
-    def update(dependencies)
-      reset_dependencies!
-      dependencies.each { |dependency| append(dependency) }
-=======
-    # @param [Array<Berkshelf::CookbookSource>] sources
-    #   the list of sources to update
     # @option options [String] :sha
     #   the sha of the Berksfile updating the sources
     def update(sources, options = {})
-      reset_sources!
+      reset_dependencies!
       @sha = options[:sha]
 
-      sources.each { |source| append(source) }
->>>>>>> 5b9bbf6... Revert e84b189
+      dependencies.each { |dependency| append(dependency) }
       save
     end
 
@@ -171,19 +154,12 @@ module Berkshelf
     #
     # @return [Hash]
     #   the hash representation of this lockfile
-<<<<<<< HEAD
+    #   * :sha [String] the last-known sha for the berksfile
     #   * :dependencies [Array<Berkshelf::Dependency>] the list of dependencies
     def to_hash
       {
-        dependencies: @dependencies
-=======
-    #   * :sha [String] the last-known sha for the berksfile
-    #   * :sources [Array<Berkshelf::CookbookSource>] the list of sources
-    def to_hash
-      {
         sha: sha,
-        sources: @sources
->>>>>>> 5b9bbf6... Revert e84b189
+        dependencies: @dependencies
       }
     end
 
@@ -243,12 +219,8 @@ module Berkshelf
             end
 
             {
-<<<<<<< HEAD
-              dependencies: dependencies
-=======
               sha: nil,
-              sources: sources
->>>>>>> 5b9bbf6... Revert e84b189
+              dependencies: dependencies,
             }
           end
 

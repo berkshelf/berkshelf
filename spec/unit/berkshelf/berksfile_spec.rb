@@ -277,16 +277,10 @@ describe Berkshelf::Berksfile do
       Berkshelf::Resolver.stub(:new).and_return(resolver)
       Berkshelf::Lockfile.stub(:new).and_return(lockfile)
 
-<<<<<<< HEAD
-      lockfile.stub(:dependencies).and_return([])
-=======
       subject.stub(:sha).and_return('abc123')
 
-      lockfile.stub(:sources).and_return([])
+      lockfile.stub(:dependencies).and_return([])
       lockfile.stub(:sha).and_return('xyz456')
->>>>>>> 5b9bbf6... Revert e84b189
-
-      resolver.stub(:dependencies).and_return([])
       lockfile.stub(:update)
     end
 

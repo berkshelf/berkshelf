@@ -14,12 +14,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"80396ed07db133e0192593adebb360c27eed88c2",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "fake":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -103,12 +99,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"4b614de85168d72fda4b255fc31796b4c474c3fc",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "fake":{
             "constraint":"= 0.0.0",
             "path":"./fake"
@@ -130,12 +122,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"80396ed07db133e0192593adebb360c27eed88c2",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "fake":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -159,12 +147,8 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
@@ -176,12 +160,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
@@ -202,12 +182,8 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"3dced4fcd9c3f72b68e746190aaa1140bdc6cc3d",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 0.1",
             "locked_version":"0.1.0"
@@ -219,12 +195,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 0.1",
             "locked_version":"0.2.0"
@@ -244,12 +216,8 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"7d07c22eca03bf6da5aaf38ae81cb9a8a439c692",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -261,12 +229,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -287,12 +251,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha": "b8e06c891c824b3e3481df024eb241e1c02572a6",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
@@ -314,12 +274,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha": "310f95bb86ba76b47eef28abc621d0e8de19bbb6",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"a97b9447cbd41a5fe58eee2026e48ccb503bd3bc",
@@ -341,12 +297,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha": "ade51e222f569cc299f34ec1100d321f3b230c36",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"70a527e17d91f01f031204562460ad1c17f972ee",
@@ -368,12 +320,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha": "3ac97aa503bcebb2b393410aebc176c3c5bed2d4",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
@@ -393,12 +341,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha": "f0b5a9c0230a3ff384badb0c40af1058cde75bee",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"93f5768b7d14df45e10d16c8bf6fe98ba3ff809a",
@@ -420,12 +364,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-<<<<<<< HEAD
-        "dependencies":{
-=======
         "sha": "42a13f91f1ba19ce8c6776fe267e74510dee27ce",
-        "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+        "dependencies":{
           "fake":{
             "path":"./fake"
           }
@@ -494,12 +434,8 @@ Feature: Creating and reading the Berkshelf lockfile
   # Then the file "Berksfile.lock" should contain JSON:
   #   """
   #   {
-<<<<<<< HEAD
-  #     "dependencies":{
-=======
   #     "sha": "3232c5ae6f54aee3efc5fdcfce69249a2526822b",
-  #     "sources":{
->>>>>>> 5b9bbf6... Revert e84b189
+  #     "dependencies":{
   #       "sudo":{
   #         "site":"opscode",
   #         "locked_version":"2.0.4"
