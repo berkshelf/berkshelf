@@ -484,7 +484,7 @@ Feature: Creating and reading the Berkshelf lockfile
     When I run `berks install`
     Then the output should contain:
       """
-      Could not read the Berkshelf lockfile `Berksfile.lock` (JSON::ParserError)!
+      Error reading the Berkshelf lockfile `Berksfile.lock` (JSON::ParserError)
       """
     And the CLI should exit with the status code for error "LockfileParserError"
 
