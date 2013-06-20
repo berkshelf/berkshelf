@@ -23,8 +23,7 @@ Feature: Updating a cookbook defined by a Berksfile
         "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           }
         }
       }
@@ -47,12 +46,10 @@ Feature: Updating a cookbook defined by a Berksfile
         "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.1",
-            "constraint":"= 1.0.1"
+            "locked_version":"1.0.1"
           }
         }
       }
@@ -64,12 +61,10 @@ Feature: Updating a cookbook defined by a Berksfile
         "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.2.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.2.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.1",
-            "constraint":"~> 1.0.0"
+            "locked_version":"1.0.1"
           }
         }
       }
@@ -92,12 +87,10 @@ Feature: Updating a cookbook defined by a Berksfile
         "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.0",
-            "constraint":"~> 1.0.0"
+            "locked_version":"1.0.0"
           }
         }
       }
@@ -109,12 +102,10 @@ Feature: Updating a cookbook defined by a Berksfile
         "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.2.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.2.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.0",
-            "constraint":"~> 1.0.0"
+            "locked_version":"1.0.0"
           }
         }
       }
@@ -134,8 +125,7 @@ Feature: Updating a cookbook defined by a Berksfile
         "sha":"23150cfe61b7b86882013c8664883058560b899d",
         "sources":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           }
         }
       }
