@@ -154,8 +154,12 @@ module Berkshelf
       # @return [Boolean]
       def use_source(source)
         name       = source.name
-        constraint = source.version_constraint
+        locked     = source.locked_version
         location   = source.location
+
+        # Lock the version constraint if a locked version was supplied
+        source.version_constraint = Solve::Constraint.new(locked.to_s) if locked
+        constraint = source.version_constraint
 
         if source.downloaded?
           cached = source.cached_cookbook
@@ -165,7 +169,12 @@ module Berkshelf
         elsif location.is_a?(GitLocation)
           false
         else
-          cached = downloader.cookbook_store.satisfy(name, constraint)
+          # If a locked version if specified, it must exist
+          if locked
+            cached = downloader.cookbook_store.cookbook(name, locked)
+          else
+            cached = downloader.cookbook_store.satisfy(name, constraint)
+          end
 
           if cached
             get_source(source).cached_cookbook = cached
