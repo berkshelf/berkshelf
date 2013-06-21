@@ -4,9 +4,7 @@ Spork.prefork do
   require 'aruba/cucumber'
   require 'aruba/in_process'
   require 'aruba/spawn_process'
-  require 'cucumber/rspec/doubles'
 
-  require 'berkshelf'
   require 'berkshelf/cli'
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
@@ -49,5 +47,5 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  require 'berkshelf'
+  require 'berkshelf/cli'
 end
