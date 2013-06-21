@@ -415,7 +415,7 @@ describe Berkshelf::Berksfile do
     let(:upload) { subject.upload(options) }
 
     before do
-      Berkshelf::Config.stub(:instance).and_return(berkshelf_config)
+      Berkshelf.stub(:config).and_return(berkshelf_config)
       subject.should_receive(:install).and_return(installed_cookbooks)
     end
 

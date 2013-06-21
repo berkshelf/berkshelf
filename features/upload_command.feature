@@ -1,9 +1,8 @@
 Feature: Uploading cookbooks to a Chef Server
   As a Berkshelf CLI user
-  I need a way to upload cookbooks to a Chef server that I have installed into my Bookshelf
+  I need a way to upload cookbooks to a Chef Server that I have installed into my Bookshelf
   So they are available to Chef clients
 
-  @chef_server @slow_process
   Scenario: With no arguments
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -13,7 +12,7 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '2.0.0'
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | fake   | 1.0.0 |
       | ekaf   | 2.0.0 |
     When I successfully run `berks upload`
@@ -22,30 +21,28 @@ Feature: Uploading cookbooks to a Chef Server
       Uploading fake (1.0.0) to: 'http://localhost:4000/'
       Uploading ekaf (2.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | fake   | 1.0.0 |
       | ekaf   | 2.0.0 |
     And the exit status should be 0
 
-  @chef_server
   Scenario: With a path location in the Berksfile
     Given a cookbook named "fake"
     And I write to "Berksfile" with:
       """
       cookbook 'fake', path: './fake'
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | fake | 0.0.0 |
     When I successfully run `berks upload`
     Then the output should contain:
       """
       Uploading fake (0.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | fake | 0.0.0 |
     And the exit status should be 0
 
-  @chef_server
   Scenario: With a git location in the Berksfile
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
@@ -53,18 +50,17 @@ Feature: Uploading cookbooks to a Chef Server
       """
       cookbook 'berkshelf-cookbook-fixture', ref: 'v0.1.0'
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
     When I successfully run `berks upload`
     Then the output should contain:
       """
       Uploading berkshelf-cookbook-fixture (0.1.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
     And the exit status should be 0
 
-  @chef_server @slow_process
   Scenario: With a single cookbook
     Given the cookbook store has the cookbooks:
       | fake  | 1.0.0 |
@@ -77,7 +73,7 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ekaf', '2.0.0'
       cookbook 'reset', '3.4.5'
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | fake  | 1.0.0 |
       | ekaf  | 2.0.0 |
       | reset | 3.4.5 |
@@ -87,14 +83,13 @@ Feature: Uploading cookbooks to a Chef Server
       Uploading reset (3.4.5) to: 'http://localhost:4000/'
       Uploading fake (1.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | reset | 3.4.5 |
       | fake  | 1.0.0 |
-    And the Chef server should not have the cookbooks:
+    And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
     And the exit status should be 0
 
-  @chef_server @slow_process
   Scenario: With multiple cookbooks
     Given the cookbook store has the cookbooks:
       | ntp  | 1.0.0 |
@@ -106,7 +101,7 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'vim', '1.0.0'
       cookbook 'apt', '1.0.0'
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | ntp |
       | vim |
       | apt |
@@ -120,14 +115,13 @@ Feature: Uploading cookbooks to a Chef Server
       """
       Uploading apt (1.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | ntp |
       | vim |
-    And the Chef server should not have the cookbooks:
+    And the Chef Server should not have the cookbooks:
       | apt |
     And the exit status should be 0
 
-  @chef_server @slow_process
   Scenario: With the --only flag
     Given the cookbook store has the cookbooks:
       | core    | 1.0.0 |
@@ -142,7 +136,7 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
     When I successfully run `berks upload --only group_a`
@@ -154,13 +148,12 @@ Feature: Uploading cookbooks to a Chef Server
       """
       Uploading system (1.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | core | 1.0.0 |
-    And the Chef server should not have the cookbooks:
+    And the Chef Server should not have the cookbooks:
       | system | 1.0.0 |
     And the exit status should be 0
 
-  @chef_server @slow_process
   Scenario: With the --only flag specifying multiple groups
     Given the cookbook store has the cookbooks:
       | core    | 1.0.0 |
@@ -175,7 +168,7 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
     When I successfully run `berks upload --only group_a group_b`
@@ -184,12 +177,11 @@ Feature: Uploading cookbooks to a Chef Server
       Uploading core (1.0.0) to: 'http://localhost:4000/'
       Uploading system (1.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
     And the exit status should be 0
 
-  @chef_server @slow_process
   Scenario: With the --except flag
     Given the cookbook store has the cookbooks:
       | core    | 1.0.0 |
@@ -204,7 +196,7 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
     When I successfully run `berks upload --except group_b`
@@ -216,13 +208,12 @@ Feature: Uploading cookbooks to a Chef Server
       """
       Uploading system (1.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | core | 1.0.0 |
-    And the Chef server should not have the cookbooks:
+    And the Chef Server should not have the cookbooks:
       | system | 1.0.0 |
     And the exit status should be 0
 
-  @chef_server @slow_process
   Scenario: With the --except flag specifying multiple groups
     Given the cookbook store has the cookbooks:
       | core    | 1.0.0 |
@@ -237,7 +228,7 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
     When I successfully run `berks upload --except group_a group_b`
@@ -246,7 +237,7 @@ Feature: Uploading cookbooks to a Chef Server
       Uploading core (1.0.0) to: 'http://localhost:4000/'
       Uploading system (1.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should not have the cookbooks:
+    And the Chef Server should not have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
     And the exit status should be 0
@@ -262,9 +253,8 @@ Feature: Uploading cookbooks to a Chef Server
       """
       The cookbook 'cookbook with spaces' has invalid filenames:
       """
-    And the CLI should exit with the status code for error "InvalidCookbookFiles"
+    And the exit status should be "InvalidCookbookFiles"
 
-    @chef_server @slow_process
   Scenario: With the --skip-dependencies flag
     Given the cookbook store has the cookbooks:
       | fake  | 1.0.0 |
@@ -277,7 +267,7 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ekaf', '2.0.0'
       cookbook 'reset', '3.4.5'
       """
-    And the Chef server does not have the cookbooks:
+    And the Chef Server does not have the cookbooks:
       | fake  | 1.0.0 |
       | ekaf  | 2.0.0 |
       | reset | 3.4.5 |
@@ -287,9 +277,9 @@ Feature: Uploading cookbooks to a Chef Server
       Uploading reset (3.4.5) to: 'http://localhost:4000/'
       Uploading fake (1.0.0) to: 'http://localhost:4000/'
       """
-    And the Chef server should have the cookbooks:
+    And the Chef Server should have the cookbooks:
       | reset | 3.4.5 |
       | fake  | 1.0.0 |
-    And the Chef server should not have the cookbooks:
+    And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
     And the exit status should be 0

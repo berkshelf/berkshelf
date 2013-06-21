@@ -30,21 +30,10 @@ describe Berkshelf::Config do
       Berkshelf::Config.instance_variable_set(:@path, nil)
     end
 
-    Berkshelf::Config::LOCATIONS.each do |location|
-      context "with '#{location}' as the config file" do
-        let(:path) { File.expand_path(location) }
-        before { File.stub(:exists?).with(path).and_return(true) }
-
-        it "returns '#{location}' as the path" do
-          expect(Berkshelf::Config.path).to eq(path)
-        end
-      end
-    end
-
-    context "when ENV['BERKSHELF_PATH'] is used" do
+    context "when ENV['BERKSHELF_CONFIG'] is used" do
       before do
-        ENV.stub(:[]).with('BERKSHELF_PATH').and_return('/tmp')
-        File.stub(:exists?).with('/tmp').and_return(true)
+        ENV.stub(:[]).with('BERKSHELF_CONFIG').and_return('/tmp/config.json')
+        File.stub(:exists?).with('/tmp/config.json').and_return(true)
       end
 
       it "points to a location within it" do

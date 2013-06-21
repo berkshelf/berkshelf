@@ -674,10 +674,10 @@ module Berkshelf
 
       def ridley_connection(options = {})
         ridley_options               = options.slice(:ssl)
-        ridley_options[:server_url]  = options[:server_url] || Berkshelf::Config.instance.chef.chef_server_url
-        ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
-        ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
-        ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
+        ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
+        ridley_options[:client_name] = Berkshelf.config.chef.node_name
+        ridley_options[:client_key]  = Berkshelf.config.chef.client_key
+        ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf.config.ssl.verify) }
 
         unless ridley_options[:server_url].present?
           raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
@@ -777,7 +777,7 @@ module Berkshelf
       # @raise [Berkshelf::LicenseNotAllowed]
       #   if the license is not permitted and `raise_license_exception` is true
       def verify_licenses!
-        licenses = Array(Berkshelf::Config.instance.allowed_licenses)
+        licenses = Array(Berkshelf.config.allowed_licenses)
         return if licenses.empty?
 
         dependencies.each do |dependency|
@@ -789,7 +789,7 @@ module Berkshelf
               raise Berkshelf::LicenseNotAllowed.new(cached)
             end
           rescue Berkshelf::LicenseNotAllowed => e
-            if Berkshelf::Config.instance.raise_license_exception
+            if Berkshelf.config.raise_license_exception
               FileUtils.rm_rf(cached.path)
               raise
             end

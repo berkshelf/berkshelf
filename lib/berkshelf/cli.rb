@@ -6,6 +6,31 @@ require_relative 'commands/shelf'
 require_relative 'commands/test_command'
 
 module Berkshelf
+  class Main
+    def initialize(argv, stdin=STDIN, stdout=STDOUT, stderr=STDERR, kernel=Kernel)
+      @argv, @stdin, @stdout, @stderr, @kernel = argv, stdin, stdout, stderr, kernel
+    end
+
+    def execute!
+      begin
+        $stdin  = @stdin
+        $stdout = @stdout
+        $stderr = @stderr
+
+        Berkshelf::Cli.start(@argv)
+        @kernel.exit(0)
+      rescue Berkshelf::BerkshelfError => e
+        Berkshelf.ui.error e
+        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        @kernel.exit(e.status_code)
+      rescue Ridley::Errors::RidleyError => e
+        Berkshelf.ui.error "#{e.class} #{e}"
+        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        @kernel.exit(47)
+      end
+    end
+  end
+
   class Cli < Thor
     class << self
       def dispatch(meth, given_args, given_opts, config)
@@ -31,7 +56,8 @@ module Berkshelf
         unless File.exist?(@options[:config])
           raise ConfigNotFound.new(:berkshelf, @options[:config])
         end
-        Berkshelf::Config.set_path(@options[:config])
+
+        Berkshelf.config = Berkshelf::Config.from_file(@options[:config])
       end
 
       if @options[:debug]
@@ -85,7 +111,7 @@ module Berkshelf
       desc: 'create a new configuration file even if one already exists.'
     method_option :path,
       type: :string,
-      default: Berkshelf::Config.path,
+      default: Berkshelf.config.path,
       desc: 'The path to save the configuration file'
     desc 'configure', 'Create a new Berkshelf configuration file'
     def configure
@@ -95,7 +121,7 @@ module Berkshelf
         raise Berkshelf::ConfigExists, 'A configuration file already exists. Re-run with the --force flag if you wish to overwrite it.'
       end
 
-      @config = Berkshelf::Config.new(path)
+      config = Berkshelf::Config.new(path)
 
       [
         'chef.chef_server_url',
@@ -106,7 +132,7 @@ module Berkshelf
         'vagrant.vm.box',
         'vagrant.vm.box_url',
       ].each do |attribute|
-        default = @config.get_attribute(attribute)
+        default = config.get_attribute(attribute)
 
         message = "Enter value for #{attribute}"
         message << " (default: '#{default}')" if default
@@ -115,15 +141,16 @@ module Berkshelf
         input = Berkshelf.ui.ask(message)
 
         if input.present?
-          @config.set_attribute(attribute, input)
+          config.set_attribute(attribute, input)
         end
       end
 
-      unless @config.valid?
-        raise InvalidConfiguration.new(@config.errors)
+      unless config.valid?
+        raise InvalidConfiguration.new(config.errors)
       end
 
-      @config.save
+      config.save
+      Berkshelf.config = config
 
       Berkshelf.formatter.msg "Config written to: '#{path}'"
     end
@@ -155,7 +182,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -180,7 +207,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -231,7 +258,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -249,7 +276,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -285,7 +312,7 @@ module Berkshelf
     end
 
     desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
-    def init(path = Dir.pwd)
+    def init(path = '.')
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
 
@@ -360,13 +387,13 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
     method_option :output,
       type: :string,
-      default: Dir.pwd,
+      default: '.',
       desc: 'Path to output the tarball',
       aliases: '-o',
       banner: 'PATH'
@@ -395,10 +422,6 @@ module Berkshelf
     def cookbook(name)
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
-
-      unless Config.instance.valid?
-        raise InvalidConfiguration.new(Config.instance.errors)
-      end
 
       ::Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end

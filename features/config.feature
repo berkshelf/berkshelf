@@ -4,7 +4,6 @@ Feature: Reading a Berkshelf configuration file
   So that I don't have to spend time modifying the default generated output each time
 
   Scenario: Missing a Berkshelf configuration file
-    Given I do not have a Berkshelf config file
     When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal" |
@@ -57,6 +56,7 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
     And the exit status should be 0
 
+  @spawn
   Scenario: Using an invalid Berkshelf configuration file
     Given I have a Berkshelf config file containing:
     """
@@ -71,7 +71,7 @@ Feature: Reading a Berkshelf configuration file
     When I run `berks cookbook sparkle_motion`
     Then the output should contain "Invalid configuration"
     And the output should contain "vagrant.vm.box Expected attribute: 'vagrant.vm.box' to be a type of: 'String'"
-    And the CLI should exit with the status code for error "InvalidConfiguration"
+    And the exit status should be "InvalidConfiguration"
 
   Scenario: Using a Berkshelf configuration file with Chef configuration information
     Given I have a Berkshelf config file containing:

@@ -113,7 +113,7 @@ module Berkshelf
     private
 
       def berkshelf_config
-        Berkshelf::Config.instance
+        Berkshelf.config
       end
 
       # Read the cookbook name from the metadata.rb

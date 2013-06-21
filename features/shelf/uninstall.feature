@@ -9,7 +9,7 @@ Feature: Removing a cookbook from the Berkshelf shelf
       """
       Cookbook 'fake' is not in the Berkshelf shelf
       """
-    And the CLI should exit with the status code for error "CookbookNotFound"
+    And the exit status should be "CookbookNotFound"
 
   Scenario: With two cookbooks in the store
     Given the cookbook store has the cookbooks:
@@ -67,6 +67,7 @@ Feature: Removing a cookbook from the Berkshelf shelf
       | fake | 2.0.0 |
     And the exit status should be 0
 
+  @spawn
   Scenario: With contingencies
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
       | ekaf | 2.3.4 |

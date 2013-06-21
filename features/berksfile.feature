@@ -40,7 +40,7 @@ Feature: Evaluating a Berksfile
 
         undefined method `add_location' for
       """
-    And the CLI should exit with the status code for error "BerksfileReadError"
+    And the exit status should be "BerksfileReadError"
 
   Scenario: Containing Ruby syntax errors
     Given I write to "Berksfile" with:
