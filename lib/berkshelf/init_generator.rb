@@ -135,8 +135,8 @@ module Berkshelf
       #
       # @return [nil]
       def validate_configuration
-        unless Config.instance.valid?
-          raise InvalidConfiguration.new Config.instance.errors
+        unless Berkshelf.config.valid?
+          raise InvalidConfiguration.new Berkshelf.config.errors
         end
       end
 

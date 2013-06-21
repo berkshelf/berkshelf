@@ -17,7 +17,7 @@ end
 
 Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, license|
-    generate_cookbook(cookbook_store, name, version, license: license)
+    generate_cookbook(cookbook_store.storage_path, name, version, license: license)
   end
 end
 
@@ -35,12 +35,12 @@ Given /^the cookbook store has the git cookbooks:$/ do |cookbooks|
 end
 
 Given /^the cookbook store contains a cookbook "(.*?)" "(.*?)" with dependencies:$/ do |name, version, dependencies|
-  generate_cookbook(cookbook_store, name, version, dependencies: dependencies.raw)
+  generate_cookbook(cookbook_store.storage_path, name, version, dependencies: dependencies.raw)
 end
 
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    expect(cookbook_store).to have_structure {
+    expect(cookbook_store.storage_path).to have_structure {
       directory "#{name}-#{version}" do
         file "metadata.rb" do
           contains version
@@ -52,7 +52,7 @@ end
 
 Then /^the cookbook store should have the git cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha1|
-    expect(cookbook_store).to have_structure {
+    expect(cookbook_store.storage_path).to have_structure {
       directory "#{name}-#{sha1}" do
         file "metadata.rb" do
           contains version
@@ -64,7 +64,7 @@ end
 
 Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    expect(cookbook_store).to_not have_structure {
+    expect(cookbook_store.storage_path).to_not have_structure {
       directory "#{name}-#{version}"
     }
   end

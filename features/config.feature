@@ -56,7 +56,6 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
     And the exit status should be 0
 
-  @spawn
   Scenario: Using an invalid Berkshelf configuration file
     Given I have a Berkshelf config file containing:
     """

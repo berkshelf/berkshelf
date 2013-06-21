@@ -32,11 +32,13 @@ Spork.prefork do
     Aruba.process = Aruba::SpawnProcess
 
     # Legacy ENV variables until we can move over to all InProcess
-    ENV['BERKSHELF_PATH'] = berkshelf_path
-    ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path
+    ENV['BERKSHELF_PATH'] = berkshelf_path.to_s
+    ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s
+    ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path.to_s
 
-    set_env('BERKSHELF_PATH', berkshelf_path)
-    set_env('BERKSHELF_CHEF_CONFIG', chef_config_path)
+    set_env('BERKSHELF_PATH', berkshelf_path.to_s)
+    set_env('BERKSHELF_CONFIG', Berkshelf.config.path.to_s)
+    set_env('BERKSHELF_CHEF_CONFIG', chef_config_path.to_s)
   end
 
   Before('@slow_process') do
