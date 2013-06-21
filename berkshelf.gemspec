@@ -49,7 +49,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'fuubar',        '~> 1.1'
   s.add_development_dependency 'rake',          '~> 0.9'
   s.add_development_dependency 'rspec',         '~> 2.13'
-  s.add_development_dependency 'simplecov',     '~> 0.7'
   s.add_development_dependency 'spork',         '~> 0.9'
   s.add_development_dependency 'vcr',           '~> 2.4'
   s.add_development_dependency 'webmock',       '~> 1.11'
