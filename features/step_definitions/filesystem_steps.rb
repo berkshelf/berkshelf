@@ -56,7 +56,7 @@ Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
   end
 end
 
-Given /^the cookbook store has the cookbooks installed by git:$/ do |cookbooks|
+Given /^the cookbook store has the git cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha|
     folder   = "#{name}-#{sha}"
     metadata = File.join(folder, 'metadata.rb')

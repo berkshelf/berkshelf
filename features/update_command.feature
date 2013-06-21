@@ -20,6 +20,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
@@ -43,6 +44,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
@@ -59,6 +61,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
@@ -86,6 +89,7 @@ Feature: Updating a cookbook defined by a Berksfile
     And I write to "Berksfile.lock" with:
       """
       {
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
@@ -102,6 +106,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
+        "sha":"69b2e00e970d2bb6a9b1d09aeb3e6a17ef3df955",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.2.0",
@@ -126,6 +131,7 @@ Feature: Updating a cookbook defined by a Berksfile
     Given I write to "Berksfile.lock" with:
       """
       {
+        "sha":"23150cfe61b7b86882013c8664883058560b899d",
         "dependencies":{
           "berkshelf-cookbook-fixture":{
             "locked_version":"0.1.0",
