@@ -1,3 +1,9 @@
+# 2.0.5
+
+* Improve speed of resolution when a lockfile is present
+* Gracefully fail when a lockfile is present but empty
+* Fix issue where locked version was not honored if the cookbook store was empty
+
 # 2.0.4
 
 * Fix bug where community cookbooks compressed with bzip2 would not download and install
