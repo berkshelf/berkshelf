@@ -1,11 +1,5 @@
 World(Berkshelf::RSpec::ChefAPI)
 
-Given /^the Chef Server does not have the cookbooks:$/ do |cookbooks|
-  cookbooks.raw.each do |name, version|
-    purge_cookbook(name, version)
-  end
-end
-
 Given /^the Chef Server has cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     purge_cookbook(name, version)

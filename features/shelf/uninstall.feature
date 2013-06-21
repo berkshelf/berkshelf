@@ -26,7 +26,6 @@ Feature: Removing a cookbook from the Berkshelf shelf
       | ekaf | 2.3.4 |
     And the exit status should be 0
 
-
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |

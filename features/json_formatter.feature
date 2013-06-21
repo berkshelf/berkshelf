@@ -59,8 +59,6 @@ Feature: --format json
       """
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
-    And the Chef Server does not have the cookbooks:
-      | example_cookbook | 0.5.0 |
     When I successfully run `berks upload --format json`
     Then the output should contain JSON:
       """

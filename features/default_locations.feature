@@ -31,8 +31,6 @@ Feature: Berksfile default locations
 
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
-    And the Chef Server does not have the cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -86,8 +84,6 @@ Feature: Berksfile default locations
 
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
-    And the Chef Server does not have the cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
     When I run `berks install`
     Then the output should contain:
       """

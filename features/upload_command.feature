@@ -12,9 +12,6 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '2.0.0'
       """
-    And the Chef Server does not have the cookbooks:
-      | fake   | 1.0.0 |
-      | ekaf   | 2.0.0 |
     When I successfully run `berks upload`
     Then the output should contain:
       """
@@ -32,8 +29,6 @@ Feature: Uploading cookbooks to a Chef Server
       """
       cookbook 'fake', path: './fake'
       """
-    And the Chef Server does not have the cookbooks:
-      | fake | 0.0.0 |
     When I successfully run `berks upload`
     Then the output should contain:
       """
@@ -50,8 +45,6 @@ Feature: Uploading cookbooks to a Chef Server
       """
       cookbook 'berkshelf-cookbook-fixture', ref: 'v0.1.0'
       """
-    And the Chef Server does not have the cookbooks:
-      | berkshelf-cookbook-fixture | 0.1.0 |
     When I successfully run `berks upload`
     Then the output should contain:
       """
@@ -73,10 +66,6 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ekaf', '2.0.0'
       cookbook 'reset', '3.4.5'
       """
-    And the Chef Server does not have the cookbooks:
-      | fake  | 1.0.0 |
-      | ekaf  | 2.0.0 |
-      | reset | 3.4.5 |
     When I successfully run `berks upload reset`
     Then the output should contain:
       """
@@ -101,10 +90,6 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'vim', '1.0.0'
       cookbook 'apt', '1.0.0'
       """
-    And the Chef Server does not have the cookbooks:
-      | ntp |
-      | vim |
-      | apt |
     When I successfully run `berks upload ntp vim`
     Then the output should contain:
       """
@@ -136,9 +121,6 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef Server does not have the cookbooks:
-      | core   | 1.0.0 |
-      | system | 1.0.0 |
     When I successfully run `berks upload --only group_a`
     Then the output should contain:
       """
@@ -168,9 +150,6 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef Server does not have the cookbooks:
-      | core   | 1.0.0 |
-      | system | 1.0.0 |
     When I successfully run `berks upload --only group_a group_b`
     Then the output should contain:
       """
@@ -196,9 +175,6 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef Server does not have the cookbooks:
-      | core   | 1.0.0 |
-      | system | 1.0.0 |
     When I successfully run `berks upload --except group_b`
     Then the output should contain:
       """
@@ -228,9 +204,6 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    And the Chef Server does not have the cookbooks:
-      | core   | 1.0.0 |
-      | system | 1.0.0 |
     When I successfully run `berks upload --except group_a group_b`
     Then the output should not contain:
       """
@@ -267,10 +240,6 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ekaf', '2.0.0'
       cookbook 'reset', '3.4.5'
       """
-    And the Chef Server does not have the cookbooks:
-      | fake  | 1.0.0 |
-      | ekaf  | 2.0.0 |
-      | reset | 3.4.5 |
     When I successfully run `berks upload reset -D`
     Then the output should contain:
       """

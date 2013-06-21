@@ -17,12 +17,16 @@ Spork.prefork do
   World(Berkshelf::RSpec::PathHelpers)
   World(Berkshelf::RSpec::Kitchen)
 
+  Berkshelf::RSpec::ChefServer.start
+  at_exit { Berkshelf::RSpec::ChefServer.stop }
+
   Before do
     Aruba::InProcess.main_class = Berkshelf::Main
     Aruba.process = Aruba::InProcess
 
     stub_kitchen!
     purge_store_and_configs!
+    Berkshelf::RSpec::ChefServer.reset!
 
     @aruba_io_wait_seconds = Cucumber::JRUBY ? 7 : 5
     @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15
@@ -44,15 +48,6 @@ Spork.prefork do
   Before('@slow_process') do
     @aruba_io_wait_seconds = Cucumber::JRUBY ? 70 : 30
     @aruba_timeout_seconds = Cucumber::JRUBY ? 140 : 60
-  end
-
-  # Chef Zero
-  require 'chef_zero/server'
-  @server = ChefZero::Server.new(port: 4000)
-  @server.start_background
-
-  at_exit do
-    @server.stop if @server && @server.running?
   end
 end
 
