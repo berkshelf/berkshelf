@@ -93,7 +93,7 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
-    And the cookbook store has the cookbooks installed by git:
+    And the cookbook store has the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     And I successfully run `berks install`
     When I successfully run `berks install`
@@ -105,7 +105,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the cookbooks installed by git:
+    Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
     And the output should contain:
       """
@@ -119,7 +119,7 @@ Feature: install cookbooks from a Berksfile
       site :opscode
       cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
       """
-    And the cookbook store has the cookbooks installed by git:
+    And the cookbook store has the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
     And I successfully run `berks install`
     When I run `berks install`
