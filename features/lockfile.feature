@@ -476,3 +476,37 @@ Feature: Creating and reading the Berkshelf lockfile
       Try running `berks update berkshelf-cookbook-fixture, which will try to find 'berkshelf-cookbook-fixture' matching '~> 1.3.0'
       """
     And the CLI should exit with the status code for error "OutdatedDependency"
+
+  Scenario: Installing when the Lockfile is empty
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', '1.0.0'
+      """
+    And an empty file named "Berksfile.lock"
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Using fake (1.0.0)
+      """
+    And the exit status should be 0
+
+  Scenario: Installing when the Lockfile is in a bad state
+    Given I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', '1.0.0'
+      """
+    Given I write to "Berksfile.lock" with:
+      """
+      this is totally not valid
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Error reading the Berkshelf lockfile `Berksfile.lock` (JSON::ParserError)
+      """
+    And the CLI should exit with the status code for error "LockfileParserError"
+

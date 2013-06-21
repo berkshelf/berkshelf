@@ -33,27 +33,9 @@ module Berkshelf
 
     # Load the lockfile from file system.
     def load!
-      contents = File.read(filepath)
-
-      begin
-        hash = JSON.parse(contents, symbolize_names: true)
-      rescue JSON::ParserError
-        if contents =~ /^cookbook ["'](.+)["']/
-          LockfileLegacy.warn!
-          hash = LockfileLegacy.parse(berksfile, contents)
-        else
-          raise
-        end
-      end
-
-      @sha = hash[:sha]
-
-      # Legacy support for old lockfiles
-      # @todo Remove in 4.0
-      if hash[:sources]
-        LockfileLegacy.warn!
-        hash[:dependencies] = hash[:sources]
-      end
+      contents = File.read(filepath).strip
+      hash     = parse(contents)
+      @sha     = hash[:sha]
 
       hash[:dependencies].each do |name, options|
         add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
@@ -174,6 +156,36 @@ module Berkshelf
     end
 
     private
+
+      # Parse the given string as JSON.
+      #
+      # @param [String] contents
+      #
+      # @return [Hash]
+      def parse(contents)
+        # Ruby's JSON.parse cannot handle an empty string/file
+        return { sha: nil, dependencies: [] } if contents.strip.empty?
+
+        hash = JSON.parse(contents, symbolize_names: true)
+
+        # Legacy support for 2.0 lockfiles
+        # @todo Remove in 4.0
+        if hash[:sources]
+          LockfileLegacy.warn!
+          hash[:dependencies] = hash.delete(:sources)
+        end
+
+        return hash
+      rescue Exception => e
+        # Legacy support for 1.0 lockfiles
+        # @todo Remove in 4.0
+        if e.class == JSON::ParserError && contents =~ /^cookbook ["'](.+)["']/
+          LockfileLegacy.warn!
+          return LockfileLegacy.parse(berksfile, contents)
+        else
+          raise Berkshelf::LockfileParserError.new(filepath, e)
+        end
+      end
 
       # Save the contents of the lockfile to disk.
       def save
