@@ -1,9 +1,6 @@
 require 'spork'
 
 Spork.prefork do
-  # This must be set BEFORE any require 'berkshelf' calls are made!
-  ENV['RUBY_ENV'] = 'test'
-
   require 'aruba/cucumber'
   require 'aruba/in_process'
   require 'aruba/spawn_process'

@@ -165,7 +165,6 @@ require_relative 'berkshelf/location'
 require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
-require_relative 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
 

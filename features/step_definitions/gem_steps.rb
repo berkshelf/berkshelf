@@ -1,6 +1,4 @@
 Given /^the gem "(.*)" is not installed$/ do |gem_name|
-  # @see berkshelf/test.rb
-  set_env 'MISSING_GEMS', [ENV['MISSING_GEMS'], gem_name].compact.join(',')
   Gem::Specification.stub(:find_by_name).with(gem_name).and_raise(Gem::LoadError)
 end
 
