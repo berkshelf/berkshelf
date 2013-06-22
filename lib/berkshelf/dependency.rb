@@ -223,6 +223,7 @@ module Berkshelf
     end
 
     private
+
       # Attempt to load a CachedCookbook from a local file system path (if the :path
       # option was given). If one is found, the location and cached_cookbook is
       # updated. Otherwise, this method will raise a CookbookNotFound exception.

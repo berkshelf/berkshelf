@@ -21,8 +21,8 @@ Spork.prefork do
     config.include Berkshelf::RSpec::ChefServer
     config.include Berkshelf::RSpec::Git
     config.include Berkshelf::RSpec::PathHelpers
+    config.include Berkshelf::RSpec::BerksAPIServer
 
-    # Disallow should syntax
     config.expect_with :rspec do |c|
       c.syntax = :expect
     end
@@ -33,21 +33,22 @@ Spork.prefork do
     config.run_all_when_everything_filtered = true
 
     config.before(:suite) do
+      WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
       Berkshelf::RSpec::ChefServer.start
+      Berkshelf::RSpec::BerksAPIServer.start
+      Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
+      Berkshelf.set_format(:null)
+      Berkshelf.ui.mute!
     end
 
     config.after(:suite) do
-      Berkshelf::RSpec::ChefServer.stop
+      Berkshelf.ui.unmute!
     end
 
     config.before(:each) do
-      Celluloid.shutdown
-      Celluloid.boot
-
       purge_store_and_configs!
-
-      Berkshelf.set_format(:null)
-      Berkshelf.ui.mute!
+      Berkshelf::RSpec::BerksAPIServer.clear_cache
+      clean_tmp_path
     end
   end
 
@@ -82,4 +83,3 @@ Spork.each_run do
     end
   end
 end
-

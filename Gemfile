@@ -32,3 +32,7 @@ group :guard do
     gem 'win32console', require: false
   end
 end
+
+group :test do
+  gem 'berkshelf-api', github: "RiotGames/berkshelf-api"
+end

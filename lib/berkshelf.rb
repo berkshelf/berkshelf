@@ -147,6 +147,7 @@ module Berkshelf
   end
 end
 
+require_relative 'berkshelf/api_client'
 require_relative 'berkshelf/base_generator'
 require_relative 'berkshelf/berksfile'
 require_relative 'berkshelf/cached_cookbook'
