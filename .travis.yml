@@ -6,6 +6,7 @@ rvm:
 env:
   - TEST_SUITE=unit CI=true
   - TEST_SUITE=acceptance CI=true
+  - TEST_SUITE=quality CI=true
 notifications:
   irc:
     channels:
