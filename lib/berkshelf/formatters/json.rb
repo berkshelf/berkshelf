@@ -6,15 +6,14 @@ module Berkshelf
       register_formatter :json
 
       def initialize
-        Berkshelf.ui.mute!
-
         @output = {
           cookbooks: Array.new,
           errors: Array.new,
           messages: Array.new
         }
         @cookbooks = Hash.new
-        super
+
+        Berkshelf.ui.mute { super }
       end
 
       def cleanup_hook

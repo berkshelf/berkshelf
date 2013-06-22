@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 $:.push File.expand_path('../../lib', __FILE__)
-require 'berkshelf/cli'
+require 'berkshelf/main'
 
 Berkshelf::Main.new(ARGV.dup).execute!

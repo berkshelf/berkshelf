@@ -1,20 +1,9 @@
-# We set this variable to load additional test materials during cucumber
-# runs, since aruba runs in a subprocess. See lib/berkshelf/test.rb
-ENV['RUBY_ENV'] ||= 'test'
-
-require 'rubygems'
-require 'bundler'
 require 'spork'
 
 Spork.prefork do
-  require 'pp'
   require 'rspec'
   require 'webmock/rspec'
   require 'vcr'
-
-  APP_ROOT = File.expand_path('../../', __FILE__)
-  ENV["BERKSHELF_PATH"] = File.join(APP_ROOT, "spec", "tmp", "berkshelf")
-  ENV["BERKSHELF_CHEF_CONFIG"] = File.join(APP_ROOT, "spec", "config", "knife.rb")
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
@@ -45,7 +34,6 @@ Spork.prefork do
 
     config.before(:suite) do
       Berkshelf::RSpec::ChefServer.start
-      WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
     end
 
     config.after(:suite) do
@@ -61,10 +49,6 @@ Spork.prefork do
       Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end
-
-    config.after(:each) do
-      Berkshelf.ui.unmute!
-    end
   end
 
   def capture(stream)
@@ -78,10 +62,6 @@ Spork.prefork do
     end
 
     result
-  end
-
-  def example_cookbook_from_path
-    @example_cookbook_from_path ||= Berkshelf::Cookbook.new('example_cookbook', path: File.join(File.dirname(__FILE__), 'fixtures', 'cookbooks'))
   end
 end
 
