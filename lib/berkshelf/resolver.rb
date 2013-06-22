@@ -1,91 +1,53 @@
-require_relative 'dependency'
-require_relative 'locations/git_location'
-require_relative 'locations/path_location'
-
 module Berkshelf
   class Resolver
+    require_relative 'resolver/graph'
+
     extend Forwardable
 
     # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
 
-    # @return [Solve::Graph]
+    # @return [Resolver::Graph]
     attr_reader :graph
 
+    # @return [Array<Berkshelf::Dependency>]
+    #   an array of dependencies that must be satisfied
+    attr_reader :demands
+
     # @param [Berkshelf::Berksfile] berksfile
-    # @param [Hash] options
-    #
-    # @option options [Array<Berkshelf::Dependency>, Berkshelf::Dependency] dependencies
-    def initialize(berksfile, options = {})
-      @berksfile    = berksfile
-      @downloader   = berksfile.downloader
-      @graph        = Solve::Graph.new
-      @dependencies = Hash.new
+    # @param [Array<Berkshelf::Dependency>, Berkshelf::Dependency] demands
+    #   a dependency, or array of dependencies, which must be satisfied
+    def initialize(berksfile, demands = [])
+      @berksfile = berksfile
+      @graph     = Graph.new
+      @demands   = Array.new
 
-      # Dependencies need to be added AFTER the dependencies. If they are
-      # not, then one of the dependencies of a dependency that is added
-      # may take precedence over an explicitly set dependency that appears
-      # later in the iterator.
-      Array(options[:dependencies]).each do |dependency|
-        add_dependency(dependency, false)
-      end
-
-      unless options[:skip_dependencies]
-        Array(options[:dependencies]).each do |dependency|
-          add_recursive_dependencies(dependency)
-        end
-      end
+      Array(demands).each { |demand| add_demand(demand) }
     end
 
-    # Add the given dependency to the collection of dependencies for this instance
-    # of Resolver. By default the dependencies of the given dependency will also
-    # be added as dependencies to the collection.
+    # Add the given dependency to the collection of demands
     #
-    # @param [Berkshelf::Dependency] dependency
-    #   dependency to add
-    # @param [Boolean] include_dependencies
-    #   adds the dependencies of the given dependency as dependencies to the collection of
-    #   if true. Dependencies will be ignored if false.
+    # @param [Berkshelf::Dependency] demand
+    #   add a dependency that must be satisfied to the graph
+    #
+    # @raise [DuplicateDemand]
     #
     # @return [Array<Berkshelf::Dependency>]
-    def add_dependency(dependency, include_dependencies = true)
-      if has_dependency?(dependency)
-        raise DuplicateDependencyDefined, "A dependency named '#{dependency.name}' is already present."
+    def add_demand(demand)
+      if has_demand?(demand)
+        raise DuplicateDemand, "A demand named '#{demand.name}' is already present."
       end
 
-      @dependencies[dependency.name] = dependency
-      use_dependency(dependency) || install_dependency(dependency)
-
-      graph.artifacts(dependency.name, dependency.cached_cookbook.version)
-
-      if include_dependencies
-        add_recursive_dependencies(dependency)
-      end
-
-      dependencies
+      demands.push(demand)
     end
 
-    # Add the dependencies of the given dependency as dependencies in the collection of dependencies
-    # on this instance of Resolver. Any dependencies which already have a dependency in the
-    # collection of dependencies of the same name will not be added to the collection a second
-    # time.
+    # An array of arrays containing the name and constraint of each demand
     #
-    # @param [Berkshelf::Dependency] dependency
-    #   dependency to convert dependencies into dependencies
+    # @note this is the format that Solve uses to determine a solution for the graph
     #
-    # @return [Array<Berkshelf::Dependency>]
-    def add_recursive_dependencies(dependency)
-      dependency.cached_cookbook.dependencies.each do |name, constraint|
-        next if has_dependency?(name)
-
-        add_dependency(Berkshelf::Dependency.new(berksfile, name, constraint: constraint))
-      end
-    end
-
-    # @return [Array<Berkshelf::Dependency>]
-    #   an array of Berkshelf::Dependencys that are currently added to this resolver
-    def dependencies
-      @dependencies.values
+    # @return [Array<String, String>]
+    def demand_array
+      demands.collect { |demand| [ demand.name, demand.version_constraint ] }
     end
 
     # Finds a solution for the currently added dependencies and their dependencies and
@@ -93,88 +55,29 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def resolve
-      demands = [].tap do |l_demands|
-        graph.artifacts.each do |artifact|
-          l_demands << [ artifact.name, artifact.version ]
-        end
-      end
-
-      solution = Solve.it!(graph, demands)
-
-      [].tap do |cached_cookbooks|
-        solution.each do |name, version|
-          cached_cookbooks << get_dependency(name).cached_cookbook
-        end
-      end
+      Berkshelf.formatter.msg("building universe...")
+      graph.populate(berksfile.sources)
+      Solve.it!(graph, demand_array)
     end
 
-    # @param [Berkshelf::Dependency, #to_s] dependency
+    # Retrieve the given demand from the resolver
+    #
+    # @param [Berkshelf::Dependency, #to_s] demand
     #   name of the dependency to return
     #
     # @return [Berkshelf::Dependency]
-    def [](dependency)
-      if dependency.is_a?(Berkshelf::Dependency)
-        dependency = dependency.name
-      end
-      @dependencies[dependency.to_s]
+    def [](demand)
+      name = demand.respond_to?(:name) ? demand.name : demand.to_s
+      demands.find { |demand| demand.name == name }
     end
-    alias_method :get_dependency, :[]
+    alias_method :get_demand, :[]
 
-    # @param [CoobookSource, #to_s] dependency
-    #   the dependency to test if the resolver has added
-    def has_dependency?(dependency)
-      !get_dependency(dependency).nil?
+    # Check if the given demand has been added to the resolver
+    #
+    # @param [Berkshelf::Dependency, #to_s] demand
+    #   the demand or the name of the demand to check for
+    def has_demand?(demand)
+      !get_demand(demand).nil?
     end
-
-    private
-
-      attr_reader :downloader
-
-      # @param [Berkshelf::Dependency] dependency
-      #
-      # @return [Boolean]
-      def install_dependency(dependency)
-        cached_cookbook, location = downloader.download(dependency)
-        Berkshelf.formatter.install(dependency.name, cached_cookbook.version, location)
-      end
-
-      # Use the given dependency to create a constraint solution if the dependency has been downloaded or can
-      # be satisfied by a cached cookbook that is already present in the cookbook store.
-      #
-      # @note Git location dependencies which have not yet been downloaded will not be satisfied by a
-      #   cached cookbook from the cookbook store.
-      #
-      # @param [Berkshelf::Dependency] dependency
-      #
-      # @raise [ConstraintNotSatisfied] if the CachedCookbook does not satisfy the version constraint of
-      #   this instance of Location.
-      #   contain a cookbook that satisfies the given version constraint of this instance of
-      #   Berkshelf::Dependency.
-      #
-      # @return [Boolean]
-      def use_dependency(dependency)
-        name       = dependency.name
-        constraint = dependency.version_constraint
-        location   = dependency.location
-
-        if dependency.downloaded?
-          cached = dependency.cached_cookbook
-          location.validate_cached(cached)
-          Berkshelf.formatter.use(name, cached.version, location)
-          true
-        elsif location.is_a?(GitLocation)
-          false
-        else
-          cached = downloader.cookbook_store.satisfy(name, constraint)
-
-          if cached
-            get_dependency(dependency).cached_cookbook = cached
-            Berkshelf.formatter.use(name, cached.version)
-            true
-          else
-            false
-          end
-        end
-      end
   end
 end

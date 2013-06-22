@@ -412,4 +412,6 @@ module Berkshelf
       msg + " #{reason}." unless reason.nil?
     end
   end
+
+  class DuplicateDemand < BerkshelfError; status_code(138); end
 end
