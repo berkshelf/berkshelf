@@ -11,8 +11,6 @@ describe Berkshelf::PathLocation do
     end
   end
 
-
-
   subject { Berkshelf::PathLocation.new('nginx', complacent_constraint, path: path) }
 
   describe '#to_s' do

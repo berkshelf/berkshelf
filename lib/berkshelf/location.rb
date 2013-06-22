@@ -168,7 +168,6 @@ module Berkshelf
   end
 end
 
-require_relative 'locations/chef_api_location'
-require_relative 'locations/git_location'
-require_relative 'locations/github_location'
-require_relative 'locations/site_location'
+Dir["#{File.dirname(__FILE__)}/locations/*.rb"].sort.each do |path|
+  require_relative "locations/#{File.basename(path, '.rb')}"
+end
