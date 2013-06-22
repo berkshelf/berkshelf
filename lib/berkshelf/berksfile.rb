@@ -423,11 +423,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      if self.sha == lockfile.sha
-        local_sources = locked_sources
-      else
-        local_sources = apply_lockfile(sources(options))
-      end
+      local_sources = apply_lockfile(sources(options))
 
       resolver          = resolve(local_sources)
       @cached_cookbooks = resolver[:solution]
