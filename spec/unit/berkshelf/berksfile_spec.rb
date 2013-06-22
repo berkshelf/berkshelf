@@ -397,7 +397,12 @@ describe Berkshelf::Berksfile do
       double('chef-config',
         node_name: 'fake-client',
         client_key: 'client-key',
-        chef_server_url: 'http://configured-chef-server/'
+        chef_server_url: 'http://configured-chef-server/',
+        validation_client_name: 'validator',
+        validation_key: 'validator.pem',
+        cookbook_copyright: 'user',
+        cookbook_email: 'user@example.com',
+        cookbook_license: 'apachev2',
       )
     end
     let(:berkshelf_config) { double('berkshelf-config', ssl: double(verify: true), chef: chef_config) }

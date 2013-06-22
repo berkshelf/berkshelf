@@ -60,28 +60,28 @@ module Berkshelf
 
     attribute 'chef.chef_server_url',
       type: String,
-      default: Berkshelf.chef_config[:chef_server_url]
+      default: Berkshelf.chef_config.chef_server_url
     attribute 'chef.validation_client_name',
       type: String,
-      default: Berkshelf.chef_config[:validation_client_name]
+      default: Berkshelf.chef_config.validation_client_name
     attribute 'chef.validation_key_path',
       type: String,
-      default: Berkshelf.chef_config[:validation_key]
+      default: Berkshelf.chef_config.validation_key
     attribute 'chef.client_key',
       type: String,
-      default: Berkshelf.chef_config[:client_key]
+      default: Berkshelf.chef_config.client_key
     attribute 'chef.node_name',
       type: String,
-      default: Berkshelf.chef_config[:node_name]
+      default: Berkshelf.chef_config.node_name
     attribute 'cookbook.copyright',
       type: String,
-      default: Berkshelf.chef_config[:cookbook_copyright]
+      default: Berkshelf.chef_config.cookbook_copyright
     attribute 'cookbook.email',
       type: String,
-      default: Berkshelf.chef_config[:cookbook_email]
+      default: Berkshelf.chef_config.cookbook_email
     attribute 'cookbook.license',
       type: String,
-      default: Berkshelf.chef_config[:cookbook_license]
+      default: Berkshelf.chef_config.cookbook_license
     attribute 'allowed_licenses',
       type: Array,
       default: Array.new

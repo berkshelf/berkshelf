@@ -73,7 +73,7 @@ describe Berkshelf::GitLocation do
     end
 
     context 'given a git repo that does not contain a cookbook' do
-      let(:fake_remote) { local_git_origin_path_for('not_a_cookbook') }
+      let(:fake_remote) { remote_path('not_a_cookbook') }
       subject { Berkshelf::GitLocation.new('doesnot_exist', complacent_constraint, git: "file://#{fake_remote}.git") }
 
       it 'raises a CookbookNotFound error' do
