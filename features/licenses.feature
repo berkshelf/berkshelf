@@ -87,7 +87,7 @@ Feature: Installing cookbooks with specific licenses
       """
       'mit' is not in your list of allowed licenses
       """
-    And the CLI should exit with the status code for error "LicenseNotAllowed"
+    And the exit status should be "LicenseNotAllowed"
 
   Scenario: With a :path location
     Given the cookbook store has the cookbooks:

@@ -18,7 +18,7 @@ describe Berkshelf::Git do
   end
 
   describe '.clone' do
-    let(:target) { clone_target_for('nginx') }
+    let(:target) { clone_path('nginx') }
 
     it 'clones the repository to the target path' do
       origin_uri = git_origin_for('nginx')
@@ -30,7 +30,7 @@ describe Berkshelf::Git do
   end
 
   describe '.checkout' do
-    let(:repo_path) { clone_target_for('nginx') }
+    let(:repo_path) { clone_path('nginx') }
     let(:repo) {
       origin_uri = git_origin_for('nginx', tags: ['1.0.1', '1.0.2'], branches: ['topic', 'next_topic'])
       git.clone(origin_uri, repo_path)
@@ -48,7 +48,7 @@ describe Berkshelf::Git do
     end
 
     context 'with sha commit id' do
-      let(:ref) { git_sha_for_ref('nginx', '1.0.1') }
+      let(:ref) { sha_for_ref('nginx', '1.0.1') }
 
       it_behaves_like 'able to checkout git ref'
     end
@@ -63,7 +63,7 @@ describe Berkshelf::Git do
         before do
           git.checkout(repo, other_tag)
           Dir.chdir repo_path do
-            run! "echo 'uncommitted change' >> content_file"
+            shell_out "echo 'uncommitted change' >> content_file"
           end
         end
 
@@ -81,7 +81,7 @@ describe Berkshelf::Git do
         before do
           git.checkout(repo, other_branch)
           Dir.chdir repo_path do
-            run! "echo 'uncommitted change' >> content_file"
+            shell_out "echo 'uncommitted change' >> content_file"
           end
         end
 
@@ -91,23 +91,23 @@ describe Berkshelf::Git do
   end
 
   describe '.rev_parse' do
-    let(:repo_path) { clone_target_for('nginx') }
+    let(:repo_path) { clone_path('nginx') }
     before(:each) do |example|
       origin_uri = git_origin_for('nginx', tags: ['1.1.1'])
       Berkshelf::Git.clone(origin_uri, repo_path)
-      Berkshelf::Git.checkout(repo_path, git_sha_for_ref('nginx', '1.1.1'))
+      Berkshelf::Git.checkout(repo_path, sha_for_ref('nginx', '1.1.1'))
     end
 
     it 'returns the ref for HEAD' do
       rev = Berkshelf::Git.rev_parse(repo_path)
-      ref = git_sha_for_ref('nginx', '1.1.1')
+      ref = sha_for_ref('nginx', '1.1.1')
 
       expect(rev).to eql(ref)
     end
   end
 
   describe '.show_ref' do
-    let(:repo_path) { clone_target_for('nginx') }
+    let(:repo_path) { clone_path('nginx') }
     let(:tags) { ['1.0.1'] }
     let(:branches) { ['topic'] }
     let!(:repo) {
@@ -117,14 +117,14 @@ describe Berkshelf::Git do
 
     it 'returns the commit id for the given tag' do
       show = git.show_ref(repo_path, '1.0.1')
-      ref = git_sha_for_ref('nginx', '1.0.1')
+      ref = sha_for_ref('nginx', '1.0.1')
 
       expect(show).to eq(ref)
     end
 
     it 'returns the commit id for the given branch' do
       show = git.show_ref(repo_path, 'topic')
-      ref = git_sha_for_ref('nginx', 'topic')
+      ref = sha_for_ref('nginx', 'topic')
       expect(show).to eq(ref)
     end
 
@@ -141,7 +141,7 @@ describe Berkshelf::Git do
   end
 
   describe '.revision_from_ref' do
-    let(:repo_path) { clone_target_for('nginx') }
+    let(:repo_path) { clone_path('nginx') }
     let(:tags) { ['1.0.1'] }
     let(:branches) { ['topic'] }
     let!(:repo) {
@@ -150,7 +150,7 @@ describe Berkshelf::Git do
     }
 
     context 'with sha commit id' do
-      let(:revision) { git_sha_for_ref('nginx', '1.0.1') }
+      let(:revision) { sha_for_ref('nginx', '1.0.1') }
       it 'returns the passed revision' do
         rev = git.revision_from_ref(repo_path, revision)
         expect(rev).to eq(revision)
@@ -158,7 +158,7 @@ describe Berkshelf::Git do
     end
 
     context 'with tag' do
-      let(:revision) { git_sha_for_ref('nginx', '1.0.1') }
+      let(:revision) { sha_for_ref('nginx', '1.0.1') }
       it 'returns the revision' do
         rev = git.revision_from_ref(repo_path, '1.0.1')
         expect(rev).to eq(revision)
@@ -166,7 +166,7 @@ describe Berkshelf::Git do
     end
 
     context 'with branch' do
-      let(:revision) { git_sha_for_ref('nginx', 'topic') }
+      let(:revision) { sha_for_ref('nginx', 'topic') }
       it 'returns the revision' do
         rev = git.revision_from_ref(repo_path, 'topic')
         expect(rev).to eq(revision)

@@ -2,15 +2,7 @@ require 'aruba/api'
 
 World(Aruba::Api)
 World(Berkshelf::RSpec::ChefAPI)
-
-Given /^I dynamically write to "(.+)" with:$/ do |file, contents|
-  steps %{
-    Given I write to "#{file}" with:
-      """
-      #{ERB.new(contents).result(binding)}
-      """
-  }
-end
+World(Berkshelf::RSpec::FileSystemMatchers)
 
 Given /^a cookbook named "(.*?)"$/ do |name|
   steps %{
@@ -19,40 +11,13 @@ Given /^a cookbook named "(.*?)"$/ do |name|
   }
 end
 
-Given /^I do not have a Berksfile$/ do
-  in_current_dir { FileUtils.rm_f(Berkshelf::DEFAULT_FILENAME) }
-end
-
-Given /^I do not have a Berksfile\.lock$/ do
-  in_current_dir { FileUtils.rm_f("#{Berkshelf::DEFAULT_FILENAME}.lock") }
-end
-
-Given /^I have a default Berkshelf config file$/ do
-  Berkshelf::Config.new.save
-end
-
-Given /^I have a Berkshelf config file containing:$/ do |contents|
-  ::File.open(Berkshelf::Config.path, 'w+') do |f|
-    f.write(contents)
-  end
-end
-
-Given /^I do not have a Berkshelf config file$/ do
-  remove_file Berkshelf::Config.path if ::File.exists? Berkshelf::Config.path
-end
-
-Given /^I do not have a Berkshelf config file at "(.+)"$/ do |path|
-  remove_file(path) if File.exists?(path)
-end
-
-
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|
   write_file(::File.join(cookbook_name, file_name), content)
 end
 
 Given /^the cookbook store has the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, license|
-    generate_cookbook(cookbook_store, name, version, license: license)
+    generate_cookbook(cookbook_store.storage_path, name, version, license: license)
   end
 end
 
@@ -70,12 +35,12 @@ Given /^the cookbook store has the git cookbooks:$/ do |cookbooks|
 end
 
 Given /^the cookbook store contains a cookbook "(.*?)" "(.*?)" with dependencies:$/ do |name, version, dependencies|
-  generate_cookbook(cookbook_store, name, version, dependencies: dependencies.raw)
+  generate_cookbook(cookbook_store.storage_path, name, version, dependencies: dependencies.raw)
 end
 
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    expect(cookbook_store).to have_structure {
+    expect(cookbook_store.storage_path).to have_structure {
       directory "#{name}-#{version}" do
         file "metadata.rb" do
           contains version
@@ -85,9 +50,9 @@ Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   end
 end
 
-Then /^the cookbook store should have the cookbooks installed by git:$/ do |cookbooks|
+Then /^the cookbook store should have the git cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha1|
-    expect(cookbook_store).to have_structure {
+    expect(cookbook_store.storage_path).to have_structure {
       directory "#{name}-#{sha1}" do
         file "metadata.rb" do
           contains version
@@ -99,14 +64,10 @@ end
 
 Then /^the cookbook store should not have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    expect(cookbook_store).to_not have_structure {
+    expect(cookbook_store.storage_path).to_not have_structure {
       directory "#{name}-#{version}"
     }
   end
-end
-
-Then /^I should have the cookbook "(.*?)"$/ do |name|
-  expect(Pathname.new(current_dir).join(name)).to be_cookbook
 end
 
 Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
@@ -284,12 +245,4 @@ Then /^the file "(.*?)" in the directory "(.*?)" should not contain:$/ do |file_
       contains content
     end
   }
-end
-
-Then /^the current directory should have the following files:$/ do |files|
-  check_file_presence(files.raw.map{|file_row| file_row[0]}, true)
-end
-
-Then /^the current directory should not have the following files:$/ do |files|
-  check_file_presence(files.raw.map{|file_row| file_row[0]}, false)
 end

@@ -11,8 +11,7 @@ Feature: Vendoring cookbooks to a specific path
       site :opscode
       cookbook 'fake', '1.0.0'
       """
-    When I run the install command with flags:
-      | --path vendor/cookbooks |
+    When I successfully run `berks install --path vendor/cookbooks`
     Then the following directories should exist:
       | vendor/cookbooks          |
       | vendor/cookbooks/fake |

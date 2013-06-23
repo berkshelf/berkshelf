@@ -113,7 +113,7 @@ module Berkshelf
     private
 
       def berkshelf_config
-        Berkshelf::Config.instance
+        Berkshelf.config
       end
 
       # Read the cookbook name from the metadata.rb
@@ -135,8 +135,8 @@ module Berkshelf
       #
       # @return [nil]
       def validate_configuration
-        unless Config.instance.valid?
-          raise InvalidConfiguration.new Config.instance.errors
+        unless Berkshelf.config.valid?
+          raise InvalidConfiguration.new Berkshelf.config.errors
         end
       end
 

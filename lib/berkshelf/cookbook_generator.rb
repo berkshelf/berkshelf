@@ -45,15 +45,15 @@ module Berkshelf
 
     class_option :license,
       type: :string,
-      default: Berkshelf::Config.instance.cookbook.license
+      default: Berkshelf.config.cookbook.license
 
     class_option :maintainer,
       type: :string,
-      default: Berkshelf::Config.instance.cookbook.copyright
+      default: Berkshelf.config.cookbook.copyright
 
     class_option :maintainer_email,
       type: :string,
-      default: Berkshelf::Config.instance.cookbook.email
+      default: Berkshelf.config.cookbook.email
 
     def generate
       empty_directory target.join('files/default')

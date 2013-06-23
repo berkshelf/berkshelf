@@ -3,7 +3,7 @@ require 'json'
 
 module Berkshelf::RSpec
   module ChefServer
-    PORT = 8889
+    PORT = 4000
 
     class << self
       def clear_request_log
@@ -38,6 +38,10 @@ module Berkshelf::RSpec
 
       def running?
         @server && @server.running?
+      end
+
+      def reset!
+        @server && @server.clear_data
       end
     end
 

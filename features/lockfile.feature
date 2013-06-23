@@ -92,9 +92,9 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       cookbook 'fake', '0.0.0', path: './fake'
       """
-    And I dynamically write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
-      cookbook 'fake', :locked_version => '0.0.0', path: '<%= File.expand_path('tmp/aruba/fake') %>'
+      cookbook 'fake', :locked_version => '0.0.0', path: '../../tmp/aruba/fake'
       """
     When I successfully run `berks install`
     Then the output should warn about the old lockfile format
@@ -475,7 +475,7 @@ Feature: Creating and reading the Berkshelf lockfile
 
       Try running `berks update berkshelf-cookbook-fixture, which will try to find 'berkshelf-cookbook-fixture' matching '~> 1.3.0'
       """
-    And the CLI should exit with the status code for error "OutdatedDependency"
+    And the exit status should be "OutdatedDependency"
 
   Scenario: Installing when the Lockfile is empty
     Given the cookbook store has the cookbooks:
@@ -508,5 +508,5 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       Error reading the Berkshelf lockfile `Berksfile.lock` (JSON::ParserError)
       """
-    And the CLI should exit with the status code for error "LockfileParserError"
+    And the exit status should be "LockfileParserError"
 
