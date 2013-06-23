@@ -60,7 +60,7 @@ You are encouraged to keep project-specific configuration in the `$PWD/.berkshel
 SSL Errors
 ----------
 
-If you have trouble getting Berkshelf to successfully talk to an SSL Chef server, you can try making sure you
+If you have trouble getting Berkshelf to successfully talk to an SSL Chef Server, you can try making sure you
 have a certificate bundle available to your shell. `export SSL_CERT_FILE=...path/to/cert/file...`
 
 If you need to disable SSL, you can in `~/.berkshelf/config.json` like so:

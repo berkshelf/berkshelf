@@ -9,7 +9,7 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
       """
       Cookbook 'fake' is not in the Berkshelf shelf
       """
-    And the CLI should exit with the status code for error "CookbookNotFound"
+    And the exit status should be "CookbookNotFound"
 
   Scenario: With cookbooks in the store
     Given the cookbook store has the cookbooks:
@@ -63,7 +63,7 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
       """
       Cookbook 'fake' (1.2.3) is not in the Berkshelf shelf
       """
-    And the CLI should exit with the status code for error "CookbookNotFound"
+    And the exit status should be "CookbookNotFound"
 
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:

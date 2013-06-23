@@ -55,4 +55,4 @@ Feature: Displaying information about a cookbook defined by a Berksfile
     Given an empty file named "Berksfile"
     When I run `berks show fake`
     Then the output should contain "Cookbook 'fake' is not installed by your Berksfile"
-    And the CLI should exit with the status code for error "CookbookNotFound"
+    And the exit status should be "CookbookNotFound"

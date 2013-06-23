@@ -65,8 +65,10 @@ Feature: install cookbooks from a Berksfile
     And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a path location
-    Given a Berksfile with path location sources to fixtures:
-      | example_cookbook | example_cookbook-0.5.0 |
+    Given I write to "Berksfile" with:
+      """
+      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+      """
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -80,7 +82,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the cookbooks installed by git:
+    Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     And the output should contain:
       """
@@ -135,7 +137,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the cookbooks installed by git:
+    Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
@@ -149,7 +151,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the cookbooks installed by git:
+    Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
@@ -163,7 +165,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the cookbooks installed by git:
+    Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
@@ -177,7 +179,7 @@ Feature: install cookbooks from a Berksfile
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v1.0.0", protocol: "<protocol>"
       """
     When I successfully run `berks install`
-    Then the cookbook store should have the cookbooks installed by git:
+    Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | b4f968c9001ad8de30f564a2107fab9cfa91f771 |
     And the output should contain:
       """
@@ -247,14 +249,12 @@ Feature: install cookbooks from a Berksfile
     And the exit status should be 0
 
   Scenario: running install with no Berksfile or Berksfile.lock
-    Given I do not have a Berksfile
-    And I do not have a Berksfile.lock
     When I run `berks install`
     Then the output should contain:
       """
       No Berksfile or Berksfile.lock found at:
       """
-    And the CLI should exit with the status code for error "BerksfileNotFound"
+    And the exit status should be "BerksfileNotFound"
 
   Scenario: running install when the Cookbook is not found on the remote site
     Given I write to "Berksfile" with:
@@ -266,7 +266,7 @@ Feature: install cookbooks from a Berksfile
       """
       Cookbook 'doesntexist' not found in any of the default locations
       """
-    And the CLI should exit with the status code for error "CookbookNotFound"
+    And the exit status should be "CookbookNotFound"
 
   Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
     Given I write to "Berksfile" with:
@@ -278,7 +278,7 @@ Feature: install cookbooks from a Berksfile
       """
       '/something/on/disk' is not a valid Git URI
       """
-    And the CLI should exit with the status code for error "InvalidGitURI"
+    And the exit status should be "InvalidGitURI"
 
   Scenario: installing when there are sources with duplicate names defined in the same group
     Given I write to "Berksfile" with:
@@ -291,7 +291,7 @@ Feature: install cookbooks from a Berksfile
       """
       Berksfile contains multiple entries named 'berkshelf-cookbook-fixture'. Use only one, or put them in different groups.
       """
-    And the CLI should exit with the status code for error "DuplicateDependencyDefined"
+    And the exit status should be "DuplicateDependencyDefined"
 
   Scenario: When a version constraint in the metadata exists, but does not satisfy
     Given a cookbook named "fake"
@@ -329,20 +329,20 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing when a git source defines a branch that does not satisfy the version constraint
     Given I write to "Berksfile" with:
       """
-      cookbook "berkshelf-cookbook-fixture", "= 1.0.0", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
+      cookbook "berkshelf-cookbook-fixture", "1.0.0", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I run `berks install`
-    Then the output should match multiline:
+    Then the output should contain:
       """
-      The cookbook downloaded from git: 'git://github\.com/RiotGames/berkshelf-cookbook-fixture\.git' with branch: 'v0\.2\.0' at ref: '.+':
-        berkshelf-cookbook-fixture \(.+\)
+      The cookbook downloaded from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee':
+        berkshelf-cookbook-fixture (0.2.0)
 
       does not satisfy the version constraint:
-        berkshelf-cookbook-fixture \(= 1.0.0\)
+        berkshelf-cookbook-fixture (= 1.0.0)
 
       This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`
       """
-    And the CLI should exit with the status code for error "CookbookValidationFailure"
+    And the exit status should be "CookbookValidationFailure"
 
   Scenario: when a git location source is defined and a cookbook of the same name is already cached in the cookbook store
     Given I write to "Berksfile" with:
@@ -368,15 +368,14 @@ Feature: install cookbooks from a Berksfile
       """
       Invalid options for Cookbook Source: 'whatisthis', 'anotherwat'.
       """
-    And the CLI should exit with the status code for error "InternalError"
+    And the exit status should be "InternalError"
 
-  @chef_server
   Scenario: with a cookbook definition containing a chef_api source location
     Given I write to "Berksfile" with:
       """
       cookbook 'berkshelf-cookbook-fixture', '1.0.0', chef_api: :config
       """
-    And the Chef server has cookbooks:
+    And the Chef Server has cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 |
     When I successfully run `berks install`
     Then the output should contain:
@@ -406,13 +405,12 @@ Feature: install cookbooks from a Berksfile
       """
       cookbook 'berkshelf-cookbook-fixture', chef_api: :config
       """
-    When I run the install command with flags:
-      | -c /tmp/notthere.lol |
+    When I run `berks install --config /tmp/notthere.lol`
     Then the output should contain:
       """
       No Berkshelf config file found at: '/tmp/notthere.lol'!
       """
-    And the CLI should exit with the status code for error "ConfigNotFound"
+    And the exit status should be "ConfigNotFound"
 
   Scenario: with a git error during download
     Given I write to "Berksfile" with:
@@ -425,7 +423,7 @@ Feature: install cookbooks from a Berksfile
       """
       Failed to download 'doesntexist' from git:
       """
-      And the CLI should exit with the status code for error "CookbookNotFound"
+      And the exit status should be "CookbookNotFound"
 
   Scenario: invalid site symbol
     Given I write to "Berksfile" with:

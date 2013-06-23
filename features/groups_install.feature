@@ -67,4 +67,4 @@ Feature: Installing specific groups
       """
       Cannot specify both :except and :only
       """
-    And the CLI should exit with the status code for error "ArgumentError"
+    And the exit status should be "ArgumentError"

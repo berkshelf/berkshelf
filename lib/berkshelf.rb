@@ -50,8 +50,28 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
+      @berkshelf_path ||= ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
+
+    # Programatically set the berkshelf path.
+    #
+    # @param [#to_s] path
+    #   the path to the Berkshelf
+    def berkshelf_path=(path)
+      @berkshelf_path = File.expand_path(path.to_s)
+    end
+
+    # The Berkshelf configuration.
+    #
+    # @return [Berkshelf::Config]
+    def config
+      @config ||= Berkshelf::Config.instance
+    end
+
+    # Set the Berkshelf Config.
+    #
+    # @param [Berkshelf::Config]
+    attr_writer :config
 
     # The Chef configuration file.
     #
@@ -59,6 +79,11 @@ module Berkshelf
     def chef_config
       @chef_config ||= Berkshelf::Chef::Config.load
     end
+
+    # Set the Chef Config.
+    #
+    # @param [Berkshelf::Chef::Config]
+    attr_writer :chef_config
 
     # Set the Chef configuration file.
     #
@@ -140,7 +165,6 @@ require_relative 'berkshelf/location'
 require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
-require_relative 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
 

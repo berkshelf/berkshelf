@@ -2,35 +2,26 @@ require 'buff/config/json'
 
 module Berkshelf
   class Config < Buff::Config::JSON
-    LOCATIONS = [
-      File.join('.', '.berkshelf', 'config.json').freeze,
-      File.join('.',  'berkshelf', 'config.json').freeze,
-      File.join('.',  'berkshelf-config.json').freeze,
-      File.join('.',  'config.json').freeze
-    ].freeze
-
     class << self
       # @return [String]
-      def default_location
+      def store_location
         File.join(Berkshelf.berkshelf_path, 'config.json')
       end
 
       # @return [String]
-      def path
-        @path ||= begin
-          location = LOCATIONS.find do |file|
-            path = File.expand_path(file)
-            File.exists?(path)
-          end
+      def local_location
+        ENV['BERKSHELF_CONFIG'] || File.join('.', '.berkshelf', 'config.json')
+      end
 
-          File.expand_path(location || default_location)
-        end
+      # @return [String]
+      def path
+        path = File.exists?(local_location) ? local_location : store_location
+        File.expand_path(path)
       end
 
       # @param [String] new_path
       def set_path(new_path)
         @instance = nil
-        @path     = File.expand_path(new_path)
       end
 
       # @return [String, nil]
@@ -69,28 +60,28 @@ module Berkshelf
 
     attribute 'chef.chef_server_url',
       type: String,
-      default: Berkshelf.chef_config[:chef_server_url]
+      default: Berkshelf.chef_config.chef_server_url
     attribute 'chef.validation_client_name',
       type: String,
-      default: Berkshelf.chef_config[:validation_client_name]
+      default: Berkshelf.chef_config.validation_client_name
     attribute 'chef.validation_key_path',
       type: String,
-      default: Berkshelf.chef_config[:validation_key]
+      default: Berkshelf.chef_config.validation_key
     attribute 'chef.client_key',
       type: String,
-      default: Berkshelf.chef_config[:client_key]
+      default: Berkshelf.chef_config.client_key
     attribute 'chef.node_name',
       type: String,
-      default: Berkshelf.chef_config[:node_name]
+      default: Berkshelf.chef_config.node_name
     attribute 'cookbook.copyright',
       type: String,
-      default: Berkshelf.chef_config[:cookbook_copyright]
+      default: Berkshelf.chef_config.cookbook_copyright
     attribute 'cookbook.email',
       type: String,
-      default: Berkshelf.chef_config[:cookbook_email]
+      default: Berkshelf.chef_config.cookbook_email
     attribute 'cookbook.license',
       type: String,
-      default: Berkshelf.chef_config[:cookbook_license]
+      default: Berkshelf.chef_config.cookbook_license
     attribute 'allowed_licenses',
       type: Array,
       default: Array.new

@@ -54,12 +54,11 @@ Feature: --format json
       }
       """
 
-  @chef_server
   Scenario: JSON output when running the upload command
-    Given a Berksfile with path location sources to fixtures:
-      | example_cookbook | example_cookbook-0.5.0 |
-    And the Chef server does not have the cookbooks:
-      | example_cookbook | 0.5.0 |
+    Given I write to "Berksfile" with:
+      """
+      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+      """
     When I successfully run `berks upload --format json`
     Then the output should contain JSON:
       """
