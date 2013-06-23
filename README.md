@@ -4,6 +4,7 @@ Berkshelf
 [![Build Status](https://travis-ci.org/RiotGames/berkshelf.png?branch=master)](https://travis-ci.org/RiotGames/berkshelf)
 [![Dependency Status](https://gemnasium.com/RiotGames/berkshelf.png)](https://gemnasium.com/RiotGames/berkshelf)
 [![Code Climate](https://codeclimate.com/github/RiotGames/berkshelf.png)](https://codeclimate.com/github/RiotGames/berkshelf)
+[![Coverage Status](https://coveralls.io/repos/RiotGames/berkshelf/badge.png?branch=master)](https://coveralls.io/r/RiotGames/berkshelf?branch=master)
 
 Manage a Cookbook or an Application's Cookbook dependencies
 

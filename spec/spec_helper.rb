@@ -175,6 +175,9 @@ Spork.prefork do
 end
 
 Spork.each_run do
+  require 'coveralls'
+  Coveralls.wear!
+
   require 'berkshelf'
 
   module Berkshelf
