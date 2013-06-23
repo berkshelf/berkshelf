@@ -7,6 +7,37 @@ require_relative 'commands/test_command'
 
 module Berkshelf
   class Cli < Thor
+    # This is the main entry point for the CLI. It exposes the method {#execute!} to
+    # start the CLI.
+    #
+    # @note the arity of {#initialize} and {#execute!} are extremely important for testing purposes. It
+    #   is a requirement to perform in-process testing with Aruba. In process testing is much faster
+    #   than spawning a new Ruby process for each test.
+    class Runner
+      def initialize(argv, stdin = STDIN, stdout = STDOUT, stderr = STDERR, kernel = Kernel)
+        @argv, @stdin, @stdout, @stderr, @kernel = argv, stdin, stdout, stderr, kernel
+      end
+
+      def execute!
+        begin
+          $stdin  = @stdin
+          $stdout = @stdout
+          $stderr = @stderr
+
+          Berkshelf::Cli.start(@argv)
+          @kernel.exit(0)
+        rescue Berkshelf::BerkshelfError => e
+          Berkshelf.ui.error e
+          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+          @kernel.exit(e.status_code)
+        rescue Ridley::Errors::RidleyError => e
+          Berkshelf.ui.error "#{e.class} #{e}"
+          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+          @kernel.exit(47)
+        end
+      end
+    end
+
     class << self
       def dispatch(meth, given_args, given_opts, config)
         unless (given_args & ['-h', '--help']).empty?

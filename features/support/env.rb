@@ -6,7 +6,7 @@ Spork.prefork do
   require 'aruba/spawn_process'
   require 'cucumber/rspec/doubles'
 
-  require 'berkshelf/main'
+  require 'berkshelf/cli'
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
@@ -17,8 +17,8 @@ Spork.prefork do
   at_exit { Berkshelf::RSpec::ChefServer.stop }
 
   Before do
-    Aruba::InProcess.main_class = Berkshelf::Main
-    Aruba.process = Aruba::InProcess
+    Aruba::InProcess.main_class = Berkshelf::Cli::Runner
+    Aruba.process               = Aruba::InProcess
 
     stub_kitchen!
     purge_store_and_configs!
@@ -48,5 +48,5 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  require 'berkshelf/main'
+  require 'berkshelf/cli'
 end
