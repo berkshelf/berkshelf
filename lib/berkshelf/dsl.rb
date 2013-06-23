@@ -5,11 +5,11 @@ module Berkshelf
     #
     # @note
     #   specifying the symbol :opscode as the value of the site default
-    #   location is an alias for the latest API of the Opscode Community Site
+    #   location is an alias for the latest API of the Opscode Community Site.
     #
     # @example
     #   site :opscode
-    #   site 'http://cookbooks.opscode.com/api/v1/cookbooks'
+    #   site "http://cookbooks.opscode.com/api/v1/cookbooks"
     #
     # @param [String, Symbol] value
     #
@@ -24,12 +24,12 @@ module Berkshelf
     # @note
     #   specifying the symbol :config as the value of the chef_api default
     #   location will attempt to use the contents of your Berkshelf
-    #    configuration to find the Chef API to interact with
+    #   configuration to find the Chef API to interact with.
     #
     # @example using the symbol :config to add a Chef API default location
     #   chef_api :config
     #
-    # @example using a URL, node_name, and client_key to add a Chef API default location
+    # @example using a URL, node_name, and client_key to add a Chef API defaultlocation
     #   chef_api 'https://api.opscode.com/organizations/vialstudios', node_name: 'reset',
     #     client_key: '/Users/reset/.chef/knife.rb'
     #
@@ -55,6 +55,8 @@ module Berkshelf
 
       metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
       metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
+
+      shaable_contents << File.read(metadata_path)
 
       name = metadata.name.presence || File.basename(File.expand_path(path))
 
@@ -148,11 +150,12 @@ module Berkshelf
 
       options[:group] = Array(options[:group])
 
-      if @active_group
-        options[:group] += @active_group
+      if @@active_group
+        options[:group] += @@active_group
       end
 
       add_dependency(name, constraint, options)
     end
+
   end
 end
