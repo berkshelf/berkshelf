@@ -376,8 +376,8 @@ module Berkshelf
     #    sources are considered to be "unlocked". If a lockfile is specified, a
     #    definition is created via the following algorithm:
     #
-    #    - For each source, see if there exists a locked version
-    #      that still satisfies the version constraint in the Berksfile. If
+    #    - For each source, see if there exists a locked version that still
+    #      satisfies the version constraint in the Berksfile. If
     #      there exists such a source, remove it from the list of unlocked
     #      sources. If not, then either a version constraint has changed,
     #      or a new source has been added to the Berksfile. In the event that
