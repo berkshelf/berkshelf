@@ -63,7 +63,6 @@ Feature: Installing specific groups
     And the output should not contain "Using notme (1.0.0)"
     And the exit status should be 0
 
-
   Scenario: Using the --only option
     Given the cookbook store has the cookbooks:
       | takeme   | 1.0.0 |
