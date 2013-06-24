@@ -74,7 +74,7 @@ module Berkshelf
     #   the list of sources to update
     # @option options [String] :sha
     #   the sha of the Berksfile updating the sources
-    def update(sources, options = {})
+    def update(sources)
       reset_sources!
       sources.each { |source| append(source) }
       save
