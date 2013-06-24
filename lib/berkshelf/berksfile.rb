@@ -376,20 +376,14 @@ module Berkshelf
     #    sources are considered to be "unlocked". If a lockfile is specified, a
     #    definition is created via the following algorithm:
     #
-    #    - Compare the SHA of the current sources (as JSON) with the last-known
-    #      SHA of the sources.
-    #    - If the SHAs match, the sources have not been updated, so we can rely
-    #      solely on the locked ones.
-    #    - If the SHAs don't match, then the sources have diverged from the
-    #      lockfile, which means some sources are outdated. For each unlocked
-    #      source, see if there exists a locked version that still satisfies
-    #      the version constraint in the Berksfile. If there exists such a
-    #      source, remove it from the list of unlocked sources. If not, then
-    #      either a version constraint has changed, or a new source has been
-    #      added to the Berksfile. In the event that a locked_source exists,
-    #      but it no longer satisfies the constraint, this method will raise
-    #      a {Berkshelf::OutdatedCookbookSource}, and inform the user to run
-    #      <tt>berks update COOKBOOK</tt> to remedy the issue.
+    #    - For each source, see if there exists a locked version
+    #      that still satisfies the version constraint in the Berksfile. If
+    #      there exists such a source, remove it from the list of unlocked
+    #      sources. If not, then either a version constraint has changed,
+    #      or a new source has been added to the Berksfile. In the event that
+    #      a locked_source exists, but it no longer satisfies the constraint,
+    #      this method will raise a {Berkshelf::OutdatedCookbookSource}, and
+    #      inform the user to run <tt>berks update COOKBOOK</tt> to remedy the issue.
     #    - Remove any locked sources that no longer exist in the Berksfile
     #      (i.e. a cookbook source was removed from the Berksfile).
     #
