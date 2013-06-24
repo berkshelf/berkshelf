@@ -72,7 +72,7 @@ module Berkshelf
     #
     # @param [Array<Berkshelf::Dependency>] dependencies
     #   the list of dependencies to update
-    def update(dependencies, options = {})
+    def update(dependencies)
       reset_dependencies!
 
       dependencies.each { |dependency| append(dependency) }
