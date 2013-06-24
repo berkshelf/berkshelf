@@ -78,7 +78,7 @@ module Berkshelf
           return [cached, location]
         rescue => e
           raise if e.kind_of?(CookbookValidationFailure)
-          Berkshelf.formatter.error "Failed to download '#{dependency.name}' from #{dependency.location}"
+          Berkshelf.formatter.error "Failed to download '#{dependency.name}' from #{dependency.location.info}"
         end
       else
         locations.each do |loc|
