@@ -23,6 +23,8 @@ Usage
 -----
 See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
+**Note to Ruby 1.9.2 Users**: There are known issues with Ruby 1.9.2 and Celluloid. If you encounter problems, please upgrade to Ruby 1.9.3 or Ruby 2.0.
+
 Bash Completion
 ---------------
 There is a [berkshelf bash completion script](https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh). If you're using homebrew, you can install it like this:
