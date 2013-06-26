@@ -23,6 +23,14 @@ Usage
 -----
 See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
+Supported Platforms
+-------------------
+Berkshelf is tested on Ruby 1.9.3, 2.0.0, and JRuby 1.6+.
+
+Ruby 1.9 mode is required on all interpreters.
+
+Ruby 1.9.1 and 1.9.2 are not officially supported. If you encounter problems, please upgrade to Ruby 2.0 or 1.9.3.
+
 Bash Completion
 ---------------
 There is a [berkshelf bash completion script](https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh). If you're using homebrew, you can install it like this:
