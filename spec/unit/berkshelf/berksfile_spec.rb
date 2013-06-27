@@ -314,17 +314,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#add_location' do
-    let(:type) { :site }
-    let(:value) { double('value') }
-    let(:options) { double('options') }
-
-    it 'delegates :add_location to the downloader' do
-      subject.downloader.should_receive(:add_location).with(type, value, options)
-      subject.add_location(type, value, options)
-    end
-  end
-
   describe '#upload' do
     let(:options) { Hash.new }
     let(:chef_config) do

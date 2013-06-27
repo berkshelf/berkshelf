@@ -35,21 +35,14 @@ module Berkshelf
     #   The path on disk to the file representing this instance of Berksfile
     attr_reader :filepath
 
-    # @return [Berkshelf::Downloader]
-    attr_reader :downloader
-
     # @return [Array<Berkshelf::CachedCookbook>]
     attr_reader :cached_cookbooks
-
-    def_delegator :downloader, :add_location
-    def_delegator :downloader, :locations
 
     # @param [String] path
     #   path on disk to the file containing the contents of this Berksfile
     def initialize(path)
       @filepath         = path
       @dependencies     = Hash.new
-      @downloader       = Downloader.new(Berkshelf.cookbook_store)
       @cached_cookbooks = nil
       @sources          = Array.new
     end
