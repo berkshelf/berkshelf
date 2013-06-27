@@ -218,9 +218,36 @@ module Berkshelf
       @dependencies.has_key?(dependency.to_s)
     end
 
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any dependencies marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any dependencies marked as a member of the
+    #   group to be installed and all others to be ignored
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve dependencies for
+    #
     # @return [Array<Berkshelf::Dependency>]
-    def dependencies
-      @dependencies.values
+    def dependencies(options = {})
+      cookbooks = Array(options[:cookbooks])
+      except    = Array(options[:except]).collect(&:to_sym)
+      only      = Array(options[:only]).collect(&:to_sym)
+
+      case
+      when !except.empty? && !only.empty?
+        raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only'
+      when !cookbooks.empty?
+        if !except.empty? && !only.empty?
+          Berkshelf.ui.warn 'Cookbooks were specified, ignoring :except and :only'
+        end
+        @dependencies.values.select { |dependency| cookbooks.include?(dependency.name) }
+      when !except.empty?
+        @dependencies.values.select { |dependency| (except & dependency.groups).empty? }
+      when !only.empty?
+        @dependencies.values.select { |dependency| !(only & dependency.groups).empty? }
+      else
+        @dependencies.values
+      end
     end
 
     # Find a dependency defined in this berksfile by name.
@@ -295,9 +322,8 @@ module Berkshelf
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
-    # @option options [String] :path
-    #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
-    #   is a technique for packaging all cookbooks resolved by a Berksfile.
+    # @option cookbooks [String, Array] :cookbooks
+    #   Names of the cookbooks to retrieve dependencies for
     #
     # @raise [Berkshelf::OutdatedDependency]
     #   if the lockfile constraints do not satisfy the Berskfile constraints

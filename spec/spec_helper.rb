@@ -36,13 +36,16 @@ Spork.prefork do
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
       Berkshelf::RSpec::ChefServer.start
       Berkshelf::RSpec::BerksAPIServer.start
-      Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
       Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end
 
     config.after(:suite) do
       Berkshelf.ui.unmute!
+    end
+
+    config.before(:all) do
+      Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
     end
 
     config.before(:each) do

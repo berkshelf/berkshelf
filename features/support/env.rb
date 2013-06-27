@@ -13,10 +13,10 @@ Spork.prefork do
   World(Berkshelf::RSpec::PathHelpers)
   World(Berkshelf::RSpec::Kitchen)
 
-  Berkshelf::RSpec::ChefServer.start
   at_exit { Berkshelf::RSpec::ChefServer.stop }
 
   Before do
+    Berkshelf::RSpec::ChefServer.start
     Aruba::InProcess.main_class = Berkshelf::Cli::Runner
     Aruba.process               = Aruba::InProcess
 

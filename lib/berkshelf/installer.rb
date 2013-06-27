@@ -17,6 +17,7 @@ module Berkshelf
       berksfile.sources.map(&:universe)
     end
 
+    # @option options [Array<String>, String] cookbooks
     def run(options = {})
       dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only))
 
@@ -99,28 +100,6 @@ module Berkshelf
         # Update to the new constraint (it might have changed, but still be satisfied)
         locked_dependency.version_constraint = dependency.version_constraint
         locked_dependency
-      end
-
-      def filter_dependencies(options = {})
-        cookbooks = Array(options[:cookbooks])
-        except    = Array(options[:except]).collect(&:to_sym)
-        only      = Array(options[:only]).collect(&:to_sym)
-
-        case
-        when !except.empty? && !only.empty?
-          raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only'
-        when !cookbooks.empty?
-          if !except.empty? && !only.empty?
-            Berkshelf.ui.warn 'Cookbooks were specified, ignoring :except and :only'
-          end
-          berksfile.dependencies.select { |dependency| cookbooks.include?(dependency.name) }
-        when !except.empty?
-          berksfile.dependencies.select { |dependency| (except & dependency.groups).empty? }
-        when !only.empty?
-          berksfile.dependencies.select { |dependency| !(only & dependency.groups).empty? }
-        else
-          berksfile.dependencies
-        end
       end
 
       # Merge the locked dependencies against the given dependencies.

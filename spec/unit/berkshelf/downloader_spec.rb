@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Berkshelf::Downloader do
-  describe "#download"
+  describe "#download" do
     pending
   end
 

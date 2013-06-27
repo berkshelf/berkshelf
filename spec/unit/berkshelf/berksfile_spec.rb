@@ -125,45 +125,32 @@ describe Berkshelf::Berksfile do
       expect(subject.sources.map(&:to_s)).to include(new_source)
     end
 
-    it "converts the string to a SourceURI" do
+    it "converts the string to a Source" do
       subject.source(new_source)
       subject.sources.each do |source|
-        expect(source).to be_a(Berkshelf::SourceURI)
+        expect(source).to be_a(Berkshelf::Source)
       end
-    end
-
-    it "adds the source in a position before the default sources" do
-      subject.source(new_source)
-      expect(subject.sources[0].to_s).to eql(new_source)
     end
 
     it "adds each source in order they appear" do
       subject.source(new_source)
       subject.source("http://berks.other.com")
-      expect(subject.sources[0].to_s).to eql(new_source)
-      expect(subject.sources[1].to_s).to eql("http://berks.other.com")
+      expect(subject.sources[0].to_s).to eq(new_source)
+      expect(subject.sources[1].to_s).to eq("http://berks.other.com")
     end
 
     it "does not add duplicate entries" do
       subject.source(new_source)
       subject.source(new_source)
-      expect(subject.sources[0].to_s).to eql(new_source)
-      expect(subject.sources[1].to_s).to_not eql(new_source)
+      expect(subject.sources[0].to_s).to eq(new_source)
+      expect(subject.sources[1].to_s).to_not eq(new_source)
     end
 
-    context "when a default source is explicitly specified" do
-      let(:default_source) { described_class.default_sources.first }
-
-      it "does not appear twice" do
-        subject.source(default_source)
-        expect(subject.sources).to have(described_class.default_sources.length).items
-      end
-
-      it "does not appear out of the specified order" do
-        subject.source(default_source)
-        subject.source("http://berks.other.com")
-        expect(subject.sources[0]).to eql(default_source)
-        expect(subject.sources[1].to_s).to eql("http://berks.other.com")
+    context "when a source is explicitly specified" do
+      it "does not include the default sources in the list" do
+        subject.source(new_source)
+        expect(subject.sources).to have(1).item
+        expect(subject.sources).to_not include(described_class.default_sources)
       end
     end
 
@@ -181,9 +168,9 @@ describe Berkshelf::Berksfile do
       expect(subject.sources).to be_a(Array)
     end
 
-    it "contains a collection of SourceURIs" do
+    it "contains a collection of Berkshelf::Source" do
       subject.sources.each do |source|
-        expect(source).to be_a(Berkshelf::SourceURI)
+        expect(source).to be_a(Berkshelf::Source)
       end
     end
 
@@ -289,28 +276,62 @@ describe Berkshelf::Berksfile do
   describe '#add_dependency' do
     let(:name) { 'cookbook_one' }
     let(:constraint) { '= 1.2.0' }
-    let(:location) { { site: 'http://site' } }
+    let(:options) { Hash.new }
 
     before(:each) do
-      subject.add_dependency(name, constraint, location)
+      subject.add_dependency(name, constraint, options)
     end
 
-    it 'adds new cookbook dependency to the list of dependencies' do
+    let(:dependency) { subject.dependencies.first }
+
+    it 'adds new dependency to the list of dependencies' do
       expect(subject.dependencies).to have(1).dependency
     end
 
-    it "adds a cookbook dependency with a 'name' of the given name" do
-      expect(subject.dependencies.first.name).to eq(name)
+    it "is a Berkshelf::Dependency" do
+      expect(dependency).to be_a(Berkshelf::Dependency)
     end
 
-    it "adds a cookbook dependency with a 'version_constraint' of the given constraint" do
-      expect(subject.dependencies.first.version_constraint.to_s).to eq(constraint)
+    it "has a name matching the given name" do
+      expect(dependency.name).to eq(name)
+    end
+
+    it "has a version_constraint matching the given constraint" do
+      expect(dependency.version_constraint.to_s).to eq(constraint)
     end
 
     it 'raises DuplicateDependencyDefined if multiple dependencies of the same name are found' do
       expect {
         subject.add_dependency(name)
       }.to raise_error(Berkshelf::DuplicateDependencyDefined)
+    end
+
+    it "has a nil location if no location options are provided" do
+      expect(dependency.location).to be_nil
+    end
+
+    context "when given the :git option" do
+      let(:options) { { git: "git@github.com:RiotGames/berkshelf.git" } }
+
+      it "has a GitLocation location" do
+        expect(dependency.location).to be_a(Berkshelf::GitLocation)
+      end
+    end
+
+    context "when given the :github option" do
+      let(:options) { { github: "RiotGames/berkshelf" } }
+
+      it "has a GithubLocation location" do
+        expect(dependency.location).to be_a(Berkshelf::GithubLocation)
+      end
+    end
+
+    context "when given the :path option" do
+      let(:options) { { path: fixtures_path.join('cookbooks', 'example_cookbook') } }
+
+      it "has a PathLocation location" do
+        expect(dependency.location).to be_a(Berkshelf::PathLocation)
+      end
     end
   end
 
@@ -404,7 +425,7 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#apply' do
+  describe "#apply" do
     let(:env_name)    { 'berkshelf-test' }
     let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
     let(:client_name) { 'reset' }
@@ -413,7 +434,7 @@ describe Berkshelf::Berksfile do
 
     before do
       subject.stub(:ridley_connection).and_return(ridley)
-      subject.add_dependency('nginx', '>= 0.1.2', chef_api: server_url, node_name: client_name, client_key: client_key)
+      subject.add_dependency('nginx', '>= 0.1.2')
       subject.stub(install: nil)
     end
 

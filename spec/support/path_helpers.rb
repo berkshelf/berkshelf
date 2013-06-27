@@ -43,7 +43,13 @@ module Berkshelf
         @_chef_config ||= Berkshelf::Chef::Config.from_file(chef_config_path)
       end
 
+      def clean_tmp_path
+        FileUtils.rm_rf(tmp_path)
+        FileUtils.mkdir_p(tmp_path)
+      end
+
       private
+
         # The "root" of berkshelf
         #
         # @return [Pathname]

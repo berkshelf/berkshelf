@@ -1,5 +1,7 @@
 module Berkshelf
   class Source
+    include Comparable
+
     # @return [Berkshelf::SourceURI]
     attr_reader :uri
 
@@ -23,6 +25,15 @@ module Berkshelf
     # @param [String] name
     def versions(name)
       universe.select { |cookbook| cookbook.name == name }
+    end
+
+    def to_s
+      uri.to_s
+    end
+
+    def ==(other)
+      return false unless other.is_a?(self.class)
+      uri == other.uri
     end
 
     private
