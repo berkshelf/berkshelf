@@ -1,14 +1,13 @@
 module Berkshelf
-  class SiteLocation
+  class SiteLocation < Location::Base
     extend Forwardable
-    include Location
 
     set_location_key :site
 
     def_delegator :conn, :api_uri
     attr_accessor :version_constraint
 
-    SHORTNAMES = {opscode: CommunityREST::V1_API}.freeze
+    SHORTNAMES = { opscode: CommunityREST::V1_API }.freeze
 
     # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint
@@ -17,9 +16,8 @@ module Berkshelf
     # @option options [String, Symbol] :site
     #   a URL pointing to a community API endpoint. Alternatively the symbol :opscode can
     #   be provided to initialize a SiteLocation pointing to the Opscode Community Site.
-    def initialize(name, version_constraint, options = {})
-      @name               = name
-      @version_constraint = version_constraint
+    def initialize(dependency, options = {})
+      super
 
       api_uri = if options[:site].nil?
         SHORTNAMES[:opscode]

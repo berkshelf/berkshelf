@@ -106,7 +106,7 @@ module Berkshelf
       when (200..299)
         response.body
       when 404
-        raise CookbookNotFound, "Cookbook '#{name}' not found at site: '#{api_uri}'"
+        raise CookbookNotFound, "Cookbook '#{name}' (#{version}) not found at site: '#{api_uri}'"
       else
         raise CommunitySiteError, "Error finding cookbook '#{name}' (#{version}) at site: '#{api_uri}'"
       end

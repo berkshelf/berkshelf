@@ -90,8 +90,6 @@ module Berkshelf
     #   version constraint for this dependency
     # @option options [String] :git
     #   the Git URL to clone
-    # @option options [String] :site
-    #   a URL pointing to a community API endpoint
     # @option options [String] :path
     #   a filepath to the cookbook on your local disk
     # @option options [String] :metadata
@@ -111,6 +109,7 @@ module Berkshelf
       @options            = options
       @berksfile          = berksfile
       @name               = name
+      @location           = Location.init(self, options)
       @locked_version     = Solve::Version.new(options[:locked_version]) if options[:locked_version]
       @version_constraint = Solve::Constraint.new(options[:constraint] || DEFAULT_CONSTRAINT)
 
@@ -188,7 +187,7 @@ module Berkshelf
     end
 
     def to_s
-      "#<Berkshelf::Dependency: #{name} (#{version_constraint})>"
+      "#{name} (#{version_constraint})"
     end
 
     def inspect

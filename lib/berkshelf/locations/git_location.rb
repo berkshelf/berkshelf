@@ -1,5 +1,5 @@
 module Berkshelf
-  class GitLocation
+  class GitLocation < Location::Base
     class << self
       # Create a temporary directory for the cloned repository within Berkshelf's
       # temporary directory
@@ -10,8 +10,6 @@ module Berkshelf
         @tmpdir ||= Berkshelf.mktmpdir
       end
     end
-
-    include Location
 
     set_location_key :git
     set_valid_options :ref, :branch, :tag, :rel
@@ -24,7 +22,6 @@ module Berkshelf
 
     alias_method :tag, :branch
 
-    # @param [#to_s] name
     # @param [Solve::Constraint] version_constraint
     # @param [Hash] options
     #
@@ -38,9 +35,8 @@ module Berkshelf
     #   same as tag
     # @option options [String] :rel
     #   the path within the repository to find the cookbook
-    def initialize(name, version_constraint, options = {})
-      @name               = name
-      @version_constraint = version_constraint
+    def initialize(dependency, options = {})
+      super
       @uri                = options[:git]
       @branch             = options[:branch] || options[:tag] || 'master'
       @ref                = options[:ref]
@@ -63,14 +59,14 @@ module Berkshelf
 
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
-        msg = "Cookbook '#{name}' not found at git: #{uri}"
+        msg = "Cookbook '#{dependency.name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
         msg << " with ref '#{ref}'" if ref
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
 
-      cb_path = File.join(destination, "#{name}-#{ref}")
+      cb_path = File.join(destination, "#{dependency.name}-#{ref}")
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 
@@ -123,7 +119,7 @@ module Berkshelf
 
       def revision_path(destination)
         return unless ref
-        File.join(destination, "#{name}-#{ref}")
+        File.join(destination, "#{dependency.name}-#{ref}")
       end
   end
 end

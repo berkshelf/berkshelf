@@ -1,5 +1,5 @@
 module Berkshelf
-  class PathLocation
+  class PathLocation < Location::Base
     class << self
       # Expand and return a string representation of the given path if it is
       # absolute or a path in the users home directory.
@@ -19,8 +19,6 @@ module Berkshelf
       end
     end
 
-    include Location
-
     set_location_key :path
     set_valid_options :path, :metadata
 
@@ -35,11 +33,10 @@ module Berkshelf
     #   a filepath to the cookbook on your local disk
     # @option options [Boolean] :metadata
     #   true if this is a metadata source
-    def initialize(name, version_constraint, options = {})
-      @name               = name
-      @version_constraint = version_constraint
-      @path               = options[:path].to_s
-      @metadata           = options[:metadata]
+    def initialize(dependency, options = {})
+      super
+      @path     = options[:path].to_s
+      @metadata = options[:metadata]
     end
 
     # The cookbook associated with this path location.
@@ -80,23 +77,14 @@ module Berkshelf
       super.merge(value: self.path)
     end
 
-    # The string representation of this PathLocation. If the path
-    # is the default cookbook store, just leave it out, because
-    # it's probably just cached.
-    #
-    # @example
-    #   loc.to_s #=> artifact (1.4.0)
+    # The string representation of this PathLocation
     #
     # @example
     #   loc.to_s #=> artifact (1.4.0) at path: '/Users/Seth/Dev/artifact'
     #
     # @return [String]
     def to_s
-      if path.to_s.include?(Berkshelf.berkshelf_path.to_s)
-        "#{self.class.location_key}"
-      else
-        "#{self.class.location_key}: '#{path}'"
-      end
+      "#{self.class.location_key}: '#{File.expand_path(path)}'"
     end
   end
 end

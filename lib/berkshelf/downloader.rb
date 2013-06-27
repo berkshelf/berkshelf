@@ -18,6 +18,8 @@ module Berkshelf
     #
     # @option options [String] :path
     #
+    # @raise [CookbookNotFound]
+    #
     # @return [String]
     def download(*args)
       options = args.last.is_a?(Hash) ? args.pop : Hash.new
@@ -32,7 +34,7 @@ module Berkshelf
           end
         end
 
-        raise "COOKBOOK NOT FOUND IN ANY SOURCES"
+        raise CookbookNotFound, "#{dependency} (#{version}) not found in any sources"
       end
     end
 
@@ -63,6 +65,8 @@ module Berkshelf
       else
         raise RuntimeError, "unknown location type #{remote_cookbook.location_type}"
       end
+    rescue CookbookNotFound
+      nil
     end
   end
 end
