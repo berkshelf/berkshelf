@@ -209,10 +209,6 @@ module Berkshelf
           h[:constraint] = version_constraint.to_s
         end
 
-        if location.kind_of?(SiteLocation)
-          h[:site] = location.api_uri if location.api_uri != CommunityREST::V1_API
-        end
-
         if location.kind_of?(PathLocation)
           h[:path] = location.relative_path(berksfile.filepath)
         end

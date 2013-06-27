@@ -98,14 +98,9 @@ describe Berkshelf::Location do
     end
   end
 
-  describe ';init' do
+  describe "::init" do
     let(:name) { 'artifact' }
     let(:constraint) { double('constraint') }
-
-    it 'returns an instance of SiteLocation given a site: option key' do
-      result = described_class.init(name, constraint, site: 'http://site/value')
-      expect(result).to be_a(Berkshelf::SiteLocation)
-    end
 
     it 'returns an instance of PathLocation given a path: option key' do
       result = described_class.init(name, constraint, path: '/Users/reset/code')
@@ -115,11 +110,6 @@ describe Berkshelf::Location do
     it 'returns an instance of GitLocation given a git: option key' do
       result = described_class.init(name, constraint, git: 'git://github.com/something.git')
       expect(result).to be_a(Berkshelf::GitLocation)
-    end
-
-    it 'returns an instance of SiteLocation when no option key is given that matches a registered location_key' do
-      result = described_class.init(name, constraint)
-      expect(result).to be_a(Berkshelf::SiteLocation)
     end
 
     context 'given two location_keys' do

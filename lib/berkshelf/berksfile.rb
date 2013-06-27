@@ -70,7 +70,6 @@ module Berkshelf
     #   @option options [String] :git
     #     the Git URL to clone
     #
-    #   @see SiteLocation
     #   @see PathLocation
     #   @see GitLocation
     # @overload cookbook(name, options = {})
@@ -83,7 +82,6 @@ module Berkshelf
     #   @option options [String] :git
     #     the Git URL to clone
     #
-    #   @see SiteLocation
     #   @see PathLocation
     #   @see GitLocation
     def cookbook(*args)
@@ -352,15 +350,11 @@ module Berkshelf
     def outdated(options = {})
       outdated = Hash.new
 
-      dependencies(options).each do |cookbook|
-        location = cookbook.location || Location.init(cookbook.name, cookbook.version_constraint, site: :opscode)
-
-        if location.is_a?(SiteLocation)
-          latest_version = location.latest_version
-
-          unless cookbook.version_constraint.satisfies?(latest_version)
-            outdated[cookbook] = latest_version
-          end
+      dependencies(options).each do |dependency|
+        if dependency.location
+          # explicit locations check there
+        else
+          # check api
         end
       end
 

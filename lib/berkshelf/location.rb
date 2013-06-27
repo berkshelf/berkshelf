@@ -6,8 +6,7 @@ module Berkshelf
       # options Hash. Source Locations have an associated location_key registered with
       # Berkshelf::Dependency. If your options Hash contains a key matching one of these location_keys
       # then the Class who registered that location_key will be instantiated. If you do not
-      # provide an option with a matching location_key a SiteLocation class will be
-      # instantiated.
+      # provide an option with a matching location_key nil will be returned.
       #
       # @example
       #   Location.init('nginx', '>= 0.0.0', git: 'git://github.com/RiotGames/artifact-cookbook.git') =>
@@ -16,17 +15,10 @@ module Berkshelf
       #   Location.init('nginx', '>= 0.0.0', path: '/Users/reset/code/nginx-cookbook') =>
       #     instantiates a PathLocation
       #
-      #   Location.init('nginx', '>= 0.0.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks') =>
-      #     instantiates a SiteLocation
-      #
-      #   Location.init('nginx', '>= 0.0.0') =>
-      #     instantiates a SiteLocation
-      #
-      # @param [String] name
-      # @param [String, Solve::Constraint] constraint
+      # @param [Dependency] dependency
       # @param [Hash] options
       #
-      # @return [PathLocation, GitLocation, GithubLocation]
+      # @return [~Location::Base, nil]
       def init(dependency, options = {})
         if klass = klass_from_options(options)
           klass.new(dependency, options)

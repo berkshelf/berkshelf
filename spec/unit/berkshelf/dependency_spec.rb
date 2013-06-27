@@ -137,27 +137,10 @@ describe Berkshelf::Dependency do
       expect(described_class.location_keys).to include(:git)
     end
 
-    context 'given a location key :site' do
-      let(:url) { 'http://path_to_api/v1' }
-      let(:source) { described_class.new(berksfile, cookbook_name, site: url) }
-
-      before do
-        described_class.add_location_key(:site, Berkshelf::SiteLocation)
-      end
-
-      it 'initializes a SiteLocation for location' do
-        expect(source.location).to be_a(Berkshelf::SiteLocation)
-      end
-
-      it 'points to the specified URI' do
-        expect(source.location.api_uri.to_s).to eq(url)
-      end
-    end
-
     context 'given multiple location options' do
       it 'raises with an Berkshelf::BerkshelfError' do
         expect {
-          described_class.new(berksfile, cookbook_name, site: 'something', git: 'something')
+          described_class.new(berksfile, cookbook_name, path: '/something', git: 'something')
         }.to raise_error(Berkshelf::BerkshelfError)
       end
     end
@@ -251,25 +234,6 @@ describe Berkshelf::Dependency do
 
       expect(hash).to have_key(:locked_version)
       expect(hash[:locked_version]).to eq('1.2.3')
-    end
-
-    it 'does not include the site if it is the default' do
-      location = double('site', api_uri: Berkshelf::CommunityREST::V1_API)
-      location.stub(:kind_of?).and_return(false)
-      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
-      subject.stub(:location).and_return(location)
-
-      expect(hash).to_not have_key(:site)
-    end
-
-    it 'includes the site' do
-      location = double('site', api_uri: 'www.example.com')
-      location.stub(:kind_of?).and_return(false)
-      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
-      subject.stub(:location).and_return(location)
-
-      expect(hash).to have_key(:site)
-      expect(hash[:site]).to eq('www.example.com')
     end
 
     it 'includes the git url and ref' do

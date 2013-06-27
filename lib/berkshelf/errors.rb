@@ -227,23 +227,6 @@ module Berkshelf
 
   class UploadFailure < BerkshelfError; end
   class FrozenCookbook < UploadFailure; status_code(126); end
-  class InvalidSiteShortnameError < BerkshelfError
-    status_code(127)
-
-    # @param [String,Symbol] shortname
-    #   the shortname for the site (see SiteLocation::SHORTNAMES)
-    def initialize(shortname)
-      @shortname = shortname
-    end
-
-    def to_s
-      [
-        "Unknown site shortname '#{@shortname}' - supported shortnames are:",
-        "",
-        "  * " + SiteLocation::SHORTNAMES.keys.join("\n  * "),
-      ].join("\n")
-    end
-  end
 
   class OutdatedDependency < BerkshelfError
     status_code(128)
