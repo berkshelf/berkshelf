@@ -29,7 +29,6 @@ module Berkshelf
 
     attr_accessor :ui
     attr_accessor :logger
-    attr_writer :cookbook_store
 
     # @return [Pathname]
     def root
@@ -50,7 +49,7 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      @berkshelf_path ||= ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
+      ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
 
     # Programatically set the berkshelf path.
@@ -103,10 +102,6 @@ module Berkshelf
     def mktmpdir
       FileUtils.mkdir_p(tmp_dir)
       Dir.mktmpdir(nil, tmp_dir)
-    end
-
-    def cookbooks_dir
-      File.join(berkshelf_path, 'cookbooks')
     end
 
     # @return [Berkshelf::CookbookStore]

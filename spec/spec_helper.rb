@@ -45,13 +45,15 @@ Spork.prefork do
     end
 
     config.before(:all) do
-      Berkshelf.cookbook_store = Berkshelf::CookbookStore.new(tmp_path.join("downloader_tmp"))
+      ENV['BERKSHELF_PATH'] = berkshelf_path.to_s
     end
 
     config.before(:each) do
-      purge_store_and_configs!
       Berkshelf::RSpec::BerksAPIServer.clear_cache
       clean_tmp_path
+      FileUtils.mkdir_p(ENV['BERKSHELF_PATH'])
+      FileUtils.mkdir_p(Berkshelf::CookbookStore.instance.storage_path)
+      reload_configs
     end
   end
 

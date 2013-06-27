@@ -3,8 +3,12 @@ require 'fileutils'
 module Berkshelf
   class CookbookStore
     class << self
+      def default_path
+        File.join(Berkshelf.berkshelf_path, 'cookbooks')
+      end
+
       def instance
-        @instance ||= new(Berkshelf.cookbooks_dir)
+        @instance ||= new(default_path)
       end
 
       def import(name, version, path)
@@ -112,7 +116,8 @@ module Berkshelf
         FileUtils.mkdir_p(storage_path, mode: 0755)
 
         unless File.writable?(storage_path)
-          raise InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'! Please either chown the directory or use a different Cookbook Store."
+          raise InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'!" +
+            " Please either chown the directory or use a different Cookbook Store."
         end
       end
   end
