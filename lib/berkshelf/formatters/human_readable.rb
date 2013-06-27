@@ -24,7 +24,9 @@ module Berkshelf
       # @param [String] version
       # @param [~Location] location
       def use(cookbook, version, location = nil)
-        Berkshelf.ui.info "Using #{cookbook} (#{version}) #{location}"
+        message = "Using #{cookbook} (#{version})"
+        message += " #{location}" if location
+        Berkshelf.ui.info message
       end
 
       # Output a Cookbook upload message using {Berkshelf.ui}
