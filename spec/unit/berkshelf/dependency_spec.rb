@@ -215,27 +215,8 @@ describe Berkshelf::Dependency do
     end
   end
 
-  describe '#cached_and_location' do
-    let(:options) { Hash.new }
-
-    before do
-      Berkshelf::CachedCookbook.stub(:from_path).and_return(double('cached_cookbook'))
-    end
-
-    context 'when given a value for :path' do
-      before do
-        berksfile.stub(filepath: '/rspec/Berksfile')
-        options[:path] = 'cookbooks/whatever'
-      end
-
-      it 'returns a PathLocation with a path relative to the Berksfile.filepath' do
-        _, location = subject.cached_and_location(options)
-
-        expect(location.path).to eq('cookbooks/whatever')
-        expect(location.relative_path(berksfile)).to eq('../cookbooks/whatever')
-      end
-    end
-  end
+  describe "#cached_cookbook"
+  describe "#download"
 
   describe '#downloaded?' do
     it 'returns true if self.cached_cookbook is not nil' do
@@ -360,4 +341,6 @@ describe Berkshelf::Dependency do
       end
     end
   end
+
+  describe "#scm_location?"
 end

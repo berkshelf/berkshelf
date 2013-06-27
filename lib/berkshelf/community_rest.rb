@@ -37,6 +37,7 @@ module Berkshelf
       end
 
       private
+
         def is_gzip_file(path)
           # You cannot write "\x1F\x8B" because the default encoding of
           # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
@@ -91,8 +92,9 @@ module Berkshelf
     #
     # @return [String]
     def download(name, version)
-      archive = stream(find(name, version)[:file])
-      self.class.unpack(archive.path)
+      archive   = stream(find(name, version)[:file])
+      extracted = self.class.unpack(archive.path)
+      Dir.glob(File.join(extracted, "*")).first
     ensure
       archive.unlink unless archive.nil?
     end

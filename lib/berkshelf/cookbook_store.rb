@@ -2,6 +2,16 @@ require 'fileutils'
 
 module Berkshelf
   class CookbookStore
+    class << self
+      def instance
+        @instance ||= new(Berkshelf.cookbooks_dir)
+      end
+
+      def import(name, version, path)
+        instance.import(name, version, path)
+      end
+    end
+
     # @return [String]
     #   filepath to where cookbooks are stored
     attr_reader :storage_path
@@ -15,6 +25,12 @@ module Berkshelf
     def initialize(storage_path)
       @storage_path = Pathname.new(storage_path)
       initialize_filesystem
+    end
+
+    def import(name, version, path)
+      import_validate(name, version, path)
+      FileUtils.mv(path, cookbook_path(name, version))
+      cookbook(name, version)
     end
 
     # Returns an instance of CachedCookbook representing the
@@ -87,6 +103,10 @@ module Berkshelf
     end
 
     private
+
+      def import_validate(name, version, path)
+        true
+      end
 
       def initialize_filesystem
         FileUtils.mkdir_p(storage_path, mode: 0755)

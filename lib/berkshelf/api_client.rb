@@ -2,6 +2,8 @@ require 'addressable/uri'
 
 module Berkshelf
   class APIClient < Faraday::Connection
+    require_relative 'api_client/remote_cookbook'
+
     # @return [Addressable::URI]
     attr_reader :url
     # @return [Integer]
@@ -36,7 +38,11 @@ module Berkshelf
 
       case response.status
       when 200
-        response.body
+        [].tap do |cookbooks|
+          response.body.each do |name, versions|
+            versions.each { |version, attributes| cookbooks << RemoteCookbook.new(name, version, attributes) }
+          end
+        end
       else
         raise RuntimeError, "bad response #{response.inspect}"
       end

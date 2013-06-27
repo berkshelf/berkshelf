@@ -1,26 +1,24 @@
 module Berkshelf
   class Resolver
     class Graph < Solve::Graph
-      # @param [Array<SourceURI>, SourceURI] sources
+      # @param [Array<Berkshelf::Source>, Berkshelf::Source] sources
       def populate(sources)
-        universe(sources).each do |name, versions|
-          versions.each do |version, metadata|
-            artifacts(name, version)
+        universe(sources).each do |cookbook|
+          artifacts(cookbook.name, cookbook.version)
 
-            metadata[:dependencies].each do |dependency, constraint|
-              artifacts(name, version).depends(dependency, constraint)
-            end
+          cookbook.dependencies.each do |dependency, constraint|
+            artifacts(cookbook.name, cookbook.version).depends(dependency, constraint)
           end
         end
       end
 
-      # @param [Array<SourceURI>, SourceURI] sources
+      # @param [Array<Berkshelf::Source>, Berkshelf::Source] sources
       #
-      # @return [Hash]
+      # @return [Array<Berkshelf::RemoteCookbook>]
       def universe(sources)
-        {}.tap do |universe|
-          Array(sources).each { |source| universe.merge!(APIClient.new(source).universe) }
-        end
+        cookbooks = []
+        Array(sources).each { |source| cookbooks = cookbooks | source.universe }
+        cookbooks
       end
     end
   end

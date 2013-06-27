@@ -111,7 +111,7 @@ module Berkshelf
 
     # @return [Berkshelf::CookbookStore]
     def cookbook_store
-      @cookbook_store ||= CookbookStore.new(cookbooks_dir)
+      CookbookStore.instance
     end
 
     # Get the appropriate Formatter object based on the formatter

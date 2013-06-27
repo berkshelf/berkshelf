@@ -1,16 +1,19 @@
 require 'spec_helper'
 
 describe Berkshelf::CookbookStore do
-  describe '#initialize' do
-    it 'creates the storage_path' do
-      storage_path = tmp_path.join('random_storage')
-      Berkshelf::CookbookStore.new(storage_path)
+  describe "ClassMethods" do
+    describe "::instance"
+    describe "::import"
 
-      expect(storage_path).to exist
+    describe "::new" do
+      it 'creates the storage_path' do
+        storage_path = tmp_path.join('random_storage')
+        Berkshelf::CookbookStore.new(storage_path)
+
+        expect(storage_path).to exist
+      end
     end
   end
-
-
 
   subject { Berkshelf::CookbookStore.new(tmp_path.join("cbstore_rspec")) }
 
@@ -104,4 +107,6 @@ describe Berkshelf::CookbookStore do
       end
     end
   end
+
+  describe "#import"
 end

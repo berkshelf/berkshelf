@@ -65,7 +65,8 @@ module Berkshelf
       end
     end
 
-    DEFAULT_CONSTRAINT = '>= 0.0.0'
+    DEFAULT_CONSTRAINT = '>= 0.0.0'.freeze
+    SCM_LOCATIONS      = [ :git, :github ].freeze
 
     # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
@@ -105,16 +106,13 @@ module Berkshelf
     #   same as tag
     # @option options [String] :locked_version
     def initialize(berksfile, name, options = {})
-      @options = options
-
       self.class.validate_options(options)
 
+      @options            = options
       @berksfile          = berksfile
       @name               = name
       @locked_version     = Solve::Version.new(options[:locked_version]) if options[:locked_version]
       @version_constraint = Solve::Constraint.new(options[:constraint] || DEFAULT_CONSTRAINT)
-
-      @cached_cookbook, @location = cached_and_location(options)
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
@@ -129,11 +127,12 @@ module Berkshelf
       end
     end
 
-    # Determine the CachedCookbook and Location information from the given options.
-    #
-    # @return [Array<CachedCookbook, Location>]
-    def cached_and_location(options = {})
-      from_path(options) || from_default(options)
+    def cached_cookbook
+      @cached_cookbook ||= Berkshelf.cookbook_store.satisfy(name, version_constraint)
+    end
+
+    def download(destination)
+      @cached_cookbook = location.download(destination)
     end
 
     # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
@@ -141,7 +140,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def downloaded?
-      !self.cached_cookbook.nil?
+      !cached_cookbook.nil?
     end
 
     # Returns true if this dependency has the given group.
@@ -177,6 +176,15 @@ module Berkshelf
     # @return [Array<Symbol>]
     def groups
       @groups ||= []
+    end
+
+    # @return [Boolean]
+    def scm_location?
+      if location.nil?
+        return false
+      end
+
+      SCM_LOCATIONS.include?(location.class.location_key)
     end
 
     def to_s
@@ -221,39 +229,5 @@ module Berkshelf
     def to_json(options = {})
       JSON.pretty_generate(to_hash, options)
     end
-
-    private
-
-      # Attempt to load a CachedCookbook from a local file system path (if the :path
-      # option was given). If one is found, the location and cached_cookbook is
-      # updated. Otherwise, this method will raise a CookbookNotFound exception.
-      #
-      # @raise [Berkshelf::CookbookNotFound]
-      #   if no CachedCookbook exists at the given path
-      #
-      # @return [Berkshelf::CachedCookbook]
-      def from_path(options = {})
-        return nil unless options[:path]
-
-        location = PathLocation.new(name, version_constraint, options)
-
-        [ location.cookbook, location ]
-      rescue IOError => ex
-        raise Berkshelf::CookbookNotFound, ex
-      end
-
-      # Use the default location, and a nil CachedCookbook. If there is no location
-      # specified,
-      #
-      # @return [Array<nil, Location>]
-      def from_default(options = {})
-        if (options.keys & self.class.location_keys.keys).empty?
-          location = nil
-        else
-          location = Location.init(name, version_constraint, options)
-        end
-
-        [ nil, location ]
-      end
   end
 end

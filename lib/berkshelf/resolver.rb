@@ -53,11 +53,13 @@ module Berkshelf
     # Finds a solution for the currently added dependencies and their dependencies and
     # returns an array of CachedCookbooks.
     #
-    # @return [Array<Berkshelf::CachedCookbook>]
+    # @return [Array<Array<String, String, Dependency>>]
     def resolve
-      Berkshelf.formatter.msg("building universe...")
       graph.populate(berksfile.sources)
-      Solve.it!(graph, demand_array)
+      Solve.it!(graph, demand_array).collect do |name, version|
+        dependency = get_demand(name) || Dependency.new(berksfile, name, constraint: version)
+        [ name, version, dependency ]
+      end
     end
 
     # Retrieve the given demand from the resolver

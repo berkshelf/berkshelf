@@ -5,13 +5,17 @@ module Berkshelf
 
       register_formatter :human
 
+      def fetch(dependency)
+        Berkshelf.ui.info "Fetching '#{dependency.name}' from #{dependency.location}"
+      end
+
       # Output a Cookbook installation message using {Berkshelf.ui}
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [~Location] location
-      def install(cookbook, version, location)
-        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location}"
+      # @param [Berkshelf::Dependency] dependency
+      def install(cookbook, version, dependency)
+        Berkshelf.ui.info "Installing #{cookbook} (#{version})"
       end
 
       # Output a Cookbook use message using {Berkshelf.ui}
