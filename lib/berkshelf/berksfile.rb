@@ -77,7 +77,6 @@ module Berkshelf
     #   @option options [String] :git
     #     the Git URL to clone
     #
-    #   @see ChefAPILocation
     #   @see SiteLocation
     #   @see PathLocation
     #   @see GitLocation
@@ -91,7 +90,6 @@ module Berkshelf
     #   @option options [String] :git
     #     the Git URL to clone
     #
-    #   @see ChefAPILocation
     #   @see SiteLocation
     #   @see PathLocation
     #   @see GitLocation

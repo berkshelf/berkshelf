@@ -81,9 +81,6 @@ module Berkshelf
       #   Location.init('nginx', '>= 0.0.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks') =>
       #     instantiates a SiteLocation
       #
-      #   Location.init('nginx', '>= 0.0.0', chef_api: 'https://api.opscode.com/organizations/vialstudios') =>
-      #     instantiates a ChefAPILocation
-      #
       #   Location.init('nginx', '>= 0.0.0') =>
       #     instantiates a SiteLocation
       #
@@ -91,7 +88,7 @@ module Berkshelf
       # @param [String, Solve::Constraint] constraint
       # @param [Hash] options
       #
-      # @return [SiteLocation, PathLocation, GitLocation, ChefAPILocation]
+      # @return [SiteLocation, PathLocation, GitLocation]
       def init(name, constraint, options = {})
         klass = klass_from_options(options)
 
