@@ -12,46 +12,46 @@ describe Berkshelf::APIClient do
 
     subject { instance.universe }
 
-    it "returns a Hashie::Mash" do
-      expect(subject).to be_a(Hashie::Mash)
+    it "returns an array of APIClient::RemoteCookbook" do
+      expect(subject).to be_a(Array)
+
+      subject.each do |remote|
+        expect(remote).to be_a(Berkshelf::APIClient::RemoteCookbook)
+      end
     end
 
-    it "contains a key for each dependency" do
-      expect(subject.keys).to have(2).items
-      expect(subject).to have_key("ruby")
-      expect(subject).to have_key("elixir")
+    it "contains a item for each dependency" do
+      expect(subject).to have(3).items
+      expect(subject[0].name).to eql("ruby")
+      expect(subject[0].version).to eql("1.2.3")
+      expect(subject[1].name).to eql("ruby")
+      expect(subject[1].version).to eql("2.0.0")
+      expect(subject[2].name).to eql("elixir")
+      expect(subject[2].version).to eql("1.0.0")
     end
 
-    it "each key contains a key for each version" do
-      expect(subject["ruby"]).to have(2).items
-      expect(subject["ruby"]).to have_key("1.2.3")
-      expect(subject["ruby"]).to have_key("2.0.0")
-      expect(subject["elixir"]).to have(1).items
-      expect(subject["elixir"]).to have_key("1.0.0")
+    it "has the dependencies for each" do
+      expect(subject[0].dependencies).to include("build-essential" => ">= 1.2.2")
+      expect(subject[1].dependencies).to include("build-essential" => ">= 1.2.2")
+      expect(subject[2].dependencies).to be_empty
     end
 
-    it "each version has a key for dependencies" do
-      expect(subject["ruby"]["1.2.3"]).to have_key(:dependencies)
-      expect(subject["ruby"]["2.0.0"]).to have_key(:dependencies)
-      expect(subject["elixir"]["1.0.0"]).to have_key(:dependencies)
+    it "has the platforms for each" do
+      expect(subject[0].platforms).to be_empty
+      expect(subject[1].platforms).to be_empty
+      expect(subject[2].platforms).to include("CentOS" => "= 6.0.0")
     end
 
-    it "each dependency key contains the dependencies of the cookbook" do
-      expect(subject["ruby"]["1.2.3"]["dependencies"]).to include("build-essential" => ">= 1.2.2")
-      expect(subject["ruby"]["2.0.0"]["dependencies"]).to include("build-essential" => ">= 1.2.2")
-      expect(subject["elixir"]["1.0.0"]["dependencies"]).to be_empty
+    it "has a location_path for each" do
+      subject.each do |remote|
+        expect(remote.location_path).to_not be_nil
+      end
     end
 
-    it "each version has a key for platforms" do
-      expect(subject["ruby"]["1.2.3"]).to have_key(:platforms)
-      expect(subject["ruby"]["2.0.0"]).to have_key(:platforms)
-      expect(subject["elixir"]["1.0.0"]).to have_key(:platforms)
-    end
-
-    it "each platform key contains the supported platforms of the cookbook" do
-      expect(subject["ruby"]["1.2.3"]["platforms"]).to be_empty
-      expect(subject["ruby"]["2.0.0"]["platforms"]).to be_empty
-      expect(subject["elixir"]["1.0.0"]["platforms"]).to include("CentOS" => "= 6.0.0")
+    it "has a location_type for each" do
+      subject.each do |remote|
+        expect(remote.location_type).to_not be_nil
+      end
     end
   end
 end

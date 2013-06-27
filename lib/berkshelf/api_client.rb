@@ -13,6 +13,10 @@ module Berkshelf
     #   time to wait between retries
     attr_reader :retry_interval
 
+    # @param [String, Addressable::URI] url
+    #
+    # @option options [Integer] :retries
+    # @option options [Float] :retry_interval
     def initialize(url, options = {})
       options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
       @url            = Addressable::URI.parse(url)
@@ -33,6 +37,9 @@ module Berkshelf
       super(@url, builder: builder)
     end
 
+    # Retrieves the entire universe of known cookbooks from the API source
+    #
+    # @return [Array<APIClient::RemoteCookbook>]
     def universe
       response = get("universe")
 
