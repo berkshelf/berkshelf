@@ -49,7 +49,7 @@ module Berkshelf
         end
     end
 
-    V1_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
+    V1_API = 'http://cookbooks.opscode.com/api/v1'.freeze
 
     # @return [String]
     attr_reader :api_uri
@@ -100,7 +100,7 @@ module Berkshelf
     end
 
     def find(name, version)
-      response = get("#{name}/versions/#{self.class.uri_escape_version(version)}")
+      response = get("cookbooks/#{name}/versions/#{self.class.uri_escape_version(version)}")
 
       case response.status
       when (200..299)
@@ -116,7 +116,7 @@ module Berkshelf
     #
     # @return [String]
     def latest_version(name)
-      response = get(name)
+      response = get("cookbooks/#{name}")
 
       case response.status
       when (200..299)
@@ -132,7 +132,7 @@ module Berkshelf
     #
     # @return [Array]
     def versions(name)
-      response = get(name)
+      response = get("cookbooks/#{name}")
 
       case response.status
       when (200..299)
