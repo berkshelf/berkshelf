@@ -12,4 +12,4 @@ bundler_args: --without guard
 before_script:
   - git config --global user.email "ci@berkshelf.com"
   - git config --global user.name "Berkshelf"
-script: 'bundle exec thor spec:ci
+script: bundle exec thor spec:ci
