@@ -89,12 +89,6 @@ module Berkshelf
       @cached_cookbooks = nil
     end
 
-    # @return [String]
-    #   the shasum for the sources in the Berksfile (or metadata/path locations)
-    def sha
-      @sha ||= Digest::SHA1.hexdigest(shaable_contents.join("\n"))
-    end
-
     # Add a cookbook dependency to the Berksfile to be retrieved and have it's dependencies recursively retrieved
     # and resolved.
     #
@@ -196,8 +190,6 @@ module Berkshelf
       metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
       metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
 
-      shaable_contents << File.read(metadata_path)
-
       name = metadata.name.presence || File.basename(File.expand_path(path))
 
       add_dependency(name, nil, path: path, metadata: true)
@@ -267,7 +259,6 @@ module Berkshelf
 
       if options[:path]
         metadata_file = File.expand_path(File.join(options[:path], 'metadata.rb'))
-        shaable_contents << File.read(metadata_file)
       end
 
       options[:constraint] = constraint
@@ -385,20 +376,14 @@ module Berkshelf
     #    dependencies are considered to be "unlocked". If a lockfile is specified, a
     #    definition is created via the following algorithm:
     #
-    #    - Compare the SHA of the current sources (as JSON) with the last-known
-    #      SHA of the sources.
-    #    - If the SHAs match, the sources have not been updated, so we can rely
-    #      solely on the locked ones.
-    #    - If the SHAs don't match, then the sources have diverged from the
-    #      lockfile, which means some sources are outdated. For each unlocked
-    #      source, see if there exists a locked version that still satisfies
-    #      the version constraint in the Berksfile. If there exists such a
-    #      source, remove it from the list of unlocked sources. If not, then
-    #      either a version constraint has changed, or a new source has been
-    #      added to the Berksfile. In the event that a locked_source exists,
-    #      but it no longer satisfies the constraint, this method will raise
-    #      a {Berkshelf::OutdatedCookbookSource}, and inform the user to run
-    #      <tt>berks update COOKBOOK</tt> to remedy the issue.
+    #    - For each source, see if there exists a locked version that still
+    #      satisfies the version constraint in the Berksfile. If
+    #      there exists such a source, remove it from the list of unlocked
+    #      sources. If not, then either a version constraint has changed,
+    #      or a new source has been added to the Berksfile. In the event that
+    #      a locked_source exists, but it no longer satisfies the constraint,
+    #      this method will raise a {Berkshelf::OutdatedCookbookSource}, and
+    #      inform the user to run <tt>berks update COOKBOOK</tt> to remedy the issue.
     #    - Remove any locked sources that no longer exist in the Berksfile
     #      (i.e. a cookbook source was removed from the Berksfile).
     #
@@ -423,11 +408,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
-      if self.sha == lockfile.sha
-        local_dependencies = locked_dependencies
-      else
-        local_dependencies = apply_lockfile(dependencies(options))
-      end
+      local_dependencies = apply_lockfile(dependencies(options))
 
       resolver           = resolve(local_dependencies)
       @cached_cookbooks  = resolver[:solution]
@@ -437,7 +418,7 @@ module Berkshelf
 
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
 
-      lockfile.update(local_dependencies, sha: self.sha)
+      lockfile.update(local_dependencies)
 
       self.cached_cookbooks
     end
@@ -455,8 +436,6 @@ module Berkshelf
 
       # Unlock any/all specified cookbooks
       dependencies(options).each { |dependency| lockfile.unlock(dependency) }
-
-      lockfile.reset_sha!
 
       # NOTE: We intentionally do NOT pass options to the installer
       self.install
@@ -823,12 +802,5 @@ module Berkshelf
         end
       end
 
-      # The contents of the files that we want to SHA for caching against
-      # the lockfile.
-      #
-      # @return [Array<String>]
-      def shaable_contents
-        @shaable_contents ||= [File.read(self.filepath)]
-      end
   end
 end
