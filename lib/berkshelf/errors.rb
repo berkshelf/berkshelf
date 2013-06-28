@@ -151,12 +151,12 @@ module Berkshelf
   class MismatchedCookbookName < BerkshelfError
     status_code(114)
 
-    # @param [Berkshelf::Location] location
-    #   the location that is mismatched
+    # @param [Berkshelf::Dependency] dependency
+    #   the dependency with the expected name
     # @param [Berkshelf::CachedCookbook] cached_cookbook
-    #   the cached_cookbook that is mismatched
-    def initialize(location, cached_cookbook)
-      @location = location
+    #   the cached_cookbook with the mismatched name
+    def initialize(dependency, cached_cookbook)
+      @dependency      = dependency
       @cached_cookbook = cached_cookbook
     end
 
@@ -164,7 +164,7 @@ module Berkshelf
       [
         "In your Berksfile, you have:",
         "",
-        "  cookbook '#{@location.name}'",
+        "  cookbook '#{@dependency.name}'",
         "",
         "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'",
         "",
