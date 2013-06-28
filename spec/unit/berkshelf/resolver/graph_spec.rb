@@ -4,7 +4,7 @@ describe Berkshelf::Resolver::Graph do
   subject { described_class.new }
 
   describe "#populate" do
-    let(:sources) { "http://localhost:26200" }
+    let(:sources) { Berkshelf::Source.new("http://localhost:26200") }
 
     before do
       berks_dependency("ruby", "1.0.0", dependencies: { "elixir" => ">= 0.1.0" })
@@ -24,15 +24,17 @@ describe Berkshelf::Resolver::Graph do
   end
 
   describe "#universe" do
-    let(:sources) { "http://localhost:26200" }
+    let(:sources) { Berkshelf::Source.new("http://localhost:26200") }
 
     before do
       berks_dependency("ruby", "1.0.0")
       berks_dependency("elixir", "1.0.0")
     end
 
-    it "returns a Hash" do
-      expect(subject.universe(sources)).to be_a(Hash)
+    it "returns an array of APIClient::RemoteCookbook" do
+      result = subject.universe(sources)
+      expect(result).to be_a(Array)
+      result.each { |remote| expect(remote).to be_a(Berkshelf::APIClient::RemoteCookbook) }
     end
 
     it "contains the entire universe of dependencies" do

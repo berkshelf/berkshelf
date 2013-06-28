@@ -19,7 +19,7 @@ module Berkshelf
 
     # @option options [Array<String>, String] cookbooks
     def run(options = {})
-      dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only))
+      dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only)))
 
       dependencies.each do |dependency|
         next unless dependency.scm_location?
