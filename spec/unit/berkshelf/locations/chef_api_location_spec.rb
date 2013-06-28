@@ -132,8 +132,28 @@ describe Berkshelf::ChefAPILocation, :chef_server do
   end
 
   describe '#to_s' do
+    before { subject.stub(:uri).and_return('https://api.opscode.com/organizations/foo') }
+
+    it 'includes the path' do
+      expect(subject.to_s).to eq("#<#{described_class} #{subject.uri}>")
+    end
+  end
+
+  describe '#inspect' do
+    before do
+      subject.stub(:uri).and_return('git://github.com/RiotGames/artifact.git')
+      subject.stub(:node_name).and_return('reset')
+      subject.stub(:client_key).and_return('/path/to/client.pem')
+    end
+
+    it 'includes the path' do
+      expect(subject.inspect).to eq("#<#{described_class} #{subject.uri}, node_name: #{subject.node_name}, client_key: #{subject.client_key}>")
+    end
+  end
+
+  describe '#info' do
     it 'returns a string containing the location key and the Chef API URI' do
-      expect(subject.to_s).to eq("chef_api: '#{test_chef_api}'")
+      expect(subject.info).to eq("chef_api: '#{test_chef_api}'")
     end
   end
 end

@@ -31,6 +31,13 @@ module Berkshelf
       metadata.recommendations.merge(metadata.dependencies)
     end
 
+    # The name and version pretty printed.
+    #
+    # @return [String]
+    def name_and_version
+      "#{cookbook_name} (#{version})"
+    end
+
     def pretty_print
       [].tap do |a|
         a.push "        Name: #{cookbook_name}" unless name.blank?
@@ -65,6 +72,27 @@ module Berkshelf
         h[:platforms]     = platforms.to_hash unless platforms.blank?
         h[:dependencies]  = dependencies.to_hash unless dependencies.blank?
       end
+    end
+
+    # The string representation of the CachedCookbook.
+    #
+    # @return [String]
+    def to_s
+      "#<#{self.class} #{name_and_version}>"
+    end
+
+    # The detailed string representation of the CachedCookbook.
+    #
+    # @return [String]
+    def inspect
+      "#<#{self.class} #{name_and_version}, " +
+        "description: #{metadata.description}, " +
+        "author: #{metadata.maintainer}, " +
+        "email: #{metadata.maintainer_email}, " +
+        "license: #{metadata.license}, " +
+        "platforms: #{metadata.platforms.to_hash}, " +
+        "dependencies: #{dependencies.to_hash}" +
+      ">"
     end
 
     private

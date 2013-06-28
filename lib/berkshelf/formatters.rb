@@ -69,7 +69,6 @@ module Berkshelf
         end
 
         private
-
           def formatter_methods(*args)
             args.each do |meth|
               define_method(meth.to_sym) do |*args|
@@ -85,8 +84,15 @@ module Berkshelf
         # run after the task is finished
       end
 
-      private
+      # The string representation of the Formatter.
+      #
+      # @return [String]
+      def to_s
+        "#<#{self.class}>"
+      end
+      alias_method :inspect, :to_s
 
+      private
         attr_reader :args
     end
   end

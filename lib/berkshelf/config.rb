@@ -58,6 +58,20 @@ module Berkshelf
       super(path, options)
     end
 
+    # The string representation of the Config.
+    #
+    # @return [String]
+    def to_s
+      "#<#{self.class}>"
+    end
+
+    # The detailed string representation of the Config.
+    #
+    # @return [String]
+    def inspect
+      "#<#{self.class} #{to_hash.inspect}>"
+    end
+
     attribute 'chef.chef_server_url',
       type: String,
       default: Berkshelf.chef_config.chef_server_url

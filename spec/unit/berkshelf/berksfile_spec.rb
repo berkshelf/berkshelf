@@ -610,4 +610,24 @@ describe Berkshelf::Berksfile do
       }.to_not raise_error
     end
   end
+
+  describe '#to_s' do
+    before { subject.stub(:filepath).and_return('/foo/bar') }
+
+    it 'includes the berksfile path' do
+      expect(subject.to_s).to eq("#<#{described_class} #{subject.filepath}>")
+    end
+  end
+
+  describe '#inspect' do
+    before do
+      subject.stub(:filepath).and_return('/foo/bar')
+      subject.stub(:sources).and_return([double(name_and_version: 'foo (~> 1.0.0)')])
+      subject.stub(:cached_cookbooks).and_return([double(name_and_version: 'bar (= 1.4.5)')])
+    end
+
+    it 'includes the sources and cached cookbooks' do
+      expect(subject.inspect).to eq("#<#{described_class} #{subject.filepath}, dependencies: [#{subject.dependencies.map(&:name_and_version).join(', ')}], cached_cookbooks: [#{subject.cached_cookbooks.map(&:name_and_version).join(', ')}]>")
+    end
+  end
 end

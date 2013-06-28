@@ -101,14 +101,18 @@ describe Berkshelf::Lockfile do
   end
 
   describe '#to_s' do
+    before { subject.stub(:filepath).and_return('/foo/bar.lock') }
+
     it 'returns a pretty-formatted string' do
-      expect(subject.to_s).to eq '#<Berkshelf::Lockfile Berksfile.lock>'
+      expect(subject.to_s).to eq("#<#{described_class} #{subject.filepath}>")
     end
   end
 
   describe '#inspect' do
+    before { subject.stub(:filepath).and_return('/foo/bar.lock') }
+
     it 'returns a pretty-formatted, detailed string' do
-      expect(subject.inspect).to eq("#<#{described_class} Berksfile.lock, dependencies: [#<Berkshelf::Dependency: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::Dependency: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>")
+      expect(subject.inspect).to eq("#<#{described_class} #{subject.filepath}, dependencies: [#{subject.dependencies.map(&:name_and_version).join(', ')}]>")
     end
   end
 

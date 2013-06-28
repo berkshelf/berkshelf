@@ -50,6 +50,22 @@ module Berkshelf::Chef::Cookbook
       @ignores.any? {|glob| File.fnmatch?(glob, file_name)}
     end
 
+    # The string representation of the Chefignore.
+    #
+    # @return [String]
+    def to_s
+      "#<#{self.class} #{@ignore_file}>"
+    end
+
+    # The detailed string representation of the Chefignore.
+    #
+    # @return [String]
+    def inspect
+      "#<#{self.class} #{@ignore_file}, " +
+        "ignores: [#{ignores.join(', ')}]" +
+      ">"
+    end
+
     private
 
       def parse_ignore_file
