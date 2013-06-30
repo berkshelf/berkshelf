@@ -418,7 +418,7 @@ module Berkshelf
 
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
 
-      lockfile.update(local_dependencies)
+      lockfile.update(local_sources)
 
       self.cached_cookbooks
     end
