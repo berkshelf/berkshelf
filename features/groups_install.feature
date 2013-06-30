@@ -47,7 +47,7 @@ Feature: Installing specific groups
     And I write to "Berksfile.lock" with:
       """
       {
-        "dependencies": {
+        "sources": {
           "notme": { "locked_version": "1.0.0"},
           "takeme": { "locked_version": "1.0.0"},
           "default": { "locked_version": "1.0.0"}

@@ -149,7 +149,7 @@ module Berkshelf
       # @return [Hash]
       def parse(contents)
         # Ruby's JSON.parse cannot handle an empty string/file
-        return { sha: nil, dependencies: [] } if contents.strip.empty?
+        return { sha: nil, sources: [] } if contents.strip.empty?
 
         JSON.parse(contents, symbolize_names: true)
       rescue Exception => e
