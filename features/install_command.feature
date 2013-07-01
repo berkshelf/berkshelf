@@ -356,7 +356,3 @@ Feature: install cookbooks from a Berksfile
       """
       openssl (1.0.0)
       """
-
-  
-
-
