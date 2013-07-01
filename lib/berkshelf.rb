@@ -1,7 +1,6 @@
-require 'active_support/core_ext'
+require 'buff/extensions'
 require 'archive/tar/minitar'
 require 'celluloid'
-require 'chozo/core_ext'
 require 'digest/md5'
 require 'forwardable'
 require 'hashie'
@@ -14,20 +13,22 @@ require 'tmpdir'
 require 'uri'
 require 'zlib'
 
-require 'berkshelf/core_ext'
-require 'berkshelf/errors'
-require 'thor/monkies'
-
 JSON.create_id = nil
 
+require_relative 'berkshelf/core_ext'
+require_relative 'berkshelf/thor_ext'
+
 module Berkshelf
+  require_relative 'berkshelf/errors'
+  require_relative 'berkshelf/mixin'
+
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
-    require 'berkshelf/mixin/logging'
     include Berkshelf::Mixin::Logging
 
     attr_accessor :ui
+    attr_accessor :logger
     attr_writer :cookbook_store
 
     # @return [Pathname]
@@ -49,8 +50,28 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
+      @berkshelf_path ||= ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
+
+    # Programatically set the berkshelf path.
+    #
+    # @param [#to_s] path
+    #   the path to the Berkshelf
+    def berkshelf_path=(path)
+      @berkshelf_path = File.expand_path(path.to_s)
+    end
+
+    # The Berkshelf configuration.
+    #
+    # @return [Berkshelf::Config]
+    def config
+      @config ||= Berkshelf::Config.instance
+    end
+
+    # Set the Berkshelf Config.
+    #
+    # @param [Berkshelf::Config]
+    attr_writer :config
 
     # The Chef configuration file.
     #
@@ -59,16 +80,16 @@ module Berkshelf
       @chef_config ||= Berkshelf::Chef::Config.load
     end
 
+    # Set the Chef Config.
+    #
+    # @param [Berkshelf::Chef::Config]
+    attr_writer :chef_config
+
     # Set the Chef configuration file.
     #
     # @param [Berkshelf::Chef::Config] new_config
     #   the new configuration file to use
     attr_writer :chef_config
-
-    # @return [Logger]
-    def logger
-      Celluloid.logger
-    end
 
     # @return [String]
     def tmp_dir
@@ -91,21 +112,6 @@ module Berkshelf
     # @return [Berkshelf::CookbookStore]
     def cookbook_store
       @cookbook_store ||= CookbookStore.new(cookbooks_dir)
-    end
-
-    # Ascend the directory structure from the given path to find a
-    # metadata.rb file of a Chef Cookbook. If no metadata.rb file
-    # was found, nil is returned.
-    #
-    # @return [Pathname]
-    #   path to metadata.rb
-    def find_metadata(path = Dir.pwd)
-      path = Pathname.new(path)
-      path.ascend do |potential_root|
-        if potential_root.entries.collect(&:to_s).include?('metadata.rb')
-          return potential_root.join('metadata.rb')
-        end
-      end
     end
 
     # Get the appropriate Formatter object based on the formatter
@@ -148,9 +154,9 @@ require_relative 'berkshelf/chef'
 require_relative 'berkshelf/cli'
 require_relative 'berkshelf/community_rest'
 require_relative 'berkshelf/cookbook_generator'
-require_relative 'berkshelf/cookbook_source'
 require_relative 'berkshelf/cookbook_store'
 require_relative 'berkshelf/config'
+require_relative 'berkshelf/dependency'
 require_relative 'berkshelf/downloader'
 require_relative 'berkshelf/formatters'
 require_relative 'berkshelf/git'
@@ -159,6 +165,8 @@ require_relative 'berkshelf/location'
 require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
-require_relative 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
+
+Ridley.logger = Celluloid.logger = Berkshelf.logger = Logger.new(STDOUT)
+Berkshelf.logger.level = Logger::WARN

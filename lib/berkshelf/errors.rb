@@ -80,7 +80,7 @@ module Berkshelf
     end
   end
 
-  class DuplicateSourceDefined < BerkshelfError; status_code(105); end
+  class DuplicateDependencyDefined < BerkshelfError; status_code(105); end
   class NoSolution < BerkshelfError; status_code(106); end
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
 
@@ -123,7 +123,9 @@ module Berkshelf
   class BerksfileReadError < BerkshelfError
     # @param [#status_code] original_error
     def initialize(original_error)
-      @original_error = original_error
+      @original_error  = original_error
+      @error_message   = original_error.to_s
+      @error_backtrace = original_error.backtrace
     end
 
     status_code(113)
@@ -132,16 +134,20 @@ module Berkshelf
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
     end
 
+    alias_method :original_backtrace, :backtrace
+    def backtrace
+      Array(@error_backtrace) + Array(original_backtrace)
+    end
+
     def to_s
       [
         "An error occurred while reading the Berksfile:",
         "",
-        "  " +  @original_error.to_s.split("\n").map(&:strip).join("\n  "),
+        "  #{@error_message}",
       ].join("\n")
     end
   end
 
-  # @author Seth Vargo <sethvargo@gmail.com>
   class MismatchedCookbookName < BerkshelfError
     status_code(114)
 
@@ -186,7 +192,6 @@ module Berkshelf
 
   class ConfigExists < BerkshelfError; status_code(116); end
   class ConfigurationError < BerkshelfError; status_code(117); end
-  class CommandUnsuccessful < BerkshelfError; status_code(118); end
   class InsufficientPrivledges < BerkshelfError; status_code(119); end
   class ExplicitCookbookNotFound < BerkshelfError; status_code(120); end
   class ValidationFailed < BerkshelfError; status_code(121); end
@@ -240,27 +245,26 @@ module Berkshelf
     end
   end
 
-  class OutdatedCookbookSource < BerkshelfError
+  class OutdatedDependency < BerkshelfError
     status_code(128)
 
-    # @param [Berkshelf::CookbookSource] source
-    #   the cookbook source that is outdated
-    def initialize(locked_source, source)
-      @locked_source = locked_source
-      @source = source
+    # @param [Berkshelf::Dependency] locked_dependency
+    #   the locked dependency
+    # @param [Berkshelf::Dependency] dependency
+    #   the dependency that is outdated
+    def initialize(locked_dependency, dependency)
+      @locked_dependency = locked_dependency
+      @dependency        = dependency
     end
 
     def to_s
-      [
-        "Berkshelf could not find compatible versions for cookbook '#{@source.name}':",
-        "  In Berksfile:",
-        "    #{@locked_source.name} (#{@locked_source.locked_version})",
-        "",
-        "  In Berksfile.lock:",
-        "    #{@source.name} (#{@source.version_constraint})",
-        "",
-        "Try running `berks update #{@source.name}, which will try to find  '#{@source.name}' matching '#{@source.version_constraint}'.",
-      ].join("\n")
+      "Berkshelf could not find compatible versions for cookbook '#{@dependency.name}':\n" +
+      "  In Berksfile:\n" +
+      "    #{@dependency.name} (#{@dependency.version_constraint})\n\n" +
+      "  In Berksfile.lock:\n" +
+      "    #{@locked_dependency.name} (#{@locked_dependency.locked_version})\n\n" +
+      "Try running `berks update #{@dependency.name}, which will try to find '#{@dependency.name}' matching " +
+        "'#{@dependency.version_constraint}'."
     end
   end
 
@@ -284,7 +288,6 @@ module Berkshelf
     end
   end
 
-  # @author Seth Vargo <sethvargo@gmail.com>
   class UnknownCompressionType < BerkshelfError
     status_code(131)
 
@@ -342,10 +345,25 @@ module Berkshelf
     end
   end
 
+  class LicenseNotFound < BerkshelfError
+    status_code(134)
+
+    attr_reader :license
+
+    def initialize(license)
+      @license = license
+    end
+
+    def to_s
+      "Unknown license: '#{license}'\n" +
+      "Available licenses: #{Berkshelf::CookbookGenerator::LICENSES.join(', ')}"
+    end
+  end
+
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   class ConfigNotFound < BerkshelfError
-    status_code(133)
+    status_code(135)
 
     # @param [String] type
     #   the type of config that was not found (Berkshelf, Chef, etc)
@@ -358,6 +376,23 @@ module Berkshelf
 
     def to_s
       "No #{@type.capitalize} config file found at: '#{@path}'!"
+    end
+  end
+
+  class LockfileParserError < BerkshelfError
+    status_code(136)
+
+    # @param [String] lockfile
+    #   the path to the Lockfile
+    # @param [~Exception] original
+    #   the original exception class
+    def initialize(lockfile, original)
+      @lockfile = Pathname.new(lockfile.to_s).basename.to_s
+      @original = original
+    end
+
+    def to_s
+      "Error reading the Berkshelf lockfile `#{@lockfile}` (#{@original.class})"
     end
   end
 end

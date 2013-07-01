@@ -31,10 +31,6 @@ describe Berkshelf::ChefAPILocation, :chef_server do
       expect(subject.client_key).to eq(client_key)
     end
 
-    it 'sets the downloaded status to false' do
-      expect(subject).to_not be_downloaded
-    end
-
     context 'when an invalid Chef API URI is given' do
       it 'raises Berkshelf::InvalidChefAPILocation' do
         expect {
@@ -65,15 +61,15 @@ describe Berkshelf::ChefAPILocation, :chef_server do
       end
 
       it 'uses the value of Berkshelf::Chef.instance.chef.chef_server_url for the uri attribute' do
-        expect(subject.uri).to eq(Berkshelf::Config.instance.chef.chef_server_url)
+        expect(subject.uri).to eq(Berkshelf.config.chef.chef_server_url)
       end
 
       it 'uses the value of Berkshelf::Chef.instance.chef.node_name for the node_name attribute' do
-        expect(subject.node_name).to eq(Berkshelf::Config.instance.chef.node_name)
+        expect(subject.node_name).to eq(Berkshelf.config.chef.node_name)
       end
 
       it 'uses the value of Berkshelf::Chef.instance.chef.client_key for the client_key attribute' do
-        expect(subject.client_key).to eq(Berkshelf::Config.instance.chef.client_key)
+        expect(subject.client_key).to eq(Berkshelf.config.chef.client_key)
       end
     end
   end

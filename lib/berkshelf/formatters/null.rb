@@ -1,6 +1,5 @@
 module Berkshelf
   module Formatters
-    # @author Seth Vargo <sethvargo@gmail.com>
     class Null
       include AbstractFormatter
 

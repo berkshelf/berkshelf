@@ -52,11 +52,6 @@ describe Berkshelf::GitLocation do
       }
     end
 
-    it 'sets the downloaded status to true' do
-      subject.download(tmp_path)
-      expect(subject).to be_downloaded
-    end
-
     context 'given no ref/branch/tag options is given' do
       subject { Berkshelf::GitLocation.new('berkshelf-cookbook-fixture', complacent_constraint, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 
@@ -78,7 +73,7 @@ describe Berkshelf::GitLocation do
     end
 
     context 'given a git repo that does not contain a cookbook' do
-      let(:fake_remote) { local_git_origin_path_for('not_a_cookbook') }
+      let(:fake_remote) { remote_path('not_a_cookbook') }
       subject { Berkshelf::GitLocation.new('doesnot_exist', complacent_constraint, git: "file://#{fake_remote}.git") }
 
       it 'raises a CookbookNotFound error' do

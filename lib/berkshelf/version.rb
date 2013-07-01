@@ -1,3 +1,3 @@
 module Berkshelf
-  VERSION = '2.0.0.beta'
+  VERSION = "3.0.0.dev"
 end

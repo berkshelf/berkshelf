@@ -1,13 +1,43 @@
 require 'berkshelf'
 require_relative 'config'
 require_relative 'init_generator'
-
-require 'berkshelf/commands/test_command'
-require 'berkshelf/commands/shelf'
+require_relative 'cookbook_generator'
+require_relative 'commands/shelf'
+require_relative 'commands/test_command'
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class Cli < Thor
+    # This is the main entry point for the CLI. It exposes the method {#execute!} to
+    # start the CLI.
+    #
+    # @note the arity of {#initialize} and {#execute!} are extremely important for testing purposes. It
+    #   is a requirement to perform in-process testing with Aruba. In process testing is much faster
+    #   than spawning a new Ruby process for each test.
+    class Runner
+      def initialize(argv, stdin = STDIN, stdout = STDOUT, stderr = STDERR, kernel = Kernel)
+        @argv, @stdin, @stdout, @stderr, @kernel = argv, stdin, stdout, stderr, kernel
+      end
+
+      def execute!
+        begin
+          $stdin  = @stdin
+          $stdout = @stdout
+          $stderr = @stderr
+
+          Berkshelf::Cli.start(@argv)
+          @kernel.exit(0)
+        rescue Berkshelf::BerkshelfError => e
+          Berkshelf.ui.error e
+          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+          @kernel.exit(e.status_code)
+        rescue Ridley::Errors::RidleyError => e
+          Berkshelf.ui.error "#{e.class} #{e}"
+          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+          @kernel.exit(47)
+        end
+      end
+    end
+
     class << self
       def dispatch(meth, given_args, given_opts, config)
         unless (given_args & ['-h', '--help']).empty?
@@ -32,7 +62,8 @@ module Berkshelf
         unless File.exist?(@options[:config])
           raise ConfigNotFound.new(:berkshelf, @options[:config])
         end
-        Berkshelf::Config.path = @options[:config]
+
+        Berkshelf.config = Berkshelf::Config.from_file(@options[:config])
       end
 
       if @options[:debug]
@@ -86,7 +117,7 @@ module Berkshelf
       desc: 'create a new configuration file even if one already exists.'
     method_option :path,
       type: :string,
-      default: Berkshelf::Config.path,
+      default: Berkshelf.config.path,
       desc: 'The path to save the configuration file'
     desc 'configure', 'Create a new Berkshelf configuration file'
     def configure
@@ -96,7 +127,7 @@ module Berkshelf
         raise Berkshelf::ConfigExists, 'A configuration file already exists. Re-run with the --force flag if you wish to overwrite it.'
       end
 
-      @config = Berkshelf::Config.new(path)
+      config = Berkshelf::Config.new(path)
 
       [
         'chef.chef_server_url',
@@ -107,7 +138,7 @@ module Berkshelf
         'vagrant.vm.box',
         'vagrant.vm.box_url',
       ].each do |attribute|
-        default = @config.get_attribute(attribute)
+        default = config.get_attribute(attribute)
 
         message = "Enter value for #{attribute}"
         message << " (default: '#{default}')" if default
@@ -116,32 +147,18 @@ module Berkshelf
         input = Berkshelf.ui.ask(message)
 
         if input.present?
-          @config.set_attribute(attribute, input)
+          config.set_attribute(attribute, input)
         end
       end
 
-      unless @config.valid?
-        raise InvalidConfiguration.new(@config.errors)
+      unless config.valid?
+        raise InvalidConfiguration.new(config.errors)
       end
 
-      @config.save
+      config.save
+      Berkshelf.config = config
 
       Berkshelf.formatter.msg "Config written to: '#{path}'"
-    end
-
-    desc 'open NAME', 'Open the source directory of the cookbook'
-    def open(name)
-      editor = [ENV['BERKSHELF_EDITOR'], ENV['VISUAL'], ENV['EDITOR']].find{|e| !e.nil? && !e.empty? }
-      raise ArgumentError, 'To open a cookbook, set $EDITOR or $BERKSHELF_EDITOR' unless editor
-
-      cookbook = Berkshelf.cookbook_store.cookbooks(name).last
-      raise CookbookNotFound, "Cookbook '#{name}' not found in any of the sources!" unless cookbook
-
-      Dir.chdir(cookbook.path) do
-        command = "#{editor} #{cookbook.path}"
-        success = system(command)
-        raise CommandUnsuccessful, "Could not run `#{command}`" unless success
-      end
     end
 
     method_option :except,
@@ -171,7 +188,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -196,7 +213,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -247,7 +264,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -265,7 +282,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -282,7 +299,7 @@ module Berkshelf
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       Berkshelf.formatter.msg 'Listing outdated cookbooks with newer versions available...'
       Berkshelf.formatter.msg 'BETA: this feature will only pull differences from the community site and will'
-      Berkshelf.formatter.msg 'BETA: ignore all other sources you may have defined'
+      Berkshelf.formatter.msg 'BETA: ignore all other dependencies you may have defined'
       Berkshelf.formatter.msg ''
 
       outdated_options = {
@@ -301,12 +318,12 @@ module Berkshelf
     end
 
     desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
-    def init(path = Dir.pwd)
+    def init(path = '.')
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
 
       if File.chef_cookbook?(path)
-        options[:chefignore] = true
+        options[:chefignore]     = true
         options[:metadata_entry] = true
       end
 
@@ -314,7 +331,6 @@ module Berkshelf
 
       ::Berkshelf.formatter.msg 'Successfully initialized'
     end
-    tasks['init'].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
@@ -322,34 +338,17 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    desc 'list', 'List all cookbooks (and dependencies) specified in the Berksfile'
+    desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
     def list
-      berksfile = Berksfile.from_file(options[:berksfile])
-      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
+      berksfile    = Berksfile.from_file(options[:berksfile])
+      dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
 
-      if sources.empty?
+      if dependencies.empty?
         Berkshelf.formatter.msg 'There are no cookbooks installed by your Berksfile'
       else
         Berkshelf.formatter.msg 'Cookbooks installed by your Berksfile:'
-        print_list(sources)
+        print_list(dependencies)
       end
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    desc 'show COOKBOOK', 'Display the source path on the local file system for the given cookbook'
-    def show(name)
-      berksfile = Berksfile.from_file(options[:berksfile])
-      source = berksfile.find(name)
-
-      cookbook = Berkshelf.ui.mute { berksfile.resolve(source)[:solution].first }
-
-      raise CookbookNotFound, "Cookbook '#{name}' was not installed by your Berksfile" unless cookbook
-      Berkshelf.formatter.msg(cookbook.path)
     end
 
     method_option :berksfile,
@@ -358,8 +357,8 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
-    def info(name)
+    desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
+    def show(name)
       berksfile = Berksfile.from_file(options[:berksfile])
 
       cookbook = Berkshelf.ui.mute {
@@ -368,7 +367,7 @@ module Berkshelf
 
       raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile" unless cookbook
 
-      Berkshelf.formatter.info(cookbook)
+      Berkshelf.formatter.show(cookbook)
     end
 
     method_option :berksfile,
@@ -381,8 +380,8 @@ module Berkshelf
     def contingent(name)
       berksfile = Berksfile.from_file(options[:berksfile])
 
-      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
-      dependencies = sources.select { |cookbook| cookbook.dependencies.include?(name) }
+      dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
+      dependencies = dependencies.select { |cookbook| cookbook.dependencies.include?(name) }
 
       if dependencies.empty?
         Berkshelf.formatter.msg "There are no cookbooks contingent upon '#{name}' defined in this Berksfile"
@@ -394,13 +393,13 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME),
+      default: Berkshelf::DEFAULT_FILENAME,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
     method_option :output,
       type: :string,
-      default: Dir.pwd,
+      default: '.',
       desc: 'Path to output the tarball',
       aliases: '-o',
       banner: 'PATH'
@@ -412,7 +411,7 @@ module Berkshelf
       type: :boolean,
       desc: 'Do not apply the chefignore to the packaged contents',
       default: false
-    desc 'package [COOKBOOK]', 'Package a cookbook (and dependencies) as a tarball'
+    desc "package [COOKBOOK]", "Package a cookbook and it's dependencies as a tarball"
     def package(name = nil)
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.package(name, options)
@@ -425,53 +424,14 @@ module Berkshelf
       Berkshelf.formatter.msg license
     end
 
-    method_option :foodcritic,
-      type: :boolean,
-      desc: 'Creates a Thorfile with Foodcritic support to lint test your cookbook'
-    method_option :chef_minitest,
-      type: :boolean,
-      desc: 'Creates chef-minitest support files and directories, adds minitest-handler cookbook to run_list of Vagrantfile'
-    method_option :scmversion,
-      type: :boolean,
-      desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
-    method_option :license,
-      type: :string,
-      desc: 'License for cookbook (apachev2, gplv2, gplv3, mit, reserved)',
-      aliases: '-L'
-    method_option :maintainer,
-      type: :string,
-      desc: 'Name of cookbook maintainer',
-      aliases: '-m'
-    method_option :maintainer_email,
-      type: :string,
-      desc: 'Email address of cookbook maintainer',
-      aliases: '-e'
-    method_option :no_bundler,
-      type: :boolean,
-      desc: 'Skips generation of a Gemfile and other Bundler specific support'
-    method_option :vagrant,
-      type: :boolean,
-      hide: true
-    method_option :skip_vagrant,
-      type: :boolean,
-      desc: 'Skips adding a Vagrantfile and adding supporting gems to the Gemfile'
-    method_option :git,
-      type: :boolean,
-      hide: true
-    method_option :skip_git,
-      type: :boolean,
-      desc: 'Skips adding a .gitignore and running git init in the cookbook directory'
     desc 'cookbook NAME', 'Create a skeleton for a new cookbook'
     def cookbook(name)
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
 
-      unless Config.instance.valid?
-        raise InvalidConfiguration.new(Config.instance.errors)
-      end
-
       ::Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
     end
+    tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
 
     private
 

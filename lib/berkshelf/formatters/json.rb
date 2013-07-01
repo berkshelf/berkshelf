@@ -1,21 +1,19 @@
 module Berkshelf
   module Formatters
-    # @author Michael Ivey <michael.ivey@riotgames.com>
     class JSON
       include AbstractFormatter
 
       register_formatter :json
 
       def initialize
-        Berkshelf.ui.mute!
-
         @output = {
           cookbooks: Array.new,
           errors: Array.new,
           messages: Array.new
         }
         @cookbooks = Hash.new
-        super
+
+        Berkshelf.ui.mute { super }
       end
 
       def cleanup_hook
@@ -42,11 +40,15 @@ module Berkshelf
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [String] path
-      def use(cookbook, version, path = nil)
+      # @param [~Location] location
+      def use(cookbook, version, location = nil)
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
-        cookbooks[cookbook][:location] = path if path
+
+        if location && location.is_a?(PathLocation)
+          cookbooks[cookbook][:metadata] = true if location.metadata?
+          cookbooks[cookbook][:location] = location.relative_path
+        end
       end
 
       # Add a Cookbook upload entry to delayed output
@@ -69,10 +71,10 @@ module Berkshelf
         cookbooks[cookbook][:destination] = destination
       end
 
-      # Output a Cookbook info entry to delayed output
+      # Output Cookbook info entry to delayed output
       #
       # @param [CachedCookbook] cookbook
-      def info(cookbook)
+      def show(cookbook)
         cookbooks[cookbook.cookbook_name] = cookbook.pretty_hash
       end
 

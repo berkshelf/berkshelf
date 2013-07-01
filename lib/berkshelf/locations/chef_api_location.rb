@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class ChefAPILocation
     class << self
       # @return [Proc]
@@ -80,11 +79,11 @@ module Berkshelf
     #   a URL to a Chef API. Alternatively the symbol :config can be provided
     #   which will instantiate this location with the values found in your
     #   Berkshelf configuration.
-    # @option options [String] :node_name (Berkshelf::Config.instance.chef.node_name)
+    # @option options [String] :node_name (Berkshelf.config.chef.node_name)
     #   the name of the client to use to communicate with the Chef API.
-    # @option options [String] :client_key (Berkshelf::Config.instance.chef.client_key)
+    # @option options [String] :client_key (Berkshelf.config.chef.client_key)
     #   the filepath to the authentication key for the client
-    # @option options [Boolean] :verify_ssl (Berkshelf::Config.instance.chef.ssl.verify)
+    # @option options [Boolean] :verify_ssl (Berkshelf.config.chef.ssl.verify)
     #
     # @raise [ClientKeyFileNotFound] if the value for :client_key does not contain a filepath
     #   pointing to a readable file containing a Chef client key.
@@ -94,9 +93,9 @@ module Berkshelf
     #   client key.
     def initialize(name, version_constraint, options = {})
       options = options.reverse_merge(
-        client_key: Berkshelf::Config.instance.chef.client_key,
-        node_name: Berkshelf::Config.instance.chef.node_name,
-        verify_ssl: Berkshelf::Config.instance.ssl.verify
+        client_key: Berkshelf.config.chef.client_key,
+        node_name: Berkshelf.config.chef.node_name,
+        verify_ssl: Berkshelf.config.ssl.verify
       )
 
       @name               = name
@@ -111,18 +110,18 @@ module Berkshelf
       validate_options!(options)
 
       if options[:chef_api] == :config
-        unless Berkshelf::Config.instance.chef.node_name.present? &&
-          Berkshelf::Config.instance.chef.client_key.present? &&
-          Berkshelf::Config.instance.chef.chef_server_url.present?
+        unless Berkshelf.config.chef.node_name.present? &&
+          Berkshelf.config.chef.client_key.present? &&
+          Berkshelf.config.chef.chef_server_url.present?
 
           msg = "A Berkshelf configuration is required with a 'chef.client_key', 'chef.chef_server_Url',"
           msg << " and 'chef.node_name' setting to install or upload cookbooks using 'chef_api :config'."
 
           raise Berkshelf::ConfigurationError, msg
         end
-        @node_name  = Berkshelf::Config.instance.chef.node_name
-        @client_key = Berkshelf::Config.instance.chef.client_key
-        @uri        = Berkshelf::Config.instance.chef.chef_server_url
+        @node_name  = Berkshelf.config.chef.node_name
+        @client_key = Berkshelf.config.chef.client_key
+        @uri        = Berkshelf.config.chef.chef_server_url
       else
         @node_name  = options[:node_name]
         @client_key = options[:client_key]
@@ -157,7 +156,6 @@ module Berkshelf
       cached = CachedCookbook.from_store_path(berks_path)
       validate_cached(cached)
 
-      set_downloaded_status(true)
       cached
     end
 

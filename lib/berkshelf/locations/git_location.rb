@@ -1,5 +1,4 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class GitLocation
     class << self
       # Create a temporary directory for the cloned repository within Berkshelf's
@@ -55,7 +54,7 @@ module Berkshelf
     # @return [Berkshelf::CachedCookbook]
     def download(destination)
       if cached?(destination)
-        @ref = Berkshelf::Git.rev_parse(revision_path(destination))
+        @ref ||= Berkshelf::Git.rev_parse(revision_path(destination))
         return local_revision(destination)
       end
 
@@ -78,7 +77,6 @@ module Berkshelf
       cached = CachedCookbook.from_store_path(cb_path)
       validate_cached(cached)
 
-      set_downloaded_status(true)
       cached
     end
 

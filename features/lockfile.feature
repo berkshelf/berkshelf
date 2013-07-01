@@ -14,8 +14,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"80396ed07db133e0192593adebb360c27eed88c2",
-        "sources":{
+        "dependencies":{
           "fake":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -24,11 +23,12 @@ Feature: Creating and reading the Berkshelf lockfile
       }
       """
 
-  Scenario: Wiring the Berksfile.lock when an old lockfile is present
+  Scenario: Wiring the Berksfile.lock when a 1.0 lockfile is present
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      site :opscode
       cookbook 'fake', '1.0.0'
       """
     And I write to "Berksfile.lock" with:
@@ -36,15 +36,47 @@ Feature: Creating and reading the Berkshelf lockfile
       cookbook 'fake', :locked_version => '1.0.0'
       """
     When I successfully run `berks install`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the output should warn about the old lockfile format
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"80396ed07db133e0192593adebb360c27eed88c2",
-        "sources":{
-          "fake":{
-            "locked_version":"1.0.0",
-            "constraint":"= 1.0.0"
+        "dependencies": {
+          "fake": {
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+
+  Scenario: Wiring the Berksfile.lock when a 2.0 lockfile is present
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "sources": {
+          "fake": {
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+    When I successfully run `berks install`
+    Then the output should warn about the old lockfile format
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
           }
         }
       }
@@ -56,19 +88,17 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       cookbook 'fake', '0.0.0', path: './fake'
       """
-    And I dynamically write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
-      cookbook 'fake', :locked_version => '0.0.0', path: '<%= File.expand_path('tmp/aruba/fake') %>'
+      cookbook 'fake', :locked_version => '0.0.0', path: '../../tmp/aruba/fake'
       """
     When I successfully run `berks install`
-    Then the output should contain "You are using the old lockfile format. Attempting to convert..."
+    Then the output should warn about the old lockfile format
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"4b614de85168d72fda4b255fc31796b4c474c3fc",
-        "sources":{
+        "dependencies":{
           "fake":{
-            "locked_version":"0.0.0",
             "constraint":"= 0.0.0",
             "path":"./fake"
           }
@@ -89,8 +119,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"80396ed07db133e0192593adebb360c27eed88c2",
-        "sources":{
+        "dependencies":{
           "fake":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -114,8 +143,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
@@ -127,8 +155,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"e42f8e41a5e646bd86591c5b7ec25442736b87fd",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 1.0.0",
             "locked_version":"1.0.0"
@@ -149,8 +176,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"3dced4fcd9c3f72b68e746190aaa1140bdc6cc3d",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 0.1",
             "locked_version":"0.1.0"
@@ -162,8 +188,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"b2714a4f9bdf500cb20267067160a0b3c1d8404c",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"~> 0.1",
             "locked_version":"0.2.0"
@@ -183,8 +208,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sha":"7d07c22eca03bf6da5aaf38ae81cb9a8a439c692",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -196,8 +220,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha":"c6438d7590f4d695d8abae83ff22586ba6d3a52e",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "constraint":"= 1.0.0",
             "locked_version":"1.0.0"
@@ -218,8 +241,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "b8e06c891c824b3e3481df024eb241e1c02572a6",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
@@ -241,8 +263,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "310f95bb86ba76b47eef28abc621d0e8de19bbb6",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"a97b9447cbd41a5fe58eee2026e48ccb503bd3bc",
@@ -264,8 +285,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "ade51e222f569cc299f34ec1100d321f3b230c36",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"70a527e17d91f01f031204562460ad1c17f972ee",
@@ -287,8 +307,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "3ac97aa503bcebb2b393410aebc176c3c5bed2d4",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"919afa0c402089df23ebdf36637f12271b8a96b4",
@@ -308,8 +327,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "f0b5a9c0230a3ff384badb0c40af1058cde75bee",
-        "sources":{
+        "dependencies":{
           "berkshelf-cookbook-fixture":{
             "git":"git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
             "ref":"93f5768b7d14df45e10d16c8bf6fe98ba3ff809a",
@@ -331,41 +349,64 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "42a13f91f1ba19ce8c6776fe267e74510dee27ce",
-        "sources":{
+        "dependencies":{
           "fake":{
-            "path":"./fake",
-            "locked_version":"0.0.0"
+            "path":"./fake"
           }
         }
       }
       """
 
-  Scenario: Lockfile when `metadata` is specified
-    Given I write to "metadata.rb" with:
-      """
-      name 'fake'
-      version '1.0.0'
-      """
-    And I write to "Berksfile" with:
+  Scenario: Installing a Berksfile with a metadata location
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "Berksfile" with:
       """
       site :opscode
       metadata
       """
-    When I successfully run `berks install`
+    When I cd to "fake"
+    And I successfully run `berks install`
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sha": "9e7f8da566fec49ac41c0d862cfdf728eee10568",
-        "sources":{
-          "fake":{
-            "path":".",
-            "locked_version":"1.0.0",
-            "constraint":"= 1.0.0"
+        "dependencies": {
+          "fake": {
+            "path": "."
           }
         }
       }
       """
+
+  Scenario: Installing a Berksfile with a metadata location
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      site :opscode
+      metadata
+      """
+    And the cookbook "fake" has the file "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "path": "."
+          }
+        }
+      }
+      """
+    When I cd to "fake"
+    And I successfully run `berks install`
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "path": "."
+          }
+        }
+      }
+      """
+    And the exit status should be 0
 
   Scenario: Updating a Berksfile.lock with a different site location
   Given pending we have a reliable non-opscode site to test
@@ -377,8 +418,7 @@ Feature: Creating and reading the Berkshelf lockfile
   # Then the file "Berksfile.lock" should contain JSON:
   #   """
   #   {
-  #     "sha": "3232c5ae6f54aee3efc5fdcfce69249a2526822b",
-  #     "sources":{
+  #     "dependencies":{
   #       "sudo":{
   #         "site":"opscode",
   #         "locked_version":"2.0.4"
@@ -406,11 +446,45 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       Berkshelf could not find compatible versions for cookbook 'berkshelf-cookbook-fixture':
         In Berksfile:
-          berkshelf-cookbook-fixture (1.0.0)
-
-        In Berksfile.lock:
           berkshelf-cookbook-fixture (~> 1.3.0)
 
-      Try running `berks update berkshelf-cookbook-fixture, which will try to find  'berkshelf-cookbook-fixture' matching '~> 1.3.0'
+        In Berksfile.lock:
+          berkshelf-cookbook-fixture (1.0.0)
+
+      Try running `berks update berkshelf-cookbook-fixture, which will try to find 'berkshelf-cookbook-fixture' matching '~> 1.3.0'
       """
-    And the CLI should exit with the status code for error "OutdatedCookbookSource"
+    And the exit status should be "OutdatedDependency"
+
+  Scenario: Installing when the Lockfile is empty
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', '1.0.0'
+      """
+    And an empty file named "Berksfile.lock"
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Using fake (1.0.0)
+      """
+    And the exit status should be 0
+
+  Scenario: Installing when the Lockfile is in a bad state
+    Given I write to "Berksfile" with:
+      """
+      site :opscode
+      cookbook 'fake', '1.0.0'
+      """
+    Given I write to "Berksfile.lock" with:
+      """
+      this is totally not valid
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Error reading the Berkshelf lockfile `Berksfile.lock` (JSON::ParserError)
+      """
+    And the exit status should be "LockfileParserError"
+

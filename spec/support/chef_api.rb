@@ -50,7 +50,6 @@ module Berkshelf
           "templates/default",
           "files/default",
           "attributes",
-          "definitions",
           "providers",
           "resources"
         ]

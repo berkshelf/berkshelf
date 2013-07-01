@@ -1,6 +1,5 @@
 module Berkshelf
   module Formatters
-    # @author Michael Ivey <michael.ivey@riotgames.com>
     class HumanReadable
       include AbstractFormatter
 
@@ -19,9 +18,16 @@ module Berkshelf
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [String] path
-      def use(cookbook, version, path = nil)
-        Berkshelf.ui.info "Using #{cookbook} (#{version})#{' at '+path if path}"
+      # @param [~Location] location
+      def use(cookbook, version, location = nil)
+        message = "Using #{cookbook} (#{version})"
+
+        if location && location.is_a?(PathLocation)
+          message << ' from metadata' if location.metadata?
+          message << " at '#{location.relative_path}'" unless location.relative_path == '.'
+        end
+
+        Berkshelf.ui.info message
       end
 
       # Output a Cookbook upload message using {Berkshelf.ui}
@@ -41,10 +47,10 @@ module Berkshelf
         Berkshelf.ui.info "Cookbook(s) packaged to #{destination}!"
       end
 
-      # Output a Cookbook info message using {Berkshelf.ui}
+      # Output Cookbook info message using {Berkshelf.ui}
       #
       # @param [CachedCookbook] cookbook
-      def info(cookbook)
+      def show(cookbook)
         Berkshelf.ui.info(cookbook.pretty_print)
       end
 

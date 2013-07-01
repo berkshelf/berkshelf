@@ -1,11 +1,8 @@
 require 'uri'
+require 'buff/shell_out'
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class Git
-    require 'berkshelf/mixin/shellout'
-    extend Berkshelf::Mixin::Shellout
-
     GIT_REGEXP = URI.regexp(%w(http https ssh git+ssh git rsync))
     SCP_REGEXP = /^(.+@)?[\w\d\.-]+:.*$/
 
@@ -13,6 +10,8 @@ module Berkshelf
     HAS_SPACE_RE = %r{\s}.freeze
 
     class << self
+      include Buff::ShellOut
+
       # @overload git(commands)
       #   Shellout to the Git executable on your system with the given commands.
       #
@@ -23,13 +22,13 @@ module Berkshelf
       def git(*command)
         command.unshift(git_cmd)
         command_str = command.map { |p| quote_cmd_arg(p) }.join(' ')
-        result = shellout(command_str)
+        response    = shell_out(command_str)
 
-        unless result.success?
-          raise GitError.new(result.stderr)
+        unless response.success?
+          raise GitError.new(response.stderr.strip)
         end
 
-        result.stdout
+        response.stdout.strip
       end
 
       # Clone a remote Git repository to disk
@@ -79,7 +78,7 @@ module Berkshelf
       # @raise [AmbiguousGitRef] if the ref could refer to more than one revision
       def show_ref(repo_path, ref)
         Dir.chdir repo_path do
-          lines = git('show-ref', "'#{ref}'").lines.to_a
+          lines = git('show-ref', ref).lines.to_a
 
           raise AmbiguousGitRef, ref if lines.size > 1
 

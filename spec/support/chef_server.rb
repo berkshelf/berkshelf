@@ -1,8 +1,9 @@
 require 'chef_zero/server'
+require 'json'
 
 module Berkshelf::RSpec
   module ChefServer
-    PORT = 8889
+    PORT = 4000
 
     class << self
       def clear_request_log
@@ -38,6 +39,10 @@ module Berkshelf::RSpec
       def running?
         @server && @server.running?
       end
+
+      def reset!
+        @server && @server.clear_data
+      end
     end
 
     def chef_server
@@ -67,7 +72,7 @@ module Berkshelf::RSpec
     private
 
       def load_data(key, name, hash)
-        ChefServer.server.load_data({ key.to_s => { name => MultiJson.encode(hash) }})
+        ChefServer.server.load_data({ key.to_s => { name => JSON.generate(hash) }})
       end
   end
 end

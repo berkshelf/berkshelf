@@ -2,10 +2,27 @@ require 'spec_helper'
 
 describe Berkshelf::Berksfile do
   describe '.from_file' do
-    let(:cookbook_file) { fixtures_path.join('lockfile_spec', 'with_lock', 'Berksfile') }
+    let(:content) do
+      <<-EOF.strip
+      cookbook 'ntp', '<= 1.0.0'
+      cookbook 'mysql'
+      cookbook 'nginx', '< 0.101.2'
+      cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
+      EOF
+    end
+    let(:berksfile) { tmp_path.join('Berksfile') }
 
-    it 'reads a Berksfile and returns an instance Berksfile' do
-      expect(Berkshelf::Berksfile.from_file(cookbook_file)).to be_a(Berkshelf::Berksfile)
+    before { File.open(berksfile, 'w+') { |f| f.write(content) } }
+    subject(:from_file) { described_class.from_file(berksfile) }
+
+    it "reads the content of the Berksfile and binds them to a new instance" do
+      %w(ntp mysql nginx ssh_known_hosts2).each do |name|
+        expect(subject).to have_dependency(name)
+      end
+    end
+
+    it "returns an instance of Berkshelf::Berksfile" do
+      expect(subject).to be_a(described_class)
     end
 
     context 'when Berksfile does not exist at given path' do
@@ -47,10 +64,8 @@ describe Berkshelf::Berksfile do
     end
   end
 
-
-
-  let(:source_one) { double('source_one', name: 'nginx') }
-  let(:source_two) { double('source_two', name: 'mysql') }
+  let(:dependency_one) { double('dependency_one', name: 'nginx') }
+  let(:dependency_two) { double('dependency_two', name: 'mysql') }
 
   subject do
     berksfile_path = tmp_path.join('Berksfile').to_s
@@ -63,31 +78,31 @@ describe Berkshelf::Berksfile do
     let(:constraint) { double('constraint') }
     let(:default_options) { { group: [] } }
 
-    it 'sends the add_source message with the name, constraint, and options to the instance of the includer' do
-      subject.should_receive(:add_source).with(name, constraint, default_options)
+    it 'sends the add_dependency message with the name, constraint, and options to the instance of the includer' do
+      subject.should_receive(:add_dependency).with(name, constraint, default_options)
       subject.cookbook(name, constraint, default_options)
     end
 
     it 'merges the default options into specified options' do
-      subject.should_receive(:add_source).with(name, constraint, path: '/Users/reset', group: [])
+      subject.should_receive(:add_dependency).with(name, constraint, path: '/Users/reset', group: [])
       subject.cookbook(name, constraint, path: '/Users/reset')
     end
 
     it 'converts a single specified group option into an array of groups' do
-      subject.should_receive(:add_source).with(name, constraint, group: [:production])
+      subject.should_receive(:add_dependency).with(name, constraint, group: [:production])
       subject.cookbook(name, constraint, group: :production)
     end
 
     context 'when no constraint specified' do
-      it 'sends the add_source message with a nil value for constraint' do
-        subject.should_receive(:add_source).with(name, nil, default_options)
+      it 'sends the add_dependency message with a nil value for constraint' do
+        subject.should_receive(:add_dependency).with(name, nil, default_options)
         subject.cookbook(name, default_options)
       end
     end
 
     context 'when no options specified' do
-      it 'sends the add_source message with an empty Hash for the value of options' do
-        subject.should_receive(:add_source).with(name, constraint, default_options)
+      it 'sends the add_dependency message with an empty Hash for the value of options' do
+        subject.should_receive(:add_dependency).with(name, constraint, default_options)
         subject.cookbook(name, constraint)
       end
     end
@@ -97,8 +112,8 @@ describe Berkshelf::Berksfile do
     let(:name) { 'artifact' }
     let(:group) { 'production' }
 
-    it 'sends the add_source message with an array of groups determined by the parameter passed to the group block' do
-      subject.should_receive(:add_source).with(name, nil, group: [group])
+    it 'sends the add_dependency message with an array of groups determined by the parameter passed to the group block' do
+      subject.should_receive(:add_dependency).with(name, nil, group: [group])
 
       subject.group(group) do
         subject.cookbook(name)
@@ -112,8 +127,8 @@ describe Berkshelf::Berksfile do
 
     before { Dir.chdir(path) }
 
-    it 'sends the add_source message with an explicit version constraint and the path to the cookbook' do
-      subject.should_receive(:add_source).with('example_cookbook', '= 0.5.0', path: path.to_s)
+    it 'sends the add_dependency message with an explicit version constraint and the path to the cookbook' do
+      subject.should_receive(:add_dependency).with('example_cookbook', nil, path: path.to_s, metadata: true)
       subject.metadata
     end
   end
@@ -156,7 +171,7 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#sources' do
+  describe '#dependencies' do
     let(:groups) do
       [
         :nautilus,
@@ -164,51 +179,51 @@ describe Berkshelf::Berksfile do
       ]
     end
 
-    it 'returns all CookbookSources added to the instance of Berksfile' do
-      subject.add_source(source_one.name)
-      subject.add_source(source_two.name)
+    it 'returns all Berkshelf::Dependencys added to the instance of Berksfile' do
+      subject.add_dependency(dependency_one.name)
+      subject.add_dependency(dependency_two.name)
 
-      expect(subject.sources).to have(2).items
-      expect(subject).to have_source(source_one.name)
-      expect(subject).to have_source(source_two.name)
+      expect(subject.dependencies).to have(2).items
+      expect(subject).to have_dependency(dependency_one.name)
+      expect(subject).to have_dependency(dependency_two.name)
     end
 
     context 'given the option :except' do
       before do
-        source_one.stub(:groups) { [:default, :skarner] }
-        source_two.stub(:groups) { [:default, :nautilus] }
+        dependency_one.stub(:groups) { [:default, :skarner] }
+        dependency_two.stub(:groups) { [:default, :nautilus] }
       end
 
-      it 'returns all of the sources except the ones in the given groups' do
-        subject.add_source(source_one.name, nil, group: [:default, :skarner])
-        subject.add_source(source_two.name, nil, group: [:default, :nautilus])
-        filtered = subject.sources(except: :nautilus)
+      it 'returns all of the dependencies except the ones in the given groups' do
+        subject.add_dependency(dependency_one.name, nil, group: [:default, :skarner])
+        subject.add_dependency(dependency_two.name, nil, group: [:default, :nautilus])
+        filtered = subject.dependencies(except: :nautilus)
 
         expect(filtered).to have(1).item
-        expect(filtered.first.name).to eq(source_one.name)
+        expect(filtered.first.name).to eq(dependency_one.name)
       end
     end
 
     context 'given the option :only' do
       before do
-        source_one.stub(:groups) { [:default, :skarner] }
-        source_two.stub(:groups) { [:default, :nautilus] }
+        dependency_one.stub(:groups) { [:default, :skarner] }
+        dependency_two.stub(:groups) { [:default, :nautilus] }
       end
 
-      it 'returns only the sources in the givne groups' do
-        subject.add_source(source_one.name, nil, group: [:default, :skarner])
-        subject.add_source(source_two.name, nil, group: [:default, :nautilus])
-        filtered = subject.sources(only: :nautilus)
+      it 'returns only the dependencies in the givne groups' do
+        subject.add_dependency(dependency_one.name, nil, group: [:default, :skarner])
+        subject.add_dependency(dependency_two.name, nil, group: [:default, :nautilus])
+        filtered = subject.dependencies(only: :nautilus)
 
         expect(filtered).to have(1).item
-        expect(filtered.first.name).to eq(source_two.name)
+        expect(filtered.first.name).to eq(dependency_two.name)
       end
     end
 
     context 'when a value for :only and :except is given' do
       it 'raises an ArgumentError' do
         expect {
-          subject.sources(only: [:default], except: [:other])
+          subject.dependencies(only: [:default], except: [:other])
         }.to raise_error(Berkshelf::ArgumentError, "Cannot specify both :except and :only")
       end
     end
@@ -216,19 +231,19 @@ describe Berkshelf::Berksfile do
 
   describe '#groups' do
     before do
-      subject.stub(:sources) { [source_one, source_two] }
-      source_one.stub(:groups) { [:nautilus, :skarner] }
-      source_two.stub(:groups) { [:nautilus, :riven] }
+      subject.stub(:dependencies) { [dependency_one, dependency_two] }
+      dependency_one.stub(:groups) { [:nautilus, :skarner] }
+      dependency_two.stub(:groups) { [:nautilus, :riven] }
     end
 
-    it 'returns a hash containing keys for every group a source is a member of' do
+    it 'returns a hash containing keys for every group a dependency is a member of' do
       expect(subject.groups.keys).to have(3).items
       expect(subject.groups).to have_key(:nautilus)
       expect(subject.groups).to have_key(:skarner)
       expect(subject.groups).to have_key(:riven)
     end
 
-    it 'returns an Array of CookbookSources who are members of the group for value' do
+    it 'returns an Array of Berkshelf::Dependencys who are members of the group for value' do
       expect(subject.groups[:nautilus]).to have(2).items
       expect(subject.groups[:riven]).to have(1).item
     end
@@ -236,7 +251,7 @@ describe Berkshelf::Berksfile do
 
   describe '#resolve' do
     let(:resolver) { double('resolver') }
-    let(:sources) { [source_one, source_two] }
+    let(:dependencies) { [dependency_one, dependency_two] }
     let(:cached) { [double('cached_one'), double('cached_two')] }
 
     before do
@@ -245,9 +260,9 @@ describe Berkshelf::Berksfile do
 
     it 'resolves the Berksfile' do
       resolver.should_receive(:resolve).and_return(cached)
-      resolver.should_receive(:sources).and_return(sources)
+      resolver.should_receive(:dependencies).and_return(dependencies)
 
-      expect(subject.resolve).to eq({ solution: cached, sources: sources })
+      expect(subject.resolve).to eq({ solution: cached, dependencies: dependencies })
     end
   end
 
@@ -256,18 +271,15 @@ describe Berkshelf::Berksfile do
     let(:lockfile) { double('lockfile') }
 
     let(:cached_cookbooks) { [double('cached_one'), double('cached_two')] }
-    let(:sources) { [source_one, source_two] }
+    let(:dependencies) { [dependency_one, dependency_two] }
 
     before do
       Berkshelf::Resolver.stub(:new).and_return(resolver)
       Berkshelf::Lockfile.stub(:new).and_return(lockfile)
 
-      subject.stub(:sha).and_return('abc123')
+      lockfile.stub(:dependencies).and_return([])
 
-      lockfile.stub(:sources).and_return([])
-      lockfile.stub(:sha).and_return('xyz456')
-
-      resolver.stub(:sources).and_return([])
+      resolver.stub(:dependencies).and_return([])
       lockfile.stub(:update)
     end
 
@@ -289,9 +301,9 @@ describe Berkshelf::Berksfile do
         subject.install
       end
 
-      it 'writes a lockfile with the resolvers sources' do
+      it 'writes a lockfile with the resolvers dependencies' do
         resolver.should_receive(:resolve)
-        lockfile.should_receive(:update).with([], sha: 'abc123')
+        lockfile.should_receive(:update).with([])
 
         subject.install
       end
@@ -300,7 +312,7 @@ describe Berkshelf::Berksfile do
     context 'when a value for :path is given' do
       before do
         resolver.should_receive(:resolve)
-        resolver.should_receive(:sources).and_return([])
+        resolver.should_receive(:dependencies).and_return([])
       end
 
       it 'sends the message :vendor to Berksfile with the value for :path' do
@@ -314,13 +326,13 @@ describe Berkshelf::Berksfile do
     context 'when a value for :except is given' do
       before do
         resolver.should_receive(:resolve)
-        resolver.should_receive(:sources).and_return([])
-        subject.stub(:sources).and_return(sources)
-        subject.stub(:apply_lockfile).and_return(sources)
+        resolver.should_receive(:dependencies).and_return([])
+        subject.stub(:dependencies).and_return(dependencies)
+        subject.stub(:apply_lockfile).and_return(dependencies)
       end
 
-      it 'filters the sources and gives the results to the Resolver initializer' do
-        subject.should_receive(:sources).with(except: [:skip_me]).and_return(sources)
+      it 'filters the dependencies and gives the results to the Resolver initializer' do
+        subject.should_receive(:dependencies).with(except: [:skip_me]).and_return(dependencies)
         subject.install(except: [:skip_me])
       end
     end
@@ -328,66 +340,43 @@ describe Berkshelf::Berksfile do
     context 'when a value for :only is given' do
       before do
         resolver.should_receive(:resolve)
-        resolver.should_receive(:sources).and_return([])
-        subject.stub(:sources).and_return(sources)
-        subject.stub(:apply_lockfile).and_return(sources)
+        resolver.should_receive(:dependencies).and_return([])
+        subject.stub(:dependencies).and_return(dependencies)
+        subject.stub(:apply_lockfile).and_return(dependencies)
       end
 
-      it 'filters the sources and gives the results to the Resolver initializer' do
-        subject.should_receive(:sources).with(only: [:skip_me]).and_return(sources)
+      it 'filters the dependencies and gives the results to the Resolver initializer' do
+        subject.should_receive(:dependencies).with(only: [:skip_me]).and_return(dependencies)
         subject.install(only: [:skip_me])
       end
     end
   end
 
-  describe '#load' do
-    let(:content) do
-      <<-EOF.strip
-      cookbook 'ntp', '<= 1.0.0'
-      cookbook 'mysql'
-      cookbook 'nginx', '< 0.101.2'
-      cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
-      EOF
-    end
-
-    it 'reads the content of a Berksfile and adds the sources to the Shelf' do
-      subject.load(content)
-
-      %w(ntp mysql nginx ssh_known_hosts2).each do |name|
-        expect(subject).to have_source(name)
-      end
-    end
-
-    it 'returns an instance of Berksfile' do
-      expect(subject.load(content)).to be_a(Berkshelf::Berksfile)
-    end
-  end
-
-  describe '#add_source' do
+  describe '#add_dependency' do
     let(:name) { 'cookbook_one' }
     let(:constraint) { '= 1.2.0' }
     let(:location) { { site: 'http://site' } }
 
     before(:each) do
-      subject.add_source(name, constraint, location)
+      subject.add_dependency(name, constraint, location)
     end
 
-    it 'adds new cookbook source to the list of sources' do
-      expect(subject.sources).to have(1).source
+    it 'adds new cookbook dependency to the list of dependencies' do
+      expect(subject.dependencies).to have(1).dependency
     end
 
-    it "adds a cookbook source with a 'name' of the given name" do
-      expect(subject.sources.first.name).to eq(name)
+    it "adds a cookbook dependency with a 'name' of the given name" do
+      expect(subject.dependencies.first.name).to eq(name)
     end
 
-    it "adds a cookbook source with a 'version_constraint' of the given constraint" do
-      expect(subject.sources.first.version_constraint.to_s).to eq(constraint)
+    it "adds a cookbook dependency with a 'version_constraint' of the given constraint" do
+      expect(subject.dependencies.first.version_constraint.to_s).to eq(constraint)
     end
 
-    it 'raises DuplicateSourceDefined if multiple sources of the same name are found' do
+    it 'raises DuplicateDependencyDefined if multiple dependencies of the same name are found' do
       expect {
-        subject.add_source(name)
-      }.to raise_error(Berkshelf::DuplicateSourceDefined)
+        subject.add_dependency(name)
+      }.to raise_error(Berkshelf::DuplicateDependencyDefined)
     end
   end
 
@@ -403,18 +392,21 @@ describe Berkshelf::Berksfile do
   end
 
   describe '#upload' do
-    let(:upload) { subject.upload(options) }
     let(:options) { Hash.new }
-    let(:ssl) { double('ssl', verify: true) }
-    let(:chef) {
-      double('chef',
+    let(:chef_config) do
+      double('chef-config',
         node_name: 'fake-client',
         client_key: 'client-key',
-        chef_server_url: 'http://configured-chef-server/'
+        chef_server_url: 'http://configured-chef-server/',
+        validation_client_name: 'validator',
+        validation_key: 'validator.pem',
+        cookbook_copyright: 'user',
+        cookbook_email: 'user@example.com',
+        cookbook_license: 'apachev2',
       )
-    }
-    let(:berkshelf_config) { double('berks', ssl: ssl, chef: chef) }
-    let(:default_ridley_options) {
+    end
+    let(:berkshelf_config) { double('berkshelf-config', ssl: double(verify: true), chef: chef_config) }
+    let(:default_ridley_options) do
       {
         client_name: 'fake-client',
         client_key: 'client-key',
@@ -422,55 +414,36 @@ describe Berkshelf::Berksfile do
           verify: true
         }
       }
-    }
+    end
+    let(:installed_cookbooks) { Array.new }
+
+    let(:upload) { subject.upload(options) }
 
     before do
-      Berkshelf::Config.stub(:instance).and_return(berkshelf_config)
-      subject.stub(:resolve).and_return(solution: [], sources: [])
+      Berkshelf.stub(:config).and_return(berkshelf_config)
+      subject.should_receive(:install).and_return(installed_cookbooks)
     end
 
-    context 'when there is no :server_url' do
-      let(:chef) do
-        double('chef',
-          node_name: 'fake-client',
-          client_key: 'client-key',
-          chef_server_url: nil
-        )
-      end
+    context 'when there is no value for :chef_server_url' do
+      before { chef_config.stub(chef_server_url: nil) }
       let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.server_url' }
 
       it 'raises an error' do
-        expect {
-          upload
-        }.to raise_error(Berkshelf::ChefConnectionError, message)
+        expect { upload }.to raise_error(Berkshelf::ChefConnectionError, message)
       end
     end
 
-    context 'when there is no :client_name' do
-      let(:chef) do
-        double('chef',
-          node_name: nil,
-          client_key: 'client-key',
-          chef_server_url: 'http://configured-chef-server/'
-        )
-      end
+    context 'when there is no value for :client_name' do
+      before { chef_config.stub(node_name: nil) }
       let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.node_name' }
 
       it 'raises an error' do
-        expect {
-          upload
-        }.to raise_error(Berkshelf::ChefConnectionError, message)
+        expect { upload }.to raise_error(Berkshelf::ChefConnectionError, message)
       end
     end
 
-    context 'when there is no :client_key' do
-      let(:chef) do
-        double('chef',
-          node_name: 'fake-client',
-          client_key: nil,
-          chef_server_url: 'http://configured-chef-server/'
-        )
-      end
+    context 'when there is no value for :client_key' do
+      before { chef_config.stub(client_key: nil) }
       let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.client_key' }
 
       it 'raises an error' do
@@ -517,12 +490,12 @@ describe Berkshelf::Berksfile do
 
     before do
       subject.stub(:ridley_connection).and_return(ridley)
-      subject.add_source('nginx', '>= 0.1.2', chef_api: server_url, node_name: client_name, client_key: client_key)
+      subject.add_dependency('nginx', '>= 0.1.2', chef_api: server_url, node_name: client_name, client_key: client_key)
       subject.stub(install: nil)
     end
 
     context 'when the chef environment exists' do
-      let(:sources) do
+      let(:dependencies) do
         [
           double(name: 'nginx', locked_version: '1.2.3'),
           double(name: 'artifact', locked_version: '1.4.0')
@@ -531,7 +504,7 @@ describe Berkshelf::Berksfile do
 
       before do
         chef_environment('berkshelf')
-        subject.lockfile.stub(:sources).and_return(sources)
+        subject.lockfile.stub(:dependencies).and_return(dependencies)
       end
 
       it 'installs the Berksfile' do
@@ -539,7 +512,7 @@ describe Berkshelf::Berksfile do
         subject.apply('berkshelf')
       end
 
-      it 'applys the locked_versions of the Lockfile sources to the given Chef environment' do
+      it 'applys the locked_versions of the Lockfile dependencies to the given Chef environment' do
         subject.apply('berkshelf')
 
         environment = ::JSON.parse(chef_server.data_store.get(['environments', 'berkshelf']))
@@ -569,7 +542,7 @@ describe Berkshelf::Berksfile do
   end
 
   describe '#package' do
-    context 'when the source does not exist' do
+    context 'when the dependency does not exist' do
       it 'raises a CookbookNotFound exception' do
         expect {
           subject.package('non-existent', output: '/tmp')
@@ -577,26 +550,64 @@ describe Berkshelf::Berksfile do
       end
     end
 
-    context 'when the source exists' do
-      let(:source) { double('source') }
+    context 'when the dependency exists' do
+      let(:dependency) { double('dependency') }
       let(:cached) { double('cached', path: '/foo/bar', cookbook_name: 'cookbook') }
       let(:options) { { output: '/tmp' } }
 
       before do
         FileUtils.stub(:cp_r)
         FileUtils.stub(:mkdir_p)
-        subject.stub(:find).with('non-existent').and_return(source)
-        subject.stub(:resolve).with(source, options).and_return({ solution: [cached], sources: [source] })
+        subject.stub(:find).with('non-existent').and_return(dependency)
+        subject.stub(:resolve).with(dependency, options).and_return({ solution: [cached], dependencies: [dependency] })
       end
 
-      it 'resolves the sources' do
-        subject.should_receive(:resolve).with(source, options)
+      it 'resolves the dependencies' do
+        subject.should_receive(:resolve).with(dependency, options)
         subject.package('non-existent', options)
       end
 
       it 'returns the output path' do
         expect(subject.package('non-existent', options)).to eq('/tmp/non-existent.tar.gz')
       end
+    end
+  end
+
+  describe "#remove_dependency" do
+    let(:dependency) { "nginx" }
+    before { subject.add_dependency(dependency) }
+
+    it "removes a dependencies from the list" do
+      subject.remove_dependency(dependency)
+      expect(subject.dependencies).to have(0).items
+    end
+  end
+
+  describe '#validate_files!' do
+    before { described_class.send(:public, :validate_files!) }
+    let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path') }
+
+    it 'raises an error when the cookbook has spaces in the files' do
+      Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
+      expect {
+        subject.validate_files!(cookbook)
+      }.to raise_error(Berkshelf::InvalidCookbookFiles)
+    end
+
+    it 'does not raise an error when the cookbook is valid' do
+      Dir.stub(:glob).and_return(['/there-are/no-spaces/in-this/recipes/default.rb'])
+      expect {
+        subject.validate_files!(cookbook)
+      }.to_not raise_error(Berkshelf::InvalidCookbookFiles)
+    end
+
+    it 'does not raise an exception with spaces in the path' do
+      Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
+      Pathname.any_instance.stub(:dirname).and_return('/there are/spaces/in this')
+
+      expect {
+        subject.validate_files!(cookbook)
+      }.to_not raise_error
     end
   end
 end

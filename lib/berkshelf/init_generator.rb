@@ -1,8 +1,8 @@
-require 'kitchen/generator/init'
+begin
+  require 'kitchen/generator/init'
+rescue LoadError; end
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
-  # @author Josiah Kiehl <jkiehl@riotgames.com>
   class InitGenerator < BaseGenerator
     def initialize(*args)
       super(*args)
@@ -51,16 +51,19 @@ module Berkshelf
     class_option :cookbook_name,
       type: :string
 
-    class_option :skip_test_kitchen,
-      type: :boolean,
-      default: false,
-      desc: 'Skip adding a testing environment to your cookbook'
+    if defined?(Kitchen::Generator::Init)
+      class_option :skip_test_kitchen,
+        type: :boolean,
+        default: false,
+        desc: 'Skip adding a testing environment to your cookbook'
+    end
 
     def generate
       validate_configuration
       check_option_support
 
       template 'Berksfile.erb', target.join('Berksfile')
+      template 'Thorfile.erb', target.join('Thorfile')
 
       if options[:chefignore]
         copy_file 'chefignore', target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
@@ -74,10 +77,6 @@ module Berkshelf
             run 'git init', capture: true
           end
         end
-      end
-
-      if options[:foodcritic] || options[:scmversion]
-        template 'Thorfile.erb', target.join('Thorfile')
       end
 
       if options[:chef_minitest]
@@ -94,20 +93,27 @@ module Berkshelf
         template 'Gemfile.erb', target.join('Gemfile')
       end
 
-      unless options[:skip_test_kitchen]
-        Kitchen::Generator::Init.new([], options).invoke_all
+      if defined?(Kitchen::Generator::Init)
+        unless options[:skip_test_kitchen]
+          # Temporarily use Dir.chdir to ensure the destionation_root of test kitchen's generator
+          # is where we expect until this bug can be addressed:
+          # https://github.com/opscode/test-kitchen/pull/140
+          Dir.chdir target do
+            # Kitchen::Generator::Init.new([], {}, destination_root: target).invoke_all
+            Kitchen::Generator::Init.new([], {}).invoke_all
+          end
+        end
       end
 
       unless options[:skip_vagrant]
         template 'Vagrantfile.erb', target.join('Vagrantfile')
-        ::Berkshelf::Cli.new([], berksfile: target.join('Berksfile')).invoke(:install)
       end
     end
 
     private
 
       def berkshelf_config
-        Berkshelf::Config.instance
+        Berkshelf.config
       end
 
       # Read the cookbook name from the metadata.rb
@@ -129,8 +135,8 @@ module Berkshelf
       #
       # @return [nil]
       def validate_configuration
-        unless Config.instance.valid?
-          raise InvalidConfiguration.new Config.instance.errors
+        unless Berkshelf.config.valid?
+          raise InvalidConfiguration.new Berkshelf.config.errors
         end
       end
 

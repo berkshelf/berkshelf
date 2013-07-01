@@ -3,7 +3,6 @@ require 'retryable'
 require 'addressable/uri'
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class CommunityREST < Faraday::Connection
     class << self
       # @param [String] target
@@ -75,6 +74,7 @@ module Berkshelf
 
       builder = Faraday::Builder.new do |b|
         b.response :parse_json
+        b.response :gzip
         b.request :retry,
           max: @retries,
           interval: @retry_interval,

@@ -45,7 +45,7 @@ Feature: Packaging a cookbook as a tarball for distribution
       """
       Cookbook 'non-existent' is not in your Berksfile
       """
-    And the CLI should exit with the status code for error "CookbookNotFound"
+    And the exit status should be "CookbookNotFound"
 
   Scenario: With an invalid cookbook
     Given a cookbook named "cookbook with spaces"
@@ -58,4 +58,4 @@ Feature: Packaging a cookbook as a tarball for distribution
       """
       The cookbook 'cookbook with spaces' has invalid filenames:
       """
-    And the CLI should exit with the status code for error "InvalidCookbookFiles"
+    And the exit status should be "InvalidCookbookFiles"

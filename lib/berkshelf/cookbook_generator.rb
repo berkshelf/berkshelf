@@ -1,7 +1,14 @@
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class CookbookGenerator < BaseGenerator
     require_relative 'config'
+
+    LICENSES = [
+      "apachev2",
+      "gplv2",
+      "gplv3",
+      "mit",
+      "reserved"
+    ].freeze
 
     argument :name,
       type: :string,
@@ -14,6 +21,11 @@ module Berkshelf
     class_option :skip_git,
       type: :boolean,
       default: false
+
+    class_option :skip_test_kitchen,
+      type: :boolean,
+      default: false,
+      desc: 'Skip adding a testing environment to your cookbook'
 
     class_option :foodcritic,
       type: :boolean,
@@ -33,21 +45,20 @@ module Berkshelf
 
     class_option :license,
       type: :string,
-      default: Berkshelf::Config.instance.cookbook.license
+      default: Berkshelf.config.cookbook.license
 
     class_option :maintainer,
       type: :string,
-      default: Berkshelf::Config.instance.cookbook.copyright
+      default: Berkshelf.config.cookbook.copyright
 
     class_option :maintainer_email,
       type: :string,
-      default: Berkshelf::Config.instance.cookbook.email
+      default: Berkshelf.config.cookbook.email
 
     def generate
       empty_directory target.join('files/default')
       empty_directory target.join('templates/default')
       empty_directory target.join('attributes')
-      empty_directory target.join('definitions')
       empty_directory target.join('libraries')
       empty_directory target.join('providers')
       empty_directory target.join('recipes')
@@ -75,7 +86,7 @@ module Berkshelf
         when 'mit'; 'MIT'
         when 'reserved'; 'All rights reserved'
         else
-          raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
+          raise Berkshelf::LicenseNotFound.new(options[:license])
         end
       end
 
@@ -91,7 +102,7 @@ module Berkshelf
         when 'mit'; 'licenses/mit.erb'
         when 'reserved'; 'licenses/reserved.erb'
         else
-          raise Berkshelf::InternalError, "Unknown license: '#{options[:license]}'"
+          raise Berkshelf::LicenseNotFound.new(options[:license])
         end
       end
 

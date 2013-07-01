@@ -2,7 +2,16 @@ source 'https://rubygems.org'
 
 gemspec
 
-group :development do
+group :guard do
+  # Placed in a separate group to ignore on Windows + Travis
+  gem 'coolline',      '~> 0.4.2'
+  gem 'guard',         '~> 1.8'
+  gem 'guard-cane'
+  gem 'guard-cucumber'
+  gem 'guard-rspec'
+  gem 'guard-spork'
+  gem 'guard-yard'
+
   require 'rbconfig'
 
   if RbConfig::CONFIG['target_os'] =~ /darwin/i

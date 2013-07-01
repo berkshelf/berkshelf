@@ -1,7 +1,6 @@
 require 'thor/group'
 
 module Berkshelf
-  # @author Jamie Winsor <reset@riotgames.com>
   class BaseGenerator < Thor::Group
     class << self
       def source_root

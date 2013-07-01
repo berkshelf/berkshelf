@@ -1,7 +1,5 @@
 module Berkshelf
   # All tasks that operate on the Berkshelf shelf.
-  #
-  # @author Seth Vargo <sethvargo@gmail.com>
   class Shelf < Thor
     desc 'list', 'List all cookbooks and their versions'
     def list
@@ -32,7 +30,8 @@ module Berkshelf
       end
 
       cookbooks.each do |cookbook|
-        Berkshelf.formatter.msg(cookbook.pretty_print + "\n\n")
+        Berkshelf.formatter.show(cookbook)
+        Berkshelf.formatter.msg("\n")
       end
     end
 
@@ -103,7 +102,7 @@ module Berkshelf
           contingent = contingent.map { |c| "#{c.cookbook_name} (#{c.version})" }.join(', ')
           confirm = Berkshelf.ui.ask("[#{contingent}] depend on #{cookbook.cookbook_name}.\n\nAre you sure you want to continue? (y/N)")
 
-          exit unless confirm.upcase[0] == 'Y'
+          exit unless confirm.to_s.upcase[0] == 'Y'
         end
 
         FileUtils.rm_rf(cookbook.path)

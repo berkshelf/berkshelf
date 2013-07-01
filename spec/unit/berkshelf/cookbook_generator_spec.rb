@@ -17,7 +17,6 @@ describe Berkshelf::CookbookGenerator do
     specify do
       expect(target).to have_structure {
         directory 'attributes'
-        directory 'definitions'
         directory 'files' do
           directory 'default'
         end
@@ -75,6 +74,16 @@ describe Berkshelf::CookbookGenerator do
           contains "maintainer_email 'jamie@vialstudios.com'"
         end
       }
+    end
+  end
+
+  context "given an invalid option for :license" do
+    subject(:run) do
+      capture(:stdout) { described_class.new([target, name], license: 'not-there').invoke_all }
+    end
+
+    it "raises a LicenseNotFound error" do
+      expect { run }.to raise_error(Berkshelf::LicenseNotFound)
     end
   end
 end

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe Berkshelf::CookbookSource do
+describe Berkshelf::Dependency do
   let(:cookbook_name) { 'nginx' }
   let(:berksfile) { double('berksfile', filepath: fixtures_path.join('Berksfile').to_s) }
 
   describe '.initialize' do
-    let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name) }
+    let(:source) { described_class.new(berksfile, cookbook_name) }
 
     context 'given no location key (i.e. :git, :path, :site)' do
       it 'sets a nil valie for location' do
@@ -26,7 +26,7 @@ describe Berkshelf::CookbookSource do
     end
 
     context 'given a value for :constraint' do
-      let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name, constraint: '~> 1.0.84') }
+      let(:source) { described_class.new(berksfile, cookbook_name, constraint: '~> 1.0.84') }
 
       it 'returns a Solve::Constraint for the given version for version_constraint' do
         expect(source.version_constraint.to_s).to eq('~> 1.0.84')
@@ -35,7 +35,7 @@ describe Berkshelf::CookbookSource do
 
     context 'given a location key :git' do
       let(:url) { 'git://url_to_git' }
-      let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name, git: url) }
+      let(:source) { described_class.new(berksfile, cookbook_name, git: url) }
 
       it 'initializes a GitLocation for location' do
         expect(source.location).to be_a(Berkshelf::GitLocation)
@@ -49,7 +49,7 @@ describe Berkshelf::CookbookSource do
     context 'given a location key :path' do
       context 'given a value for path that contains a cookbook' do
         let(:path) { fixtures_path.join('cookbooks', 'example_cookbook').to_s }
-        let(:location) { Berkshelf::CookbookSource.new(berksfile, cookbook_name, path: path).location }
+        let(:location) { described_class.new(berksfile, cookbook_name, path: path).location }
 
         it 'initializes a PathLocation for location' do
           expect(location).to be_a(Berkshelf::PathLocation)
@@ -65,7 +65,7 @@ describe Berkshelf::CookbookSource do
 
         it 'raises Berkshelf::CookbookNotFound' do
           expect {
-            Berkshelf::CookbookSource.new(berksfile, cookbook_name, path: path)
+            described_class.new(berksfile, cookbook_name, path: path)
           }.to raise_error(Berkshelf::CookbookNotFound)
         end
       end
@@ -73,13 +73,13 @@ describe Berkshelf::CookbookSource do
       context 'given an invalid option' do
         it 'raises BerkshelfError with a friendly message' do
           expect {
-            Berkshelf::CookbookSource.new(berksfile, cookbook_name, invalid_opt: 'thisisnotvalid')
+            described_class.new(berksfile, cookbook_name, invalid_opt: 'thisisnotvalid')
           }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_opt'.")
         end
 
         it 'raises BerkshelfError with a messaging containing all of the invalid options' do
           expect {
-            Berkshelf::CookbookSource.new(berksfile, cookbook_name, invalid_one: 'one', invalid_two: 'two')
+            described_class.new(berksfile, cookbook_name, invalid_one: 'one', invalid_two: 'two')
           }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_one', 'invalid_two'.")
         end
       end
@@ -88,61 +88,61 @@ describe Berkshelf::CookbookSource do
 
   describe '.add_valid_option' do
     before do
-      @original = Berkshelf::CookbookSource.class_variable_get :@@valid_options
-      Berkshelf::CookbookSource.class_variable_set :@@valid_options, []
+      @original = described_class.class_variable_get :@@valid_options
+      described_class.class_variable_set :@@valid_options, []
     end
 
     after do
-      Berkshelf::CookbookSource.class_variable_set :@@valid_options, @original
+      described_class.class_variable_set :@@valid_options, @original
     end
 
     it 'adds an option to the list of valid options' do
-      Berkshelf::CookbookSource.add_valid_option(:one)
+      described_class.add_valid_option(:one)
 
-      expect(Berkshelf::CookbookSource.valid_options).to have(1).item
-      expect(Berkshelf::CookbookSource.valid_options).to include(:one)
+      expect(described_class.valid_options).to have(1).item
+      expect(described_class.valid_options).to include(:one)
     end
 
     it 'does not add duplicate options to the list of valid options' do
-      Berkshelf::CookbookSource.add_valid_option(:one)
-      Berkshelf::CookbookSource.add_valid_option(:one)
+      described_class.add_valid_option(:one)
+      described_class.add_valid_option(:one)
 
-      expect(Berkshelf::CookbookSource.valid_options).to have(1).item
+      expect(described_class.valid_options).to have(1).item
     end
   end
 
   describe '.add_location_key' do
     before do
-      @original = Berkshelf::CookbookSource.class_variable_get :@@location_keys
-      Berkshelf::CookbookSource.class_variable_set :@@location_keys, {}
+      @original = described_class.class_variable_get :@@location_keys
+      described_class.class_variable_set :@@location_keys, {}
     end
 
     after do
-      Berkshelf::CookbookSource.class_variable_set :@@location_keys, @original
+      described_class.class_variable_set :@@location_keys, @original
     end
 
     it 'adds a location key and the associated class to the list of valid locations' do
-      Berkshelf::CookbookSource.add_location_key(:git, Berkshelf::CookbookSource)
+      described_class.add_location_key(:git, described_class)
 
-      expect(Berkshelf::CookbookSource.location_keys).to have(1).item
-      expect(Berkshelf::CookbookSource.location_keys).to include(:git)
-      expect(Berkshelf::CookbookSource.location_keys[:git]).to eq(Berkshelf::CookbookSource)
+      expect(described_class.location_keys).to have(1).item
+      expect(described_class.location_keys).to include(:git)
+      expect(described_class.location_keys[:git]).to eq(described_class)
     end
 
     it 'does not add duplicate location keys to the list of location keys' do
-      Berkshelf::CookbookSource.add_location_key(:git, Berkshelf::CookbookSource)
-      Berkshelf::CookbookSource.add_location_key(:git, Berkshelf::CookbookSource)
+      described_class.add_location_key(:git, described_class)
+      described_class.add_location_key(:git, described_class)
 
-      expect(Berkshelf::CookbookSource.location_keys).to have(1).item
-      expect(Berkshelf::CookbookSource.location_keys).to include(:git)
+      expect(described_class.location_keys).to have(1).item
+      expect(described_class.location_keys).to include(:git)
     end
 
     context 'given a location key :site' do
       let(:url) { 'http://path_to_api/v1' }
-      let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name, site: url) }
+      let(:source) { described_class.new(berksfile, cookbook_name, site: url) }
 
       before do
-        Berkshelf::CookbookSource.add_location_key(:site, Berkshelf::SiteLocation)
+        described_class.add_location_key(:site, Berkshelf::SiteLocation)
       end
 
       it 'initializes a SiteLocation for location' do
@@ -157,14 +157,14 @@ describe Berkshelf::CookbookSource do
     context 'given multiple location options' do
       it 'raises with an Berkshelf::BerkshelfError' do
         expect {
-          Berkshelf::CookbookSource.new(berksfile, cookbook_name, site: 'something', git: 'something')
+          described_class.new(berksfile, cookbook_name, site: 'something', git: 'something')
         }.to raise_error(Berkshelf::BerkshelfError)
       end
     end
 
     context 'given a group option containing a single group' do
       let(:group) { :production }
-      let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name, group: group) }
+      let(:source) { described_class.new(berksfile, cookbook_name, group: group) }
 
       it 'assigns the single group to the groups attribute' do
         expect(source.groups).to include(group)
@@ -173,7 +173,7 @@ describe Berkshelf::CookbookSource do
 
     context 'given a group option containing an array of groups' do
       let(:groups) { [ :development, :test ] }
-      let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name, group: groups) }
+      let(:source) { described_class.new(berksfile, cookbook_name, group: groups) }
 
       it 'assigns all the groups to the group attribute' do
         expect(source.groups).to eq(groups)
@@ -181,7 +181,7 @@ describe Berkshelf::CookbookSource do
     end
 
     context 'given no group option' do
-      let(:source) { Berkshelf::CookbookSource.new(berksfile, cookbook_name) }
+      let(:source) { described_class.new(berksfile, cookbook_name) }
 
       it 'has the default group assigned' do
         expect(source.groups).to include(:default)
@@ -189,9 +189,7 @@ describe Berkshelf::CookbookSource do
     end
   end
 
-
-
-  subject { Berkshelf::CookbookSource.new(berksfile, cookbook_name) }
+  subject { described_class.new(berksfile, cookbook_name) }
 
   describe '#add_group' do
     it 'stores strings as symbols' do
@@ -233,7 +231,8 @@ describe Berkshelf::CookbookSource do
       it 'returns a PathLocation with a path relative to the Berksfile.filepath' do
         _, location = subject.cached_and_location(options)
 
-        expect(location.path).to eq('/rspec/cookbooks/whatever')
+        expect(location.path).to eq('cookbooks/whatever')
+        expect(location.relative_path(berksfile)).to eq('../cookbooks/whatever')
       end
     end
   end
@@ -275,8 +274,8 @@ describe Berkshelf::CookbookSource do
 
     it 'does not include the site if it is the default' do
       location = double('site', api_uri: Berkshelf::CommunityREST::V1_API)
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
-      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
       subject.stub(:location).and_return(location)
 
       expect(hash).to_not have_key(:site)
@@ -284,8 +283,8 @@ describe Berkshelf::CookbookSource do
 
     it 'includes the site' do
       location = double('site', api_uri: 'www.example.com')
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(true)
-      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(false)
       subject.stub(:location).and_return(location)
 
       expect(hash).to have_key(:site)
@@ -294,7 +293,7 @@ describe Berkshelf::CookbookSource do
 
     it 'includes the git url and ref' do
       location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234', rel: nil)
-      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(false)
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)
 
@@ -306,7 +305,7 @@ describe Berkshelf::CookbookSource do
 
     it 'includes the git url and rel' do
       location = double('git', uri: 'git://github.com/foo/bar.git', ref: nil, rel: 'cookbooks/foo')
-      location.stub(:kind_of?).with(Berkshelf::SiteLocation).and_return(false)
+      location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)
 
@@ -317,44 +316,47 @@ describe Berkshelf::CookbookSource do
     end
 
     it 'includes a relative path' do
-      subject.instance_variable_set(:@options, { path: '~/Development/foo' })
+      location = double('path', relative_path: '../dev/foo')
+      location.stub(:kind_of?).and_return(false)
+      location.stub(:kind_of?).with(Berkshelf::PathLocation).and_return(true)
+      subject.stub(:location).and_return(location)
 
       expect(hash).to have_key(:path)
-      expect(hash[:path]).to eq('~/Development/foo')
+      expect(hash[:path]).to eq('../dev/foo')
     end
   end
 
   describe '#to_s' do
     it 'contains the name, constraint, and groups' do
-      source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0')
-      expect(source.to_s).to eq('#<Berkshelf::CookbookSource: artifact (= 0.10.0)>')
+      source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0')
+      expect(source.to_s).to eq("#<#{described_class}: artifact (= 0.10.0)>")
     end
 
-    context 'given a CookbookSource with an explicit location' do
+    context 'given a Berkshelf::Dependency with an explicit location' do
       it 'contains the name, constraint, groups, and location' do
-        source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
-        expect(source.to_s).to eq('#<Berkshelf::CookbookSource: artifact (= 0.10.0)>')
+        source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
+        expect(source.to_s).to eq("#<#{described_class}: artifact (= 0.10.0)>")
       end
     end
   end
 
   describe '#inspect' do
     it 'contains the name, constraint, and groups' do
-      source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0')
-      expect(source.inspect).to eq('#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: default>')
+      source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0')
+      expect(source.inspect).to eq("#<#{described_class}: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: default>")
     end
 
-    context 'given a CookbookSource with an explicit location' do
+    context 'given a Berkshelf::Dependency with an explicit location' do
       it 'contains the name, constraint, groups, and location' do
-        source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
-        expect(source.inspect).to eq("#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
+        source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks')
+        expect(source.inspect).to eq("#<#{described_class}: artifact (= 0.10.0), locked_version: nil, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
       end
     end
 
     context 'given an explicitly locked version' do
       it 'includes the locked_version' do
-        source = Berkshelf::CookbookSource.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks', locked_version: '1.2.3')
-        expect(source.inspect).to eq("#<Berkshelf::CookbookSource: artifact (= 0.10.0), locked_version: 1.2.3, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
+        source = described_class.new(berksfile, 'artifact', constraint: '= 0.10.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks', locked_version: '1.2.3')
+        expect(source.inspect).to eq("#<#{described_class}: artifact (= 0.10.0), locked_version: 1.2.3, groups: [:default], location: site: 'http://cookbooks.opscode.com/api/v1/cookbooks'>")
       end
     end
   end
