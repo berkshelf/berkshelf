@@ -338,3 +338,25 @@ Feature: install cookbooks from a Berksfile
       """
       Unknown site shortname 'somethingabsurd' - supported shortnames are:
       """
+
+  @metadata
+  Scenario: transitive dependencies in metadata are honored
+    Given I write to "Berksfile" with:
+      """
+      site :opscode
+      metadata
+      """
+    And I write to "metadata.rb" with:
+      """
+      depends 'mysql', '3.0.2'   # depends on openssl
+      depends 'openssl', '1.0.0'
+      """
+    When I run `bundle exec berks install`
+    Then the output should contain:
+      """
+      openssl (1.0.0)
+      """
+
+  
+
+
