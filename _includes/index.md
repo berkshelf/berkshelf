@@ -328,11 +328,23 @@ The Git location will clone the given Git repository to The Berkshelf if the Git
 
 Given the previous example, the cookbook found at the HEAD revision of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
-An optional `branch` key can be specified whose value is a tag, branch, or ref that contains the desired cookbook.
+An optional `branch` key can be specified whose value is a branch or tag that contains the desired cookbook.
 
-    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", branch: "1.0.1"
+    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", branch: "foodcritic"
 
-Given the previous example, the cookbook found at tag `1.0.1` of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
+Given the previous example, the cookbook found at branch `foodcritic` of the opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
+
+An optional `tag` key is an alias for `branch` and can be used interchangeably.
+
+   cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", tag: "3.0.2"
+
+Given the previous example, the cookbook found at tag `3.0.2` of the  opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
+
+An optional `ref` key can be specified for the exact SHA-1 commit ID to use and exact revision of the desired cookbook.
+
+   cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "eef7e65806e7ff3bdbe148e27c447ef4a8bc3881"
+
+Given the previous example, the cookbook found at commit id `eef7e65806e7ff3bdbe148e27c447ef4a8bc3881` of the  opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
 An optional `rel` key can be specified if your repository contains many cookbooks in a single repository under a sub-directory or at root.
 
@@ -344,11 +356,9 @@ This will fetch the cookbook `rightscale` from the speficied Git location from u
 
 As of version 1.0.0, you may now use GitHub shorthand to specify a location.
 
-    cookbook "artifact", github: "RiotGames/artifact-cookbook", ref: "0.9.8"
+    cookbook "artifact", github: "RiotGames/artifact-cookbook", tag: "0.9.8"
 
 Given this example, the `artifact` cookbook from the `RiotGames` organization in the `artifact-cookbook` repository with a tag of `0.9.8` will be cloned to The Berkshelf.
-
-Note: `ref:` is an alias for `branch:` and can be used interchangeably.
 
 The `git` protocol will be used if no protocol is explicity set. To access a private repository specify the `ssh` or `https` protocol.
 
