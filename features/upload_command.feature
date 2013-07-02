@@ -252,3 +252,27 @@ Feature: Uploading cookbooks to a Chef Server
     And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
     And the exit status should be 0
+
+  @focus
+  Scenario: With unicode characters
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "README.md" with:
+      """
+      Jamié Wiñsor
+      赛斯瓦戈
+      Μιψηαελ Ιωευ
+      جوستين كامبل
+      """
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      site :opscode
+      metadata
+      """
+    When I cd to "fake"
+    And I successfully run `berks upload fake`
+    Then the output should contain:
+      """
+      Uploading fake (0.0.0)
+      """
+    And the exit status should be 0
+
