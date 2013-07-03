@@ -33,6 +33,7 @@ module Berkshelf
       hash = parse(contents)
 
       hash[:sources].each do |name, options|
+        options[:path] = File.expand_path(options[:path], File.dirname(@filepath)) if options[:path]
         add(CookbookSource.new(berksfile, name.to_s, options))
       end
     end

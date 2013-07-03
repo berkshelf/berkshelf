@@ -74,6 +74,18 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 0
 
+  Scenario: installing a Berksfile from a remote directory that contains a path location
+    Given I write to "tmp_berks/Berksfile" with:
+      """
+      cookbook 'example_cookbook', path: '../../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+      """
+    When I successfully run `berks install -b ./tmp_berks/Berksfile`
+    Then the output should contain:
+      """
+      Using example_cookbook (0.5.0) at '
+      """
+    And the exit status should be 0
+
   Scenario: installing a Berksfile that contains a Git location
     Given I write to "Berksfile" with:
       """
