@@ -1,3 +1,8 @@
+# 2.0.6
+
+* Fix installation failures due to latest release of ActiveSupport
+* --except and --only will now work with a lockfile present
+
 # 2.0.5
 
 * Improve speed of resolution when a lockfile is present
