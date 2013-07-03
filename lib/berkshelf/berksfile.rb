@@ -161,6 +161,7 @@ module Berkshelf
       options = args.last.is_a?(Hash) ? args.pop : Hash.new
       name, constraint = args
 
+      options[:path] = File.expand_path(options[:path], File.dirname(@filepath)) if options[:path]
       options[:group] = Array(options[:group])
 
       if @@active_group
@@ -258,7 +259,7 @@ module Berkshelf
       end
 
       if options[:path]
-        metadata_file = File.expand_path(File.join(options[:path], 'metadata.rb'))
+        metadata_file = File.join(options[:path], 'metadata.rb')
       end
 
       options[:constraint] = constraint
