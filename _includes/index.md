@@ -271,9 +271,9 @@ Constraints can be specified as
 
 * Equal to (=)
 * Greater than (>)
-* Greater than equal to (<)
+* Greater than or equal to (>=)
 * Less than (<)
-* Less than equal to (<=)
+* Less than or equal to (<=)
 * Pessimistic (~>)
 
 The final parameter is an options hash
