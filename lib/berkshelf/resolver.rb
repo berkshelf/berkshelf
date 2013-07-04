@@ -1,5 +1,6 @@
 require_relative 'dependency'
 require_relative 'locations/git_location'
+require_relative 'locations/mercurial_location'
 require_relative 'locations/path_location'
 
 module Berkshelf
@@ -162,7 +163,7 @@ module Berkshelf
           location.validate_cached(cached)
           Berkshelf.formatter.use(name, cached.version, location)
           true
-        elsif location.is_a?(GitLocation)
+        elsif location.is_a?(GitLocation) || location.is_a?(MercurialLocation)
           false
         else
           cached = downloader.cookbook_store.satisfy(name, constraint)

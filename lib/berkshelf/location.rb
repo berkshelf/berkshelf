@@ -74,6 +74,9 @@ module Berkshelf
       # @example
       #   Location.init('nginx', '>= 0.0.0', git: 'git://github.com/RiotGames/artifact-cookbook.git') =>
       #     instantiates a GitLocation
+
+      #   Location.init('nginx', '>= 0.0.0', hg: 'http://hghub.com/RiotGames/') =>
+      #     instantiates a MercurialLocation
       #
       #   Location.init('nginx', '>= 0.0.0', path: '/Users/reset/code/nginx-cookbook') =>
       #     instantiates a PathLocation
@@ -91,7 +94,7 @@ module Berkshelf
       # @param [String, Solve::Constraint] constraint
       # @param [Hash] options
       #
-      # @return [SiteLocation, PathLocation, GitLocation, ChefAPILocation]
+      # @return [SiteLocation, PathLocation, GitLocation, MercurialLocation, ChefAPILocation]
       def init(name, constraint, options = {})
         klass = klass_from_options(options)
 
@@ -170,5 +173,6 @@ end
 
 require_relative 'locations/chef_api_location'
 require_relative 'locations/git_location'
+require_relative 'locations/mercurial_location'
 require_relative 'locations/github_location'
 require_relative 'locations/site_location'

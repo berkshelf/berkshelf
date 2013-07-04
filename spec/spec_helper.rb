@@ -26,6 +26,20 @@ Spork.prefork do
     config.ignore_localhost = true
   end
 
+  # Cross-platform way of finding an executable in the $PATH.
+  # used to filter out mercurial tests if mercurial is
+  # not available on the test system
+  def which(cmd)
+    exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+    ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+      exts.each { |ext|
+        exe = File.join(path, "#{cmd}#{ext}")
+        return exe if File.executable? exe
+      }
+    end
+    return nil
+  end
+
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
     config.include Berkshelf::RSpec::ChefAPI
@@ -39,6 +53,8 @@ Spork.prefork do
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true
     config.filter_run focus: true
+    config.filter_run_excluding mercurial: true unless which('hg')
+
     config.run_all_when_everything_filtered = true
 
     config.before(:suite) do
@@ -102,6 +118,37 @@ Spork.prefork do
     "file://#{generate_fake_git_remote("git@github.com/RiotGames/#{repo}.git", options)}/.git"
   end
 
+  def mercurial_origin_for(repo, options = {})
+    "file://localhost#{generate_fake_mercurial_remote(repo, options)}"
+  end
+
+  def generate_fake_mercurial_remote(uri, options = {})
+    repo_path = Pathname.new(::File.dirname(__FILE__)).join('tmp', 'remote_repos')+uri
+    FileUtils.mkdir_p(repo_path)
+
+    Dir.chdir(repo_path) do
+      run! "hg init"
+      run! "echo '# a change!' >> content_file"
+      if options[:is_cookbook]
+        run! "echo 'cookbook' >> metadata.rb"
+      end
+      run! "hg add ."
+      run! "hg commit -m 'A commit.'"
+      options[:tags].each do |tag|
+        run! "echo '#{tag}' > content_file"
+        run "hg commit -m '#{tag} content'"
+        run "hg tag '#{tag}'"
+      end if options.has_key? :tags
+      options[:branches].each do |branch|
+        run! "hg branch #{branch}"
+        run! "echo '#{branch}' > content_file"
+        run! "hg commit -m '#{branch} content'"
+        run! "hg up default"
+      end if options.has_key? :branches
+    end
+    repo_path.to_path
+  end
+
   def generate_fake_git_remote(uri, options = {})
     remote_bucket = Pathname.new(::File.dirname(__FILE__)).join('tmp', 'remote_repos')
     FileUtils.mkdir_p(remote_bucket)
@@ -143,13 +190,19 @@ Spork.prefork do
     path
   end
 
+  def hg_id_for_rev(repo, rev)
+    Dir.chdir local_origin_path_for(repo) do
+      run!("hg id -r '#{rev}'").split(' ').first.strip
+    end
+  end
+
   def git_sha_for_ref(repo, ref)
-    Dir.chdir local_git_origin_path_for(repo) do
+    Dir.chdir local_origin_path_for(repo) do
       run!("git show-ref '#{ref}'").chomp.split(/\s/).first
     end
   end
 
-  def local_git_origin_path_for(repo)
+  def local_origin_path_for(repo)
     remote_repos_path = tmp_path.join('remote_repos')
     FileUtils.mkdir_p(remote_repos_path)
     remote_repos_path.join(repo)
@@ -160,6 +213,7 @@ Spork.prefork do
   end
 
   def clone_target_for(repo)
+    FileUtils.mkdir_p(clone_target)
     clone_target.join(repo)
   end
 

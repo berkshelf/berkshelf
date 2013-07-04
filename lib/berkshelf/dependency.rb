@@ -56,8 +56,8 @@ module Berkshelf
           raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
         end
 
-        if (options.keys & [:site, :path, :git]).size > 1
-          invalid = (options.keys & [:site, :path, :git]).map { |opt| "'#{opt}" }
+        if (options.keys & [:site, :path, :git, :hg]).size > 1
+          invalid = (options.keys & [:site, :path, :git, :hg]).map { |opt| "'#{opt}" }
           raise InternalError, "Cannot specify #{invalid.join(' and ')} for a Cookbook Source!"
         end
 
@@ -208,6 +208,12 @@ module Berkshelf
 
         if location.kind_of?(PathLocation)
           h[:path] = location.relative_path(berksfile.filepath)
+        end
+
+        if location.kind_of?(MercurialLocation)
+          h[:hg] = location.uri
+          h[:rev] = location.rev
+          h[:rel] = location.rel if location.rel
         end
 
         if location.kind_of?(GitLocation)

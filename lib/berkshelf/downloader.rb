@@ -136,8 +136,8 @@ module Berkshelf
       #
       # @return [Berkshelf::CachedCookbook, nil]
       def from_cache(dependency)
-        # Can't safely read a git location from cache
-        return nil if dependency.location.kind_of?(Berkshelf::GitLocation)
+        # Can't safely read a git or mercurial location from cache
+        return nil if dependency.location.kind_of?(Berkshelf::GitLocation) || dependency.location.kind_of?(Berkshelf::MercurialLocation)
 
         if dependency.locked_version
           cookbook = cookbook_store.cookbook_path(dependency.name, dependency.locked_version)
