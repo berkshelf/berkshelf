@@ -12,8 +12,13 @@ module Berkshelf
           Berkshelf::API::Application.instance
         end
 
-        def start
-          Berkshelf::API::Application.run!(log_location: "/dev/null")
+        def running?
+          Berkshelf::API::Application.running?
+        end
+
+        def start(options = {})
+          options = options.reverse_merge(port: 26210, log_location: "/dev/null")
+          Berkshelf::API::Application.run!(options) unless running?
         end
 
         def stop

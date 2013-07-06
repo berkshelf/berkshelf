@@ -41,6 +41,14 @@ module Berkshelf
       demands.push(demand)
     end
 
+    def add_explicit_dependencies(dependency)
+      unless cookbook = dependency.cached_cookbook
+        return nil
+      end
+
+      graph.populate_local(cookbook)
+    end
+
     # An array of arrays containing the name and constraint of each demand
     #
     # @note this is the format that Solve uses to determine a solution for the graph
@@ -56,6 +64,7 @@ module Berkshelf
     # @return [Array<Array<String, String, Dependency>>]
     def resolve
       graph.populate(berksfile.sources)
+
       Solve.it!(graph, demand_array).collect do |name, version|
         dependency = get_demand(name) || Dependency.new(berksfile, name, constraint: version)
         [ name, version, dependency ]

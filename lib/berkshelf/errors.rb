@@ -205,21 +205,13 @@ module Berkshelf
     #   the location (or any subclass) raising this validation error
     # @param [Berkshelf::CachedCookbook] cached_cookbook
     #   the cached_cookbook that does not satisfy the constraint
-    def initialize(location, cached_cookbook)
-      @location = location
+    def initialize(dependency, cached_cookbook)
+      @dependency      = dependency
       @cached_cookbook = cached_cookbook
     end
 
     def to_s
-      [
-        "The cookbook downloaded from #{@location.to_s}:",
-        "  #{@cached_cookbook.cookbook_name} (#{@cached_cookbook.version})",
-        "",
-        "does not satisfy the version constraint:",
-        "  #{@cached_cookbook.cookbook_name} (#{@location.version_constraint})",
-        "",
-        "This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`",
-      ].join("\n")
+      "The cookbook downloaded for #{@dependency} did not satisfy the constraint."
     end
   end
 

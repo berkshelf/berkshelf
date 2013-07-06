@@ -6,6 +6,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a source with a default location
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install`
@@ -13,7 +15,7 @@ Feature: install cookbooks from a Berksfile
       | berkshelf-cookbook-fixture   | 1.0.0 |
     And the output should contain:
       """
-      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
+      Installing berkshelf-cookbook-fixture (1.0.0)
       """
     And the exit status should be 0
 
@@ -22,6 +24,8 @@ Feature: install cookbooks from a Berksfile
       | berkshelf-cookbook-fixture   | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install`
@@ -36,6 +40,8 @@ Feature: install cookbooks from a Berksfile
       | berkshelf-cookbook-fixture   | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       group :a do
         cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       end
@@ -55,6 +61,8 @@ Feature: install cookbooks from a Berksfile
       | hostsfile    | 1.0.1 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'deps'
       """
     When I successfully run `berks install`
@@ -67,6 +75,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a path location
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I successfully run `berks install`
@@ -91,6 +101,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Git location
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
     When I successfully run `berks install`
@@ -105,6 +117,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Git location that has already been downloaded
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
     And the cookbook store has the git cookbooks:
@@ -116,6 +130,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Git location with a rel
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
       """
     When I successfully run `berks install`
@@ -130,7 +146,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Git location with a rel that has already been downloaded
     Given I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
       """
     And the cookbook store has the git cookbooks:
@@ -146,6 +163,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I successfully run `berks install`
@@ -160,20 +179,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a GitHub location
     Given I write to "Berksfile" with:
       """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
-      """
-    When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
-      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
-    And the output should contain:
-      """
-      Installing berkshelf-cookbook-fixture (0.2.0) from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v0.2.0'
-      """
-    And the exit status should be 0
+      source "http://localhost:26210"
 
-  Scenario: installing a Berksfile that contains a Github location and the default protocol
-    Given I write to "Berksfile" with:
-      """
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
@@ -188,6 +195,8 @@ Feature: install cookbooks from a Berksfile
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v1.0.0", protocol: "<protocol>"
       """
     When I successfully run `berks install`
@@ -208,6 +217,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that contains a Github location and an unsupported protocol
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "somethingabsurd"
       """
     When I run `berks install`
@@ -217,24 +228,12 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be 110
 
-  Scenario: installing a Berksfile that contains an explicit site location
-    Given I write to "Berksfile" with:
-      """
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0', site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      """
-    When I successfully run `berks install`
-    Then the cookbook store should have the cookbooks:
-      | berkshelf-cookbook-fixture   | 1.0.0 |
-    And the output should contain:
-      """
-      Installing berkshelf-cookbook-fixture (1.0.0) from site: 'http://cookbooks.opscode.com/api/v1/cookbooks'
-      """
-    And the exit status should be 0
-
   Scenario: running install when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"
     And the cookbook "sparkle_motion" has the file "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       metadata
       """
     When I cd to "sparkle_motion"
@@ -250,6 +249,8 @@ Feature: install cookbooks from a Berksfile
     Given a cookbook named "fake"
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       metadata path: './fake'
       """
     When I successfully run `berks install`
@@ -271,6 +272,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: running install when the Cookbook is not found on the remote site
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'doesntexist'
       """
     And I run `berks install`
@@ -283,6 +286,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'nginx', git: '/something/on/disk'
       """
     When I run `berks install`
@@ -295,6 +300,8 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing when there are sources with duplicate names defined in the same group
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture'
       cookbook 'berkshelf-cookbook-fixture'
       """
@@ -309,7 +316,8 @@ Feature: install cookbooks from a Berksfile
     Given a cookbook named "fake"
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', path: './fake'
       """
     And the cookbook "fake" has the file "metadata.rb" with:
@@ -341,24 +349,23 @@ Feature: install cookbooks from a Berksfile
   Scenario: installing when a git source defines a branch that does not satisfy the version constraint
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", "1.0.0", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I run `berks install`
     Then the output should contain:
       """
-      The cookbook downloaded from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee':
-        berkshelf-cookbook-fixture (0.2.0)
-
-      does not satisfy the version constraint:
-        berkshelf-cookbook-fixture (= 1.0.0)
-
-      This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`
+      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
+      The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
       """
     And the exit status should be "CookbookValidationFailure"
 
   Scenario: when a git location source is defined and a cookbook of the same name is already cached in the cookbook store
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v1.0.0"
       """
     And the cookbook store has the cookbooks:
@@ -366,13 +373,15 @@ Feature: install cookbooks from a Berksfile
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing berkshelf-cookbook-fixture (1.0.0) from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v1.0.0' at ref:
+      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v1.0.0' at ref:
       """
     And the exit status should be 0
 
   Scenario: with a cookbook definition containing an invalid option
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook "berkshelf-cookbook-fixture", whatisthis: "I don't even know", anotherwat: "isthat"
       """
     When I run `berks install`
@@ -382,69 +391,18 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be "InternalError"
 
-  Scenario: with a cookbook definition containing a chef_api source location
-    Given I write to "Berksfile" with:
-      """
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0', chef_api: :config
-      """
-    And the Chef Server has cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
-    When I successfully run `berks install`
-    Then the output should contain:
-      """
-      Installing berkshelf-cookbook-fixture (1.0.0) from chef_api:
-      """
-    And the cookbook store should have the cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
-    And the exit status should be 0
-
-  Scenario: when the :site is not defined
-    Given I write to "Berksfile" with:
-      """
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0', site: nil
-      """
-    When I successfully run `berks install`
-    Then the output should contain:
-      """
-      Installing berkshelf-cookbook-fixture (1.0.0) from site:
-      """
-    And the cookbook store should have the cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 |
-    And the exit status should be 0
-
-  Scenario: with a chef_api source location specifying :config when a Berkshelf config is not found at the given path
-    Given I write to "Berksfile" with:
-      """
-      cookbook 'berkshelf-cookbook-fixture', chef_api: :config
-      """
-    When I run `berks install --config /tmp/notthere.lol`
-    Then the output should contain:
-      """
-      No Berkshelf config file found at: '/tmp/notthere.lol'!
-      """
-    And the exit status should be "ConfigNotFound"
-
   Scenario: with a git error during download
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       cookbook "doesntexist", git: "git://github.com/asdjhfkljashflkjashfakljsf"
       """
     When I run `berks install`
     Then the output should contain:
       """
-      Failed to download 'doesntexist' from git:
+      Fetching 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf' with branch: 'master'
+      An error occurred during Git execution:
       """
-      And the exit status should be "CookbookNotFound"
-
-  Scenario: invalid site symbol
-    Given I write to "Berksfile" with:
-      """
-      site :somethingabsurd
-      cookbook 'berkshelf-cookbook-fixture'
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      Unknown site shortname 'somethingabsurd' - supported shortnames are:
-      """
+      And the exit status should be "GitError"

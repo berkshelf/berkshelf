@@ -20,6 +20,7 @@ module Berkshelf
     # @option options [Array<String>, String] cookbooks
     def run(options = {})
       dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only)))
+      resolver     = Resolver.new(berksfile, dependencies)
 
       dependencies.each do |dependency|
         next unless dependency.scm_location?
@@ -27,10 +28,15 @@ module Berkshelf
         downloader.download(dependency)
       end
 
+      dependencies.each do |dependency|
+        next unless dependency.cached_cookbook
+        resolver.add_explicit_dependencies(dependency)
+      end
+
       Berkshelf.formatter.msg("building universe...")
       build_universe
 
-      resolve(dependencies).each do |name, version, dependency|
+      resolver.resolve.each do |name, version, dependency|
         if dependency.downloaded?
           Berkshelf.formatter.use(dependency.name, dependency.cached_cookbook.version, dependency.location)
         else
@@ -42,16 +48,6 @@ module Berkshelf
 
       verify_licenses!
       lockfile.update(dependencies)
-    end
-
-    # Finds a solution for the Berksfile and returns an array of CachedCookbooks.
-    #
-    # @param [Array<Berkshelf::Dependency>, Berkshelf::Dependency] demands
-    #   A dependency, or an array of dependencies to satisfy
-    #
-    # @return [Array<Berkshelf::CachedCookbooks>]
-    def resolve(dependencies)
-      Resolver.new(berksfile, dependencies).resolve
     end
 
     # Verify that the licenses of all the cached cookbooks fall in the realm of

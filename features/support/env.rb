@@ -13,16 +13,24 @@ Spork.prefork do
   World(Berkshelf::RSpec::PathHelpers)
   World(Berkshelf::RSpec::Kitchen)
 
-  at_exit { Berkshelf::RSpec::ChefServer.stop }
+  Berkshelf::API::Application.config.endpoints = Array.new
+
+  at_exit do
+    Berkshelf::RSpec::ChefServer.stop
+    Berkshelf::RSpec::BerksAPIServer.stop
+  end
 
   Before do
     Berkshelf::RSpec::ChefServer.start
+    Berkshelf::RSpec::BerksAPIServer.start
     Aruba::InProcess.main_class = Berkshelf::Cli::Runner
     Aruba.process               = Aruba::InProcess
 
     stub_kitchen!
-    purge_store_and_configs!
+    clean_tmp_path
+    reload_configs
     Berkshelf::RSpec::ChefServer.reset!
+    Berkshelf::RSpec::BerksAPIServer.clear_cache
 
     @aruba_io_wait_seconds = Cucumber::JRUBY ? 7 : 5
     @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15

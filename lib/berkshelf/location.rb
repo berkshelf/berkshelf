@@ -122,7 +122,7 @@ module Berkshelf
       # @return [Boolean]
       def validate_cached(cached_cookbook)
         unless dependency.version_constraint.satisfies?(cached_cookbook.version)
-          raise CookbookValidationFailure.new(self, cached_cookbook)
+          raise CookbookValidationFailure.new(dependency, cached_cookbook)
         end
 
         unless dependency.name == cached_cookbook.cookbook_name
