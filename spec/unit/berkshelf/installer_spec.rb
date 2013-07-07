@@ -33,18 +33,6 @@ describe Berkshelf::Installer do
     end
   end
 
-  describe "#resolve" do
-    let(:resolver) { double('resolver') }
-    let(:dependencies) { double('dependencies') }
-
-    it "instantiates and delegates to an instance of Resolver" do
-      Berkshelf::Resolver.should_receive(:new).with(berksfile, dependencies).and_return(resolver)
-      resolver.should_receive(:resolve)
-
-      subject.resolve(dependencies)
-    end
-  end
-
   describe "#verify_licenses!" do
     pending
   end
