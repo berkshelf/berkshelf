@@ -4,7 +4,7 @@ describe Berkshelf::Resolver::Graph do
   subject { described_class.new }
 
   describe "#populate" do
-    let(:sources) { Berkshelf::Source.new("http://localhost:26200") }
+    let(:sources) { Berkshelf::Source.new("http://localhost:26210") }
 
     before do
       berks_dependency("ruby", "1.0.0", dependencies: { "elixir" => ">= 0.1.0" })
@@ -24,7 +24,7 @@ describe Berkshelf::Resolver::Graph do
   end
 
   describe "#universe" do
-    let(:sources) { Berkshelf::Source.new("http://localhost:26200") }
+    let(:sources) { Berkshelf::Source.new("http://localhost:26210") }
 
     before do
       berks_dependency("ruby", "1.0.0")

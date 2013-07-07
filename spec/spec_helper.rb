@@ -4,6 +4,7 @@ Spork.prefork do
   require 'rspec'
   require 'webmock/rspec'
   require 'vcr'
+  require 'berkshelf/api/rspec'
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
@@ -21,7 +22,7 @@ Spork.prefork do
     config.include Berkshelf::RSpec::ChefServer
     config.include Berkshelf::RSpec::Git
     config.include Berkshelf::RSpec::PathHelpers
-    config.include Berkshelf::RSpec::BerksAPIServer
+    config.include Berkshelf::API::RSpec
 
     config.expect_with :rspec do |c|
       c.syntax = :expect
@@ -35,7 +36,7 @@ Spork.prefork do
     config.before(:suite) do
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
       Berkshelf::RSpec::ChefServer.start
-      Berkshelf::RSpec::BerksAPIServer.start
+      Berkshelf::API::RSpec::Server.start
       Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end
@@ -49,7 +50,7 @@ Spork.prefork do
     end
 
     config.before(:each) do
-      Berkshelf::RSpec::BerksAPIServer.clear_cache
+      Berkshelf::API::RSpec::Server.clear_cache
       clean_tmp_path
       FileUtils.mkdir_p(ENV['BERKSHELF_PATH'])
       FileUtils.mkdir_p(Berkshelf::CookbookStore.instance.storage_path)

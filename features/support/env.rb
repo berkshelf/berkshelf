@@ -7,22 +7,21 @@ Spork.prefork do
   require 'cucumber/rspec/doubles'
 
   require 'berkshelf/cli'
+  require 'berkshelf/api/rspec'
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
   World(Berkshelf::RSpec::PathHelpers)
   World(Berkshelf::RSpec::Kitchen)
 
-  Berkshelf::API::Application.config.endpoints = Array.new
-
   at_exit do
     Berkshelf::RSpec::ChefServer.stop
-    Berkshelf::RSpec::BerksAPIServer.stop
+    Berkshelf::API::RSpec::Server.start
   end
 
   Before do
     Berkshelf::RSpec::ChefServer.start
-    Berkshelf::RSpec::BerksAPIServer.start
+    Berkshelf::API::RSpec::Server.start
     Aruba::InProcess.main_class = Berkshelf::Cli::Runner
     Aruba.process               = Aruba::InProcess
 
@@ -30,7 +29,7 @@ Spork.prefork do
     clean_tmp_path
     reload_configs
     Berkshelf::RSpec::ChefServer.reset!
-    Berkshelf::RSpec::BerksAPIServer.clear_cache
+    Berkshelf::API::RSpec::Server.clear_cache
 
     @aruba_io_wait_seconds = Cucumber::JRUBY ? 7 : 5
     @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15
