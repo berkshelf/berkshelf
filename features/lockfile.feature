@@ -106,6 +106,36 @@ Feature: Creating and reading the Berkshelf lockfile
       }
       """
 
+  Scenario: Reading the Berksfile.lock when it contains an invalid path location
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      cookbook 'fake'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "sources":{
+          "non-existent":{
+            "path":"/this/path/does/not/exist"
+          }
+        }
+      }
+      """
+    When I successfully run `berks install`
+    Then the file "Berksfile.lock" should contain JSON:
+      """
+      {
+        "sources":{
+          "fake":{
+            "locked_version":"1.0.0"
+          }
+        }
+      }
+      """
+    And the exit status should be 0
+
   Scenario: Installing a cookbook with dependencies
     Given the cookbook store has the cookbooks:
       | dep | 1.0.0 |
