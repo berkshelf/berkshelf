@@ -38,6 +38,10 @@ Given /^the cookbook store contains a cookbook "(.*?)" "(.*?)" with dependencies
   generate_cookbook(cookbook_store.storage_path, name, version, dependencies: dependencies.raw)
 end
 
+Given(/^the cookbook store is empty$/) do
+  Berkshelf::CookbookStore.instance.clean!
+end
+
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     expect(cookbook_store.storage_path).to have_structure {

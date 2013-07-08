@@ -63,6 +63,7 @@ module Berkshelf
     #
     # @return [Array<Array<String, String, Dependency>>]
     def resolve
+      graph.populate_store
       graph.populate(berksfile.sources)
 
       Solve.it!(graph, demand_array).collect do |name, version|

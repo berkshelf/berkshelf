@@ -31,6 +31,10 @@ module Berkshelf
       initialize_filesystem
     end
 
+    def clean!
+      FileUtils.rm_rf(Dir.glob(File.join(storage_path, '*')))
+    end
+
     def import(name, version, path)
       import_validate(name, version, path)
       FileUtils.mv(path, cookbook_path(name, version))
@@ -88,6 +92,15 @@ module Berkshelf
       storage_path.join("#{name}-#{version}")
     end
 
+    def initialize_filesystem
+      FileUtils.mkdir_p(storage_path, mode: 0755)
+
+      unless File.writable?(storage_path)
+        raise InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'!" +
+          " Please either chown the directory or use a different Cookbook Store."
+      end
+    end
+
     # Return a CachedCookbook matching the best solution for the given name and
     # constraint. Nil is returned if no matching CachedCookbook is found.
     #
@@ -110,15 +123,6 @@ module Berkshelf
 
       def import_validate(name, version, path)
         true
-      end
-
-      def initialize_filesystem
-        FileUtils.mkdir_p(storage_path, mode: 0755)
-
-        unless File.writable?(storage_path)
-          raise InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'!" +
-            " Please either chown the directory or use a different Cookbook Store."
-        end
       end
   end
 end

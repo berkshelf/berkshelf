@@ -115,9 +115,9 @@ module Berkshelf
 
         def ridley
           @ridley ||= Ridley.new(
-            server_url:   Berkshelf.chef_config[:chef_server_url],
-            client_name:  Berkshelf.chef_config[:node_name],
-            client_key:   Berkshelf.chef_config[:client_key],
+            server_url: Berkshelf::RSpec::ChefServer.server_url,
+            client_name: Berkshelf.chef_config[:node_name],
+            client_key: Berkshelf.chef_config[:client_key],
             ssl: { verify: false }
           )
         end

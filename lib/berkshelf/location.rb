@@ -95,7 +95,10 @@ module Berkshelf
         end
       end
 
+      extend Forwardable
+
       attr_reader :dependency
+      def_delegator :dependency, :name
 
       # @param [Berkshelf::Dependency] dependency
       # @param [Hash] options

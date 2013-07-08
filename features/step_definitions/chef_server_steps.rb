@@ -1,11 +1,19 @@
 World(Berkshelf::RSpec::ChefAPI)
 
+Given(/^the Chef Server is empty$/) do
+  Berkshelf::RSpec::ChefServer.reset!
+end
+
 Given /^the Chef Server has cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     purge_cookbook(name, version)
     cb_path = generate_cookbook(tmp_path, name, version)
     upload_cookbook(cb_path)
   end
+end
+
+Given(/^an empty Chef Server$/) do
+  Berkshelf::RSpec::ChefServer.reset!
 end
 
 Then /^the Chef Server should have the cookbooks:$/ do |cookbooks|

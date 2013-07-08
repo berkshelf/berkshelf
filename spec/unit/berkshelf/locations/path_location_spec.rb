@@ -7,10 +7,21 @@ describe Berkshelf::PathLocation do
 
   describe "ClassMethods" do
     describe "::new" do
-      it 'assigns the value of :path to @path' do
+      it 'assigns the value of :path to #path' do
         location = described_class.new(dependency, path: path)
         expect(location.path).to eq(path)
       end
+    end
+  end
+
+  let(:options) { { path: path } }
+  let(:instance) { described_class.new(dependency, options) }
+
+  describe "#cookbook" do
+    subject(:cookbook) { instance.cookbook }
+
+    it "returns a CachedCookbook" do
+      expect(cookbook).to be_a(Berkshelf::CachedCookbook)
     end
   end
 end

@@ -1,6 +1,15 @@
 module Berkshelf
   class Resolver
     class Graph < Solve::Graph
+      # @param [Berkshelf::CookbookStore] store
+      def populate_store(store = nil)
+        store ||= Berkshelf::CookbookStore.instance
+
+        store.cookbooks.each do |cookbook|
+          artifacts(cookbook.cookbook_name, cookbook.version)
+        end
+      end
+
       def populate_local(cookbook)
         name    = cookbook.cookbook_name
         version = cookbook.version

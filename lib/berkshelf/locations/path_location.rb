@@ -23,9 +23,8 @@ module Berkshelf
     set_valid_options :path, :metadata
 
     attr_accessor :path
-    attr_reader :name
 
-    # @param [#to_s] name
+    # @param [#to_s] dependency
     # @param [Solve::Constraint] version_constraint
     # @param [Hash] options
     #
@@ -37,6 +36,10 @@ module Berkshelf
       super
       @path     = options[:path].to_s
       @metadata = options[:metadata]
+    end
+
+    def activate
+      cookbook
     end
 
     # The cookbook associated with this path location.

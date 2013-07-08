@@ -127,7 +127,11 @@ module Berkshelf
     end
 
     def cached_cookbook
-      @cached_cookbook ||= Berkshelf::CookbookStore.instance.satisfy(name, version_constraint)
+      @cached_cookbook ||= if location
+        location.activate
+      else
+        Berkshelf::CookbookStore.instance.satisfy(name, version_constraint)
+      end
     end
 
     def download(destination)
