@@ -33,7 +33,14 @@ module Berkshelf
       hash = parse(contents)
 
       hash[:sources].each do |name, options|
-        add(CookbookSource.new(berksfile, name.to_s, options))
+        begin
+          add(CookbookSource.new(berksfile, name.to_s, options))
+        rescue Berkshelf::CookbookNotFound
+          # It's possible that a source is locked that contains a path location, and
+          # that path location was renamed or no longer exists. When loading the
+          # lockfile, Berkshelf will throw an error if it can't find a cookbook that
+          # previously existed at a path location.
+        end
       end
     end
 
