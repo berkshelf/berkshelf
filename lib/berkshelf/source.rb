@@ -18,11 +18,22 @@ module Berkshelf
 
     # @param [String] name
     # @param [String] version
+    #
+    # @return [APIClient::RemoteCookbook]
     def cookbook(name, version)
       universe.find { |cookbook| cookbook.name == name && cookbook.version == version }
     end
 
     # @param [String] name
+    #
+    # @return [APIClient::RemoteCookbook]
+    def latest(name)
+      versions(name).sort.last
+    end
+
+    # @param [String] name
+    #
+    # @return [Array<APIClient::RemoteCookbook>]
     def versions(name)
       universe.select { |cookbook| cookbook.name == name }
     end

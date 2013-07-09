@@ -353,8 +353,8 @@ module Berkshelf
       self.install
     end
 
-    # Get a list of all the cookbooks which have newer versions found on the community
-    # site versus what your current constraints allow
+    # List of all the cookbooks which have a newer version found at a source that satisfies
+    # the constraints of your dependencies
     #
     # @option options [Symbol, Array] :except
     #   Group(s) to exclude which will cause any dependencies marked as a member of the
@@ -363,28 +363,18 @@ module Berkshelf
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
     # @option cookbooks [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve dependencies for
+    #   Whitelist of cookbooks to to check for updated versions for
     #
     # @return [Hash]
     #   a hash of cached cookbooks and their latest version. An empty hash is returned
     #   if there are no newer cookbooks for any of your dependencies
     #
     # @example
-    #   berksfile.outdated => {
+    #   berksfile.outdated #=> {
     #     #<CachedCookbook name="artifact"> => "0.11.2"
     #   }
     def outdated(options = {})
-      outdated = Hash.new
-
-      dependencies(options).each do |dependency|
-        if dependency.location
-          # explicit locations check there
-        else
-          # check api
-        end
-      end
-
-      outdated
+      raise RuntimeError, "not yet implemented"
     end
 
     # Upload the cookbooks installed by this Berksfile

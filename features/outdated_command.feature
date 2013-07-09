@@ -3,53 +3,6 @@ Feature: Displaying outdated cookbooks
   I want to know what cookbooks are outdated before I run update
   So that I can decide whether to update everything at once
 
-  Scenario: Running berks outdated with no version constraints
-    Given I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-
-      cookbook 'berkshelf-cookbook-fixture'
-      """
-    When I successfully run `berks outdated`
-    Then the output should contain:
-      """
-      Listing outdated cookbooks with newer versions available...
-      """
-    And the output should contain:
-      """
-      All cookbooks up to date
-      """
-
-  Scenario: Running berks outdated with satisfied version constraints
-    Given I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-
-      cookbook 'berkshelf-cookbook-fixture', '>= 0.1'
-      """
-    When I run `berks outdated`
-    Then the output should contain:
-      """
-      Listing outdated cookbooks with newer versions available...
-      """
-    And the output should contain:
-      """
-      All cookbooks up to date
-      """
-
-  Scenario: Running berks outdated with unsatisfied version constraints
-    Given I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-
-      cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
-      """
-    When I run `berks outdated`
-    Then the output should contain:
-      """
-      Listing outdated cookbooks with newer versions available...
-      """
-    And the output should contain:
-      """
-      Cookbook 'berkshelf-cookbook-fixture (~> 0.1)' is outdated
-      """
+  Scenario: the dependency is up to date
+  Scenario: the dependency has a no version constraint and there are new items
+  Scenario: the dependency has a version constraint and there are new items that satisfy it

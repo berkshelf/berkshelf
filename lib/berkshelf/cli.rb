@@ -289,27 +289,13 @@ module Berkshelf
       type: :array,
       desc: 'Only cookbooks that are in these groups.',
       aliases: '-o'
-    desc 'outdated [COOKBOOKS]', 'Show outdated cookbooks (from the community site)'
+    desc 'outdated [COOKBOOKS]', 'List dependencies that have new versions available that satisfy their constraints'
     def outdated(*cookbook_names)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       Berkshelf.formatter.msg 'Listing outdated cookbooks with newer versions available...'
-      Berkshelf.formatter.msg 'BETA: this feature will only pull differences from the community site and will'
-      Berkshelf.formatter.msg 'BETA: ignore all other dependencies you may have defined'
-      Berkshelf.formatter.msg ''
 
-      outdated_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      outdated = berksfile.outdated(outdated_options)
-
-      if outdated.empty?
-        Berkshelf.formatter.msg 'All cookbooks up to date'
-      else
-        outdated.each do |cookbook, latest_version|
-          Berkshelf.formatter.msg "Cookbook '#{cookbook.name} (#{cookbook.version_constraint})' is outdated (#{latest_version})"
-        end
-      end
+      outdated_options = { cookbooks: cookbook_names }.merge(options).symbolize_keys
+      berksfile.outdated(outdated_options)
     end
 
     desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
