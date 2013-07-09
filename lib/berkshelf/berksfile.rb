@@ -404,8 +404,6 @@ module Berkshelf
     #   Names of the cookbooks to retrieve dependencies for
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
-    # @option options [Boolean] :skip_dependencies (false)
-    #   Skip uploading dependent cookbook(s).
     # @option options [Boolean] :halt_on_frozen (false)
     #   Raise a FrozenCookbook error if one of the cookbooks being uploaded is already located
     #   on the remote Chef Server and frozen.
@@ -418,7 +416,7 @@ module Berkshelf
     #   if an attempt to upload a cookbook which has been frozen on the target server is made
     #   and the :halt_on_frozen option was true
     def upload(options = {})
-      options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false)
+      options = options.reverse_merge(force: false, freeze: true, halt_on_frozen: false)
 
       cached_cookbooks = install(options)
       upload_opts      = options.slice(:force, :freeze)
@@ -434,16 +432,6 @@ module Berkshelf
           if options[:halt_on_frozen]
             raise Berkshelf::FrozenCookbook, ex
           end
-        end
-      end
-
-      if options[:skip_dependencies]
-        missing_cookbooks = options.fetch(:cookbooks, nil) - cached_cookbooks.map(&:cookbook_name)
-        unless missing_cookbooks.empty?
-          msg = "Unable to upload cookbooks: #{missing_cookbooks.sort.join(', ')}\n"
-          msg << "Specified cookbooks must be defined within the Berkshelf file when using the"
-          msg << " `--skip-dependencies` option"
-          raise ExplicitCookbookNotFound.new(msg)
         end
       end
     rescue Ridley::Errors::RidleyError => ex
@@ -495,8 +483,6 @@ module Berkshelf
     #
     # @option options [String] :output
     #   the path to output the tarball
-    # @option options [Boolean] :skip_dependencies
-    #   package cookbook dependencies as well
     # @option options [Boolean] :ignore_chefignore
     #   do not apply the chefignore file to the packed cookbooks
     #

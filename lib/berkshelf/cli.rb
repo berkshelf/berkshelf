@@ -242,11 +242,6 @@ module Berkshelf
       default: false,
       desc: 'Skip Ruby syntax check when uploading cookbooks.',
       aliases: '-s'
-    method_option :skip_dependencies,
-      type: :boolean,
-      desc: 'Skip uploading dependent cookbook(s).',
-      default: false,
-      aliases: '-D'
     method_option :halt_on_frozen,
       type: :boolean,
       default: false,
@@ -403,10 +398,6 @@ module Berkshelf
       desc: 'Path to output the tarball',
       aliases: '-o',
       banner: 'PATH'
-    method_option :skip_dependencies,
-      type: :boolean,
-      desc: 'Skip packaging dependent cookbook(s).',
-      default: false
     method_option :ignore_chefignore,
       type: :boolean,
       desc: 'Do not apply the chefignore to the packaged contents',
