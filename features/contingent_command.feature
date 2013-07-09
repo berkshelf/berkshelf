@@ -48,7 +48,10 @@ Feature: Running the contingent command
     And the exit status should be 0
 
   Scenario: When the cookbook is not in the Berksfile
-    Given an empty file named "Berksfile"
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+      """
     And I successfully run `berks contingent dep`
     Then the output should contain:
       """
