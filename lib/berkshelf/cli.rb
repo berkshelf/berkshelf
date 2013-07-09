@@ -355,12 +355,11 @@ module Berkshelf
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def show(name)
       berksfile = Berksfile.from_file(options[:berksfile])
+      cookbook  = berksfile.install(cookbooks: name).first
 
-      cookbook = Berkshelf.ui.mute {
-        berksfile.resolve(berksfile.find(name))[:solution].first
-      }
-
-      raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile" unless cookbook
+      unless cookbook
+        raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile"
+      end
 
       Berkshelf.formatter.show(cookbook)
     end

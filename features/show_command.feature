@@ -50,13 +50,16 @@ Feature: Displaying information about a cookbook defined by a Berksfile
 
         ],
         "messages": [
-
+          "building universe..."
         ]
       }
       """
 
   Scenario: When the cookbook is not in the Berksfile
-    Given an empty file named "Berksfile"
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+      """
     When I run `berks show fake`
     Then the output should contain "Cookbook 'fake' is not installed by your Berksfile"
     And the exit status should be "CookbookNotFound"
