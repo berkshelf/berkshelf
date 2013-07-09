@@ -90,39 +90,6 @@ describe Berkshelf::Location::Base do
         expect(Berkshelf::Dependency.valid_options).to include(:arenanet)
       end
     end
-
-    describe "::solve_for_constraint" do
-      let(:constraint) { '~> 0.101.2' }
-      let(:versions) do
-        {
-          '0.101.2' => 'http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_2',
-          '0.101.0' => 'http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_101_0',
-          '0.100.2' => 'http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_2',
-          '0.100.0' => 'http://cookbooks.opscode.com/api/v1/cookbooks/nginx/versions/0_100_0'
-        }
-      end
-
-      it 'returns an array with a string containing the version of the solution at index 0' do
-        result = subject.solve_for_constraint(constraint, versions)
-        expect(result[0]).to eq('0.101.2')
-      end
-
-      it 'returns an array containing a URI at index 0' do
-        result = subject.solve_for_constraint(constraint, versions)
-        expect(result[1]).to match(URI.regexp)
-      end
-
-      it 'returns the best match for the constraint and versions given' do
-        expect(subject.solve_for_constraint(constraint, versions)[0].to_s).to eql('0.101.2')
-      end
-
-      context 'given a solution can not be found for constraint' do
-        it 'returns nil' do
-          result = subject.solve_for_constraint(Solve::Constraint.new('>= 1.0'), versions)
-          expect(result).to be_nil
-        end
-      end
-    end
   end
 
   let(:name) { "nginx" }
