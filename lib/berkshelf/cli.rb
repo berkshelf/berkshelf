@@ -336,7 +336,7 @@ module Berkshelf
     desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
     def list
       berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
+      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
 
       if dependencies.empty?
         Berkshelf.formatter.msg 'There are no cookbooks installed by your Berksfile'

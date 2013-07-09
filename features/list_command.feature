@@ -24,7 +24,10 @@ Feature: Listing cookbooks defined by a Berksfile
     And the exit status should be 0
 
   Scenario: Running the list command with no sources defined
-    Given an empty file named "Berksfile"
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+      """
     When I successfully run `berks list`
     Then the output should contain:
       """
