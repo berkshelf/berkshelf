@@ -8,6 +8,8 @@ Feature: Displaying information about a cookbook defined by a Berksfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     When I successfully run `berks show fake`
@@ -26,6 +28,8 @@ Feature: Displaying information about a cookbook defined by a Berksfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     When I successfully run `berks show fake --format json`

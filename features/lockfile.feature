@@ -438,25 +438,6 @@ Feature: Creating and reading the Berkshelf lockfile
       """
     And the exit status should be 0
 
-  Scenario: Updating a Berksfile.lock with a different site location
-  Given pending we have a reliable non-opscode site to test
-  # Given I write to "Berksfile" with:
-  #   """
-  #   cookbook 'fake', site: 'example.com'
-  #   """
-  # When I successfully run `berks install`
-  # Then the file "Berksfile.lock" should contain JSON:
-  #   """
-  #   {
-  #     "dependencies":{
-  #       "sudo":{
-  #         "site":"opscode",
-  #         "locked_version":"2.0.4"
-  #       }
-  #     }
-  #   }
-  #   """
-
   Scenario: Installing when the locked version is no longer satisfied
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 |

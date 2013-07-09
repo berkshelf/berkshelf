@@ -13,19 +13,11 @@ Feature: Evaluating a Berksfile
       end
       """
     And the environment variable BACON is "1"
-    When I successfully run `berks install`
+    When I run `berks install`
     Then the output should contain:
       """
       If you don't got bacon...
       """
-    And the exit status should be 0
-
-  Scenario: Calling valid DSL methods:
-    Given I write to "Berksfile" with:
-      """
-      site :opscode
-      """
-    When I successfully run `berks install`
     And the exit status should be 0
 
   Scenario: Containing methods I shouldn't be able to call

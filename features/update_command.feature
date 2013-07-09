@@ -8,7 +8,8 @@ Feature: Updating a cookbook defined by a Berksfile
       | berkshelf-cookbook-fixture | 0.1.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
     And I write to "Berksfile.lock" with:
@@ -36,7 +37,8 @@ Feature: Updating a cookbook defined by a Berksfile
       | hostsfile                  | 1.0.1 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       cookbook 'hostsfile', '~> 1.0.0'
       """
@@ -79,7 +81,8 @@ Feature: Updating a cookbook defined by a Berksfile
       | hostsfile                  | 1.0.1 |
     Given I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       cookbook 'hostsfile', '~> 1.0.0'
       """
@@ -120,7 +123,8 @@ Feature: Updating a cookbook defined by a Berksfile
       | berkshelf-cookbook-fixture | 0.1.0 |
     Given I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
     Given I write to "Berksfile.lock" with:

@@ -11,6 +11,8 @@ Feature: Applying cookbook versions to a Chef Environment
     And The Chef Server has an environment named "berkshelf_lock_test"
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     When I successfully run `berks apply berkshelf_lock_test`
@@ -26,6 +28,8 @@ Feature: Applying cookbook versions to a Chef Environment
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     When I run `berks apply berkshelf_lock_test`

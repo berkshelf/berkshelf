@@ -3,6 +3,11 @@ Feature: Running the contingent command
   I want a way to the cookbooks that depend on another
   So that I can better understand my infrastructure
 
+  Background:
+    Given the Berkshelf API server's cache is empty
+    And the Chef Server is empty
+    And the cookbook store is empty
+
   Scenario: When there are dependent cookbooks
     Given the cookbook store has the cookbooks:
       | dep | 1.0.0 |
@@ -12,6 +17,8 @@ Feature: Running the contingent command
       | dep | ~> 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '1.0.0'
       """
@@ -29,6 +36,8 @@ Feature: Running the contingent command
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     And I successfully run `berks contingent dep`

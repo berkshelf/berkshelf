@@ -3,12 +3,22 @@ Feature: --format json
   I want to be able to get all output in JSON format
   So I can easily parse the output in scripts
 
+  Background:
+    Given the Berkshelf API server's cache is empty
+    And the Chef Server is empty
+    And the cookbook store is empty
+
   Scenario: JSON output installing a cookbook from the default location
     Given I write to "Berksfile" with:
       """
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      source "http://localhost:26210"
+
+      cookbook 'berkshelf', '1.0.0'
       """
-    When I successfully run `berks install --format json`
+    And the Chef Server has cookbooks:
+      | berkshelf | 1.0.0 |
+    And the Berkshelf API server cache is up to date
+    When I run `berks install --format json`
     Then the output should contain JSON:
       """
       {
@@ -16,7 +26,7 @@ Feature: --format json
           {
             "version": "1.0.0",
             "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'",
-            "name": "berkshelf-cookbook-fixture"
+            "name": "berkshelf"
           }
         ],
         "errors": [
@@ -33,6 +43,8 @@ Feature: --format json
       | berkshelf-cookbook-fixture   | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install --format json`
@@ -57,6 +69,8 @@ Feature: --format json
   Scenario: JSON output when running the upload command
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I successfully run `berks upload --format json`

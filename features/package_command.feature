@@ -8,7 +8,8 @@ Feature: Packaging a cookbook as a tarball for distribution
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '~> 1.0.0'
       """
     When I successfully run `berks package fake`
@@ -24,7 +25,8 @@ Feature: Packaging a cookbook as a tarball for distribution
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '~> 1.0.0'
       """
     When I successfully run `berks package fake --output foo/bar`
@@ -36,7 +38,8 @@ Feature: Packaging a cookbook as a tarball for distribution
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '~> 1.0.0'
       """
     When I run `berks package non-existent`

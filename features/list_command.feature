@@ -9,6 +9,8 @@ Feature: Listing cookbooks defined by a Berksfile
       | fake2 | 1.0.1 |
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake1', '1.0.0'
       cookbook 'fake2', '1.0.1'
       """
