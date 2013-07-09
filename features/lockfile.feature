@@ -116,7 +116,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources":{
+        "dependencies":{
           "non-existent":{
             "path":"/this/path/does/not/exist"
           }
@@ -127,7 +127,7 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "sources":{
+        "dependencies":{
           "fake":{
             "locked_version":"1.0.0"
           }
