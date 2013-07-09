@@ -8,6 +8,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     When I successfully run `berks install`
@@ -28,7 +30,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     And I write to "Berksfile.lock" with:
@@ -54,7 +57,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     And I write to "Berksfile.lock" with:
@@ -86,6 +90,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Given a cookbook named "fake"
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '0.0.0', path: './fake'
       """
     And I write to "Berksfile.lock" with:
@@ -111,6 +117,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake'
       """
     And I write to "Berksfile.lock" with:
@@ -143,6 +151,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | dep | ~> 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     When I successfully run `berks install`
@@ -167,7 +177,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '~> 1.0.0'
       """
     And I write to "Berksfile.lock" with:
@@ -200,7 +211,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
       """
     And I write to "Berksfile.lock" with:
@@ -232,7 +244,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     And I write to "Berksfile.lock" with:
@@ -264,7 +277,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 919afa0c402089df23ebdf36637f12271b8a96b4 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', ref: '919afa0c4'
       """
     When I successfully run `berks install`
@@ -286,7 +300,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | master |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', branch: 'master'
       """
     When I successfully run `berks install`
@@ -308,7 +323,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 70a527e17d91f01f031204562460ad1c17f972ee |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', tag: 'v0.2.0'
       """
     When I successfully run `berks install`
@@ -330,7 +346,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 919afa0c402089df23ebdf36637f12271b8a96b4 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', ref: '919afa0c4'
       """
     When I successfully run `berks install`
@@ -350,7 +367,8 @@ Feature: Creating and reading the Berkshelf lockfile
   Scenario: Updating a Berksfile.lock when a git location with :rel
     Given I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
       """
     When I successfully run `berks install`
@@ -372,7 +390,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Given a cookbook named "fake"
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', path: './fake'
       """
     When I successfully run `berks install`
@@ -391,7 +410,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Given a cookbook named "fake"
     And the cookbook "fake" has the file "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       metadata
       """
     When I cd to "fake"
@@ -411,7 +431,8 @@ Feature: Creating and reading the Berkshelf lockfile
     Given a cookbook named "fake"
     And the cookbook "fake" has the file "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       metadata
       """
     And the cookbook "fake" has the file "Berksfile.lock" with:
@@ -443,13 +464,15 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 1.0.0 |
     Given I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     And I successfully run `berks install`
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '~> 1.3.0'
       """
     When I run `berks install`
@@ -471,7 +494,8 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     And an empty file named "Berksfile.lock"
@@ -485,7 +509,8 @@ Feature: Creating and reading the Berkshelf lockfile
   Scenario: Installing when the Lockfile is in a bad state
     Given I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
       """
     Given I write to "Berksfile.lock" with:
@@ -498,4 +523,3 @@ Feature: Creating and reading the Berkshelf lockfile
       Error reading the Berkshelf lockfile `Berksfile.lock` (JSON::ParserError)
       """
     And the exit status should be "LockfileParserError"
-
