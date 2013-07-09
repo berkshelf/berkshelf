@@ -74,13 +74,25 @@ module Berkshelf
       # @param [Berkshelf::Dependency] dependency
       # @param [Hash] options
       def initialize(dependency, options = {})
-        @dependency = dependency
+        @dependency       = dependency
+        @@cached_cookbook = nil
       end
 
       # @param [#to_s] destination
       #
       # @return [Berkshelf::CachedCookbook]
-      def download(destination)
+      def download
+        return @cached_cookbook if @cached_cookbook
+
+        cached_cookbook = do_download
+        validate_cached(cached_cookbook)
+        @cached_cookbook = cached_cookbook
+      end
+
+      # @param [#to_s] destination
+      #
+      # @return [Berkshelf::CachedCookbook]
+      def do_download
         raise AbstractFunction
       end
 

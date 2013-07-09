@@ -97,11 +97,27 @@ describe Berkshelf::Location::Base do
   let(:dependency) { double('dependency', name: name, version_constraint: constraint) }
   subject { Class.new(Berkshelf::Location::Base).new(dependency) }
 
-  describe '#download' do
-    it 'raises a AbstractFunction if not defined' do
-      expect {
-        subject.download(double('destination'))
-      }.to raise_error(Berkshelf::AbstractFunction)
+  describe "#download" do
+    context "when #do_download is not defined" do
+      it "raises a AbstractFunction" do
+        expect { subject.download }.to raise_error(Berkshelf::AbstractFunction)
+      end
+    end
+
+    context "when #do_download is defined" do
+      let(:cached) { double('cached') }
+      before { subject.stub(do_download: cached) }
+
+      it "validates the returned cached cookbook" do
+        subject.should_receive(:validate_cached).with(cached).and_return(true)
+        subject.download
+      end
+
+      it "returns the cached cookbook if valid" do
+        subject.stub(validate_cached: true)
+
+        expect(subject.download).to eq(cached)
+      end
     end
   end
 

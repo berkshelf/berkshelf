@@ -126,16 +126,18 @@ module Berkshelf
       end
     end
 
+    # @return [Berkshelf::CachedCookbook]
     def cached_cookbook
       @cached_cookbook ||= if location
-        location.activate
+        location.download
       else
         Berkshelf::CookbookStore.instance.satisfy(name, version_constraint)
       end
     end
 
-    def download(destination)
-      @cached_cookbook = location.download(destination)
+    # @return [Berkshelf::CachedCookbook]
+    def download
+      @cached_cookbook = location.download
     end
 
     # Returns true if the dependency has already been downloaded. A dependency is downloaded when a

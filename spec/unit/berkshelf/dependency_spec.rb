@@ -229,7 +229,7 @@ describe Berkshelf::Dependency do
     end
 
     it 'includes the git url and ref' do
-      location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234', rel: nil)
+      location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234', rel: nil, download: nil)
       location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)
@@ -241,7 +241,7 @@ describe Berkshelf::Dependency do
     end
 
     it 'includes the git url and rel' do
-      location = double('git', uri: 'git://github.com/foo/bar.git', ref: nil, rel: 'cookbooks/foo')
+      location = double('git', uri: 'git://github.com/foo/bar.git', ref: nil, rel: 'cookbooks/foo', download: nil)
       location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)

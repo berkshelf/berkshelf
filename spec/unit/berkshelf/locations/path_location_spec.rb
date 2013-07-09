@@ -17,11 +17,9 @@ describe Berkshelf::PathLocation do
   let(:options) { { path: path } }
   let(:instance) { described_class.new(dependency, options) }
 
-  describe "#cookbook" do
-    subject(:cookbook) { instance.cookbook }
-
+  describe "#download" do
     it "returns a CachedCookbook" do
-      expect(cookbook).to be_a(Berkshelf::CachedCookbook)
+      expect(instance.download).to be_a(Berkshelf::CachedCookbook)
     end
   end
 end

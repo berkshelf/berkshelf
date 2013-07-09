@@ -20,6 +20,7 @@ describe Berkshelf::GitLocation do
     end
   end
 
+  let(:storage_path) { Berkshelf::CookbookStore.instance.storage_path }
   subject { described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 
   describe '#download' do
@@ -34,19 +35,19 @@ describe Berkshelf::GitLocation do
       end
 
       it 'returns the cached cookbook' do
-        expect(subject.download(tmp_path)).to eq(cached)
+        expect(subject.download).to eq(cached)
       end
     end
 
     it 'returns an instance of Berkshelf::CachedCookbook' do
-      expect(subject.download(tmp_path)).to be_a(Berkshelf::CachedCookbook)
+      expect(subject.download).to be_a(Berkshelf::CachedCookbook)
     end
 
     it 'downloads the cookbook to the given destination' do
-      cached_cookbook = subject.download(tmp_path)
+      cached_cookbook = subject.download
       ref = subject.ref
 
-      expect(tmp_path).to have_structure {
+      expect(storage_path).to have_structure {
         directory "#{cached_cookbook.cookbook_name}-#{ref}" do
           file 'metadata.rb'
         end
@@ -57,7 +58,7 @@ describe Berkshelf::GitLocation do
       subject { described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 
       it 'sets the branch attribute to the HEAD revision of the cloned repo' do
-        subject.download(tmp_path)
+        subject.download
         expect(subject.branch).to_not be_nil
       end
     end
@@ -68,9 +69,7 @@ describe Berkshelf::GitLocation do
 
       it 'raises a GitError' do
         Berkshelf::Git.stub(:git).and_raise(Berkshelf::GitError.new(''))
-        expect {
-          subject.download(tmp_path)
-        }.to raise_error(Berkshelf::GitError)
+        expect { subject.download }.to raise_error(Berkshelf::GitError)
       end
     end
 
@@ -85,9 +84,7 @@ describe Berkshelf::GitLocation do
           Dir.chdir(fake_remote) { |dir| `git init; echo hi > README; git add README; git commit README -m 'README'`; dir }
         }
 
-        expect {
-          subject.download(tmp_path)
-        }.to raise_error(Berkshelf::CookbookNotFound)
+        expect { subject.download }.to raise_error(Berkshelf::CookbookNotFound)
       end
     end
 
@@ -96,7 +93,7 @@ describe Berkshelf::GitLocation do
       subject { described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 
       it 'raises a CookbookValidationFailure error' do
-        expect { subject.download(tmp_path) }.to raise_error(Berkshelf::CookbookValidationFailure)
+        expect { subject.download }.to raise_error(Berkshelf::CookbookValidationFailure)
       end
     end
 
@@ -107,9 +104,9 @@ describe Berkshelf::GitLocation do
         described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', tag: tag)
       end
 
-      let(:cached) { subject.download(tmp_path) }
+      let(:cached) { subject.download }
       let(:sha) { subject.ref }
-      let(:expected_path) { tmp_path.join("#{cached.cookbook_name}-#{sha}") }
+      let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }
 
       it 'returns a cached cookbook with a path that contains the ref' do
         expect(cached.path).to eq(expected_path)
@@ -123,9 +120,9 @@ describe Berkshelf::GitLocation do
         described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git',
           branch: branch)
       end
-      let(:cached) { subject.download(tmp_path) }
+      let(:cached) { subject.download }
       let(:sha) { subject.ref }
-      let(:expected_path) { tmp_path.join("#{cached.cookbook_name}-#{sha}") }
+      let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }
 
       it 'returns a cached cookbook with a path that contains the ref' do
         expect(cached.path).to eq(expected_path)

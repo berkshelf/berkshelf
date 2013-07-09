@@ -26,7 +26,7 @@ module Berkshelf
       dependency, version = args
 
       if dependency.is_a?(Berkshelf::Dependency)
-        dependency.download(Berkshelf::CookbookStore.instance.storage_path)
+        dependency.download
       else
         sources.each do |source|
           if result = try_download(source, dependency, version)

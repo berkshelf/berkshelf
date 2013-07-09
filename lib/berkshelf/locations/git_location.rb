@@ -48,7 +48,9 @@ module Berkshelf
     # @param [#to_s] destination
     #
     # @return [Berkshelf::CachedCookbook]
-    def download(destination)
+    def do_download
+      destination = Berkshelf::CookbookStore.instance.storage_path
+
       if cached?(destination)
         @ref ||= Berkshelf::Git.rev_parse(revision_path(destination))
         return local_revision(destination)

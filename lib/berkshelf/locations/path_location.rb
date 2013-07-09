@@ -38,16 +38,8 @@ module Berkshelf
       @metadata = options[:metadata]
     end
 
-    def activate
-      cookbook
-    end
-
-    # The cookbook associated with this path location.
-    #
-    # @return [Berkshelf::CachedCookbook]
-    #   the cached cookbook for this location
-    def cookbook
-      @cookbook ||= CachedCookbook.from_path(path, name: name)
+    def do_download
+      CachedCookbook.from_path(path, name: name)
     end
 
     # Returns true if the location is a metadata location. By default, no
