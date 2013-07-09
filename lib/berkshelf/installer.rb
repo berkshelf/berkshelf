@@ -52,7 +52,7 @@ module Berkshelf
         end
       end
 
-      verify_licenses!
+      verify_licenses!(lock_deps)
       lockfile.update(lock_deps)
       cached_cookbooks
     end
@@ -60,9 +60,11 @@ module Berkshelf
     # Verify that the licenses of all the cached cookbooks fall in the realm of
     # allowed licenses from the Berkshelf Config.
     #
+    # @param [Array<Berkshelf::Dependencies>] dependencies
+    #
     # @raise [Berkshelf::LicenseNotAllowed]
     #   if the license is not permitted and `raise_license_exception` is true
-    def verify_licenses!
+    def verify_licenses!(dependencies)
       licenses = Array(Berkshelf.config.allowed_licenses)
       return if licenses.empty?
 
