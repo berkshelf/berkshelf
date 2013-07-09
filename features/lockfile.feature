@@ -64,7 +64,7 @@ Feature: Creating and reading the Berkshelf lockfile
     And I write to "Berksfile.lock" with:
       """
       {
-        "sources": {
+        "dependencies": {
           "fake": {
             "constraint": "= 1.0.0",
             "locked_version": "1.0.0"
@@ -73,7 +73,6 @@ Feature: Creating and reading the Berkshelf lockfile
       }
       """
     When I successfully run `berks install`
-    Then the output should warn about the old lockfile format
     Then the file "Berksfile.lock" should contain JSON:
       """
       {

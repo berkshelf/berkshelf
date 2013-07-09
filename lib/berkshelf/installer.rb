@@ -18,6 +18,8 @@ module Berkshelf
     end
 
     # @option options [Array<String>, String] cookbooks
+    #
+    # @return [Array<Berkshelf::CachedCookbook>]
     def run(options = {})
       dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only)))
       resolver     = Resolver.new(berksfile, dependencies)
@@ -36,7 +38,10 @@ module Berkshelf
       Berkshelf.formatter.msg("building universe...")
       build_universe
 
+      lock_deps = []
+
       cached_cookbooks = resolver.resolve.collect do |name, version, dependency|
+        lock_deps << dependency
         if dependency.downloaded?
           Berkshelf.formatter.use(dependency.name, dependency.cached_cookbook.version, dependency.location)
           dependency.cached_cookbook
@@ -48,7 +53,7 @@ module Berkshelf
       end
 
       verify_licenses!
-      lockfile.update(dependencies)
+      lockfile.update(lock_deps)
       cached_cookbooks
     end
 

@@ -452,20 +452,19 @@ module Berkshelf
     # @raise [EnvironmentNotFound] if the target environment was not found
     # @raise [ChefConnectionError] if you are locking cookbooks with an invalid or not-specified client configuration
     def apply(environment_name, options = {})
-      conn        = ridley_connection(options)
-      environment = conn.environment.find(environment_name)
+      conn = ridley_connection(options)
 
-      if environment
-        install
-
-        environment.cookbook_versions = {}.tap do |cookbook_versions|
-          lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = dependency.locked_version.to_s }
-        end
-
-        environment.save
-      else
+      unless environment = conn.environment.find(environment_name)
         raise EnvironmentNotFound.new(environment_name)
       end
+
+      install
+
+      environment.cookbook_versions = {}.tap do |cookbook_versions|
+        lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = dependency.locked_version }
+      end
+
+      environment.save
     rescue Ridley::Errors::RidleyError => ex
       raise ChefConnectionError, ex
     ensure
