@@ -5,7 +5,9 @@ class Hash
       if seed[key].is_a?(Hash)
         seed[key] = seed[key].sort_by_key(&block)
       elsif seed[key].is_a?(Array)
-        seed[key] = seed[key].map { |i| i.sort_by_key(&block) }
+        seed[key] = seed[key].map do |i|
+          i.respond_to?(:sort_by_key) ? i.sort_by_key(&block) : i
+        end
       end
       seed
     end

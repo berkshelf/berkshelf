@@ -33,7 +33,11 @@ module Berkshelf
       def install(cookbook, version, location)
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
-        cookbooks[cookbook][:location] = location.to_s
+
+        if location && location.is_a?(PathLocation)
+          cookbooks[cookbook][:metadata] = true if location.metadata?
+          cookbooks[cookbook][:location] = location.relative_path
+        end
       end
 
       # Add a Cookbook use entry to delayed output

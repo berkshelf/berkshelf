@@ -25,7 +25,6 @@ Feature: --format json
         "cookbooks": [
           {
             "version": "1.0.0",
-            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'",
             "name": "berkshelf"
           }
         ],
@@ -33,7 +32,7 @@ Feature: --format json
 
         ],
         "messages": [
-
+          "building universe..."
         ]
       }
       """
@@ -61,7 +60,7 @@ Feature: --format json
 
         ],
         "messages": [
-
+          "building universe..."
         ]
       }
       """
@@ -82,14 +81,14 @@ Feature: --format json
             "name": "example_cookbook",
             "version": "0.5.0",
             "location": "../../spec/fixtures/cookbooks/example_cookbook-0.5.0",
-            "uploaded_to": "http://localhost:4000/"
+            "uploaded_to": "http://localhost:26310/"
           }
         ],
         "errors": [
 
         ],
         "messages": [
-
+          "building universe..."
         ]
       }
       """
