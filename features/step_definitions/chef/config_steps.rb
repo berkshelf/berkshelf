@@ -1,5 +1,9 @@
 require 'tempfile'
 
+Given(/^I do not have a Berkshelf config$/) do
+  FileUtils.rm_f(ENV['BERKSHELF_CONFIG'])
+end
+
 Given /^I do not have a Chef config$/ do
   path   = Tempfile.new('chef_config').path
   config = Berkshelf::Chef::Config.from_file(path)

@@ -4,6 +4,9 @@ Feature: Configuring Berkshelf via the command line
   I want a command to generate a Berkshelf configuration file based on my input
   So I can quickly get up and running with the least amount of resistance
 
+  Background:
+    Given I do not have a Berkshelf config
+
   Scenario: Using custom values
     When I run `berks configure` interactively
     And I type "https://api.opscode.com/organizations/vialstudios"
