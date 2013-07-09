@@ -82,7 +82,22 @@ module Berkshelf
   end
 
   class DuplicateDependencyDefined < BerkshelfError; status_code(105); end
-  class NoSolution < BerkshelfError; status_code(106); end
+
+  class NoSolutionError < BerkshelfError
+    status_code(106)
+
+    attr_reader :demands
+
+    # @param [Array<Berkshelf::Dependency>] demands
+    def initialize(demands)
+      @demands = demands
+    end
+
+    def to_s
+      "Unable to find a solution for demands: #{demands.join(', ')}"
+    end
+  end
+
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
 
   class InvalidGitURI < BerkshelfError

@@ -61,6 +61,8 @@ module Berkshelf
     # Finds a solution for the currently added dependencies and their dependencies and
     # returns an array of CachedCookbooks.
     #
+    # @raise [Berkshelf::NoSolutionError] when a solution could not be found for the given demands
+    #
     # @return [Array<Array<String, String, Dependency>>]
     def resolve
       graph.populate_store
@@ -70,6 +72,8 @@ module Berkshelf
         dependency = get_demand(name) || Dependency.new(berksfile, name, constraint: version)
         [ name, version, dependency ]
       end
+    rescue Solve::Errors::NoSolutionError
+      raise Berkshelf::NoSolutionError.new(demands)
     end
 
     # Retrieve the given demand from the resolver

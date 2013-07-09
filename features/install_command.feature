@@ -294,13 +294,14 @@ Feature: install cookbooks from a Berksfile
       source "http://localhost:26210"
 
       cookbook 'doesntexist'
+      cookbook 'other-failure'
       """
     And I run `berks install`
     Then the output should contain:
       """
-      Cookbook 'doesntexist' not found in any of the default locations
+      Unable to find a solution for demands: doesntexist (>= 0.0.0), other-failure (>= 0.0.0)
       """
-    And the exit status should be "CookbookNotFound"
+    And the exit status should be "NoSolutionError"
 
   Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
     Given I write to "Berksfile" with:
