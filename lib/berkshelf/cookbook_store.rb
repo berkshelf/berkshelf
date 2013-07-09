@@ -35,6 +35,11 @@ module Berkshelf
       FileUtils.rm_rf(Dir.glob(File.join(storage_path, '*')))
     end
 
+    # @param [String] name
+    # @param [String] version
+    # @param [String] path
+    #
+    # @return [Berkshelf::CachedCookbook]
     def import(name, version, path)
       import_validate(name, version, path)
       FileUtils.mv(path, cookbook_path(name, version))

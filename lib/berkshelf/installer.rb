@@ -36,9 +36,10 @@ module Berkshelf
       Berkshelf.formatter.msg("building universe...")
       build_universe
 
-      resolver.resolve.each do |name, version, dependency|
+      cached_cookbooks = resolver.resolve.collect do |name, version, dependency|
         if dependency.downloaded?
           Berkshelf.formatter.use(dependency.name, dependency.cached_cookbook.version, dependency.location)
+          dependency.cached_cookbook
         else
           Berkshelf.formatter.install(name, version, dependency)
           temp_filepath = downloader.download(name, version)
@@ -48,6 +49,7 @@ module Berkshelf
 
       verify_licenses!
       lockfile.update(dependencies)
+      cached_cookbooks
     end
 
     # Verify that the licenses of all the cached cookbooks fall in the realm of
