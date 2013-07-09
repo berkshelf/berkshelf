@@ -273,7 +273,7 @@ Feature: Creating and reading the Berkshelf lockfile
 
   Scenario: Updating a Berksfile.lock with a git location
     Given the cookbook store has the cookbooks:
-      | berkshelf-cookbook-fixture | 919afa0c402089df23ebdf36637f12271b8a96b4 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And I write to "Berksfile" with:
       """
       source "http://localhost:26210"
@@ -296,7 +296,7 @@ Feature: Creating and reading the Berkshelf lockfile
 
   Scenario: Updating a Berksfile.lock with a git location and a branch
     Given the cookbook store has the cookbooks:
-      | berkshelf-cookbook-fixture | master |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And I write to "Berksfile" with:
       """
       source "http://localhost:26210"
