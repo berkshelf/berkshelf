@@ -54,6 +54,8 @@ Feature: Packaging a cookbook as a tarball for distribution
     Given a cookbook named "cookbook with spaces"
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'cookbook with spaces', path: './cookbook with spaces'
       """
     When I run `berks package`

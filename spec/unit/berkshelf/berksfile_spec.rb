@@ -503,11 +503,11 @@ describe Berkshelf::Berksfile do
         FileUtils.stub(:cp_r)
         FileUtils.stub(:mkdir_p)
         subject.stub(:find).with('non-existent').and_return(dependency)
-        subject.stub(:resolve).with(dependency, options).and_return({ solution: [cached], dependencies: [dependency] })
+        subject.stub(:install).with(options).and_return([ cached ])
       end
 
       it 'resolves the dependencies' do
-        subject.should_receive(:resolve).with(dependency, options)
+        subject.should_receive(:install).with(options)
         subject.package('non-existent', options)
       end
 

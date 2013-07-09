@@ -490,29 +490,25 @@ module Berkshelf
     #   the path to the package
     def package(name = nil, options = {})
       tar_name = "#{name || 'package'}.tar.gz"
-      output = File.expand_path(File.join(options[:output], tar_name))
+      output   = File.expand_path(File.join(options[:output], tar_name))
 
-      unless name.nil?
-        dependency = self.find(name)
-        raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile" unless dependency
+      cached_cookbooks = unless name.nil?
+        unless dependency = find(name)
+          raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile"
+        end
 
-        package = Berkshelf.ui.mute {
-          self.resolve(dependency, options)[:solution]
-        }
+        options[:cookbooks] = name
+        Berkshelf.ui.mute { install(options) }
       else
-        package = Berkshelf.ui.mute {
-          self.resolve(dependencies, options)[:solution]
-        }
+        Berkshelf.ui.mute { install(options) }
       end
 
-      package.each do |cookbook|
-        validate_files!(cookbook)
-      end
+      cached_cookbooks.each { |cookbook| validate_files!(cookbook) }
 
       Dir.mktmpdir do |tmp|
-        package.each do |cached_cookbook|
-          path = cached_cookbook.path.to_s
-          destination = File.join(tmp, cached_cookbook.cookbook_name)
+        cached_cookbooks.each do |cookbook|
+          path        = cookbook.path.to_s
+          destination = File.join(tmp, cookbook.cookbook_name)
 
           FileUtils.cp_r(path, destination)
 
