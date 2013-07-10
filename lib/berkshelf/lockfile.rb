@@ -33,6 +33,9 @@ module Berkshelf
       hash = parse(contents)
 
       hash[:sources].each do |name, options|
+        # Dynamically calculate paths relative to the Berksfile if a path is given
+        options[:path] &&= File.expand_path(options[:path], File.dirname(filepath))
+
         begin
           add(CookbookSource.new(berksfile, name.to_s, options))
         rescue Berkshelf::CookbookNotFound
