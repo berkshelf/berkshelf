@@ -33,6 +33,7 @@ module Berkshelf
       hash     = parse(contents)
 
       hash[:dependencies].each do |name, options|
+        options[:path] = File.expand_path(options[:path], File.dirname(@filepath)) if options[:path]
         begin
           add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
         rescue Berkshelf::CookbookNotFound
