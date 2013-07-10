@@ -161,7 +161,7 @@ module Berkshelf
       options = args.last.is_a?(Hash) ? args.pop : Hash.new
       name, constraint = args
 
-      options[:path] = File.expand_path(options[:path], File.dirname(@filepath)) if options[:path]
+      options[:path] &&= File.expand_path(options[:path], File.dirname(filepath))
       options[:group] = Array(options[:group])
 
       if @@active_group
