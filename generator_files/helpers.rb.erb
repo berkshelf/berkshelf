@@ -1,5 +1,5 @@
 module Helpers
-  module <%= cookbook_name.capitalize.sub('-','_') %>
+  module <%= cookbook_name.capitalize.gsub('-','_') %>
     include MiniTest::Chef::Assertions
     include MiniTest::Chef::Context
     include MiniTest::Chef::Resources
