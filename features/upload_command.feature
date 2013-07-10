@@ -82,8 +82,8 @@ Feature: Uploading cookbooks to a Chef Server
     When I run `berks upload reset`
     Then the output should contain:
       """
-      Uploading fake (1.0.0) to: 'http://localhost:26310/'
       Uploading reset (3.4.5) to: 'http://localhost:26310/'
+      Uploading fake (1.0.0) to: 'http://localhost:26310/'
       """
     And the output should not contain:
       """
@@ -95,6 +95,18 @@ Feature: Uploading cookbooks to a Chef Server
     And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
     And the exit status should be 0
+
+  Scenario: specifying a dependency not defined in the Berksfile
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+      """
+    When I run `berks upload reset`
+    Then the output should contain:
+      """
+      Failed to upload cookbook 'reset'. Not defined in Berksfile.
+      """
+    And the exit status should be "DependencyNotFound"
 
   Scenario: specifying multiple cookbooks to upload
     Given the cookbook store has the cookbooks:

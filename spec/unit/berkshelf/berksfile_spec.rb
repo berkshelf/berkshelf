@@ -403,7 +403,7 @@ describe Berkshelf::Berksfile do
       end
 
       it 'uses Berkshelf::Config configured server_url' do
-        Ridley.should_receive(:new).with(ridley_options)
+        Ridley.should_receive(:open).with(ridley_options)
         upload
       end
     end
@@ -419,7 +419,7 @@ describe Berkshelf::Berksfile do
       end
 
       it 'uses the passed in :server_url' do
-        Ridley.should_receive(:new).with(ridley_options)
+        Ridley.should_receive(:open).with(ridley_options)
         upload
       end
     end
@@ -433,7 +433,7 @@ describe Berkshelf::Berksfile do
     let(:ridley)      { Ridley.new(server_url: server_url, client_name: client_name, client_key: client_key) }
 
     before do
-      subject.stub(:ridley_connection).and_return(ridley)
+      subject.stub(:ridley_connection).and_yield(ridley)
       subject.add_dependency('nginx', '>= 0.1.2')
       subject.stub(install: nil)
     end
@@ -471,16 +471,6 @@ describe Berkshelf::Berksfile do
         expect {
           subject.apply(env_name)
         }.to raise_error(Berkshelf::EnvironmentNotFound)
-      end
-    end
-
-    context 'when Ridley throw an exception' do
-      before { ridley.stub_chain(:environment, :find).and_raise(Ridley::Errors::RidleyError) }
-
-      it 'raises a ChefConnectionError' do
-        expect {
-          subject.apply(env_name)
-        }.to raise_error(Berkshelf::ChefConnectionError)
       end
     end
   end

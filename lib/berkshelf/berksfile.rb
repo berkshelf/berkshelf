@@ -402,33 +402,23 @@ module Berkshelf
     #
     # @raise [UploadFailure]
     #   if you are uploading cookbooks with an invalid or not-specified client key
+    # @raise [DependencyNotFound]
+    #   if one of the given cookbooks is not a dependency defined in the Berksfile
     # @raise [Berkshelf::FrozenCookbook]
     #   if an attempt to upload a cookbook which has been frozen on the target server is made
     #   and the :halt_on_frozen option was true
     def upload(options = {})
-      options = options.reverse_merge(force: false, freeze: true, halt_on_frozen: false)
+      options = options.reverse_merge(force: false, freeze: true, halt_on_frozen: false, cookbooks: [])
 
-      cached_cookbooks = install(options)
-      upload_opts      = options.slice(:force, :freeze)
-      conn             = ridley_connection(options)
-
-      cached_cookbooks.each do |cookbook|
-        Berkshelf.formatter.upload(cookbook.cookbook_name, cookbook.version, conn.server_url)
-        validate_files!(cookbook)
-
-        begin
-          conn.cookbook.upload(cookbook.path, upload_opts.merge(name: cookbook.cookbook_name))
-        rescue Ridley::Errors::FrozenCookbook => ex
-          if options[:halt_on_frozen]
-            raise Berkshelf::FrozenCookbook, ex
-          end
+      options[:cookbooks].each do |cookbook|
+        unless dependency = find(cookbook)
+          raise DependencyNotFound, "Failed to upload cookbook '#{cookbook}'. Not defined in Berksfile."
         end
       end
-    rescue Ridley::Errors::RidleyError => ex
-      log_exception(ex)
-      raise ChefConnectionError, ex # todo implement
-    ensure
-      conn.terminate if conn && conn.alive?
+
+      cached_cookbooks = install(options)
+      cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
+      do_upload(cached_cookbooks, options)
     end
 
     # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
@@ -442,23 +432,19 @@ module Berkshelf
     # @raise [EnvironmentNotFound] if the target environment was not found
     # @raise [ChefConnectionError] if you are locking cookbooks with an invalid or not-specified client configuration
     def apply(environment_name, options = {})
-      conn = ridley_connection(options)
+      ridley_connection(options) do |conn|
+        unless environment = conn.environment.find(environment_name)
+          raise EnvironmentNotFound.new(environment_name)
+        end
 
-      unless environment = conn.environment.find(environment_name)
-        raise EnvironmentNotFound.new(environment_name)
+        install
+
+        environment.cookbook_versions = {}.tap do |cookbook_versions|
+          lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = dependency.locked_version }
+        end
+
+        environment.save
       end
-
-      install
-
-      environment.cookbook_versions = {}.tap do |cookbook_versions|
-        lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = dependency.locked_version }
-      end
-
-      environment.save
-    rescue Ridley::Errors::RidleyError => ex
-      raise ChefConnectionError, ex
-    ensure
-      conn.terminate if conn && conn.alive?
     end
 
     # Package the given cookbook for distribution outside of berkshelf. If the
@@ -535,7 +521,49 @@ module Berkshelf
 
     private
 
-      def ridley_connection(options = {})
+      def do_upload(cookbooks, options = {})
+        upload_opts = options.slice(:force, :freeze)
+
+        ridley_connection(options) do |conn|
+          cookbooks.each do |cookbook|
+            Berkshelf.formatter.upload(cookbook.cookbook_name, cookbook.version, conn.server_url)
+            validate_files!(cookbook)
+
+            begin
+              conn.cookbook.upload(cookbook.path, upload_opts.merge(name: cookbook.cookbook_name))
+            rescue Ridley::Errors::FrozenCookbook => ex
+              if options[:halt_on_frozen]
+                raise Berkshelf::FrozenCookbook, ex
+              end
+            end
+          end
+        end
+      end
+
+      # Filter the cookbooks to upload based on a set of given names. The dependencies of a cookbook
+      # will always be included in the filtered results even if the dependencie's name is not
+      # explicitly provided.
+      #
+      # @param [Array<Berkshelf::CachedCookbooks>] cookbooks
+      #   set of cookbooks to filter
+      # @param [Array<String>] names
+      #   names of cookbooks to include in the filtered results
+      #
+      # @return [Array<Berkshelf::CachedCookbooks]
+      def filter_to_upload(cookbooks, names)
+        if names.any?
+          explicit = cookbooks.select { |cookbook| names.include?(cookbook.cookbook_name) }
+          explicit.each do |cookbook|
+            cookbook.dependencies.each do |name, version|
+              explicit += cookbooks.select { |cookbook| cookbook.cookbook_name == name }
+            end
+          end
+          cookbooks = explicit.uniq
+        end
+        cookbooks
+      end
+
+      def ridley_connection(options = {}, &block)
         ridley_options               = options.slice(:ssl)
         ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
         ridley_options[:client_name] = Berkshelf.config.chef.node_name
@@ -554,7 +582,10 @@ module Berkshelf
           raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
         end
 
-        Ridley.new(ridley_options)
+        Ridley.open(ridley_options, &block)
+      rescue Ridley::Errors::RidleyError => ex
+        log_exception(ex)
+        raise ChefConnectionError, ex # todo implement
       end
 
       def descendant_directory?(candidate, parent)

@@ -208,7 +208,7 @@ module Berkshelf
   class ConfigExists < BerkshelfError; status_code(116); end
   class ConfigurationError < BerkshelfError; status_code(117); end
   class InsufficientPrivledges < BerkshelfError; status_code(119); end
-  class ExplicitCookbookNotFound < BerkshelfError; status_code(120); end
+  class DependencyNotFound < BerkshelfError; status_code(120); end
   class ValidationFailed < BerkshelfError; status_code(121); end
   class InvalidVersionConstraint < BerkshelfError; status_code(122); end
   class CommunitySiteError < BerkshelfError; status_code(123); end
