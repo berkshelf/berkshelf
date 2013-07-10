@@ -3,7 +3,6 @@ source 'https://rubygems.org'
 gemspec
 
 group :guard do
-  # Placed in a separate group to ignore on Windows + Travis
   gem 'coolline',      '~> 0.4.2'
   gem 'guard',         '~> 1.8'
   gem 'guard-cane'
