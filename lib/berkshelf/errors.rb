@@ -20,7 +20,20 @@ module Berkshelf
     end
   end
 
-  class BerksfileNotFound < BerkshelfError; status_code(100); end
+  class BerksfileNotFound < BerkshelfError
+    status_code(100)
+
+    # @param [#to_s] filepath
+    #   the path where a Berksfile was not found
+    def initialize(filepath)
+      @filepath = File.dirname(File.expand_path(filepath)) rescue filepath
+    end
+
+    def to_s
+      "No Berksfile or Berksfile.lock found at '#{filepath}'!"
+    end
+  end
+
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DuplicateLocationDefined < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError; status_code(103); end
