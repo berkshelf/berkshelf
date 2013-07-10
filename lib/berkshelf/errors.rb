@@ -30,7 +30,7 @@ module Berkshelf
     end
 
     def to_s
-      "No Berksfile or Berksfile.lock found at '#{filepath}'!"
+      "No Berksfile or Berksfile.lock found at '#{@filepath}'!"
     end
   end
 
