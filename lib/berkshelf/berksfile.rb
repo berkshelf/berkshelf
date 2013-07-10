@@ -9,6 +9,7 @@ module Berkshelf
         raise BerksfileNotFound.new(file) unless File.exist?(file)
         new(file).dsl_eval_file(file)
       rescue => ex
+        raise if ex.is_a?(BerksfileNotFound)
         raise BerksfileReadError.new(ex)
       end
 
