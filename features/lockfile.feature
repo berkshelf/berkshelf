@@ -158,14 +158,13 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the file "Berksfile.lock" should contain JSON:
       """
       {
-        "dependencies":{
+        "dependencies": {
           "fake":{
-            "constraint":"= 1.0.0",
-            "locked_version":"1.0.0"
+            "constraint": "= 1.0.0",
+            "locked_version": "1.0.0"
           },
           "dep":{
-            "constraint":"~> 1.0.0",
-            "locked_version":"1.0.0"
+            "locked_version": "1.0.0"
           }
         }
       }

@@ -69,7 +69,7 @@ module Berkshelf
       graph.populate(berksfile.sources)
 
       Solve.it!(graph, demand_array).collect do |name, version|
-        dependency = get_demand(name) || Dependency.new(berksfile, name, constraint: version)
+        dependency = get_demand(name) || Dependency.new(berksfile, name, locked_version: version)
         [ name, version, dependency ]
       end
     rescue Solve::Errors::NoSolutionError
