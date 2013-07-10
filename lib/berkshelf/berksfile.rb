@@ -6,9 +6,8 @@ module Berkshelf
       #
       # @return [Berksfile]
       def from_file(file)
+        raise BerksfileNotFound.new(file) unless File.exist?(file)
         new(file).dsl_eval_file(file)
-      rescue Errno::ENOENT => ex
-        raise BerksfileNotFound, "Error in #{file}: #{ex.to_s}. Hint: No Berksfile or Berksfile.lock?"
       rescue => ex
         raise BerksfileReadError.new(ex)
       end
