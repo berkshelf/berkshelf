@@ -64,31 +64,25 @@ module Berkshelf
     #
     # @return [Berkshelf::Config]
     def config
-      @config ||= Berkshelf::Config.instance
+      Berkshelf::Config.instance
     end
 
-    # Set the Berkshelf Config.
-    #
     # @param [Berkshelf::Config]
-    attr_writer :config
+    def config=(config)
+      Berkshelf::Config.set_config(config)
+    end
 
     # The Chef configuration file.
     #
     # @return [Berkshelf::Chef::Config]
     def chef_config
-      @chef_config ||= Berkshelf::Chef::Config.load
+      Berkshelf::Chef::Config.instance
     end
 
-    # Set the Chef Config.
-    #
     # @param [Berkshelf::Chef::Config]
-    attr_writer :chef_config
-
-    # Set the Chef configuration file.
-    #
-    # @param [Berkshelf::Chef::Config] new_config
-    #   the new configuration file to use
-    attr_writer :chef_config
+    def chef_config=(config)
+      Berkshelf::Chef::Config.set_config(config)
+    end
 
     # @return [String]
     def tmp_dir
