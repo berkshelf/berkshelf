@@ -5,6 +5,11 @@ module Berkshelf
 
       register_formatter :json
 
+      # Output the version of Berkshelf
+      def version
+        @output = { version: Berkshelf::VERSION }
+      end
+
       def initialize
         @output = {
           cookbooks: Array.new,
@@ -22,7 +27,7 @@ module Berkshelf
           output[:cookbooks] << details
         end
 
-        print ::JSON.pretty_generate(output)
+        puts ::JSON.pretty_generate(output)
       end
 
       # @param [Berkshelf::Dependency] dependency

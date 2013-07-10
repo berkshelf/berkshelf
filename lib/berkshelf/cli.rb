@@ -415,7 +415,7 @@ module Berkshelf
 
     desc 'version', 'Display version and copyright information'
     def version
-      Berkshelf.formatter.msg(Berkshelf::VERSION)
+      Berkshelf.formatter.version
     end
 
     desc 'cookbook NAME', 'Create a skeleton for a new cookbook'
