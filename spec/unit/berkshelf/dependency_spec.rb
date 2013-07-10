@@ -65,13 +65,13 @@ describe Berkshelf::Dependency do
           it 'raises BerkshelfError with a friendly message' do
             expect {
               described_class.new(berksfile, cookbook_name, invalid_opt: 'thisisnotvalid')
-            }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_opt'.")
+            }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for dependency: 'invalid_opt'.")
           end
 
           it 'raises BerkshelfError with a messaging containing all of the invalid options' do
             expect {
               described_class.new(berksfile, cookbook_name, invalid_one: 'one', invalid_two: 'two')
-            }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for Cookbook Source: 'invalid_one', 'invalid_two'.")
+            }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for dependency: 'invalid_one', 'invalid_two'.")
           end
         end
       end

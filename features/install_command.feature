@@ -375,7 +375,7 @@ Feature: install cookbooks from a Berksfile
     When I run `berks install`
     Then the output should contain:
       """
-      Invalid options for Cookbook Source: 'whatisthis', 'anotherwat'.
+      Invalid options for dependency: 'whatisthis', 'anotherwat'.
       """
     And the exit status should be "InternalError"
 

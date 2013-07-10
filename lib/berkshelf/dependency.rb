@@ -53,12 +53,12 @@ module Berkshelf
 
         unless invalid_options.empty?
           invalid_options.collect! { |opt| "'#{opt}'" }
-          raise InternalError, "Invalid options for Cookbook Source: #{invalid_options.join(', ')}."
+          raise InternalError, "Invalid options for dependency: #{invalid_options.join(', ')}."
         end
 
-        if (options.keys & [:site, :path, :git]).size > 1
-          invalid = (options.keys & [:site, :path, :git]).map { |opt| "'#{opt}" }
-          raise InternalError, "Cannot specify #{invalid.join(' and ')} for a Cookbook Source!"
+        if (options.keys & [:path, :git]).size > 1
+          invalid = (options.keys & [:path, :git]).map { |opt| "'#{opt}" }
+          raise InternalError, "Cannot specify #{invalid.join(' and ')} for a dependency!"
         end
 
         true
