@@ -5,7 +5,7 @@ module Berkshelf
       #
       # @return [Pathname]
       def berkshelf_path
-        @berkshelf_path ||= tmp_path.join('berkshelf').expand_path
+        tmp_path.join('berkshelf').expand_path
       end
 
       # The Berkshelf cookbook store
@@ -19,28 +19,28 @@ module Berkshelf
       #
       # @return [Pathname]
       def tmp_path
-        @tmp_path ||= Berkshelf.root.join('spec/tmp')
+        Berkshelf.root.join('spec/tmp')
       end
 
       # The path to the spec fixtures
       #
       # @return [Pathname]
       def fixtures_path
-        @fixtures_path ||= Berkshelf.root.join('spec/fixtures')
+        Berkshelf.root.join('spec/fixtures')
       end
 
       # The path to the Chef config fixture
       #
       # @return [String]
       def chef_config_path
-        @chef_config_path ||= Berkshelf.root.join('spec/config/knife.rb').to_s
+        Berkshelf.root.join('spec/config/knife.rb').to_s
       end
 
       # The actual Chef config object
       #
       # @return [Bershelf::Chef::Config]
       def chef_config
-        @chef_config ||= Berkshelf::Chef::Config.from_file(chef_config_path)
+        Berkshelf::Chef::Config.from_file(chef_config_path)
       end
 
       def clean_tmp_path
@@ -55,8 +55,7 @@ module Berkshelf
         #
         # @return [nil]
         def reload_configs
-          Berkshelf.berkshelf_path = berkshelf_path
-          Berkshelf.chef_config    = chef_config
+          Berkshelf.chef_config = chef_config
 
           # This fucking sucks...
           load 'berkshelf/chef/config.rb'

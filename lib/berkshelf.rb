@@ -52,14 +52,6 @@ module Berkshelf
       ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
 
-    # Programatically set the berkshelf path.
-    #
-    # @param [#to_s] path
-    #   the path to the Berkshelf
-    def berkshelf_path=(path)
-      @berkshelf_path = File.expand_path(path.to_s)
-    end
-
     # The Berkshelf configuration.
     #
     # @return [Berkshelf::Config]
