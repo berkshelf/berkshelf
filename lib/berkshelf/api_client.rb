@@ -11,9 +11,11 @@ module Berkshelf
 
     # @return [Addressable::URI]
     attr_reader :url
+
     # @return [Integer]
     #   how many retries to attempt on HTTP requests
     attr_reader :retries
+
     # @return [Float]
     #   time to wait between retries
     attr_reader :retry_interval
