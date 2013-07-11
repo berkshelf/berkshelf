@@ -36,14 +36,14 @@ module Berkshelf
         b.response :parse_json
         b.response :gzip
         b.request :retry,
-          max: @retries,
-          interval: @retry_interval,
+          max: self.retries,
+          interval: self.retry_interval,
           exceptions: [ Faraday::Error::TimeoutError ]
 
         b.adapter :net_http
       end
 
-      super(@url, builder: builder)
+      super(self.url, builder: builder)
     end
 
     # Retrieves the entire universe of known cookbooks from the API source
