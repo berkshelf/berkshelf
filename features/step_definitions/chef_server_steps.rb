@@ -12,10 +12,6 @@ Given /^the Chef Server has cookbooks:$/ do |cookbooks|
   end
 end
 
-Given(/^an empty Chef Server$/) do
-  Berkshelf::RSpec::ChefServer.reset!
-end
-
 Then /^the Chef Server should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     expect(server_has_cookbook?(name, version)).to be_true
