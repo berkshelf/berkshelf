@@ -52,8 +52,8 @@ Spork.prefork do
     config.before(:each) do
       Berkshelf::API::RSpec::Server.clear_cache
       clean_tmp_path
-      FileUtils.mkdir_p(ENV['BERKSHELF_PATH'])
-      FileUtils.mkdir_p(Berkshelf::CookbookStore.instance.storage_path)
+      Berkshelf.initialize_filesystem
+      Berkshelf::CookbookStore.instance.initialize_filesystem
       reload_configs
     end
   end

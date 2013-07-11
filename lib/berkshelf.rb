@@ -84,6 +84,16 @@ module Berkshelf
       Berkshelf::Chef::Config.set_config(config)
     end
 
+    # Initialize the filepath for the Berkshelf path..
+    def initialize_filesystem
+      FileUtils.mkdir_p(berkshelf_path, mode: 0755)
+
+      unless File.writable?(berkshelf_path)
+        raise InsufficientPrivledges, "You do not have permission to write to '#{berkshelf_path}'!" +
+          " Please either chown the directory or use a different filepath."
+      end
+    end
+
     # @return [String]
     def tmp_dir
       File.join(berkshelf_path, 'tmp')

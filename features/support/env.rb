@@ -32,6 +32,7 @@ Spork.prefork do
 
     stub_kitchen!
     clean_tmp_path
+    Berkshelf.initialize_filesystem
     Berkshelf::CookbookStore.instance.initialize_filesystem
     reload_configs
 
