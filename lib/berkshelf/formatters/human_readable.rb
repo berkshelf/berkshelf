@@ -5,6 +5,7 @@ module Berkshelf
 
       register_formatter :human
 
+      # @param [Berkshelf::Dependency] dependency
       def fetch(dependency)
         Berkshelf.ui.info "Fetching '#{dependency.name}' from #{dependency.location}"
       end

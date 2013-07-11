@@ -25,6 +25,13 @@ module Berkshelf
         print ::JSON.pretty_generate(output)
       end
 
+      # @param [Berkshelf::Dependency] dependency
+      def fetch(dependency)
+        cookbooks[dependency] ||= {}
+        cookbooks[dependency][:version]  = dependency.cached_cookbook.version
+        cookbooks[dependency][:location] = dependency.location
+      end
+
       # Add a Cookbook installation entry to delayed output
       #
       # @param [String] cookbook
