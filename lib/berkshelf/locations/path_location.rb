@@ -44,10 +44,10 @@ module Berkshelf
 
     # The cookbook associated with this path location.
     #
-    # @return [Berkshelf::CachedCookbook]
+    # @return [Berkshelf::Cookbook]
     #   the cached cookbook for this location
     def cookbook
-      @cookbook ||= CachedCookbook.from_path(path, name: name)
+      @cookbook ||= Cookbook.from_path(path, name: name)
     end
 
     # Returns true if the location is a metadata location. By default, no

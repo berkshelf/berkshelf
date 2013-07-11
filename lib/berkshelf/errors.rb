@@ -153,11 +153,11 @@ module Berkshelf
 
     # @param [Berkshelf::Location] location
     #   the location that is mismatched
-    # @param [Berkshelf::CachedCookbook] cached_cookbook
-    #   the cached_cookbook that is mismatched
-    def initialize(location, cached_cookbook)
+    # @param [Berkshelf::Cookbook] cookbook
+    #   the cookbook that is mismatched
+    def initialize(location, cookbook)
       @location = location
-      @cached_cookbook = cached_cookbook
+      @cookbook = cookbook
     end
 
     def to_s
@@ -166,7 +166,7 @@ module Berkshelf
         "",
         "  cookbook '#{@location.name}'",
         "",
-        "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'",
+        "But that cookbook is actually named '#{@cookbook.cookbook_name}'",
         "",
         "This can cause potentially unwanted side-effects in the future",
         "",
@@ -203,20 +203,20 @@ module Berkshelf
 
     # @param [Berkshelf::Location] location
     #   the location (or any subclass) raising this validation error
-    # @param [Berkshelf::CachedCookbook] cached_cookbook
-    #   the cached_cookbook that does not satisfy the constraint
-    def initialize(location, cached_cookbook)
+    # @param [Berkshelf::Cookbook] cookbook
+    #   the cookbook that does not satisfy the constraint
+    def initialize(location, cookbook)
       @location = location
-      @cached_cookbook = cached_cookbook
+      @cookbook = cookbook
     end
 
     def to_s
       [
         "The cookbook downloaded from #{@location.to_s}:",
-        "  #{@cached_cookbook.cookbook_name} (#{@cached_cookbook.version})",
+        "  #{@cookbook.cookbook_name} (#{@cookbook.version})",
         "",
         "does not satisfy the version constraint:",
-        "  #{@cached_cookbook.cookbook_name} (#{@location.version_constraint})",
+        "  #{@cookbook.cookbook_name} (#{@location.version_constraint})",
         "",
         "This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`",
       ].join("\n")
@@ -303,7 +303,7 @@ module Berkshelf
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   #
-  # @param [Berkshelf::CachedCookbook] cookbook
+  # @param [Berkshelf::Cookbook] cookbook
   #   the cookbook that failed validation
   # @param [Array<#to_s>] files
   #   the list of files that were not valid
@@ -326,10 +326,10 @@ module Berkshelf
     end
   end
 
-  # Raised when a CachedCookbook has a license file that isn't allowed
+  # Raised when a Cookbook has a license file that isn't allowed
   # by the Berksfile.
   #
-  # @param [Berkshelf::CachedCookbook] cookbook
+  # @param [Berkshelf::Cookbook] cookbook
   #   the cookbook that failed license validation
   class LicenseNotAllowed < BerkshelfError
     status_code(133)

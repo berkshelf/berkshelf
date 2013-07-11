@@ -129,28 +129,28 @@ module Berkshelf
 
     # @param [#to_s] destination
     #
-    # @return [Berkshelf::CachedCookbook]
+    # @return [Berkshelf::Cookbook]
     def download(destination)
       raise AbstractFunction
     end
 
-    # Ensure the retrieved CachedCookbook is valid
+    # Ensure the retrieved Cookbook is valid
     #
-    # @param [CachedCookbook] cached_cookbook
+    # @param [Cookbook] cookbook
     #   the downloaded cookbook to validate
     #
-    # @raise [CookbookValidationFailure] if given CachedCookbook does not satisfy the constraint of the location
+    # @raise [CookbookValidationFailure] if given Cookbook does not satisfy the constraint of the location
     #
     # @todo Change MismatchedCookbookName to raise instead of warn
     #
     # @return [Boolean]
-    def validate_cached(cached_cookbook)
-      unless version_constraint.satisfies?(cached_cookbook.version)
-        raise CookbookValidationFailure.new(self, cached_cookbook)
+    def validate_cached(cookbook)
+      unless version_constraint.satisfies?(cookbook.version)
+        raise CookbookValidationFailure.new(self, cookbook)
       end
 
-      unless self.name == cached_cookbook.cookbook_name
-        Berkshelf.ui.warn(MismatchedCookbookName.new(self, cached_cookbook).to_s)
+      unless self.name == cookbook.cookbook_name
+        Berkshelf.ui.warn(MismatchedCookbookName.new(self, cookbook).to_s)
       end
 
       true

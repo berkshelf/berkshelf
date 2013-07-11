@@ -149,7 +149,7 @@ end
 
 require_relative 'berkshelf/base_generator'
 require_relative 'berkshelf/berksfile'
-require_relative 'berkshelf/cached_cookbook'
+require_relative 'berkshelf/cookbook'
 require_relative 'berkshelf/chef'
 require_relative 'berkshelf/cli'
 require_relative 'berkshelf/community_rest'

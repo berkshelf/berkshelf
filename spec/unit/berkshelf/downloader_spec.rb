@@ -43,24 +43,24 @@ describe Berkshelf::Downloader do
   describe '#download' do
     let(:source) { double('source', name: 'artifact', version_constraint: '= 0.10.0', locked_version: '0.10.0') }
     let(:location) { double('location') }
-    let(:cached_cookbook) { double('cached') }
+    let(:cookbook) { double('cached') }
 
     context 'when the source has a location' do
       before do
         source.stub(:location).and_return(location)
-        location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
-        source.should_receive(:cached_cookbook=).with(cached_cookbook)
+        location.should_receive(:download).with(subject.storage_path).and_return(cookbook)
+        source.should_receive(:cookbook=).with(cookbook)
       end
 
-      it "sends :download to the source's location and sets the source's cached_cookbook to the result" do
+      it "sends :download to the source's location and sets the source's cookbook to the result" do
         expect(subject.download(source)).to be_true
       end
 
-      it 'returns an Array containing the cached_cookbook and location used to download' do
+      it 'returns an Array containing the cookbook and location used to download' do
         result = subject.download(source)
 
         expect(result).to be_a(Array)
-        expect(result[0]).to eq(cached_cookbook)
+        expect(result[0]).to eq(cookbook)
         expect(result[1]).to eq(location)
       end
     end
@@ -73,8 +73,8 @@ describe Berkshelf::Downloader do
 
       it 'sends the :download message to the default location' do
         Berkshelf::Location.should_receive(:init).with(source.name, source.version_constraint, chef_api: :config).and_return(location)
-        location.should_receive(:download).with(subject.storage_path).and_return(cached_cookbook)
-        source.should_receive(:cached_cookbook=).with(cached_cookbook)
+        location.should_receive(:download).with(subject.storage_path).and_return(cookbook)
+        source.should_receive(:cookbook=).with(cookbook)
 
         subject.download(source)
       end

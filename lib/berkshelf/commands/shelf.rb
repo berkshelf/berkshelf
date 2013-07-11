@@ -63,7 +63,7 @@ module Berkshelf
       # @raise [Berkshelf::CookbookNotFound]
       #   if the cookbook does not exist
       #
-      # @return [Array<Berkshelf::CachedCookbook>]
+      # @return [Array<Berkshelf::Cookbook>]
       #   the list of cookbooks that match the parameters - this is always an
       #   array!
       def find(name, version = nil)
@@ -92,7 +92,7 @@ module Berkshelf
       # behavior can be overridden by setting the second parameter `force` to
       # true.
       #
-      # @param [Berkshelf::CachedCookbook] cookbook
+      # @param [Berkshelf::Cookbook] cookbook
       #   the cookbook to uninstall
       # @param [Boolean] force
       #   if false, the user will need to confirm before uninstalling
@@ -112,10 +112,10 @@ module Berkshelf
       # Return a list of all cookbooks which are contingent upon the given
       # cookbook.
       #
-      # @param [Berkshelf::CachedCookbook] cookbook
+      # @param [Berkshelf::Cookbook] cookbook
       #   the cached cookbook to search for dependencies against
       #
-      # @return [Array<Berkshelf::CachedCookbook>]
+      # @return [Array<Berkshelf::Cookbook>]
       #   the list of cookbooks which depend on the parameter
       def contingencies(cookbook)
         store.cookbooks.select { |c| c.dependencies.include?(cookbook.cookbook_name) }

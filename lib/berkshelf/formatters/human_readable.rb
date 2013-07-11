@@ -49,7 +49,7 @@ module Berkshelf
 
       # Output Cookbook info message using {Berkshelf.ui}
       #
-      # @param [CachedCookbook] cookbook
+      # @param [Cookbook] cookbook
       def show(cookbook)
         Berkshelf.ui.info(cookbook.pretty_print)
       end

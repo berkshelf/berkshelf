@@ -219,7 +219,7 @@ describe Berkshelf::Dependency do
     let(:options) { Hash.new }
 
     before do
-      Berkshelf::CachedCookbook.stub(:from_path).and_return(double('cached_cookbook'))
+      Berkshelf::Cookbook.stub(:from_path).and_return(double('cookbook'))
     end
 
     context 'when given a value for :path' do
@@ -238,13 +238,13 @@ describe Berkshelf::Dependency do
   end
 
   describe '#downloaded?' do
-    it 'returns true if self.cached_cookbook is not nil' do
-      subject.stub(:cached_cookbook) { double('cb') }
+    it 'returns true if self.cookbook is not nil' do
+      subject.stub(:cookbook) { double('cb') }
       expect(subject.downloaded?).to be_true
     end
 
-    it 'returns false if self.cached_cookbook is nil' do
-      subject.stub(:cached_cookbook) { nil }
+    it 'returns false if self.cookbook is nil' do
+      subject.stub(:cookbook) { nil }
       expect(subject.downloaded?).to be_false
     end
   end
@@ -266,7 +266,7 @@ describe Berkshelf::Dependency do
     end
 
     it 'includes the locked version' do
-      subject.cached_cookbook = double('cached', version: '1.2.3')
+      subject.cookbook = double('cached', version: '1.2.3')
 
       expect(hash).to have_key(:locked_version)
       expect(hash[:locked_version]).to eq('1.2.3')

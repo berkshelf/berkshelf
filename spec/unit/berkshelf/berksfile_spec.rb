@@ -37,11 +37,11 @@ describe Berkshelf::Berksfile do
   end
 
   describe '.vendor' do
-    let(:cached_cookbooks) { [] }
+    let(:cookbooks) { [] }
     let(:tmpdir) { Dir.mktmpdir(nil, tmp_path) }
 
     it 'returns the expanded filepath of the vendor directory' do
-      expect(Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)).to eql(tmpdir)
+      expect(Berkshelf::Berksfile.vendor(cookbooks, tmpdir)).to eql(tmpdir)
     end
 
     context 'with a chefignore' do
@@ -52,14 +52,14 @@ describe Berkshelf::Berksfile do
 
       it 'finds a chefignore file' do
         Berkshelf::Chef::Cookbook::Chefignore.should_receive(:new).with(File.expand_path('chefignore'))
-        Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)
+        Berkshelf::Berksfile.vendor(cookbooks, tmpdir)
       end
 
       it 'removes files in chefignore' do
-        cached_cookbooks = [ Berkshelf::CachedCookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
+        cookbooks = [ Berkshelf::Cookbook.from_path(fixtures_path.join('cookbooks/example_cookbook')) ]
         FileUtils.should_receive(:cp_r).with(['metadata.rb'], anything()).exactly(1).times
         FileUtils.should_receive(:cp_r).with(anything(), anything(), anything()).once
-        Berkshelf::Berksfile.vendor(cached_cookbooks, tmpdir)
+        Berkshelf::Berksfile.vendor(cookbooks, tmpdir)
       end
     end
   end
@@ -270,7 +270,7 @@ describe Berkshelf::Berksfile do
     let(:resolver) { double('resolver') }
     let(:lockfile) { double('lockfile') }
 
-    let(:cached_cookbooks) { [double('cached_one'), double('cached_two')] }
+    let(:cookbooks) { [double('cached_one'), double('cached_two')] }
     let(:dependencies) { [dependency_one, dependency_two] }
 
     before do
@@ -285,15 +285,15 @@ describe Berkshelf::Berksfile do
 
     context 'when a lockfile is not present' do
       it 'returns the result from sending the message resolve to resolver' do
-        resolver.should_receive(:resolve).and_return(cached_cookbooks)
-        expect(subject.install).to eql(cached_cookbooks)
+        resolver.should_receive(:resolve).and_return(cookbooks)
+        expect(subject.install).to eql(cookbooks)
       end
 
-      it 'sets a value for self.cached_cookbooks equivalent to the return value' do
-        resolver.should_receive(:resolve).and_return(cached_cookbooks)
+      it 'sets a value for self.cookbooks equivalent to the return value' do
+        resolver.should_receive(:resolve).and_return(cookbooks)
         subject.install
 
-        expect(subject.cached_cookbooks).to eql(cached_cookbooks)
+        expect(subject.cookbooks).to eql(cookbooks)
       end
 
       it 'creates a new resolver and finds a solution by calling resolve on the resolver' do
@@ -317,7 +317,7 @@ describe Berkshelf::Berksfile do
 
       it 'sends the message :vendor to Berksfile with the value for :path' do
         path = double('path')
-        subject.class.should_receive(:vendor).with(subject.cached_cookbooks, path)
+        subject.class.should_receive(:vendor).with(subject.cookbooks, path)
 
         subject.install(path: path)
       end

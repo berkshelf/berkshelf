@@ -36,7 +36,7 @@ module Berkshelf
 
     # @param [#to_s] destination
     #
-    # @return [Berkshelf::CachedCookbook]
+    # @return [Berkshelf::Cookbook]
     def download(destination)
       version    = target_version
       berks_path = File.join(destination, "#{name}-#{version}")
@@ -44,7 +44,7 @@ module Berkshelf
       temp_path = conn.download(name, version)
       FileUtils.mv(File.join(temp_path, name), berks_path)
 
-      cached = CachedCookbook.from_store_path(berks_path)
+      cached = Cookbook.from_store_path(berks_path)
       validate_cached(cached)
 
       cached
