@@ -23,7 +23,9 @@ module Berkshelf
     # @param [String, Addressable::URI] url
     #
     # @option options [Integer] :retries
+    #   how many retries to perform before giving up
     # @option options [Float] :retry_interval
+    #   how long to wait (in seconds) between each retry
     def initialize(url, options = {})
       options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
       @url            = Addressable::URI.parse(url)
