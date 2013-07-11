@@ -46,6 +46,7 @@ module Berkshelf
       initialize_filesystem
     end
 
+    # Destroy the contents of the initialized storage path.
     def clean!
       FileUtils.rm_rf(Dir.glob(File.join(storage_path, '*')))
     end
