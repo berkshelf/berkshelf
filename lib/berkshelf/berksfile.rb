@@ -1,6 +1,9 @@
 module Berkshelf
   class Berksfile
     class << self
+      # The sources to use if no sources are explicitly provided
+      #
+      # @return [Array<Berkshelf::Source>]
       def default_sources
         @default_sources ||= [ Source.new("http://api.berkshelf.com") ]
       end
@@ -327,8 +330,6 @@ module Berkshelf
     #
     # @raise [Berkshelf::OutdatedDependency]
     #   if the lockfile constraints do not satisfy the Berskfile constraints
-    # @raise [Berkshelf::ArgumentError]
-    #   if there are missing or conflicting options
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
@@ -400,9 +401,9 @@ module Berkshelf
     # @option options [String] :server_url
     #   An overriding Chef Server to upload the cookbooks to
     #
-    # @raise [UploadFailure]
+    # @raise [Berkshelf::UploadFailure]
     #   if you are uploading cookbooks with an invalid or not-specified client key
-    # @raise [DependencyNotFound]
+    # @raise [Berkshelf::DependencyNotFound]
     #   if one of the given cookbooks is not a dependency defined in the Berksfile
     # @raise [Berkshelf::FrozenCookbook]
     #   if an attempt to upload a cookbook which has been frozen on the target server is made
@@ -429,8 +430,10 @@ module Berkshelf
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
     #
-    # @raise [EnvironmentNotFound] if the target environment was not found
-    # @raise [ChefConnectionError] if you are locking cookbooks with an invalid or not-specified client configuration
+    # @raise [EnvironmentNotFound]
+    #   if the target environment was not found
+    # @raise [ChefConnectionError]
+    #   if you are locking cookbooks with an invalid or not-specified client configuration
     def apply(environment_name, options = {})
       ridley_connection(options) do |conn|
         unless environment = conn.environment.find(environment_name)
@@ -563,6 +566,7 @@ module Berkshelf
         cookbooks
       end
 
+      # @raise [Berkshelf::ChefConnectionError]
       def ridley_connection(options = {}, &block)
         ridley_options               = options.slice(:ssl)
         ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
@@ -586,11 +590,6 @@ module Berkshelf
       rescue Ridley::Errors::RidleyError => ex
         log_exception(ex)
         raise ChefConnectionError, ex # todo implement
-      end
-
-      def descendant_directory?(candidate, parent)
-        hack = FileUtils::Entry_.new('/tmp')
-        hack.send(:descendant_diretory?, candidate, parent)
       end
 
       # Determine if any cookbooks were specified that aren't in our shelf.

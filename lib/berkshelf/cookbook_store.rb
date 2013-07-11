@@ -3,14 +3,29 @@ require 'fileutils'
 module Berkshelf
   class CookbookStore
     class << self
+      # The default path to the cookbook store relative to the Berkshelf path.
+      #
+      # @return [String]
       def default_path
         File.join(Berkshelf.berkshelf_path, 'cookbooks')
       end
 
+      # @return [Berkshelf::CookbookStore]
       def instance
         @instance ||= new(default_path)
       end
 
+      # Import a cookbook found on the local filesystem into the current instance of
+      # the cookbook store.
+      #
+      # @param [String] name
+      #   name of the cookbook
+      # @param [String] version
+      #   verison of the cookbook
+      # @param [String] path
+      #   location on disk of the cookbook
+      #
+      # @return [Berkshelf::CachedCookbook]
       def import(name, version, path)
         instance.import(name, version, path)
       end
@@ -35,15 +50,23 @@ module Berkshelf
       FileUtils.rm_rf(Dir.glob(File.join(storage_path, '*')))
     end
 
+    # Import a cookbook found on the local filesystem into this instance of the cookbook store.
+    #
     # @param [String] name
+    #   name of the cookbook
     # @param [String] version
+    #   verison of the cookbook
     # @param [String] path
+    #   location on disk of the cookbook
     #
     # @return [Berkshelf::CachedCookbook]
     def import(name, version, path)
-      import_validate(name, version, path)
-      FileUtils.mv(path, cookbook_path(name, version))
+      destination = cookbook_path(name, version)
+      FileUtils.mv(path, destination)
       cookbook(name, version)
+    rescue => ex
+      FileUtils.rm_f(destination)
+      raise
     end
 
     # Returns an instance of CachedCookbook representing the
@@ -123,11 +146,5 @@ module Berkshelf
     rescue Solve::Errors::NoSolutionError
       nil
     end
-
-    private
-
-      def import_validate(name, version, path)
-        true
-      end
   end
 end

@@ -1,5 +1,8 @@
 module Berkshelf
   class APIClient
+    # A representation of cookbook metadata indexed by a Berkshelf API Server. Returned
+    # by sending messages to a {Berkshelf::APIClient} and used to download cookbooks
+    # indexed by the Berkshelf API Server.
     class RemoteCookbook
       # @return [String]
       attr_reader :name
