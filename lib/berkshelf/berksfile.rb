@@ -544,7 +544,7 @@ module Berkshelf
       end
 
       # Filter the cookbooks to upload based on a set of given names. The dependencies of a cookbook
-      # will always be included in the filtered results even if the dependencie's name is not
+      # will always be included in the filtered results even if the dependency's name is not
       # explicitly provided.
       #
       # @param [Array<Berkshelf::CachedCookbooks>] cookbooks
