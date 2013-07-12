@@ -141,7 +141,6 @@ Feature: Creating and reading the Berkshelf lockfile
         }
       }
       """
-    And the exit status should be 0
 
   Scenario: Installing a cookbook with dependencies
     Given the cookbook store has the cookbooks:
@@ -455,7 +454,6 @@ Feature: Creating and reading the Berkshelf lockfile
         }
       }
       """
-    And the exit status should be 0
 
   Scenario: Installing when the locked version is no longer satisfied
     Given the cookbook store has the cookbooks:
@@ -502,7 +500,6 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       Using fake (1.0.0)
       """
-    And the exit status should be 0
 
   Scenario: Installing when the Lockfile is in a bad state
     Given I write to "Berksfile" with:

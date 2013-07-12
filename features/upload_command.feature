@@ -19,7 +19,7 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ruby', '1.0.0'
       cookbook 'elixir', '2.0.0'
       """
-    When I run `berks upload`
+    When I successfully run `berks upload`
     Then the output should contain:
       """
       Uploading ruby (1.0.0) to: 'http://localhost:26310/'
@@ -28,7 +28,6 @@ Feature: Uploading cookbooks to a Chef Server
     And the Chef Server should have the cookbooks:
       | ruby   | 1.0.0 |
       | elixir | 2.0.0 |
-    And the exit status should be 0
 
   Scenario: a cookbook with a path location
     Given a cookbook named "ruby"
@@ -38,14 +37,13 @@ Feature: Uploading cookbooks to a Chef Server
 
       cookbook 'ruby', path: './ruby'
       """
-    When I run `berks upload`
+    When I successfully run `berks upload`
     Then the output should contain:
       """
       Uploading ruby (0.0.0) to: 'http://localhost:26310/'
       """
     And the Chef Server should have the cookbooks:
       | ruby | 0.0.0 |
-    And the exit status should be 0
 
   Scenario: a cookbook with a git location
     Given the cookbook store has the cookbooks:
@@ -56,14 +54,13 @@ Feature: Uploading cookbooks to a Chef Server
 
       cookbook 'berkshelf-cookbook-fixture', ref: 'v0.1.0'
       """
-    When I run `berks upload`
+    When I successfully run `berks upload`
     Then the output should contain:
       """
       Uploading berkshelf-cookbook-fixture (0.1.0) to: 'http://localhost:26310/'
       """
     And the Chef Server should have the cookbooks:
       | berkshelf-cookbook-fixture | 0.1.0 |
-    And the exit status should be 0
 
   Scenario: specifying a single cookbook with dependencies
     Given the cookbook store has the cookbooks:
@@ -79,7 +76,7 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ekaf', '2.0.0'
       cookbook 'reset', '3.4.5'
       """
-    When I run `berks upload reset`
+    When I successfully run `berks upload reset`
     Then the output should contain:
       """
       Uploading reset (3.4.5) to: 'http://localhost:26310/'
@@ -94,7 +91,6 @@ Feature: Uploading cookbooks to a Chef Server
       | fake  | 1.0.0 |
     And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
-    And the exit status should be 0
 
   Scenario: specifying a dependency not defined in the Berksfile
     Given I write to "Berksfile" with:
@@ -121,7 +117,7 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ntp', '1.0.0'
       cookbook 'vim', '1.0.0'
       """
-    When I run `berks upload ntp vim`
+    When I successfully run `berks upload ntp vim`
     Then the output should contain:
       """
       Uploading ntp (1.0.0) to: 'http://localhost:26310/'
@@ -136,7 +132,6 @@ Feature: Uploading cookbooks to a Chef Server
       | vim |
     And the Chef Server should not have the cookbooks:
       | apt |
-    And the exit status should be 0
 
   Scenario: uploading a single groups of demands with the --only flag
     Given the cookbook store has the cookbooks:
@@ -154,7 +149,7 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    When I run `berks upload --only group_a`
+    When I successfully run `berks upload --only group_a`
     Then the output should contain:
       """
       Uploading core (1.0.0) to: 'http://localhost:26310/'
@@ -167,7 +162,6 @@ Feature: Uploading cookbooks to a Chef Server
       | core | 1.0.0 |
     And the Chef Server should not have the cookbooks:
       | system | 1.0.0 |
-    And the exit status should be 0
 
   Scenario: uploading multiple groups of demands with the --only flag
     Given the cookbook store has the cookbooks:
@@ -185,7 +179,7 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
-    When I run `berks upload --only group_a group_b`
+    When I successfully run `berks upload --only group_a group_b`
     Then the output should contain:
       """
       Uploading core (1.0.0) to: 'http://localhost:26310/'
@@ -194,7 +188,6 @@ Feature: Uploading cookbooks to a Chef Server
     And the Chef Server should have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
-    And the exit status should be 0
 
   Scenario: skipping a single group to upload with the --except flag
     Given the cookbook store has the cookbooks:
@@ -225,7 +218,6 @@ Feature: Uploading cookbooks to a Chef Server
       | core | 1.0.0 |
     And the Chef Server should not have the cookbooks:
       | system | 1.0.0 |
-    And the exit status should be 0
 
   Scenario: skipping multiple groups with the --except flag
     Given the cookbook store has the cookbooks:
@@ -252,7 +244,6 @@ Feature: Uploading cookbooks to a Chef Server
     And the Chef Server should not have the cookbooks:
       | core   | 1.0.0 |
       | system | 1.0.0 |
-    And the exit status should be 0
 
   Scenario: attempting to upload an invalid cookbook
     Given a cookbook named "cookbook with spaces"
@@ -290,4 +281,3 @@ Feature: Uploading cookbooks to a Chef Server
       """
       Uploading fake (0.0.0)
       """
-    And the exit status should be 0

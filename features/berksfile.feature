@@ -15,12 +15,11 @@ Feature: Evaluating a Berksfile
       end
       """
     And the environment variable BACON is "1"
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       If you don't got bacon...
       """
-    And the exit status should be 0
 
   Scenario: Containing methods I shouldn't be able to call
     Given I write to "Berksfile" with:
@@ -52,3 +51,4 @@ Feature: Evaluating a Berksfile
 
         undefined method `ptus' for
       """
+    And the exit status should be "BerksfileReadError"

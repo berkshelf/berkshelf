@@ -19,14 +19,13 @@ Feature: install cookbooks from a Berksfile
       | berkshelf | 1.0.0 |
       | berkshelf | 2.0.0 |
     And the Berkshelf API server cache is up to date
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Installing berkshelf (2.0.0)
       """
     And the cookbook store should have the cookbooks:
       | berkshelf | 2.0.0 |
-    And the exit status should be 0
 
   Scenario: installing an explicit version demand
     Given I write to "Berksfile" with:
@@ -39,14 +38,13 @@ Feature: install cookbooks from a Berksfile
       | berkshelf | 1.0.0 |
       | berkshelf | 2.0.0 |
     And the Berkshelf API server cache is up to date
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Installing berkshelf (1.0.0)
       """
     And the cookbook store should have the cookbooks:
       | berkshelf | 1.0.0 |
-    And the exit status should be 0
 
   Scenario: installing demands from all groups
     Given I write to "Berksfile" with:
@@ -65,7 +63,7 @@ Feature: install cookbooks from a Berksfile
       | ruby   | 1.0.0 |
       | elixir | 1.0.0 |
     And the Berkshelf API server cache is up to date
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Installing ruby (1.0.0)
@@ -74,7 +72,6 @@ Feature: install cookbooks from a Berksfile
     And the cookbook store should have the cookbooks:
       | ruby   | 1.0.0 |
       | elixir | 1.0.0 |
-    And the exit status should be 0
 
   Scenario: installing a demand that has already been installed
     Given I write to "Berksfile" with:
@@ -88,12 +85,11 @@ Feature: install cookbooks from a Berksfile
     And the cookbook store has the cookbooks:
       | hostsfile    | 1.0.1 |
     And the Berkshelf API server cache is up to date
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Using hostsfile (1.0.1)
       """
-    And the exit status should be 0
 
   Scenario: installing a demand from a path location
     Given I write to "Berksfile" with:
@@ -103,12 +99,11 @@ Feature: install cookbooks from a Berksfile
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     And the Berkshelf API server cache is up to date
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Using example_cookbook (0.5.0) path: '
       """
-    And the exit status should be 0
 
   Scenario: installing a Berksfile from a remote directory that contains a path location
     Given I write to "tmp_berks/Berksfile" with:
@@ -117,12 +112,11 @@ Feature: install cookbooks from a Berksfile
 
       cookbook 'example_cookbook', path: '../../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
-    When I run `berks install -b ./tmp_berks/Berksfile`
+    When I successfully run `berks install -b ./tmp_berks/Berksfile`
     Then the output should contain:
       """
       Using example_cookbook (0.5.0) path: '
       """
-    And the exit status should be 0
 
   Scenario: installing a demand from a Git location
     Given I write to "Berksfile" with:
@@ -131,7 +125,7 @@ Feature: install cookbooks from a Berksfile
 
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     And the output should contain:
@@ -140,7 +134,6 @@ Feature: install cookbooks from a Berksfile
       building universe...
       Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
       """
-    And the exit status should be 0
 
   Scenario: installing a demand from a Git location that has already been installed
     Given I write to "Berksfile" with:
@@ -151,12 +144,11 @@ Feature: install cookbooks from a Berksfile
       """
     And the cookbook store has the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
       """
-    And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a Git location with a rel
     Given I write to "Berksfile" with:
@@ -165,7 +157,7 @@ Feature: install cookbooks from a Berksfile
 
       cookbook "berkshelf-cookbook-fixture", github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
     And the output should contain:
@@ -174,7 +166,6 @@ Feature: install cookbooks from a Berksfile
       building universe...
       Using berkshelf-cookbook-fixture (1.0.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'rel' over protocol: 'git'
       """
-    And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I write to "Berksfile" with:
@@ -183,7 +174,7 @@ Feature: install cookbooks from a Berksfile
 
       cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
@@ -192,7 +183,6 @@ Feature: install cookbooks from a Berksfile
       building universe...
       Using berkshelf-cookbook-fixture (0.2.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
       """
-    And the exit status should be 0
 
   Scenario: installing a Berksfile that contains a GitHub location
     Given I write to "Berksfile" with:
@@ -210,7 +200,6 @@ Feature: install cookbooks from a Berksfile
       building universe...
       Using berkshelf-cookbook-fixture (0.2.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v0.2.0' over protocol: 'git'
       """
-    And the exit status should be 0
 
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I write to "Berksfile" with:
@@ -228,7 +217,6 @@ Feature: install cookbooks from a Berksfile
       building universe...
       Using berkshelf-cookbook-fixture (1.0.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v1.0.0' over protocol: '<protocol>'
       """
-    And the exit status should be 0
 
     Examples:
       | protocol |
@@ -247,7 +235,7 @@ Feature: install cookbooks from a Berksfile
       """
       'somethingabsurd' is not supported for the 'github' location key - please use 'git' instead
       """
-    And the exit status should be 110
+    And the exit status should be "InvalidGitURI"
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"
@@ -258,12 +246,11 @@ Feature: install cookbooks from a Berksfile
       metadata
       """
     When I cd to "sparkle_motion"
-    And I run `berks install`
+    And I successfully run `berks install`
     Then the output should contain:
       """
       Using sparkle_motion (0.0.0)
       """
-    And the exit status should be 0
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified with a path
     Given a cookbook named "fake"
@@ -273,12 +260,11 @@ Feature: install cookbooks from a Berksfile
 
       metadata path: './fake'
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       Using fake (0.0.0)
       """
-    And the exit status should be 0
 
   Scenario: running install with no Berksfile or Berksfile.lock
     When I run `berks install`
@@ -363,7 +349,6 @@ Feature: install cookbooks from a Berksfile
       building universe...
       Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v1.0.0' at ref: 'b4f968c9001ad8de30f564a2107fab9cfa91f771'
       """
-    And the exit status should be 0
 
   Scenario: with a cookbook definition containing an invalid option
     Given I write to "Berksfile" with:

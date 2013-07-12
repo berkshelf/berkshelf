@@ -136,6 +136,8 @@ module Berkshelf
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
   class BerksfileReadError < BerkshelfError
+    status_code(113)
+
     # @param [#status_code] original_error
     def initialize(original_error)
       @original_error  = original_error
@@ -143,7 +145,6 @@ module Berkshelf
       @error_backtrace = original_error.backtrace
     end
 
-    status_code(113)
 
     def status_code
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113

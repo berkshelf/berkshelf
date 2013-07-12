@@ -23,12 +23,11 @@ Feature: Installing cookbooks with specific licenses
         "allowed_licenses": ["mit"]
       }
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should not contain:
       """
       is not in your list of allowed licenses
       """
-    And the exit status should be 0
 
   Scenario: With a license that is not listed
     Given the cookbook store has the cookbooks:
@@ -45,12 +44,11 @@ Feature: Installing cookbooks with specific licenses
         "allowed_licenses": ["apache2"]
       }
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should contain:
       """
       'mit' is not in your list of allowed licenses
       """
-    And the exit status should be 0
 
   Scenario: With raise_license_exception defined
     Given the cookbook store has the cookbooks:
@@ -68,12 +66,11 @@ Feature: Installing cookbooks with specific licenses
         "raise_license_exception": true
       }
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should not contain:
       """
       is not in your list of allowed licenses
       """
-    And the exit status should be 0
 
   Scenario: With a license that is not listed
     Given the cookbook store has the cookbooks:
@@ -114,9 +111,8 @@ Feature: Installing cookbooks with specific licenses
         "raise_license_exception": true
       }
       """
-    When I run `berks install`
+    When I successfully run `berks install`
     Then the output should not contain:
       """
       'mit' is not in your list of allowed licenses
       """
-    And the exit status should be 0

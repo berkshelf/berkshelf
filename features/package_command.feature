@@ -18,7 +18,6 @@ Feature: Packaging a cookbook as a tarball for distribution
       """
       Cookbook(s) packaged to
       """
-    And the exit status should be 0
 
   Scenario: With the --output option
     Given the cookbook store has the cookbooks:
@@ -31,7 +30,6 @@ Feature: Packaging a cookbook as a tarball for distribution
       """
     When I successfully run `berks package fake --output foo/bar`
     Then a file named "foo/bar/fake.tar.gz" should exist
-    And the exit status should be 0
 
   Scenario: With an installed cookbook name
     Given the cookbook store has the cookbooks:
