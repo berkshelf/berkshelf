@@ -242,11 +242,6 @@ module Berkshelf
       default: false,
       desc: 'Skip Ruby syntax check when uploading cookbooks.',
       aliases: '-s'
-    method_option :skip_dependencies,
-      type: :boolean,
-      desc: 'Skip uploading dependent cookbook(s).',
-      default: false,
-      aliases: '-D'
     method_option :halt_on_frozen,
       type: :boolean,
       default: false,
@@ -294,27 +289,13 @@ module Berkshelf
       type: :array,
       desc: 'Only cookbooks that are in these groups.',
       aliases: '-o'
-    desc 'outdated [COOKBOOKS]', 'Show outdated cookbooks (from the community site)'
+    desc 'outdated [COOKBOOKS]', 'List dependencies that have new versions available that satisfy their constraints'
     def outdated(*cookbook_names)
-      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       Berkshelf.formatter.msg 'Listing outdated cookbooks with newer versions available...'
-      Berkshelf.formatter.msg 'BETA: this feature will only pull differences from the community site and will'
-      Berkshelf.formatter.msg 'BETA: ignore all other dependencies you may have defined'
-      Berkshelf.formatter.msg ''
 
-      outdated_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      outdated = berksfile.outdated(outdated_options)
-
-      if outdated.empty?
-        Berkshelf.formatter.msg 'All cookbooks up to date'
-      else
-        outdated.each do |cookbook, latest_version|
-          Berkshelf.formatter.msg "Cookbook '#{cookbook.name} (#{cookbook.version_constraint})' is outdated (#{latest_version})"
-        end
-      end
+      outdated_options = { cookbooks: cookbook_names }.merge(options).symbolize_keys
+      berksfile.outdated(outdated_options)
     end
 
     desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
@@ -341,7 +322,7 @@ module Berkshelf
     desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
     def list
       berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
+      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
 
       if dependencies.empty?
         Berkshelf.formatter.msg 'There are no cookbooks installed by your Berksfile'
@@ -360,12 +341,11 @@ module Berkshelf
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def show(name)
       berksfile = Berksfile.from_file(options[:berksfile])
+      cookbook  = Berkshelf.ui.mute { berksfile.install(cookbooks: name) }.first
 
-      cookbook = Berkshelf.ui.mute {
-        berksfile.resolve(berksfile.find(name))[:solution].first
-      }
-
-      raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile" unless cookbook
+      unless cookbook
+        raise CookbookNotFound, "Cookbook '#{name}' is not installed by your Berksfile"
+      end
 
       Berkshelf.formatter.show(cookbook)
     end
@@ -378,9 +358,8 @@ module Berkshelf
       banner: 'PATH'
     desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook'
     def contingent(name)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
-      dependencies = Berkshelf.ui.mute { berksfile.resolve(berksfile.dependencies)[:solution] }.sort
+      berksfile    = Berksfile.from_file(options[:berksfile])
+      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
       dependencies = dependencies.select { |cookbook| cookbook.dependencies.include?(name) }
 
       if dependencies.empty?
@@ -403,10 +382,6 @@ module Berkshelf
       desc: 'Path to output the tarball',
       aliases: '-o',
       banner: 'PATH'
-    method_option :skip_dependencies,
-      type: :boolean,
-      desc: 'Skip packaging dependent cookbook(s).',
-      default: false
     method_option :ignore_chefignore,
       type: :boolean,
       desc: 'Do not apply the chefignore to the packaged contents',

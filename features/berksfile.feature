@@ -6,6 +6,8 @@ Feature: Evaluating a Berksfile
   Scenario: Containing pure Ruby
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       if ENV['BACON']
         puts "If you don't got bacon..."
       else
@@ -18,19 +20,12 @@ Feature: Evaluating a Berksfile
       """
       If you don't got bacon...
       """
-    And the exit status should be 0
-
-  Scenario: Calling valid DSL methods:
-    Given I write to "Berksfile" with:
-      """
-      site :opscode
-      """
-    When I successfully run `berks install`
-    And the exit status should be 0
 
   Scenario: Containing methods I shouldn't be able to call
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       add_location(:foo)
       """
     When I run `berks install`
@@ -45,6 +40,8 @@ Feature: Evaluating a Berksfile
   Scenario: Containing Ruby syntax errors
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       ptus "This is a ruby syntax error"
       """
     When I run `berks install`
@@ -54,3 +51,4 @@ Feature: Evaluating a Berksfile
 
         undefined method `ptus' for
       """
+    And the exit status should be "BerksfileReadError"

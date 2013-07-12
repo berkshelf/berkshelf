@@ -6,6 +6,8 @@ module Berkshelf::RSpec
     PORT = 4000
 
     class << self
+      attr_reader :server
+
       def clear_request_log
         @request_log = Array.new
       end
@@ -14,22 +16,24 @@ module Berkshelf::RSpec
         @request_log ||= Array.new
       end
 
-      def server
-        @server ||= ChefZero::Server.new(port: PORT, generate_real_keys: false)
-      end
-
       def server_url
-        (@server && @server.url) || "http://localhost:#{PORT}"
+        @server && @server.url
       end
 
-      def start
-        server.start_background
-        server.on_response do |request, response|
+      def start(options = {})
+        return @server if @server
+
+        options = options.reverse_merge(port: PORT)
+        options[:generate_real_keys] = false
+
+        @server = ChefZero::Server.new(options)
+        @server.start_background
+        @server.on_response do |request, response|
           request_log << [ request, response ]
         end
         clear_request_log
 
-        server
+        @server
       end
 
       def stop

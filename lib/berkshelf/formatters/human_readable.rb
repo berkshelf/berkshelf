@@ -5,13 +5,18 @@ module Berkshelf
 
       register_formatter :human
 
+      # @param [Berkshelf::Dependency] dependency
+      def fetch(dependency)
+        Berkshelf.ui.info "Fetching '#{dependency.name}' from #{dependency.location}"
+      end
+
       # Output a Cookbook installation message using {Berkshelf.ui}
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [~Location] location
-      def install(cookbook, version, location)
-        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location}"
+      # @param [Berkshelf::Dependency] dependency
+      def install(cookbook, version, dependency)
+        Berkshelf.ui.info "Installing #{cookbook} (#{version})"
       end
 
       # Output a Cookbook use message using {Berkshelf.ui}
@@ -21,12 +26,7 @@ module Berkshelf
       # @param [~Location] location
       def use(cookbook, version, location = nil)
         message = "Using #{cookbook} (#{version})"
-
-        if location && location.is_a?(PathLocation)
-          message << ' from metadata' if location.metadata?
-          message << " at '#{location.relative_path}'" unless location.relative_path == '.'
-        end
-
+        message += " #{location}" if location
         Berkshelf.ui.info message
       end
 

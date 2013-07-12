@@ -1,71 +1,68 @@
 require 'spec_helper'
 
 describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with: :json } do
-  describe '.unpack' do
-    let(:target) { '/foo/bar' }
-    let(:destination) { '/destination/bar' }
-    let(:file) { double('file') }
-    let(:gzip_reader) { double('gzip_reader') }
+  describe "ClassMethods" do
+    describe "::unpack" do
+      let(:target) { '/foo/bar' }
+      let(:destination) { '/destination/bar' }
+      let(:file) { double('file') }
+      let(:gzip_reader) { double('gzip_reader') }
 
-    before do
-      File.stub(:open).with(target, 'rb').and_return(file)
-      Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
-      Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
+      before do
+        File.stub(:open).with(target, 'rb').and_return(file)
+        Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
+        Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
+      end
+
+      it 'unpacks the tar' do
+        File.should_receive(:open).with(target, 'rb')
+        ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
+        Zlib::GzipReader.should_receive(:new).with(file)
+        Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
+
+        expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
+      end
     end
 
-    it 'unpacks the tar' do
-      File.should_receive(:open).with(target, 'rb')
-      ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
-      Zlib::GzipReader.should_receive(:new).with(file)
-      Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
+    describe "::uri_escape_version" do
+      it 'returns a string' do
+        expect(Berkshelf::CommunityREST.uri_escape_version(nil)).to be_a(String)
+      end
 
-      expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
+      it 'converts a version to it\'s underscored version' do
+        expect(Berkshelf::CommunityREST.uri_escape_version('1.1.2')).to eq('1_1_2')
+      end
+
+      it 'works when the version has more than three points' do
+        expect(Berkshelf::CommunityREST.uri_escape_version('1.1.1.2')).to eq('1_1_1_2')
+      end
+
+      it 'works when the version has less than three points' do
+        expect(Berkshelf::CommunityREST.uri_escape_version('1.2')).to eq('1_2')
+      end
+    end
+
+    describe "::version_from_uri" do
+      it 'returns a string' do
+        expect(Berkshelf::CommunityREST.version_from_uri(nil)).to be_a(String)
+      end
+
+      it 'extracts the version from the URL' do
+        expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_2')).to eq('1.1.2')
+      end
+
+      it 'works when the version has more than three points' do
+        expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_1_2')).to eq('1.1.1.2')
+      end
+
+      it 'works when the version has less than three points' do
+        expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_2')).to eq('1.2')
+      end
     end
   end
-
-  describe '.uri_escape_version' do
-    it 'returns a string' do
-      expect(Berkshelf::CommunityREST.uri_escape_version(nil)).to be_a(String)
-    end
-
-    it 'converts a version to it\'s underscored version' do
-      expect(Berkshelf::CommunityREST.uri_escape_version('1.1.2')).to eq('1_1_2')
-    end
-
-    it 'works when the version has more than three points' do
-      expect(Berkshelf::CommunityREST.uri_escape_version('1.1.1.2')).to eq('1_1_1_2')
-    end
-
-    it 'works when the version has less than three points' do
-      expect(Berkshelf::CommunityREST.uri_escape_version('1.2')).to eq('1_2')
-    end
-  end
-
-  describe '.version_from_uri' do
-    it 'returns a string' do
-      expect(Berkshelf::CommunityREST.version_from_uri(nil)).to be_a(String)
-    end
-
-    it 'extracts the version from the URL' do
-      expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_2')).to eq('1.1.2')
-    end
-
-    it 'works when the version has more than three points' do
-      expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_1_1_2')).to eq('1.1.1.2')
-    end
-
-    it 'works when the version has less than three points' do
-      expect(Berkshelf::CommunityREST.version_from_uri('/api/v1/cookbooks/nginx/versions/1_2')).to eq('1.2')
-    end
-  end
-
-
 
   let(:api_uri) { Berkshelf::CommunityREST::V1_API }
-
-  subject do
-    Berkshelf::CommunityREST.new(api_uri)
-  end
+  subject { Berkshelf::CommunityREST.new(api_uri) }
 
   describe '#download' do
     let(:archive) { double('archive', path: '/foo/bar', unlink: true) }
@@ -76,7 +73,7 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
 
     it 'unpacks the archive' do
-      Berkshelf::CommunityREST.should_receive(:unpack).with('/foo/bar').once
+      Berkshelf::CommunityREST.should_receive(:unpack).with('/foo/bar').once.and_return('/foo/nginx')
       archive.should_receive(:unlink).once
 
       subject.download('nginx', '1.4.0')

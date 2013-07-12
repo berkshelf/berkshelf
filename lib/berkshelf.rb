@@ -27,9 +27,9 @@ module Berkshelf
   class << self
     include Berkshelf::Mixin::Logging
 
+    attr_writer :berkshelf_path
     attr_accessor :ui
     attr_accessor :logger
-    attr_writer :cookbook_store
 
     # @return [Pathname]
     def root
@@ -50,46 +50,42 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      @berkshelf_path ||= ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
-    end
-
-    # Programatically set the berkshelf path.
-    #
-    # @param [#to_s] path
-    #   the path to the Berkshelf
-    def berkshelf_path=(path)
-      @berkshelf_path = File.expand_path(path.to_s)
+      @berkshelf_path || ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
 
     # The Berkshelf configuration.
     #
     # @return [Berkshelf::Config]
     def config
-      @config ||= Berkshelf::Config.instance
+      Berkshelf::Config.instance
     end
 
-    # Set the Berkshelf Config.
-    #
     # @param [Berkshelf::Config]
-    attr_writer :config
+    def config=(config)
+      Berkshelf::Config.set_config(config)
+    end
 
     # The Chef configuration file.
     #
     # @return [Berkshelf::Chef::Config]
     def chef_config
-      @chef_config ||= Berkshelf::Chef::Config.load
+      Berkshelf::Chef::Config.instance
     end
 
-    # Set the Chef Config.
-    #
     # @param [Berkshelf::Chef::Config]
-    attr_writer :chef_config
+    def chef_config=(config)
+      Berkshelf::Chef::Config.set_config(config)
+    end
 
-    # Set the Chef configuration file.
-    #
-    # @param [Berkshelf::Chef::Config] new_config
-    #   the new configuration file to use
-    attr_writer :chef_config
+    # Initialize the filepath for the Berkshelf path..
+    def initialize_filesystem
+      FileUtils.mkdir_p(berkshelf_path, mode: 0755)
+
+      unless File.writable?(berkshelf_path)
+        raise InsufficientPrivledges, "You do not have permission to write to '#{berkshelf_path}'!" +
+          " Please either chown the directory or use a different filepath."
+      end
+    end
 
     # @return [String]
     def tmp_dir
@@ -105,13 +101,9 @@ module Berkshelf
       Dir.mktmpdir(nil, tmp_dir)
     end
 
-    def cookbooks_dir
-      File.join(berkshelf_path, 'cookbooks')
-    end
-
     # @return [Berkshelf::CookbookStore]
     def cookbook_store
-      @cookbook_store ||= CookbookStore.new(cookbooks_dir)
+      CookbookStore.instance
     end
 
     # Get the appropriate Formatter object based on the formatter
@@ -147,6 +139,7 @@ module Berkshelf
   end
 end
 
+require_relative 'berkshelf/api_client'
 require_relative 'berkshelf/base_generator'
 require_relative 'berkshelf/berksfile'
 require_relative 'berkshelf/cached_cookbook'
@@ -161,10 +154,13 @@ require_relative 'berkshelf/downloader'
 require_relative 'berkshelf/formatters'
 require_relative 'berkshelf/git'
 require_relative 'berkshelf/init_generator'
+require_relative 'berkshelf/installer'
 require_relative 'berkshelf/location'
 require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
+require_relative 'berkshelf/source'
+require_relative 'berkshelf/source_uri'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
 

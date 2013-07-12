@@ -6,6 +6,9 @@ module Berkshelf
       end
 
       module ClassMethods
+        # @return [String, nil]
+        attr_reader :default_location
+
         # Load a Chef configuration from the given path.
         #
         # @raise [Berkshelf::ConfigNotFound]
@@ -16,10 +19,15 @@ module Berkshelf
           raise Berkshelf::ConfigNotFound.new(self.class.name, filepath)
         end
 
+        # @return [Berkshelf::Mixin::Config]
+        def instance
+          @instance ||= load
+        end
+
         # Load the contents of the most probable Chef config. See {location}
         # for more information on how this logic is decided.
         def load
-          self.new(location)
+          new(location)
         end
 
         # Class method for defining a default option.
@@ -47,9 +55,6 @@ module Berkshelf
           @default_location = File.expand_path(path)
         end
 
-        # @return [String, nil]
-        attr_reader :default_location
-
         # Converts a path to a path usable for your current platform
         #
         # @param [String] path
@@ -64,7 +69,19 @@ module Berkshelf
           path
         end
 
+        # @return [Berkshelf::Mixin::Config]
+        def reload
+          @instance = nil
+          instance
+        end
+
+        # @param [Berkshelf::Mixin::Config]
+        def set_config(config)
+          @instance = config
+        end
+
         private
+
           # @abstract
           #   include and override {location} in your class to define the
           #   default location logic

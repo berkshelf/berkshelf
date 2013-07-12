@@ -5,7 +5,7 @@ module Berkshelf
       #
       # @return [Pathname]
       def berkshelf_path
-        @_berkshelf_path ||= tmp_path.join('berkshelf').expand_path
+        tmp_path.join('berkshelf').expand_path
       end
 
       # The Berkshelf cookbook store
@@ -19,51 +19,43 @@ module Berkshelf
       #
       # @return [Pathname]
       def tmp_path
-        @_tmp_path ||= app_root.join('tmp').expand_path
+        Berkshelf.root.join('spec/tmp')
       end
 
       # The path to the spec fixtures
       #
       # @return [Pathname]
       def fixtures_path
-        @_fixtures_path ||= app_root.join('spec/fixtures').expand_path
+        Berkshelf.root.join('spec/fixtures')
       end
 
       # The path to the Chef config fixture
       #
       # @return [String]
       def chef_config_path
-        @_chef_config_path ||= app_root.join('spec/config/knife.rb').expand_path.to_s
+        Berkshelf.root.join('spec/config/knife.rb').to_s
       end
 
       # The actual Chef config object
       #
       # @return [Bershelf::Chef::Config]
       def chef_config
-        @_chef_config ||= Berkshelf::Chef::Config.from_file(chef_config_path)
+        Berkshelf::Chef::Config.from_file(chef_config_path)
+      end
+
+      def clean_tmp_path
+        FileUtils.rm_rf(tmp_path)
+        FileUtils.mkdir_p(tmp_path)
       end
 
       private
-        # The "root" of berkshelf
-        #
-        # @return [Pathname]
-        def app_root
-          @_app_root ||= Pathname.new(File.expand_path('../../..', __FILE__))
-        end
 
         # This is the magical "reset" function that gives us a clean working
         # directory on each run.
         #
         # @return [nil]
-        def purge_store_and_configs!
-          FileUtils.rm_rf(tmp_path)
-          FileUtils.mkdir(tmp_path)
-
-          Berkshelf.berkshelf_path = berkshelf_path
-          Berkshelf.chef_config    = chef_config
-
-          FileUtils.mkdir(Berkshelf.berkshelf_path)
-          FileUtils.mkdir(Berkshelf.cookbooks_dir)
+        def reload_configs
+          Berkshelf.chef_config = chef_config
 
           # This fucking sucks...
           load 'berkshelf/chef/config.rb'
