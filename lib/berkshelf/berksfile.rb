@@ -554,7 +554,7 @@ module Berkshelf
       #
       # @return [Array<Berkshelf::CachedCookbooks]
       def filter_to_upload(cookbooks, names)
-        if names.any?
+        unless names.empty?
           explicit = cookbooks.select { |cookbook| names.include?(cookbook.cookbook_name) }
           explicit.each do |cookbook|
             cookbook.dependencies.each do |name, version|
