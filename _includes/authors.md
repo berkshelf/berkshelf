@@ -1,4 +1,4 @@
-* Jamie Winsor (<reset@riotgames.com>)
+* Jamie Winsor (<jamie@vialstudios.com>)
 * Josiah Kiehl (<jkiehl@riotgames.com>)
 * Michael Ivey (<michael.ivey@riotgames.com>)
 * Justin Campbell (<justin.campbell@riotgames.com>)
