@@ -1,3 +1,7 @@
+# 2.0.7
+
+* Fix crash when parsing a lockfile that contains path locations which no longer exist
+
 # 2.0.6
 
 * Fix installation failures due to latest release of ActiveSupport
