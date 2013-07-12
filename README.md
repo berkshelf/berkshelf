@@ -75,7 +75,7 @@ If you need to disable SSL, you can in `~/.berkshelf/config.json` like so:
 
 Authors
 -------
-- Jamie Winsor (<reset@riotgames.com>)
+- Jamie Winsor (<jamie@vialstudios.com>)
 - Josiah Kiehl (<jkiehl@riotgames.com>)
 - Michael Ivey (<michael.ivey@riotgames.com>)
 - Justin Campbell (<justin.campbell@riotgames.com>)

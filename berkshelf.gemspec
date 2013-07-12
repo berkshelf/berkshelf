@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
     'Seth Vargo'
   ]
   s.email                 = [
-    'reset@riotgames.com',
+    'jamie@vialstudios.com',
     'jkiehl@riotgames.com',
     'michael.ivey@riotgames.com',
     'justin.campbell@riotgames.com',
