@@ -56,8 +56,8 @@ module Berkshelf
           raise InternalError, "Invalid options for dependency: #{invalid_options.join(', ')}."
         end
 
-        if (options.keys & [:path, :git]).size > 1
-          invalid = (options.keys & [:path, :git]).map { |opt| "'#{opt}" }
+        if (options.keys & location_keys.keys).size > 1
+          invalid = (options.keys & location_keys.keys).map { |opt| "'#{opt}'" }
           raise InternalError, "Cannot specify #{invalid.join(' and ')} for a dependency!"
         end
 
