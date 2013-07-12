@@ -27,6 +27,7 @@ module Berkshelf
   class << self
     include Berkshelf::Mixin::Logging
 
+    attr_writer :berkshelf_path
     attr_accessor :ui
     attr_accessor :logger
 
@@ -49,7 +50,7 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
+      @berkshelf_path || ENV['BERKSHELF_PATH'] || File.expand_path('~/.berkshelf')
     end
 
     # The Berkshelf configuration.
