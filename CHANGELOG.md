@@ -1,3 +1,7 @@
+# 3.0.0
+
+* New "universe" resolver which communicates with an API server to resolve constraint graphs faster and more reliably
+
 # 2.0.7
 
 * Fix crash when parsing a lockfile that contains path locations which no longer exist
