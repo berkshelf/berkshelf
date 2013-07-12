@@ -5,7 +5,7 @@ module Berkshelf
       #
       # @return [Array<Berkshelf::Source>]
       def default_sources
-        @default_sources ||= [ Source.new("http://api.berkshelf.com") ]
+        @default_sources ||= [ Source.new(DEFAULT_API_URL) ]
       end
 
       # @param [#to_s] file
@@ -20,6 +20,8 @@ module Berkshelf
         raise BerksfileReadError.new(ex)
       end
     end
+
+    DEFAULT_API_URL = "http://api.berkshelf.com".freeze
 
     include Berkshelf::Mixin::Logging
     include Berkshelf::Mixin::DSLEval
@@ -154,6 +156,15 @@ module Berkshelf
     #
     # @raise [Berkshelf::DeprecatedError]
     def site(*args)
+      if args.first == :opscode
+        Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
+          "Site (site :opscode). Site locations have been replaced by the source location. Change this to: " +
+          "'source \"http://api.berkshelf.com\" to remove this warning. For more information visit " +
+          "https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+        source(DEFAULT_API_URL)
+        return
+      end
+
       raise Berkshelf::DeprecatedError.new "Your Berksfile contains a site location. Site locations have been " +
         " replaced by the source location. Please remove your site location and try again. For more information " +
         " visit https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
