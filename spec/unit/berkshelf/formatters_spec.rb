@@ -77,8 +77,6 @@ describe Berkshelf::Formatters do
       end
     end
 
-
-
     subject do
       Class.new { include Berkshelf::Formatters::AbstractFormatter }.new
     end
@@ -106,6 +104,10 @@ describe Berkshelf::Formatters do
 
       expect {
         subject.error('whoa this is bad')
+      }.to raise_error(Berkshelf::AbstractFunction)
+
+      expect {
+        subject.fetch(double('dependency'))
       }.to raise_error(Berkshelf::AbstractFunction)
     end
   end

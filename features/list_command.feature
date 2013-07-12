@@ -9,6 +9,8 @@ Feature: Listing cookbooks defined by a Berksfile
       | fake2 | 1.0.1 |
     Given I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake1', '1.0.0'
       cookbook 'fake2', '1.0.1'
       """
@@ -22,7 +24,10 @@ Feature: Listing cookbooks defined by a Berksfile
     And the exit status should be 0
 
   Scenario: Running the list command with no sources defined
-    Given an empty file named "Berksfile"
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+      """
     When I successfully run `berks list`
     Then the output should contain:
       """

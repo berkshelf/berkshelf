@@ -19,6 +19,11 @@ module Berkshelf
         File.expand_path(path)
       end
 
+      # @param [Berkshelf::Config] config
+      def set_config(config)
+        @instance = config
+      end
+
       # @param [String] new_path
       def set_path(new_path)
         @instance = nil

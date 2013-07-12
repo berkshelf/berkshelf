@@ -50,7 +50,7 @@ describe Berkshelf::CookbookGenerator do
           contains "description      'Installs/Configures sparkle_motion'"
         end
         file 'Berksfile' do
-          contains 'site :opscode'
+          contains 'source "http://api.berkshelf.com"'
           contains 'metadata'
         end
         file 'Gemfile'

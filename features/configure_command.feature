@@ -4,6 +4,9 @@ Feature: Configuring Berkshelf via the command line
   I want a command to generate a Berkshelf configuration file based on my input
   So I can quickly get up and running with the least amount of resistance
 
+  Background:
+    Given I do not have a Berkshelf config
+
   Scenario: Using custom values
     When I run `berks configure` interactively
     And I type "https://api.opscode.com/organizations/vialstudios"
@@ -17,7 +20,6 @@ Feature: Configuring Berkshelf via the command line
       """
       Config written to:
       """
-    And the exit status should be 0
     And a Berkshelf config file should exist and contain:
       | chef.chef_server_url        | https://api.opscode.com/organizations/vialstudios |
       | chef.validation_client_name | reset                                             |
@@ -26,6 +28,7 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
+    And the exit status should be 0
 
   Scenario: Accepting the default values
     Given I do not have a Chef config
@@ -41,7 +44,6 @@ Feature: Configuring Berkshelf via the command line
       """
       Config written to:
       """
-    And the exit status should be 0
     And a Berkshelf config file should exist and contain:
       | chef.chef_server_url        | http://localhost:4000               |
       | chef.validation_client_name | chef-validator                      |
@@ -49,6 +51,7 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_key_path    | /etc/chef/validation.pem            |
       | vagrant.vm.box              | Berkshelf-CentOS-6.3-x86_64-minimal |
       | vagrant.vm.box_url          | https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box |
+    And the exit status should be 0
 
   Scenario: Creating a Berkshelf configuration file when one already exists
     Given I already have a Berkshelf config file
@@ -72,7 +75,6 @@ Feature: Configuring Berkshelf via the command line
       """
       Config written to:
       """
-    And the exit status should be 0
     And a Berkshelf config file should exist at "<path>" and contain:
       | chef.chef_server_url        | https://api.opscode.com/organizations/vialstudios |
       | chef.validation_client_name | reset                                             |
@@ -81,8 +83,9 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
+    And the exit status should be 0
 
     Examples:
-      |       path      |
+      | path                   |
       | .berkshelf/config.json |
       | berkshelf/config.json  |

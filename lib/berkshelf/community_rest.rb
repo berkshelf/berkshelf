@@ -37,6 +37,7 @@ module Berkshelf
       end
 
       private
+
         def is_gzip_file(path)
           # You cannot write "\x1F\x8B" because the default encoding of
           # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
@@ -48,7 +49,7 @@ module Berkshelf
         end
     end
 
-    V1_API = 'http://cookbooks.opscode.com/api/v1/cookbooks'.freeze
+    V1_API = 'http://cookbooks.opscode.com/api/v1'.freeze
 
     # @return [String]
     attr_reader :api_uri
@@ -91,20 +92,21 @@ module Berkshelf
     #
     # @return [String]
     def download(name, version)
-      archive = stream(find(name, version)[:file])
-      self.class.unpack(archive.path)
+      archive   = stream(find(name, version)[:file])
+      extracted = self.class.unpack(archive.path)
+      Dir.glob(File.join(extracted, "*")).first
     ensure
       archive.unlink unless archive.nil?
     end
 
     def find(name, version)
-      response = get("#{name}/versions/#{self.class.uri_escape_version(version)}")
+      response = get("cookbooks/#{name}/versions/#{self.class.uri_escape_version(version)}")
 
       case response.status
       when (200..299)
         response.body
       when 404
-        raise CookbookNotFound, "Cookbook '#{name}' not found at site: '#{api_uri}'"
+        raise CookbookNotFound, "Cookbook '#{name}' (#{version}) not found at site: '#{api_uri}'"
       else
         raise CommunitySiteError, "Error finding cookbook '#{name}' (#{version}) at site: '#{api_uri}'"
       end
@@ -114,7 +116,7 @@ module Berkshelf
     #
     # @return [String]
     def latest_version(name)
-      response = get(name)
+      response = get("cookbooks/#{name}")
 
       case response.status
       when (200..299)
@@ -130,7 +132,7 @@ module Berkshelf
     #
     # @return [Array]
     def versions(name)
-      response = get(name)
+      response = get("cookbooks/#{name}")
 
       case response.status
       when (200..299)

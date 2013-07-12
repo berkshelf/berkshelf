@@ -4,6 +4,7 @@ Spork.prefork do
   require 'rspec'
   require 'webmock/rspec'
   require 'vcr'
+  require 'berkshelf/api/rspec'
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
@@ -21,8 +22,8 @@ Spork.prefork do
     config.include Berkshelf::RSpec::ChefServer
     config.include Berkshelf::RSpec::Git
     config.include Berkshelf::RSpec::PathHelpers
+    config.include Berkshelf::API::RSpec
 
-    # Disallow should syntax
     config.expect_with :rspec do |c|
       c.syntax = :expect
     end
@@ -33,21 +34,27 @@ Spork.prefork do
     config.run_all_when_everything_filtered = true
 
     config.before(:suite) do
+      WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
       Berkshelf::RSpec::ChefServer.start
+      Berkshelf::API::RSpec::Server.start
+      Berkshelf.set_format(:null)
+      Berkshelf.ui.mute!
     end
 
     config.after(:suite) do
-      Berkshelf::RSpec::ChefServer.stop
+      Berkshelf.ui.unmute!
+    end
+
+    config.before(:all) do
+      ENV['BERKSHELF_PATH'] = berkshelf_path.to_s
     end
 
     config.before(:each) do
-      Celluloid.shutdown
-      Celluloid.boot
-
-      purge_store_and_configs!
-
-      Berkshelf.set_format(:null)
-      Berkshelf.ui.mute!
+      Berkshelf::API::RSpec::Server.clear_cache
+      clean_tmp_path
+      Berkshelf.initialize_filesystem
+      Berkshelf::CookbookStore.instance.initialize_filesystem
+      reload_configs
     end
   end
 
@@ -82,4 +89,3 @@ Spork.each_run do
     end
   end
 end
-

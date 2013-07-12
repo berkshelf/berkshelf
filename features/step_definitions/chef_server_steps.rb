@@ -1,5 +1,9 @@
 World(Berkshelf::RSpec::ChefAPI)
 
+Given(/^the Chef Server is empty$/) do
+  Berkshelf::RSpec::ChefServer.reset!
+end
+
 Given /^the Chef Server has cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     purge_cookbook(name, version)

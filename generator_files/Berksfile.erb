@@ -1,5 +1,6 @@
-site :opscode
+source "http://api.berkshelf.com"
 <% if options[:chef_minitest] -%>
+
 group :integration do
   cookbook 'minitest-handler'
 end

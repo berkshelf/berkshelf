@@ -8,6 +8,7 @@ module Berkshelf
 
       class << self
         private
+
           # Return the most sensible path to the Chef configuration file. This can
           # be configured by setting a value for the 'BERKSHELF_CHEF_CONFIG' environment
           # variable.

@@ -11,6 +11,7 @@ module Berkshelf
     alias_method :message, :to_s
   end
 
+  class DeprecatedError < BerkshelfError; status_code(10); end
   class InternalError < BerkshelfError; status_code(99); end
   class ArgumentError < InternalError; end
   class AbstractFunction < InternalError
@@ -81,7 +82,22 @@ module Berkshelf
   end
 
   class DuplicateDependencyDefined < BerkshelfError; status_code(105); end
-  class NoSolution < BerkshelfError; status_code(106); end
+
+  class NoSolutionError < BerkshelfError
+    status_code(106)
+
+    attr_reader :demands
+
+    # @param [Array<Berkshelf::Dependency>] demands
+    def initialize(demands)
+      @demands = demands
+    end
+
+    def to_s
+      "Unable to find a solution for demands: #{demands.join(', ')}"
+    end
+  end
+
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
 
   class InvalidGitURI < BerkshelfError
@@ -119,8 +135,9 @@ module Berkshelf
   end
 
   class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
-  class InvalidChefAPILocation < BerkshelfError; status_code(112); end
   class BerksfileReadError < BerkshelfError
+    status_code(113)
+
     # @param [#status_code] original_error
     def initialize(original_error)
       @original_error  = original_error
@@ -128,7 +145,6 @@ module Berkshelf
       @error_backtrace = original_error.backtrace
     end
 
-    status_code(113)
 
     def status_code
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
@@ -151,12 +167,12 @@ module Berkshelf
   class MismatchedCookbookName < BerkshelfError
     status_code(114)
 
-    # @param [Berkshelf::Location] location
-    #   the location that is mismatched
+    # @param [Berkshelf::Dependency] dependency
+    #   the dependency with the expected name
     # @param [Berkshelf::CachedCookbook] cached_cookbook
-    #   the cached_cookbook that is mismatched
-    def initialize(location, cached_cookbook)
-      @location = location
+    #   the cached_cookbook with the mismatched name
+    def initialize(dependency, cached_cookbook)
+      @dependency      = dependency
       @cached_cookbook = cached_cookbook
     end
 
@@ -164,7 +180,7 @@ module Berkshelf
       [
         "In your Berksfile, you have:",
         "",
-        "  cookbook '#{@location.name}'",
+        "  cookbook '#{@dependency.name}'",
         "",
         "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'",
         "",
@@ -193,7 +209,7 @@ module Berkshelf
   class ConfigExists < BerkshelfError; status_code(116); end
   class ConfigurationError < BerkshelfError; status_code(117); end
   class InsufficientPrivledges < BerkshelfError; status_code(119); end
-  class ExplicitCookbookNotFound < BerkshelfError; status_code(120); end
+  class DependencyNotFound < BerkshelfError; status_code(120); end
   class ValidationFailed < BerkshelfError; status_code(121); end
   class InvalidVersionConstraint < BerkshelfError; status_code(122); end
   class CommunitySiteError < BerkshelfError; status_code(123); end
@@ -205,21 +221,13 @@ module Berkshelf
     #   the location (or any subclass) raising this validation error
     # @param [Berkshelf::CachedCookbook] cached_cookbook
     #   the cached_cookbook that does not satisfy the constraint
-    def initialize(location, cached_cookbook)
-      @location = location
+    def initialize(dependency, cached_cookbook)
+      @dependency      = dependency
       @cached_cookbook = cached_cookbook
     end
 
     def to_s
-      [
-        "The cookbook downloaded from #{@location.to_s}:",
-        "  #{@cached_cookbook.cookbook_name} (#{@cached_cookbook.version})",
-        "",
-        "does not satisfy the version constraint:",
-        "  #{@cached_cookbook.cookbook_name} (#{@location.version_constraint})",
-        "",
-        "This occurs when the Chef Server has a cookbook with a missing/mis-matched version number in its `metadata.rb`",
-      ].join("\n")
+      "The cookbook downloaded for #{@dependency} did not satisfy the constraint."
     end
   end
 
@@ -227,23 +235,6 @@ module Berkshelf
 
   class UploadFailure < BerkshelfError; end
   class FrozenCookbook < UploadFailure; status_code(126); end
-  class InvalidSiteShortnameError < BerkshelfError
-    status_code(127)
-
-    # @param [String,Symbol] shortname
-    #   the shortname for the site (see SiteLocation::SHORTNAMES)
-    def initialize(shortname)
-      @shortname = shortname
-    end
-
-    def to_s
-      [
-        "Unknown site shortname '#{@shortname}' - supported shortnames are:",
-        "",
-        "  * " + SiteLocation::SHORTNAMES.keys.join("\n  * "),
-      ].join("\n")
-    end
-  end
 
   class OutdatedDependency < BerkshelfError
     status_code(128)
@@ -395,4 +386,22 @@ module Berkshelf
       "Error reading the Berkshelf lockfile `#{@lockfile}` (#{@original.class})"
     end
   end
+
+  class InvalidSourceURI < BerkshelfError
+    status_code(137)
+
+    attr_reader :reason
+
+    def initialize(url, reason = nil)
+      @url    = url
+      @reason = reason
+    end
+
+    def to_s
+      msg = "'#{@url}' is not a valid Berkshelf source URI."
+      msg + " #{reason}." unless reason.nil?
+    end
+  end
+
+  class DuplicateDemand < BerkshelfError; status_code(138); end
 end

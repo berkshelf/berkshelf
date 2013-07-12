@@ -8,7 +8,8 @@ Feature: Packaging a cookbook as a tarball for distribution
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '~> 1.0.0'
       """
     When I successfully run `berks package fake`
@@ -17,26 +18,26 @@ Feature: Packaging a cookbook as a tarball for distribution
       """
       Cookbook(s) packaged to
       """
-    And the exit status should be 0
 
   Scenario: With the --output option
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '~> 1.0.0'
       """
     When I successfully run `berks package fake --output foo/bar`
     Then a file named "foo/bar/fake.tar.gz" should exist
-    And the exit status should be 0
 
   Scenario: With an installed cookbook name
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
-      site :opscode
+      source "http://localhost:26210"
+
       cookbook 'fake', '~> 1.0.0'
       """
     When I run `berks package non-existent`
@@ -51,6 +52,8 @@ Feature: Packaging a cookbook as a tarball for distribution
     Given a cookbook named "cookbook with spaces"
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'cookbook with spaces', path: './cookbook with spaces'
       """
     When I run `berks package`
