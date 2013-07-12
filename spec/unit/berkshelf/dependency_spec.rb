@@ -74,6 +74,40 @@ describe Berkshelf::Dependency do
             }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for dependency: 'invalid_one', 'invalid_two'.")
           end
         end
+
+        context 'given multiple location options' do
+          it 'raises with an Berkshelf::BerkshelfError' do
+            expect {
+              described_class.new(berksfile, cookbook_name, path: '/something', git: 'something')
+            }.to raise_error(Berkshelf::BerkshelfError)
+          end
+        end
+
+        context 'given a group option containing a single group' do
+          let(:group) { :production }
+          let(:source) { described_class.new(berksfile, cookbook_name, group: group) }
+
+          it 'assigns the single group to the groups attribute' do
+            expect(source.groups).to include(group)
+          end
+        end
+
+        context 'given a group option containing an array of groups' do
+          let(:groups) { [ :development, :test ] }
+          let(:source) { described_class.new(berksfile, cookbook_name, group: groups) }
+
+          it 'assigns all the groups to the group attribute' do
+            expect(source.groups).to eq(groups)
+          end
+        end
+
+        context 'given no group option' do
+          let(:source) { described_class.new(berksfile, cookbook_name) }
+
+          it 'has the default group assigned' do
+            expect(source.groups).to include(:default)
+          end
+        end
       end
     end
 
@@ -126,40 +160,6 @@ describe Berkshelf::Dependency do
 
         expect(described_class.location_keys).to have(1).item
         expect(described_class.location_keys).to include(:git)
-      end
-
-      context 'given multiple location options' do
-        it 'raises with an Berkshelf::BerkshelfError' do
-          expect {
-            described_class.new(berksfile, cookbook_name, path: '/something', git: 'something')
-          }.to raise_error(Berkshelf::BerkshelfError)
-        end
-      end
-
-      context 'given a group option containing a single group' do
-        let(:group) { :production }
-        let(:source) { described_class.new(berksfile, cookbook_name, group: group) }
-
-        it 'assigns the single group to the groups attribute' do
-          expect(source.groups).to include(group)
-        end
-      end
-
-      context 'given a group option containing an array of groups' do
-        let(:groups) { [ :development, :test ] }
-        let(:source) { described_class.new(berksfile, cookbook_name, group: groups) }
-
-        it 'assigns all the groups to the group attribute' do
-          expect(source.groups).to eq(groups)
-        end
-      end
-
-      context 'given no group option' do
-        let(:source) { described_class.new(berksfile, cookbook_name) }
-
-        it 'has the default group assigned' do
-          expect(source.groups).to include(:default)
-        end
       end
     end
   end
