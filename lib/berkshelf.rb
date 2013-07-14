@@ -67,14 +67,14 @@ module Berkshelf
 
     # The Chef configuration file.
     #
-    # @return [Berkshelf::Chef::Config]
+    # @return [Ridley::Chef::Config]
     def chef_config
-      Berkshelf::Chef::Config.instance
+      @chef_config ||= Ridley::Chef::Config.new(nil)
     end
 
-    # @param [Berkshelf::Chef::Config]
+    # @param [Ridley::Chef::Config]
     def chef_config=(config)
-      Berkshelf::Chef::Config.set_config(config)
+      @chef_config = config
     end
 
     # Initialize the filepath for the Berkshelf path..

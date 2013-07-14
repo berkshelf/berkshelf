@@ -40,7 +40,7 @@ module Berkshelf
       #
       # @return [Bershelf::Chef::Config]
       def chef_config
-        Berkshelf::Chef::Config.from_file(chef_config_path)
+        Ridley::Chef::Config.from_file(chef_config_path)
       end
 
       def clean_tmp_path
@@ -58,7 +58,7 @@ module Berkshelf
           Berkshelf.chef_config = chef_config
 
           # This fucking sucks...
-          load 'berkshelf/chef/config.rb'
+          # load 'berkshelf/chef/config.rb'
           load 'berkshelf/config.rb'
 
           Berkshelf.config = Berkshelf::Config.new
