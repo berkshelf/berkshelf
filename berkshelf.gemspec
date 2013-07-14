@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
     'jamie@vialstudios.com',
     'jkiehl@riotgames.com',
     'michael.ivey@riotgames.com',
-    'justin.campbell@riotgames.com',
+    'justin@justincampbell.me',
     'sethvargo@gmail.com'
   ]
 
