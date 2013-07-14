@@ -214,13 +214,6 @@ describe Berkshelf::Dependency do
       end
     end
 
-    it 'includes the constraint' do
-      subject.version_constraint = '~> 1.0.0'
-
-      expect(hash).to have_key(:constraint)
-      expect(hash[:constraint]).to eq('~> 1.0.0')
-    end
-
     it 'includes the locked version' do
       subject.stub(cached_cookbook: double('cached', version: '1.2.3'))
 

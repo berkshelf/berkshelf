@@ -47,7 +47,7 @@ module Berkshelf
       end
     end
 
-    # The list of sources constrained in this lockfile.
+    # The list of dependencies constrained in this lockfile.
     #
     # @return [Array<Berkshelf::Dependency>]
     #   the list of dependencies in this lockfile

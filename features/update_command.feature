@@ -23,8 +23,7 @@ Feature: Updating a cookbook defined by a Berksfile
       {
         "dependencies":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           }
         }
       }
@@ -47,12 +46,10 @@ Feature: Updating a cookbook defined by a Berksfile
       {
         "dependencies":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.1",
-            "constraint":"= 1.0.1"
+            "locked_version":"1.0.1"
           }
         }
       }
@@ -63,12 +60,10 @@ Feature: Updating a cookbook defined by a Berksfile
       {
         "dependencies":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.2.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.2.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.1",
-            "constraint":"~> 1.0.0"
+            "locked_version":"1.0.1"
           }
         }
       }
@@ -91,12 +86,10 @@ Feature: Updating a cookbook defined by a Berksfile
       {
         "dependencies":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.0",
-            "constraint":"~> 1.0.0"
+            "locked_version":"1.0.0"
           }
         }
       }
@@ -107,12 +100,10 @@ Feature: Updating a cookbook defined by a Berksfile
       {
         "dependencies":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.2.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.2.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.0",
-            "constraint":"~> 1.0.0"
+            "locked_version":"1.0.0"
           }
         }
       }
@@ -132,8 +123,7 @@ Feature: Updating a cookbook defined by a Berksfile
       {
         "dependencies":{
           "berkshelf-cookbook-fixture":{
-            "locked_version":"0.1.0",
-            "constraint":"~> 0.1"
+            "locked_version":"0.1.0"
           }
         }
       }
