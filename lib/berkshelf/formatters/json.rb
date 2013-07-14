@@ -69,13 +69,24 @@ module Berkshelf
 
       # Add a Cookbook upload entry to delayed output
       #
-      # @param [String] cookbook
-      # @param [String] version
-      # @param [String] chef_api_url
-      def upload(cookbook, version, chef_api_url)
-        cookbooks[cookbook] ||= {}
-        cookbooks[cookbook][:version] = version
-        cookbooks[cookbook][:uploaded_to] = chef_api_url
+      # @param [Berkshelf::CachedCookbook] cookbook
+      # @param [Ridley::Connection] conn
+      def upload(cookbook, conn)
+        name = cookbook.cookbook_name
+        cookbooks[name] ||= {}
+        cookbooks[name][:version] = cookbook.version
+        cookbooks[name][:uploaded_to] = conn.server_url
+      end
+
+      # Add a Cookbook skip entry to delayed output
+      #
+      # @param [Berkshelf::CachedCookbook] cookbook
+      # @param [Ridley::Connection] conn
+      def skip(cookbook, conn)
+        name = cookbook.cookbook_name
+        cookbooks[name] ||= {}
+        cookbooks[name][:version] = cookbook.version
+        cookbooks[name][:skipped] = true
       end
 
       # Output a list of outdated cookbooks and the most recent version

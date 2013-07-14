@@ -100,7 +100,7 @@ Feature: Uploading cookbooks to a Chef Server
     When I run `berks upload reset`
     Then the output should contain:
       """
-      Failed to upload cookbook 'reset'. Not defined in Berksfile.
+      Could not find cookbook(s) 'reset' in any of the configured dependencies. Is it in your Berksfile?
       """
     And the exit status should be "DependencyNotFound"
 
@@ -281,3 +281,41 @@ Feature: Uploading cookbooks to a Chef Server
       """
       Uploading fake (0.0.0)
       """
+
+  Scenario: When the cookbook already exist
+    Given the cookbook store has the cookbooks:
+      | fake  | 1.0.0 |
+    And the Chef Server has frozen cookbooks:
+      | fake  | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      cookbook 'fake', '1.0.0'
+      """
+    When I successfully run `berks upload`
+    Then the output should contain:
+      """
+      Skipping fake (1.0.0) (already uploaded)
+      """
+    And the output should contain:
+      """
+      Skipped uploading some cookbooks because they already existed on the remote server. Re-run with the `--force` flag to force overwrite these cookbooks:
+
+        * fake (1.0.0)
+      """
+    And the exit status should be 0
+
+  Scenario: When the cookbook already exist and is a metadata location
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      metadata
+      """
+    When I cd to "fake"
+    And the Chef Server has frozen cookbooks:
+      | fake  | 0.0.0 |
+    When I run `berks upload`
+    Then the output should contain:
+      """
+      The cookbook fake (0.0.0) already exists and is frozen on the Chef Server. Use the --force option to override.
+      """
+    And the exit status should be "FrozenCookbook"

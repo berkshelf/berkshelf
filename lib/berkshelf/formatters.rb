@@ -85,6 +85,7 @@ module Berkshelf
                         :msg,
                         :outdated,
                         :package,
+                        :skip,
                         :show,
                         :upload,
                         :use,

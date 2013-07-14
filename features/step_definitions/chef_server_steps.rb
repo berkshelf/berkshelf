@@ -8,9 +8,17 @@ Given /^the Chef Server has cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     purge_cookbook(name, version)
     cb_path = generate_cookbook(tmp_path, name, version)
-    upload_cookbook(cb_path)
+    upload_cookbook(cb_path, freeze: false, force: true)
   end
 end
+
+Given /^the Chef Server has frozen cookbooks:$/ do |cookbooks|
+  cookbooks.raw.each do |name, version|
+    purge_cookbook(name, version)
+    cb_path = generate_cookbook(tmp_path, name, version)
+    upload_cookbook(cb_path, freeze: true, force: true)
+  end
+ end
 
 Then /^the Chef Server should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|

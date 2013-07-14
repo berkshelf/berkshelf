@@ -222,7 +222,23 @@ module Berkshelf
   class ConfigExists < BerkshelfError; status_code(116); end
   class ConfigurationError < BerkshelfError; status_code(117); end
   class InsufficientPrivledges < BerkshelfError; status_code(119); end
-  class DependencyNotFound < BerkshelfError; status_code(120); end
+
+  class DependencyNotFound < BerkshelfError
+    status_code(120)
+
+    # @param [String, Array<String>] cookbooks
+    #   the list of cookbooks that were not defined
+    def initialize(cookbooks)
+      @cookbooks = Array(cookbooks)
+    end
+
+    def to_s
+      list = @cookbooks.collect {|c| "'#{c}'" }
+      "Could not find cookbook(s) #{list.join(', ')} in any of the configured" <<
+      " dependencies. #{list.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+    end
+  end
+
   class ValidationFailed < BerkshelfError; status_code(121); end
   class InvalidVersionConstraint < BerkshelfError; status_code(122); end
   class CommunitySiteError < BerkshelfError; status_code(123); end
@@ -247,7 +263,21 @@ module Berkshelf
   class ClientKeyFileNotFound < BerkshelfError; status_code(125); end
 
   class UploadFailure < BerkshelfError; end
-  class FrozenCookbook < UploadFailure; status_code(126); end
+
+  class FrozenCookbook < UploadFailure
+    status_code(126)
+
+    # @param [CachedCookbook] cookbook
+    def initialize(cookbook)
+      @cookbook = cookbook
+    end
+
+    def to_s
+      "The cookbook #{@cookbook.cookbook_name} (#{@cookbook.version})" <<
+        " already exists and is frozen on the Chef Server. Use the --force" <<
+        " option to override."
+    end
+  end
 
   class OutdatedDependency < BerkshelfError
     status_code(128)
