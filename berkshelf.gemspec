@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.8.0'
 
   s.add_dependency 'addressable',       '~> 2.3.4'
-  s.add_dependency 'buff-config',       '~> 0.1'
+  s.add_dependency 'buff-config',       '~> 0.2'
   s.add_dependency 'buff-extensions',   '~> 0.4'
   s.add_dependency 'buff-shell_out',    '~> 0.1'
   s.add_dependency 'celluloid',         '>= 0.14.0'
@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'hashie',            '>= 2.0.2'
   s.add_dependency 'minitar',           '~> 0.5.4'
   s.add_dependency 'retryable',         '~> 1.3.3'
-  s.add_dependency 'ridley',            '~> 1.3.0'
+  s.add_dependency 'ridley',            '~> 1.3.2'
   s.add_dependency 'solve',             '>= 0.5.0'
   s.add_dependency 'thor',              '~> 0.18.0'
 
