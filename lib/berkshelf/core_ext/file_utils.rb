@@ -8,6 +8,7 @@ module FileUtils
     # @see {FileUtils::mv}
     # @see {safe_mv}
     def mv(src, dest, options = {})
+      FileUtils.mkdir_p File.join(File.split(dest).shift)
       FileUtils.cp_r(src, dest, options)
       FileUtils.rm_rf(src)
     end

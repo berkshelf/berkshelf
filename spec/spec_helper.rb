@@ -16,6 +16,20 @@ Spork.prefork do
     config.ignore_localhost = true
   end
 
+  # Cross-platform way of finding an executable in the $PATH.
+  # used to filter out mercurial tests if mercurial is
+  # not available on the test system
+  def which(cmd)
+    exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+    ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+      exts.each { |ext|
+        exe = File.join(path, "#{cmd}#{ext}")
+        return exe if File.executable? exe
+      }
+    end
+    return nil
+  end
+
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
     config.include Berkshelf::RSpec::ChefAPI
@@ -31,6 +45,7 @@ Spork.prefork do
     config.mock_with :rspec
     config.treat_symbols_as_metadata_keys_with_true_values = true
     config.filter_run focus: true
+
     config.run_all_when_everything_filtered = true
 
     config.before(:suite) do

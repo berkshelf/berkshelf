@@ -1,15 +1,5 @@
 module Berkshelf
-  class GitLocation < Location::Base
-    class << self
-      # Create a temporary directory for the cloned repository within Berkshelf's
-      # temporary directory
-      #
-      # @return [String]
-      #   the path to the created temporary directory
-      def tmpdir
-        @tmpdir ||= Berkshelf.mktmpdir
-      end
-    end
+  class GitLocation < Location::ScmLocation
 
     set_location_key :git
     set_valid_options :ref, :branch, :tag, :rel
@@ -68,7 +58,7 @@ module Berkshelf
         raise CookbookNotFound, msg
       end
 
-      cb_path = File.join(destination, "#{dependency.name}-#{ref}")
+      cb_path = File.join(revision_path(destination))
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 

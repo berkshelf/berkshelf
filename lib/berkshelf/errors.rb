@@ -24,6 +24,11 @@ module Berkshelf
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DuplicateLocationDefined < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError; status_code(103); end
+
+  class MercurialError < BerkshelfError
+    status_code(108);
+  end
+
   class GitError < BerkshelfError
     status_code(104)
 
@@ -100,6 +105,19 @@ module Berkshelf
 
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
 
+  class InvalidHgURI < BerkshelfError
+    status_code(110)
+
+    # @param [String] uri
+    def initialize(uri)
+      @uri = uri
+    end
+
+    def to_s
+      "'#{@uri}' is not a valid Mercurial URI"
+    end
+  end
+
   class InvalidGitURI < BerkshelfError
     status_code(110)
 
@@ -123,6 +141,14 @@ module Berkshelf
 
     def to_s
       "'#{@protocol}' is not supported for the 'github' location key - please use 'git' instead"
+    end
+  end
+
+  class MercurialNotFound < BerkshelfError
+    status_code(111)
+
+    def to_s
+      'Could not find a Mercurial executable in your path - please add it and try again'
     end
   end
 
