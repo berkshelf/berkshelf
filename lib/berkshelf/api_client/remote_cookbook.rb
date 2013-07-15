@@ -1,3 +1,5 @@
+require 'json'
+
 module Berkshelf
   class APIClient
     # A representation of cookbook metadata indexed by a Berkshelf API Server. Returned
@@ -36,6 +38,17 @@ module Berkshelf
       # @return [String]
       def location_path
         @attributes[:location_path]
+      end
+
+      def to_hash
+        {
+          name: name,
+          version: version
+        }
+      end
+
+      def to_json(options = {})
+        ::JSON.pretty_generate(to_hash, options)
       end
     end
   end

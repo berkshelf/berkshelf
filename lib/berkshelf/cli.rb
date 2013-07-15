@@ -292,10 +292,16 @@ module Berkshelf
     desc 'outdated [COOKBOOKS]', 'List dependencies that have new versions available that satisfy their constraints'
     def outdated(*cookbook_names)
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      Berkshelf.formatter.msg 'Listing outdated cookbooks with newer versions available...'
+      options[:cookbooks] = cookbook_names
+      outdated = berksfile.outdated(options.symbolize_keys)
 
-      outdated_options = { cookbooks: cookbook_names }.merge(options).symbolize_keys
-      berksfile.outdated(outdated_options)
+      if outdated.empty?
+        Berkshelf.formatter.msg "All cookbooks up to date!"
+      else
+        Berkshelf.formatter.msg "The following cookbooks have newer versions:"
+      end
+
+      Berkshelf.formatter.outdated(outdated)
     end
 
     desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
