@@ -69,7 +69,7 @@ module Berkshelf
     #
     # @return [Ridley::Chef::Config]
     def chef_config
-      @chef_config ||= Ridley::Chef::Config.new(nil)
+      @chef_config ||= Ridley::Chef::Config.new(ENV['BERKSHELF_CHEF_CONFIG'])
     end
 
     # @param [Ridley::Chef::Config]
