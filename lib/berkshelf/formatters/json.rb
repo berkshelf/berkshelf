@@ -89,6 +89,15 @@ module Berkshelf
         cookbooks[cookbook.cookbook_name] = cookbook.pretty_hash
       end
 
+      # Add a vendor message to delayed output
+      #
+      # @param [CachedCookbook] cookbook
+      # @param [String] destination
+      def vendor(cookbook, destination)
+        cookbook_destination = File.join(destination, cookbook.cookbook_name)
+        msg("Vendoring #{cookbook.cookbook_name} (#{cookbook.version}) to #{cookbook_destination}")
+      end
+
       # Add a generic message entry to delayed output
       #
       # @param [String] message

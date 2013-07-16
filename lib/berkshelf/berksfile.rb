@@ -522,6 +522,46 @@ module Berkshelf
       output
     end
 
+    # @param [String] destination
+    #
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any dependencies marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any dependencies marked as a member of the
+    #   group to be installed and all others to be ignored
+    def vendor(destination, options = {})
+      destination = File.expand_path(destination)
+      scratch     = Berkshelf.mktmpdir
+      chefignore  = nil
+
+      FileUtils.mkdir_p(destination)
+      FileUtils.remove_dir(destination, force: true)
+
+      unless (ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)).nil?
+        chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
+      end
+
+      install(options.slice(:except, :only)).each do |cookbook|
+        Berkshelf.formatter.vendor(cookbook, destination)
+        cookbook_destination = File.join(scratch, cookbook.cookbook_name, '/')
+        FileUtils.mkdir_p(cookbook_destination)
+
+        # Dir.glob does not support backslash as a File separator
+        src   = cookbook.path.to_s.gsub('\\', '/')
+        files = Dir.glob(File.join(src, '*'))
+
+        if chefignore
+          files = chefignore.remove_ignores_from(files)
+        end
+
+        FileUtils.cp_r(files, cookbook_destination)
+      end
+
+      FileUtils.mv(scratch, destination)
+      destination
+    end
+
     # Get the lockfile corresponding to this Berksfile. This is necessary because
     # the user can specify a different path to the Berksfile. So assuming the lockfile
     # is named "Berksfile.lock" is a poor assumption.

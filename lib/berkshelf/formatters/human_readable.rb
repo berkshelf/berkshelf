@@ -54,6 +54,15 @@ module Berkshelf
         Berkshelf.ui.info(cookbook.pretty_print)
       end
 
+      # Output Cookbook vendor info message using {Berkshelf.ui}
+      #
+      # @param [CachedCookbook] cookbook
+      # @param [String] destination
+      def vendor(cookbook, destination)
+        cookbook_destination = File.join(destination, cookbook.cookbook_name)
+        Berkshelf.ui.info "Vendoring #{cookbook.cookbook_name} (#{cookbook.version}) to #{cookbook_destination}"
+      end
+
       # Output a generic message using {Berkshelf.ui}
       #
       # @param [String] message

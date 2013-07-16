@@ -392,6 +392,26 @@ module Berkshelf
       berksfile.package(name, options)
     end
 
+    method_option :except,
+      type: :array,
+      desc: 'Exclude cookbooks that are in these groups.',
+      aliases: '-e'
+    method_option :only,
+      type: :array,
+      desc: 'Only cookbooks that are in these groups.',
+      aliases: '-o'
+    method_option :berksfile,
+      type: :string,
+      default: Berkshelf::DEFAULT_FILENAME,
+      desc: 'Path to a Berksfile to operate off of.',
+      aliases: '-b',
+      banner: 'PATH'
+    desc "vendor", "stuff"
+    def vendor(path)
+      berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile.vendor(path, options)
+    end
+
     desc 'version', 'Display version and copyright information'
     def version
       Berkshelf.formatter.msg version_header
