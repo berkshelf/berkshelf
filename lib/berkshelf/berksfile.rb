@@ -388,7 +388,29 @@ module Berkshelf
     #     #<CachedCookbook name="artifact"> => "0.11.2"
     #   }
     def outdated(options = {})
-      raise RuntimeError, "not yet implemented"
+      validate_cookbook_names!(options)
+      install(options)
+
+      outdated = {}
+      dependencies(options).each do |dependency|
+        locked = lockfile.find(dependency.name)
+        outdated[dependency.name] = {}
+
+        sources.each do |source|
+          cookbooks = source.versions(dependency.name)
+
+          latest = cookbooks.select do |cookbook|
+            dependency.version_constraint.satisfies?(cookbook.version) &&
+            cookbook.version != locked.locked_version.to_s
+          end.sort_by { |cookbook| cookbook.version }.last
+
+          unless latest.nil?
+            outdated[dependency.name][source.uri.to_s] = latest
+          end
+        end
+      end
+
+      outdated.reject { |name, newer| newer.empty? }
     end
 
     # Upload the cookbooks installed by this Berksfile

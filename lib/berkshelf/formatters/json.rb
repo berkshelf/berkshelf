@@ -73,6 +73,23 @@ module Berkshelf
         cookbooks[cookbook][:uploaded_to] = chef_api_url
       end
 
+      # Output a list of outdated cookbooks and the most recent version
+      # to delayed output
+      #
+      # @param [Hash] hash
+      #   the list of outdated cookbooks in the format
+      #   { 'cookbook' => { 'api.berkshelf.com' => #<Cookbook> } }
+      def outdated(hash)
+        hash.keys.each do |name|
+          hash[name].each do |source, cookbook|
+            cookbooks[name] ||= {}
+            cookbooks[name][:version] = cookbook.version
+            cookbooks[name][:sources] ||= {}
+            cookbooks[name][:sources][source] = cookbook
+          end
+        end
+      end
+
       # Add a Cookbook package entry to delayed output
       #
       # @param [String] cookbook

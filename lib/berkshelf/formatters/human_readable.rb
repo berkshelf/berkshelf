@@ -39,6 +39,24 @@ module Berkshelf
         Berkshelf.ui.info "Uploading #{cookbook} (#{version}) to: '#{chef_api_url}'"
       end
 
+      # Output a list of outdated cookbooks and the most recent version
+      # using {Berkshelf.ui}
+      #
+      # @param [Hash] hash
+      #   the list of outdated cookbooks in the format
+      #   { 'cookbook' => { 'api.berkshelf.com' => #<Cookbook> } }
+      def outdated(hash)
+        hash.keys.each do |name|
+          hash[name].each do |source, newest|
+            string = "  * #{newest.name} (#{newest.version})"
+            unless Berksfile.default_sources.map { |s| s.uri.to_s }.include?(source)
+              string << " [#{source}]"
+            end
+            Berkshelf.ui.info string
+          end
+        end
+      end
+
       # Output a Cookbook package message using {Berkshelf.ui}
       #
       # @param [String] cookbook
