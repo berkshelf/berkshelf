@@ -102,7 +102,7 @@ Feature: Installing cookbooks with specific licenses
       """
       source "http://localhost:26210"
 
-      cookbook 'fake', path: '../../spec/tmp/berkshelf/cookbooks/fake-0.1.0'
+      cookbook 'fake', path: '../../tmp/berkshelf/cookbooks/fake-0.1.0'
       """
     And I have a Berkshelf config file containing:
       """
