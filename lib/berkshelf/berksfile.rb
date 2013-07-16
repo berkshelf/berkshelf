@@ -535,12 +535,17 @@ module Berkshelf
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
     #
-    # @return [String]
-    #   the expanded path cookbooks were vendored to
+    # @return [String, nil]
+    #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination, options = {})
-      destination = File.expand_path(destination)
-      scratch     = Berkshelf.mktmpdir
-      chefignore  = nil
+      destination      = File.expand_path(destination)
+      scratch          = Berkshelf.mktmpdir
+      chefignore       = nil
+      cached_cookbooks = install(options.slice(:except, :only))
+
+      if cached_cookbooks.empty?
+        return nil
+      end
 
       FileUtils.mkdir_p(destination)
       FileUtils.remove_dir(destination, force: true)
@@ -549,7 +554,7 @@ module Berkshelf
         chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
       end
 
-      install(options.slice(:except, :only)).each do |cookbook|
+      cached_cookbooks.each do |cookbook|
         Berkshelf.formatter.vendor(cookbook, destination)
         cookbook_destination = File.join(scratch, cookbook.cookbook_name, '/')
         FileUtils.mkdir_p(cookbook_destination)
