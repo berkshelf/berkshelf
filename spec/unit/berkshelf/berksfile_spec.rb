@@ -331,7 +331,7 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#fetch' do
+  describe '#retrive_locked' do
     let(:lockfile) { double('lockfile', find: locked) }
     let(:locked) { double('locked', cached_cookbook: cached, locked_version: '1.0.0') }
     let(:cached) { double('cached') }
@@ -343,20 +343,20 @@ describe Berkshelf::Berksfile do
 
     it 'validates cookbook names' do
       expect(subject).to receive(:validate_cookbook_names!).once
-      subject.fetch('bacon')
+      subject.retrive_locked('bacon')
     end
 
     it 'raises an error when the lockfile does not exist' do
       lockfile.stub(:find)
       expect {
-        subject.fetch('bacon')
+        subject.retrive_locked('bacon')
       }.to raise_error(Berkshelf::LockfileNotFound)
     end
 
     it 'raises an error when the cookbook is not downloaded' do
       locked.stub(:cached_cookbook)
       expect {
-        subject.fetch('bacon')
+        subject.retrive_locked('bacon')
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
   end
