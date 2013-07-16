@@ -17,7 +17,7 @@ Feature: --format json
       """
     And the Chef Server has cookbooks:
       | berkshelf | 1.0.0 |
-    And the Berkshelf API server cache is up to date
+    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install --format json`
     Then the output should contain JSON:
       """

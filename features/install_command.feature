@@ -18,7 +18,7 @@ Feature: install cookbooks from a Berksfile
     And the Chef Server has cookbooks:
       | berkshelf | 1.0.0 |
       | berkshelf | 2.0.0 |
-    And the Berkshelf API server cache is up to date
+    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -37,7 +37,7 @@ Feature: install cookbooks from a Berksfile
     And the Chef Server has cookbooks:
       | berkshelf | 1.0.0 |
       | berkshelf | 2.0.0 |
-    And the Berkshelf API server cache is up to date
+    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -62,7 +62,7 @@ Feature: install cookbooks from a Berksfile
     And the Chef Server has cookbooks:
       | ruby   | 1.0.0 |
       | elixir | 1.0.0 |
-    And the Berkshelf API server cache is up to date
+    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -84,7 +84,7 @@ Feature: install cookbooks from a Berksfile
       | hostsfile    | = 1.0.1 |
     And the cookbook store has the cookbooks:
       | hostsfile    | 1.0.1 |
-    And the Berkshelf API server cache is up to date
+    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -98,7 +98,7 @@ Feature: install cookbooks from a Berksfile
 
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
-    And the Berkshelf API server cache is up to date
+    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
