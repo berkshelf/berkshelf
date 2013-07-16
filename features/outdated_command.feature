@@ -92,3 +92,41 @@ Feature: Displaying outdated cookbooks
       The following cookbooks have newer versions:
         * bacon (1.5.8) [http://localhost:26210]
       """
+
+  Scenario: When there is no lockfile present
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'bacon', '1.0.0'
+      """
+    When I run `berks outdated`
+    Then the output should contain:
+      """
+      Could not find cookbook 'bacon (>= 0.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      """
+    And the exit status should be "LockfileNotFound"
+
+  Scenario: When the cookbook is not installed
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'bacon', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "bacon": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+    When I run `berks outdated`
+    Then the output should contain:
+      """
+      Could not find cookbook 'bacon (= 1.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      """
+    And the exit status should be "CookbookNotFound"
