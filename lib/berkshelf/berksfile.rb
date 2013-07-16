@@ -421,11 +421,10 @@ module Berkshelf
     #   }
     def outdated(options = {})
       validate_cookbook_names!(options)
-      install(options)
 
       outdated = {}
       dependencies(options).each do |dependency|
-        locked = lockfile.find(dependency.name)
+        locked = retrieve_locked(dependency.name)
         outdated[dependency.name] = {}
 
         sources.each do |source|
@@ -433,7 +432,7 @@ module Berkshelf
 
           latest = cookbooks.select do |cookbook|
             dependency.version_constraint.satisfies?(cookbook.version) &&
-            cookbook.version != locked.locked_version.to_s
+            cookbook.version != locked.version
           end.sort_by { |cookbook| cookbook.version }.last
 
           unless latest.nil?

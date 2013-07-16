@@ -8,6 +8,8 @@ Feature: Displaying outdated cookbooks
       | bacon | 1.0.0 |
       | bacon | 1.1.0 |
     And the Berkshelf API server's cache is up to date
+    And the cookbook store has the cookbooks:
+      | bacon | 1.1.0 |
     And I write to "Berksfile" with:
       """
       source "http://localhost:26210"
@@ -35,6 +37,8 @@ Feature: Displaying outdated cookbooks
       | bacon | 1.0.0 |
       | bacon | 1.1.0 |
     And the Berkshelf API server's cache is up to date
+    And the cookbook store has the cookbooks:
+      | bacon | 1.0.0 |
     And I write to "Berksfile" with:
       """
       source "http://localhost:26210"
@@ -64,6 +68,8 @@ Feature: Displaying outdated cookbooks
       | bacon | 1.2.1 |
       | bacon | 1.5.8 |
     And the Berkshelf API server's cache is up to date
+    And the cookbook store has the cookbooks:
+      | bacon | 1.0.0 |
     And I write to "Berksfile" with:
       """
       source "http://localhost:26210"
