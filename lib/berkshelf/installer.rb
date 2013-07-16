@@ -90,21 +90,21 @@ module Berkshelf
     private
 
       def dependency_from_lockfile(dependency)
-        locked_dependency = lockfile.find(dependency)
+        locked = lockfile.find(dependency)
 
-        return nil unless locked_dependency
+        return nil unless locked
 
         # If there's a locked_version, make sure it's still satisfied
         # by the constraint
-        if locked_dependency.locked_version
-          unless dependency.version_constraint.satisfies?(locked_dependency.locked_version)
-            raise Berkshelf::OutdatedDependency.new(locked_dependency, dependency)
+        if locked.locked_version
+          unless dependency.version_constraint.satisfies?(locked.locked_version)
+            raise Berkshelf::OutdatedDependency.new(locked, dependency)
           end
         end
 
-        # Update to the new constraint (it might have changed, but still be satisfied)
-        locked_dependency.version_constraint = dependency.version_constraint
-        locked_dependency
+        # Update to the constraint to be a hard one
+        locked.version_constraint = Solve::Constraint.new(locked.locked_version.to_s)
+        locked
       end
 
       # Merge the locked dependencies against the given dependencies.
