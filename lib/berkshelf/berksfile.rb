@@ -13,13 +13,11 @@ module Berkshelf
       #
       # @return [Berksfile]
       def from_file(file)
-        raise BerksfileNotFound.new(file) unless File.exist?(file)
-
-        begin
-          new(file).dsl_eval_file(file)
-        rescue => ex
-          raise BerksfileReadError.new(ex)
-        end
+        new(file).dsl_eval_file(file)
+      rescue Errno::ENOENT => ex
+        raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
+      rescue => ex
+        raise BerksfileReadError.new(ex)
       end
     end
 
@@ -365,6 +363,40 @@ module Berkshelf
 
       # NOTE: We intentionally do NOT pass options to the installer
       self.install
+    end
+
+    # Retrieve information about a given cookbook that is installed by this Berksfile.
+    # Unlike {#find}, which returns a dependency, this method returns the corresponding
+    # CachedCookbook for the given name.
+    #
+    # @raise [LockfileNotFound]
+    #   if there is no lockfile containing that cookbook
+    # @raise [CookbookNotFound]
+    #   if there is a lockfile with a cookbook, but the cookbook is not downloaded
+    #
+    # @param [String] name
+    #   the name of the cookbook to find
+    #
+    # @return [CachedCookbook]
+    #   the CachedCookbook that corresponds to the given name parameter
+    def retrieve_locked(name)
+      validate_cookbook_names!(cookbooks: name)
+
+      locked = lockfile.find(name)
+      unless locked
+        raise LockfileNotFound, "Could not find cookbook '#{name} (>= 0.0.0)'."\
+          " Try running `berks install` to download and install the missing"\
+          " dependencies."
+      end
+
+      cookbook = locked.cached_cookbook
+      unless cookbook
+        raise CookbookNotFound, "Could not find cookbook '#{name} (= #{locked.locked_version})'."\
+          " Try running `berks install` to download and install the missing"\
+          " dependencies."
+      end
+
+      cookbook
     end
 
     # List of all the cookbooks which have a newer version found at a source that satisfies

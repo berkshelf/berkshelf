@@ -418,4 +418,5 @@ module Berkshelf
 
   class DuplicateDemand < BerkshelfError; status_code(138); end
   class VendorError < BerkshelfError; status_code(139); end
+  class LockfileNotFound < BerkshelfError; status_code(140); end
 end
