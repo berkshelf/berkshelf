@@ -53,3 +53,16 @@ Feature: Vendoring cookbooks to a directory
       """
     And a directory named "cukebooks/sparkle-motion" should exist
     And the directory "cukebooks/sparkle-motion" should contain version "0.0.0" of the "sparkle-motion" cookbook
+
+  Scenario: vendoring a Berksfile with a metadata demand multiple times
+    Given a cookbook named "sparkle-motion"
+    And the cookbook "sparkle-motion" has the file "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      metadata
+      """
+    When I cd to "sparkle-motion"
+    And I successfully run `berks vendor cukebooks`
+    And I successfully run `berks vendor cukebooks`
+    And a directory named "cukebooks/sparkle-motion/cukebooks" should not exist
