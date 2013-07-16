@@ -79,7 +79,16 @@ module Berkshelf
           end
       end
 
-      formatter_methods :fetch, :install, :use, :upload, :msg, :error, :package, :show, :vendor
+      formatter_methods :error,
+                        :fetch,
+                        :install,
+                        :msg,
+                        :outdated,
+                        :package,
+                        :show,
+                        :upload,
+                        :use,
+                        :vendor
 
       def cleanup_hook
         # run after the task is finished
