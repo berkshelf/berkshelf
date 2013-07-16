@@ -100,18 +100,6 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  describe '#to_s' do
-    it 'returns a pretty-formatted string' do
-      expect(subject.to_s).to eq '#<Berkshelf::Lockfile Berksfile.lock>'
-    end
-  end
-
-  describe '#inspect' do
-    it 'returns a pretty-formatted, detailed string' do
-      expect(subject.inspect).to eq("#<#{described_class} Berksfile.lock, dependencies: [#<Berkshelf::Dependency: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::Dependency: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>")
-    end
-  end
-
   describe '#to_hash' do
     let(:hash) { subject.to_hash }
 
