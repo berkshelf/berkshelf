@@ -65,8 +65,8 @@ Feature: Vendoring cookbooks to a directory
       | berkshelf | 1.0.0 |
     And the Berkshelf API server's cache is up to date
     When I successfully run `berks vendor`
-    And a directory named "cookbooks/berkshelf" should exist
-    And the directory "cookbooks/berkshelf" should contain version "1.0.0" of the "berkshelf" cookbook
+    And a directory named "berks-cookbooks/berkshelf" should exist
+    And the directory "berks-cookbooks/berkshelf" should contain version "1.0.0" of the "berkshelf" cookbook
 
   Scenario: vendoring to a directory that already exists
     Given I write to "Berksfile" with:
