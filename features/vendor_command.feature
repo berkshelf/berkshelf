@@ -66,3 +66,17 @@ Feature: Vendoring cookbooks to a directory
     And I successfully run `berks vendor cukebooks`
     And I successfully run `berks vendor cukebooks`
     And a directory named "cukebooks/sparkle-motion/cukebooks" should not exist
+
+  Scenario: vendoring without an explicit path to vendor into
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'berkshelf'
+      """
+    And the Chef Server has cookbooks:
+      | berkshelf | 1.0.0 |
+    And the Berkshelf API server's cache is up to date
+    When I successfully run `berks vendor`
+    And a directory named "cookbooks/berkshelf" should exist
+    And the directory "cookbooks/berkshelf" should contain version "1.0.0" of the "berkshelf" cookbook
