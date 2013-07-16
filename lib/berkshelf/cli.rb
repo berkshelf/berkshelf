@@ -406,7 +406,7 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    desc "vendor", "stuff"
+    desc "vendor [PATH]", "Vendor the cookbooks specified by the Berksfile into a directory"
     def vendor(path)
       berksfile = ::Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.vendor(path, options)
