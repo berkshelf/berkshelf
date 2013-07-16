@@ -538,7 +538,7 @@ module Berkshelf
       FileUtils.mkdir_p(destination)
       FileUtils.remove_dir(destination, force: true)
 
-      unless (ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)).nil?
+      if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)
         chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
       end
 
