@@ -266,6 +266,34 @@ Feature: install cookbooks from a Berksfile
       Using fake (0.0.0)
       """
 
+  Scenario: running install when a Berksfile.lock is present
+    Given the Chef Server has cookbooks:
+      | bacon | 0.1.0 |
+      | bacon | 0.2.0 |
+      | bacon | 1.0.0 |
+    And the Berkshelf API server's cache is up to date
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'bacon', '~> 0.1'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "bacon": {
+            "locked_version": "0.2.0"
+          }
+        }
+      }
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Installing bacon (0.2.0)
+      """
+
   Scenario: running install with no Berksfile or Berksfile.lock
     When I run `berks install`
     Then the output should contain:
