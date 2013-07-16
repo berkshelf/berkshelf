@@ -269,10 +269,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe "#install" do
-    pending
-  end
-
   describe '#add_dependency' do
     let(:name) { 'cookbook_one' }
     let(:constraint) { '= 1.2.0' }
