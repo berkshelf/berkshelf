@@ -17,6 +17,7 @@ module Berkshelf
         FileUtils.mkdir repo_path
 
         Dir.chdir(repo_path) do
+          ENV['HGUSER'] = 'test_user'
           shell_out "hg init"
           shell_out "echo '# a change!' >> content_file"
           if options[:is_cookbook]
