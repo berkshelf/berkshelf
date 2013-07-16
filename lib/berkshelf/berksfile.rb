@@ -538,7 +538,13 @@ module Berkshelf
     # @return [String, nil]
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination, options = {})
-      destination      = File.expand_path(destination)
+      destination = File.expand_path(destination)
+
+      if Dir.exist?(destination)
+        raise VendorError, "destination already exists #{destination}. Delete it and try again or use a " +
+          "different filepath."
+      end
+
       scratch          = Berkshelf.mktmpdir
       chefignore       = nil
       cached_cookbooks = install(options.slice(:except, :only))
@@ -546,9 +552,6 @@ module Berkshelf
       if cached_cookbooks.empty?
         return nil
       end
-
-      FileUtils.mkdir_p(destination)
-      FileUtils.remove_dir(destination, force: true)
 
       if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)
         chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)

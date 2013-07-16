@@ -54,19 +54,6 @@ Feature: Vendoring cookbooks to a directory
     And a directory named "cukebooks/sparkle-motion" should exist
     And the directory "cukebooks/sparkle-motion" should contain version "0.0.0" of the "sparkle-motion" cookbook
 
-  Scenario: vendoring a Berksfile with a metadata demand multiple times
-    Given a cookbook named "sparkle-motion"
-    And the cookbook "sparkle-motion" has the file "Berksfile" with:
-      """
-      source "http://localhost:26210"
-
-      metadata
-      """
-    When I cd to "sparkle-motion"
-    And I successfully run `berks vendor cukebooks`
-    And I successfully run `berks vendor cukebooks`
-    And a directory named "cukebooks/sparkle-motion/cukebooks" should not exist
-
   Scenario: vendoring without an explicit path to vendor into
     Given I write to "Berksfile" with:
       """
@@ -80,3 +67,17 @@ Feature: Vendoring cookbooks to a directory
     When I successfully run `berks vendor`
     And a directory named "cookbooks/berkshelf" should exist
     And the directory "cookbooks/berkshelf" should contain version "1.0.0" of the "berkshelf" cookbook
+
+  Scenario: vendoring to a directory that already exists
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'berkshelf'
+      """
+    And the Chef Server has cookbooks:
+      | berkshelf | 1.0.0 |
+    And the Berkshelf API server's cache is up to date
+    And a directory named "cukebooks"
+    When I run `berks vendor cukebooks`
+    And the exit status should be "VendorError"

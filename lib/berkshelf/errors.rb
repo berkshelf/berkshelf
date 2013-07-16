@@ -404,4 +404,5 @@ module Berkshelf
   end
 
   class DuplicateDemand < BerkshelfError; status_code(138); end
+  class VendorError < BerkshelfError; status_code(139); end
 end
