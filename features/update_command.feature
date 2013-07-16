@@ -89,7 +89,7 @@ Feature: Updating a cookbook defined by a Berksfile
             "locked_version":"0.1.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.0"
+            "locked_version":"1.0.1"
           }
         }
       }
@@ -103,7 +103,7 @@ Feature: Updating a cookbook defined by a Berksfile
             "locked_version":"0.2.0"
           },
           "hostsfile":{
-            "locked_version":"1.0.0"
+            "locked_version":"1.0.1"
           }
         }
       }
