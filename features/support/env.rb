@@ -29,6 +29,7 @@ Spork.prefork do
 
     Aruba::InProcess.main_class = Berkshelf::Cli::Runner
     Aruba.process               = Aruba::InProcess
+    @dirs                       = ["spec/tmp/aruba"] # set aruba's temporary directory
 
     stub_kitchen!
     clean_tmp_path

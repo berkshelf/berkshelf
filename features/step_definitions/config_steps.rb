@@ -34,7 +34,7 @@ end
 Then /^a Berkshelf config file should exist at "(.+)" and contain:$/ do |path, table|
   check_file_presence([path], true)
 
-  path = File.expand_path(File.join('tmp', 'aruba', path))
+  path             = File.join(@dirs.first, path)
   Berkshelf.config = Berkshelf::Config.from_file(path)
 
   table.raw.each do |key, value|
