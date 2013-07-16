@@ -379,7 +379,7 @@ module Berkshelf
     #
     # @return [CachedCookbook]
     #   the CachedCookbook that corresponds to the given name parameter
-    def fetch(name)
+    def retrieve_locked(name)
       validate_cookbook_names!(cookbooks: name)
 
       locked = lockfile.find(name)
