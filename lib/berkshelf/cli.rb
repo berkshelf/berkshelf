@@ -392,6 +392,12 @@ module Berkshelf
       berksfile.package(name, options)
     end
 
+    desc "publish [PATH]", "Publish a cookbook to the community site"
+    def publish(path = Dir.pwd)
+      publisher = Publisher.new
+      publisher.publish(File.expand_path(path))
+    end
+
     method_option :except,
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
