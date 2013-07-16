@@ -70,7 +70,7 @@ Feature: --format json
       """
       source "http://localhost:26210"
 
-      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I successfully run `berks upload --format json`
     Then the output should contain JSON:
@@ -80,7 +80,7 @@ Feature: --format json
           {
             "name": "example_cookbook",
             "version": "0.5.0",
-            "location": "../../spec/fixtures/cookbooks/example_cookbook-0.5.0",
+            "location": "../../fixtures/cookbooks/example_cookbook-0.5.0",
             "uploaded_to": "http://localhost:26310/"
           }
         ],

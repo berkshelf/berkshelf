@@ -96,7 +96,7 @@ Feature: install cookbooks from a Berksfile
       """
       source "http://localhost:26210"
 
-      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
       """
     And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
@@ -110,7 +110,7 @@ Feature: install cookbooks from a Berksfile
       """
       source "http://localhost:26210"
 
-      cookbook 'example_cookbook', path: '../../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../../fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I successfully run `berks install -b ./tmp_berks/Berksfile`
     Then the output should contain:
