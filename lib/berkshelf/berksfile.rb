@@ -522,7 +522,11 @@ module Berkshelf
       output
     end
 
+    # Install the Berksfile or Berksfile.lock and then copy the cached cookbooks into
+    # directories within the given destination matching their name.
+    #
     # @param [String] destination
+    #   filepath to vendor cookbooks to
     #
     # @option options [Symbol, Array] :except
     #   Group(s) to exclude which will cause any dependencies marked as a member of the
@@ -530,6 +534,9 @@ module Berkshelf
     # @option options [Symbol, Array] :only
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
+    #
+    # @return [String]
+    #   the expanded path cookbooks were vendored to
     def vendor(destination, options = {})
       destination = File.expand_path(destination)
       scratch     = Berkshelf.mktmpdir
