@@ -211,10 +211,6 @@ module Berkshelf
           h[:locked_version] = locked_version.to_s
         end
 
-        unless version_constraint.to_s == DEFAULT_CONSTRAINT
-          h[:constraint] = version_constraint.to_s
-        end
-
         if location.kind_of?(PathLocation)
           h[:path] = location.relative_path(berksfile.filepath)
         end
