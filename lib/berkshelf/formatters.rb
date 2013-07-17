@@ -88,7 +88,8 @@ module Berkshelf
                         :show,
                         :upload,
                         :use,
-                        :vendor
+                        :vendor,
+                        :version
 
       def cleanup_hook
         # run after the task is finished

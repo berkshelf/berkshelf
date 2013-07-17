@@ -5,6 +5,11 @@ module Berkshelf
 
       register_formatter :human
 
+      # Output the version of Berkshelf
+      def version
+        Berkshelf.ui.info Berkshelf::VERSION
+      end
+
       # @param [Berkshelf::Dependency] dependency
       def fetch(dependency)
         Berkshelf.ui.info "Fetching '#{dependency.name}' from #{dependency.location}"

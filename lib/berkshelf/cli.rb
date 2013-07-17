@@ -415,9 +415,7 @@ module Berkshelf
 
     desc 'version', 'Display version and copyright information'
     def version
-      Berkshelf.formatter.msg version_header
-      Berkshelf.formatter.msg "\n"
-      Berkshelf.formatter.msg license
+      Berkshelf.formatter.version
     end
 
     desc 'cookbook NAME', 'Create a skeleton for a new cookbook'
@@ -430,15 +428,6 @@ module Berkshelf
     tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
 
     private
-
-      def version_header
-        "Berkshelf (#{Berkshelf::VERSION})"
-      end
-
-      def license
-        File.read(Berkshelf.root.join('LICENSE'))
-      end
-
       # Print a list of the given cookbooks. This is used by various
       # methods like {list} and {contingent}.
       #
