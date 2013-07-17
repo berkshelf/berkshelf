@@ -65,6 +65,47 @@ Feature: --format json
       }
       """
 
+  Scenario: JSON output when running the show command
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+    When I successfully run `berks show fake --format json`
+    Then the output should contain JSON:
+      """
+      {
+        "cookbooks": [
+          {
+            "name": "fake",
+            "version": "1.0.0",
+            "description": "A fabulous new cookbook",
+            "author": "YOUR_COMPANY_NAME",
+            "email": "YOUR_EMAIL",
+            "license": "none"
+          }
+        ],
+        "errors": [
+
+        ],
+        "messages": [
+        ]
+      }
+      """
+
   Scenario: JSON output when running the upload command
     Given I write to "Berksfile" with:
       """

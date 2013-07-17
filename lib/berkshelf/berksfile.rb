@@ -474,16 +474,19 @@ module Berkshelf
     # @raise [Berkshelf::DependencyNotFound]
     #   if one of the given cookbooks is not a dependency defined in the Berksfile
     # @raise [Berkshelf::FrozenCookbook]
-    #   if an attempt to upload a cookbook which has been frozen on the target server is made
-    #   and the :halt_on_frozen option was true
+    #   if the cookbook being uploaded is a {metadata} cookbook and is already
+    #   frozen on the remote Chef Server; indirect dependencies or non-metadata
+    #   dependencies are just skipped
     def upload(options = {})
-      options = options.reverse_merge(force: false, freeze: true, halt_on_frozen: false, cookbooks: [])
+      options = {
+        force: false,
+        freeze: true,
+        halt_on_frozen: false,
+        skip_dependencies: false,
+        cookbooks: [],
+      }.merge(options)
 
-      options[:cookbooks].each do |cookbook|
-        unless dependency = find(cookbook)
-          raise DependencyNotFound, "Failed to upload cookbook '#{cookbook}'. Not defined in Berksfile."
-        end
-      end
+      validate_cookbook_names!(options)
 
       cached_cookbooks = install(options)
       cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
@@ -648,21 +651,36 @@ module Berkshelf
     private
 
       def do_upload(cookbooks, options = {})
-        upload_opts = options.slice(:force, :freeze)
+        @skipped = []
 
         ridley_connection(options) do |conn|
           cookbooks.each do |cookbook|
-            Berkshelf.formatter.upload(cookbook.cookbook_name, cookbook.version, conn.server_url)
+            Berkshelf.formatter.upload(cookbook, conn)
             validate_files!(cookbook)
 
             begin
-              conn.cookbook.upload(cookbook.path, upload_opts.merge(name: cookbook.cookbook_name))
+              conn.cookbook.upload(cookbook.path, {
+                force: options[:force],
+                freeze: options[:freeze],
+                name: cookbook.cookbook_name,
+              })
             rescue Ridley::Errors::FrozenCookbook => ex
-              if options[:halt_on_frozen]
-                raise Berkshelf::FrozenCookbook, ex
+              if options[:halt_on_frozen] || find(cookbook.cookbook_name).metadata?
+                raise Berkshelf::FrozenCookbook.new(cookbook)
               end
+
+              Berkshelf.formatter.skip(cookbook, conn)
+              @skipped << cookbook
             end
           end
+        end
+
+        unless @skipped.empty?
+          Berkshelf.formatter.msg "Skipped uploading some cookbooks because they" <<
+            " already existed on the remote server. Re-run with the `--force`" <<
+            " flag to force overwrite these cookbooks:" <<
+            "\n\n" <<
+            "  * " << @skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
         end
       end
 
@@ -720,14 +738,13 @@ module Berkshelf
       # @option options [Array<String>] :cookbooks
       #   a list of strings of cookbook names
       #
-      # @raise [Berkshelf::CookbookNotFound]
+      # @raise [Berkshelf::DependencyNotFound]
       #   if a cookbook name is given that does not exist
       def validate_cookbook_names!(options = {})
         missing = (Array(options[:cookbooks]) - dependencies.map(&:name))
+
         unless missing.empty?
-          raise Berkshelf::CookbookNotFound,
-            "Could not find cookbook(s) #{missing.collect{ |c| "'#{c}'" }.join(', ')} " +
-            "in any of the configured dependencies. #{missing.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+          raise Berkshelf::DependencyNotFound.new(missing)
         end
       end
 
