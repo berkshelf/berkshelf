@@ -13,11 +13,13 @@ module Berkshelf
       #
       # @return [Berksfile]
       def from_file(file)
-        new(file).dsl_eval_file(file)
-      rescue Errno::ENOENT => ex
-        raise BerksfileNotFound, "No Berksfile or Berksfile.lock found at: #{file}"
-      rescue => ex
-        raise BerksfileReadError.new(ex)
+        raise BerksfileNotFound.new(file) unless File.exist?(file)
+
+        begin
+          new(file).dsl_eval_file(file)
+        rescue => ex
+          raise BerksfileReadError.new(ex)
+        end
       end
     end
 
