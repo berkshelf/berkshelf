@@ -30,6 +30,7 @@ describe Berkshelf::MercurialLocation, mercurial: true do
     before() do
       # recreate the fake repo
       clean_tmp_path
+      FileUtils.mkdir_p(storage_path)
       cookbook_uri
     end
 

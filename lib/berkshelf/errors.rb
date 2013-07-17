@@ -25,10 +25,6 @@ module Berkshelf
   class DuplicateLocationDefined < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError; status_code(103); end
 
-  class MercurialError < BerkshelfError
-    status_code(108);
-  end
-
   class GitError < BerkshelfError
     status_code(104)
 
@@ -104,6 +100,10 @@ module Berkshelf
   end
 
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
+
+  class MercurialError < BerkshelfError
+    status_code(108);
+  end
 
   class InvalidHgURI < BerkshelfError
     status_code(110)

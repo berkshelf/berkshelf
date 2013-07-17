@@ -11,7 +11,7 @@ module Berkshelf
       # @example
       #   Location.init('nginx', '>= 0.0.0', git: 'git://github.com/RiotGames/artifact-cookbook.git') =>
       #     instantiates a GitLocation
-
+      #
       #   Location.init('nginx', '>= 0.0.0', hg: 'http://hghub.com/RiotGames/') =>
       #     instantiates a MercurialLocation
       #
