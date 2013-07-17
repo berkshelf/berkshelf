@@ -408,7 +408,7 @@ module Berkshelf
       aliases: '-b',
       banner: 'PATH'
     desc "vendor [PATH]", "Vendor the cookbooks specified by the Berksfile into a directory"
-    def vendor(path = File.join(Dir.pwd, "cookbooks"))
+    def vendor(path = File.join(Dir.pwd, "berks-cookbooks"))
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.vendor(path, options)
     end
