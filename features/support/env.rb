@@ -43,7 +43,7 @@ Spork.prefork do
         options: {
           url: "http://localhost:#{CHEF_SERVER_PORT}",
           client_name: "reset",
-          client_key: fixtures_path.join("reset.pem")
+          client_key: File.expand_path("spec/config/berkshelf.pem")
         }
       }
     ]
