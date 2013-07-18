@@ -60,7 +60,7 @@ class Spec < Thor
     end
 
     def acceptance_command
-      run('cucumber --color --format progress --tags ~@no_run')
+      run('cucumber --color --format progress --tags ~@no_run --strict')
     end
 
     def quality_command
