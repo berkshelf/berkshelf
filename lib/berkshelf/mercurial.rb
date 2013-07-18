@@ -3,7 +3,7 @@ require 'buff/shell_out'
 
 module Berkshelf
   class Mercurial
-    HG_REGEXP = URI.regexp(%w(http https file))
+    HG_REGEXP = URI.regexp(%w(http https file ssh))
 
     HAS_QUOTE_RE = %r{\"}.freeze
     HAS_SPACE_RE = %r{\s}.freeze
@@ -83,17 +83,21 @@ module Berkshelf
         return hg_path
       end
 
-      # Determines if the given URI is a valid Mercurial URI. A valid Mercurial URI is a string
-      # containing the location of a Mercurial repository by HTTP or HTTPS
+      # Determines if the given URI is a valid mercurial URI. A valid mercurial URI is a string
+      # containing the location of a mercurial repository by either the HTTP protocol,
+      # HTTPS protocol, or SSH protocol.
       #
+      # @example Valid HTTP protocol URI
+      #   'http://hghub.com/project'
       # @example Valid HTTPS URI
-      #   'https://hghub.com/mryan/test'
+      #   'https://hghub.com/project'
+      # @example Valid SSH protocol URI
+      #   'ssh://user@hghub.com:22/path/to/repo'
       #
       # @param [String] uri
       #
       # @return [Boolean]
       def validate_uri(uri)
-
         unless uri.is_a?(String)
           return false
         end
@@ -118,25 +122,25 @@ module Berkshelf
 
       private
 
-      def hg_cmd
-        @hg_cmd ||= find_hg
-      end
-
-      def quote_cmd_arg(arg)
-        return arg if HAS_QUOTE_RE.match(arg)
-        return arg unless HAS_SPACE_RE.match(arg)
-        "\"#{arg}\""
-      end
-
-      def detect_hg_path(base_dir)
-        %w(hg hg.exe hg.cmd).each do |hg_cmd|
-          potential_path = File.join(base_dir, hg_cmd)
-          if File.executable?(potential_path)
-            return potential_path
-          end
+        def hg_cmd
+          @hg_cmd ||= find_hg
         end
-        nil
+
+        def quote_cmd_arg(arg)
+          return arg if HAS_QUOTE_RE.match(arg)
+          return arg unless HAS_SPACE_RE.match(arg)
+          "\"#{arg}\""
+        end
+
+        def detect_hg_path(base_dir)
+          %w(hg hg.exe hg.cmd).each do |hg_cmd|
+            potential_path = File.join(base_dir, hg_cmd)
+            if File.executable?(potential_path)
+              return potential_path
+            end
+          end
+          nil
+        end
       end
-    end
   end
 end

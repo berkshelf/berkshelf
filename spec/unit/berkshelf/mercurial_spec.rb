@@ -1,37 +1,37 @@
 require 'spec_helper'
 
-describe Berkshelf::Mercurial, mercurial: true do
+describe Berkshelf::Mercurial do
 
   include Berkshelf::RSpec::Mercurial
 
   let(:hg) { Berkshelf::Mercurial }
 
-    describe '.find_hg' do
-      it 'finds hg' do
-        expect(Berkshelf::Mercurial.find_hg).to_not be_nil
-      end
-
-      it 'raises an error if mercurial cannot be not found' do
-        ENV.should_receive(:[]).with('PATH').and_return(String.new)
-
-        expect {
-          Berkshelf::Mercurial.find_hg
-        }.to raise_error(Berkshelf::MercurialNotFound)
-      end
+  describe '.find_hg' do
+    it 'finds hg' do
+      expect(described_class.find_hg).to_not be_nil
     end
 
-    describe '.clone' do
-      let(:target) { clone_path('nginx') }
+    it 'raises an error if mercurial cannot be not found' do
+      ENV.should_receive(:[]).with('PATH').and_return(String.new)
 
-      it 'clones the repository to the target path' do
-        origin_uri = mercurial_origin_for('nginx')
-
-        Berkshelf::Mercurial.clone(origin_uri, target)
-
-        expect(target).to exist
-        expect(target).to be_directory
-      end
+      expect {
+        described_class.find_hg
+      }.to raise_error(Berkshelf::MercurialNotFound)
     end
+  end
+
+  describe '.clone' do
+    let(:target) { clone_path('nginx') }
+
+    it 'clones the repository to the target path' do
+      origin_uri = mercurial_origin_for('nginx')
+
+      described_class.clone(origin_uri, target)
+
+      expect(target).to exist
+      expect(target).to be_directory
+    end
+  end
 
   describe '.checkout' do
     let(:repo_path) { clone_path('nginx') }
@@ -99,12 +99,12 @@ describe Berkshelf::Mercurial, mercurial: true do
 
     before(:each) do
       origin_uri = mercurial_origin_for('nginx', tags: ['1.1.1'])
-      Berkshelf::Mercurial.clone(origin_uri, repo_path)
-      Berkshelf::Mercurial.checkout(repo_path, id_for_rev('nginx', '1.1.1'))
+      described_class.clone(origin_uri, repo_path)
+      described_class.checkout(repo_path, id_for_rev('nginx', '1.1.1'))
     end
 
     it 'returns the ref for HEAD' do
-      rev = Berkshelf::Mercurial.rev_parse(repo_path)
+      rev = described_class.rev_parse(repo_path)
       ref = id_for_rev('nginx', '1.1.1')
 
       expect(rev).to eql(ref)
@@ -116,58 +116,56 @@ describe Berkshelf::Mercurial, mercurial: true do
   let(:invalid_uri) { '/something/on/disk' }
 
   describe '.validate_uri' do
-
     context 'given an invalid URI' do
       it 'returns false' do
-        expect(Berkshelf::Mercurial.validate_uri(invalid_uri)).to be_false
+        expect(described_class.validate_uri(invalid_uri)).to be_false
       end
     end
 
     context 'given a HTTP URI' do
       it 'returns true' do
-        expect(Berkshelf::Mercurial.validate_uri(http_uri)).to be_true
+        expect(described_class.validate_uri(http_uri)).to be_true
       end
     end
 
     context 'given a valid HTTPS URI' do
       it 'returns true' do
-        expect(Berkshelf::Mercurial.validate_uri(https_uri)).to be_true
+        expect(described_class.validate_uri(https_uri)).to be_true
       end
     end
 
     context 'given an integer' do
       it 'returns false' do
-        expect(Berkshelf::Mercurial.validate_uri(123)).to be_false
+        expect(described_class.validate_uri(123)).to be_false
       end
     end
   end
 
   describe '.validate_uri!' do
-
     context 'given an invalid URI' do
       it 'raises InvalidHgURI' do
         expect {
-          Berkshelf::Mercurial.validate_uri!(invalid_uri)
+          described_class.validate_uri!(invalid_uri)
         }.to raise_error(Berkshelf::InvalidHgURI)
       end
     end
 
     context 'given a HTTP URI' do
       it 'raises InvalidHgURI' do
-        expect(Berkshelf::Mercurial.validate_uri!(http_uri)).to be_true
+        expect(described_class.validate_uri!(http_uri)).to be_true
       end
     end
 
     context 'given a valid HTTPS URI' do
       it 'returns true' do
-        expect(Berkshelf::Mercurial.validate_uri!(https_uri)).to be_true
+        expect(described_class.validate_uri!(https_uri)).to be_true
       end
     end
 
     context 'given an integer' do
       it 'raises InvalidHgURI' do
         expect {
-          Berkshelf::Mercurial.validate_uri!(123)
+          described_class.validate_uri!(123)
         }.to raise_error(Berkshelf::InvalidHgURI)
       end
     end

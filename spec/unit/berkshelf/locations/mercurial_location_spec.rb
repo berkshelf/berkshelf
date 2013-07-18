@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::MercurialLocation, mercurial: true do
+describe Berkshelf::MercurialLocation do
 
   include Berkshelf::RSpec::Mercurial
 
@@ -12,18 +12,18 @@ describe Berkshelf::MercurialLocation, mercurial: true do
   describe '.initialize' do
     it 'raises InvalidHgURI if given an invalid URI for options[:hg]' do
       expect {
-        Berkshelf::MercurialLocation.new(dependency, hg: '/something/on/disk')
+        described_class.new(dependency, hg: '/something/on/disk')
       }.to raise_error(Berkshelf::InvalidHgURI)
     end
   end
 
   describe '.tmpdir' do
     it 'creates a temporary directory within the Berkshelf temporary directory' do
-      expect(Berkshelf::MercurialLocation.tmpdir).to include(Berkshelf.tmp_dir)
+      expect(described_class.tmpdir).to include(Berkshelf.tmp_dir)
     end
   end
 
-  subject { Berkshelf::MercurialLocation.new(dependency, hg: cookbook_uri) }
+  subject { described_class.new(dependency, hg: cookbook_uri) }
 
   describe '#download' do
 
@@ -39,8 +39,8 @@ describe Berkshelf::MercurialLocation, mercurial: true do
 
       before do
         Berkshelf::Mercurial.stub(:rev_parse).and_return('abcd1234')
-        Berkshelf::MercurialLocation.any_instance.stub(:cached?).and_return(true)
-        Berkshelf::MercurialLocation.any_instance.stub(:validate_cached).with(cached).and_return(cached)
+        described_class.any_instance.stub(:cached?).and_return(true)
+        described_class.any_instance.stub(:validate_cached).with(cached).and_return(cached)
         Berkshelf::CachedCookbook.stub(:from_store_path).with(any_args()).and_return(cached)
       end
 
@@ -65,7 +65,7 @@ describe Berkshelf::MercurialLocation, mercurial: true do
     end
 
     context 'given no ref/branch/tag options is given' do
-      subject { Berkshelf::MercurialLocation.new(dependency, hg: cookbook_uri) }
+      subject { described_class.new(dependency, hg: cookbook_uri) }
 
       it 'sets the branch attribute to the default revision of the cloned repo' do
         subject.download
@@ -75,7 +75,7 @@ describe Berkshelf::MercurialLocation, mercurial: true do
 
     context 'given a repo that does not exist' do
       before { dependency.stub(name: "doesnot_exist") }
-      subject { Berkshelf::MercurialLocation.new(dependency, hg: 'http://thisdoesntexist.org/notarepo') }
+      subject { described_class.new(dependency, hg: 'http://thisdoesntexist.org/notarepo') }
 
       it 'raises a MercurailError' do
         Berkshelf::Mercurial.stub(:hg).and_raise(Berkshelf::MercurialError.new(''))
@@ -87,7 +87,7 @@ describe Berkshelf::MercurialLocation, mercurial: true do
 
     context 'given a hg repo that does not contain a cookbook' do
       let(:fake_remote) { mercurial_origin_for('not_a_cookbook', is_cookbook: false) }
-      subject { Berkshelf::MercurialLocation.new(dependency, hg: fake_remote) }
+      subject { described_class.new(dependency, hg: fake_remote) }
 
       it 'raises a CookbookNotFound error' do
         expect {
@@ -99,7 +99,7 @@ describe Berkshelf::MercurialLocation, mercurial: true do
     context 'given the content at the repo does not satisfy the version constraint' do
       before { constraint.stub(satisfies?: false) }
       subject do
-        Berkshelf::MercurialLocation.new(dependency,
+        described_class.new(dependency,
                                    hg: cookbook_uri
         )
       end
@@ -115,7 +115,7 @@ describe Berkshelf::MercurialLocation, mercurial: true do
       let(:tag) { '1.0.0' }
 
       subject do
-        Berkshelf::MercurialLocation.new(dependency,
+        described_class.new(dependency,
                                    hg: cookbook_uri,
                                    tag: tag
         )
@@ -133,7 +133,7 @@ describe Berkshelf::MercurialLocation, mercurial: true do
       let(:branch) { 'mybranch' }
 
       subject do
-        Berkshelf::MercurialLocation.new(dependency,
+        described_class.new(dependency,
                                    hg: cookbook_uri,
                                    branch: branch
         )

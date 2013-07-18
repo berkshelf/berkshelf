@@ -27,18 +27,15 @@ module Berkshelf
     #   the path within the repository to find the cookbook
     def initialize(dependency, options = {})
       super
-      @uri                = options[:hg]
-      @rev                = options[:rev] || options[:branch] || options[:tag] || 'default'
-      @rel                = options[:rel]
+      @uri = options[:hg]
+      @rev = options[:rev] || options[:branch] || options[:tag] || 'default'
+      @rel = options[:rel]
 
       Mercurial.validate_uri!(@uri)
     end
 
-    # @param [#to_s] destination
-    #
     # @return [Berkshelf::CachedCookbook]
     def do_download
-
       destination = Berkshelf::CookbookStore.instance.storage_path
 
       if cached?(destination)

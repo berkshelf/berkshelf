@@ -12,7 +12,7 @@ module Berkshelf
 
     alias_method :tag, :branch
 
-    # @param [Solve::Constraint] version_constraint
+    # @param [Dependency] dependency
     # @param [Hash] options
     #
     # @option options [String] :git
@@ -27,10 +27,10 @@ module Berkshelf
     #   the path within the repository to find the cookbook
     def initialize(dependency, options = {})
       super
-      @uri                = options[:git]
-      @branch             = options[:branch] || options[:tag] || 'master'
-      @ref                = options[:ref]
-      @rel                = options[:rel]
+      @uri    = options[:git]
+      @branch = options[:branch] || options[:tag] || 'master'
+      @ref    = options[:ref]
+      @rel    = options[:rel]
 
       Git.validate_uri!(@uri)
     end
