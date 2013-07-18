@@ -186,7 +186,7 @@ module Berkshelf
     def inspect
       '#<Berkshelf::CookbookSource: ' << [
         "#{name} (#{version_constraint})",
-        "locked_version: #{locked_version.inspect}",
+        "locked_version: #{locked_version ? locked_version.to_s : 'nil'}",
         "groups: #{groups}",
         "location: #{location || 'default'}>"
       ].join(', ')
