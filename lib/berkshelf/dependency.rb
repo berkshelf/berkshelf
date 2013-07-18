@@ -223,6 +223,12 @@ module Berkshelf
           h[:path] = location.relative_path(berksfile.filepath)
         end
 
+        if location.kind_of?(MercurialLocation)
+          h[:hg] = location.uri
+          h[:rev] = location.rev
+          h[:rel] = location.rel if location.rel
+        end
+
         if location.kind_of?(GitLocation)
           h[:git] = location.uri
           h[:ref] = location.ref
