@@ -58,7 +58,7 @@ module Berkshelf
         raise CookbookNotFound, msg
       end
 
-      cb_path = File.join(revision_path(destination))
+      cb_path = revision_path(destination)
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 

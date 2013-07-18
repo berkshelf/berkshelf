@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 gemspec
 
@@ -33,5 +33,6 @@ group :guard do
 end
 
 group :test do
-  gem 'berkshelf-api', github: "RiotGames/berkshelf-api"
+  gem 'ffi', '1.8.1'
+  gem 'berkshelf-api', git: "http://github.com/RiotGames/berkshelf-api"
 end
