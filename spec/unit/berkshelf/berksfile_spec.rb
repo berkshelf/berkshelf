@@ -454,8 +454,8 @@ describe Berkshelf::Berksfile do
   describe "#apply" do
     let(:env_name)    { 'berkshelf-test' }
     let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
-    let(:client_name) { 'reset' }
-    let(:client_key)  { fixtures_path.join('reset.pem').to_s }
+    let(:client_name) { 'berkshelf' }
+    let(:client_key)  { fixtures_path.join('../config/berkshelf.pem').to_s }
     let(:ridley)      { Ridley.new(server_url: server_url, client_name: client_name, client_key: client_key) }
 
     before do
