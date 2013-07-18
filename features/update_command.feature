@@ -133,4 +133,4 @@ Feature: Updating a cookbook defined by a Berksfile
       """
       Could not find cookbook(s) 'non-existent-cookbook' in any of the configured dependencies. Is it in your Berksfile?
       """
-    And the exit status should be "CookbookNotFound"
+    And the exit status should be "DependencyNotFound"

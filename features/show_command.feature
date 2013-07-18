@@ -33,47 +33,6 @@ Feature: Displaying information about a cookbook defined by a Berksfile
            License: none
       """
 
-  Scenario: When JSON is requested
-    Given the cookbook store has the cookbooks:
-      | fake | 1.0.0 |
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-
-      cookbook 'fake', '1.0.0'
-      """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "fake": {
-            "locked_version": "1.0.0"
-          }
-        }
-      }
-      """
-    When I successfully run `berks show fake --format json`
-    Then the output should contain JSON:
-      """
-      {
-        "cookbooks": [
-          {
-            "name": "fake",
-            "version": "1.0.0",
-            "description": "A fabulous new cookbook",
-            "author": "YOUR_COMPANY_NAME",
-            "email": "YOUR_EMAIL",
-            "license": "none"
-          }
-        ],
-        "errors": [
-
-        ],
-        "messages": [
-        ]
-      }
-      """
-
   Scenario: When the cookbook is not in the Berksfile
     Given I write to "Berksfile" with:
       """
@@ -84,7 +43,7 @@ Feature: Displaying information about a cookbook defined by a Berksfile
       """
       Could not find cookbook(s) 'fake' in any of the configured dependencies. Is it in your Berksfile?
       """
-    And the exit status should be "CookbookNotFound"
+    And the exit status should be "DependencyNotFound"
 
   Scenario: When there is no lockfile present
     And I write to "Berksfile" with:

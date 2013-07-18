@@ -8,9 +8,16 @@ module Berkshelf
         ridley.cookbook.all
       end
 
-      def upload_cookbook(path)
+      def upload_cookbook(path, options = {})
         cached = CachedCookbook.from_store_path(path)
-        ridley.cookbook.upload(cached.path, name: cached.cookbook_name)
+
+        options = {
+          force: false,
+          freeze: false,
+          name: cached.cookbook_name,
+        }.merge(options)
+
+        ridley.cookbook.upload(cached.path, options)
       end
 
       # Remove the version of the given cookbook from the Chef Server defined

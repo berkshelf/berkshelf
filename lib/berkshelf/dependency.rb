@@ -109,12 +109,20 @@ module Berkshelf
       @options            = options
       @berksfile          = berksfile
       @name               = name
+      @metadata           = options[:metadata]
       @location           = Location.init(self, options)
       @locked_version     = Solve::Version.new(options[:locked_version]) if options[:locked_version]
       @version_constraint = Solve::Constraint.new(options[:constraint] || DEFAULT_CONSTRAINT)
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
+    end
+
+    # Return true if this is a metadata location.
+    #
+    # @return [Boolean]
+    def metadata?
+      !!@metadata
     end
 
     def add_group(*local_groups)
