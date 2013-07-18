@@ -79,34 +79,34 @@ module Berkshelf
 
     private
 
-    def hg
-      @hg ||= Berkshelf::Mercurial.new(uri)
-    end
-
-    def clone
-      tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
-      FileUtils.mkdir_p(File.join(File.split(tmp_clone).shift))
-      unless File.exists?(tmp_clone)
-        Berkshelf::Mercurial.clone(uri, tmp_clone)
+      def hg
+        @hg ||= Berkshelf::Mercurial.new(uri)
       end
 
-      tmp_clone
-    end
+      def clone
+        tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
+        FileUtils.mkdir_p(File.join(File.split(tmp_clone).shift))
+        unless File.exists?(tmp_clone)
+          Berkshelf::Mercurial.clone(uri, tmp_clone)
+        end
 
-    def cached?(destination)
-      revision_path(destination) && File.exists?(revision_path(destination))
-    end
+        tmp_clone
+      end
 
-    def local_revision(destination)
-      path = revision_path(destination)
-      cached = Berkshelf::CachedCookbook.from_store_path(path)
-      validate_cached(cached)
-      return cached
-    end
+      def cached?(destination)
+        revision_path(destination) && File.exists?(revision_path(destination))
+      end
 
-    def revision_path(destination)
-      return unless rev
-      File.join(destination, "#{dependency.name}-#{rev}")
-    end
+      def local_revision(destination)
+        path = revision_path(destination)
+        cached = Berkshelf::CachedCookbook.from_store_path(path)
+        validate_cached(cached)
+        return cached
+      end
+
+      def revision_path(destination)
+        return unless rev
+        File.join(destination, "#{dependency.name}-#{rev}")
+      end
   end
 end
