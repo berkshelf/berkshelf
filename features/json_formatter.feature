@@ -113,6 +113,16 @@ Feature: --format json
 
       cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
       """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "example_cookbook": {
+            "path": "../../fixtures/cookbooks/example_cookbook-0.5.0"
+          }
+        }
+      }
+      """
     When I successfully run `berks upload --format json`
     Then the output should contain JSON:
       """
@@ -121,7 +131,6 @@ Feature: --format json
           {
             "name": "example_cookbook",
             "version": "0.5.0",
-            "location": "../../fixtures/cookbooks/example_cookbook-0.5.0",
             "uploaded_to": "http://localhost:26310/"
           }
         ],
@@ -129,7 +138,6 @@ Feature: --format json
 
         ],
         "messages": [
-          "building universe..."
         ]
       }
       """
