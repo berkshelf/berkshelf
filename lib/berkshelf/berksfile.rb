@@ -488,7 +488,10 @@ module Berkshelf
 
       validate_cookbook_names!(options)
 
-      cached_cookbooks = install(options)
+      cached_cookbooks = dependencies(options).collect do |dependency|
+        retrieve_locked(dependency.name)
+      end
+
       cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
       do_upload(cached_cookbooks, options)
     end
@@ -699,7 +702,7 @@ module Berkshelf
           explicit = cookbooks.select { |cookbook| names.include?(cookbook.cookbook_name) }
           explicit.each do |cookbook|
             cookbook.dependencies.each do |name, version|
-              explicit += cookbooks.select { |cookbook| cookbook.cookbook_name == name }
+              explicit << retrieve_locked(name)
             end
           end
           cookbooks = explicit.uniq

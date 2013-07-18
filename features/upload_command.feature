@@ -19,6 +19,19 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ruby', '1.0.0'
       cookbook 'elixir', '2.0.0'
       """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "ruby": {
+            "locked_version": "1.0.0"
+          },
+          "elixir": {
+            "locked_version": "2.0.0"
+          }
+        }
+      }
+      """
     When I successfully run `berks upload`
     Then the output should contain:
       """
@@ -37,6 +50,16 @@ Feature: Uploading cookbooks to a Chef Server
 
       cookbook 'ruby', path: './ruby'
       """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "ruby": {
+            "path": "./ruby"
+          }
+        }
+      }
+      """
     When I successfully run `berks upload`
     Then the output should contain:
       """
@@ -53,6 +76,16 @@ Feature: Uploading cookbooks to a Chef Server
       source "http://localhost:26210"
 
       cookbook 'berkshelf-cookbook-fixture', ref: 'v0.1.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "berkshelf-cookbook-fixture": {
+            "locked_version": "0.1.0"
+          }
+        }
+      }
       """
     When I successfully run `berks upload`
     Then the output should contain:
@@ -75,6 +108,22 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '2.0.0'
       cookbook 'reset', '3.4.5'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "locked_version": "1.0.0"
+          },
+          "ekaf": {
+            "locked_version": "2.0.0"
+          },
+          "reset": {
+            "locked_version": "3.4.5"
+          }
+        }
+      }
       """
     When I successfully run `berks upload reset`
     Then the output should contain:
@@ -117,6 +166,22 @@ Feature: Uploading cookbooks to a Chef Server
       cookbook 'ntp', '1.0.0'
       cookbook 'vim', '1.0.0'
       """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "apt": {
+            "locked_version": "1.0.0"
+          },
+          "ntp": {
+            "locked_version": "1.0.0"
+          },
+          "vim": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
     When I successfully run `berks upload ntp vim`
     Then the output should contain:
       """
@@ -149,6 +214,19 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "core": {
+            "locked_version": "1.0.0"
+          },
+          "system": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
     When I successfully run `berks upload --only group_a`
     Then the output should contain:
       """
@@ -179,6 +257,19 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "core": {
+            "locked_version": "1.0.0"
+          },
+          "system": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
     When I successfully run `berks upload --only group_a group_b`
     Then the output should contain:
       """
@@ -204,6 +295,19 @@ Feature: Uploading cookbooks to a Chef Server
       group :group_b do
         cookbook 'system', '1.0.0'
       end
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "core": {
+            "locked_version": "1.0.0"
+          },
+          "system": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
       """
     When I successfully run `berks upload --except group_b`
     Then the output should contain:
@@ -235,6 +339,19 @@ Feature: Uploading cookbooks to a Chef Server
         cookbook 'system', '1.0.0'
       end
       """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "core": {
+            "locked_version": "1.0.0"
+          },
+          "system": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
     When I successfully run `berks upload --except group_a group_b`
     Then the output should not contain:
       """
@@ -252,6 +369,16 @@ Feature: Uploading cookbooks to a Chef Server
       source "http://localhost:26210"
 
       cookbook 'cookbook with spaces', path: './cookbook with spaces'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "cookbook with spaces": {
+            "path": "./cookbook with spaces"
+          }
+        }
+      }
       """
     When I run `berks upload`
     Then the output should contain:
@@ -275,6 +402,16 @@ Feature: Uploading cookbooks to a Chef Server
 
       metadata
       """
+    And the cookbook "fake" has the file "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "path": "."
+          }
+        }
+      }
+      """
     When I cd to "fake"
     And I successfully run `berks upload fake`
     Then the output should contain:
@@ -290,6 +427,16 @@ Feature: Uploading cookbooks to a Chef Server
     And I write to "Berksfile" with:
       """
       cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
       """
     When I successfully run `berks upload`
     Then the output should contain:
@@ -308,7 +455,19 @@ Feature: Uploading cookbooks to a Chef Server
     Given a cookbook named "fake"
     And the cookbook "fake" has the file "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       metadata
+      """
+    And the cookbook "fake" has the file "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "path": "."
+          }
+        }
+      }
       """
     When I cd to "fake"
     And the Chef Server has frozen cookbooks:
