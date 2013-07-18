@@ -385,13 +385,10 @@ describe Berkshelf::Berksfile do
         }
       }
     end
-    let(:installed_cookbooks) { Array.new }
-
     let(:upload) { subject.upload(options) }
 
     before do
       Berkshelf.stub(:config).and_return(berkshelf_config)
-      subject.should_receive(:install).and_return(installed_cookbooks)
     end
 
     context 'when there is no value for :chef_server_url' do
