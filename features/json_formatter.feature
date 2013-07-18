@@ -137,15 +137,26 @@ Feature: --format json
   Scenario: JSON output when running the outdated command
     Given the cookbook store has the cookbooks:
       | seth | 0.1.0 |
-    Given the Berkshelf API has the cookbooks:
+    And the Chef Server has cookbooks:
       | seth | 0.1.0 |
       | seth | 0.2.9 |
       | seth | 1.0.0 |
+    And the Berkshelf API server's cache is up to date
     And I write to "Berksfile" with:
       """
       source "http://localhost:26210"
 
       cookbook 'seth', '~> 0.1'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "seth": {
+            "locked_version": "0.1.0"
+          }
+        }
+      }
       """
     And I successfully run `berks outdated --format json`
     Then the output should contain:
