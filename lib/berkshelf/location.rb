@@ -12,6 +12,9 @@ module Berkshelf
       #   Location.init('nginx', '>= 0.0.0', git: 'git://github.com/RiotGames/artifact-cookbook.git') =>
       #     instantiates a GitLocation
       #
+      #   Location.init('nginx', '>= 0.0.0', hg: 'http://hghub.com/RiotGames/') =>
+      #     instantiates a MercurialLocation
+      #
       #   Location.init('nginx', '>= 0.0.0', path: '/Users/reset/code/nginx-cookbook') =>
       #     instantiates a PathLocation
       #
@@ -126,6 +129,20 @@ module Berkshelf
         JSON.pretty_generate(to_hash, options)
       end
     end
+
+    class ScmLocation < Location::Base
+      class << self
+        # Create a temporary directory for the cloned repository within Berkshelf's
+        # temporary directory
+        #
+        # @return [String]
+        #   the path to the created temporary directory
+        def tmpdir
+          @tmpdir ||= Berkshelf.mktmpdir
+        end
+      end
+    end
+
   end
 end
 
