@@ -555,9 +555,12 @@ module Berkshelf
       cached_cookbooks.each { |cookbook| validate_files!(cookbook) }
 
       Dir.mktmpdir do |tmp|
+        cookbooks_dir = File.join(tmp, 'cookbooks')
+        FileUtils.mkdir_p(cookbooks_dir)
+
         cached_cookbooks.each do |cookbook|
           path        = cookbook.path.to_s
-          destination = File.join(tmp, cookbook.cookbook_name)
+          destination = File.join(cookbooks_dir, cookbook.cookbook_name)
 
           FileUtils.cp_r(path, destination)
 
