@@ -665,7 +665,7 @@ module Berkshelf
                 name: cookbook.cookbook_name,
               })
             rescue Ridley::Errors::FrozenCookbook => ex
-              if options[:halt_on_frozen] || find(cookbook.cookbook_name).metadata?
+              if options[:halt_on_frozen]
                 raise Berkshelf::FrozenCookbook.new(cookbook)
               end
 
