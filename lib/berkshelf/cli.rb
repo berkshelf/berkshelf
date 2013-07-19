@@ -251,7 +251,7 @@ module Berkshelf
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
 
       options[:cookbooks] = cookbook_names
-      options[:freeze] = !options[:no_freeze]
+      options[:freeze]    = !options[:no_freeze]
 
       berksfile.upload(options.symbolize_keys)
     end
