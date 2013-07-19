@@ -403,6 +403,8 @@ module Berkshelf
     # @option options [String] :path
     #   a path to "vendor" the cached_cookbooks resolved by the resolver. Vendoring
     #   is a technique for packaging all cookbooks resolved by a Berksfile.
+    # @option options [Boolean] :update_lockfile (true)
+    #   a boolean method indicating whether we should update the lockfile
     #
     # @raise [Berkshelf::OutdatedCookbookSource]
     #   if the lockfile constraints do not satisfy the Berskfile constraints
@@ -421,7 +423,7 @@ module Berkshelf
 
       self.class.vendor(@cached_cookbooks, options[:path]) if options[:path]
 
-      lockfile.update(local_sources)
+      lockfile.update(local_sources) unless options[:update_lockfile] == false
 
       self.cached_cookbooks
     end
@@ -513,7 +515,7 @@ module Berkshelf
     #   if an attempt to upload a cookbook which has been frozen on the target server is made
     #   and the :halt_on_frozen option was true
     def upload(options = {})
-      options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false)
+      options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false, update_lockfile: false)
 
       cached_cookbooks = install(options)
       upload_opts      = options.slice(:force, :freeze)
