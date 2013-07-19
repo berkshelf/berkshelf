@@ -3,7 +3,7 @@ Given(/^I do not have a Berkshelf config$/) do
 end
 
 Given /^I do not have a Chef config$/ do
-	path = tmp_path.join('knife.rb').to_s
+  path = tmp_path.join('knife.rb').to_s
   Berkshelf.chef_config = Ridley::Chef::Config.new(path)
   Berkshelf.chef_config.save
 
