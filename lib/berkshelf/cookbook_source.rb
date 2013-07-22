@@ -78,7 +78,7 @@ module Berkshelf
     # @return [Solve::Constraint]
     attr_accessor :version_constraint
     # @return [Berkshelf::CachedCookbook]
-    attr_reader :cached_cookbook
+    attr_accessor :cached_cookbook
 
     # @param [Berkshelf::Berksfile] berksfile
     #   the berksfile this source belongs to
@@ -134,16 +134,6 @@ module Berkshelf
     # @return [Array<CachedCookbook, Location>]
     def cached_and_location(options = {})
       from_path(options) || from_default(options)
-    end
-
-    # Set the cached_cookbook and update location based on that cached cookbook
-    #
-    # @param [Berkshelf::CachedCookbook] cached_cookbook
-    def cached_cookbook=(cached_cookbook)
-      @cached_cookbook = cached_cookbook
-      options = @options.reverse_merge(path: cached_cookbook.path)
-      @location = CachedLocation.new(name, version_constraint, cached_cookbook, options)
-      @cached_cookbook
     end
 
     # Returns true if the cookbook source has already been downloaded. A cookbook

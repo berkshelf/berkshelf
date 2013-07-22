@@ -22,9 +22,7 @@ module Berkshelf
       def use(cookbook, version, location = nil)
         message = "Using #{cookbook} (#{version})"
 
-        if location.is_a?(CachedLocation)
-          message << ' from cache'
-        elsif location.is_a?(PathLocation)
+        if location.is_a?(PathLocation)
           message << ' from metadata' if location.metadata?
           message << " at '#{location.relative_path}'" unless location.relative_path == '.'
         end
