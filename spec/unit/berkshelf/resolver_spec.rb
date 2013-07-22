@@ -2,7 +2,18 @@ require 'spec_helper'
 
 describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
   let(:downloader ) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
+  let(:path) { fixtures_path.join('cookbooks', 'example_cookbook').to_s }
   let(:berksfile) { double(downloader: downloader) }
+
+  let(:cached_cookbook) do
+    double('mysql-cookbook',
+     name: 'mysql-1.2.4',
+     cookbook_name: 'mysql',
+     version: '1.2.4',
+     dependencies: { "nginx" => ">= 0.1.0" }
+    )
+  end
+
   let(:source) do
     double('source',
       name: 'mysql',
@@ -10,13 +21,8 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
       :version_constraint= => nil,
       locked_version: '1.2.4',
       downloaded?: true,
-      cached_cookbook: double('mysql-cookbook',
-        name: 'mysql-1.2.4',
-        cookbook_name: 'mysql',
-        version: '1.2.4',
-        dependencies: { "nginx" => ">= 0.1.0" }
-      ),
-      location: double('location', validate_cached: true)
+      cached_cookbook: cached_cookbook,
+      location: double('location', download: cached_cookbook, path: path, validate_cached: true)
     )
   end
 
@@ -74,6 +80,23 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
         subject.should_not_receive(:add_source_dependencies)
 
         subject.add_source(source, false)
+      end
+    end
+
+    context 'when the source has not been downloaded' do
+      before do
+        source.stub(:downloaded?) { false }
+        source.stub(:cached_cookbook) { nil }
+        source.stub(:cached_cookbook=) do |cached|
+          source.stub(:cached_cookbook) { cached }
+          cached
+        end
+      end
+
+      it 'downloads cached cookbook' do
+        source.should_receive(:cached_cookbook=).with(cached_cookbook)
+        subject.add_source(source, false)
+        expect(subject[source.name].cached_cookbook).to be cached_cookbook
       end
     end
   end

@@ -1,4 +1,3 @@
-
 require 'spec_helper'
 
 describe Berkshelf::CookbookSource do
@@ -252,6 +251,24 @@ describe Berkshelf::CookbookSource do
     end
   end
 
+  describe '#cached_cookbook=' do
+    let(:cached_cookbook) { double('example_cookbook', path: 'some/path', metadata: true)}
+
+    it 'sets the location' do
+      subject.cached_cookbook = cached_cookbook
+      expect(subject.location).to be_a Berkshelf::CachedLocation
+    end
+
+    it 'sets cached_cookbook' do
+      subject.cached_cookbook = cached_cookbook
+      expect(subject.cached_cookbook).to be cached_cookbook
+    end
+
+    it 'returns cached_cookbook' do
+      expect(subject.cached_cookbook = cached_cookbook).to be cached_cookbook
+    end
+  end
+
   describe '#to_hash' do
     let(:hash) { subject.to_hash }
 
@@ -262,7 +279,7 @@ describe Berkshelf::CookbookSource do
     end
 
     it 'includes the locked version' do
-      subject.cached_cookbook = double('cached', version: '1.2.3')
+      subject.stub(:cached_cookbook) { double('cached', version: '1.2.3') }
 
       expect(hash).to have_key(:locked_version)
       expect(hash[:locked_version]).to eq('1.2.3')

@@ -177,8 +177,9 @@ module Berkshelf
           end
 
           if cached
-            get_source(source).cached_cookbook = cached
-            Berkshelf.formatter.use(name, cached.version)
+            source = get_source(source)
+            source.cached_cookbook = cached
+            Berkshelf.formatter.use(name, cached.version, source.location)
             true
           else
             false
