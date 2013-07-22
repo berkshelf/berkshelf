@@ -131,7 +131,7 @@ module Berkshelf
       @cached_cookbook ||= if location
         location.download
       else
-        Berkshelf::CookbookStore.instance.satisfy(name, version_constraint)
+        Berkshelf::CookbookStore.instance.satisfy(name, Solve::Constraint.new(locked_version.to_s))
       end
     end
 
