@@ -28,7 +28,7 @@ module Berkshelf
       # @param [Berkshelf::Dependency] dependency
       def fetch(dependency)
         cookbooks[dependency] ||= {}
-        cookbooks[dependency][:version]  = dependency.cached_cookbook.version
+        cookbooks[dependency][:version]  = dependency.locked_version.to_s
         cookbooks[dependency][:location] = dependency.location
       end
 

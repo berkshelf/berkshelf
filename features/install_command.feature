@@ -408,6 +408,7 @@ Feature: install cookbooks from a Berksfile
       """
       And the exit status should be "GitError"
 
+  @focus
   Scenario: transitive dependencies in metadata
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
       | bacon | >= 0.0.0 |

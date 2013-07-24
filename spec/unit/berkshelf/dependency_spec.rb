@@ -215,7 +215,7 @@ describe Berkshelf::Dependency do
     end
 
     it 'includes the locked version' do
-      subject.stub(cached_cookbook: double('cached', version: '1.2.3'))
+      subject.stub(locked_version: double('cached', to_s: '1.2.3'))
 
       expect(hash).to have_key(:locked_version)
       expect(hash[:locked_version]).to eq('1.2.3')
