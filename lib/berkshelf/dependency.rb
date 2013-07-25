@@ -76,6 +76,8 @@ module Berkshelf
     attr_reader :groups
     # @return [Berkshelf::Location]
     attr_reader :location
+    # @return [Solve::Version]
+    attr_accessor :locked_version
     # @return [Solve::Constraint]
     attr_accessor :version_constraint
     # @return [Berkshelf::CachedCookbook]
@@ -139,7 +141,7 @@ module Berkshelf
       @cached_cookbook ||= if location
         location.download
       else
-        Berkshelf::CookbookStore.instance.satisfy(name, version_constraint)
+        Berkshelf::CookbookStore.instance.satisfy(name, Solve::Constraint.new(locked_version.to_s))
       end
     end
 
@@ -161,18 +163,6 @@ module Berkshelf
     # @return [Boolean]
     def has_group?(group)
       groups.include?(group.to_sym)
-    end
-
-    # Get the locked version of this cookbook. First check the instance variable
-    # and then resort to the cached_cookbook for the version.
-    #
-    # This was formerly a delegator, but it would fail if the `@cached_cookbook`
-    # was nil or undefined.
-    #
-    # @return [Solve::Version, nil]
-    #   the locked version of this cookbook
-    def locked_version
-      @locked_version ||= cached_cookbook ? cached_cookbook.version : nil
     end
 
     # The location for this dependency, such as a remote Chef Server, the
