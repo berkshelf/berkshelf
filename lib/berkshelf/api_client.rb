@@ -1,5 +1,3 @@
-require 'addressable/uri'
-
 module Berkshelf
   # Used to communicate with a remotely hosted [Berkshelf API Server](https://github.com/riotgames/berkshelf-api).
   #
@@ -9,7 +7,7 @@ module Berkshelf
   class APIClient < Faraday::Connection
     require_relative 'api_client/remote_cookbook'
 
-    # @return [Addressable::URI]
+    # @return [String]
     attr_reader :url
 
     # @return [Integer]
@@ -28,11 +26,11 @@ module Berkshelf
     #   how long to wait (in seconds) between each retry
     def initialize(url, options = {})
       options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
-      @url            = Addressable::URI.parse(url)
+      @url            = url
       @retries        = options[:retries]
       @retry_interval = options[:retry_interval]
 
-      builder = Faraday::Builder.new do |b|
+      options[:builder] ||= Faraday::Builder.new do |b|
         b.response :parse_json
         b.response :gzip
         b.request :retry,
@@ -43,7 +41,7 @@ module Berkshelf
         b.adapter :net_http
       end
 
-      super(self.url, builder: builder)
+      super(self.url, options)
     end
 
     # Retrieves the entire universe of known cookbooks from the API source
