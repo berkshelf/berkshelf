@@ -9,10 +9,8 @@ Feature: --format json
     And the cookbook store is empty
 
   Scenario: JSON output installing a cookbook from the default location
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'berkshelf', '1.0.0'
       """
     And the Chef Server has cookbooks:
@@ -40,10 +38,8 @@ Feature: --format json
   Scenario: JSON output installing a cookbook we already have
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture   | 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install --format json`
@@ -68,22 +64,12 @@ Feature: --format json
   Scenario: JSON output when running the show command
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'fake', '1.0.0'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "fake": {
-            "locked_version": "1.0.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | fake | 1.0.0 |
     When I successfully run `berks show fake --format json`
     Then the output should contain JSON:
       """
@@ -107,10 +93,8 @@ Feature: --format json
       """
 
   Scenario: JSON output when running the upload command
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I successfully run `berks upload --format json`
@@ -142,31 +126,21 @@ Feature: --format json
       | seth | 0.2.9 |
       | seth | 1.0.0 |
     And the Berkshelf API server's cache is up to date
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'seth', '~> 0.1'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "seth": {
-            "locked_version": "0.1.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | seth | 0.1.0 |
     And I successfully run `berks outdated --format json`
-    Then the output should contain:
+    Then the output should contain JSON:
       """
       {
         "cookbooks": [
           {
             "version": "0.2.9",
             "sources": {
-              "http://localhost:26210": {
+              "http://0.0.0.0:26210": {
                 "name": "seth",
                 "version": "0.2.9"
               }

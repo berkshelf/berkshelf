@@ -3,13 +3,13 @@ Feature: Packaging a cookbook as a tarball for distribution
   I want to be able to package a cookbook
   So that I can use it outside of Berkshelf
 
-  Scenario: When no options are passed
+  Background:
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
+  Scenario: When no options are passed
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
       cookbook 'fake', '~> 1.0.0'
       """
     When I successfully run `berks package fake`
@@ -19,25 +19,19 @@ Feature: Packaging a cookbook as a tarball for distribution
       Cookbook(s) packaged to
       """
 
-  Scenario: With the --output option
-    Given the cookbook store has the cookbooks:
-      | fake | 1.0.0 |
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
+  Scenario: With the --output option
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
       cookbook 'fake', '~> 1.0.0'
       """
     When I successfully run `berks package fake --output foo/bar`
     Then a file named "foo/bar/fake.tar.gz" should exist
 
-  Scenario: With an installed cookbook name
-    Given the cookbook store has the cookbooks:
-      | fake | 1.0.0 |
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
+  Scenario: With an installed cookbook name
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
       cookbook 'fake', '~> 1.0.0'
       """
     When I run `berks package non-existent`
@@ -48,12 +42,11 @@ Feature: Packaging a cookbook as a tarball for distribution
       """
     And the exit status should be "CookbookNotFound"
 
+
   Scenario: With an invalid cookbook
     Given a cookbook named "cookbook with spaces"
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'cookbook with spaces', path: './cookbook with spaces'
       """
     When I run `berks package`

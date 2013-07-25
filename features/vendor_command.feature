@@ -5,79 +5,52 @@ Feature: Vendoring cookbooks to a directory
 
   Background:
     Given the Berkshelf API server's cache is empty
-    And the Chef Server is empty
+    And the Chef Server has cookbooks:
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+    And the Berkshelf API server's cache is up to date
 
   Scenario: successfully vendoring a Berksfile with multiple cookbook demands
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      cookbook 'berkshelf'
-      cookbook 'elixir'
+      cookbook 'fake'
+      cookbook 'ekaf'
       """
-    And the Chef Server has cookbooks:
-      | berkshelf | 1.0.0 |
-      | elixir    | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks vendor cukebooks`
-    Then the output should contain:
-      """
-      Vendoring berkshelf (1.0.0) to
-      """
-    And the output should contain:
-      """
-      Vendoring elixir (1.0.0) to
-      """
-    And a directory named "cukebooks/berkshelf" should exist
-    And a directory named "cukebooks/elixir" should exist
-    And the directory "cukebooks/berkshelf" should contain version "1.0.0" of the "berkshelf" cookbook
-    And the directory "cukebooks/elixir" should contain version "1.0.0" of the "elixir" cookbook
+    Then the directory "cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
+    And the directory "cukebooks/ekaf" should contain version "2.0.0" of the "ekaf" cookbook
+
 
   Scenario: attempting to vendor when no Berksfile is present
     When I run `berks vendor cukebooks`
     Then the exit status should be "BerksfileNotFound"
 
-  Scenario: vendoring a Berksfile with a metadata demand
-    Given a cookbook named "sparkle-motion"
-    And the cookbook "sparkle-motion" has the file "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
+  Scenario: vendoring a Berksfile with a metadata demand
+    Given a cookbook named "fake"
+    And I cd to "fake"
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
       metadata
       """
-    When I cd to "sparkle-motion"
-    And I successfully run `berks vendor cukebooks`
-    Then the output should contain:
-      """
-      Vendoring sparkle-motion (0.0.0) to
-      """
-    And a directory named "cukebooks/sparkle-motion" should exist
-    And the directory "cukebooks/sparkle-motion" should contain version "0.0.0" of the "sparkle-motion" cookbook
+    When I successfully run `berks vendor cukebooks`
+    And the directory "cukebooks/fake" should contain version "0.0.0" of the "fake" cookbook
+
 
   Scenario: vendoring without an explicit path to vendor into
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      cookbook 'berkshelf'
+      cookbook 'fake'
       """
-    And the Chef Server has cookbooks:
-      | berkshelf | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks vendor`
-    And a directory named "berks-cookbooks/berkshelf" should exist
-    And the directory "berks-cookbooks/berkshelf" should contain version "1.0.0" of the "berkshelf" cookbook
+    And the directory "berks-cookbooks/fake" should contain version "1.0.0" of the "fake" cookbook
+
 
   Scenario: vendoring to a directory that already exists
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      cookbook 'berkshelf'
+      cookbook 'fake'
       """
-    And the Chef Server has cookbooks:
-      | berkshelf | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     And a directory named "cukebooks"
     When I run `berks vendor cukebooks`
     And the exit status should be "VendorError"
