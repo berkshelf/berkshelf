@@ -716,7 +716,7 @@ module Berkshelf
         ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
         ridley_options[:client_name] = Berkshelf.config.chef.node_name
         ridley_options[:client_key]  = Berkshelf.config.chef.client_key
-        ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf.config.ssl.verify) }
+        ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
 
         unless ridley_options[:server_url].present?
           raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
