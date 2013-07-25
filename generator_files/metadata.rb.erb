@@ -3,7 +3,7 @@ maintainer       '<%= maintainer %>'
 maintainer_email '<%= maintainer_email %>'
 license          '<%= license_name %>'
 description      'Installs/Configures <%= name %>'
-long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+long_description IO.read(File.join(File.dirname(__FILE__), 'README.md')) rescue description
 <% if options[:scmversion] -%>
 version          IO.read(File.join(File.dirname(__FILE__), 'VERSION')) rescue '0.1.0'
 <% else -%>
