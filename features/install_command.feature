@@ -407,3 +407,54 @@ Feature: install cookbooks from a Berksfile
       An error occurred during Git execution:
       """
       And the exit status should be "GitError"
+
+  Scenario: transitive dependencies in metadata
+    Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
+      | bacon | >= 0.0.0 |
+    Given I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      metadata
+      """
+    And I write to "metadata.rb" with:
+      """
+      depends 'fake', '1.0.0'
+      depends 'bacon', '0.2.0'
+      """
+    And the Chef Server has cookbooks:
+      | bacon | 0.1.0 |
+      | bacon | 0.2.0 |
+      | bacon | 1.0.0 |
+    And the Berkshelf API server's cache is up to date
+    When I successfully run `berks install`
+    Then the cookbook store should have the cookbooks:
+      | bacon | 0.2.0 |
+    Then the output should contain:
+      """
+      Installing bacon (0.2.0)
+      """
+
+  Scenario: transitive dependencies in metadata when cookbooks are downloaded
+    Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
+      | bacon | >= 0.0.0 |
+    And the cookbook store has the cookbooks:
+      | bacon | 1.0.0 |
+      | bacon | 0.3.0 |
+      | bacon | 0.2.0 |
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      metadata
+      """
+    And I write to "metadata.rb" with:
+      """
+      depends 'fake', '1.0.0'
+      depends 'bacon', '0.2.0'
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Using bacon (0.2.0)
+      """

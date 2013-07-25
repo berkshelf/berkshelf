@@ -42,6 +42,7 @@ module Berkshelf
 
       cached_cookbooks = resolver.resolve.collect do |name, version, dependency|
         lock_deps << dependency
+        dependency.locked_version ||= Solve::Version.new(version)
         if dependency.downloaded?
           Berkshelf.formatter.use(dependency.name, dependency.cached_cookbook.version, dependency.location)
           dependency.cached_cookbook
