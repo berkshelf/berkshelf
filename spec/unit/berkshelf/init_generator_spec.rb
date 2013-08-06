@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::InitGenerator, vcr: { record: :new_episodes, serialize_with: :json } do
+describe Berkshelf::InitGenerator do
   let(:target) { tmp_path.join("some_cookbook") }
   let(:resolver) { double('resolver') }
   let(:kitchen_generator) { double('kitchen-generator', invoke_all: nil) }

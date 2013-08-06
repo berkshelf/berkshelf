@@ -3,18 +3,9 @@ require 'spork'
 Spork.prefork do
   require 'rspec'
   require 'webmock/rspec'
-  require 'vcr'
   require 'berkshelf/api/rspec'
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
-
-  VCR.configure do |config|
-    config.configure_rspec_metadata!
-    config.cassette_library_dir = 'spec/fixtures/cassettes'
-    config.hook_into :webmock
-    config.default_cassette_options = { record: :new_episodes }
-    config.ignore_localhost = true
-  end
 
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
