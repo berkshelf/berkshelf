@@ -163,7 +163,7 @@ module Berkshelf
 
         if source.downloaded?
           cached = source.cached_cookbook
-          location.validate_cached(cached)
+          location.validate_cached(cached) if location
           Berkshelf.formatter.use(name, cached.version, location)
           true
         elsif location.is_a?(GitLocation)

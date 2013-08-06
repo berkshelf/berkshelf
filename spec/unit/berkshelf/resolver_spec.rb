@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
-  let(:downloader ) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
+describe Berkshelf::Resolver, :chef_server, vcr: {record: :new_episodes, serialize_with: :yaml} do
+  let(:downloader) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
   let(:berksfile) { double(downloader: downloader) }
   let(:source) do
     double('source',
@@ -14,7 +14,7 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
         name: 'mysql-1.2.4',
         cookbook_name: 'mysql',
         version: '1.2.4',
-        dependencies: { "nginx" => ">= 0.1.0" }
+        dependencies: {"nginx" => ">= 0.1.0"}
       ),
       location: double('location', validate_cached: true)
     )
@@ -35,8 +35,17 @@ describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serial
       resolver = Berkshelf::Resolver.new(berksfile, sources: [source])
       expect(resolver).to have_source('nginx')
     end
-  end
 
+    context 'location is not set' do
+      before(:each) do
+        source.stub(:location) { nil }
+      end
+
+      it 'does not raise' do
+        expect { Berkshelf::Resolver.new(berksfile, sources: [source], skip_dependencies: true) }.to_not raise_error
+      end
+    end
+  end
 
 
   subject { Berkshelf::Resolver.new(berksfile) }
