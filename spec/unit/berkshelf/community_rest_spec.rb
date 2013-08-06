@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with: :json } do
+describe Berkshelf::CommunityREST do
   describe "ClassMethods" do
     describe "::unpack" do
       let(:target) { '/foo/bar' }
@@ -73,85 +73,136 @@ describe Berkshelf::CommunityREST, vcr: { record: :new_episodes, serialize_with:
     end
 
     it 'unpacks the archive' do
+      stub_request(:get, "#{api_uri}/cookbooks/bacon/versions/1_0_0").to_return(
+        status: 200,
+        body: '{ "cookbook": "/path/to/cookbook", "version": "1.0.0" }',
+        headers: { 'Content-Type' => 'application/json' },
+      )
+
       Berkshelf::CommunityREST.should_receive(:unpack).with('/foo/bar').once.and_return('/foo/nginx')
       archive.should_receive(:unlink).once
 
-      subject.download('nginx', '1.4.0')
+      subject.download('bacon', '1.0.0')
     end
   end
 
   describe '#find' do
     it 'returns the cookbook and version information' do
-      result = subject.find('nginx', '1.4.0')
+      stub_request(:get, "#{api_uri}/cookbooks/bacon/versions/1_0_0").to_return(
+        status: 200,
+        body: '{ "cookbook": "/path/to/cookbook", "version": "1.0.0" }',
+        headers: { 'Content-Type' => 'application/json' },
+      )
 
-      expect(result.cookbook).to eq('http://cookbooks.opscode.com/api/v1/cookbooks/nginx')
-      expect(result.version).to eq('1.4.0')
+      result = subject.find('bacon', '1.0.0')
+
+      expect(result.cookbook).to eq('/path/to/cookbook')
+      expect(result.version).to eq('1.0.0')
     end
 
     it 'raises a CookbookNotFound error on a 404 response for a non-existent cookbook' do
+      stub_request(:get, "#{api_uri}/cookbooks/not_real/versions/1_0_0").to_return(
+        status: 404,
+        body: nil,
+      )
+
       expect {
-        subject.find('not_a_real_cookbook_that_anyone_should_ever_make', '0.1.0')
+        subject.find('not_real', '1.0.0')
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
 
-    it 'raises a CookbookNotFound error on a 404 response for a non-existent version' do
-      expect {
-        subject.find('nginx', '0.0.0')
-      }.to raise_error(Berkshelf::CookbookNotFound)
-    end
-
-    # @warn if you re-record the VCR cassettes, you'll need to manually change the
-    # HTTP Response Code in the YAML file to 500
     it 'raises a CommunitySiteError error on any non 200 or 404 response' do
+      stub_request(:get, "#{api_uri}/cookbooks/not_real/versions/1_0_0").to_return(
+        status: 500,
+        body: nil,
+      )
+
       expect {
-        subject.find('not_a_real_cookbook_that_anyone_should_ever_make', '0.0.0')
+        subject.find('not_real', '1.0.0')
       }.to raise_error(Berkshelf::CommunitySiteError)
     end
   end
 
   describe '#latest_version' do
     it 'returns the version number of the latest version of the cookbook' do
-      expect(subject.latest_version('nginx')).to eq('1.4.0')
+      stub_request(:get, "#{api_uri}/cookbooks/bacon").to_return(
+        status: 200,
+        body: '{ "latest_version": "1.0.0" }',
+        headers: { 'Content-Type' => 'application/json' }
+      )
+
+      latest = subject.latest_version('bacon')
+      expect(latest).to eq('1.0.0')
     end
 
     it 'raises a CookbookNotFound error on a 404 response' do
+      stub_request(:get, "#{api_uri}/cookbooks/not_real").to_return(
+        status: 404,
+        body: nil,
+      )
+
       expect {
-        subject.latest_version('not_a_real_cookbook_that_anyone_should_ever_make')
+        subject.latest_version('not_real')
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
 
-    # @warn if you re-record the VCR cassettes, you'll need to manually change the
-    # HTTP Response Code in the YAML file to 500
     it 'raises a CommunitySiteError error on any non 200 or 404 response' do
+      stub_request(:get, "#{api_uri}/cookbooks/not_real").to_return(
+        status: 500,
+        body: nil,
+      )
+
       expect {
-        subject.latest_version('not_a_real_cookbook_that_anyone_should_ever_make')
+        subject.latest_version('not_real')
       }.to raise_error(Berkshelf::CommunitySiteError)
     end
   end
 
   describe '#versions' do
     it 'returns an array containing an item for each version' do
-      expect(subject.versions('nginx')).to have(24).versions
+      stub_request(:get, "#{api_uri}/cookbooks/bacon").to_return(
+        status: 200,
+        body: '{ "versions": ["/bacon/versions/1_0_0", "/bacon/versions/2_0_0"] }',
+        headers: { 'Content-Type' => 'application/json' }
+      )
+
+      versions = subject.versions('bacon')
+      expect(versions.size).to eq(2)
     end
 
     it 'raises a CookbookNotFound error on a 404 response' do
+      stub_request(:get, "#{api_uri}/cookbooks/not_real").to_return(
+        status: 404,
+        body: nil,
+      )
+
       expect {
-        subject.versions('not_a_real_cookbook_that_anyone_should_ever_make')
+        subject.versions('not_real')
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
 
-    # @warn if you re-record the VCR cassettes, you'll need to manually change the
-    # HTTP Response Code in the YAML file to 500
     it 'raises a CommunitySiteError error on any non 200 or 404 response' do
+      stub_request(:get, "#{api_uri}/cookbooks/not_real").to_return(
+        status: 500,
+        body: nil,
+      )
+
       expect {
-        subject.versions('not_a_real_cookbook_that_anyone_should_ever_make')
+        subject.versions('not_real')
       }.to raise_error(Berkshelf::CommunitySiteError)
     end
   end
 
   describe '#satisfy' do
     it 'returns the version number of the best solution' do
-      expect(subject.satisfy('nginx', '= 1.1.0')).to eq('1.1.0')
+      stub_request(:get, "#{api_uri}/cookbooks/bacon").to_return(
+        status: 200,
+        body: '{ "versions": ["/bacon/versions/1_0_0", "/bacon/versions/2_0_0"] }',
+        headers: { 'Content-Type' => 'application/json' }
+      )
+
+      result = subject.satisfy('bacon', '= 1.0.0')
+      expect(result).to eq('1.0.0')
     end
   end
 
