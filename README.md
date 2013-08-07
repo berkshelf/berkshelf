@@ -39,7 +39,7 @@ There is a [berkshelf bash completion script](https://raw.github.com/RiotGames/b
 
 Download the latest script
 
-    cd `brew --prefix`/etc/bash_completion && wget https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh
+    cd `brew --prefix`/etc/bash_completion.d && wget https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh
 
 And make sure you have this in your bash/zsh profile:
 
