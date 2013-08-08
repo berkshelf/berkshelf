@@ -323,7 +323,7 @@ module Berkshelf
       "    #{@dependency.name} (#{@dependency.version_constraint})\n\n" +
       "  In Berksfile.lock:\n" +
       "    #{@locked_dependency.name} (#{@locked_dependency.locked_version})\n\n" +
-      "Try running `berks update #{@dependency.name}, which will try to find '#{@dependency.name}' matching " +
+      "Try running `berks update #{@dependency.name}`, which will try to find '#{@dependency.name}' matching " +
         "'#{@dependency.version_constraint}'."
     end
   end
