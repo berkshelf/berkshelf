@@ -316,12 +316,10 @@ Feature: Uploading cookbooks to a Chef Server
     When I run `berks upload`
     Then the output should contain:
       """
-      building universe...
-      Using fake (0.0.0) path: '/home/travis/build/RiotGames/berkshelf/spec/tmp/aruba/fake'
       Uploading fake (0.0.0) to: 'http://localhost:26310/'
       Skipping fake (0.0.0) (already uploaded)
       Skipped uploading some cookbooks because they already existed on the remote server. Re-run with the `--force` flag to force overwrite these cookbooks:
-      
+
         * fake (0.0.0)
       """
     And the exit status should be 0

@@ -469,7 +469,7 @@ Feature: Creating and reading the Berkshelf lockfile
         In Berksfile.lock:
           berkshelf-cookbook-fixture (1.0.0)
 
-      Try running `berks update berkshelf-cookbook-fixture, which will try to find 'berkshelf-cookbook-fixture' matching '~> 1.3.0'
+      Try running `berks update berkshelf-cookbook-fixture`, which will try to find 'berkshelf-cookbook-fixture' matching '~> 1.3.0'
       """
     And the exit status should be "OutdatedDependency"
 
