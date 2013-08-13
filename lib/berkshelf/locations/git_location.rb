@@ -1,17 +1,5 @@
 module Berkshelf
-  class GitLocation
-    class << self
-      # Create a temporary directory for the cloned repository within Berkshelf's
-      # temporary directory
-      #
-      # @return [String]
-      #   the path to the created temporary directory
-      def tmpdir
-        @tmpdir ||= Berkshelf.mktmpdir
-      end
-    end
-
-    include Location
+  class GitLocation < Location::ScmLocation
 
     set_location_key :git
     set_valid_options :ref, :branch, :tag, :rel
@@ -24,8 +12,7 @@ module Berkshelf
 
     alias_method :tag, :branch
 
-    # @param [#to_s] name
-    # @param [Solve::Constraint] version_constraint
+    # @param [Dependency] dependency
     # @param [Hash] options
     #
     # @option options [String] :git
@@ -38,13 +25,12 @@ module Berkshelf
     #   same as tag
     # @option options [String] :rel
     #   the path within the repository to find the cookbook
-    def initialize(name, version_constraint, options = {})
-      @name               = name
-      @version_constraint = version_constraint
-      @uri                = options[:git]
-      @branch             = options[:branch] || options[:tag] || 'master'
-      @ref                = options[:ref]
-      @rel                = options[:rel]
+    def initialize(dependency, options = {})
+      super
+      @uri    = options[:git]
+      @branch = options[:branch] || options[:tag] || 'master'
+      @ref    = options[:ref]
+      @rel    = options[:rel]
 
       Git.validate_uri!(@uri)
     end
@@ -52,7 +38,9 @@ module Berkshelf
     # @param [#to_s] destination
     #
     # @return [Berkshelf::CachedCookbook]
-    def download(destination)
+    def do_download
+      destination = Berkshelf::CookbookStore.instance.storage_path
+
       if cached?(destination)
         @ref ||= Berkshelf::Git.rev_parse(revision_path(destination))
         return local_revision(destination)
@@ -63,14 +51,14 @@ module Berkshelf
 
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
-        msg = "Cookbook '#{name}' not found at git: #{uri}"
+        msg = "Cookbook '#{dependency.name}' not found at git: #{uri}"
         msg << " with branch '#{branch}'" if branch
         msg << " with ref '#{ref}'" if ref
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
 
-      cb_path = File.join(destination, "#{name}-#{ref}")
+      cb_path = revision_path(destination)
       FileUtils.rm_rf(cb_path)
       FileUtils.mv(tmp_path, cb_path)
 
@@ -123,7 +111,7 @@ module Berkshelf
 
       def revision_path(destination)
         return unless ref
-        File.join(destination, "#{name}-#{ref}")
+        File.join(destination, "#{dependency.name}-#{ref}")
       end
   end
 end

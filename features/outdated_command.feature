@@ -3,50 +3,130 @@ Feature: Displaying outdated cookbooks
   I want to know what cookbooks are outdated before I run update
   So that I can decide whether to update everything at once
 
-  Scenario: Running berks outdated with no version constraints
-    Given I write to "Berksfile" with:
+  Scenario: the dependency is up to date
+    Given the Chef Server has cookbooks:
+      | bacon | 1.0.0 |
+      | bacon | 1.1.0 |
+    And the Berkshelf API server's cache is up to date
+    And the cookbook store has the cookbooks:
+      | bacon | 1.1.0 |
+    And I write to "Berksfile" with:
       """
-      site :opscode
-      cookbook 'berkshelf-cookbook-fixture'
+      source "http://localhost:26210"
+
+      cookbook 'bacon', '~> 1.1.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "bacon": {
+            "locked_version": "1.1.0"
+          }
+        }
+      }
       """
     When I successfully run `berks outdated`
     Then the output should contain:
       """
-      Listing outdated cookbooks with newer versions available...
-      """
-    And the output should contain:
-      """
-      All cookbooks up to date
+      All cookbooks up to date!
       """
 
-  Scenario: Running berks outdated with satisfied version constraints
-    Given I write to "Berksfile" with:
+  Scenario: the dependency has a no version constraint and there are new items
+    Given the Chef Server has cookbooks:
+      | bacon | 1.0.0 |
+      | bacon | 1.1.0 |
+    And the Berkshelf API server's cache is up to date
+    And the cookbook store has the cookbooks:
+      | bacon | 1.0.0 |
+    And I write to "Berksfile" with:
       """
-      site :opscode
-      cookbook 'berkshelf-cookbook-fixture', '>= 0.1'
+      source "http://localhost:26210"
+
+      cookbook 'bacon'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "bacon": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+    When I successfully run `berks outdated`
+    Then the output should contain:
+      """
+      The following cookbooks have newer versions:
+        * bacon (1.1.0) [http://localhost:26210]
+      """
+
+  Scenario: the dependency has a version constraint and there are new items that satisfy it
+    Given the Chef Server has cookbooks:
+      | bacon | 1.1.0 |
+      | bacon | 1.2.1 |
+      | bacon | 1.5.8 |
+    And the Berkshelf API server's cache is up to date
+    And the cookbook store has the cookbooks:
+      | bacon | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'bacon', '~> 1.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "bacon": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+    When I successfully run `berks outdated`
+    Then the output should contain:
+      """
+      The following cookbooks have newer versions:
+        * bacon (1.5.8) [http://localhost:26210]
+      """
+
+  Scenario: When there is no lockfile present
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'bacon', '1.0.0'
       """
     When I run `berks outdated`
     Then the output should contain:
       """
-      Listing outdated cookbooks with newer versions available...
+      Could not find cookbook 'bacon (>= 0.0.0)'. Try running `berks install` to download and install the missing dependencies.
       """
-    And the output should contain:
-      """
-      All cookbooks up to date
-      """
+    And the exit status should be "LockfileNotFound"
 
-  Scenario: Running berks outdated with unsatisfied version constraints
-    Given I write to "Berksfile" with:
+  Scenario: When the cookbook is not installed
+    And I write to "Berksfile" with:
       """
-      site :opscode
-      cookbook 'berkshelf-cookbook-fixture', '~> 0.1'
+      source "http://localhost:26210"
+
+      cookbook 'bacon', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "bacon": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
       """
     When I run `berks outdated`
     Then the output should contain:
       """
-      Listing outdated cookbooks with newer versions available...
+      Could not find cookbook 'bacon (= 1.0.0)'. Try running `berks install` to download and install the missing dependencies.
       """
-    And the output should contain:
-      """
-      Cookbook 'berkshelf-cookbook-fixture (~> 0.1)' is outdated
-      """
+    And the exit status should be "CookbookNotFound"

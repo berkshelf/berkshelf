@@ -13,10 +13,6 @@ module Berkshelf
     #   the Berksfile for this Lockfile
     attr_reader :berksfile
 
-    # @return [String]
-    #   the last known SHA of the Berksfile
-    attr_accessor :sha
-
     # Create a new lockfile instance associated with the given Berksfile. If a
     # Lockfile exists, it is automatically loaded. Otherwise, an empty instance is
     # created and ready for use.
@@ -35,20 +31,23 @@ module Berkshelf
     def load!
       contents = File.read(filepath).strip
       hash     = parse(contents)
-      @sha     = hash[:sha]
 
       hash[:dependencies].each do |name, options|
-        add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
+        # Dynamically calculate paths relative to the Berksfile if a path is given
+        options[:path] &&= File.expand_path(options[:path], File.dirname(filepath))
+
+        begin
+          add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
+        rescue Berkshelf::CookbookNotFound
+          # It's possible that a source is locked that contains a path location, and
+          # that path location was renamed or no longer exists. When loading the
+          # lockfile, Berkshelf will throw an error if it can't find a cookbook that
+          # previously existed at a path location.
+        end
       end
     end
 
-    # Set the sha value to nil to mark that the lockfile is not out of
-    # sync with the Berksfile.
-    def reset_sha!
-      @sha = nil
-    end
-
-    # The list of sources constrained in this lockfile.
+    # The list of dependencies constrained in this lockfile.
     #
     # @return [Array<Berkshelf::Dependency>]
     #   the list of dependencies in this lockfile
@@ -83,11 +82,8 @@ module Berkshelf
     #
     # @param [Array<Berkshelf::Dependency>] dependencies
     #   the list of dependencies to update
-    # @option options [String] :sha
-    #   the sha of the Berksfile updating the dependencies
-    def update(dependencies, options = {})
+    def update(dependencies)
       reset_dependencies!
-      @sha = options[:sha]
 
       dependencies.each { |dependency| append(dependency) }
       save
@@ -136,11 +132,9 @@ module Berkshelf
     #
     # @return [Hash]
     #   the hash representation of this lockfile
-    #   * :sha [String] the last-known sha for the berksfile
     #   * :dependencies [Array<Berkshelf::Dependency>] the list of dependencies
     def to_hash
       {
-        sha: sha,
         dependencies: @dependencies
       }
     end
@@ -164,7 +158,7 @@ module Berkshelf
       # @return [Hash]
       def parse(contents)
         # Ruby's JSON.parse cannot handle an empty string/file
-        return { sha: nil, dependencies: [] } if contents.strip.empty?
+        return { dependencies: [] } if contents.strip.empty?
 
         hash = JSON.parse(contents, symbolize_names: true)
 
@@ -231,7 +225,6 @@ module Berkshelf
             end
 
             {
-              sha: nil,
               dependencies: dependencies,
             }
           end

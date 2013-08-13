@@ -17,6 +17,8 @@ If you'd like to submit a patch:
 
 ### Install prerequisites
 
+Install git and mercurial on your test system. (http://mercurial.selenic.com/wiki/Download)
+
 Install the latest version of [Bundler](http://gembundler.com)
 
     $ gem install bundler

@@ -38,6 +38,10 @@ Given /^the cookbook store contains a cookbook "(.*?)" "(.*?)" with dependencies
   generate_cookbook(cookbook_store.storage_path, name, version, dependencies: dependencies.raw)
 end
 
+Given(/^the cookbook store is empty$/) do
+  Berkshelf::CookbookStore.instance.clean!
+end
+
 Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     expect(cookbook_store.storage_path).to have_structure {
@@ -204,6 +208,16 @@ Then /^I should have a new cookbook skeleton "(.*?)" with no Vagrant support$/ d
   }
 end
 
+Then(/^I should have a new cookbook skeleton "(.*?)" with no Test Kitchen support$/) do |name|
+  expect(Pathname.new(current_dir).join(name)).to have_structure {
+    file "Gemfile" do
+      does_not_contain "gem 'test-kitchen'"
+    end
+    no_file ".kitchen.yml"
+    no_file ".kitchen.yml.local"
+  }
+end
+
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, true)
 end
@@ -245,4 +259,11 @@ Then /^the file "(.*?)" in the directory "(.*?)" should not contain:$/ do |file_
       contains content
     end
   }
+end
+
+Then(/^the directory "(.*?)" should contain version "(.*?)" of the "(.*?)" cookbook$/) do |path, version, name|
+  cookbook_path = File.join(current_dir, path)
+  cookbook = Berkshelf::CachedCookbook.from_path(cookbook_path)
+  expect(cookbook.version).to eql(version)
+  expect(cookbook.cookbook_name).to eql(name)
 end

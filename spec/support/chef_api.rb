@@ -8,9 +8,16 @@ module Berkshelf
         ridley.cookbook.all
       end
 
-      def upload_cookbook(path)
+      def upload_cookbook(path, options = {})
         cached = CachedCookbook.from_store_path(path)
-        ridley.cookbook.upload(cached.path, name: cached.cookbook_name)
+
+        options = {
+          force: false,
+          freeze: false,
+          name: cached.cookbook_name,
+        }.merge(options)
+
+        ridley.cookbook.upload(cached.path, options)
       end
 
       # Remove the version of the given cookbook from the Chef Server defined
@@ -115,9 +122,9 @@ module Berkshelf
 
         def ridley
           @ridley ||= Ridley.new(
-            server_url:   Berkshelf.chef_config[:chef_server_url],
-            client_name:  Berkshelf.chef_config[:node_name],
-            client_key:   Berkshelf.chef_config[:client_key],
+            server_url: Berkshelf::RSpec::ChefServer.server_url,
+            client_name: Berkshelf.chef_config[:node_name],
+            client_key: Berkshelf.chef_config[:client_key],
             ssl: { verify: false }
           )
         end

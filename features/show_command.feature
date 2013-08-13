@@ -8,7 +8,19 @@ Feature: Displaying information about a cookbook defined by a Berksfile
       | fake | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
       """
     When I successfully run `berks show fake`
     Then the output should contain:
@@ -21,38 +33,52 @@ Feature: Displaying information about a cookbook defined by a Berksfile
            License: none
       """
 
-  Scenario: When JSON is requested
-    Given the cookbook store has the cookbooks:
-      | fake | 1.0.0 |
-    And I write to "Berksfile" with:
+  Scenario: When the cookbook is not in the Berksfile
+    Given I write to "Berksfile" with:
       """
-      cookbook 'fake', '1.0.0'
+      source "http://localhost:26210"
       """
-    When I successfully run `berks show fake --format json`
+    When I run `berks show fake`
     Then the output should contain:
       """
+      Could not find cookbook(s) 'fake' in any of the configured dependencies. Is it in your Berksfile?
+      """
+    And the exit status should be "DependencyNotFound"
+
+  Scenario: When there is no lockfile present
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'fake', '1.0.0'
+      """
+    When I run `berks show fake`
+    Then the output should contain:
+      """
+      Could not find cookbook 'fake (>= 0.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      """
+    And the exit status should be "LockfileNotFound"
+
+  Scenario: When the cookbook is not installed
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
       {
-        "cookbooks": [
-          {
-            "name": "fake",
-            "version": "1.0.0",
-            "description": "A fabulous new cookbook",
-            "author": "YOUR_COMPANY_NAME",
-            "email": "YOUR_EMAIL",
-            "license": "none"
+        "dependencies": {
+          "fake": {
+            "locked_version": "1.0.0"
           }
-        ],
-        "errors": [
-
-        ],
-        "messages": [
-
-        ]
+        }
       }
       """
-
-  Scenario: When the cookbook is not in the Berksfile
-    Given an empty file named "Berksfile"
     When I run `berks show fake`
-    Then the output should contain "Cookbook 'fake' is not installed by your Berksfile"
+    Then the output should contain:
+      """
+      Could not find cookbook 'fake (= 1.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      """
     And the exit status should be "CookbookNotFound"

@@ -15,10 +15,6 @@ describe Berkshelf::Lockfile do
       }.to_not raise_error
     end
 
-    it 'has the correct sha' do
-      expect(subject.sha).to eq('6b76225554cc1f7c0aea0f8b3f10c6743aeba67e')
-    end
-
     it 'has the correct dependencies' do
       expect(subject).to have_dependency 'build-essential'
       expect(subject).to have_dependency 'chef-client'
@@ -26,12 +22,6 @@ describe Berkshelf::Lockfile do
   end
 
   subject { Berkshelf::Lockfile.new(berksfile) }
-
-  describe '#reset_sha!' do
-    it 'sets the sha to nil' do
-      expect { subject.reset_sha! }.to change { subject.sha }.to nil
-    end
-  end
 
   describe '#dependencies' do
     it 'returns an array' do
@@ -63,12 +53,6 @@ describe Berkshelf::Lockfile do
     it 'resets the dependencies' do
       subject.should_receive(:reset_dependencies!).once
       subject.update([])
-    end
-
-    it 'updates the sha' do
-      expect {
-        subject.update([])
-      }.to change { subject.sha }
     end
 
     it 'appends each of the dependencies' do
@@ -116,24 +100,8 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  describe '#to_s' do
-    it 'returns a pretty-formatted string' do
-      expect(subject.to_s).to eq '#<Berkshelf::Lockfile Berksfile.lock>'
-    end
-  end
-
-  describe '#inspect' do
-    it 'returns a pretty-formatted, detailed string' do
-      expect(subject.inspect).to eq("#<#{described_class} Berksfile.lock, dependencies: [#<Berkshelf::Dependency: build-essential (>= 0.0.0), locked_version: 1.1.2, groups: [:default], location: default>, #<Berkshelf::Dependency: chef-client (>= 0.0.0), locked_version: 2.1.4, groups: [:default], location: default>]>")
-    end
-  end
-
   describe '#to_hash' do
     let(:hash) { subject.to_hash }
-
-    it 'has the `:sha` key' do
-      expect(hash).to have_key(:sha)
-    end
 
     it 'has the `:dependencies` key' do
       expect(hash).to have_key(:dependencies)

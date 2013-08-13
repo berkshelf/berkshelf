@@ -23,6 +23,14 @@ Usage
 -----
 See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
+Supported Platforms
+-------------------
+Berkshelf is tested on Ruby 1.9.3, 2.0.0, and JRuby 1.6+.
+
+Ruby 1.9 mode is required on all interpreters.
+
+Ruby 1.9.1 and 1.9.2 are not officially supported. If you encounter problems, please upgrade to Ruby 2.0 or 1.9.3.
+
 Bash Completion
 ---------------
 There is a [berkshelf bash completion script](https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh). If you're using homebrew, you can install it like this:
@@ -31,7 +39,7 @@ There is a [berkshelf bash completion script](https://raw.github.com/RiotGames/b
 
 Download the latest script
 
-    cd `brew --prefix`/etc/bash_completion && wget https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh
+    cd `brew --prefix`/etc/bash_completion.d && wget https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh
 
 And make sure you have this in your bash/zsh profile:
 
@@ -75,10 +83,10 @@ If you need to disable SSL, you can in `~/.berkshelf/config.json` like so:
 
 Authors
 -------
-- Jamie Winsor (<reset@riotgames.com>)
+- Jamie Winsor (<jamie@vialstudios.com>)
 - Josiah Kiehl (<jkiehl@riotgames.com>)
 - Michael Ivey (<michael.ivey@riotgames.com>)
-- Justin Campbell (<justin.campbell@riotgames.com>)
+- Justin Campbell (<justin@justincampbell.me>)
 - Seth Vargo (<sethvargo@gmail.com>)
 
 Thank you to all of our [Contributors](https://github.com/RiotGames/berkshelf/graphs/contributors), testers, and users.

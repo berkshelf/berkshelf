@@ -3,7 +3,6 @@ source 'https://rubygems.org'
 gemspec
 
 group :guard do
-  # Placed in a separate group to ignore on Windows + Travis
   gem 'coolline',      '~> 0.4.2'
   gem 'guard',         '~> 1.8'
   gem 'guard-cane'
@@ -31,4 +30,8 @@ group :guard do
     gem 'wdm', require: false
     gem 'win32console', require: false
   end
+end
+
+group :test do
+  gem 'berkshelf-api', github: "RiotGames/berkshelf-api"
 end

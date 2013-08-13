@@ -1,98 +1,62 @@
 require 'spec_helper'
 
-describe Berkshelf::Resolver, :chef_server, vcr: { record: :new_episodes, serialize_with: :yaml } do
-  let(:downloader ) { Berkshelf::Downloader.new(Berkshelf.cookbook_store) }
-  let(:berksfile) { double(downloader: downloader) }
-  let(:dependency) do
-    double('dependency',
-      name: 'mysql',
-      version_constraint: Solve::Constraint.new('= 1.2.4'),
-      downloaded?: true,
-      cached_cookbook: double('mysql-cookbook',
-        name: 'mysql-1.2.4',
-        cookbook_name: 'mysql',
-        version: '1.2.4',
-        dependencies: { "nginx" => ">= 0.1.0" }
-      ),
-      location: double('location', validate_cached: true)
-    )
-  end
+describe Berkshelf::Resolver do
+  let(:berksfile) { double('berksfile') }
+  let(:demand) { Berkshelf::Dependency.new(berksfile, "mysql", constraint: "= 1.2.4") }
 
-  describe '.initialize' do
-    it 'adds the specified dependencies to the dependencies hash' do
-      resolver = Berkshelf::Resolver.new(berksfile, dependencies: [dependency], skip_dependencies: true)
-      expect(resolver).to have_dependency(dependency.name)
-    end
-
-    it 'does not add dependencies if skipped' do
-      resolver = Berkshelf::Resolver.new(berksfile, dependencies: [dependency], skip_dependencies: true)
-      expect(resolver).to_not have_dependency('nginx')
-    end
-
-    it 'adds the dependencies of the dependency as dependencies' do
-      resolver = Berkshelf::Resolver.new(berksfile, dependencies: [dependency])
-      expect(resolver).to have_dependency('nginx')
+  describe "ClassMethods" do
+    describe "::initialize" do
+      it 'adds the specified dependencies to the dependencies hash' do
+        resolver = described_class.new(berksfile, demand)
+        expect(resolver).to have_demand(demand)
+      end
     end
   end
 
   subject { Berkshelf::Resolver.new(berksfile) }
 
-  describe '#add_dependency' do
-    let(:package_version) { double('package-version', dependencies: Array.new) }
-
-    it 'adds the dependency to the instance of resolver' do
-      subject.add_dependency(dependency, false)
-      expect(subject.dependencies).to include(dependency)
+  describe "#add_demand" do
+    it 'adds the demand to the instance of resolver' do
+      subject.add_demand(demand)
+      expect(subject.demands).to include(demand)
     end
 
-    it 'adds an artifact of the same name of the dependency to the graph' do
-      subject.graph.should_receive(:artifacts).with(dependency.name, dependency.cached_cookbook.version)
-
-      subject.add_dependency(dependency, false)
-    end
-
-    it 'adds the dependencies of the dependency as packages to the graph' do
-      subject.should_receive(:add_recursive_dependencies).with(dependency)
-
-      subject.add_dependency(dependency)
-    end
-
-    it 'raises a DuplicateDependencyDefined exception if a dependency of the same name is added' do
-      subject.should_receive(:has_dependency?).with(dependency).and_return(true)
+    it 'raises a DuplicateDemand exception if a demand of the same name is added' do
+      subject.should_receive(:has_demand?).with(demand).and_return(true)
 
       expect {
-        subject.add_dependency(dependency)
-      }.to raise_error(Berkshelf::DuplicateDependencyDefined)
+        subject.add_demand(demand)
+      }.to raise_error(Berkshelf::DuplicateDemand)
     end
+  end
 
-    context 'when include_dependencies is false' do
-      it 'does not try to include_dependencies' do
-        subject.should_not_receive(:add_recursive_dependencies)
+  describe "#demands" do
+    it "returns an Array" do
+      expect(subject.demands).to be_a(Array)
+    end
+  end
 
-        subject.add_dependency(dependency, false)
+  describe "#get_demand" do
+    before { subject.add_demand(demand) }
+
+    context 'given a string representation of the demand to retrieve' do
+      it 'returns a Berkshelf::Dependency of the same name' do
+        expect(subject.get_demand(demand.name)).to eq(demand)
       end
     end
   end
 
-  describe '#get_dependency' do
-    before { subject.add_dependency(dependency, false) }
+  describe '#has_demand?' do
+    before { subject.add_demand(demand) }
 
-    context 'given a string representation of the dependency to retrieve' do
-      it 'returns the dependency of the same name' do
-        expect(subject.get_dependency(dependency.name)).to eq(dependency)
-      end
+    it 'returns true if the demand exists' do
+      expect(subject.has_demand?(demand.name)).to be_true
+    end
+
+    it 'returns false if the demand does not exist' do
+      expect(subject.has_demand?('non-existent')).to be_false
     end
   end
 
-  describe '#has_dependency?' do
-    before { subject.add_dependency(dependency, false) }
-
-    it 'returns true if the dependency exists' do
-      expect(subject.has_dependency?(dependency.name)).to be_true
-    end
-
-    it 'returns false if the dependency does not exist' do
-      expect(subject.has_dependency?('non-existent')).to be_false
-    end
-  end
+  describe "#resolve"
 end

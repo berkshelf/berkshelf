@@ -2,6 +2,35 @@ require 'fileutils'
 
 module Berkshelf
   class CookbookStore
+    class << self
+      # The default path to the cookbook store relative to the Berkshelf path.
+      #
+      # @return [String]
+      def default_path
+        File.join(Berkshelf.berkshelf_path, 'cookbooks')
+      end
+
+      # @return [Berkshelf::CookbookStore]
+      def instance
+        @instance ||= new(default_path)
+      end
+
+      # Import a cookbook found on the local filesystem into the current instance of
+      # the cookbook store.
+      #
+      # @param [String] name
+      #   name of the cookbook
+      # @param [String] version
+      #   verison of the cookbook
+      # @param [String] path
+      #   location on disk of the cookbook
+      #
+      # @return [Berkshelf::CachedCookbook]
+      def import(name, version, path)
+        instance.import(name, version, path)
+      end
+    end
+
     # @return [String]
     #   filepath to where cookbooks are stored
     attr_reader :storage_path
@@ -15,6 +44,30 @@ module Berkshelf
     def initialize(storage_path)
       @storage_path = Pathname.new(storage_path)
       initialize_filesystem
+    end
+
+    # Destroy the contents of the initialized storage path.
+    def clean!
+      FileUtils.rm_rf(Dir.glob(File.join(storage_path, '*')))
+    end
+
+    # Import a cookbook found on the local filesystem into this instance of the cookbook store.
+    #
+    # @param [String] name
+    #   name of the cookbook
+    # @param [String] version
+    #   verison of the cookbook
+    # @param [String] path
+    #   location on disk of the cookbook
+    #
+    # @return [Berkshelf::CachedCookbook]
+    def import(name, version, path)
+      destination = cookbook_path(name, version)
+      FileUtils.mv(path, destination)
+      cookbook(name, version)
+    rescue => ex
+      FileUtils.rm_f(destination)
+      raise
     end
 
     # Returns an instance of CachedCookbook representing the
@@ -68,6 +121,15 @@ module Berkshelf
       storage_path.join("#{name}-#{version}")
     end
 
+    def initialize_filesystem
+      FileUtils.mkdir_p(storage_path, mode: 0755)
+
+      unless File.writable?(storage_path)
+        raise InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'!" +
+          " Please either chown the directory or use a different Cookbook Store."
+      end
+    end
+
     # Return a CachedCookbook matching the best solution for the given name and
     # constraint. Nil is returned if no matching CachedCookbook is found.
     #
@@ -85,15 +147,5 @@ module Berkshelf
     rescue Solve::Errors::NoSolutionError
       nil
     end
-
-    private
-
-      def initialize_filesystem
-        FileUtils.mkdir_p(storage_path, mode: 0755)
-
-        unless File.writable?(storage_path)
-          raise InsufficientPrivledges, "You do not have permission to write to '#{storage_path}'! Please either chown the directory or use a different Cookbook Store."
-        end
-      end
   end
 end

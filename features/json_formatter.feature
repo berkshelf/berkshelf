@@ -3,11 +3,21 @@ Feature: --format json
   I want to be able to get all output in JSON format
   So I can easily parse the output in scripts
 
+  Background:
+    Given the Berkshelf API server's cache is empty
+    And the Chef Server is empty
+    And the cookbook store is empty
+
   Scenario: JSON output installing a cookbook from the default location
     Given I write to "Berksfile" with:
       """
-      cookbook 'berkshelf-cookbook-fixture', '1.0.0'
+      source "http://localhost:26210"
+
+      cookbook 'berkshelf', '1.0.0'
       """
+    And the Chef Server has cookbooks:
+      | berkshelf | 1.0.0 |
+    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install --format json`
     Then the output should contain JSON:
       """
@@ -15,15 +25,14 @@ Feature: --format json
         "cookbooks": [
           {
             "version": "1.0.0",
-            "location": "site: 'http://cookbooks.opscode.com/api/v1/cookbooks'",
-            "name": "berkshelf-cookbook-fixture"
+            "name": "berkshelf"
           }
         ],
         "errors": [
 
         ],
         "messages": [
-
+          "building universe..."
         ]
       }
       """
@@ -33,6 +42,8 @@ Feature: --format json
       | berkshelf-cookbook-fixture   | 1.0.0 |
     And I write to "Berksfile" with:
       """
+      source "http://localhost:26210"
+
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install --format json`
@@ -49,7 +60,48 @@ Feature: --format json
 
         ],
         "messages": [
+          "building universe..."
+        ]
+      }
+      """
 
+  Scenario: JSON output when running the show command
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "fake": {
+            "locked_version": "1.0.0"
+          }
+        }
+      }
+      """
+    When I successfully run `berks show fake --format json`
+    Then the output should contain JSON:
+      """
+      {
+        "cookbooks": [
+          {
+            "name": "fake",
+            "version": "1.0.0",
+            "description": "A fabulous new cookbook",
+            "author": "YOUR_COMPANY_NAME",
+            "email": "YOUR_EMAIL",
+            "license": "none"
+          }
+        ],
+        "errors": [
+
+        ],
+        "messages": [
         ]
       }
       """
@@ -57,7 +109,9 @@ Feature: --format json
   Scenario: JSON output when running the upload command
     Given I write to "Berksfile" with:
       """
-      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+      source "http://localhost:26210"
+
+      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I successfully run `berks upload --format json`
     Then the output should contain JSON:
@@ -67,15 +121,64 @@ Feature: --format json
           {
             "name": "example_cookbook",
             "version": "0.5.0",
-            "location": "../../spec/fixtures/cookbooks/example_cookbook-0.5.0",
-            "uploaded_to": "http://localhost:4000/"
+            "location": "../../fixtures/cookbooks/example_cookbook-0.5.0",
+            "uploaded_to": "http://localhost:26310/"
           }
         ],
         "errors": [
 
         ],
         "messages": [
+          "building universe..."
+        ]
+      }
+      """
 
+  Scenario: JSON output when running the outdated command
+    Given the cookbook store has the cookbooks:
+      | seth | 0.1.0 |
+    And the Chef Server has cookbooks:
+      | seth | 0.1.0 |
+      | seth | 0.2.9 |
+      | seth | 1.0.0 |
+    And the Berkshelf API server's cache is up to date
+    And I write to "Berksfile" with:
+      """
+      source "http://localhost:26210"
+
+      cookbook 'seth', '~> 0.1'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "seth": {
+            "locked_version": "0.1.0"
+          }
+        }
+      }
+      """
+    And I successfully run `berks outdated --format json`
+    Then the output should contain:
+      """
+      {
+        "cookbooks": [
+          {
+            "version": "0.2.9",
+            "sources": {
+              "http://localhost:26210": {
+                "name": "seth",
+                "version": "0.2.9"
+              }
+            },
+            "name": "seth"
+          }
+        ],
+        "errors": [
+
+        ],
+        "messages": [
+          "The following cookbooks have newer versions:"
         ]
       }
       """
