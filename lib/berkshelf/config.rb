@@ -95,11 +95,11 @@ module Berkshelf
       default: false
     attribute 'vagrant.vm.box',
       type: String,
-      default: 'Berkshelf-CentOS-6.3-x86_64-minimal',
+      default: 'opscode_ubuntu-12.04_provisionerless',
       required: true
     attribute 'vagrant.vm.box_url',
       type: String,
-      default: 'https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box',
+      default: 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box',
       required: true
     attribute 'vagrant.vm.forward_port',
       type: Hash,
@@ -113,6 +113,12 @@ module Berkshelf
     attribute 'vagrant.vm.provision',
       type: String,
       default: 'chef_solo'
+    attribute 'vagrant.omnibus.enabled',
+      type: Boolean,
+      default: true
+    attribute 'vagrant.omnibus.version',
+      type: String,
+      default: 'latest'
     attribute 'ssl.verify',
       type: Boolean,
       default: true,

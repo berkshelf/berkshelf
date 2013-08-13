@@ -6,15 +6,20 @@ Feature: Reading a Berkshelf configuration file
   Scenario: Missing a Berkshelf configuration file
     When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
-      | config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal" |
-      | config.vm.box_url = "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box" |
+      | config.omnibus.chef_version = :latest |
+      | config.vm.box = "opscode_ubuntu-12.04_provisionerless" |
+      | config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box" |
     And the exit status should be 0
 
-  Scenario: Using a Berkshelf configuration file
+  Scenario: Using a Berkshelf configuration file that disables the vagrant-omnibus plugin
     Given I have a Berkshelf config file containing:
     """
     {
       "vagrant": {
+        "omnibus": {
+          "enabled": false,
+          "version": "11.4.4"
+        },
         "vm": {
           "box": "my_box",
           "box_url": "http://files.vagrantup.com/lucid64.box",
@@ -31,6 +36,73 @@ Feature: Reading a Berkshelf configuration file
     """
     When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
+      | #config.omnibus.chef_version = :latest |
+      | config.vm.box = "my_box" |
+      | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
+      | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
+      | config.vm.network :private_network, ip: "12.34.56.78" |
+      | config.vm.network :public_network |
+    And the exit status should be 0
+
+  Scenario: Using a Berkshelf configuration file that sets the vagrant-omnibus plugin chef version
+    Given I have a Berkshelf config file containing:
+    """
+    {
+      "vagrant": {
+        "omnibus": {
+          "enabled": true,
+          "version": "11.4.4"
+        },
+        "vm": {
+          "box": "my_box",
+          "box_url": "http://files.vagrantup.com/lucid64.box",
+          "forward_port": {
+            "12345": "54321"
+          },
+          "network": {
+            "bridged": true,
+            "hostonly": "12.34.56.78"
+          }
+        }
+      }
+    }
+    """
+    When I successfully run `berks cookbook sparkle_motion`
+    Then the resulting "sparkle_motion" Vagrantfile should contain:
+      | config.omnibus.chef_version = "11.4.4" |
+      | config.vm.box = "my_box" |
+      | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
+      | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
+      | config.vm.network :private_network, ip: "12.34.56.78" |
+      | config.vm.network :public_network |
+    And the exit status should be 0
+
+  Scenario: Using a Berkshelf configuration file that sets the vagrant-omnibus plugin chef version to latest
+    Given I have a Berkshelf config file containing:
+    """
+    {
+      "vagrant": {
+        "omnibus": {
+          "enabled": true,
+          "version": "latest"
+        },
+        "vm": {
+          "box": "my_box",
+          "box_url": "http://files.vagrantup.com/lucid64.box",
+          "forward_port": {
+            "12345": "54321"
+          },
+          "network": {
+            "bridged": true,
+            "hostonly": "12.34.56.78"
+          }
+        }
+      }
+    }
+    """
+    When I successfully run `berks cookbook sparkle_motion`
+    Then the resulting "sparkle_motion" Vagrantfile should contain:
+      | config.omnibus.chef_version = :latest |
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
