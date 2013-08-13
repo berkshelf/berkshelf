@@ -73,9 +73,6 @@ module Berkshelf
     attribute 'chef.node_name',
       type: String,
       default: Berkshelf.chef_config.node_name
-    attribute 'cookbook.namespace',
-      type: String,
-      default: Berkshelf.chef_config.cookbook_namespace
     attribute 'cookbook.copyright',
       type: String,
       default: Berkshelf.chef_config.cookbook_copyright

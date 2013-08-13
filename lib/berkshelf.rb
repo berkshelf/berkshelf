@@ -167,7 +167,6 @@ require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
-require_relative 'berkshelf/wrap_generator'
 
 Ridley.logger = Celluloid.logger = Berkshelf.logger = Logger.new(STDOUT)
 Berkshelf.logger.level = Logger::WARN
