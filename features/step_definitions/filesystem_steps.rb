@@ -218,6 +218,34 @@ Then(/^I should have a new cookbook skeleton "(.*?)" with no Test Kitchen suppor
   }
 end
 
+Then(/^I should have a new cookbook skeleton "(.*?)" with minimal cookbook support$/) do |name|
+  expect(Pathname.new(current_dir).join(name)).to have_structure {
+    directory "attributes" do
+      file "default.rb"
+    end
+    directory "recipes" do
+      file "default.rb"
+    end
+    file "metadata.rb"
+    file "Berksfile"
+  }
+end
+
+Then(/^I should have a new cookbook skeleton "(.*?)" with wrapped cookbook support$/) do |name|
+  expect(Pathname.new(current_dir).join(name)).to have_structure {
+    directory "attributes" do
+      file "default.rb"
+    end
+    directory "recipes" do
+      file "default.rb"
+    end
+    file "metadata.rb" do
+      contains "depends 'sparkle_motion'"
+    end
+    file "Berksfile"
+  }
+end
+
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, true)
 end
