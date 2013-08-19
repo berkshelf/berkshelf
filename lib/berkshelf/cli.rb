@@ -40,12 +40,12 @@ module Berkshelf
 
     class << self
       def dispatch(meth, given_args, given_opts, config)
-        unless (given_args & ['-h', '--help']).empty?
-          if given_args.length == 1
-            # berks --help
-            super
+        if given_args.length > 1 && !(given_args & Thor::HELP_MAPPINGS).empty?
+          command = given_args.first
+
+          if self.subcommands.include?(command)
+            super(meth, [command, 'help'].compact, nil, config)
           else
-            command = given_args.first
             super(meth, ['help', command].compact, nil, config)
           end
         else
