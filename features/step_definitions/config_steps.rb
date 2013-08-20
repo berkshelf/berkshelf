@@ -27,6 +27,9 @@ Then /^a Berkshelf config file should exist and contain:$/ do |table|
   check_file_presence([Berkshelf.config.path], true)
 
   table.raw.each do |key, value|
+    if value == "BOOLEAN[true]"
+      value = true
+    end
     expect(Berkshelf.config[key]).to eq(value)
   end
 end
