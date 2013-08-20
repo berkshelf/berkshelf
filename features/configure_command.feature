@@ -49,8 +49,10 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_client_name | chef-validator                      |
       | chef.client_key             | /etc/chef/client.pem                |
       | chef.validation_key_path    | /etc/chef/validation.pem            |
-      | vagrant.vm.box              | Berkshelf-CentOS-6.3-x86_64-minimal |
-      | vagrant.vm.box_url          | https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box |
+      | vagrant.vm.box              | opscode_ubuntu-12.04_provisionerless |
+      | vagrant.vm.box_url          | https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box |
+      | vagrant.omnibus.enabled     | BOOLEAN[true] |
+      | vagrant.omnibus.version     | latest |
     And the exit status should be 0
 
   Scenario: Creating a Berkshelf configuration file when one already exists
