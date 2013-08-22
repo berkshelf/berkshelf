@@ -275,4 +275,19 @@ describe Berkshelf::Dependency do
       it { should be_false }
     end
   end
+
+  describe "#path_location?" do
+    let(:options) { Hash.new }
+    subject { described_class.new(berksfile, cookbook_name, options).path_location? }
+
+    context "when the location is a PathLocation" do
+      let(:options) { { path: fixtures_path.join("cookbooks", "example_cookbook") } }
+      it { should be_true }
+    end
+
+    context "when the location is not a PathLocation" do
+      let(:options) { { github: "RiotGames/berkshelf" } }
+      it { should be_false }
+    end
+  end
 end
