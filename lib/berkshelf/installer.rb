@@ -116,9 +116,19 @@ module Berkshelf
       #
       # If a locked dependency exists, but doesn't satisfy the constraint, raise a
       # {Berkshelf::OutdatedDependency} and tell the user to run update.
+      #
+      # Never use the locked constraint for a dependency with a {PathLocation}
+      #
+      # @param [Array<Berkshelf::Dependency>] dependencies
+      #
+      # @return [Array<Berkshelf::Dependency>]
       def lockfile_reduce(dependencies = [])
         dependencies.collect do |dependency|
-          dependency_from_lockfile(dependency) || dependency
+          if dependency.path_location?
+            dependency
+          else
+            dependency_from_lockfile(dependency) || dependency
+          end
         end
       end
 

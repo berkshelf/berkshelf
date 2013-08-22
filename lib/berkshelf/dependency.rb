@@ -181,6 +181,10 @@ module Berkshelf
       @groups ||= []
     end
 
+    def path_location?
+      location.nil? ? false : location.is_a?(PathLocation)
+    end
+
     # @return [Boolean]
     def scm_location?
       if location.nil?
