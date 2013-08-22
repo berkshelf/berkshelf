@@ -1,3 +1,7 @@
+# 2.0.9
+
+* Update required version of Ridley
+
 # 2.0.7
 
 * Fix crash when parsing a lockfile that contains path locations which no longer exist
