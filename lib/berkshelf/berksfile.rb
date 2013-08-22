@@ -143,13 +143,13 @@ module Berkshelf
     #
     # @raise [Berkshelf::InvalidSourceURI]
     #
-    # @return [Array<SourceURI>]
+    # @return [Array<Berkshelf::Source>]
     def source(api_url)
       new_source = Source.new(api_url)
       @sources.push(new_source) unless @sources.include?(new_source)
     end
 
-    # @return [Array<SourceURI>]
+    # @return [Array<Berkshelf::Source>]
     def sources
       @sources.empty? ? self.class.default_sources : @sources
     end

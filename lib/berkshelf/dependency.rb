@@ -181,6 +181,15 @@ module Berkshelf
       @groups ||= []
     end
 
+    # Determines if this dependency has a location and is it a {PathLocation}
+    #
+    # @return [Boolean]
+    def path_location?
+      location.nil? ? false : location.is_a?(PathLocation)
+    end
+
+    # Determines if this dependency has a location and if it is an SCM location
+    #
     # @return [Boolean]
     def scm_location?
       if location.nil?
