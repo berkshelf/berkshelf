@@ -140,7 +140,7 @@ module Berkshelf
       # Why do we use a class function for defining our finalizer?
       # http://www.mikeperham.com/2010/02/24/the-trouble-with-ruby-finalizers/
       ObjectSpace.define_finalizer(self, self.class.finalizer)
-    rescue Ridley::Errors::ClientKeyFileNotFound => ex
+    rescue Ridley::Errors::ClientKeyFileNotFoundOrInvalid => ex
       raise ClientKeyFileNotFound, ex
     end
 
