@@ -565,10 +565,10 @@ module Berkshelf
           FileUtils.cp_r(path, destination)
 
           unless options[:ignore_chefignore]
-            if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(path)
-              chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
-              chefignore.remove_ignores_from(destination) if chefignore
-            end
+            chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
+            Dir["#{destination}/**/*"].each do |path|
+              FileUtils.rm_rf(path) if chefignore.ignored?(path)
+            end if chefignore
           end
         end
 
@@ -612,13 +612,7 @@ module Berkshelf
       chefignore       = nil
       cached_cookbooks = install(options.slice(:except, :only))
 
-      if cached_cookbooks.empty?
-        return nil
-      end
-
-      if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)
-        chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
-      end
+      return nil if cached_cookbooks.empty?
 
       cached_cookbooks.each do |cookbook|
         Berkshelf.formatter.vendor(cookbook, destination)
@@ -634,6 +628,11 @@ module Berkshelf
         end
 
         FileUtils.cp_r(files, cookbook_destination)
+
+        chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
+        Dir["#{cookbook_destination}/**/*"].each do |path|
+          FileUtils.rm_rf(path) if chefignore.ignored?(path)
+        end if chefignore
       end
 
       FileUtils.mv(scratch, destination)

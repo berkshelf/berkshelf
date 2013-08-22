@@ -66,7 +66,7 @@ module Berkshelf
       template 'Thorfile.erb', target.join('Thorfile')
 
       if options[:chefignore]
-        copy_file 'chefignore', target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
+        copy_file 'chefignore', target.join(Ridley::Chef::Chefignore::FILENAME)
       end
 
       unless options[:skip_git]
