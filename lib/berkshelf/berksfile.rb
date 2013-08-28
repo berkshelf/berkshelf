@@ -508,6 +508,10 @@ module Berkshelf
     #   on the remote Chef Server and frozen.
     # @option options [String] :server_url
     #   An overriding Chef Server to upload the cookbooks to
+    # @option options [String] :client_name
+    #   An overriding client name to use for connecting to the chef server
+    # @option options [String] :client_key
+    #   An overriding client key to use for connecting to the chef server
     #
     # @raise [UploadFailure]
     #   if you are uploading cookbooks with an invalid or not-specified client key
@@ -683,8 +687,8 @@ module Berkshelf
       def ridley_connection(options = {})
         ridley_options               = options.slice(:ssl)
         ridley_options[:server_url]  = options[:server_url] || Berkshelf::Config.instance.chef.chef_server_url
-        ridley_options[:client_name] = Berkshelf::Config.instance.chef.node_name
-        ridley_options[:client_key]  = Berkshelf::Config.instance.chef.client_key
+        ridley_options[:client_name] = options[:client_name] || Berkshelf::Config.instance.chef.node_name
+        ridley_options[:client_key]  = options[:client_key] || Berkshelf::Config.instance.chef.client_key
         ridley_options[:ssl]         = { verify: (options[:ssl_verify] || Berkshelf::Config.instance.ssl.verify) }
 
         unless ridley_options[:server_url].present?
