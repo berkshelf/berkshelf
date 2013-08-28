@@ -476,6 +476,38 @@ describe Berkshelf::Berksfile do
         upload
       end
     end
+
+    context 'when a client name is passed as an option' do
+      let(:options) do
+        {
+            client_name: 'passed-in-client-name'
+        }
+      end
+      let(:ridley_options) do
+        default_ridley_options.merge({ server_url: 'http://configured-chef-server/', client_name: 'passed-in-client-name'})        
+      end
+
+      it 'uses the passed in :client_name' do
+        Ridley.should_receive(:new).with(ridley_options)
+        upload
+      end
+    end
+
+    context 'when a client key is passed as an option' do
+      let(:options) do
+        {
+            client_key: 'passed-in-client-key'
+        }
+      end
+      let(:ridley_options) do
+        default_ridley_options.merge({ server_url: 'http://configured-chef-server/', client_key: 'passed-in-client-key'})
+      end
+
+      it 'uses the passed in :client_key' do
+        Ridley.should_receive(:new).with(ridley_options)
+        upload
+      end
+    end
   end
 
   describe '#apply' do
