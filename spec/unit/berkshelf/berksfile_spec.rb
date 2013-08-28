@@ -462,7 +462,7 @@ describe Berkshelf::Berksfile do
       end
 
       it 'uses the passed in :client_name' do
-        Ridley.should_receive(:new).with(ridley_options)
+        Ridley.should_receive(:open).with(ridley_options)
         upload
       end
     end
@@ -479,7 +479,7 @@ describe Berkshelf::Berksfile do
       end
 
       it 'uses the passed in :client_key' do
-        Ridley.should_receive(:new).with(ridley_options)
+        Ridley.should_receive(:open).with(ridley_options)
         upload
       end
     end
