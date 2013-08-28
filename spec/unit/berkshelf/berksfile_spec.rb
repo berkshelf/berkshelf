@@ -484,7 +484,8 @@ describe Berkshelf::Berksfile do
         }
       end
       let(:ridley_options) do
-        default_ridley_options.merge({ server_url: 'http://configured-chef-server/', client_name: 'passed-in-client-name'})        
+        default_ridley_options.merge(
+            { server_url: 'http://configured-chef-server/', client_name: 'passed-in-client-name'})
       end
 
       it 'uses the passed in :client_name' do
@@ -500,7 +501,8 @@ describe Berkshelf::Berksfile do
         }
       end
       let(:ridley_options) do
-        default_ridley_options.merge({ server_url: 'http://configured-chef-server/', client_key: 'passed-in-client-key'})
+        default_ridley_options.merge(
+            { server_url: 'http://configured-chef-server/', client_key: 'passed-in-client-key'})
       end
 
       it 'uses the passed in :client_key' do
