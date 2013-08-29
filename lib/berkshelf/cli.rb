@@ -308,11 +308,6 @@ module Berkshelf
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
 
-      if File.chef_cookbook?(path)
-        options[:chefignore]     = true
-        options[:metadata_entry] = true
-      end
-
       Berkshelf::InitGenerator.new([path], options).invoke_all
 
       Berkshelf.formatter.msg 'Successfully initialized'
