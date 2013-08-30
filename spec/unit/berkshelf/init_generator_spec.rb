@@ -7,6 +7,10 @@ describe Berkshelf::InitGenerator do
 
   before do
     Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
+    FileUtils.mkdir_p(target)
+    File.open(File.join(target, 'metadata.rb'), 'w') do |f|
+      f.write("name 'some_cookbook'")
+    end
   end
 
   context 'with default options' do
@@ -29,7 +33,7 @@ describe Berkshelf::InitGenerator do
           contains 'config.vm.box = "opscode_ubuntu-12.04_provisionerless"'
           contains 'config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box"'
         end
-        no_file 'chefignore'
+        file 'chefignore'
       }
     end
   end
@@ -49,13 +53,17 @@ describe Berkshelf::InitGenerator do
     end
   end
 
+  context 'with no metadata' do
+    before do
+      FileUtils.rm(File.join(target, 'metadata.rb'))
+      expect {
+        Berkshelf::InitGenerator.new([target]).invoke_all
+        }.to raise_error(Berkshelf::NotACookbook)
+    end
+  end
+
   context 'with a metadata entry in the Berksfile' do
     before(:each) do
-      Dir.mkdir target
-      File.open(target.join('metadata.rb'), 'w+') do |f|
-        f.write ''
-      end
-
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target], metadata_entry: true).invoke_all
       }
