@@ -141,7 +141,7 @@ module Berkshelf
       graph = Solve::Graph.new
       cookbooks(name).each { |cookbook| graph.artifacts(name, cookbook.version) }
 
-      name, version = Solve.it!(graph, [[name, constraint]]).first
+      name, version = Solve.it!(graph, [[name, constraint]], ENV['DEBUG_RESOLVER'] ? { ui: Berkshelf.ui } : {}).first
 
       cookbook(name, version)
     rescue Solve::Errors::NoSolutionError
