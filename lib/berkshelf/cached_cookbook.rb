@@ -1,6 +1,12 @@
 module Berkshelf
   class CachedCookbook < Ridley::Chef::Cookbook
     class << self
+
+      # @return [Hash]
+      def loaded
+        @loaded ||= {}
+      end
+
       # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
       #
@@ -12,8 +18,9 @@ module Berkshelf
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
         return nil if cached_name.nil?
 
-        from_path(path, name: cached_name)
+        loaded[path.to_s] ||= from_path(path, name: cached_name)
       end
+
     end
 
     DIRNAME_REGEXP = /^(.+)-(.+)$/
@@ -23,7 +30,7 @@ module Berkshelf
       metadata.recommendations.merge(metadata.dependencies)
     end
 
-    def pretty_print
+    def pretty_print pp = nil
       [].tap do |a|
         a.push "        Name: #{cookbook_name}" unless name.blank?
         a.push "     Version: #{version}" unless version.blank?
