@@ -2,6 +2,10 @@
 
 * New "universe" resolver which communicates with an API server to resolve constraint graphs faster and more reliably
 
+# 2.0.10
+
+* Huge performance increase when resolving a Berksfile when the Berkshelf contains a lot of cookbooks
+
 # 2.0.9
 
 * Update required version of Ridley
