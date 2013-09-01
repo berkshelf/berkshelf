@@ -475,4 +475,18 @@ module Berkshelf
   class DuplicateDemand < BerkshelfError; status_code(138); end
   class VendorError < BerkshelfError; status_code(139); end
   class LockfileNotFound < BerkshelfError; status_code(140); end
+
+  class NotACookbook < BerkshelfError
+    status_code(141)
+
+    # @param [String] path
+    #   the path to the thing that is not a cookbook
+    def initialize(path)
+      @path = File.expand_path(path) rescue path
+    end
+
+    def to_s
+      "#{@path} does not appear to be a valid cookbook. Does it have a `metadata.rb`?"
+    end
+  end
 end
