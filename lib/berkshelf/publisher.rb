@@ -1,6 +1,10 @@
 module Berkshelf
   class Publisher
-    include Mixin::Tar
+    require_relative 'publisher/packager'
+
+    def initialize
+      @conn = CommunityREST.new
+    end
 
     def publish(path, options = {})
       begin
@@ -10,21 +14,18 @@ module Berkshelf
         raise PublishError, ex
       end
 
-      upload archive(cookbook), options
+      upload Packager.package(cookbook), options
     end
 
     private
 
-      # @param [CachedCookbook] cookbook
-      #
-      # @return [StringIO]
-      def archive(cookbook)
-        tar(cookbook.path, gzip: true)
-      end
+      # @return [Berkshelf::CommunityREST]
+      attr_reader :conn
 
       # @param [StringIO] stream
       def upload(stream, options = {})
         puts "uploading #{archive}"
+        conn.upload(cookbook)
       end
   end
 end
