@@ -30,7 +30,7 @@ module Berkshelf
       metadata.recommendations.merge(metadata.dependencies)
     end
 
-    def pretty_print pp = nil
+    def pretty_print
       [].tap do |a|
         a.push "        Name: #{cookbook_name}" unless name.blank?
         a.push "     Version: #{version}" unless version.blank?
