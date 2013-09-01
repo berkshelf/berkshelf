@@ -1,12 +1,10 @@
 module Berkshelf
   class CachedCookbook < Ridley::Chef::Cookbook
+
+    # Hash of { path => CachedCookbook } pairs for instances already loaded
+    @loaded = {}
+
     class << self
-
-      # @return [Hash]
-      def loaded
-        @loaded ||= {}
-      end
-
       # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
       #
@@ -18,9 +16,8 @@ module Berkshelf
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
         return nil if cached_name.nil?
 
-        loaded[path.to_s] ||= from_path(path, name: cached_name)
+        @loaded[path.to_s] ||= from_path(path, name: cached_name)
       end
-
     end
 
     DIRNAME_REGEXP = /^(.+)-(.+)$/
