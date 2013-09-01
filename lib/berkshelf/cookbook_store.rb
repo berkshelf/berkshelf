@@ -41,7 +41,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)
-      cookbooks = storage_path.children.map do |path|
+      cookbooks = storage_path.children.collect do |path|
         CachedCookbook.from_store_path(path)
       end.compact
 
