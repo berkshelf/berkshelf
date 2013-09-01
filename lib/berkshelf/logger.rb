@@ -1,9 +1,12 @@
 module Berkshelf
-  Logger = Celluloid::Logger.dup
+  Logger = Ridley.logger
 
-  Logger.module_eval do
-    def self.fatal(string)
-      error(string)
+  Logger.class_eval do
+    alias_method :fatal, :error
+
+    def deprecate(message)
+      trace = caller.join("\n\t")
+      warn "DEPRECATION WARNING: #{message}\n\t#{trace}"
     end
   end
 end

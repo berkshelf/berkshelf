@@ -1,6 +1,5 @@
 require 'active_support/core_ext'
 require 'archive/tar/minitar'
-require 'celluloid'
 require 'chozo/core_ext'
 require 'digest/md5'
 require 'forwardable'
@@ -145,5 +144,5 @@ require_relative 'berkshelf/test' if ENV['RUBY_ENV'] == 'test'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
 
-Ridley.logger = Celluloid.logger = Berkshelf.logger = Logger.new(STDOUT)
+Ridley.logger = Berkshelf.logger = Logger.new(STDOUT)
 Berkshelf.logger.level = Logger::WARN
