@@ -1,8 +1,8 @@
 module Berkshelf
   class CachedCookbook < Ridley::Chef::Cookbook
-    class << self
-      @loaded = Hash.new
+    @loaded = Hash.new
 
+    class << self
       # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
       #
