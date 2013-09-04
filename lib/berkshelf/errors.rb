@@ -65,6 +65,33 @@ module Berkshelf
     end
   end
 
+  class SubversionError < BerkshelfError
+    status_code(104)
+
+    # @param [#to_s] stderr
+    #   the error that came from stderr
+    def initialize(stderr)
+      @stderr = stderr.to_s
+    end
+
+    # A common header for all git errors. The #to_s method should
+    # use this before outputting any specific errors.
+    #
+    # @return [String]
+    def header
+      'An error occurred during Subversion execution:'
+    end
+
+    def to_s
+      [
+        header,
+        "",
+        "  " + @stderr.to_s.split("\n").map(&:strip).join("\n  "),
+        ""
+      ].join("\n")
+    end
+  end
+
   class AmbiguousGitRef < GitError
     def initialize(ref)
       @ref = ref
@@ -144,6 +171,19 @@ module Berkshelf
     end
   end
 
+  class InvalidSubversionURI < BerkshelfError
+    status_code(110)
+
+    # @param [String] uri
+    def initialize(uri)
+      @uri = uri
+    end
+
+    def to_s
+      "'#{@uri}' is not a valid Subversion URI"
+    end
+  end
+
   class UnknownGitHubProtocol < BerkshelfError
     status_code(110)
 
@@ -170,6 +210,14 @@ module Berkshelf
 
     def to_s
       'Could not find a Git executable in your path - please add it and try again'
+    end
+  end
+
+  class SubversionNotFound < BerkshelfError
+    status_code(110)
+
+    def to_s
+      'Could not find a Subversion executable in your path - please add it and try again'
     end
   end
 
