@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'thread'
 
 describe Berkshelf::ChefAPILocation, :chef_server do
   let(:test_chef_api) { 'https://chefserver:8081' }
@@ -10,6 +11,33 @@ describe Berkshelf::ChefAPILocation, :chef_server do
   let(:constraint) { double('constraint') }
 
   describe '.initialize' do
+    
+    it 'does not leak threads' do
+
+      # This will cause a ridley connection to be created and cached, which will create a bunch of threads.
+      # Storing in a variable to ensure the object is not garbage collected, which would clear the cache and
+      # mess up this test.
+      first_location = Berkshelf::ChefAPILocation.new('nginx',
+                                     constraint,
+                                     chef_api: test_chef_api,
+                                     node_name: node_name,
+                                     client_key: client_key)
+      
+      # keep track of how many threads are currently active in this process
+      current_thread_count = Thread.list.length
+      
+      10.times do
+        # Since we're giving the same chef server connection info, the existing cached connection sould be reused
+        Berkshelf::ChefAPILocation.new('nginx',
+                                       constraint,
+                                       chef_api: test_chef_api,
+                                       node_name: node_name,
+                                       client_key: client_key)
+      end
+      
+      expect(Thread.list.length <= current_thread_count).to be true
+    end
+    
     subject do
       Berkshelf::ChefAPILocation.new('nginx',
         constraint,
