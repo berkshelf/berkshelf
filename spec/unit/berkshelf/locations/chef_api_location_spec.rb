@@ -11,7 +11,7 @@ describe Berkshelf::ChefAPILocation, :chef_server do
   let(:constraint) { double('constraint') }
 
   describe '.initialize' do
-    
+
     it 'does not leak threads' do
 
       # This will cause a ridley connection to be created and cached, which will create a bunch of threads.
@@ -22,10 +22,10 @@ describe Berkshelf::ChefAPILocation, :chef_server do
                                      chef_api: test_chef_api,
                                      node_name: node_name,
                                      client_key: client_key)
-      
+
       # keep track of how many threads are currently active in this process
       current_thread_count = Thread.list.length
-      
+
       10.times do
         # Since we're giving the same chef server connection info, the existing cached connection sould be reused
         Berkshelf::ChefAPILocation.new('nginx',
@@ -34,10 +34,10 @@ describe Berkshelf::ChefAPILocation, :chef_server do
                                        node_name: node_name,
                                        client_key: client_key)
       end
-      
+
       expect(Thread.list.length <= current_thread_count).to be true
     end
-    
+
     subject do
       Berkshelf::ChefAPILocation.new('nginx',
         constraint,
