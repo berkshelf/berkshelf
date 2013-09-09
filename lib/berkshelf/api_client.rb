@@ -2,7 +2,7 @@ module Berkshelf
   # Used to communicate with a remotely hosted [Berkshelf API Server](https://github.com/riotgames/berkshelf-api).
   #
   # @example
-  #   client = Berkshelf::APIClient.new("http://api.berkshelf.com")
+  #   client = Berkshelf::APIClient.new("https://api.berkshelf.com")
   #   client.universe #=> [...]
   class APIClient < Faraday::Connection
     require_relative 'api_client/remote_cookbook'
