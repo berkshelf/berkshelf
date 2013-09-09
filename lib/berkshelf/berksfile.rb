@@ -23,7 +23,7 @@ module Berkshelf
       end
     end
 
-    DEFAULT_API_URL = "http://api.berkshelf.com".freeze
+    DEFAULT_API_URL = "https://api.berkshelf.com".freeze
 
     include Berkshelf::Mixin::Logging
     include Berkshelf::Mixin::DSLEval
@@ -135,8 +135,8 @@ module Berkshelf
     # in a second source would not be used.
     #
     # @example
-    #   source "http://api.berkshelf.com"
-    #   source "http://berks-api.riotgames.com"
+    #   source "https://api.berkshelf.com"
+    #   source "https://berks-api.riotgames.com"
     #
     # @param [String] api_url
     #   url for the api to add
