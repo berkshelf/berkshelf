@@ -8,7 +8,7 @@ describe Berkshelf::Berksfile do
       it "returns an array including the default sources" do
         expect(subject).to be_a(Array)
         expect(subject).to have(1).item
-        expect(subject.map(&:to_s)).to include("http://api.berkshelf.com")
+        expect(subject.map(&:to_s)).to include("https://api.berkshelf.com")
       end
     end
 
