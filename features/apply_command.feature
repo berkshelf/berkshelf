@@ -17,8 +17,8 @@ Feature: Applying cookbook versions to a Chef Environment
     When I successfully run `berks apply berkshelf_lock_test`
     Then the version locks in "berkshelf_lock_test" should be:
       | cookbook   | version_lock |
-      | fake       | 1.0.0 |
-      | dependency | 2.0.0 |
+      | fake       | = 1.0.0 |
+      | dependency | = 2.0.0 |
     And the exit status should be 0
 
   @chef_server
