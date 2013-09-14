@@ -5,7 +5,6 @@ gemspec
 group :guard do
   gem 'coolline',      '~> 0.4.2'
   gem 'guard',         '~> 1.8'
-  gem 'guard-cane'
   gem 'guard-cucumber'
   gem 'guard-rspec'
   gem 'guard-spork'
