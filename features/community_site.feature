@@ -39,3 +39,16 @@ Feature: Installing cookbooks from the community site
       Unable to find a solution for demands: apache2 (= 0.0.0)
       """
     And the exit status should be "NoSolutionError"
+
+  Scenario: when the cookbook exists, but it is a zip file
+    Given I have a Berksfile pointing at the community API endpoint with:
+      """
+      cookbook 'packer', '0.2.1'
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Installing packer (0.2.1)
+      """
+    And the cookbook store should have the cookbooks:
+      | packer | 0.2.1 |
