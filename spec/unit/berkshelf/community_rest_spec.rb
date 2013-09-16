@@ -7,6 +7,8 @@ describe Berkshelf::CommunityREST do
       let(:destination) { '/destination/bar' }
       let(:file) { double('file') }
       let(:gzip_reader) { double('gzip_reader') }
+      let(:zip_file) { double('zip_file') }
+      let(:zip_entry) { double('zip_entry') }
 
       before do
         File.stub(:open).with(target, 'rb').and_return(file)
@@ -19,6 +21,17 @@ describe Berkshelf::CommunityREST do
         ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
         Zlib::GzipReader.should_receive(:new).with(file)
         Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
+
+        expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
+      end
+
+      it 'unpacks the zip' do
+        ::IO.should_receive(:binread).with(target, 8, 257).and_return("\x00" * 8)
+        ::IO.should_receive(:binread).with(target, 2).twice.and_return("PK")
+        Zip::File.should_receive(:open).with(target).and_yield(zip_file)
+        zip_file.should_receive(:each).and_yield(zip_entry)
+        zip_entry.should_receive(:name).and_return("baz")
+        zip_file.should_receive(:extract).with(zip_entry, "/destination/bar/baz")
 
         expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
       end

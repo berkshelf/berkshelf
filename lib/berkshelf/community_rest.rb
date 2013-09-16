@@ -15,6 +15,12 @@ module Berkshelf
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
         elsif is_tar_file(target)
           Archive::Tar::Minitar.unpack(target, destination)
+        elsif is_zip_file(target)
+          Zip::File.open(target) do |zip_file|
+            zip_file.each do |zip_entry|
+              zip_file.extract(zip_entry, File.join(destination, zip_entry.name))
+            end
+          end
         else
           raise Berkshelf::UnknownCompressionType.new(target)
         end
@@ -45,6 +51,10 @@ module Berkshelf
 
         def is_tar_file(path)
           IO.binread(path, 8, 257).to_s == "ustar\x0000"
+        end
+
+        def is_zip_file(path)
+          IO.binread(path, 2) == "PK"
         end
     end
 
