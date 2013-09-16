@@ -572,7 +572,7 @@ module Berkshelf
         install
 
         environment.cookbook_versions = {}.tap do |cookbook_versions|
-          lockfile.sources.each { |source| cookbook_versions[source.name] = source.locked_version.to_s }
+          lockfile.sources.each { |source| cookbook_versions[source.name] = "= #{source.locked_version.to_s}" }
         end
 
         environment.save
