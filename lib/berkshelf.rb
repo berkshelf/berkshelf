@@ -11,6 +11,7 @@ require 'solve'
 require 'thor'
 require 'tmpdir'
 require 'uri'
+require 'zip'
 require 'zlib'
 
 JSON.create_id = nil
