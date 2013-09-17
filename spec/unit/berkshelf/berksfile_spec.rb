@@ -333,30 +333,25 @@ describe Berkshelf::Berksfile do
 
   describe '#retrieve_locked' do
     let(:lockfile) { double('lockfile', find: locked) }
+    let(:dependency) { double('dependency', name: 'bacon') }
     let(:locked) { double('locked', cached_cookbook: cached, locked_version: '1.0.0') }
     let(:cached) { double('cached') }
 
     before do
-      subject.stub(:validate_cookbook_names!)
       subject.stub(:lockfile).and_return(lockfile)
     end
 
-    it 'validates cookbook names' do
-      expect(subject).to receive(:validate_cookbook_names!).once
-      subject.retrieve_locked('bacon')
-    end
-
-    it 'raises an error when the lockfile does not exist' do
+    it 'raises an error when the lockfile does not have the source' do
       lockfile.stub(:find)
       expect {
-        subject.retrieve_locked('bacon')
-      }.to raise_error(Berkshelf::LockfileNotFound)
+        subject.retrieve_locked(dependency)
+      }.to raise_error(Berkshelf::CookbookNotFound)
     end
 
     it 'raises an error when the cookbook is not downloaded' do
-      locked.stub(:cached_cookbook)
+      locked.stub(:downloaded?).and_return(false)
       expect {
-        subject.retrieve_locked('bacon')
+        subject.retrieve_locked(dependency)
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
   end

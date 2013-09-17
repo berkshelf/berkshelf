@@ -70,9 +70,9 @@ Feature: berks outdated
     When I run `berks outdated`
     Then the output should contain:
       """
-      Could not find cookbook 'bacon (>= 0.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      Could not find cookbook 'bacon (= 1.0.0)'. Try running `berks install` to download and install the missing dependencies.
       """
-    And the exit status should be "LockfileNotFound"
+    And the exit status should be "CookbookNotFound"
 
 
   Scenario: When the cookbook is not installed
@@ -85,6 +85,6 @@ Feature: berks outdated
     When I run `berks outdated`
     Then the output should contain:
       """
-      Could not find cookbook 'bacon (= 1.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      Could not find cookbook 'bacon (1.0.0)'. Try running `berks install` to download and install the missing dependencies.
       """
     And the exit status should be "CookbookNotFound"
