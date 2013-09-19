@@ -30,7 +30,7 @@ class Spec < Thor
 
   desc 'all', 'Run all specs and features'
   def all
-    exit(units_command && acceptance_command && quality_command)
+    exit(units_command && acceptance_command)
   end
 
   desc 'ci', 'Run tests on Travis'
@@ -47,11 +47,6 @@ class Spec < Thor
   desc 'acceptance', 'Run acceptance tests'
   def acceptance
     exit(acceptance_command)
-  end
-
-  desc 'quality', 'Run code quality tests'
-  def quality
-    exit(quality_command)
   end
 
   no_tasks do
