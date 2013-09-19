@@ -28,7 +28,7 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
-    And the exit status should be 0
+
 
   Scenario: Accepting the default values
     Given I do not have a Chef config
@@ -53,7 +53,6 @@ Feature: Configuring Berkshelf via the command line
       | vagrant.vm.box_url          | https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box |
       | vagrant.omnibus.enabled     | BOOLEAN[true] |
       | vagrant.omnibus.version     | latest |
-    And the exit status should be 0
 
   Scenario: Creating a Berkshelf configuration file when one already exists
     Given I already have a Berkshelf config file
@@ -85,7 +84,6 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
-    And the exit status should be 0
 
     Examples:
       | path                   |
