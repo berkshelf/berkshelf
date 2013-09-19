@@ -30,6 +30,14 @@ describe Berkshelf::CachedCookbook do
           expect(described_class.from_store_path(path)).to be_nil
         end
       end
+
+      context 'given an already cached cookbook' do
+        let!(:cached) { described_class.from_store_path(path) }
+
+        it 'returns the cached cookbook instance' do
+          expect(described_class.from_store_path(path)).to eq(cached)
+        end
+      end
     end
 
     describe '::checksum' do

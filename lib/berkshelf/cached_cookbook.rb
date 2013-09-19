@@ -12,8 +12,15 @@ module Berkshelf
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
         return nil if cached_name.nil?
 
-        from_path(path, name: cached_name)
+        loaded_cookbooks[path.to_s] ||= from_path(path, name: cached_name)
       end
+
+      private
+        # @api private
+        # @return [Hash<String, CachedCookbook>]
+        def loaded_cookbooks
+          @loaded_cookbooks ||= {}
+        end
     end
 
     DIRNAME_REGEXP = /^(.+)-(.+)$/
