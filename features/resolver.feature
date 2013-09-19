@@ -20,17 +20,8 @@ Feature: resolve cookbooks
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Attempting to use berkshelf-2.0.0
-      Found Solution
-      {"berkshelf"=>"2.0.0"}
       Attempting to find a solution
-      Adding constraint berkshelf = 2.0.0 from root
-      Resetting possible values for berkshelf
-      Possible values are Searching for a value for berkshelf
-      Constraints are = 2.0.0
-      Possible values are ["berkshelf", []]
-      Could not find an acceptable value for berkshelf
-      Cannot backtrack any further
+      Adding constraint berkshelf >= 0.0.0 from root
       """
 
   Scenario: without DEBUG_RESOLVER
