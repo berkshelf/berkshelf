@@ -6,97 +6,53 @@ Feature: Uploading cookbooks to a Chef Server
   Background:
     Given the Berkshelf API server's cache is empty
     And the Chef Server is empty
-    And the cookbook store is empty
+    And the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+      | oops | 3.0.0 |
 
   Scenario: multiple cookbooks with no arguments
-    Given the cookbook store has the cookbooks:
-      | ruby   | 1.0.0 |
-      | elixir | 2.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      cookbook 'ruby', '1.0.0'
-      cookbook 'elixir', '2.0.0'
+      cookbook 'fake', '1.0.0'
+      cookbook 'ekaf', '2.0.0'
       """
     When I successfully run `berks upload`
-    Then the output should contain:
-      """
-      Uploading ruby (1.0.0) to: 'http://localhost:26310/'
-      Uploading elixir (2.0.0) to: 'http://localhost:26310/'
-      """
-    And the Chef Server should have the cookbooks:
-      | ruby   | 1.0.0 |
-      | elixir | 2.0.0 |
+    Then the Chef Server should have the cookbooks:
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+
 
   Scenario: a cookbook with a path location
-    Given a cookbook named "ruby"
-    And I write to "Berksfile" with:
+    Given a cookbook named "fake"
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      cookbook 'ruby', path: './ruby'
+      cookbook 'fake', path: './fake'
       """
     When I successfully run `berks upload`
-    Then the output should contain:
-      """
-      Uploading ruby (0.0.0) to: 'http://localhost:26310/'
-      """
-    And the Chef Server should have the cookbooks:
-      | ruby | 0.0.0 |
+    Then the Chef Server should have the cookbooks:
+      | fake | 0.0.0 |
 
-  Scenario: a cookbook with a git location
-    Given the cookbook store has the cookbooks:
-      | berkshelf-cookbook-fixture | 0.1.0 |
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-
-      cookbook 'berkshelf-cookbook-fixture', ref: 'v0.1.0'
-      """
-    When I successfully run `berks upload`
-    Then the output should contain:
-      """
-      Uploading berkshelf-cookbook-fixture (0.1.0) to: 'http://localhost:26310/'
-      """
-    And the Chef Server should have the cookbooks:
-      | berkshelf-cookbook-fixture | 0.1.0 |
 
   Scenario: specifying a single cookbook with dependencies
-    Given the cookbook store has the cookbooks:
-      | fake  | 1.0.0 |
-      | ekaf  | 2.0.0 |
-    And the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
+    Given the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
       | fake | = 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '2.0.0'
       cookbook 'reset', '3.4.5'
       """
     When I successfully run `berks upload reset`
-    Then the output should contain:
-      """
-      Uploading reset (3.4.5) to: 'http://localhost:26310/'
-      Uploading fake (1.0.0) to: 'http://localhost:26310/'
-      """
-    And the output should not contain:
-      """
-      Uploading ekaf (2.0.0) to: 'http://localhost:26310/'
-      """
-    And the Chef Server should have the cookbooks:
+    Then the Chef Server should have the cookbooks:
       | reset | 3.4.5 |
       | fake  | 1.0.0 |
     And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
 
+
   Scenario: specifying a dependency not defined in the Berksfile
-    Given I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-      """
+    Given I have a Berksfile pointing at the local Berkshelf API
     When I run `berks upload reset`
     Then the output should contain:
       """
@@ -104,153 +60,76 @@ Feature: Uploading cookbooks to a Chef Server
       """
     And the exit status should be "DependencyNotFound"
 
-  Scenario: specifying multiple cookbooks to upload
-    Given the cookbook store has the cookbooks:
-      | ntp  | 1.0.0 |
-      | vim  | 1.0.0 |
-      | apt  | 1.0.0 |
-    Given I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
-      cookbook 'apt', '1.0.0'
-      cookbook 'ntp', '1.0.0'
-      cookbook 'vim', '1.0.0'
+  Scenario: specifying multiple cookbooks to upload
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-    When I successfully run `berks upload ntp vim`
-    Then the output should contain:
+      cookbook 'fake', '1.0.0'
+      cookbook 'ekaf', '2.0.0'
+      cookbook 'oops', '3.0.0'
       """
-      Uploading ntp (1.0.0) to: 'http://localhost:26310/'
-      Uploading vim (1.0.0) to: 'http://localhost:26310/'
-      """
-    And the output should not contain:
-      """
-      Uploading apt (1.0.0) to: 'http://localhost:26310/'
-      """
-    And the Chef Server should have the cookbooks:
-      | ntp |
-      | vim |
+    When I successfully run `berks upload fake ekaf`
+    Then the Chef Server should have the cookbooks:
+      | fake |
+      | ekaf |
     And the Chef Server should not have the cookbooks:
-      | apt |
+      | oops |
+
 
   Scenario: uploading a single groups of demands with the --only flag
-    Given the cookbook store has the cookbooks:
-      | core    | 1.0.0 |
-      | system  | 1.0.0 |
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      group :group_a do
-        cookbook 'core', '1.0.0'
-      end
-
-      group :group_b do
-        cookbook 'system', '1.0.0'
-      end
+      cookbook 'fake', group: :take_me
+      cookbook 'ekaf', group: :not_me
       """
-    When I successfully run `berks upload --only group_a`
-    Then the output should contain:
-      """
-      Uploading core (1.0.0) to: 'http://localhost:26310/'
-      """
-    And the output should not contain:
-      """
-      Uploading system (1.0.0) to: 'http://localhost:26310/'
-      """
-    And the Chef Server should have the cookbooks:
-      | core | 1.0.0 |
+    When I successfully run `berks upload --only take_me`
+    Then the Chef Server should have the cookbooks:
+      | fake | 1.0.0 |
     And the Chef Server should not have the cookbooks:
-      | system | 1.0.0 |
+      | ekaf | 2.0.0 |
+
 
   Scenario: uploading multiple groups of demands with the --only flag
-    Given the cookbook store has the cookbooks:
-      | core    | 1.0.0 |
-      | system  | 1.0.0 |
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      group :group_a do
-        cookbook 'core', '1.0.0'
-      end
-
-      group :group_b do
-        cookbook 'system', '1.0.0'
-      end
+      cookbook 'fake', group: :take_me
+      cookbook 'ekaf', group: :not_me
       """
-    When I successfully run `berks upload --only group_a group_b`
-    Then the output should contain:
-      """
-      Uploading core (1.0.0) to: 'http://localhost:26310/'
-      Uploading system (1.0.0) to: 'http://localhost:26310/'
-      """
+    When I successfully run `berks upload --only take_me not_me`
     And the Chef Server should have the cookbooks:
-      | core   | 1.0.0 |
-      | system | 1.0.0 |
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+
 
   Scenario: skipping a single group to upload with the --except flag
-    Given the cookbook store has the cookbooks:
-      | core    | 1.0.0 |
-      | system  | 1.0.0 |
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      group :group_a do
-        cookbook 'core', '1.0.0'
-      end
-
-      group :group_b do
-        cookbook 'system', '1.0.0'
-      end
+      cookbook 'fake', group: :take_me
+      cookbook 'ekaf', group: :not_me
       """
-    When I successfully run `berks upload --except group_b`
-    Then the output should contain:
-      """
-      Uploading core (1.0.0) to: 'http://localhost:26310/'
-      """
-    And the output should not contain:
-      """
-      Uploading system (1.0.0) to: 'http://localhost:26310/'
-      """
+    When I successfully run `berks upload --except not_me`
     And the Chef Server should have the cookbooks:
-      | core | 1.0.0 |
+      | fake | 1.0.0 |
     And the Chef Server should not have the cookbooks:
-      | system | 1.0.0 |
+      | ekaf | 2.0.0 |
+
 
   Scenario: skipping multiple groups with the --except flag
-    Given the cookbook store has the cookbooks:
-      | core    | 1.0.0 |
-      | system  | 1.0.0 |
-    Given I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
-      group :group_a do
-        cookbook 'core', '1.0.0'
-      end
-
-      group :group_b do
-        cookbook 'system', '1.0.0'
-      end
+      cookbook 'fake', group: :take_me
+      cookbook 'ekaf', group: :not_me
       """
-    When I successfully run `berks upload --except group_a group_b`
-    Then the output should not contain:
-      """
-      Uploading core (1.0.0) to: 'http://localhost:26310/'
-      Uploading system (1.0.0) to: 'http://localhost:26310/'
-      """
+    When I successfully run `berks upload --except take_me not_me`
     And the Chef Server should not have the cookbooks:
-      | core   | 1.0.0 |
-      | system | 1.0.0 |
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+
 
   Scenario: attempting to upload an invalid cookbook
     Given a cookbook named "cookbook with spaces"
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'cookbook with spaces', path: './cookbook with spaces'
       """
     When I run `berks upload`
@@ -260,31 +139,29 @@ Feature: Uploading cookbooks to a Chef Server
       """
     And the exit status should be "InvalidCookbookFiles"
 
+
   Scenario: With unicode characters
     Given a cookbook named "fake"
-    And the cookbook "fake" has the file "README.md" with:
+    And I cd to "fake"
+    And I write to "README.md" with:
       """
       Jamié Wiñsor
       赛斯瓦戈
       Μιψηαελ Ιωευ
       جوستين كامبل
       """
-    And the cookbook "fake" has the file "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       metadata
       """
-    When I cd to "fake"
-    And I successfully run `berks upload fake`
+    When I successfully run `berks upload fake`
     Then the output should contain:
       """
       Uploading fake (0.0.0)
       """
 
+
   Scenario: When the cookbook already exist
-    Given the cookbook store has the cookbooks:
-      | fake  | 1.0.0 |
     And the Chef Server has frozen cookbooks:
       | fake  | 1.0.0 |
     And I write to "Berksfile" with:
@@ -302,7 +179,7 @@ Feature: Uploading cookbooks to a Chef Server
 
         * fake (1.0.0)
       """
-    And the exit status should be 0
+
 
   Scenario: When the cookbook already exist and is a metadata location
     Given a cookbook named "fake"
@@ -310,16 +187,14 @@ Feature: Uploading cookbooks to a Chef Server
       """
       metadata
       """
-    When I cd to "fake"
     And the Chef Server has frozen cookbooks:
       | fake  | 0.0.0 |
-    When I run `berks upload`
+    And I cd to "fake"
+    When I successfully run `berks upload`
     Then the output should contain:
       """
-      Uploading fake (0.0.0) to: 'http://localhost:26310/'
       Skipping fake (0.0.0) (already uploaded)
       Skipped uploading some cookbooks because they already existed on the remote server. Re-run with the `--force` flag to force overwrite these cookbooks:
 
         * fake (0.0.0)
       """
-    And the exit status should be 0

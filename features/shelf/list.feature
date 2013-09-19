@@ -9,7 +9,7 @@ Feature: Listing all cookbooks in the Berkshelf shelf
       """
       There are no cookbooks in the Berkshelf shelf
       """
-    And the exit status should be 0
+
 
   Scenario: With two cookbooks in the store
     Given the cookbook store has the cookbooks:
@@ -22,7 +22,7 @@ Feature: Listing all cookbooks in the Berkshelf shelf
         * ekaf (2.3.4)
         * fake (1.0.0)
       """
-    And the exit status should be 0
+
 
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:
@@ -36,4 +36,3 @@ Feature: Listing all cookbooks in the Berkshelf shelf
       Cookbooks in the Berkshelf shelf:
         * fake (1.0.0, 1.1.0, 1.2.0, 2.0.0)
       """
-    And the exit status should be 0

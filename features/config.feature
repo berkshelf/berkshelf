@@ -9,7 +9,6 @@ Feature: Reading a Berkshelf configuration file
       | config.omnibus.chef_version = :latest |
       | config.vm.box = "opscode_ubuntu-12.04_provisionerless" |
       | config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box" |
-    And the exit status should be 0
 
   Scenario: Using a Berkshelf configuration file that disables the vagrant-omnibus plugin
     Given I have a Berkshelf config file containing:
@@ -108,7 +107,7 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
       | config.vm.network :private_network, ip: "12.34.56.78" |
       | config.vm.network :public_network |
-    And the exit status should be 0
+
 
   Scenario: Using a partial Berkshelf configuration file
     Given I have a Berkshelf config file containing:
@@ -126,7 +125,7 @@ Feature: Reading a Berkshelf configuration file
     When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
-    And the exit status should be 0
+
 
   Scenario: Using an invalid Berkshelf configuration file
     Given I have a Berkshelf config file containing:
@@ -166,4 +165,3 @@ Feature: Reading a Berkshelf configuration file
       | chef.chef_server_url        = "localhost:4000"      |
       | chef.validation_client_name = "my_client-validator" |
       | chef.validation_key_path    = "/a/b/c/my_client-validator.pem" |
-    Then the exit status should be 0
