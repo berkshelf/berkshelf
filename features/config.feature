@@ -1,14 +1,11 @@
 Feature: Reading a Berkshelf configuration file
-  As a Cookbook author
-  I want to quickly generate a cookbook with my own customizations
-  So that I don't have to spend time modifying the default generated output each time
-
   Scenario: Missing a Berkshelf configuration file
     When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.omnibus.chef_version = :latest |
       | config.vm.box = "opscode_ubuntu-12.04_provisionerless" |
       | config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box" |
+
 
   Scenario: Using a Berkshelf configuration file that disables the vagrant-omnibus plugin
     Given I have a Berkshelf config file containing:
@@ -43,6 +40,7 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.network :public_network |
     And the exit status should be 0
 
+
   Scenario: Using a Berkshelf configuration file that sets the vagrant-omnibus plugin chef version
     Given I have a Berkshelf config file containing:
     """
@@ -75,6 +73,7 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.network :private_network, ip: "12.34.56.78" |
       | config.vm.network :public_network |
     And the exit status should be 0
+
 
   Scenario: Using a Berkshelf configuration file that sets the vagrant-omnibus plugin chef version to latest
     Given I have a Berkshelf config file containing:
@@ -142,6 +141,7 @@ Feature: Reading a Berkshelf configuration file
     Then the output should contain "Invalid configuration"
     And the output should contain "vagrant.vm.box Expected attribute: 'vagrant.vm.box' to be a type of: 'String'"
     And the exit status should be "InvalidConfiguration"
+
 
   Scenario: Using a Berkshelf configuration file with Chef configuration information
     Given I have a Berkshelf config file containing:

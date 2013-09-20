@@ -1,8 +1,4 @@
-Feature: Listing all cookbooks in the Berkshelf shelf
-  As a user with a cookbook store
-  I want to show all the cookbooks I have installed
-  So that I can be well informed
-
+Feature: berks shelf list
   Scenario: With no cookbooks in the store
     When I successfully run `berks shelf list`
     Then the output should contain:

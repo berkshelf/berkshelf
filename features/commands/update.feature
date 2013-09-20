@@ -1,10 +1,6 @@
-Feature: Updating a cookbook defined by a Berksfile
-  As a user
-  I want a way to update the versions without clearing out the files I've downloaded
-  So that I can update faster than a clean install
-
+Feature: berks update
   Background:
-    Given the cookbook store has the cookbooks:
+    * the cookbook store has the cookbooks:
       | fake | 0.1.0 |
       | fake | 0.2.0 |
       | fake | 1.0.0 |

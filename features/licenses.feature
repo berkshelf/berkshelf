@@ -1,13 +1,9 @@
 Feature: Installing cookbooks with specific licenses
-  As a user
-  I want to ensure my company only uses cookbooks that fall in our legal realm
-  So that I can safely install and legally use community cookbooks
-
   Background:
-    Given the Berkshelf API server's cache is empty
-    And the Chef Server is empty
-    And the cookbook store is empty
-    And I have a Berksfile pointing at the local Berkshelf API with:
+    * the Berkshelf API server's cache is empty
+    * the Chef Server is empty
+    * the cookbook store is empty
+    * I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'fake', '1.0.0'
       """

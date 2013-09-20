@@ -1,12 +1,9 @@
 Feature: --format json
-  As a user
-  I want to be able to get all output in JSON format
-  So I can easily parse the output in scripts
-
   Background:
-    Given the Berkshelf API server's cache is empty
-    And the Chef Server is empty
-    And the cookbook store is empty
+    * the Berkshelf API server's cache is empty
+    * the Chef Server is empty
+    * the cookbook store is empty
+
 
   Scenario: JSON output installing a cookbook from the default location
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -35,6 +32,7 @@ Feature: --format json
       }
       """
 
+
   Scenario: JSON output installing a cookbook we already have
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture   | 1.0.0 |
@@ -60,6 +58,7 @@ Feature: --format json
         ]
       }
       """
+
 
   Scenario: JSON output when running the show command
     Given the cookbook store has the cookbooks:
@@ -92,6 +91,7 @@ Feature: --format json
       }
       """
 
+
   Scenario: JSON output when running the upload command
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -117,6 +117,7 @@ Feature: --format json
         ]
       }
       """
+
 
   Scenario: JSON output when running the outdated command
     Given the cookbook store has the cookbooks:

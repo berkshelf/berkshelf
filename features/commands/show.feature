@@ -1,8 +1,4 @@
-Feature: Displaying information about a cookbook defined by a Berksfile
-  As a user
-  I want to be able to view the metadata information of a cached cookbook
-  So that I can troubleshoot bugs or satisfy my own curiosity
-
+Feature: berks show
   Scenario: With no options
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
