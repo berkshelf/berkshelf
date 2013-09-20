@@ -1,12 +1,9 @@
-Feature: install cookbooks from a Berksfile
-  As a user with a Berksfile
-  I want a command to install the cookbooks defined in my Berksfile and their recursive dependencies
-  So I don't have to download those cookbooks and their all of their dependencies manually
-
+Feature: berks install
   Background:
-    Given the Berkshelf API server's cache is empty
-    And the Chef Server is empty
-    And the cookbook store is empty
+    * the Berkshelf API server's cache is empty
+    * the Chef Server is empty
+    * the cookbook store is empty
+
 
   Scenario: installing the version that best satisfies our demand
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -25,6 +22,7 @@ Feature: install cookbooks from a Berksfile
     And the cookbook store should have the cookbooks:
       | berkshelf | 2.0.0 |
 
+
   Scenario: installing an explicit version demand
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -41,6 +39,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the cookbook store should have the cookbooks:
       | berkshelf | 1.0.0 |
+
 
   Scenario: installing demands from all groups
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -67,6 +66,7 @@ Feature: install cookbooks from a Berksfile
       | ruby   | 1.0.0 |
       | elixir | 1.0.0 |
 
+
   Scenario: installing a demand that has already been installed
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -83,6 +83,63 @@ Feature: install cookbooks from a Berksfile
       Using hostsfile (1.0.1)
       """
 
+
+  Scenario: installing a single groups of demands with the --only flag
+    Given the cookbook store has the cookbooks:
+      | takeme | 1.0.0 |
+      | notme  | 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'takeme', group: :take_me
+      cookbook 'notme', group: :not_me
+      """
+    When I successfully run `berks install --only take_me`
+    Then the output should contain "Using takeme (1.0.0)"
+    Then the output should not contain "Using notme (1.0.0)"
+
+
+  Scenario: installing multiple groups of demands with the --only flag
+    Given the cookbook store has the cookbooks:
+      | takeme | 1.0.0 |
+      | notme | 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'takeme', group: :take_me
+      cookbook 'notme', group: :not_me
+      """
+    When I successfully run `berks upload --only take_me not_me`
+    Then the output should contain "Using takeme (1.0.0)"
+    Then the output should contain "Using notme (1.0.0)"
+
+
+  Scenario: skipping a single group to install with the --except flag
+    Given the cookbook store has the cookbooks:
+      | takeme | 1.0.0 |
+      | notme | 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'takeme', group: :take_me
+      cookbook 'notme', group: :not_me
+      """
+    When I successfully run `berks upload --except not_me`
+    Then the output should contain "Using takeme (1.0.0)"
+    Then the output should not contain "Using notme (1.0.0)"
+
+
+  Scenario: skipping multiple groups to install with the --except flag
+    Given the cookbook store has the cookbooks:
+      | takeme | 1.0.0 |
+      | notme | 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'takeme', group: :take_me
+      cookbook 'notme', group: :not_me
+      """
+    When I successfully run `berks upload --except take_me not_me`
+    Then the output should not contain "Using takeme (1.0.0)"
+    Then the output should not contain "Using notme (1.0.0)"
+
+
   Scenario: installing a demand from a path location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -95,6 +152,7 @@ Feature: install cookbooks from a Berksfile
       Using example_cookbook (0.5.0) path: '
       """
 
+
   Scenario: installing a Berksfile from a remote directory that contains a path location
     Given I have a Berksfile at "subdirectory" pointing at the local Berkshelf API with:
       """
@@ -105,6 +163,7 @@ Feature: install cookbooks from a Berksfile
       """
       Using example_cookbook (0.5.0) path: '
       """
+
 
   Scenario: installing a demand from a Git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -121,6 +180,7 @@ Feature: install cookbooks from a Berksfile
       Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
       """
 
+
   Scenario: installing a demand from a Git location that has already been installed
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -133,6 +193,7 @@ Feature: install cookbooks from a Berksfile
       """
       Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
       """
+
 
   Scenario: installing a Berksfile that contains a Git location with a rel
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -149,6 +210,7 @@ Feature: install cookbooks from a Berksfile
       Using berkshelf-cookbook-fixture (1.0.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'rel' over protocol: 'git'
       """
 
+
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -164,6 +226,7 @@ Feature: install cookbooks from a Berksfile
       Using berkshelf-cookbook-fixture (0.2.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
       """
 
+
   Scenario: installing a Berksfile that contains a GitHub location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -178,6 +241,7 @@ Feature: install cookbooks from a Berksfile
       building universe...
       Using berkshelf-cookbook-fixture (0.2.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v0.2.0' over protocol: 'git'
       """
+
 
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -196,8 +260,9 @@ Feature: install cookbooks from a Berksfile
 
     Examples:
       | protocol |
-      | git |
-      | https |
+      | git      |
+      | https    |
+
 
   Scenario: installing a Berksfile that contains a Github location and an unsupported protocol
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -210,6 +275,7 @@ Feature: install cookbooks from a Berksfile
       'somethingabsurd' is not supported for the 'github' location key - please use 'git' instead
       """
     And the exit status should be "InvalidGitURI"
+
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"
@@ -224,6 +290,7 @@ Feature: install cookbooks from a Berksfile
       Using sparkle_motion (0.0.0)
       """
 
+
   Scenario: running install when current project is a cookbook and the 'metadata' is specified with a path
     Given a cookbook named "fake"
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -235,6 +302,7 @@ Feature: install cookbooks from a Berksfile
       """
       Using fake (0.0.0)
       """
+
 
   Scenario: running install when a Berksfile.lock is present
     Given the Chef Server has cookbooks:
@@ -262,6 +330,7 @@ Feature: install cookbooks from a Berksfile
       Installing bacon (0.2.0)
       """
 
+
   Scenario: running install with no Berksfile or Berksfile.lock
     When I run `berks install`
     Then the output should contain:
@@ -269,6 +338,7 @@ Feature: install cookbooks from a Berksfile
       No Berksfile or Berksfile.lock found at '
       """
     And the exit status should be "BerksfileNotFound"
+
 
   Scenario: running install when the Cookbook is not found on the remote site
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -283,6 +353,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be "NoSolutionError"
 
+
   Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -294,6 +365,7 @@ Feature: install cookbooks from a Berksfile
       '/something/on/disk' is not a valid Git URI
       """
     And the exit status should be "InvalidGitURI"
+
 
   Scenario: installing when there are sources with duplicate names defined in the same group
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -308,6 +380,7 @@ Feature: install cookbooks from a Berksfile
       """
     And the exit status should be "DuplicateDependencyDefined"
 
+
   Scenario: when a Git demand points to a branch that does not satisfy the version constraint
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -320,6 +393,7 @@ Feature: install cookbooks from a Berksfile
       The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
       """
     And the exit status should be "CookbookValidationFailure"
+
 
   Scenario: when a Git demand is defined and a cookbook of the same name and version is already in the cookbook store
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -336,6 +410,7 @@ Feature: install cookbooks from a Berksfile
       Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v1.0.0' at ref: 'b4f968c9001ad8de30f564a2107fab9cfa91f771'
       """
 
+
   Scenario: with a cookbook definition containing an invalid option
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -347,6 +422,7 @@ Feature: install cookbooks from a Berksfile
       Invalid options for dependency: 'whatisthis', 'anotherwat'.
       """
     And the exit status should be "InternalError"
+
 
   Scenario: with a git error during download
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -362,13 +438,12 @@ Feature: install cookbooks from a Berksfile
       """
       And the exit status should be "GitError"
 
+
   Scenario: transitive dependencies in metadata
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
       | bacon | >= 0.0.0 |
-    Given I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       metadata
       """
     And I write to "metadata.rb" with:
@@ -389,6 +464,7 @@ Feature: install cookbooks from a Berksfile
       Installing bacon (0.2.0)
       """
 
+
   Scenario: transitive dependencies in metadata when cookbooks are downloaded
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
       | bacon | >= 0.0.0 |
@@ -396,10 +472,8 @@ Feature: install cookbooks from a Berksfile
       | bacon | 1.0.0 |
       | bacon | 0.3.0 |
       | bacon | 0.2.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       metadata
       """
     And I write to "metadata.rb" with:

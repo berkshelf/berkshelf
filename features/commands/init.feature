@@ -1,8 +1,4 @@
-Feature: initialize command
-  As a Cookbook author
-  I want a way to quickly prepare a Cookbook on my local disk with Berkshelf files
-  So that I can resolve my Cookbook's dependencies with Berkshelf
-
+Feature: berks init
   Scenario: initializing a path containing a cookbook
     Given a cookbook named "sparkle_motion"
     When I successfully run `berks init sparkle_motion`
@@ -15,10 +11,12 @@ Feature: initialize command
       """
     And the output should contain "Successfully initialized"
 
+
   Scenario: initializing a path that does not contain a cookbook
     Given a directory named "not_a_cookbook"
     When I run `berks init not_a_cookbook`
     And the exit status should be "NotACookbook"
+
 
   Scenario: initializing with no value given for target
     Given I write to "metadata.rb" with:

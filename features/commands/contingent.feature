@@ -1,12 +1,8 @@
-Feature: Running the contingent command
-  As a user with a Berksfile
-  I want a way to the cookbooks that depend on another
-  So that I can better understand my infrastructure
-
+Feature: berks contingent
   Background:
-    Given the Berkshelf API server's cache is empty
-    And the Chef Server is empty
-    And the cookbook store is empty
+    * the Berkshelf API server's cache is empty
+    * the Chef Server is empty
+    * the cookbook store is empty
 
   Scenario: When there are dependent cookbooks
     Given the cookbook store has the cookbooks:

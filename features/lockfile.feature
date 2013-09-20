@@ -1,18 +1,15 @@
 Feature: Creating and reading the Berkshelf lockfile
-  As a user
-  I want my versions to be locked even when I don't specify versions in my Berksfile
-  So when I share my repository, all other developers get the same versions that I did when I installed.
-
   Background:
-    Given the cookbook store has the cookbooks:
+    * the cookbook store has the cookbooks:
       | fake | 0.1.0 |
       | fake | 0.2.0 |
       | fake | 1.0.0 |
-    And the cookbook store has the git cookbooks:
+    * the cookbook store has the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
       | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 |
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
+
 
   Scenario: Writing the Berksfile.lock
     Given I have a Berksfile pointing at the local Berkshelf API with:

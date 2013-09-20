@@ -1,8 +1,4 @@
 Feature: Installing cookbooks from the community site
-  As a user with a Berksfile
-  I want a command to install the cookbooks at the community site
-  So I don't need to run an internal Chef Server as an API endpoint
-
   Scenario: when the cookbook exists
     Given I have a Berksfile pointing at the community API endpoint with:
       """
@@ -16,6 +12,7 @@ Feature: Installing cookbooks from the community site
     And the cookbook store should have the cookbooks:
       | apache2 | 1.6.6 |
 
+
   Scenario: when the cookbook does not exist
     Given I have a Berksfile pointing at the community API endpoint with:
       """
@@ -27,6 +24,7 @@ Feature: Installing cookbooks from the community site
       Unable to find a solution for demands: 1234567890 (>= 0.0.0)
       """
     And the exit status should be "NoSolutionError"
+
 
   Scenario: when the cookbook exists, but the version does not
     Given I have a Berksfile pointing at the community API endpoint with:
