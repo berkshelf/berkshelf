@@ -16,7 +16,7 @@ module Berkshelf
       end
 
       private
-        # @api private
+
         # @return [Hash<String, CachedCookbook>]
         def loaded_cookbooks
           @loaded_cookbooks ||= {}
