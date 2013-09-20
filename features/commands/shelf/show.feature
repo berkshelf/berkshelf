@@ -1,8 +1,4 @@
-Feature: Displaying information about a cookbook in the Berkshelf shelf
-  As a user with a cookbook store
-  I want to show information about a specific cookbook in my cookbook store
-  So that I can be well informed
-
+Feature: berks shelf show
   Scenario: With a cookbook that is not in the store
     When I run `berks shelf show fake`
     Then the output should contain:
@@ -64,6 +60,7 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
       Cookbook 'fake' (1.2.3) is not in the Berkshelf shelf
       """
     And the exit status should be "CookbookNotFound"
+
 
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:

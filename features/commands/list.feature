@@ -1,8 +1,4 @@
-Feature: Listing cookbooks defined by a Berksfile
-  As a user with a Berksfile
-  I want a way to show all my cookbooks and their versions without opening my Berksfile
-  So that I can be more productive
-
+Feature: berks list
   Scenario: Running the list command
     Given the cookbook store has the cookbooks:
       | fake1 | 1.0.0 |

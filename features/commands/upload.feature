@@ -1,15 +1,12 @@
-Feature: Uploading cookbooks to a Chef Server
-  As a Berkshelf CLI user
-  I need a way to upload cookbooks to a Chef Server that I have installed into my Bookshelf
-  So they are available to Chef clients
-
+Feature: berks upload
   Background:
-    Given the Berkshelf API server's cache is empty
-    And the Chef Server is empty
-    And the cookbook store has the cookbooks:
+    * the Berkshelf API server's cache is empty
+    * the Chef Server is empty
+    * the cookbook store has the cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
       | oops | 3.0.0 |
+
 
   Scenario: multiple cookbooks with no arguments
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -164,7 +161,7 @@ Feature: Uploading cookbooks to a Chef Server
   Scenario: When the cookbook already exist
     And the Chef Server has frozen cookbooks:
       | fake  | 1.0.0 |
-    And I write to "Berksfile" with:
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'fake', '1.0.0'
       """

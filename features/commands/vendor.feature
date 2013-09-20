@@ -1,14 +1,11 @@
 Feature: Vendoring cookbooks to a directory
-  As a CLI user
-  I want a command to vendor cookbooks into a directory
-  So they are structured similar to a Chef Repository
-
   Background:
-    Given the Berkshelf API server's cache is empty
-    And the Chef Server has cookbooks:
+    * the Berkshelf API server's cache is empty
+    * the Chef Server has cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
-    And the Berkshelf API server's cache is up to date
+    * the Berkshelf API server's cache is up to date
+
 
   Scenario: successfully vendoring a Berksfile with multiple cookbook demands
     Given I have a Berksfile pointing at the local Berkshelf API with:

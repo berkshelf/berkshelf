@@ -1,8 +1,4 @@
-Feature: Displaying outdated cookbooks
-  As a user
-  I want to know what cookbooks are outdated before I run update
-  So that I can decide whether to update everything at once
-
+Feature: berks outdated
   Scenario: the dependency is up to date
     Given the Chef Server has cookbooks:
       | bacon | 1.0.0 |

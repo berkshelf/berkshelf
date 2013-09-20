@@ -1,10 +1,6 @@
-Feature: Packaging a cookbook as a tarball for distribution
-  As a user
-  I want to be able to package a cookbook
-  So that I can use it outside of Berkshelf
-
+Feature: berks package
   Background:
-    Given the cookbook store has the cookbooks:
+    * the cookbook store has the cookbooks:
       | fake | 1.0.0 |
 
   Scenario: When no options are passed

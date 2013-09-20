@@ -1,8 +1,4 @@
-Feature: Removing a cookbook from the Berkshelf shelf
-  As a user with a cookbook store
-  I want to remove a cookbook because it's a bad version
-  So that I don't have to manually touch things in the ~/.berkshelf directory
-
+Feature: berks shelf uninstall
   Scenario: With no cookbooks in the store
     When I run `berks shelf uninstall fake`
     Then the output should contain:

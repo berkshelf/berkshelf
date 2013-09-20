@@ -1,17 +1,12 @@
-Feature: resolve cookbooks
-  As a Berkshelf user
-  I want to see the resolver in action
-  So I can debug any issues that arise
-
+Feature: Berkshelf resolver
   Background:
     * the Berkshelf API server's cache is empty
     * the Chef Server has cookbooks:
       | berkshelf | 1.0.0 |
       | berkshelf | 2.0.0 |
     * the Berkshelf API server's cache is up to date
-    * I write to "Berksfile" with:
+    * I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
       cookbook 'berkshelf'
       """
 
