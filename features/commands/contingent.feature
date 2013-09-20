@@ -4,6 +4,7 @@ Feature: berks contingent
     * the Chef Server is empty
     * the cookbook store is empty
 
+
   Scenario: When there are dependent cookbooks
     Given the cookbook store has the cookbooks:
       | dep | 1.0.0 |

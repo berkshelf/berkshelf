@@ -89,25 +89,20 @@ module Berkshelf
     # Returns an array of the Cookbooks that have been cached to the
     # storage_path of this instance of CookbookStore.
     #
-    # @param [String] filter
+    # @param [String, Regexp] filter
     #   return only the CachedCookbooks whose name match the given filter
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)
-      cookbooks = []
+      cookbooks = storage_path.children.collect do |path|
+        CachedCookbook.from_store_path(path)
+      end.compact
 
-      storage_path.each_child.map do |path|
-        Celluloid::Future.new do
-          cached_cookbook = CachedCookbook.from_store_path(path)
+      return cookbooks unless filter
 
-          next unless cached_cookbook
-          next if filter && cached_cookbook.cookbook_name != filter
-
-          cookbooks << cached_cookbook
-        end
-      end.each(&:value)
-
-      cookbooks
+      cookbooks.select do |cookbook|
+        filter === cookbook.cookbook_name
+      end
     end
 
     # Returns an expanded path to the location on disk where the Cookbook
