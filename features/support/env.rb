@@ -36,6 +36,7 @@ Spork.prefork do
     Berkshelf.initialize_filesystem
     Berkshelf::CookbookStore.instance.initialize_filesystem
     reload_configs
+    Berkshelf::CachedCookbook.instance_variable_set(:@loaded_cookbooks, nil)
 
     endpoints = [
       {
