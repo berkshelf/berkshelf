@@ -1,11 +1,7 @@
 @spawn
-Feature: Configuring Berkshelf via the command line
-  As CLI user of Berkshelf
-  I want a command to generate a Berkshelf configuration file based on my input
-  So I can quickly get up and running with the least amount of resistance
-
+Feature: berks configure
   Background:
-    Given I do not have a Berkshelf config
+    * I do not have a Berkshelf config
 
   Scenario: Using custom values
     When I run `berks configure` interactively
@@ -28,7 +24,7 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
-    And the exit status should be 0
+
 
   Scenario: Accepting the default values
     Given I do not have a Chef config
@@ -53,7 +49,7 @@ Feature: Configuring Berkshelf via the command line
       | vagrant.vm.box_url          | https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box |
       | vagrant.omnibus.enabled     | BOOLEAN[true] |
       | vagrant.omnibus.version     | latest |
-    And the exit status should be 0
+
 
   Scenario: Creating a Berkshelf configuration file when one already exists
     Given I already have a Berkshelf config file
@@ -63,6 +59,7 @@ Feature: Configuring Berkshelf via the command line
       A configuration file already exists. Re-run with the --force flag if you wish to overwrite it.
       """
     And the exit status should be "ConfigExists"
+
 
   Scenario Outline: Using the --path option
     When I run `berks configure --path <path>` interactively
@@ -85,7 +82,6 @@ Feature: Configuring Berkshelf via the command line
       | chef.validation_key_path    | /Users/reset/.chef/reset.pem                      |
       | vagrant.vm.box              | Berkshelf-minimal                                 |
       | vagrant.vm.box_url          | https://dl.dropbox.com/Berkshelf.box              |
-    And the exit status should be 0
 
     Examples:
       | path                   |

@@ -1,6 +1,5 @@
 require 'buff/extensions'
 require 'archive/tar/minitar'
-require 'celluloid'
 require 'digest/md5'
 require 'forwardable'
 require 'hashie'
@@ -165,5 +164,5 @@ require_relative 'berkshelf/source_uri'
 require_relative 'berkshelf/ui'
 require_relative 'berkshelf/version'
 
-Ridley.logger = Celluloid.logger = Berkshelf.logger = Logger.new(STDOUT)
+Ridley.logger = Berkshelf.logger = Logger.new(STDOUT)
 Berkshelf.logger.level = Logger::WARN

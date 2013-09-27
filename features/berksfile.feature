@@ -1,13 +1,7 @@
 Feature: Evaluating a Berksfile
-  As a user with a Berksfile
-  I want to evaluate things and see nice errors
-  So I can identify my syntax errors and faults
-
   Scenario: Containing pure Ruby
     Given I write to "Berksfile" with:
       """
-      source "http://localhost:26210"
-
       if ENV['BACON']
         puts "If you don't got bacon..."
       else
@@ -21,11 +15,10 @@ Feature: Evaluating a Berksfile
       If you don't got bacon...
       """
 
+
   Scenario: Containing methods I shouldn't be able to call
     Given I write to "Berksfile" with:
       """
-      source "http://localhost:26210"
-
       add_location(:foo)
       """
     When I run `berks install`
@@ -37,11 +30,10 @@ Feature: Evaluating a Berksfile
       """
     And the exit status should be "BerksfileReadError"
 
+
   Scenario: Containing Ruby syntax errors
     Given I write to "Berksfile" with:
       """
-      source "http://localhost:26210"
-
       ptus "This is a ruby syntax error"
       """
     When I run `berks install`

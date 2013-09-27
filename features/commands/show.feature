@@ -1,27 +1,13 @@
-Feature: Displaying information about a cookbook defined by a Berksfile
-  As a user
-  I want to be able to view the metadata information of a cached cookbook
-  So that I can troubleshoot bugs or satisfy my own curiosity
-
+Feature: berks show
   Scenario: With no options
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'fake', '1.0.0'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "fake": {
-            "locked_version": "1.0.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | fake | 1.0.0 |
     When I successfully run `berks show fake`
     Then the output should contain:
       """
@@ -33,11 +19,9 @@ Feature: Displaying information about a cookbook defined by a Berksfile
            License: none
       """
 
+
   Scenario: When the cookbook is not in the Berksfile
-    Given I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-      """
+    Given I have a Berksfile pointing at the local Berkshelf API
     When I run `berks show fake`
     Then the output should contain:
       """
@@ -45,11 +29,10 @@ Feature: Displaying information about a cookbook defined by a Berksfile
       """
     And the exit status should be "DependencyNotFound"
 
-  Scenario: When there is no lockfile present
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
+  Scenario: When there is no lockfile present
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
       cookbook 'fake', '1.0.0'
       """
     When I run `berks show fake`
@@ -59,23 +42,15 @@ Feature: Displaying information about a cookbook defined by a Berksfile
       """
     And the exit status should be "LockfileNotFound"
 
-  Scenario: When the cookbook is not installed
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
+  Scenario: When the cookbook is not installed
+    Given the cookbook store is empty
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
       cookbook 'fake', '1.0.0'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "fake": {
-            "locked_version": "1.0.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | fake | 1.0.0 |
     When I run `berks show fake`
     Then the output should contain:
       """

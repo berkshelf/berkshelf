@@ -1,8 +1,4 @@
-Feature: Displaying outdated cookbooks
-  As a user
-  I want to know what cookbooks are outdated before I run update
-  So that I can decide whether to update everything at once
-
+Feature: berks outdated
   Scenario: the dependency is up to date
     Given the Chef Server has cookbooks:
       | bacon | 1.0.0 |
@@ -10,57 +6,39 @@ Feature: Displaying outdated cookbooks
     And the Berkshelf API server's cache is up to date
     And the cookbook store has the cookbooks:
       | bacon | 1.1.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'bacon', '~> 1.1.0'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "bacon": {
-            "locked_version": "1.1.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | bacon | 1.1.0 |
     When I successfully run `berks outdated`
     Then the output should contain:
       """
       All cookbooks up to date!
       """
 
-  Scenario: the dependency has a no version constraint and there are new items
+
+  Scenario: the dependency has no version constraint and there are new items
     Given the Chef Server has cookbooks:
       | bacon | 1.0.0 |
       | bacon | 1.1.0 |
     And the Berkshelf API server's cache is up to date
     And the cookbook store has the cookbooks:
       | bacon | 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'bacon'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "bacon": {
-            "locked_version": "1.0.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | bacon | 1.0.0 |
     When I successfully run `berks outdated`
     Then the output should contain:
       """
       The following cookbooks have newer versions:
-        * bacon (1.1.0) [http://localhost:26210]
+        * bacon (1.1.0)
       """
+
 
   Scenario: the dependency has a version constraint and there are new items that satisfy it
     Given the Chef Server has cookbooks:
@@ -70,34 +48,23 @@ Feature: Displaying outdated cookbooks
     And the Berkshelf API server's cache is up to date
     And the cookbook store has the cookbooks:
       | bacon | 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'bacon', '~> 1.0'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "bacon": {
-            "locked_version": "1.0.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | bacon | 1.0.0 |
     When I successfully run `berks outdated`
     Then the output should contain:
       """
       The following cookbooks have newer versions:
-        * bacon (1.5.8) [http://localhost:26210]
+        * bacon (1.5.8)
       """
+
 
   Scenario: When there is no lockfile present
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'bacon', '1.0.0'
       """
     When I run `berks outdated`
@@ -107,23 +74,14 @@ Feature: Displaying outdated cookbooks
       """
     And the exit status should be "LockfileNotFound"
 
-  Scenario: When the cookbook is not installed
-    And I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
 
+  Scenario: When the cookbook is not installed
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
       cookbook 'bacon', '1.0.0'
       """
-    And I write to "Berksfile.lock" with:
-      """
-      {
-        "dependencies": {
-          "bacon": {
-            "locked_version": "1.0.0"
-          }
-        }
-      }
-      """
+    And the Lockfile has:
+      | bacon | 1.0.0 |
     When I run `berks outdated`
     Then the output should contain:
       """
