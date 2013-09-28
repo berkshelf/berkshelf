@@ -165,6 +165,16 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
 
 
+  Scenario: Updating a Berksfile.lock with a git location and a branch
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', branch: 'branch1'
+      """
+    When I successfully run `berks install`
+    Then the Lockfile should have:
+      | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 | | branch1 |
+
+
   Scenario: Updating a Berksfile.lock with a GitHub location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
