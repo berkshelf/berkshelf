@@ -235,6 +235,7 @@ module Berkshelf
         if location.kind_of?(GitLocation)
           h[:git] = location.uri
           h[:ref] = location.ref
+          h[:branch] = location.branch if location.branch
           h[:rel] = location.rel if location.rel
         end
       end.reject { |k,v| v.blank? }
