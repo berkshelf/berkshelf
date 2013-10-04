@@ -7,13 +7,13 @@ module Berkshelf
       # A cache of ridley connections
       #
       # Each ridley connection object increases the number of active threads in the current process by a
-      # rather large amount (dozens) simply by instatiating it (Ridley.new).  The threads can be freed by
+      # rather large amount (dozens) simply by instantiating it (Ridley.new).  The threads can be freed by
       # calling terminate on the Ridley connection object, but since this class (ChefAPILocation) provides
       # public methods that return Ridley::CookbookResource objects that were retrieved from the Ridley
       # connection, and terminating the connection causes the CookbookResource objects to get errors when
-      # you try to use them, we can't safely call terminate on the connection except during garabage collection.
+      # you try to use them, we can't safely call terminate on the connection except during garbage collection.
       # However, there is no guarantee as to when garbage collection will happen. So, we reuse existing connections
-      # rather than making a new one each time to keep the thread count under control.  This is especially noticable
+      # rather than making a new one each time to keep the thread count under control.  This is especially noticeable
       # on windows systems, on which processes tend to freak out if you have a "mere" 1000 threads or so.
       # (see http://stackoverflow.com/questions/481900/whats-the-maximum-number-of-threads-in-windows-server-2003).
       @@ridley_conn_cache = {}
