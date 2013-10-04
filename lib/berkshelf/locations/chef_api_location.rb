@@ -49,12 +49,14 @@ module Berkshelf
       def finalizer(key)
         proc do
           @@mutex.synchronize do
-            if @@ridley_conn_cache[key] && @@ridley_conn_cache[key][:count] > 1
-              @@ridley_conn_cache[key][:count] = @@ridley_conn_cache[key][:count] - 1
-            else
-              @@ridley_conn_cache[key][:conn].terminate if @@ridley_conn_cache[key][:conn].alive?
-              @@ridley_conn_cache[key][:conn] = nil
-              @@ridley_conn_cache[key] = nil
+            if @@ridley_conn_cache[key]
+              if @@ridley_conn_cache[key][:count] > 1
+                @@ridley_conn_cache[key][:count] = @@ridley_conn_cache[key][:count] - 1
+              else               
+                @@ridley_conn_cache[key][:conn].terminate! if @@ridley_conn_cache[key][:conn].alive?
+                @@ridley_conn_cache[key][:conn] = nil
+                @@ridley_conn_cache[key] = nil
+              end
             end
           end
         end
