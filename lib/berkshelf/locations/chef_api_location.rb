@@ -52,7 +52,7 @@ module Berkshelf
             if @@ridley_conn_cache[key]
               if @@ridley_conn_cache[key][:count] > 1
                 @@ridley_conn_cache[key][:count] = @@ridley_conn_cache[key][:count] - 1
-              else               
+              else
                 @@ridley_conn_cache[key][:conn].terminate! if @@ridley_conn_cache[key][:conn].alive?
                 @@ridley_conn_cache[key][:conn] = nil
                 @@ridley_conn_cache[key] = nil
