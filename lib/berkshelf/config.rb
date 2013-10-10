@@ -93,10 +93,6 @@ module Berkshelf
     attribute 'raise_license_exception',
       type: Boolean,
       default: false
-    attribute 'vagrant.version',
-      type: String,
-      default: '1.3.x',
-      required: true
     attribute 'vagrant.vm.box',
       type: String,
       default: 'opscode_ubuntu-12.04_provisionerless',
