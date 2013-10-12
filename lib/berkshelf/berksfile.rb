@@ -342,7 +342,7 @@ module Berkshelf
     #   Names of the cookbooks to retrieve dependencies for
     #
     # @raise [Berkshelf::OutdatedDependency]
-    #   if the lockfile constraints do not satisfy the Berskfile constraints
+    #   if the lockfile constraints do not satisfy the Berksfile constraints
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})

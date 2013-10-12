@@ -41,7 +41,7 @@ module Berkshelf
       @ui ||= Thor::Base.shell.new
     end
 
-    # Returns the filepath to the location Berskhelf will use for
+    # Returns the filepath to the location Berkshelf will use for
     # storage; temp files will go here, Cookbooks will be downloaded
     # to or uploaded from here. By default this is '~/.berkshelf' but
     # can be overridden by specifying a value for the ENV variable
