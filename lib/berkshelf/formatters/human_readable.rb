@@ -20,8 +20,10 @@ module Berkshelf
       # @param [String] cookbook
       # @param [String] version
       # @param [Berkshelf::Dependency] dependency
-      def install(cookbook, version, dependency)
-        Berkshelf.ui.info "Installing #{cookbook} (#{version})"
+      # @param [String] api_source
+      # @param [String] location_path
+      def install(cookbook, version, dependency, api_source, location_path)
+        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location_path} (via #{URI(api_source).host})"
       end
 
       # Output a Cookbook use message using {Berkshelf.ui}

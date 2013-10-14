@@ -42,9 +42,13 @@ module Berkshelf
       # @param [String] cookbook
       # @param [String] version
       # @param [~Location] location
-      def install(cookbook, version, location)
+      # @param [String] api_source
+      # @param [String] location_path
+      def install(cookbook, version, location, api_source, location_path)
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
+        cookbooks[cookbook][:api_source] = api_source if api_source
+        cookbooks[cookbook][:location_path] = location_path if location_path
 
         if location && location.is_a?(PathLocation)
           cookbooks[cookbook][:metadata] = true if location.metadata?
