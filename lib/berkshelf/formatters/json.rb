@@ -48,8 +48,11 @@ module Berkshelf
       def install(cookbook, version, options = {})
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
-        cookbooks[cookbook][:api_source] = options[:api_source] if options.has_key?(:api_source)
-        cookbooks[cookbook][:location_path] = options[:location_path] if options.has_key?(:location_path)
+
+        if options.has_key?(:api_source) && options.has_key?(:location_path)
+          cookbooks[cookbook][:api_source] = options[:api_source] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
+          cookbooks[cookbook][:location_path] = options[:location_path] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
+        end
       end
 
       # Add a Cookbook use entry to delayed output
