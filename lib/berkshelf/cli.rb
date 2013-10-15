@@ -225,6 +225,7 @@ module Berkshelf
       upload_options             = Hash[options.except(:no_freeze, :berksfile)].symbolize_keys
       upload_options[:cookbooks] = cookbook_names
       upload_options[:freeze]    = false if options[:no_freeze]
+      upload_options[:validate]  = false if options[:skip_syntax_check]
 
       berksfile.upload(upload_options)
     end
