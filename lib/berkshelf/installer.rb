@@ -47,9 +47,9 @@ module Berkshelf
           Berkshelf.formatter.use(dependency.name, dependency.cached_cookbook.version, dependency.location)
           dependency.cached_cookbook
         else
-          source = berksfile.sources.find { |source| source.cookbook(name, version)}
+          source = berksfile.sources.find { |source| source.cookbook(name, version) }
           remote_cookbook = source.cookbook(name, version)
-          Berkshelf.formatter.install(name, version, dependency, source.to_s, remote_cookbook.location_path)
+          Berkshelf.formatter.install(name, version, api_source: source.to_s, location_path: remote_cookbook.location_path)
           temp_filepath = downloader.download(name, version)
           CookbookStore.import(name, version, temp_filepath)
         end

@@ -19,11 +19,18 @@ module Berkshelf
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [Berkshelf::Dependency] dependency
-      # @param [String] api_source
-      # @param [String] location_path
-      def install(cookbook, version, dependency, api_source, location_path)
-        Berkshelf.ui.info "Installing #{cookbook} (#{version}) from #{location_path} (via #{URI(api_source).host})"
+      # @option options [String] :api_source
+      #   the berkshelf-api source url
+      # @option options [String] :location_path
+      #   the chef server url for a cookbook's location
+      def install(cookbook, version, options = {})
+        info_message = "Installing #{cookbook} (#{version})"
+
+        if options.has_key?(:api_source) && options.has_key?(:location_path)
+          api_source = options[:api_source]
+          info_message << " from #{options[:location_path]} (via #{URI(api_source).host})" unless api_source == Berkshelf::Berksfile::DEFAULT_API_URL
+        end
+        Berkshelf.ui.info info_message
       end
 
       # Output a Cookbook use message using {Berkshelf.ui}
