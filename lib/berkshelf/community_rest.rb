@@ -166,7 +166,7 @@ module Berkshelf
       local.binmode
 
       retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
-        open(target, 'rb', headers) do |remote|
+        open(target, 'rb', open_uri_options) do |remote|
           local.write(remote.read)
         end
       end
@@ -174,6 +174,22 @@ module Berkshelf
       local
     ensure
       local.close(false) unless local.nil?
+    end
+
+    private
+
+    def open_uri_options
+      options = {}
+      options.merge!(headers) 
+      options.merge!(open_uri_proxy_options)
+    end
+
+    def open_uri_proxy_options
+      if proxy && proxy[:user] && proxy[:password]
+        {proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ]}
+      else
+        {}
+      end
     end
   end
 end
