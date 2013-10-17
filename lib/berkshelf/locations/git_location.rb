@@ -5,10 +5,17 @@ module Berkshelf
     set_valid_options :ref, :branch, :tag, :rel
 
     attr_accessor :uri
-    attr_accessor :branch
     attr_accessor :rel
     attr_accessor :ref
     attr_reader :options
+
+    def branch
+      @branch || 'master'
+    end
+
+    def branch=(str)
+      @branch = str
+    end
 
     alias_method :tag, :branch
 
@@ -28,11 +35,24 @@ module Berkshelf
     def initialize(dependency, options = {})
       super
       @uri    = options[:git]
-      @branch = options[:branch] || options[:tag] || 'master'
+      @branch = options[:branch] || options[:tag]
       @ref    = options[:ref]
+      @sha    = ref
       @rel    = options[:rel]
 
       Git.validate_uri!(@uri)
+    end
+
+    def checkout_info
+      if @sha
+        kind, rev = "ref", @sha
+      else
+        kind, rev = "branch", branch
+      end
+      {
+        kind: kind,
+        rev: rev
+      }
     end
 
     # @param [#to_s] destination
@@ -46,14 +66,15 @@ module Berkshelf
         return local_revision(destination)
       end
 
-      Berkshelf::Git.checkout(clone, ref || branch) if ref || branch
+      info = checkout_info
+      Berkshelf::Git.checkout(clone, @ref || info[:rev])
       @ref = Berkshelf::Git.rev_parse(clone)
 
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{dependency.name}' not found at git: #{uri}"
-        msg << " with branch '#{branch}'" if branch
-        msg << " with ref '#{ref}'" if ref
+        msg << " with #{info[:kind]} '#{info[:rev]}'"
+        msg << " at ref '#{ref}'" if ref && info[:kind] != "ref"
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
@@ -76,9 +97,10 @@ module Berkshelf
     end
 
     def to_s
+      info = checkout_info
       s = "#{self.class.location_key}: '#{uri}'"
-      s << " with branch: '#{branch}'" if branch
-      s << " at ref: '#{ref}'" if ref
+      s << " with #{info[:kind]}: '#{info[:rev]}'"
+      s << " at ref: '#{ref}'" if ref && info[:kind] != "ref"
       s
     end
 
