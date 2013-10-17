@@ -5,17 +5,10 @@ module Berkshelf
     set_valid_options :ref, :branch, :tag, :rel
 
     attr_accessor :uri
+    attr_accessor :branch
     attr_accessor :rel
     attr_accessor :ref
     attr_reader :options
-
-    def branch
-      @branch || 'master'
-    end
-
-    def branch=(str)
-      @branch = str
-    end
 
     alias_method :tag, :branch
 
@@ -35,8 +28,8 @@ module Berkshelf
     def initialize(dependency, options = {})
       super
       @uri    = options[:git]
-      @branch = options[:branch] || options[:tag]
       @ref    = options[:ref]
+      @branch = options[:branch] || options[:tag] || "master" unless ref
       @sha    = ref
       @rel    = options[:rel]
 
@@ -63,8 +56,7 @@ module Berkshelf
         return local_revision(destination)
       end
 
-      info = checkout_info
-      Berkshelf::Git.checkout(clone, ref || info[:rev])
+      Berkshelf::Git.checkout(clone, ref || checkout_info[:rev])
       @ref = Berkshelf::Git.rev_parse(clone)
 
       tmp_path = rel ? File.join(clone, rel) : clone
@@ -92,7 +84,6 @@ module Berkshelf
     end
 
     def to_s
-      info = checkout_info
       "#{self.class.location_key}: #{to_display}"
     end
 
