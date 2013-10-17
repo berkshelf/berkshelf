@@ -49,10 +49,7 @@ module Berkshelf
       else
         kind, rev = "branch", branch
       end
-      {
-        kind: kind,
-        rev: rev
-      }
+      { :kind => kind, :rev => rev }
     end
 
     # @param [#to_s] destination
@@ -67,14 +64,12 @@ module Berkshelf
       end
 
       info = checkout_info
-      Berkshelf::Git.checkout(clone, @ref || info[:rev])
+      Berkshelf::Git.checkout(clone, ref || info[:rev])
       @ref = Berkshelf::Git.rev_parse(clone)
 
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
-        msg = "Cookbook '#{dependency.name}' not found at git: #{uri}"
-        msg << " with #{info[:kind]} '#{info[:rev]}'"
-        msg << " at ref '#{ref}'" if ref && info[:kind] != "ref"
+        msg = "Cookbook '#{dependency.name}' not found at git: #{to_display}"
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
@@ -98,13 +93,17 @@ module Berkshelf
 
     def to_s
       info = checkout_info
-      s = "#{self.class.location_key}: '#{uri}'"
-      s << " with #{info[:kind]}: '#{info[:rev]}'"
-      s << " at ref: '#{ref}'" if ref && info[:kind] != "ref"
-      s
+      "#{self.class.location_key}: #{to_display}"
     end
 
     private
+
+      def to_display
+        info = checkout_info
+        s = "'#{uri}' with #{info[:kind]}: '#{info[:rev]}'"
+        s << " at ref: '#{ref}'" if ref && info[:kind] != "ref"
+        s
+      end
 
       def git
         @git ||= Berkshelf::Git.new(uri)

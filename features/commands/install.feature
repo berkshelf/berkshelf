@@ -227,6 +227,22 @@ Feature: berks install
       """
 
 
+  Scenario: installing a Berksfile that contains a Git location with a ref
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", ref: "70a527e17d91f01f031204562460ad1c17f972ee"
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
+    And the output should contain:
+      """
+      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      building universe...
+      Using berkshelf-cookbook-fixture (0.2.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      """
+
+
   Scenario: installing a Berksfile that contains a GitHub location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
