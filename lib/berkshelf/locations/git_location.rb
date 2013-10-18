@@ -92,7 +92,7 @@ module Berkshelf
       def to_display
         info = checkout_info
         s = "'#{uri}' with #{info[:kind]}: '#{info[:rev]}'"
-        s << " at ref: '#{ref}'" if ref && info[:kind] != "ref"
+        s << " at ref: '#{ref}'" if ref && (info[:kind] != "ref" || ref != info[:rev])
         s
       end
 
