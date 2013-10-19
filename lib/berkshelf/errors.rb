@@ -144,6 +144,19 @@ module Berkshelf
     end
   end
 
+  class InvalidGitHubIdentifier < BerkshelfError
+    status_code(110)
+
+    # @param [String] repo_identifier
+    def initialize(repo_identifier)
+      @repo_identifier = repo_identifier
+    end
+
+    def to_s
+      "'#{@repo_identifier}' is not a valid GitHub identifier - should not end in '.git'"
+    end
+  end
+
   class UnknownGitHubProtocol < BerkshelfError
     status_code(110)
 

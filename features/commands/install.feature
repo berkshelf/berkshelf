@@ -243,6 +243,19 @@ Feature: berks install
       """
 
 
+  Scenario: installing a Berksfile that contains a GitHub location ending in .git
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      'RiotGames/berkshelf-cookbook-fixture.git' is not a valid GitHub identifier - should not end in '.git'
+      """
+    And the exit status should be "InvalidGitHubIdentifier"
+
+
   Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
