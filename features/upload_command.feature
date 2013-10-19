@@ -316,3 +316,32 @@ Feature: Uploading cookbooks to a Chef Server
       Uploading fake (0.0.0)
       """
     And the exit status should be 0
+  Scenario: When the syntax check is skipped
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "recipes/default.rb" with:
+      """
+      Totally not valid Ruby syntax
+      """
+    And the cookbook "fake" has the file "templates/default/file.erb" with:
+      """
+      <% for %>
+      """
+    And the cookbook "fake" has the file "recipes/template.rb" with:
+      """
+      template "/tmp/wadus" do
+        source "file.erb"
+      end
+      """
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      site :opscode
+
+      metadata
+      """
+    And I cd to "fake"
+    When I successfully run `berks upload --skip-syntax-check`
+    Then the output should contain:
+      """
+      Using fake (0.0.0) from metadata
+      Uploading fake (0.0.0) to: 'http://localhost:4000/'
+      """
