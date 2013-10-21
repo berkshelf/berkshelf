@@ -519,10 +519,10 @@ module Berkshelf
     #   if an attempt to upload a cookbook which has been frozen on the target server is made
     #   and the :halt_on_frozen option was true
     def upload(options = {})
-      options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false, update_lockfile: false)
+      options = options.reverse_merge(force: false, freeze: true, skip_dependencies: false, halt_on_frozen: false, update_lockfile: false, validate: true)
 
       cached_cookbooks = install(options)
-      upload_opts      = options.slice(:force, :freeze)
+      upload_opts      = options.slice(:force, :freeze, :validate)
       conn             = ridley_connection(options)
 
       cached_cookbooks.each do |cookbook|
