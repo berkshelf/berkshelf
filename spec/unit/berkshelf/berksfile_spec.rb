@@ -510,6 +510,37 @@ describe Berkshelf::Berksfile do
         upload
       end
     end
+
+    context 'when validate is passed' do
+      let(:options) do
+        {
+          force: false,
+          freeze: true,
+          validate: false,
+          name: "cookbook"
+        }
+      end
+      let(:ridley_options) do
+        default_ridley_options.merge(
+            { server_url: 'http://configured-chef-server/'})
+      end
+      let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path', version: '1.0.0') }
+      let(:installed_cookbooks) { [ cookbook ] }
+      let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
+      let(:client_name) { 'reset' }
+      let(:client_key) { 'client-key' }
+      let(:ridley_connection)      { double('ridley-connection', server_url: server_url, client_name: client_name, client_key: client_key) }
+      let(:cookbook_resource) { double('cookbook') }
+
+      it 'uses the passed in :validate' do
+        Ridley.stub(:new).with(ridley_options).and_return(ridley_connection)
+        ridley_connection.stub(:alive?).and_return(true)
+        ridley_connection.stub(:terminate).and_return(true)
+        ridley_connection.should_receive(:cookbook).and_return(cookbook_resource)
+        cookbook_resource.should_receive(:upload).with('path', options )
+        upload
+      end
+    end
   end
 
   describe '#apply' do
