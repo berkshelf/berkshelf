@@ -627,9 +627,9 @@ module Berkshelf
         src   = cookbook.path.to_s.gsub('\\', '/')
         files = Dir.glob(File.join(src, '*'))
 
-        if chefignore
-          files = chefignore.remove_ignores_from(files)
-        end
+        # if chefignore
+        #   files = chefignore.remove_ignores_from(files)
+        # end
 
         FileUtils.cp_r(files, cookbook_destination)
 
