@@ -11,8 +11,8 @@ Feature: berks apply
       """
     When I successfully run `berks apply my_env`
     Then the version locks in the "my_env" environment should be:
-      | fake       | 1.0.0 |
-      | dependency | 2.0.0 |
+      | fake       | = 1.0.0 |
+      | dependency | = 2.0.0 |
 
 
   Scenario: Locking cookbook versions to a non-existent Chef Environment

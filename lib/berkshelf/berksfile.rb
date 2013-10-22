@@ -518,7 +518,7 @@ module Berkshelf
         install
 
         environment.cookbook_versions = {}.tap do |cookbook_versions|
-          lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = dependency.locked_version }
+          lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = "= #{dependency.locked_version.to_s}" }
         end
 
         environment.save

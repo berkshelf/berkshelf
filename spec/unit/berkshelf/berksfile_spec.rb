@@ -521,8 +521,8 @@ describe Berkshelf::Berksfile do
 
         environment = ::JSON.parse(chef_server.data_store.get(['environments', 'berkshelf']))
         expect(environment['cookbook_versions']).to have(2).items
-        expect(environment['cookbook_versions']['nginx']).to eq('1.2.3')
-        expect(environment['cookbook_versions']['artifact']).to eq('1.4.0')
+        expect(environment['cookbook_versions']['nginx']).to eq('= 1.2.3')
+        expect(environment['cookbook_versions']['artifact']).to eq('= 1.4.0')
       end
     end
 
