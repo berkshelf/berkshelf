@@ -205,9 +205,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'rel' over protocol: 'git'
+      Fetching 'berkshelf-cookbook-fixture' from github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'rel'
       building universe...
-      Using berkshelf-cookbook-fixture (1.0.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'rel' over protocol: 'git'
+      Using berkshelf-cookbook-fixture (1.0.0) github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'rel' at ref: '93f5768b7d14df45e10d16c8bf6fe98ba3ff809a'
       """
 
 
@@ -237,31 +237,55 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v0.2.0' over protocol: 'git'
+      Fetching 'berkshelf-cookbook-fixture' from github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
       building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v0.2.0' over protocol: 'git'
+      Using berkshelf-cookbook-fixture (0.2.0) github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
       """
 
 
-  Scenario Outline: installing a Berksfile that contains a Github location and specific protocol
+  Scenario: installing a Berksfile that contains a GitHub location ending in .git
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v1.0.0", protocol: "<protocol>"
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Fetching 'berkshelf-cookbook-fixture' from github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git.git' with branch: 'v0.2.0'
+      """
+    And the exit status should be "InvalidGitRef"
+
+
+  Scenario: installing a Berksfile that contains a Github location and protocol https
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "https"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
-      | berkshelf-cookbook-fixture | 1.0.0 | b4f968c9001ad8de30f564a2107fab9cfa91f771 |
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v1.0.0' over protocol: '<protocol>'
+      Fetching 'berkshelf-cookbook-fixture' from github: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
       building universe...
-      Using berkshelf-cookbook-fixture (1.0.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'v1.0.0' over protocol: '<protocol>'
+      Using berkshelf-cookbook-fixture (0.2.0) github: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
       """
 
-    Examples:
-      | protocol |
-      | git      |
-      | https    |
+
+  Scenario: installing a Berksfile that contains a Github location and protocol ssh
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "ssh"
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
+    And the output should contain:
+      """
+      Fetching 'berkshelf-cookbook-fixture' from github: 'git@github.com:RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
+      building universe...
+      Using berkshelf-cookbook-fixture (0.2.0) github: 'git@github.com:RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      """
 
 
   Scenario: installing a Berksfile that contains a Github location and an unsupported protocol
