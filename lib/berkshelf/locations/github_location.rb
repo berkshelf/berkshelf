@@ -46,14 +46,6 @@ module Berkshelf
       end
     end
 
-    def to_s
-      info = checkout_info
-      s = "#{self.class.location_key}: '#{repo_identifier}'"
-      s << " with #{info[:kind]}: '#{info[:rev]}'"
-      s << " over protocol: '#{protocol}'"
-      s
-    end
-
     private
 
       def default_protocol?
