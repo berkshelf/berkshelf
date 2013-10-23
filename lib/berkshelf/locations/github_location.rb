@@ -19,6 +19,9 @@ module Berkshelf
     #   the protocol with which to communicate with GitHub
     def initialize(dependency, options = {})
       @repo_identifier = options.delete(:github)
+      if repo_identifier.end_with?(".git")
+        raise InvalidGitHubIdentifier.new(repo_identifier)
+      end
       @protocol        = (options.delete(:protocol) || DEFAULT_PROTOCOL).to_sym
       options[:git]    = github_url
       super
