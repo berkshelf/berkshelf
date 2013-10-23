@@ -28,11 +28,21 @@ module Berkshelf
     def initialize(dependency, options = {})
       super
       @uri    = options[:git]
-      @branch = options[:branch] || options[:tag] || 'master'
       @ref    = options[:ref]
+      @branch = options[:branch] || options[:tag] || "master" unless ref
+      @sha    = ref
       @rel    = options[:rel]
 
       Git.validate_uri!(@uri)
+    end
+
+    def checkout_info
+      if @sha
+        kind, rev = "ref", @sha
+      else
+        kind, rev = "branch", branch
+      end
+      { :kind => kind, :rev => rev }
     end
 
     # @param [#to_s] destination
@@ -46,14 +56,12 @@ module Berkshelf
         return local_revision(destination)
       end
 
-      Berkshelf::Git.checkout(clone, ref || branch) if ref || branch
+      Berkshelf::Git.checkout(clone, ref || checkout_info[:rev])
       @ref = Berkshelf::Git.rev_parse(clone)
 
       tmp_path = rel ? File.join(clone, rel) : clone
       unless File.chef_cookbook?(tmp_path)
-        msg = "Cookbook '#{dependency.name}' not found at git: #{uri}"
-        msg << " with branch '#{branch}'" if branch
-        msg << " with ref '#{ref}'" if ref
+        msg = "Cookbook '#{dependency.name}' not found at git: #{to_display}"
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
@@ -76,13 +84,17 @@ module Berkshelf
     end
 
     def to_s
-      s = "#{self.class.location_key}: '#{uri}'"
-      s << " with branch: '#{branch}'" if branch
-      s << " at ref: '#{ref}'" if ref
-      s
+      "#{self.class.location_key}: #{to_display}"
     end
 
     private
+
+      def to_display
+        info = checkout_info
+        s = "'#{uri}' with #{info[:kind]}: '#{info[:rev]}'"
+        s << " at ref: '#{ref}'" if ref && (info[:kind] != "ref" || ref != info[:rev])
+        s
+      end
 
       def git
         @git ||= Berkshelf::Git.new(uri)

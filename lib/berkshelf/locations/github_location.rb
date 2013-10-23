@@ -47,8 +47,9 @@ module Berkshelf
     end
 
     def to_s
+      info = checkout_info
       s = "#{self.class.location_key}: '#{repo_identifier}'"
-      s << " with branch: '#{branch}'" if branch
+      s << " with #{info[:kind]}: '#{info[:rev]}'"
       s << " over protocol: '#{protocol}'"
       s
     end
