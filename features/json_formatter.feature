@@ -19,6 +19,8 @@ Feature: --format json
       {
         "cookbooks": [
           {
+            "api_source": "http://0.0.0.0:26210",
+            "location_path": "http://localhost:26310/",
             "version": "1.0.0",
             "name": "berkshelf"
           }

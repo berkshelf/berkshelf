@@ -41,14 +41,17 @@ module Berkshelf
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [~Location] location
-      def install(cookbook, version, location)
+      # @option options [String] :api_source
+      #   the berkshelf-api source url
+      # @option options [String] :location_path
+      #   the chef server url for a cookbook's location
+      def install(cookbook, version, options = {})
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
 
-        if location && location.is_a?(PathLocation)
-          cookbooks[cookbook][:metadata] = true if location.metadata?
-          cookbooks[cookbook][:location] = location.relative_path
+        if options.has_key?(:api_source) && options.has_key?(:location_path)
+          cookbooks[cookbook][:api_source] = options[:api_source] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
+          cookbooks[cookbook][:location_path] = options[:location_path] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
         end
       end
 
