@@ -685,7 +685,7 @@ module Berkshelf
 
         unless @skipped.empty?
           Berkshelf.formatter.msg "Skipped uploading some cookbooks because they" <<
-            " already existed on the remote server. Re-run with the `--force`" <<
+            " already exist on the remote server and are frozen. Re-run with the `--force`" <<
             " flag to force overwrite these cookbooks:" <<
             "\n\n" <<
             "  * " << @skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")

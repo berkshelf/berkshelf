@@ -168,11 +168,11 @@ Feature: berks upload
     When I successfully run `berks upload`
     Then the output should contain:
       """
-      Skipping fake (1.0.0) (already uploaded)
+      Skipping fake (1.0.0) (frozen)
       """
     And the output should contain:
       """
-      Skipped uploading some cookbooks because they already existed on the remote server. Re-run with the `--force` flag to force overwrite these cookbooks:
+      Skipped uploading some cookbooks because they already exist on the remote server and are frozen. Re-run with the `--force` flag to force overwrite these cookbooks:
 
         * fake (1.0.0)
       """
@@ -190,8 +190,8 @@ Feature: berks upload
     When I successfully run `berks upload`
     Then the output should contain:
       """
-      Skipping fake (0.0.0) (already uploaded)
-      Skipped uploading some cookbooks because they already existed on the remote server. Re-run with the `--force` flag to force overwrite these cookbooks:
+      Skipping fake (0.0.0) (frozen)
+      Skipped uploading some cookbooks because they already exist on the remote server and are frozen. Re-run with the `--force` flag to force overwrite these cookbooks:
 
         * fake (0.0.0)
       """
