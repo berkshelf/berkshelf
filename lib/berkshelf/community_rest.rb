@@ -1,4 +1,4 @@
-require 'open-uri'
+require 'httpclient'
 require 'retryable'
 
 module Berkshelf
@@ -83,6 +83,8 @@ module Berkshelf
         b.adapter :net_http
       end
 
+      @httpclient = HTTPClient.new
+
       super(api_uri, options)
     end
 
@@ -165,9 +167,9 @@ module Berkshelf
       local = Tempfile.new('community-rest-stream')
       local.binmode
 
-      retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
-        open(target, 'rb', headers) do |remote|
-          local.write(remote.read)
+      retryable(tries: retries, on: [HTTPClient::BadResponseError, HTTPClient::TimeoutError], sleep: retry_interval) do
+        @httpclient.get_content(target) do |content|
+          local.write(content)
         end
       end
 
