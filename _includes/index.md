@@ -402,7 +402,7 @@ This same entry could also have been written
 
 A Chef API default location can also be specified to attempt to retrieve your cookbook and it's dependencies from
 
-    chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "mushroom", client_key: "/Users/teemo/.chef/teemo.pem"
+    chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "teemo", client_key: "/Users/teemo/.chef/teemo.pem"
 
 Provided my Berkshelf config contains these Chef credentials - this could have been simplified by using the `:config` symbol
 
