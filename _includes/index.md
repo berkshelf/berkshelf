@@ -201,7 +201,7 @@ Visit the [Vagrant downloads page](http://downloads.vagrantup.com/) and download
 
 ### Install the Vagrant Berkshelf plugin
 
-Ther is a separate gem which provides the [Vagrant Berkshelf plugin](https://github.com/riotgames/vagrant-berkshelf). This plugin supports Vagrant 1.1.0 and greater.
+There is a separate gem which provides the [Vagrant Berkshelf plugin](https://github.com/riotgames/vagrant-berkshelf). This plugin supports Vagrant 1.1.0 and greater.
 
 To install the plugin run the Vagrant plugin install command
 
