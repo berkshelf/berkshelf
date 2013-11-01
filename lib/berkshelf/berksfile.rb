@@ -54,7 +54,7 @@ module Berkshelf
       @sources          = Array.new
     end
 
-    # Add a cookbook dependency to the Berksfile to be retrieved and have it's dependencies recursively retrieved
+    # Add a cookbook dependency to the Berksfile to be retrieved and have its dependencies recursively retrieved
     # and resolved.
     #
     # @example a cookbook dependency that will be retrieved from one of the default locations
