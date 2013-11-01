@@ -57,7 +57,7 @@ If at anytime you are stuck or if you're just curious about what Berkshelf can d
       berks install               # Install the cookbooks specified in the Berksfile
       berks list                  # List all cookbooks and their dependencies specified by your Berksfile
       berks outdated [COOKBOOKS]  # List dependencies that have new versions available that satisfy their constraints
-      berks package [COOKBOOK]    # Package a cookbook and it's dependencies as a tarball
+      berks package [COOKBOOK]    # Package a cookbook and its dependencies as a tarball
       berks shelf SUBCOMMAND      # Interact with the cookbook store
       berks show [COOKBOOK]       # Display name, author, copyright, and dependency information about a cookbook
       berks update [COOKBOOKS]    # Update the cookbooks (and dependencies) specified in the Berksfile
@@ -72,7 +72,7 @@ If at anytime you are stuck or if you're just curious about what Berkshelf can d
       -q, [--quiet]          # Silence all informational output.
       -d, [--debug]          # Output debug information
 
-You can get more detailed information about a command, or a sub command, but asking it for help
+You can get more detailed information about a command, or a sub command, by asking it for help
 
     $ berks shelf help
 
