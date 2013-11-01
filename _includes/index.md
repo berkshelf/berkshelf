@@ -263,12 +263,6 @@ Dependencies are managed via the file `Berksfile`. The Berksfile contains a list
 
 All listed dependencies _and_ their dependencies will be retrieved, recursively. Two kinds of dependency can be defined.
 
-
-
-
-
-
-
 ### Cookbook
 
 The usual way to define a cookbook dependency is with a `cookbook` statement in your Berksfile. They have the format:
@@ -303,6 +297,17 @@ Given a Berksfile at `~/code/nginx-cookbook` containing:
     metadata
 
 A `metadata.rb` file is assumed to be located at `~/code/nginx-cookbook/metadata.rb` describing your nginx cookbook.
+
+### Sources
+
+Berkshelf comes configured with one source of cookbook metadata: api.berkshelf.com contains a list of all cookbooks available on the Opscode Community Site and their dependencies. You do not need to configure anything to use cookbooks from this source.
+
+If you want to use another source of cookbook metadata, it's easy to do so. You must also include api.berkshelf.com if you specify any other sources - once you start configuring it, Berkshelf assumes you may not want the defaults at all.
+
+    source "https://api.berkshelf.com"
+    source "https://berks-api.intranet.riotgames.com"
+
+For more information about running your own [Berkshelf API](https://github.com/RiotGames/berkshelf-api) server, see the [RiotGames/berkshelf-api](https://github.com/RiotGames/berkshelf-api) on GitHub.
 
 ### Dependency Options
 
