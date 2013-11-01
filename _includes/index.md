@@ -6,7 +6,7 @@ Getting started with Berkshelf is a breeze.
     Successfully installed berkshelf-3.0.0
     1 gem installed
 
-Specify your dependencies in a Berksfile in your project's root
+Specify your cookbook dependencies in a Berksfile in your project's root
 
     # Berksfile
     cookbook 'mysql'
@@ -261,23 +261,17 @@ Dependencies are managed via the file `Berksfile`. The Berksfile contains a list
     cookbook 'database', github: 'opscode-cookbooks/database'
     cookbook 'myapp', chef_api: :config
 
-All sources _and_ their dependencies will be retrieved, recursively. Two kinds of sources can be defined.
+All listed dependencies _and_ their dependencies will be retrieved, recursively. Two kinds of dependency can be defined.
 
-### Metadata Source
 
-The metadata source is like saying `gemspec` in Bundler's [Gemfile](http://gembundler.com/man/gemfile.5.html). It says, "There is a metadata.rb file within the same relative path of my Berksfile". This allows you to resolve a Cookbook's dependencies that you are currently working on just like you would resolve the dependencies of a Gem that you are currently working on with Bundler.
 
-Given a Berksfile at `~/code/nginx-cookbook` containing:
 
-    metadata
 
-A `metadata.rb` file is assumed to be located at `~/code/nginx-cookbook/metadata.rb` describing your nginx cookbook.
 
-### Cookbook Source
 
-A cookbook source is a way to describe a cookbook to install or a way to override the location of a dependency.
+### Cookbook
 
-Cookbook sources are defined with the format:
+The usual way to define a cookbook dependency is with a `cookbook` statement in your Berksfile. They have the format:
 
     cookbook {name}, {version_constraint}, {options}
 
@@ -300,39 +294,23 @@ The second parameter is a `version constraint` and is optional. If no version co
 
 The final parameter is an options hash
 
-### Source Options
+### Metadata
 
-Options passed to a source can contain a location or a group(s).
+Defining a dependency via metadata says, "There is a metadata.rb file within the same relative path of my Berksfile". This allows you to resolve a Cookbook's dependencies that you are currently working.
+
+Given a Berksfile at `~/code/nginx-cookbook` containing:
+
+    metadata
+
+A `metadata.rb` file is assumed to be located at `~/code/nginx-cookbook/metadata.rb` describing your nginx cookbook.
+
+### Dependency Options
+
+Options passed to a cookbook dependency can contain a location or a group(s).
 
 #### Locations
 
-By default a cookbook source is assumed to come from the Opscode Community site `http://cookbooks.opscode.com/api/v1/cookbooks`. This behavior can be customized with a different location type. You might want to use a different location type if the cookbook is stored in a git repository, at a local file path, or at a different community site.
-
-##### Chef API Location
-
-The Chef API location allows you to treat your Chef Server like an [artifact](http://en.wikipedia.org/wiki/Artifact_%28software_development%29) server. Cookbooks or dependencies can be pulled directly out of a Chef Server. This is super useful if your organization has cookbooks that isn't available to the community but may be a dependency of other proprietary cookbooks in your organization.
-
-A Chef API Location is expressed with the `chef_api` key followed by some options. You can tell Berkshelf to use the Chef credentials found in your Berkshelf config by passing the symbol `:config` to `chef_api`.
-
-    cookbook "artifact", chef_api: :config
-
-The Berkshelf configuration is by default located at `~/.berkshelf/config.json`. You can specify a different configuration file with the `-c` flag.
-
-    $ berks install -c /Users/teemo/.berkshelf/production-config.json
-
-You can also explicitly define the `chef_server_url`, `node_name`, and `client_key` to use:
-
-    cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", node_name: "teemo", client_key: "/Users/teemo/.chef/teemo.pem"
-
-##### Site Location
-
-The Site location can be used to specify a community site API to retrieve cookbooks from
-
-    cookbook "artifact", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
-
-The symbol `:opscode` is an alias for "Opscode's newest community API" and can be provided in place of a URL
-
-    cookbook "artifact", site: :opscode
+By default a cookbook will be downloaded from the API source that provided it, defaulting the the Opscode Community site `http://cookbooks.opscode.com/api/v1/cookbooks`. You might want to use a different location type if the cookbook is stored in a git repository or a local file path.
 
 ##### Path Location
 
@@ -388,46 +366,9 @@ The `git` protocol will be used if no protocol is explicity set. To access a pri
 
 > You will receive a repository not found error if you are referencing a private repository and have not set the protocol to `https` or `ssh`.
 
-### Default Locations
-
-Any source that does not explicit define a location will attempted to be retrieved at the latest Opscode community API. Any source not explicitly defined in the Berksfile but found in the `metadata.rb` of the current cookbook or a dependency will also attempt to use this default location.
-
-Additional site locations can be specified with the `site` keyword in the Berksfile
-
-    site "http://cookbooks.opscode.com/api/v1/cookbooks"
-
-This same entry could also have been written
-
-    site :opscode
-
-A Chef API default location can also be specified to attempt to retrieve your cookbook and it's dependencies from
-
-    chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "teemo", client_key: "/Users/teemo/.chef/teemo.pem"
-
-Provided my Berkshelf config contains these Chef credentials - this could have been simplified by using the `:config` symbol
-
-    chef_api :config
-
-> Specifying a Chef API default location is particularly useful if you have cookbooks that are
-> private to your organization that are not shared on the Opscode community site.
->
-> It is highly recommended that you upload your cookbooks to your organization's Chef Server
-> and then set a chef_api default location at the top of every application cookbook's Berksfile
-
-#### Multiple default locations
-
-A combination of default locations can be specified in case a location is unavailable or does not contain the desired cookbook or version
-
-    chef_api :config
-    site :opscode
-
-    cookbook "artifact", "= 0.10.0"
-
-The order in which the default locations keywords appear in the Berksfile is the order in which sources will be tried. In the above example Berkshelf would first try a Chef API using my Berkshelf configuration to find the "artifact" cookbook. If the Chef API didn't contain the "artifact" cookbook, or version 0.10.0 of the cookbook, it will try the Opscode community site.
-
 ### Groups
 
-Adding sources to a group is useful if you want to ignore a cookbook or a set of cookbooks at install or upload time.
+Adding dependencies to a group is useful if you want to ignore a cookbook or a set of cookbooks at install or upload time.
 
 Groups can be defined via blocks:
 
