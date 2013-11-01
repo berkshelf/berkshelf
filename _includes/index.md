@@ -1,6 +1,6 @@
 ## Getting Started
 
-If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a breeze.
+Getting started with Berkshelf is a breeze.
 
     $ gem install berkshelf
     Successfully installed berkshelf-3.0.0
@@ -251,7 +251,7 @@ The above example will use an absolute path to the Berksfile of a sweet applicat
 
 ## The Berksfile
 
-Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berskfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
+Dependencies are managed via the file `Berksfile`. The Berksfile contains a list of cookbooks to retrieve and where to get them.
 
     metadata
     cookbook 'memcached'
