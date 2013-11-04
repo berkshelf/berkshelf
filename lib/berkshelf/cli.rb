@@ -381,7 +381,7 @@ module Berkshelf
       type: :boolean,
       desc: 'Do not apply the chefignore to the packaged contents',
       default: false
-    desc "package [COOKBOOK]", "Package a cookbook and it's dependencies as a tarball"
+    desc "package [COOKBOOK]", "Package a cookbook and its dependencies as a tarball"
     def package(name = nil)
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.package(name, options)

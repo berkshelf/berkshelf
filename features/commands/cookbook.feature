@@ -13,7 +13,7 @@ Feature: berks cookbook
     | chef-minitest     | Chef-Minitest   |
     | scmversion        | SCMVersion      |
     | no-bundler        | no Bundler      |
-    # Disable testing of skip git until Test Kitchen supports the skip_git flag in it's generator
+    # Disable testing of skip git until Test Kitchen supports the skip_git flag in its generator
     # https://github.com/opscode/test-kitchen/issues/141
     # | skip-git          | no Git          |
     | skip-vagrant      | no Vagrant      |

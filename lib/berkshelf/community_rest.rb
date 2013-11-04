@@ -111,7 +111,7 @@ module Berkshelf
       end
     end
 
-    # Returns the latest version of the cookbook and it's download link.
+    # Returns the latest version of the cookbook and its download link.
     #
     # @return [String]
     def latest_version(name)
