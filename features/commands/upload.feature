@@ -195,3 +195,27 @@ Feature: berks upload
 
         * fake (0.0.0)
       """
+  Scenario: When the syntax check is skipped
+    Given a cookbook named "fake"
+    And the cookbook "fake" has the file "recipes/default.rb" with:
+      """
+      Totally not valid Ruby syntax
+      """
+    And the cookbook "fake" has the file "templates/default/file.erb" with:
+      """
+      <% for %>
+      """
+    And the cookbook "fake" has the file "recipes/template.rb" with:
+      """
+      template "/tmp/wadus" do
+        source "file.erb"
+      end
+      """
+    And the cookbook "fake" has the file "Berksfile" with:
+      """
+      metadata
+      """
+    And I cd to "fake"
+    When I successfully run `berks upload --skip-syntax-check`
+    Then the Chef Server should have the cookbooks:
+      | fake | 0.0.0 |

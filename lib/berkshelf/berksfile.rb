@@ -488,6 +488,7 @@ module Berkshelf
         halt_on_frozen: false,
         skip_dependencies: false,
         cookbooks: [],
+        validate: true
       }.merge(options)
 
       validate_cookbook_names!(options)
@@ -669,6 +670,7 @@ module Berkshelf
                 force: options[:force],
                 freeze: options[:freeze],
                 name: cookbook.cookbook_name,
+                validate: options[:validate]
               })
             rescue Ridley::Errors::FrozenCookbook => ex
               if options[:halt_on_frozen]
