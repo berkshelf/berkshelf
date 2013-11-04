@@ -252,6 +252,7 @@ module Berkshelf
 
       options[:cookbooks] = cookbook_names
       options[:freeze]    = !options[:no_freeze]
+      options[:validate]  = false if options[:skip_syntax_check]
 
       berksfile.upload(options.symbolize_keys)
     end
