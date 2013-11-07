@@ -43,8 +43,8 @@ Want to start a new cookbook for a new application or supporting application?
 
 ### Guides
 
-[Getting Started Writing Chef Cookbooks the Berkshelf Way](http://misheska.com/blog/2013/06/16/getting-started-writing-chef-cookbooks-the-berkshelf-way/)
-(ty [misheska](https://github.com/misheska))
+[Getting Started Writing Chef Cookbooks the Berkshelf Way](http://misheska.com/blog/2013/06/16/getting-started-writing-chef-cookbooks-the-berkshelf-way/)  
+(thanks [misheska](https://github.com/misheska))
 
 ## Getting Help
 
