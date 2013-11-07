@@ -28,7 +28,7 @@ Add the Berksfile to your project
 
 If you already have a cookbook and it's not managed by Berkshelf it's easy to get up and running. Just locate your cookbook and initialize it!
 
-    $ berks init ~/code/mushroom-cookbook
+    $ berks init ~/code/app_of_doom-cookbook
 
 Note how the Berksfile in this case tells Berkshelf to read the cookbook's metadata, rather than specifying the dependencies directly
 
@@ -249,10 +249,10 @@ By default, the Vagrant Berkshelf plugin will assume that the Vagrantfile is loc
 
     Vagrant.configure("2") do |config|
       ...
-      config.berkshelf.berksfile_path = "/Users/teemo/code/mushroom/Berksfile"
+      config.berkshelf.berksfile_path = "/Users/teemo/code/app_of_doom/Berksfile"
     end
 
-The above example will use an absolute path to the Berksfile of a sweet application called Mushroom.
+The above example will use an absolute path to the Berksfile of a sweet application called App of Doom.
 
 ## The Berksfile
 
@@ -398,9 +398,9 @@ To exclude the groups when installing or updating just add the `--without` flag.
 
 Berkshelf includes a command to help you quickly generate a cookbook with a number of helpful supporting tools
 
-    $ berks cookbook mushroom --foodcritic
+    $ berks cookbook app_of_doom --foodcritic
 
-This will generate a cookbook called "mushroom" in your current directory with Vagrant, Git, and Foodcritic support. Check out [this guide](http://vialstudios.com/guide-authoring-cookbooks.html) for more information and the help provided in the Berkshelf CLI for the cookbook command.
+This will generate a cookbook called "app\_of\_doom" in your current directory with Vagrant, Git, and Foodcritic support. Check out [this guide](http://vialstudios.com/guide-authoring-cookbooks.html) for more information and the help provided in the Berkshelf CLI for the cookbook command.
 
 ## Build Integration
 
