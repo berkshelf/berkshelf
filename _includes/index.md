@@ -41,6 +41,11 @@ Want to start a new cookbook for a new application or supporting application?
 
     $ berks cookbook new_application
 
+### Guides
+
+[Getting Started Writing Chef Cookbooks the Berkshelf Way](http://misheska.com/blog/2013/06/16/getting-started-writing-chef-cookbooks-the-berkshelf-way/)
+(ty [misheska](https://github.com/misheska))
+
 ## Getting Help
 
 If at anytime you are stuck or if you're just curious about what Berkshelf can do, just type the help command
