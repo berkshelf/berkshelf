@@ -284,7 +284,7 @@ The second parameter is a `version constraint` and is optional. If no version co
 * Greater than or equal to (>=)
 * Less than (<)
 * Less than or equal to (<=)
-* Approximately greater than (~>)
+* [Pessimistic](http://robots.thoughtbot.com/rubys-pessimistic-operator/) (~>)
 
 The final parameter is an options hash
 
