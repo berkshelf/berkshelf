@@ -272,3 +272,24 @@ Feature: Creating and reading the Berkshelf lockfile
       Error reading the Berkshelf lockfile `Berksfile.lock` (JSON::ParserError)
       """
     And the exit status should be "LockfileParserError"
+
+
+  Scenario: Installing with a cookbook in the excluding group and with the update_lockfile to false doesn't update lockfile
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake', '1.0.0'
+
+      group :wadus do
+        cookbook 'wadus', '1.0.0'
+      end
+      """
+    Given the cookbook store has the cookbooks:
+      | fake | 1.0.0 |
+      | wadus | 1.0.0 |
+    Given the Lockfile has:
+      | fake | 1.0.0 |
+      | wadus | 1.0.0 |
+    When I successfully run `berks install -e wadus -l false`
+    Then the Lockfile should have:
+      | fake | 1.0.0 |
+      | wadus | 1.0.0 |
