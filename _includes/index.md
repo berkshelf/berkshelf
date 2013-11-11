@@ -28,7 +28,7 @@ Add the Berksfile to your project
 
 If you already have a cookbook and it's not managed by Berkshelf it's easy to get up and running. Just locate your cookbook and initialize it!
 
-    $ berks init ~/code/app_of_doom-cookbook
+    $ berks init ~/code/awesome_app-cookbook
 
 Note how the Berksfile in this case tells Berkshelf to read the cookbook's metadata, rather than specifying the dependencies directly
 
@@ -127,21 +127,21 @@ You can configure Berkshelf to your liking with the `configure` command
 
 Answer each question prompt with a value or just press enter to accept the default value.
 
-    Config written to: '/Users/teemo/.berkshelf/config.json'
+    Config written to: '/Users/yourusername/.berkshelf/config.json'
 
 You will only be prompted to fill in the most travelled configuration options. Looking in the generated configuration will give you some insight to some other configurable values.
 
     {
       "chef": {
-        "chef_server_url": "https://api.opscode.com/organizations/riot",
-        "validation_client_name": "riot-validator",
-        "validation_key_path": "/Users/teemo/.chef/riot-validator.pem",
-        "client_key": "/Users/teemo/.chef/teemo.pem",
-        "node_name": "teemo"
+        "chef_server_url": "https://api.opscode.com/organizations/awesome_org",
+        "validation_client_name": "awesome_org-validator",
+        "validation_key_path": "/Users/yourusername/.chef/awesome_org-validator.pem",
+        "client_key": "/Users/yourusername/.chef/yourusername.pem",
+        "node_name": "defaultnodename"
       },
       "cookbook": {
-        "copyright": "Riot Games",
-        "email": "teemo@riotgames.com",
+        "copyright": "Awesome Org",
+        "email": "yourusername@awesome_org.com",
         "license": "reserved"
       },
       "allowed_licenses": [
@@ -171,22 +171,22 @@ You will only be prompted to fill in the most travelled configuration options. L
 
 ### Configurable options
 
-* `chef.chef_server_url` [String] Location of your chef server's API endpoint (e.g. http://api.opscode.com/organizations/riot) Default: knife configuration
-* `chef.validation_client_name` [String] Client used to connect to the chef server API (e.g. teemo) Default: knife configuration
-* `chef.validation_key_path` [String] Path to the validator client key (e.g. riot-validator.pem) Default: knife configuration
-* `chef.node_name` [String] Node name used to authenticate with the chef server API (e.g. teemo) Default: knife configuration
-* `chef.client_key` [String] Path to the key used to authenticate with the chef server API (e.g. teemo.pem) Default: knife configuration
-* `cookbook.copyright` [String] Copyright holder to be used in Berkshelf generated cookbooks (e.g. Riot Games) Default: YOUR_NAME
-* `cookbook.email` [String] Email address for the maintainer of Berkshelf generated cookbooks (e.g. teemo@riotgames.com) Default: YOUR_EMAIL
+* `chef.chef_server_url` [String] Location of your chef server's API endpoint (e.g. http://api.opscode.com/organizations/awesome_org) Default: knife configuration
+* `chef.validation_client_name` [String] Client used to connect to the chef server API (e.g. yourusername) Default: knife configuration
+* `chef.validation_key_path` [String] Path to the validator client key (e.g. awesome_org-validator.pem) Default: knife configuration
+* `chef.node_name` [String] Node name used to authenticate with the chef server API Default: knife configuration
+* `chef.client_key` [String] Path to the key used to authenticate with the chef server API (e.g. yourusername.pem) Default: knife configuration
+* `cookbook.copyright` [String] Copyright holder to be used in Berkshelf generated cookbooks (e.g. Awesome Org) Default: YOUR_NAME
+* `cookbook.email` [String] Email address for the maintainer of Berkshelf generated cookbooks (e.g. yourusername@awesome\_org.com) Default: YOUR\_EMAIL
 * `cookbook.license` [String] Licence to be used in Berkshelf generated cookbooks (e.g. MIT) Default: reserved
 * `allowed_licenses` [Array] List of licences allowed to be used in cookbooks (e.g. [ "MIT", "Apache" ]) Default: []
 * `raise_license_exception` [Boolean] Raise an exception if the license used in a dependent cookbook resolved by Berkshelf is not in the list of allowed licenses defined in allowed_licenses (e.g. true) Default: false
-* `vagrant.vm.box` [String] Name of the box printed in a Vagrantfile's config.vm.box field (e.g. arbitrary_box_name) Default: 'opscode_ubuntu-12.04_provisionerless'
+* `vagrant.vm.box` [String] Name of the box printed in a Vagrantfile's config.vm.box field (e.g. arbitrary\_box\_name) Default: 'opscode\_ubuntu-12.04\_provisionerless'
 * `vagrant.vm.box_url` [String] Download URL for the box referred to in vagrant.vm.box Default: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
 * `vagrant.vm.forward_port` [Hash] Set of key/value pairs (mapping to guest/host, respectively) specifying which ports the Vagrantfile should configure to be forwarded. (e.g. {"80": "8080"})
 * `vagrant.vm.network.bridged` [Boolean] Whether the network should be configured to "bridged" in the Vagrantfile (e.g. true) Default: false
 * `vagrant.vm.network.hostonly` [String] Default IP address to be configured in the Vagrantfile (e.g. 172.10.10.11) Default: 33.33.33.10
-* `vagrant.vm.provision` [String] The default provisioner to use in the Vagrantfile (e.g. chef_client) Default: chef_solo
+* `vagrant.vm.provision` [String] The default provisioner to use in the Vagrantfile (e.g. chef\_client) Default: chef\_solo
 * `vagrant.omnibus.enabled` [Boolean] Whether the omnibus vagrant plugin should be used to install Chef on the VM (e.g. false) Default: true
 * `vagrant.omnibus.version` [String] The version of Chef the omnibus installer should install on teh VM (e.g. 11.6.0) Default: latest
 * `ssl.verify` [Boolean] Whether to verify the SSL certificate used by resources Berkshelf connects to. If your Chef server uses a self signed certificate, this should be false. (e.g. false) Default: true
@@ -229,7 +229,7 @@ Once the Vagrant Berkshelf plugin is installed it can be enabled in your Vagrant
 The plugin will look in your current working directory for your `Berksfile` by default. Ensure that your Berksfile exists and when you run `vagrant up`, `vagrant provision`, or `vagrant destroy` the Berkshelf integration will automatically kick in!
 
     $ vagrant provision
-    [Berkshelf] Updating Vagrant's berkshelf: '/Users/teemo/.berkshelf/vagrant/berkshelf-20130320-28478-sy1k0n'
+    [Berkshelf] Updating Vagrant's berkshelf: '/Users/yourusername/.berkshelf/vagrant/berkshelf-20130320-28478-sy1k0n'
     [Berkshelf] Installing nginx (2.0.0)
     ...
 
@@ -249,10 +249,10 @@ By default, the Vagrant Berkshelf plugin will assume that the Vagrantfile is loc
 
     Vagrant.configure("2") do |config|
       ...
-      config.berkshelf.berksfile_path = "/Users/teemo/code/app_of_doom/Berksfile"
+      config.berkshelf.berksfile_path = "/Users/yourusername/code/awesome_app/Berksfile"
     end
 
-The above example will use an absolute path to the Berksfile of a sweet application called App of Doom.
+The above example will use an absolute path to the Berksfile of a sweet application called Awesome App.
 
 ## The Berksfile
 
@@ -261,7 +261,7 @@ Dependencies are managed via the file `Berksfile`. The Berksfile contains a list
     metadata
     cookbook 'memcached'
     cookbook 'nginx'
-    cookbook 'pvpnet', path: '/Users/teemo/code/riot-cookbooks/pvpnet-cookbook'
+    cookbook 'pvpnet', path: '/Users/yourusername/code/awesome_org-cookbooks/pvpnet-cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
     cookbook 'database', github: 'opscode-cookbooks/database'
     cookbook 'myapp', chef_api: :config
@@ -310,7 +310,7 @@ Berkshelf comes configured with one source of cookbook metadata: api.berkshelf.c
 If you want to use another source of cookbook metadata, it's easy to do so. You must also include api.berkshelf.com if you specify any other sources - once you start configuring it, Berkshelf assumes you may not want the defaults at all.
 
     source "https://api.berkshelf.com"
-    source "https://berks-api.intranet.riotgames.com"
+    source "https://berks-api.intranet.awesome_org.com"
 
 For more information about running your own [Berkshelf API](https://github.com/RiotGames/berkshelf-api) server, see the [RiotGames/berkshelf-api](https://github.com/RiotGames/berkshelf-api) on GitHub.
 
@@ -326,7 +326,7 @@ By default a cookbook will be downloaded from the API source that provided it, d
 
 The Path location is useful for rapid iteration because it does not download, copy, or move the cookbook to The Berkshelf or change the contents of the target. Instead the cookbook found at the given filepath will be used alongside the cookbooks found in The Berkshelf.
 
-    cookbook "artifact", path: "/Users/teemo/code/artifact-cookbook"
+    cookbook "artifact", path: "/Users/yourusername/code/artifact-cookbook"
 
 The value given to `:path` can only contain a single cookbook and _must_ contain a `metadata.rb` file.
 
@@ -383,12 +383,12 @@ Adding dependencies to a group is useful if you want to ignore a cookbook or a s
 Groups can be defined via blocks:
 
     group :solo do
-      cookbook 'riot_base'
+      cookbook 'awesome_org_base'
     end
 
 Groups can also be defined inline as an option:
 
-    cookbook 'riot_base', group: 'solo'
+    cookbook 'awesome_org_base', group: 'solo'
 
 To exclude the groups when installing or updating just add the `--without` flag.
 
@@ -398,9 +398,9 @@ To exclude the groups when installing or updating just add the `--without` flag.
 
 Berkshelf includes a command to help you quickly generate a cookbook with a number of helpful supporting tools
 
-    $ berks cookbook app_of_doom --foodcritic
+    $ berks cookbook awesome_app --foodcritic
 
-This will generate a cookbook called "app\_of\_doom" in your current directory with Vagrant, Git, and Foodcritic support. Check out [this guide](http://vialstudios.com/guide-authoring-cookbooks.html) for more information and the help provided in the Berkshelf CLI for the cookbook command.
+This will generate a cookbook called "awesome\_app" in your current directory with Vagrant, Git, and Foodcritic support. Check out [this guide](http://vialstudios.com/guide-authoring-cookbooks.html) for more information and the help provided in the Berkshelf CLI for the cookbook command.
 
 ## Build Integration
 
