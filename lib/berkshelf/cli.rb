@@ -180,6 +180,10 @@ module Berkshelf
       desc: 'Path to install cookbooks to (i.e. vendor/cookbooks).',
       aliases: '-p',
       banner: 'PATH'
+    method_option :update_lockfile,
+      type: :boolean,
+      desc: 'Avoid updating lockfile',
+      aliases: '-l'
     desc 'install', 'Install the cookbooks specified in the Berksfile'
     def install
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
