@@ -1,12 +1,51 @@
 require 'berkshelf'
-require_relative 'config'
-require_relative 'init_generator'
-require_relative 'cookbook_generator'
-require_relative 'commands/shelf'
-require_relative 'commands/test_command'
+require 'clamp'
 
 module Berkshelf
-  class Cli < Thor
+  module FilterOptions
+    def self.included(base)
+      base.instance_eval do
+        option ['-e', '--except'], 'LIST', 'groups to exclude', multivalued: true
+        option ['-o', '--only'],   'LIST', 'groups to exclusively include', multivalued: true
+      end
+    end
+
+    def options
+      super.merge(
+        only:   only_list,
+        except: except_list,
+      )
+    end
+  end
+
+  module BerksfileOptions
+    def self.included(base)
+      base.class_eval do
+        option ['-b', '--berksfile'], 'PATH', 'path to the Berksfile', default: 'Berksfile', attribute_name: 'berksfile_path'
+      end
+    end
+
+    def berksfile
+      @berksfile ||= Berksfile.from_file(berksfile_path)
+    end
+  end
+
+  module SSLOptions
+    def self.included(base)
+      base.class_eval do
+        option ['-s', '--[no-]ssl-verify'], :flag, 'use Ruby\'s SSL verification', default: true
+      end
+    end
+
+    def options
+      super.merge(ssl_verify: ssl_verify?)
+    end
+  end
+
+  #
+  # Main CLI application entry point
+  #
+  class CLI < Clamp::Command
     # This is the main entry point for the CLI. It exposes the method {#execute!} to
     # start the CLI.
     #
@@ -19,360 +58,89 @@ module Berkshelf
       end
 
       def execute!
-        begin
-          $stdin  = @stdin
-          $stdout = @stdout
-          $stderr = @stderr
+        $stdin  = @stdin
+        $stdout = @stdout
+        $stderr = @stderr
 
-          Berkshelf::Cli.start(@argv)
-          @kernel.exit(0)
-        rescue Berkshelf::BerkshelfError => e
-          Berkshelf.ui.error e
-          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
-          @kernel.exit(e.status_code)
-        rescue Ridley::Errors::RidleyError => e
-          Berkshelf.ui.error "#{e.class} #{e}"
-          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
-          @kernel.exit(47)
-        end
+        Berkshelf::CLI.run('berks', @argv)
+        @kernel.exit(0)
+      rescue Berkshelf::BerkshelfError => e
+        Berkshelf.ui.error e
+        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        @kernel.exit(e.status_code)
+      rescue Ridley::Errors::RidleyError => e
+        Berkshelf.ui.error "#{e.class} #{e}"
+        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        @kernel.exit(47)
+      ensure
+        $stdin  = STDIN
+        $stdout = STDOUT
+        $stderr = STDERR
       end
     end
 
-    class << self
-      def dispatch(meth, given_args, given_opts, config)
-        if given_args.length > 1 && !(given_args & Thor::HELP_MAPPINGS).empty?
-          command = given_args.first
+    require_relative 'commands/apply_command'
+    require_relative 'commands/contingent_command'
+    require_relative 'commands/cookbook_command'
+    require_relative 'commands/init_command'
+    require_relative 'commands/install_command'
+    require_relative 'commands/list_command'
+    require_relative 'commands/outdated_command'
+    require_relative 'commands/package_command'
+    require_relative 'commands/shelf_command'
+    require_relative 'commands/show_command'
+    require_relative 'commands/update_command'
+    require_relative 'commands/upload_command'
+    require_relative 'commands/vendor_command'
 
-          if self.subcommands.include?(command)
-            super(meth, [command, 'help'].compact, nil, config)
-          else
-            super(meth, ['help', command].compact, nil, config)
-          end
-        else
-          super
-          Berkshelf.formatter.cleanup_hook unless config[:current_command].name == 'help'
-        end
-      end
+    # Global options
+    option ['-c', '--config'], 'PATH', 'path to Berkshelf configuration file' do |path|
+      raise ConfigNotFound.new(:berkshelf, path) unless File.exist?(path)
+      Berkshelf.config = Config.from_file(path)
+    end
+    option ['-F', '--format'], 'FORMAT', 'output format to use', default: 'human' do |format|
+      Berkshelf.set_format(format)
+    end
+    option ['-q', '--quiet'],  :flag, 'silence informational output' do
+      Berkshelf.ui.mute!
+    end
+    option ['-d', '--debug'],  :flag, 'output debug information' do
+      Berkshelf.logger.level = ::Logger::DEBUG
     end
 
-    def initialize(*args)
-      super(*args)
-
-      if @options[:config]
-        unless File.exist?(@options[:config])
-          raise ConfigNotFound.new(:berkshelf, @options[:config])
-        end
-
-        Berkshelf.config = Berkshelf::Config.from_file(@options[:config])
-      end
-
-      if @options[:debug]
-        Berkshelf.logger.level = ::Logger::DEBUG
-      end
-
-      if @options[:quiet]
-        Berkshelf.ui.mute!
-      end
-
-      Berkshelf.set_format @options[:format]
-      @options = options.dup # unfreeze frozen options Hash from Thor
-    end
-
-    namespace 'berkshelf'
-
-    map 'in'   => :install
-    map 'up'   => :upload
-    map 'ud'   => :update
-    map 'ls'   => :list
-    map 'book' => :cookbook
-    map ['ver', '-v', '--version'] => :version
-
-    default_task :install
-
-    class_option :config,
-      type: :string,
-      desc: 'Path to Berkshelf configuration to use.',
-      aliases: '-c',
-      banner: 'PATH'
-    class_option :format,
-      type: :string,
-      default: 'human',
-      desc: 'Output format to use.',
-      aliases: '-F',
-      banner: 'FORMAT'
-    class_option :quiet,
-      type: :boolean,
-      desc: 'Silence all informational output.',
-      aliases: '-q',
-      default: false
-    class_option :debug,
-      type: :boolean,
-      desc: 'Output debug information',
-      aliases: '-d',
-      default: false
-
-    method_option :except,
-      type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
-    method_option :only,
-      type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    method_option :path,
-      type: :string,
-      desc: 'Path to install cookbooks to (i.e. vendor/cookbooks).',
-      aliases: '-p',
-      banner: 'PATH'
-    desc 'install', 'Install the cookbooks specified in the Berksfile'
-    def install
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.install(options)
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    method_option :except,
-      type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
-    method_option :only,
-      type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    desc 'update [COOKBOOKS]', 'Update the cookbooks (and dependencies) specified in the Berksfile'
-    def update(*cookbook_names)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
-      update_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.update(update_options)
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    method_option :except,
-      type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
-    method_option :only,
-      type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    method_option :no_freeze,
-      type: :boolean,
-      default: false,
-      desc: 'Do not freeze uploaded cookbook(s).'
-    method_option :force,
-      type: :boolean,
-      default: false,
-      desc: 'Upload all cookbook(s) even if a frozen one exists on the Chef Server.'
-    method_option :ssl_verify,
-      type: :boolean,
-      default: nil,
-      desc: 'Disable/Enable SSL verification when uploading cookbooks.'
-    method_option :skip_syntax_check,
-      type: :boolean,
-      default: false,
-      desc: 'Skip Ruby syntax check when uploading cookbooks.',
-      aliases: '-s'
-    method_option :halt_on_frozen,
-      type: :boolean,
-      default: false,
-      desc: 'Halt uploading and exit if the Chef Server has a frozen version of the cookbook(s).'
-    desc 'upload [COOKBOOKS]', 'Upload the cookbook specified in the Berksfile to the Chef Server'
-    def upload(*cookbook_names)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-
-      options[:cookbooks] = cookbook_names
-      options[:freeze]    = !options[:no_freeze]
-      options[:validate]  = false if options[:skip_syntax_check]
-
-      berksfile.upload(options.symbolize_keys)
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    method_option :ssl_verify,
-      type: :boolean,
-      default: nil,
-      desc: 'Disable/Enable SSL verification when locking cookbooks.'
-    desc 'apply ENVIRONMENT', 'Apply the cookbook version locks from Berksfile.lock to a Chef environment'
-    def apply(environment_name)
-      berksfile    = Berkshelf::Berksfile.from_file(options[:berksfile])
-      lock_options = Hash[options].symbolize_keys
-
-      berksfile.apply(environment_name, lock_options)
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    method_option :except,
-      type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
-    method_option :only,
-      type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    desc 'outdated [COOKBOOKS]', 'List dependencies that have new versions available that satisfy their constraints'
-    def outdated(*cookbook_names)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      options[:cookbooks] = cookbook_names
-      outdated = berksfile.outdated(options.symbolize_keys)
-
-      if outdated.empty?
-        Berkshelf.formatter.msg "All cookbooks up to date!"
-      else
-        Berkshelf.formatter.msg "The following cookbooks have newer versions:"
-      end
-
-      Berkshelf.formatter.outdated(outdated)
-    end
-
-    desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
-    def init(path = '.')
-      Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
-      Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
-
-      Berkshelf::InitGenerator.new([path], options).invoke_all
-
-      Berkshelf.formatter.msg 'Successfully initialized'
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
-    def list
-      berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
-
-      if dependencies.empty?
-        Berkshelf.formatter.msg 'There are no cookbooks installed by your Berksfile'
-      else
-        Berkshelf.formatter.msg 'Cookbooks installed by your Berksfile:'
-        print_list(dependencies)
-      end
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: "Path to a Berksfile to operate off of.",
-      aliases: "-b",
-      banner: "PATH"
-    desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
-    def show(name)
-      berksfile = Berksfile.from_file(options[:berksfile])
-      cookbook = berksfile.retrieve_locked(name)
-      Berkshelf.formatter.show(cookbook)
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook'
-    def contingent(name)
-      berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
-      dependencies = dependencies.select { |cookbook| cookbook.dependencies.include?(name) }
-
-      if dependencies.empty?
-        Berkshelf.formatter.msg "There are no cookbooks contingent upon '#{name}' defined in this Berksfile"
-      else
-        Berkshelf.formatter.msg "Cookbooks in this Berksfile contingent upon #{name}:"
-        print_list(dependencies)
-      end
-    end
-
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    method_option :output,
-      type: :string,
-      default: '.',
-      desc: 'Path to output the tarball',
-      aliases: '-o',
-      banner: 'PATH'
-    method_option :ignore_chefignore,
-      type: :boolean,
-      desc: 'Do not apply the chefignore to the packaged contents',
-      default: false
-    desc "package [COOKBOOK]", "Package a cookbook and its dependencies as a tarball"
-    def package(name = nil)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.package(name, options)
-    end
-
-    method_option :except,
-      type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
-    method_option :only,
-      type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    method_option :berksfile,
-      type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    desc "vendor [PATH]", "Vendor the cookbooks specified by the Berksfile into a directory"
-    def vendor(path = File.join(Dir.pwd, "berks-cookbooks"))
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.vendor(path, options)
-    end
-
-    desc 'version', 'Display version and copyright information'
-    def version
+    # Listen for -v, --version and output the version header
+    option ['-v', '--version'], :flag, 'Show version' do
       Berkshelf.formatter.version
+      exit(0)
     end
 
-    desc 'cookbook NAME', 'Create a skeleton for a new cookbook'
-    def cookbook(name)
-      Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
-      Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
+    # Set the default command to `install`
+    default_subcommand = 'install'
 
-      Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
-    end
-    tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
+    # Subcommands
+    subcommand 'apply',       'apply cookbook version locks to a Chef environment', Berkshelf::ApplyCommand
+    subcommand 'contingent',  'list cookbooks that depend on the given cookbook', Berkshelf::ContingentCommand
+    subcommand 'cookbook',    'create a skeleton for a new cookbook', Berkshelf::CookbookCommand
+    subcommand 'init',        'initialize Berkshelf in the given directory', Berkshelf::InitCommand
+    subcommand 'install',     'install the cookbooks in the Berksfile', Berkshelf::InstallCommand
+    subcommand 'list',        'list all cookbooks and dependencies from your Berksfile', Berkshelf::ListCommand
+    subcommand 'outdated',    'list remote cookbooks that have newer versions', Berkshelf::OutdatedCommand
+    subcommand 'package',     'package a cookbook and dependencies as a tarball', Berkshelf::PackageCommand
+    subcommand 'shelf',       'interact with the cookbook store', Berkshelf::ShelfCommand
+    subcommand 'show',        'show descriptive information about a cookbook', Berkshelf::ShowCommand
+    subcommand 'update',      'update the given cookbooks list', Berkshelf::UpdateCommand
+    subcommand 'upload',      'upload the cookbooks to the Chef Server', Berkshelf::UploadCommand
+    subcommand 'vendor',      'vendor cookbooks into a directory', Berkshelf::VendorCommand
 
-    private
+    protected
+
+      # The default list of options.
+      #
+      # @return [Hash]
+      def options
+        {}
+      end
+
       # Print a list of the given cookbooks. This is used by various
       # methods like {list} and {contingent}.
       #

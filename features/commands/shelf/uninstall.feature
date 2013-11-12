@@ -50,7 +50,7 @@ Feature: berks shelf uninstall
       | fake | 1.1.0 |
       | fake | 1.2.0 |
       | fake | 2.0.0 |
-    When I successfully run `berks shelf uninstall fake --version 1.0.0`
+    When I successfully run `berks shelf uninstall fake 1.0.0`
     Then the output should contain:
       """
       Successfully uninstalled fake (1.0.0)
@@ -90,7 +90,7 @@ Feature: berks shelf uninstall
       | ekaf | 2.3.4 |
     And the cookbook store has the cookbooks:
       | ekaf | 2.3.4 |
-    When I run `berks shelf uninstall ekaf --force`
+    When I run `berks shelf uninstall --force ekaf`
     Then the output should contain:
       """
       Successfully uninstalled ekaf (2.3.4)

@@ -92,7 +92,7 @@ Feature: berks upload
       cookbook 'fake', group: :take_me
       cookbook 'ekaf', group: :not_me
       """
-    When I successfully run `berks upload --only take_me not_me`
+    When I successfully run `berks upload --only take_me --only not_me`
     And the Chef Server should have the cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
@@ -117,7 +117,7 @@ Feature: berks upload
       cookbook 'fake', group: :take_me
       cookbook 'ekaf', group: :not_me
       """
-    When I successfully run `berks upload --except take_me not_me`
+    When I successfully run `berks upload --except take_me --except not_me`
     And the Chef Server should not have the cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |

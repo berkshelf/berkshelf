@@ -27,7 +27,7 @@ Spork.prefork do
     ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s
     ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path.to_s
 
-    Aruba::InProcess.main_class = Berkshelf::Cli::Runner
+    Aruba::InProcess.main_class = Berkshelf::CLI::Runner
     Aruba.process               = Aruba::InProcess
     @dirs                       = ["spec/tmp/aruba"] # set aruba's temporary directory
 
