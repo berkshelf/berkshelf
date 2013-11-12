@@ -1,6 +1,5 @@
 require 'buff/extensions'
 require 'archive/tar/minitar'
-require 'digest/md5'
 require 'forwardable'
 require 'hashie'
 require 'json'
