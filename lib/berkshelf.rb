@@ -10,8 +10,6 @@ require 'tmpdir'
 require 'uri'
 require 'zlib'
 
-JSON.create_id = nil
-
 require_relative 'berkshelf/core_ext'
 require_relative 'berkshelf/thor_ext'
 
