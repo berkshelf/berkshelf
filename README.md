@@ -61,9 +61,7 @@ $PWD/config.json
 ~/.berkshelf/config.json
 ```
 
-You are encouraged to keep project-specific configuration in the `$PWD/.berkshelf` directory. You can generate a project-configuration file by running:
-
-    $ berks configure --path ./.berkshelf/config.json
+You are encouraged to keep project-specific configuration in the `$PWD/.berkshelf` directory. A default configuration file is generated for you, but you can update the values to suit your needs.
 
 SSL Errors
 ----------
