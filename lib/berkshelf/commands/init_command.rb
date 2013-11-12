@@ -3,11 +3,9 @@ module Berkshelf
     parameter 'PATH', 'directory to initialize', default: '.'
 
     def execute
-      InitGenerator.new(Array(path), options).invoke_all
-    end
+      require_relative '../generators/cookbook_generator'
 
-    def options
-      {}
+      InitGenerator.new([path], options).invoke_all
     end
   end
 end

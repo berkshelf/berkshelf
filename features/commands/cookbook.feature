@@ -5,7 +5,7 @@ Feature: berks cookbook
 
 
   Scenario Outline: With various options
-    When I successfully run `berks cookbook sparkle_motion --<option>`
+    When I successfully run `berks cookbook --<option> sparkle_motion`
     Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
   Examples:
     | option            | feature         |
@@ -22,7 +22,7 @@ Feature: berks cookbook
 
   Scenario Outline: When a required supporting gem is not installed
     Given the gem "<gem>" is not installed
-    When I successfully run `berks cookbook sparkle_motion --<option>`
+    When I successfully run `berks cookbook --<option> sparkle_motion`
     Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
     And the output should contain a warning to suggest supporting the option "<option>" by installing "<gem>"
   Examples:

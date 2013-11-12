@@ -1,6 +1,9 @@
+require_relative 'base_generator'
+require_relative 'init_generator'
+
 module Berkshelf
   class CookbookGenerator < BaseGenerator
-    require_relative 'config'
+    require_relative '../config'
 
     LICENSES = [
       "apachev2",
