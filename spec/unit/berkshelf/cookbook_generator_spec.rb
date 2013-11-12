@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'berkshelf/generators/cookbook_generator'
 
 describe Berkshelf::CookbookGenerator do
   let(:name) { 'sparkle_motion' }

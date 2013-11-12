@@ -109,7 +109,9 @@ module Berkshelf
             force: true,
           }.merge(options)
 
-          Berkshelf::Cli.new.invoke(:cookbook, [name.to_s], options)
+          CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
+
+          # Berkshelf::CLI.new.invoke(:cookbook, [name.to_s], options)
         end
 
         # Make sure the given path exists and return the path
