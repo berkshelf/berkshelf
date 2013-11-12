@@ -1,7 +1,6 @@
 require 'buff/extensions'
 require 'archive/tar/minitar'
 require 'forwardable'
-require 'hashie'
 require 'json'
 require 'pathname'
 require 'ridley'
