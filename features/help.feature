@@ -1,11 +1,17 @@
 Feature: Appending -h or --help to a command
-  Scenario Outline: Using various help switches
-    Then the output from `<actual>` should be the same as `<expected>`
-    Examples:
-      | actual                | expected |
-      | berks --help          | berks help |
-      | berks -h              | berks help |
-      | berks cookbook --help | berks help cookbook |
-      | berks cookbook -h     | berks help cookbook |
-      | berks shelf --help    | berks shelf help |
-      | berks shelf -h        | berks shelf help |
+  Scenario: A top-level command
+    When I successfully run `berks --help`
+    Then the output should contain:
+      """
+      Usage:
+          berks [OPTIONS] SUBCOMMAND [ARG] ...
+      """
+
+
+  Scenario: A subcommand
+    When I successfully run `berks shelf --help`
+    Then the output should contain:
+      """
+      Usage:
+          berks shelf [OPTIONS] SUBCOMMAND [ARG] ...
+      """
