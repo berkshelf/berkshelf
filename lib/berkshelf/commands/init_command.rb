@@ -119,7 +119,6 @@ module Berkshelf
       #
       # @param [String] path
       def directory(path)
-        puts "directory  ".rjust(15) + path
         FileUtils.mkdir_p(path)
       end
 
@@ -129,18 +128,6 @@ module Berkshelf
       # @param [String] destination
       def template(name, destination)
         result = render_file(generators.join(name))
-
-        if File.exists?(destination)
-          print "#{destination} exists, overwrite? [y/N]"
-          answer = gets.strip
-
-          if answer.empty? || answer.upcase.include?('N')
-            puts "skip template  ".rjust(15) + destination
-            return
-          end
-        end
-
-        puts "template  ".rjust(15) + destination
         File.open(destination, 'w') { |f| f.write(result) }
       end
 
