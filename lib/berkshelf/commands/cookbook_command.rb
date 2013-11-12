@@ -1,4 +1,5 @@
-require_relative 'init_command'
+require 'berkshelf/config'
+require 'berkshelf/commands/init_command'
 
 module Berkshelf
   class CookbookCommand < InitCommand

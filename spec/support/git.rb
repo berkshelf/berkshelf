@@ -100,18 +100,17 @@ module Berkshelf
         #
         # @param [#to_s] name
         #   the name of the cookbook to create
-        # @param [Hash] options
-        #   the list ooptions to pass to the generator
-        def generate_git_cookbook(name, options = {})
-          options = {
-            skip_vagrant: true,
-            skip_test_kitchen: true,
-            force: true,
-          }.merge(options)
-
-          CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
-
-          # Berkshelf::CLI.new.invoke(:cookbook, [name.to_s], options)
+        def generate_git_cookbook(name)
+          CookbookCommand.run(nil, [
+            '--no-bundler',
+            '--no-chefspec',
+            '--no-foodcritic',
+            '--no-minitest',
+            '--no-scmversion',
+            '--no-test-kitchen',
+            '--no-vagrant',
+            name
+          ])
         end
 
         # Make sure the given path exists and return the path
