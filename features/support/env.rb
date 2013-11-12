@@ -38,6 +38,8 @@ Spork.prefork do
     reload_configs
     Berkshelf::CachedCookbook.instance_variable_set(:@loaded_cookbooks, nil)
 
+    Berkshelf.set_format(:human)
+
     endpoints = [
       {
         type: "chef_server",

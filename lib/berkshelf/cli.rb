@@ -63,6 +63,7 @@ module Berkshelf
         $stderr = @stderr
 
         Berkshelf::CLI.run('berks', @argv)
+        Berkshelf.formatter.cleanup_hook
         @kernel.exit(0)
       rescue Berkshelf::BerkshelfError => e
         Berkshelf.ui.error e
@@ -99,7 +100,7 @@ module Berkshelf
       Berkshelf.config = Config.from_file(path)
     end
     option ['-F', '--format'], 'FORMAT', 'output format to use', default: 'human' do |format|
-      Berkshelf.set_format(format)
+      Berkshelf.set_format(format.to_sym)
     end
     option ['-q', '--quiet'],  :flag, 'silence informational output' do
       Berkshelf.ui.mute!
