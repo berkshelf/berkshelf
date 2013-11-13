@@ -1,4 +1,4 @@
 Feature: berks cookbook
-  Scenario: test
+  Scenario: Default command
     * I successfully run `berks cookbook myface`
     * I should have a new cookbook skeleton "myface"
