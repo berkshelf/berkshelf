@@ -80,20 +80,6 @@ module Berkshelf
       end
     end
 
-    require_relative 'commands/apply_command'
-    require_relative 'commands/contingent_command'
-    require_relative 'commands/cookbook_command'
-    require_relative 'commands/init_command'
-    require_relative 'commands/install_command'
-    require_relative 'commands/list_command'
-    require_relative 'commands/outdated_command'
-    require_relative 'commands/package_command'
-    require_relative 'commands/shelf_command'
-    require_relative 'commands/show_command'
-    require_relative 'commands/update_command'
-    require_relative 'commands/upload_command'
-    require_relative 'commands/vendor_command'
-
     # Global options
     option ['-c', '--config'], 'PATH', 'path to Berkshelf configuration file' do |path|
       raise ConfigNotFound.new(:berkshelf, path) unless File.exist?(path)

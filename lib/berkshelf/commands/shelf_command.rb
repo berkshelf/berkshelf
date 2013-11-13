@@ -1,9 +1,11 @@
 module Berkshelf
-  class ShelfCommand < CLI
-    require_relative 'shelf/list_command'
-    require_relative 'shelf/show_command'
-    require_relative 'shelf/uninstall_command'
+  module Shelf
+    autoload :ListCommand,      'berkshelf/commands/shelf/list_command'
+    autoload :ShowCommand,      'berkshelf/commands/shelf/show_command'
+    autoload :UninstallCommand, 'berkshelf/commands/shelf/uninstall_command'
+  end
 
+  class ShelfCommand < CLI
     # Set the default command to `show`
     default_subcommand = 'show'
 

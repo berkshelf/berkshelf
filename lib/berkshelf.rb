@@ -10,10 +10,48 @@ require 'tmpdir'
 require 'uri'
 require 'zlib'
 
+require_relative 'berkshelf/errors'
 require_relative 'berkshelf/core_ext'
 require_relative 'berkshelf/thor_ext'
+require_relative 'berkshelf/version'
+# formatters
 
 module Berkshelf
+  autoload :APIClient,      'berkshelf/api_client'
+  autoload :Berksfile,      'berkshelf/berksfile'
+  autoload :CachedCookbook, 'berkshelf/cached_cookbook'
+  autoload :CLI,            'berkshelf/cli'
+  autoload :CommunityREST,  'berkshelf/community_rest'
+  autoload :Config,         'berkshelf/config'
+  autoload :CookbookStore,  'berkshelf/cookbook_store'
+  autoload :Dependency,     'berkshelf/dependency'
+  autoload :Downloader,     'berkshelf/downloader'
+  autoload :Git,            'berkshelf/git'
+  autoload :Installer,      'berkshelf/installer'
+  autoload :Location,       'berkshelf/location'
+  autoload :Lockfile,       'berkshelf/lockfile'
+  autoload :Logger,         'berkshelf/logger'
+  autoload :Mercurial,      'berkshelf/mercurial'
+  autoload :Mixin,          'berkshelf/mixin'
+  autoload :Resolver,       'berkshelf/resolver'
+  autoload :Source,         'berkshelf/source'
+  autoload :SourceURI,      'berkshelf/source_uri'
+  autoload :UI,             'berkshelf/ui'
+
+  autoload :ApplyCommand,      'berkshelf/commands/apply_command'
+  autoload :ContingentCommand, 'berkshelf/commands/contingent_command'
+  autoload :CookbookCommand,   'berkshelf/commands/cookbook_command'
+  autoload :InitCommand,       'berkshelf/commands/init_command'
+  autoload :InstallCommand,    'berkshelf/commands/install_command'
+  autoload :ListCommand,       'berkshelf/commands/list_command'
+  autoload :OutdatedCommand,   'berkshelf/commands/outdated_command'
+  autoload :PackageCommand,    'berkshelf/commands/package_command'
+  autoload :ShelfCommand,      'berkshelf/commands/shelf_command'
+  autoload :ShowCommand,       'berkshelf/commands/show_command'
+  autoload :UpdateCommand,     'berkshelf/commands/update_command'
+  autoload :UploadCommand,     'berkshelf/commands/upload_command'
+  autoload :VendorCommand,     'berkshelf/commands/vendor_command'
+
   require_relative 'berkshelf/errors'
   require_relative 'berkshelf/mixin'
 
@@ -133,28 +171,6 @@ module Berkshelf
       end
   end
 end
-
-require_relative 'berkshelf/api_client'
-require_relative 'berkshelf/berksfile'
-require_relative 'berkshelf/cached_cookbook'
-require_relative 'berkshelf/cli'
-require_relative 'berkshelf/community_rest'
-require_relative 'berkshelf/cookbook_store'
-require_relative 'berkshelf/config'
-require_relative 'berkshelf/dependency'
-require_relative 'berkshelf/downloader'
-require_relative 'berkshelf/formatters'
-require_relative 'berkshelf/git'
-require_relative 'berkshelf/mercurial'
-require_relative 'berkshelf/installer'
-require_relative 'berkshelf/location'
-require_relative 'berkshelf/lockfile'
-require_relative 'berkshelf/logger'
-require_relative 'berkshelf/resolver'
-require_relative 'berkshelf/source'
-require_relative 'berkshelf/source_uri'
-require_relative 'berkshelf/ui'
-require_relative 'berkshelf/version'
 
 Ridley.logger = Berkshelf.logger = Logger.new(STDOUT)
 Berkshelf.logger.level = Logger::WARN
