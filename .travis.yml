@@ -12,6 +12,7 @@ bundler_args: --without guard
 before_install:
   - sudo apt-get install -qq libarchive12 libarchive-dev
 before_script:
+  - echo "StrictHostKeyChecking no" > ~/.ssh/config
   - git config --global user.email "ci@berkshelf.com"
   - git config --global user.name "Berkshelf"
 script: bundle exec thor spec:ci
