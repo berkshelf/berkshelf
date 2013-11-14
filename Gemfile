@@ -32,5 +32,5 @@ group :guard do
 end
 
 group :test do
-  gem 'berkshelf-api', github: "RiotGames/berkshelf-api"
+  gem 'berkshelf-api', github: "berkshelf/berkshelf-api"
 end
