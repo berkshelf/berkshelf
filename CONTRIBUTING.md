@@ -25,7 +25,7 @@ Install the latest version of [Bundler](http://gembundler.com)
 
 Clone the project
 
-    $ git clone git://github.com/RiotGames/berkshelf.git
+    $ git clone git://github.com/berkshelf/berkshelf.git
 
 and run:
 

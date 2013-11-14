@@ -162,14 +162,14 @@ module Berkshelf
         Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
           "Site (site :opscode). Site locations have been replaced by the source location. Change this to: " +
           "'source \"http://api.berkshelf.com\" to remove this warning. For more information visit " +
-          "https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+          "https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
         source(DEFAULT_API_URL)
         return
       end
 
       raise Berkshelf::DeprecatedError.new "Your Berksfile contains a site location. Site locations have been " +
         " replaced by the source location. Please remove your site location and try again. For more information " +
-        " visit https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+        " visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
 
     # @todo remove in Berkshelf 4.0
@@ -178,7 +178,7 @@ module Berkshelf
     def chef_api(*args)
       raise Berkshelf::DeprecatedError.new "Your Berksfile contains a chef_api location. Chef API locations have " +
         " been replaced by the source location. Please remove your site location and try again. For more " +
-        " information visit https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+        " information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
 
     # Add a dependency of the given name and constraint to the array of dependencies.
