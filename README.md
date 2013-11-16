@@ -2,8 +2,6 @@ Berkshelf
 =========
 [![Gem Version](https://badge.fury.io/rb/berkshelf.png)](http://badge.fury.io/rb/berkshelf)
 [![Build Status](https://travis-ci.org/berkshelf/berkshelf.png?branch=master)](https://travis-ci.org/berkshelf/berkshelf)
-[![Dependency Status](https://gemnasium.com/berkshelf/berkshelf.png)](https://gemnasium.com/berkshelf/berkshelf)
-[![Code Climate](https://codeclimate.com/github/berkshelf/berkshelf.png)](https://codeclimate.com/github/berkshelf/berkshelf)
 
 Manage a Cookbook or an Application's Cookbook dependencies
 
