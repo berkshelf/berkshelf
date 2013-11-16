@@ -17,7 +17,7 @@ describe Berkshelf::Git do
     end
   end
 
-  describe '.clone', focus: true do
+  describe '.clone' do
     let(:target) { clone_path('nginx') }
 
     it 'clones the repository to the target path' do

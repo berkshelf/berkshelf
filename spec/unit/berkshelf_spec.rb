@@ -4,6 +4,7 @@ describe Berkshelf do
   describe '.formatter' do
     context 'with default formatter' do
       it 'should be human readable' do
+        Berkshelf.remove_instance_variable(:@formatter)
         expect(Berkshelf.formatter).to be_a(Berkshelf::Formatters::HumanFormatter)
       end
     end

@@ -108,16 +108,7 @@ module Berkshelf
           FileUtils.mkdir_p(File.join(name, 'recipes'))
           FileUtils.touch(File.join(name, 'recipes', 'default.rb'))
 
-          # Berkshelf::Commands::CookbookCommand.run(nil, [
-          #   '--no-bundler',
-          #   '--no-chefspec',
-          #   '--no-foodcritic',
-          #   '--no-minitest',
-          #   '--no-scmversion',
-          #   '--no-test-kitchen',
-          #   '--no-vagrant',
-          #   name,
-          # ])
+          shell_out("git init #{name}")
         end
 
         # Make sure the given path exists and return the path
