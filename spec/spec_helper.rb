@@ -15,14 +15,23 @@ Spork.prefork do
     config.include Berkshelf::RSpec::PathHelpers
     config.include Berkshelf::API::RSpec
 
+    # Run specs in random order to surface order dependencies. If you find an
+    # order dependency and want to debug it, you can fix the order by
+    # providing the seed, which is printed after each run.
+    #     --seed 1234
+    config.order = 'random'
+
     config.expect_with :rspec do |c|
       c.syntax = :expect
     end
 
-    config.mock_with :rspec
-    config.treat_symbols_as_metadata_keys_with_true_values = true
+    # Allow tests to isolate a specific test using +focus: true+. If nothing
+    # is focused, then all tests are executed.
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
+
+    config.mock_with :rspec
+    config.treat_symbols_as_metadata_keys_with_true_values = true
 
     config.before(:suite) do
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
