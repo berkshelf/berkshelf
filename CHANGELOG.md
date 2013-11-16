@@ -10,6 +10,12 @@
 
 * Update required version of Ridley
 
+# 2.0.8
+
+* Account for API changes to solve
+* Rescue exceptions when parsing the lockfile
+* Fix deprecation errors
+
 # 2.0.7
 
 * Fix crash when parsing a lockfile that contains path locations which no longer exist
