@@ -1,17 +1,17 @@
 require 'spec_helper'
 
 describe Berkshelf::Lockfile do
-  let(:content) do
-    {
-      dependencies: {
-        :berkshelf => { locked_version: '0.0.1' },
-        :ridley    => { locked_version: '1.2.3' },
-      }
-    }
-  end
-
   let(:berksfile) { double('Berksfile', filepath: 'Berksfile') }
-  before { subject.stub(:parse).and_return(content) }
+  before do
+    File.stub(:read).and_return('
+      {
+        "dependencies": {
+          "berkshelf": { "locked_version": "0.0.1" },
+          "ridley": { "locked_version": "0.0.1" }
+        }
+      }
+    ')
+  end
 
   describe '.initialize' do
     it 'does not throw an exception' do
