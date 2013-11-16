@@ -1,12 +1,17 @@
 require 'spec_helper'
 
 describe Berkshelf::Lockfile do
-  let!(:content) { File.read(fixtures_path.join('lockfiles/default.lock')) }
-  let(:berksfile) { Berkshelf::Berksfile.new('Berksfile') }
-
-  before do
-    File.stub(:read).and_return(content)
+  let(:content) do
+    {
+      dependencies: {
+        :berkshelf => { locked_version: '0.0.1' },
+        :ridley    => { locked_version: '1.2.3' },
+      }
+    }
   end
+
+  let(:berksfile) { double('Berksfile', filepath: 'Berksfile') }
+  before { subject.stub(:parse).and_return(content) }
 
   describe '.initialize' do
     it 'does not throw an exception' do
@@ -16,12 +21,13 @@ describe Berkshelf::Lockfile do
     end
 
     it 'has the correct dependencies' do
-      expect(subject).to have_dependency 'build-essential'
-      expect(subject).to have_dependency 'chef-client'
+      expect(subject).to have_dependency('berkshelf')
+      expect(subject).to have_dependency('ridley')
     end
   end
 
   subject { Berkshelf::Lockfile.new(berksfile) }
+  before  { subject.load! }
 
   describe '#dependencies' do
     it 'returns an array' do
@@ -31,7 +37,7 @@ describe Berkshelf::Lockfile do
 
   describe '#find' do
     it 'returns a matching cookbook' do
-      expect(subject.find('build-essential').name).to eq 'build-essential'
+      expect(subject.find('berkshelf').name).to eq('berkshelf')
     end
 
     it 'returns nil for a missing cookbook' do
@@ -41,7 +47,7 @@ describe Berkshelf::Lockfile do
 
   describe '#has_dependency?' do
     it 'returns true if a matching cookbook is found' do
-      expect(subject.has_dependency?('build-essential')).to be_true
+      expect(subject.has_dependency?('berkshelf')).to be_true
     end
 
     it 'returns false if no matching cookbook is found' do
@@ -68,7 +74,7 @@ describe Berkshelf::Lockfile do
   end
 
   describe '#add' do
-    let(:dependency) { double('dependency', name: 'build-essential') }
+    let(:dependency) { double('dependency', name: 'berkshelf') }
 
     it 'adds the new dependency to the @dependencies instance variable' do
       subject.add(dependency)
@@ -82,7 +88,7 @@ describe Berkshelf::Lockfile do
   end
 
   describe '#remove' do
-    let(:dependency) { double('dependency', name: 'build-essential') }
+    let(:dependency) { double('dependency', name: 'berkshelf') }
 
     before do
       subject.add(dependency)
@@ -144,12 +150,12 @@ describe Berkshelf::Lockfile do
     before { Berkshelf::Lockfile.send(:public, :cookbook_name) }
 
     it 'accepts a cookbook dependency' do
-      dependency = double('dependency', name: 'build-essential', is_a?: true)
-      expect(subject.cookbook_name(dependency)).to eq 'build-essential'
+      dependency = double('dependency', name: 'berkshelf', is_a?: true)
+      expect(subject.cookbook_name(dependency)).to eq('berkshelf')
     end
 
     it 'accepts a string' do
-      expect(subject.cookbook_name('build-essential')).to eq 'build-essential'
+      expect(subject.cookbook_name('berkshelf')).to eq('berkshelf')
     end
   end
 end
