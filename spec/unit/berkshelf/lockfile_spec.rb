@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::Lockfile do
+describe Berkshelf::Lockfile, focus: true do
   let(:content) do
     {
       dependencies: {
