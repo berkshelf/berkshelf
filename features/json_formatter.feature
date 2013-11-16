@@ -71,7 +71,7 @@ Feature: --format json
       """
     And the Lockfile has:
       | fake | 1.0.0 |
-    When I successfully run `berks show fake --format json`
+    When I successfully run `berks show --format json fake`
     Then the output should contain JSON:
       """
       {

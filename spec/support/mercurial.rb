@@ -104,7 +104,7 @@ module Berkshelf
             force: true,
         }.merge(options)
 
-        Berkshelf::Cli.new.invoke(:cookbook, [name.to_s], options)
+        Berkshelf::CLI.new.invoke(:cookbook, [name.to_s], options)
       end
 
       # Make sure the given path exists and return the path

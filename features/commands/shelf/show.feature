@@ -29,11 +29,11 @@ Feature: berks shelf show
       """
 
 
-  Scenario: With cookbooks in the store and the --version option
+  Scenario: With cookbooks in the store and the version option
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.3.4 |
-    When I successfully run `berks shelf show fake --version 1.0.0`
+    When I successfully run `berks shelf show fake 1.0.0`
     Then the output should contain:
       """
       Displaying 'fake' (1.0.0) in the Berkshelf shelf:
@@ -50,11 +50,11 @@ Feature: berks shelf show
       """
 
 
-  Scenario: With cookbooks in the store and the --version option doesn't exist
+  Scenario: With cookbooks in the store and the version option doesn't exist
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.3.4 |
-    When I run `berks shelf show fake --version 1.2.3`
+    When I run `berks shelf show fake 1.2.3`
     Then the output should contain:
       """
       Cookbook 'fake' (1.2.3) is not in the Berkshelf shelf
@@ -102,13 +102,13 @@ Feature: berks shelf show
       """
 
 
-  Scenario: With multiple cookbook versions installed and the --version flag
+  Scenario: With multiple cookbook versions installed and the version option
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
       | fake | 1.1.0 |
       | fake | 1.2.0 |
       | fake | 2.0.0 |
-    When I successfully run `berks shelf show fake --version 1.0.0`
+    When I successfully run `berks shelf show fake 1.0.0`
     Then the output should contain:
       """
       Displaying 'fake' (1.0.0) in the Berkshelf shelf:

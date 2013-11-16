@@ -18,6 +18,7 @@ tmp
 .DS_Store
 /spec/knife.rb
 /spec/*.pem
+/spec/fixtures/cookbooks/*.lock
 /features/config.yml
 *.sw[op]
 \.\#*

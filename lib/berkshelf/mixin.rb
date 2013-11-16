@@ -1,7 +1,6 @@
 module Berkshelf
-  module Mixin; end
-end
-
-Dir["#{File.dirname(__FILE__)}/mixin/*.rb"].sort.each do |path|
-  require_relative "mixin/#{File.basename(path, '.rb')}"
+  module Mixin
+    autoload :DSLEval, 'berkshelf/mixin/dsl_eval'
+    autoload :Logging, 'berkshelf/mixin/logging'
+  end
 end

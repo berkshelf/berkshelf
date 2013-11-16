@@ -34,13 +34,12 @@ Gem::Specification.new do |s|
   s.add_dependency 'buff-config',       '~> 0.2'
   s.add_dependency 'buff-extensions',   '~> 0.4'
   s.add_dependency 'buff-shell_out',    '~> 0.1'
+  s.add_dependency 'clamp',             '~> 0.6'
   s.add_dependency 'faraday',           '>= 0.8.5'
-  s.add_dependency 'hashie',            '>= 2.0.2'
   s.add_dependency 'minitar',           '~> 0.5.4'
   s.add_dependency 'retryable',         '~> 1.3.3'
   s.add_dependency 'ridley',            '~> 1.6'
   s.add_dependency 'solve',             '>= 0.8.0'
-  s.add_dependency 'thor',              '~> 0.18.0'
 
   s.add_development_dependency 'aruba',         '~> 0.5'
   s.add_development_dependency 'chef-zero',     '~> 1.5.0'
@@ -48,7 +47,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake',          '~> 0.9'
   s.add_development_dependency 'rspec',         '~> 2.13'
   s.add_development_dependency 'spork',         '~> 0.9'
-  s.add_development_dependency 'test-kitchen',  '>= 1.0.0.alpha7'
+  s.add_development_dependency 'test-kitchen',  '~> 1.0.0.beta'
   s.add_development_dependency 'webmock',       '~> 1.11'
   s.add_development_dependency 'yard',          '~> 0.8'
 end

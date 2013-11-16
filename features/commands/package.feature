@@ -21,7 +21,7 @@ Feature: berks package
       """
       cookbook 'fake', '~> 1.0.0'
       """
-    When I successfully run `berks package fake --output foo/bar`
+    When I successfully run `berks package --output foo/bar fake`
     Then a file named "foo/bar/fake.tar.gz" should exist
 
 

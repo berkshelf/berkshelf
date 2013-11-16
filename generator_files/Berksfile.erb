@@ -1,11 +1,9 @@
-source "https://api.berkshelf.com"
-<% if options[:chef_minitest] -%>
+source 'https://api.berkshelf.com'
+
+metadata
+<% if minitest? -%>
 
 group :integration do
   cookbook 'minitest-handler'
 end
-<% end -%>
-<% if options[:metadata_entry] -%>
-
-metadata
 <% end -%>

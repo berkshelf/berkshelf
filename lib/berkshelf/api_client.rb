@@ -5,7 +5,7 @@ module Berkshelf
   #   client = Berkshelf::APIClient.new("https://api.berkshelf.com")
   #   client.universe #=> [...]
   class APIClient < Faraday::Connection
-    require_relative 'api_client/remote_cookbook'
+    autoload :RemoteCookbook, 'berkshelf/api_client/remote_cookbook'
 
     # @return [String]
     attr_reader :url

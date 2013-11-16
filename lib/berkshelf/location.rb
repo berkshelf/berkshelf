@@ -115,7 +115,7 @@ module Berkshelf
         end
 
         unless dependency.name == cached_cookbook.cookbook_name
-          Berkshelf.ui.warn(MismatchedCookbookName.new(dependency, cached_cookbook).to_s)
+          Berkshelf.ui.alert_warning(MismatchedCookbookName.new(dependency, cached_cookbook).to_s)
         end
 
         true

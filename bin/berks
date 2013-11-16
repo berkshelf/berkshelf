@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
+
+# Trap interrupts to quit cleanly. See
+Signal.trap('INT') { exit 1 }
+
 $:.push File.expand_path('../../lib', __FILE__)
 require 'berkshelf/cli'
 
-Berkshelf::Cli::Runner.new(ARGV.dup).execute!
+Berkshelf::CLI::Runner.new(ARGV.dup).execute!

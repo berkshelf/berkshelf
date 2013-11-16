@@ -149,7 +149,7 @@ describe Berkshelf::Location::Base do
         cached.stub(:cookbook_name) { "artifact" }
         msg = Berkshelf::MismatchedCookbookName.new(dependency, cached).to_s
 
-        Berkshelf.ui.should_receive(:warn).with(msg)
+        Berkshelf.ui.should_receive(:alert_warning).with(msg)
         subject.validate_cached(cached)
       end
     end

@@ -107,7 +107,7 @@ Feature: berks install
       cookbook 'takeme', group: :take_me
       cookbook 'notme', group: :not_me
       """
-    When I successfully run `berks upload --only take_me not_me`
+    When I successfully run `berks install --only take_me --only not_me`
     Then the output should contain "Using takeme (1.0.0)"
     Then the output should contain "Using notme (1.0.0)"
 
@@ -121,7 +121,7 @@ Feature: berks install
       cookbook 'takeme', group: :take_me
       cookbook 'notme', group: :not_me
       """
-    When I successfully run `berks upload --except not_me`
+    When I successfully run `berks install --except not_me`
     Then the output should contain "Using takeme (1.0.0)"
     Then the output should not contain "Using notme (1.0.0)"
 
@@ -135,7 +135,7 @@ Feature: berks install
       cookbook 'takeme', group: :take_me
       cookbook 'notme', group: :not_me
       """
-    When I successfully run `berks upload --except take_me not_me`
+    When I successfully run `berks install --except take_me --except not_me`
     Then the output should not contain "Using takeme (1.0.0)"
     Then the output should not contain "Using notme (1.0.0)"
 
@@ -459,8 +459,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
-      The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
+      ERROR:  The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
       """
     And the exit status should be "CookbookValidationFailure"
 
@@ -503,8 +502,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf' with branch: 'master'
-      An error occurred during Git execution:
+      ERROR:  An error occurred during Git execution:
       """
       And the exit status should be "GitError"
 

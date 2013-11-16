@@ -1,9 +1,15 @@
 source 'https://rubygems.org'
 
 gem 'berkshelf'
-<% if options[:foodcritic] -%>
-gem 'thor-foodcritic'
+<% if chefspec? -%>
+gem 'chefspec'
 <% end -%>
-<% if options[:scmversion] -%>
+<% if foodcritic? -%>
+gem 'foodcritic'
+<% end -%>
+<% if test_kitchen? -%>
+gem 'test-kitchen'
+<% end -%>
+<% if scmversion? -%>
 gem 'thor-scmversion'
 <% end -%>

@@ -236,7 +236,7 @@ module Berkshelf
           #
           # @return [nil]
           def warn!
-            Berkshelf.ui.warn(warning_message)
+            Berkshelf.ui.alert_warning(warning_message)
           end
 
           private

@@ -50,7 +50,7 @@ Feature: berks shelf uninstall
       | fake | 1.1.0 |
       | fake | 1.2.0 |
       | fake | 2.0.0 |
-    When I successfully run `berks shelf uninstall fake --version 1.0.0`
+    When I successfully run `berks shelf uninstall fake 1.0.0`
     Then the output should contain:
       """
       Successfully uninstalled fake (1.0.0)
@@ -63,34 +63,12 @@ Feature: berks shelf uninstall
       | fake | 2.0.0 |
 
 
-  @spawn
-  Scenario: With contingencies
-    Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
-      | ekaf | 2.3.4 |
-    And the cookbook store has the cookbooks:
-      | ekaf | 2.3.4 |
-    When I run `berks shelf uninstall ekaf` interactively
-    And I type "yes"
-    Then the output should contain:
-      """
-      [fake (1.0.0)] depend on ekaf.
-
-      Are you sure you want to continue? (y/N)
-      """
-    And the output should contain:
-      """
-      Successfully uninstalled ekaf (2.3.4)
-      """
-    And the cookbook store should not have the cookbooks:
-      | ekaf | 2.3.4 |
-
-
   Scenario: With contingencies and the --force flag
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
       | ekaf | 2.3.4 |
     And the cookbook store has the cookbooks:
       | ekaf | 2.3.4 |
-    When I run `berks shelf uninstall ekaf --force`
+    When I run `berks shelf uninstall --force ekaf`
     Then the output should contain:
       """
       Successfully uninstalled ekaf (2.3.4)

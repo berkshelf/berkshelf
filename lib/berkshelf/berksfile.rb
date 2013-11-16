@@ -254,7 +254,7 @@ module Berkshelf
         raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only'
       when !cookbooks.empty?
         if !except.empty? && !only.empty?
-          Berkshelf.ui.warn 'Cookbooks were specified, ignoring :except and :only'
+          Berkshelf.ui.alert_warning 'Cookbooks were specified, ignoring :except and :only'
         end
         @dependencies.values.select { |dependency| cookbooks.include?(dependency.name) }
       when !except.empty?

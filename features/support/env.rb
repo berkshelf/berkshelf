@@ -22,12 +22,14 @@ Spork.prefork do
   end
 
   Before do
+    Berkshelf.reset!
+
     # Legacy ENV variables until we can move over to all InProcess
     ENV['BERKSHELF_PATH'] = berkshelf_path.to_s
     ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s
     ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path.to_s
 
-    Aruba::InProcess.main_class = Berkshelf::Cli::Runner
+    Aruba::InProcess.main_class = Berkshelf::CLI::Runner
     Aruba.process               = Aruba::InProcess
     @dirs                       = ["spec/tmp/aruba"] # set aruba's temporary directory
 
@@ -37,6 +39,8 @@ Spork.prefork do
     Berkshelf::CookbookStore.instance.initialize_filesystem
     reload_configs
     Berkshelf::CachedCookbook.instance_variable_set(:@loaded_cookbooks, nil)
+
+    Berkshelf.set_format(:human)
 
     endpoints = [
       {

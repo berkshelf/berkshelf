@@ -85,7 +85,7 @@ module Berkshelf
             raise
           end
 
-          Berkshelf.ui.warn(e.to_s)
+          Berkshelf.ui.alert_warning(e.to_s)
         end
       end
     end
