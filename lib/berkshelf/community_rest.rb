@@ -178,18 +178,18 @@ module Berkshelf
 
     private
 
-    def open_uri_options
-      options = {}
-      options.merge!(headers)
-      options.merge!(open_uri_proxy_options)
-    end
-
-    def open_uri_proxy_options
-      if proxy && proxy[:user] && proxy[:password]
-        {proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ]}
-      else
-        {}
+      def open_uri_options
+        options = {}
+        options.merge!(headers)
+        options.merge!(open_uri_proxy_options)
       end
-    end
+
+      def open_uri_proxy_options
+        if proxy && proxy[:user] && proxy[:password]
+          {proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ]}
+        else
+          {}
+        end
+      end
   end
 end
