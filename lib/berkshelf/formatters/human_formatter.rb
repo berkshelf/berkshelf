@@ -52,7 +52,7 @@ module Berkshelf
     # @param [Berkshelf::CachedCookbook] cookbook
     # @param [Ridley::Connection] conn
     def skip(cookbook, conn)
-      Berkshelf.ui.say "Skipping #{cookbook.cookbook_name} (#{cookbook.version}) (already uploaded)"
+      Berkshelf.ui.say "Skipping #{cookbook.cookbook_name} (#{cookbook.version}) (frozen)"
     end
 
     # Output a list of outdated cookbooks and the most recent version

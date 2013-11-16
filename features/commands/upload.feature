@@ -216,6 +216,6 @@ Feature: berks upload
       metadata
       """
     And I cd to "fake"
-    When I successfully run `berks upload --skip-syntax-check`
+    When I successfully run `berks upload --no-validate`
     Then the Chef Server should have the cookbooks:
       | fake | 0.0.0 |
