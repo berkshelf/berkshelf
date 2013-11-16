@@ -1,5 +1,5 @@
 module Berkshelf
-  class OutdatedCommand < CLI
+  class Commands::OutdatedCommand < CLI
     include BerksfileOptions
     include FilterOptions
 

@@ -459,8 +459,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
-      The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
+      ERROR:  The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
       """
     And the exit status should be "CookbookValidationFailure"
 
@@ -503,8 +502,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf' with branch: 'master'
-      An error occurred during Git execution:
+      ERROR:  An error occurred during Git execution:
       """
       And the exit status should be "GitError"
 

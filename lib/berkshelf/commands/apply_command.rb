@@ -1,5 +1,5 @@
 module Berkshelf
-  class ApplyCommand < CLI
+  class Commands::ApplyCommand < CLI
     include BerksfileOptions
     include SSLOptions
 

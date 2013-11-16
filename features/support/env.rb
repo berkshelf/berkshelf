@@ -22,6 +22,8 @@ Spork.prefork do
   end
 
   Before do
+    Berkshelf.reset!
+
     # Legacy ENV variables until we can move over to all InProcess
     ENV['BERKSHELF_PATH'] = berkshelf_path.to_s
     ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s

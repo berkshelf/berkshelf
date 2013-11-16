@@ -1,20 +1,19 @@
 require 'buff/extensions'
 require 'archive/tar/minitar'
+require 'erb'
 require 'forwardable'
 require 'json'
 require 'pathname'
 require 'ridley'
 require 'solve'
-require 'thor'
 require 'tmpdir'
 require 'uri'
 require 'zlib'
 
 require_relative 'berkshelf/errors'
 require_relative 'berkshelf/core_ext'
-require_relative 'berkshelf/thor_ext'
+require_relative 'berkshelf/mixin'
 require_relative 'berkshelf/version'
-# formatters
 
 module Berkshelf
   autoload :APIClient,      'berkshelf/api_client'
@@ -26,6 +25,7 @@ module Berkshelf
   autoload :CookbookStore,  'berkshelf/cookbook_store'
   autoload :Dependency,     'berkshelf/dependency'
   autoload :Downloader,     'berkshelf/downloader'
+  autoload :Formatter,      'berkshelf/formatter'
   autoload :Git,            'berkshelf/git'
   autoload :Installer,      'berkshelf/installer'
   autoload :Location,       'berkshelf/location'
@@ -38,22 +38,46 @@ module Berkshelf
   autoload :SourceURI,      'berkshelf/source_uri'
   autoload :UI,             'berkshelf/ui'
 
-  autoload :ApplyCommand,      'berkshelf/commands/apply_command'
-  autoload :ContingentCommand, 'berkshelf/commands/contingent_command'
-  autoload :CookbookCommand,   'berkshelf/commands/cookbook_command'
-  autoload :InitCommand,       'berkshelf/commands/init_command'
-  autoload :InstallCommand,    'berkshelf/commands/install_command'
-  autoload :ListCommand,       'berkshelf/commands/list_command'
-  autoload :OutdatedCommand,   'berkshelf/commands/outdated_command'
-  autoload :PackageCommand,    'berkshelf/commands/package_command'
-  autoload :ShelfCommand,      'berkshelf/commands/shelf_command'
-  autoload :ShowCommand,       'berkshelf/commands/show_command'
-  autoload :UpdateCommand,     'berkshelf/commands/update_command'
-  autoload :UploadCommand,     'berkshelf/commands/upload_command'
-  autoload :VendorCommand,     'berkshelf/commands/vendor_command'
+  module Commands
+    autoload :ApplyCommand,      'berkshelf/commands/apply_command'
+    autoload :ContingentCommand, 'berkshelf/commands/contingent_command'
+    autoload :CookbookCommand,   'berkshelf/commands/cookbook_command'
+    autoload :InitCommand,       'berkshelf/commands/init_command'
+    autoload :InstallCommand,    'berkshelf/commands/install_command'
+    autoload :ListCommand,       'berkshelf/commands/list_command'
+    autoload :OutdatedCommand,   'berkshelf/commands/outdated_command'
+    autoload :PackageCommand,    'berkshelf/commands/package_command'
+    autoload :ShelfCommand,      'berkshelf/commands/shelf_command'
+    autoload :ShowCommand,       'berkshelf/commands/show_command'
+    autoload :UpdateCommand,     'berkshelf/commands/update_command'
+    autoload :UploadCommand,     'berkshelf/commands/upload_command'
+    autoload :VendorCommand,     'berkshelf/commands/vendor_command'
 
-  require_relative 'berkshelf/errors'
-  require_relative 'berkshelf/mixin'
+    module Shelf
+      autoload :ListCommand,      'berkshelf/commands/shelf/list_command'
+      autoload :ShowCommand,      'berkshelf/commands/shelf/show_command'
+      autoload :UninstallCommand, 'berkshelf/commands/shelf/uninstall_command'
+    end
+  end
+
+  puts
+  puts
+  puts Berkshelf::Commands::ShowCommand
+  puts
+  puts
+
+  module Formatters
+    autoload :HumanFormatter, 'berkshelf/formatters/human_formatter'
+    autoload :JSONFormatter,  'berkshelf/formatters/json_formatter'
+    autoload :NullFormatter,  'berkshelf/formatters/null_formatter'
+  end
+
+  module Locations
+    autoload :GitLocation,       'berkshelf/locations/git_location'
+    autoload :GitHubLocation,    'berkshelf/locations/github_location'
+    autoload :MercurialLocation, 'berkshelf/locations/mercurial_location'
+    autoload :PathLocation,      'berkshelf/locations/path_location'
+  end
 
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
@@ -64,15 +88,22 @@ module Berkshelf
     attr_accessor :ui
     attr_accessor :logger
 
+    # Unset all instance variables (which are actually cached on the parent
+    # class) to prevent caching. This is mostly used in the tests, but it can
+    # be useful when using Berkshelf as a library.
+    def reset!
+      instance_variables.each(&method(:remove_instance_variable))
+    end
+
     # @return [Pathname]
     def root
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
 
-    # @return [Thor::Shell::Color, Thor::Shell::Basic]
+    # @return [Berkshelf::UI, Berkshelf::SilentUI]
     #   A basic shell on Windows, colored everywhere else
     def ui
-      @ui ||= Thor::Base.shell.new
+      @ui ||= Berkshelf::UI.new
     end
 
     # Returns the filepath to the location Berkshelf will use for
@@ -93,7 +124,7 @@ module Berkshelf
       Berkshelf::Config.instance
     end
 
-    # @param [Berkshelf::Config]
+    # @param [Berkshelf::Config] config
     def config=(config)
       Berkshelf::Config.set_config(config)
     end
@@ -105,7 +136,7 @@ module Berkshelf
       @chef_config ||= Ridley::Chef::Config.new(ENV['BERKSHELF_CHEF_CONFIG'])
     end
 
-    # @param [Ridley::Chef::Config]
+    # @param [Ridley::Chef::Config] config
     def chef_config=(config)
       @chef_config = config
     end
@@ -144,19 +175,19 @@ module Berkshelf
     #
     # @return [~Formatter]
     def formatter
-      @formatter ||= Formatters::HumanReadable.new
+      @formatter ||= Formatters::HumanFormatter.new
     end
 
     # Specify the format for output
     #
-    # @param [#to_sym] format_id
+    # @param [Symbol] format
     #   the ID of the registered formatter to use
     #
-    # @example Berkshelf.set_format :json
+    # @example Berkshelf.set_format(:json)
     #
     # @return [~Formatter]
-    def set_format(format_id)
-      @formatter = Formatters[format_id].new
+    def set_format(format)
+      @formatter = Formatter.find(format).new
     end
 
     private

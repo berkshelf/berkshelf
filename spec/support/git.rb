@@ -101,7 +101,7 @@ module Berkshelf
         # @param [#to_s] name
         #   the name of the cookbook to create
         def generate_git_cookbook(name)
-          CookbookCommand.run(nil, [
+          Berkshelf::Commands::CookbookCommand.run(nil, [
             '--no-bundler',
             '--no-chefspec',
             '--no-foodcritic',
@@ -109,7 +109,7 @@ module Berkshelf
             '--no-scmversion',
             '--no-test-kitchen',
             '--no-vagrant',
-            name
+            name,
           ])
         end
 

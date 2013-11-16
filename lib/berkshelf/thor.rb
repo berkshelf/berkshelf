@@ -1,1 +1,0 @@
-require 'berkshelf/cli'

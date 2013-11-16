@@ -1,5 +1,5 @@
 module Berkshelf
-  class ListCommand < CLI
+  class Commands::ListCommand < CLI
     include BerksfileOptions
 
     def execute

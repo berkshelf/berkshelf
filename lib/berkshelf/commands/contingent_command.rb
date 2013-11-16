@@ -1,5 +1,5 @@
 module Berkshelf
-  class ContingentCommand < CLI
+  class Commands::ContingentCommand < CLI
     include BerksfileOptions
 
     parameter 'NAME', 'name of dependent cookbook'

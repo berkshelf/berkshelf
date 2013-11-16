@@ -1,5 +1,5 @@
 module Berkshelf
-  class UploadCommand < CLI
+  class Commands::UploadCommand < CLI
     include BerksfileOptions
     include FilterOptions
     include SSLOptions

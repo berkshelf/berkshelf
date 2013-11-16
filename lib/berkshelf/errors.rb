@@ -428,8 +428,8 @@ module Berkshelf
     end
 
     def to_s
-      "Unknown license: '#{license}'\n" +
-      "Available licenses: #{Berkshelf::CookbookCommand::LICENSES.join(', ')}"
+      "Unknown license: '#{license}'\n" + ''
+      # "Available licenses: #{Berkshelf::Commands::CookbookCommand::LICENSES.join(', ')}"
     end
   end
 

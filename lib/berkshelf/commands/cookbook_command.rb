@@ -1,8 +1,5 @@
-require 'berkshelf/config'
-require 'berkshelf/commands/init_command'
-
 module Berkshelf
-  class CookbookCommand < InitCommand
+  class Commands::CookbookCommand < Commands::InitCommand
     LICENSES = [
       'apachev2',
       'gplv2',

@@ -1,17 +1,11 @@
 module Berkshelf
-  module Shelf
-    autoload :ListCommand,      'berkshelf/commands/shelf/list_command'
-    autoload :ShowCommand,      'berkshelf/commands/shelf/show_command'
-    autoload :UninstallCommand, 'berkshelf/commands/shelf/uninstall_command'
-  end
-
-  class ShelfCommand < CLI
+  class Commands::ShelfCommand < CLI
     # Set the default command to `show`
     default_subcommand = 'show'
 
-    subcommand 'list',      'list all cookbooks and versions', Berkshelf::Shelf::ListCommand
-    subcommand 'show',      'show descriptive information about a cookbook', Berkshelf::Shelf::ShowCommand
-    subcommand 'uninstall', 'show descriptive information about a cookbook', Berkshelf::Shelf::UninstallCommand
+    subcommand 'list',      'list all cookbooks and versions', Berkshelf::Commands::Shelf::ListCommand
+    subcommand 'show',      'show descriptive information about a cookbook', Berkshelf::Commands::Shelf::ShowCommand
+    subcommand 'uninstall', 'remove a cookbook from the cookbook store', Berkshelf::Commands::Shelf::UninstallCommand
 
     # Shortcut method to the cookbook store.
     #
@@ -69,9 +63,8 @@ module Berkshelf
     def uninstall_cookbook(cookbook, force = false)
       unless force || (contingent = contingencies(cookbook)).empty?
         contingent = contingent.map { |c| "#{c.cookbook_name} (#{c.version})" }.join(', ')
-        confirm = Berkshelf.ui.ask("[#{contingent}] depend on #{cookbook.cookbook_name}.\n\nAre you sure you want to continue? (y/N)")
 
-        exit unless confirm.to_s.upcase[0] == 'Y'
+        return unless Berkshelf.ui.ask_yes_no("[#{contingent}] depend on #{cookbook.cookbook_name}.\n\nAre you sure you want to continue?", false)
       end
 
       FileUtils.rm_rf(cookbook.path)

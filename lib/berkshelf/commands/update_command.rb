@@ -1,5 +1,5 @@
 module Berkshelf
-  class UpdateCommand < CLI
+  class Commands::UpdateCommand < CLI
     include BerksfileOptions
     include FilterOptions
 

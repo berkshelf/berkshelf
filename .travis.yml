@@ -1,4 +1,3 @@
-language: ruby
 rvm:
   - 1.9.3
   - 2.0.0
@@ -15,4 +14,3 @@ before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
   - git config --global user.email "ci@berkshelf.com"
   - git config --global user.name "Berkshelf"
-script: bundle exec thor spec:ci

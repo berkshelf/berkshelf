@@ -1,5 +1,5 @@
 module Berkshelf
-  class VendorCommand < CLI
+  class Commands::VendorCommand < CLI
     include BerksfileOptions
     include FilterOptions
 

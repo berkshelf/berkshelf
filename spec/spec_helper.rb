@@ -28,12 +28,6 @@ Spork.prefork do
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
       Berkshelf::RSpec::ChefServer.start
       Berkshelf::API::RSpec::Server.start
-      Berkshelf.set_format(:null)
-      Berkshelf.ui.mute!
-    end
-
-    config.after(:suite) do
-      Berkshelf.ui.unmute!
     end
 
     config.before(:all) do
@@ -46,6 +40,12 @@ Spork.prefork do
       Berkshelf.initialize_filesystem
       Berkshelf::CookbookStore.instance.initialize_filesystem
       reload_configs
+
+      Berkshelf.reset!
+
+      # Don't output anything
+      Berkshelf.ui.mute!
+      Berkshelf.set_format(:null)
     end
   end
 
@@ -67,7 +67,7 @@ Spork.each_run do
   require 'berkshelf'
 
   module Berkshelf
-    class GitLocation
+    class GitLocation < Location::ScmLocation
       include Berkshelf::RSpec::Git
 
       alias :real_clone :clone

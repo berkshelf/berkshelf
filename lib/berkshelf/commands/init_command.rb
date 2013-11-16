@@ -1,7 +1,5 @@
-require 'erb'
-
 module Berkshelf
-  class InitCommand < CLI
+  class Commands::InitCommand < CLI
     option ['-n', '--cookbook-name'], 'NAME', 'name of the cookbook'
 
     option '--[no-]bundler',      :flag, 'add Bundler support', default: true
@@ -94,14 +92,14 @@ module Berkshelf
 
       # Warn of any caveats that happened during the run
       unless caveats.empty?
-        Berkshelf.ui.warn "\nCaveats:"
+        Berkshelf.ui.alert_warning "\nCaveats:"
 
         caveats.each do |caveat|
-          Berkshelf.ui.warn("  " + caveat)
+          Berkshelf.ui.alert_warning("  " + caveat)
         end
       end
 
-      Berkshelf.ui.info "Successfully initialized"
+      Berkshelf.ui.say "Successfully initialized"
     end
 
     protected

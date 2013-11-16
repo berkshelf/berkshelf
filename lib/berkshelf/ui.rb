@@ -1,48 +1,46 @@
+require 'rubygems/user_interaction'
+
 module Berkshelf
-  module UI
-    # Mute the output of this instance of UI until {#unmute!} is called
+  module Mutable
+    #
+    # Silence all output until further notice.
+    #
     def mute!
-      @mute = true
+      Berkshelf.ui = SilentUI.new
     end
 
-    # Unmute the output of this instance of UI until {#mute!} is called
+    #
+    # Unsilence output.
+    #
     def unmute!
-      @mute = false
+      Berkshelf.ui = UI.new
     end
 
-    def say(message = '', color = nil, force_new_line = (message.to_s !~ /( |\t)\Z/))
-      return if quiet?
-
-      super(message, color, force_new_line)
+    #
+    # Mute the Berkshelf UI over the given block, suppressing all output.
+    #
+    # @example
+    #   mute { chatty_method_call }
+    #
+    def mute
+      Berkshelf.ui = SilentUI.new
+      yield
+    ensure
+      Berkshelf.ui = UI.new
     end
+  end
 
-    # @see {say}
-    def info(message = '', color = nil, force_new_line = (message.to_s !~ /( |\t)\Z/))
-      say(message, color, force_new_line)
+  # A totally silent (everything is written to a null stream) ui.
+  class SilentUI < Gem::SilentUI
+    include Mutable
+  end
+
+  # The generic base class for outputting information to the user.
+  class UI < Gem::StreamUI
+    include Mutable
+
+    def initialize
+      super($stdin, $stdout, $stderr, true)
     end
-
-    def say_status(status, message, log_status = true)
-      return if quiet?
-
-      super(status, message, log_status)
-    end
-
-    def warn(message, color = :yellow)
-      return if quiet?
-
-      say(message, color)
-    end
-
-    def deprecated(message)
-      warn("[DEPRECATION] #{message}")
-    end
-
-    def error(message, color = :red)
-      return if quiet?
-
-      message = set_color(message, *color) if color
-      super(message)
-    end
-    alias_method :fatal, :error
   end
 end

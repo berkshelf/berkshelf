@@ -2,50 +2,50 @@ require 'berkshelf'
 require 'clamp'
 
 module Berkshelf
-  module FilterOptions
-    def self.included(base)
-      base.instance_eval do
-        option ['-e', '--except'], 'LIST', 'groups to exclude', multivalued: true
-        option ['-o', '--only'],   'LIST', 'groups to exclusively include', multivalued: true
-      end
-    end
-
-    def options
-      super.merge(
-        only:   only_list,
-        except: except_list,
-      )
-    end
-  end
-
-  module BerksfileOptions
-    def self.included(base)
-      base.class_eval do
-        option ['-b', '--berksfile'], 'PATH', 'path to the Berksfile', default: 'Berksfile', attribute_name: 'berksfile_path'
-      end
-    end
-
-    def berksfile
-      @berksfile ||= Berksfile.from_file(berksfile_path)
-    end
-  end
-
-  module SSLOptions
-    def self.included(base)
-      base.class_eval do
-        option ['-s', '--[no-]ssl-verify'], :flag, 'use Ruby\'s SSL verification', default: true
-      end
-    end
-
-    def options
-      super.merge(ssl_verify: ssl_verify?)
-    end
-  end
-
   #
   # Main CLI application entry point
   #
   class CLI < Clamp::Command
+    module BerksfileOptions
+      def self.included(base)
+        base.class_eval do
+          option ['-b', '--berksfile'], 'PATH', 'path to the Berksfile', default: 'Berksfile', attribute_name: 'berksfile_path'
+        end
+      end
+
+      def berksfile
+        @berksfile ||= Berksfile.from_file(berksfile_path)
+      end
+    end
+
+    module FilterOptions
+      def self.included(base)
+        base.instance_eval do
+          option ['-e', '--except'], 'LIST', 'groups to exclude', multivalued: true
+          option ['-o', '--only'],   'LIST', 'groups to exclusively include', multivalued: true
+        end
+      end
+
+      def options
+        super.merge(
+          only:   only_list,
+          except: except_list,
+        )
+      end
+    end
+
+    module SSLOptions
+      def self.included(base)
+        base.class_eval do
+          option ['-s', '--[no-]ssl-verify'], :flag, 'use Ruby\'s SSL verification', default: true
+        end
+      end
+
+      def options
+        super.merge(ssl_verify: ssl_verify?)
+      end
+    end
+
     # This is the main entry point for the CLI. It exposes the method {#execute!} to
     # start the CLI.
     #
@@ -66,12 +66,12 @@ module Berkshelf
         Berkshelf.formatter.cleanup_hook
         @kernel.exit(0)
       rescue Berkshelf::BerkshelfError => e
-        Berkshelf.ui.error e
-        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        Berkshelf.ui.alert_error e
+        Berkshelf.ui.alert_error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
         @kernel.exit(e.status_code)
       rescue Ridley::Errors::RidleyError => e
-        Berkshelf.ui.error "#{e.class} #{e}"
-        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+        Berkshelf.ui.alert_error "#{e.class} #{e}"
+        Berkshelf.ui.alert_error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
         @kernel.exit(47)
       ensure
         $stdin  = STDIN
@@ -105,19 +105,19 @@ module Berkshelf
     default_subcommand = 'install'
 
     # Subcommands
-    subcommand 'apply',       'apply cookbook version locks to a Chef environment', Berkshelf::ApplyCommand
-    subcommand 'contingent',  'list cookbooks that depend on the given cookbook', Berkshelf::ContingentCommand
-    subcommand 'cookbook',    'create a skeleton for a new cookbook', Berkshelf::CookbookCommand
-    subcommand 'init',        'initialize Berkshelf in the given directory', Berkshelf::InitCommand
-    subcommand 'install',     'install the cookbooks in the Berksfile', Berkshelf::InstallCommand
-    subcommand 'list',        'list all cookbooks and dependencies from your Berksfile', Berkshelf::ListCommand
-    subcommand 'outdated',    'list remote cookbooks that have newer versions', Berkshelf::OutdatedCommand
-    subcommand 'package',     'package a cookbook and dependencies as a tarball', Berkshelf::PackageCommand
-    subcommand 'shelf',       'interact with the cookbook store', Berkshelf::ShelfCommand
-    subcommand 'show',        'show descriptive information about a cookbook', Berkshelf::ShowCommand
-    subcommand 'update',      'update the given cookbooks list', Berkshelf::UpdateCommand
-    subcommand 'upload',      'upload the cookbooks to the Chef Server', Berkshelf::UploadCommand
-    subcommand 'vendor',      'vendor cookbooks into a directory', Berkshelf::VendorCommand
+    subcommand 'apply',       'apply cookbook version locks to a Chef environment', Commands::ApplyCommand
+    subcommand 'contingent',  'list cookbooks that depend on the given cookbook', Commands::ContingentCommand
+    subcommand 'cookbook',    'create a skeleton for a new cookbook', Commands::CookbookCommand
+    subcommand 'init',        'initialize Berkshelf in the given directory', Commands::InitCommand
+    subcommand 'install',     'install the cookbooks in the Berksfile', Commands::InstallCommand
+    subcommand 'list',        'list all cookbooks and dependencies from your Berksfile', Commands::ListCommand
+    subcommand 'outdated',    'list remote cookbooks that have newer versions', Commands::OutdatedCommand
+    subcommand 'package',     'package a cookbook and dependencies as a tarball', Commands::PackageCommand
+    subcommand 'shelf',       'interact with the cookbook store', Commands::ShelfCommand
+    subcommand 'show',        'show descriptive information about a cookbook', Commands::ShowCommand
+    subcommand 'update',      'update the given cookbooks list', Commands::UpdateCommand
+    subcommand 'upload',      'upload the cookbooks to the Chef Server', Commands::UploadCommand
+    subcommand 'vendor',      'vendor cookbooks into a directory', Commands::VendorCommand
 
     protected
 

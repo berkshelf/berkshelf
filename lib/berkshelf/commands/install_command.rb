@@ -1,5 +1,5 @@
 module Berkshelf
-  class InstallCommand < CLI
+  class Commands::InstallCommand < CLI
     include BerksfileOptions
     include FilterOptions
 

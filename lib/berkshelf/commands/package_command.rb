@@ -1,5 +1,5 @@
 module Berkshelf
-  class PackageCommand < CLI
+  class Commands::PackageCommand < CLI
     include BerksfileOptions
     option ['-i', '--ignore'], :flag, 'apply the chefignore to contents', default: false
     option ['-o', '--output'], 'PATH', 'path to output the package', default: '.'
