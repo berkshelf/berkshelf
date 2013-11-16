@@ -4,7 +4,7 @@ require 'yard'
 YARD::Rake::YardocTask.new
 
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:unit) do |t|
+RSpec::Core::RakeTask.new do |t|
   t.rspec_opts = [
     '--color',
     '--format progress',
@@ -12,7 +12,7 @@ RSpec::Core::RakeTask.new(:unit) do |t|
 end
 
 require 'cucumber/rake/task'
-Cucumber::Rake::Task.new(:acceptance) do |t|
+Cucumber::Rake::Task.new do |t|
   t.cucumber_opts = [
     '--color',
     '--format progress',
@@ -22,6 +22,6 @@ Cucumber::Rake::Task.new(:acceptance) do |t|
 end
 
 desc 'Run all tests'
-task test: [:unit, :acceptance]
+task test: [:spec, :cucumber]
 
 task default: [:test]
