@@ -21,10 +21,6 @@ describe Berkshelf::Git do
     let(:target) { clone_path('nginx') }
 
     it 'clones the repository to the target path' do
-      STDOUT.puts
-      STDOUT.puts Berkshelf::Commands.constants
-      STDOUT.puts Berkshelf::Commands::ApplyCommand
-      STDOUT.puts
       origin_uri = git_origin_for('nginx')
       Berkshelf::Git.clone(origin_uri, target)
 

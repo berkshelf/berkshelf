@@ -60,12 +60,6 @@ module Berkshelf
     end
   end
 
-  puts
-  puts
-  puts Berkshelf::Commands::ShowCommand
-  puts
-  puts
-
   module Formatters
     autoload :HumanFormatter, 'berkshelf/formatters/human_formatter'
     autoload :JSONFormatter,  'berkshelf/formatters/json_formatter'

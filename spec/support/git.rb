@@ -101,16 +101,23 @@ module Berkshelf
         # @param [#to_s] name
         #   the name of the cookbook to create
         def generate_git_cookbook(name)
-          Berkshelf::Commands::CookbookCommand.run(nil, [
-            '--no-bundler',
-            '--no-chefspec',
-            '--no-foodcritic',
-            '--no-minitest',
-            '--no-scmversion',
-            '--no-test-kitchen',
-            '--no-vagrant',
-            name,
-          ])
+          FileUtils.mkdir_p(name)
+          File.open(File.join(name, 'metadata.rb'), 'w') do |f|
+            f.write("name '#{name}'\nversion '1.0.0'")
+          end
+          FileUtils.mkdir_p(File.join(name, 'recipes'))
+          FileUtils.touch(File.join(name, 'recipes', 'default.rb'))
+
+          # Berkshelf::Commands::CookbookCommand.run(nil, [
+          #   '--no-bundler',
+          #   '--no-chefspec',
+          #   '--no-foodcritic',
+          #   '--no-minitest',
+          #   '--no-scmversion',
+          #   '--no-test-kitchen',
+          #   '--no-vagrant',
+          #   name,
+          # ])
         end
 
         # Make sure the given path exists and return the path
