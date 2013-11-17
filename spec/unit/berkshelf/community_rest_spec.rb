@@ -2,28 +2,6 @@ require 'spec_helper'
 
 describe Berkshelf::CommunityREST do
   describe "ClassMethods" do
-    describe "::unpack" do
-      let(:target) { '/foo/bar' }
-      let(:destination) { '/destination/bar' }
-      let(:file) { double('file') }
-      let(:gzip_reader) { double('gzip_reader') }
-
-      before do
-        File.stub(:open).with(target, 'rb').and_return(file)
-        Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
-        Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
-      end
-
-      it 'unpacks the tar' do
-        File.should_receive(:open).with(target, 'rb')
-        ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
-        Zlib::GzipReader.should_receive(:new).with(file)
-        Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
-
-        expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
-      end
-    end
-
     describe "::uri_escape_version" do
       it 'returns a string' do
         expect(Berkshelf::CommunityREST.uri_escape_version(nil)).to be_a(String)
@@ -66,10 +44,11 @@ describe Berkshelf::CommunityREST do
 
   describe '#download' do
     let(:archive) { double('archive', path: '/foo/bar', unlink: true) }
+    let(:extractor) { double('extractor', unpack!: '/destination/path' ) }
 
     before do
-      subject.stub(:stream).with(any_args()).and_return(archive)
-      Berkshelf::CommunityREST.stub(:unpack)
+      Berkshelf::Extractor.stub(:new).and_return(extractor)
+      subject.stub(:stream).and_return(archive)
     end
 
     it 'unpacks the archive' do
@@ -79,8 +58,8 @@ describe Berkshelf::CommunityREST do
         headers: { 'Content-Type' => 'application/json' },
       )
 
-      Berkshelf::CommunityREST.should_receive(:unpack).with('/foo/bar').once.and_return('/foo/nginx')
-      archive.should_receive(:unlink).once
+      expect(extractor).to receive(:unpack!)
+      expect(archive).to receive(:unlink)
 
       subject.download('bacon', '1.0.0')
     end

@@ -4,23 +4,6 @@ require 'retryable'
 module Berkshelf
   class CommunityREST < Faraday::Connection
     class << self
-      # @param [String] target
-      #   file path to the tar.gz archive on disk
-      # @param [String] destination
-      #   file path to extract the contents of the target to
-      #
-      # @return [String]
-      def unpack(target, destination = Dir.mktmpdir)
-        if is_gzip_file(target)
-          Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
-        elsif is_tar_file(target)
-          Archive::Tar::Minitar.unpack(target, destination)
-        else
-          raise Berkshelf::UnknownCompressionType.new(target)
-        end
-        destination
-      end
-
       # @param [String] version
       #
       # @return [String]
@@ -34,18 +17,6 @@ module Berkshelf
       def version_from_uri(uri)
         File.basename(uri.to_s).gsub('_', '.')
       end
-
-      private
-
-        def is_gzip_file(path)
-          # You cannot write "\x1F\x8B" because the default encoding of
-          # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
-          IO.binread(path, 2) == [0x1F, 0x8B].pack("C*")
-        end
-
-        def is_tar_file(path)
-          IO.binread(path, 8, 257).to_s == "ustar\x0000"
-        end
     end
 
     V1_API = 'https://cookbooks.opscode.com/api/v1'.freeze
@@ -92,7 +63,7 @@ module Berkshelf
     # @return [String]
     def download(name, version)
       archive   = stream(find(name, version)[:file])
-      extracted = self.class.unpack(archive.path)
+      extracted = Extractor.new(archive.path).unpack!
       Dir.glob(File.join(extracted, "*")).first
     ensure
       archive.unlink unless archive.nil?
