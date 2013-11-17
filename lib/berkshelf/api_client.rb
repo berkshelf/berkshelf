@@ -1,64 +1,47 @@
+require_relative 'rest_adapter'
+
 module Berkshelf
-  # Used to communicate with a remotely hosted [Berkshelf API Server](https://github.com/riotgames/berkshelf-api).
+  #
+  # A class for communicating with a hosted Berkshelf API Server.
   #
   # @example
-  #   client = Berkshelf::APIClient.new("https://api.berkshelf.com")
-  #   client.universe #=> [...]
-  class APIClient < Faraday::Connection
+  #   client = Berkshelf::APIClient.new('https://api.berkshelf.com')
+  #   client.universe #=> [#<RemoteCookbook @name="berkshelf">, ...]
+  #
+  class APIClient < RESTAdapter
     require_relative 'api_client/remote_cookbook'
 
-    # @return [String]
-    attr_reader :url
-
-    # @return [Integer]
-    #   how many retries to attempt on HTTP requests
-    attr_reader :retries
-
-    # @return [Float]
-    #   time to wait between retries
-    attr_reader :retry_interval
-
-    # @param [String, Addressable::URI] url
-    #
-    # @option options [Integer] :retries
-    #   how many retries to perform before giving up
-    # @option options [Float] :retry_interval
-    #   how long to wait (in seconds) between each retry
-    def initialize(url, options = {})
-      options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
-      @url            = url
-      @retries        = options[:retries]
-      @retry_interval = options[:retry_interval]
-
-      options[:builder] ||= Faraday::Builder.new do |b|
-        b.response :parse_json
-        b.response :gzip
-        b.request :retry,
-          max: self.retries,
-          interval: self.retry_interval,
-          exceptions: [ Faraday::Error::TimeoutError ]
-
-        b.adapter :net_http
+    class BadResponse < BerkshelfError
+      def initialize(url)
+        super \
+          "Berkshelf received an unexpected response from an API server. " \
+          "Please make sure the API server is accessible and running at " \
+          "#{url.inspect}." \
+          "\n\n" \
+          "If this is an internally run API server, try accessing it from " \
+          "your web browser. If this is a public API server, please check " \
+          "the status website or #berkshelf on freenode for outage " \
+          "information."
       end
-
-      super(self.url, options)
     end
 
-    # Retrieves the entire universe of known cookbooks from the API source
+    #
+    # Retrieves the entire universe of known cookbooks from the API source.
     #
     # @return [Array<APIClient::RemoteCookbook>]
+    #
     def universe
-      response = get("universe")
+      response = get('universe')
 
       case response.status
-      when 200
-        [].tap do |cookbooks|
-          response.body.each do |name, versions|
-            versions.each { |version, attributes| cookbooks << RemoteCookbook.new(name, version, attributes) }
+      when (200..299)
+        response.parsed.collect do |name, versions|
+          versions.collect do |version, attributes|
+            RemoteCookbook.new(name, version, attributes)
           end
-        end
+        end.flatten
       else
-        raise RuntimeError, "bad response #{response.inspect}"
+        raise BadResponse.new(@base)
       end
     end
   end

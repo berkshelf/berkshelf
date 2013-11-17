@@ -22,22 +22,22 @@ module Berkshelf
 
       # @return [Hash]
       def dependencies
-        @attributes[:dependencies]
+        @attributes['dependencies']
       end
 
       # @return [Hash]
       def platforms
-        @attributes[:platforms]
+        @attributes['platforms']
       end
 
       # @return [Symbol]
       def location_type
-        @attributes[:location_type].to_sym
+        @attributes['location_type'].to_sym
       end
 
       # @return [String]
       def location_path
-        @attributes[:location_path]
+        @attributes['location_path']
       end
 
       def to_hash

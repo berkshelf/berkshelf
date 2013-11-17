@@ -13,7 +13,6 @@ Spork.prefork do
     config.include Berkshelf::RSpec::ChefServer
     config.include Berkshelf::RSpec::Git
     config.include Berkshelf::RSpec::PathHelpers
-    config.include Berkshelf::API::RSpec
 
     config.expect_with :rspec do |c|
       c.syntax = :expect
@@ -27,7 +26,6 @@ Spork.prefork do
     config.before(:suite) do
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
       Berkshelf::RSpec::ChefServer.start
-      Berkshelf::API::RSpec::Server.start
       Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end
@@ -41,7 +39,6 @@ Spork.prefork do
     end
 
     config.before(:each) do
-      Berkshelf::API::RSpec::Server.clear_cache
       clean_tmp_path
       Berkshelf.initialize_filesystem
       Berkshelf::CookbookStore.instance.initialize_filesystem
