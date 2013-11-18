@@ -9,7 +9,12 @@ describe Berkshelf::APIClient::RemoteCookbook do
   let(:location_path) { "http://localhost:8080" }
 
   let(:attributes) do
-    { dependencies: dependencies, platforms: platforms, location_path: location_path, location_type: location_type }
+    {
+      'dependencies'  => dependencies,
+      'platforms'     => platforms,
+      'location_path' => location_path,
+      'location_type' => location_type,
+    }
   end
 
   subject { described_class.new(name, version, attributes) }

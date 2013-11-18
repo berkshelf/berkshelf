@@ -1,25 +1,122 @@
-require 'open-uri'
-require 'retryable'
+require_relative 'rest_adapter'
 
 module Berkshelf
-  class CommunityREST < Faraday::Connection
-    class << self
-      # @param [String] target
-      #   file path to the tar.gz archive on disk
-      # @param [String] destination
-      #   file path to extract the contents of the target to
-      #
-      # @return [String]
-      def unpack(target, destination = Dir.mktmpdir)
-        if is_gzip_file(target)
-          Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
-        elsif is_tar_file(target)
-          Archive::Tar::Minitar.unpack(target, destination)
-        else
-          raise Berkshelf::UnknownCompressionType.new(target)
+  class CommunityREST < RESTAdapter
+    # The Community Site API endpoint
+    V1_API = 'https://cookbooks.opscode.com/api/v1'.freeze
+
+    def initialize
+      super(V1_API)
+    end
+
+    #
+    # Download the cookbook from the community site.
+    #
+    # @param [String] name
+    #   the name of the cookbook to download
+    # @param [String] version
+    #   the version of the cookbook to download
+    #
+    # @return [String]
+    #   the path where the extracted files live
+    #
+    def download(name, version)
+      url = find(name, version)['file']
+      response = get(url)
+
+      case response.status
+      when (200..299)
+        begin
+          io = Tempfile.new('package')
+          io.binmode
+          io.write(response.body)
+          io.close(false)
+
+          extracted = Extractor.new(io).unpack!
+          Dir.glob(File.join(extracted, '*')).first
+        ensure
+          io.unlink unless io.nil?
         end
-        destination
+      when 404
+        raise "Got a 404"
+      else
+        raise "Got a #{response.status}"
       end
+    end
+
+    #
+    # Find a cookbook on the community site by the given name and version.
+    #
+    # @example fetch the +berkshelf+ cookbook
+    #   find('berkshelf', '0.1.0') #=> { "file" => "http://s3.amazonaws..." }
+    #
+    # @param [String] name
+    #   the name of the cookbook to download
+    # @param [String] version
+    #   the version of the cookbook to download
+    #
+    # @return [Hash]
+    #   the parsed JSON response from the community site
+    #
+    def find(name, version)
+      response = get("cookbooks/#{name}/versions/#{uri_escape_version(version)}")
+
+      case response.status
+      when (200..299)
+        response.parsed
+      when 404
+        raise CookbookNotFound, "Cookbook '#{name}' (#{version}) not found!"
+      else
+        raise CommunitySiteError, "Error finding cookbook '#{name}' (#{version})!"
+      end
+    end
+
+    #
+    # Get the full list of versions for the given cookbook.
+    #
+    # @example get all versions of the +berkshelf+ cookbook
+    #   versions('berkshelf') #=> ['1.0.0', '1.0.1']
+    #
+    # @param [String] name
+    #
+    # @return [Array<String>]
+    #
+    def versions(name)
+      response = get("cookbooks/#{name}")
+
+      case response.status
+      when (200..299)
+        response.parsed['versions'].map(&method(:version_from_uri))
+      when 404
+        raise CookbookNotFound, "Cookbook '#{name}' not found!"
+      else
+        raise CommunitySiteError, "Error retrieving versions of cookbook '#{name}'!"
+      end
+    end
+
+    #
+    # Returns the latest version of the cookbook and its download link.
+    #
+    # @example fetch the latest version of the +berkshelf+ cookbook
+    #   latest_version('berkshelf') #=> "1.0.0"
+    #
+    # @return [String]
+    #   the latest version of the cookbook
+    #
+    def latest_version(name)
+      response = get("cookbooks/#{name}")
+
+      case response.status
+      when (200..299)
+        version_from_uri(response.parsed['latest_version'])
+      when 404
+        raise CookbookNotFound, "Cookbook '#{name}' not found!"
+      else
+        raise CommunitySiteError, "Error retrieving latest version of cookbook '#{name}'!"
+      end
+    end
+
+    private
 
       # @param [String] version
       #
@@ -33,163 +130,6 @@ module Berkshelf
       # @return [String]
       def version_from_uri(uri)
         File.basename(uri.to_s).gsub('_', '.')
-      end
-
-      private
-
-        def is_gzip_file(path)
-          # You cannot write "\x1F\x8B" because the default encoding of
-          # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
-          IO.binread(path, 2) == [0x1F, 0x8B].pack("C*")
-        end
-
-        def is_tar_file(path)
-          IO.binread(path, 8, 257).to_s == "ustar\x0000"
-        end
-    end
-
-    V1_API = 'https://cookbooks.opscode.com/api/v1'.freeze
-
-    # @return [String]
-    attr_reader :api_uri
-    # @return [Integer]
-    #   how many retries to attempt on HTTP requests
-    attr_reader :retries
-    # @return [Float]
-    #   time to wait between retries
-    attr_reader :retry_interval
-
-    # @param [String] uri (CommunityREST::V1_API)
-    #   location of community site to connect to
-    #
-    # @option options [Integer] :retries (5)
-    #   retry requests on 5XX failures
-    # @option options [Float] :retry_interval (0.5)
-    #   how often we should pause between retries
-    def initialize(uri = V1_API, options = {})
-      options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
-      @api_uri        = uri
-      @retries        = options[:retries]
-      @retry_interval = options[:retry_interval]
-
-      options[:builder] ||= Faraday::Builder.new do |b|
-        b.response :parse_json
-        b.response :gzip
-        b.request :retry,
-          max: @retries,
-          interval: @retry_interval,
-          exceptions: [Faraday::Error::TimeoutError]
-
-        b.adapter :net_http
-      end
-
-      super(api_uri, options)
-    end
-
-    # @param [String] name
-    # @param [String] version
-    #
-    # @return [String]
-    def download(name, version)
-      archive   = stream(find(name, version)[:file])
-      extracted = self.class.unpack(archive.path)
-      Dir.glob(File.join(extracted, "*")).first
-    ensure
-      archive.unlink unless archive.nil?
-    end
-
-    def find(name, version)
-      response = get("cookbooks/#{name}/versions/#{self.class.uri_escape_version(version)}")
-
-      case response.status
-      when (200..299)
-        response.body
-      when 404
-        raise CookbookNotFound, "Cookbook '#{name}' (#{version}) not found at site: '#{api_uri}'"
-      else
-        raise CommunitySiteError, "Error finding cookbook '#{name}' (#{version}) at site: '#{api_uri}'"
-      end
-    end
-
-    # Returns the latest version of the cookbook and its download link.
-    #
-    # @return [String]
-    def latest_version(name)
-      response = get("cookbooks/#{name}")
-
-      case response.status
-      when (200..299)
-        self.class.version_from_uri response.body['latest_version']
-      when 404
-        raise CookbookNotFound, "Cookbook '#{name}' not found at site: '#{api_uri}'"
-      else
-        raise CommunitySiteError, "Error retrieving latest version of cookbook '#{name}' at site: '#{api_uri}'"
-      end
-    end
-
-    # @param [String] name
-    #
-    # @return [Array]
-    def versions(name)
-      response = get("cookbooks/#{name}")
-
-      case response.status
-      when (200..299)
-        response.body['versions'].collect do |version_uri|
-          self.class.version_from_uri(version_uri)
-        end
-      when 404
-        raise CookbookNotFound, "Cookbook '#{name}' not found at site: '#{api_uri}'"
-      else
-        raise CommunitySiteError, "Error retrieving versions of cookbook '#{name}' at site: '#{api_uri}'"
-      end
-    end
-
-    # @param [String] name
-    # @param [String, Solve::Constraint] constraint
-    #
-    # @return [String]
-    def satisfy(name, constraint)
-      Solve::Solver.satisfy_best(constraint, versions(name)).to_s
-    rescue Solve::Errors::NoSolutionError
-      nil
-    end
-
-    # Stream the response body of a remote URL to a file on the local file system
-    #
-    # @param [String] target
-    #   a URL to stream the response body from
-    #
-    # @return [Tempfile]
-    def stream(target)
-      local = Tempfile.new('community-rest-stream')
-      local.binmode
-
-      retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
-        open(target, 'rb', open_uri_options) do |remote|
-          local.write(remote.read)
-        end
-      end
-
-      local
-    ensure
-      local.close(false) unless local.nil?
-    end
-
-    private
-
-      def open_uri_options
-        options = {}
-        options.merge!(headers)
-        options.merge!(open_uri_proxy_options)
-      end
-
-      def open_uri_proxy_options
-        if proxy && proxy[:user] && proxy[:password]
-          {proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ]}
-        else
-          {}
-        end
       end
   end
 end
