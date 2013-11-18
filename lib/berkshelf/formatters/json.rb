@@ -118,6 +118,19 @@ module Berkshelf
         cookbooks[cookbook][:destination] = destination
       end
 
+      # Output a list of cookbooks to delayed output
+      #
+      # @param [Hash<Dependency, CachedCookbook>] list
+      def list(list)
+        list.each do |dependency, cookbook|
+          cookbooks[cookbook.cookbook_name] ||= {}
+          cookbooks[cookbook.cookbook_name][:version] = cookbook.version
+          if dependency.location
+            cookbooks[cookbook.cookbook_name][:location] = dependency.location
+          end
+        end
+      end
+
       # Output Cookbook info entry to delayed output
       #
       # @param [CachedCookbook] cookbook
