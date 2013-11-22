@@ -642,16 +642,10 @@ module Berkshelf
         src   = cookbook.path.to_s.gsub('\\', '/')
         files = Dir.glob(File.join(src, '*'))
 
-        if chefignore
-          files = chefignore.remove_ignores_from(files)
-        end
+        chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
+        chefignore.apply!(files) if chefignore
 
         FileUtils.cp_r(files, cookbook_destination)
-
-        chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
-        Dir["#{cookbook_destination}/**/*"].each do |path|
-          FileUtils.rm_rf(path) if chefignore.ignored?(path)
-        end if chefignore
       end
 
       FileUtils.mv(scratch, destination)
