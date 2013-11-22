@@ -478,8 +478,8 @@ module Berkshelf
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
     # @option options [Boolean] :halt_on_frozen (false)
-    #   Raise a FrozenCookbook error if one of the cookbooks being uploaded is already located
-    #   on the remote Chef Server and frozen.
+    #   Raise a FrozenCookbook error if one of the given cookbooks already exists on the
+    #   remote Chef Server and is frozen, or if any is frozen if none are given.
     # @option options [String] :server_url
     #   An overriding Chef Server to upload the cookbooks to
     # @option options [String] :client_name
@@ -674,8 +674,12 @@ module Berkshelf
       def do_upload(cookbooks, options = {})
         @skipped = []
 
+        # These are the top-level, explicitly-provided cookbooks.
+        explicit_names = options[:cookbooks]
+
         ridley_connection(options) do |conn|
           cookbooks.each do |cookbook|
+            current_name = cookbook.cookbook_name
             Berkshelf.formatter.upload(cookbook, conn)
             validate_files!(cookbook)
 
@@ -687,7 +691,8 @@ module Berkshelf
                 validate: options[:validate]
               })
             rescue Ridley::Errors::FrozenCookbook => ex
-              if options[:halt_on_frozen]
+              # If explicit_names is empty, then we consider all cookbooks to be top-level.
+              if options[:halt_on_frozen] and explicit_names.empty? || explicit_names.include?(current_name)
                 raise Berkshelf::FrozenCookbook.new(cookbook)
               end
 
