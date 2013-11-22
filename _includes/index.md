@@ -109,13 +109,13 @@ This will install your Cookbooks to the `vendor/cookbooks` directory relative to
 
 ## Configuring Berkshelf
 
-Berkshelf will run with a default configuration unless you explicitly generate one. The configuration will attempt to populate itself with values found in your Knife configuration (if you have one) and fill in the rest with other sensible defaults.
+Berkshelf will run with a default configuration unless you explicitly generate one. By default, Berkshelf uses the values found in your Knife configuration (if you have one).
 
-You can configure Berkshelf to your liking with the `configure` command
+You can override this default behavior by generating an explicit Berkshelf configuration file with the `configure` command
 
     $ berks configure
 
-Answer each question prompt with a value or just press enter to accept the default value.
+Answer each question prompt with a value or press enter to accept the default value.  As with Berkshelf's default behavior, Berkshelf attempts to populate the default values from your Knife configuration (otherwise using something else sensible).
 
     Config written to: '/Users/reset/.berkshelf/config.json'
 
