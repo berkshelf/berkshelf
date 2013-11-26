@@ -37,7 +37,7 @@ describe Berkshelf::Config do
       end
 
       it "points to a location within it" do
-        expect(Berkshelf::Config.path).to eq('/tmp/config.json')
+        expect(Berkshelf::Config.path).to match(%r{/tmp/config.json})
       end
     end
   end

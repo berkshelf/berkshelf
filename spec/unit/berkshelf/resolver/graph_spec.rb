@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::Resolver::Graph do
+describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
   subject { described_class.new }
 
   describe "#populate" do

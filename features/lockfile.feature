@@ -1,3 +1,4 @@
+@api_server
 Feature: Creating and reading the Berkshelf lockfile
   Background:
     * the cookbook store has the cookbooks:
