@@ -1,6 +1,15 @@
 source 'https://rubygems.org'
 
 gem 'berkshelf'
+
+# Uncomment these lines (and the ones in the generated Vagrantfile) if you want
+# to live on the Edge:
+#
+# gem "berkshelf", github: "RiotGames/berkshelf"
+# gem "vagrant", github: "mitchellh/vagrant", tag: "v1.3.5"
+# gem "vagrant-berkshelf", github: "RiotGames/vagrant-berkshelf"
+# gem "vagrant-omnibus", github: "schisamo/vagrant-omnibus", tag: "v1.1.2"
+
 <% if options[:foodcritic] -%>
 gem 'thor-foodcritic'
 <% end -%>
