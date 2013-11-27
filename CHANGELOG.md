@@ -1,6 +1,10 @@
 # 3.0.0
 
-* New "universe" resolver which communicates with an API server to resolve constraint graphs faster and more reliably
+* Enhancements
+  * New "universe" resolver which communicates with an API server to resolve constraint graphs faster and more reliably
+
+* Bug Fixes
+  * Raw metadata will be compiled into metadata.json during vendor process
 
 # 2.0.10
 
