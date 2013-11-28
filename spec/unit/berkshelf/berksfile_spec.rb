@@ -333,30 +333,25 @@ describe Berkshelf::Berksfile do
 
   describe '#retrieve_locked' do
     let(:lockfile) { double('lockfile', find: locked) }
+    let(:dependency) { double('dependency', name: 'bacon') }
     let(:locked) { double('locked', cached_cookbook: cached, locked_version: '1.0.0') }
     let(:cached) { double('cached') }
 
     before do
-      subject.stub(:validate_cookbook_names!)
       subject.stub(:lockfile).and_return(lockfile)
     end
 
-    it 'validates cookbook names' do
-      expect(subject).to receive(:validate_cookbook_names!).once
-      subject.retrieve_locked('bacon')
-    end
-
-    it 'raises an error when the lockfile does not exist' do
+    it 'raises an error when the lockfile does not have the source' do
       lockfile.stub(:find)
       expect {
-        subject.retrieve_locked('bacon')
-      }.to raise_error(Berkshelf::LockfileNotFound)
+        subject.retrieve_locked(dependency)
+      }.to raise_error(Berkshelf::CookbookNotFound)
     end
 
     it 'raises an error when the cookbook is not downloaded' do
-      locked.stub(:cached_cookbook)
+      locked.stub(:downloaded?).and_return(false)
       expect {
-        subject.retrieve_locked('bacon')
+        subject.retrieve_locked(dependency)
       }.to raise_error(Berkshelf::CookbookNotFound)
     end
   end
@@ -480,6 +475,32 @@ describe Berkshelf::Berksfile do
 
       it 'uses the passed in :client_key' do
         Ridley.should_receive(:open).with(ridley_options)
+        upload
+      end
+    end
+
+    context 'when validate is passed' do
+      let(:options) do
+        {
+          force: false,
+          freeze: true,
+          validate: false,
+          name: "cookbook"
+        }
+      end
+      let(:ridley_options) do
+        default_ridley_options.merge(
+            { server_url: 'http://configured-chef-server/'})
+      end
+      let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path', version: '1.0.0') }
+      let(:installed_cookbooks) { [ cookbook ] }
+      let(:cookbook_resource) { double('cookbook') }
+      let(:conn) { double('conn') }
+
+      it 'uses the passed in :validate' do
+        Ridley.should_receive(:open).with(ridley_options).and_yield(conn)
+        conn.should_receive(:cookbook).and_return(cookbook_resource)
+        cookbook_resource.should_receive(:upload).with('path', options )
         upload
       end
     end

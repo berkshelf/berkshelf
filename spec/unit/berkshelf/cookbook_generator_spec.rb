@@ -39,13 +39,11 @@ describe Berkshelf::CookbookGenerator do
           contains 'All rights reserved - Do Not Redistribute'
         end
         file 'README.md' do
-          contains 'sparkle_motion cookbook'
-          contains '======================='
-          contains '- `toaster` - sparkle_motion needs toaster to brown your bagel.'
-          contains '#### sparkle_motion::default'
+          contains '# sparkle_motion-cookbook'
+          contains '### sparkle_motion::default'
           contains "    <td><tt>['sparkle_motion']['bacon']</tt></td>"
-          contains "Just include `sparkle_motion` in your node's `run_list`:"
-          contains '    "recipe[sparkle_motion]"'
+          contains "Include `sparkle_motion` in your node's `run_list`:"
+          contains '    "recipe[sparkle_motion::default]"'
           contains 'Author:: YOUR_NAME (<YOUR_EMAIL>)'
         end
         file 'metadata.rb' do

@@ -42,15 +42,11 @@ module Berkshelf
     #   The path on disk to the file representing this instance of Berksfile
     attr_reader :filepath
 
-    # @return [Array<Berkshelf::CachedCookbook>]
-    attr_reader :cached_cookbooks
-
     # @param [String] path
     #   path on disk to the file containing the contents of this Berksfile
     def initialize(path)
       @filepath         = path
       @dependencies     = Hash.new
-      @cached_cookbooks = nil
       @sources          = Array.new
     end
 
@@ -162,14 +158,14 @@ module Berkshelf
         Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
           "Site (site :opscode). Site locations have been replaced by the source location. Change this to: " +
           "'source \"http://api.berkshelf.com\" to remove this warning. For more information visit " +
-          "https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+          "https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
         source(DEFAULT_API_URL)
         return
       end
 
       raise Berkshelf::DeprecatedError.new "Your Berksfile contains a site location. Site locations have been " +
         " replaced by the source location. Please remove your site location and try again. For more information " +
-        " visit https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+        " visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
 
     # @todo remove in Berkshelf 4.0
@@ -178,7 +174,7 @@ module Berkshelf
     def chef_api(*args)
       raise Berkshelf::DeprecatedError.new "Your Berksfile contains a chef_api location. Chef API locations have " +
         " been replaced by the source location. Please remove your site location and try again. For more " +
-        " information visit https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+        " information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
 
     # Add a dependency of the given name and constraint to the array of dependencies.
@@ -274,6 +270,12 @@ module Berkshelf
     #   the cookbook dependency, or nil if one does not exist
     def find(name)
       @dependencies[name]
+    end
+
+    # Find a dependency, raising an exception if it is not found.
+    # @see {find}
+    def find!(name)
+      find(name) || raise(DependencyNotFound.new(name))
     end
 
     # @return [Hash]
@@ -376,29 +378,41 @@ module Berkshelf
     # @raise [CookbookNotFound]
     #   if there is a lockfile with a cookbook, but the cookbook is not downloaded
     #
-    # @param [String] name
+    # @param [Dependency] name
     #   the name of the cookbook to find
     #
     # @return [CachedCookbook]
     #   the CachedCookbook that corresponds to the given name parameter
-    def retrieve_locked(name)
-      validate_cookbook_names!(cookbooks: name)
+    def retrieve_locked(dependency)
+      locked = lockfile.find(dependency.name)
 
-      locked = lockfile.find(name)
       unless locked
-        raise LockfileNotFound, "Could not find cookbook '#{name} (>= 0.0.0)'."\
+        raise CookbookNotFound, "Could not find cookbook '#{dependency.to_s}'."\
           " Try running `berks install` to download and install the missing"\
           " dependencies."
       end
 
-      cookbook = locked.cached_cookbook
-      unless cookbook
-        raise CookbookNotFound, "Could not find cookbook '#{name} (= #{locked.locked_version})'."\
+      unless locked.downloaded?
+        raise CookbookNotFound, "Could not find cookbook '#{locked.to_s}'."\
           " Try running `berks install` to download and install the missing"\
           " dependencies."
       end
 
-      cookbook
+      @dependencies[dependency.name] = locked
+      locked.cached_cookbook
+    end
+
+    # The cached cookbooks installed by this Berksfile.
+    #
+    # @raise [Berkshelf::LockfileNotFound]
+    #   if there is no lockfile
+    # @raise [Berkshelf::CookbookNotFound]
+    #   if a listed source could not be found
+    #
+    # @return [Hash<Berkshelf::Dependency, Berkshelf::CachedCookbook>]
+    #   the list of dependencies as keys and the cached cookbook as the value
+    def list
+      Hash[*dependencies.sort.collect { |dependency| [dependency, retrieve_locked(dependency)] }.flatten]
     end
 
     # List of all the cookbooks which have a newer version found at a source that satisfies
@@ -426,7 +440,7 @@ module Berkshelf
 
       outdated = {}
       dependencies(options).each do |dependency|
-        locked = retrieve_locked(dependency.name)
+        locked = retrieve_locked(dependency)
         outdated[dependency.name] = {}
 
         sources.each do |source|
@@ -488,6 +502,7 @@ module Berkshelf
         halt_on_frozen: false,
         skip_dependencies: false,
         cookbooks: [],
+        validate: true
       }.merge(options)
 
       validate_cookbook_names!(options)
@@ -627,16 +642,29 @@ module Berkshelf
         src   = cookbook.path.to_s.gsub('\\', '/')
         files = Dir.glob(File.join(src, '*'))
 
-        # if chefignore
-        #   files = chefignore.remove_ignores_from(files)
-        # end
+        chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
+        chefignore.apply!(files) if chefignore
+
+        unless cookbook.compiled_metadata?
+          cookbook.compile_metadata(cookbook_destination)
+        end
+
+        # Don't vendor the raw metadata (metadata.rb). The raw metadata is unecessary for the
+        # client, and this is required until compiled metadata (metadata.json) takes precedence over
+        # raw metadata in the Chef-Client.
+        #
+        # We can change back to including the raw metadata in the future after this has been fixed or
+        # just remove these comments. There is no circumstance that I can currently think of where
+        # raw metadata should ever be read by the client.
+        #
+        # - Jamie
+        #
+        # See the following tickets for more information:
+        #   * https://tickets.opscode.com/browse/CHEF-4811
+        #   * https://tickets.opscode.com/browse/CHEF-4810
+        files.reject! { |file| File.basename(file) == "metadata.rb" }
 
         FileUtils.cp_r(files, cookbook_destination)
-
-        chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
-        Dir["#{cookbook_destination}/**/*"].each do |path|
-          FileUtils.rm_rf(path) if chefignore.ignored?(path)
-        end if chefignore
       end
 
       FileUtils.mv(scratch, destination)
@@ -669,6 +697,7 @@ module Berkshelf
                 force: options[:force],
                 freeze: options[:freeze],
                 name: cookbook.cookbook_name,
+                validate: options[:validate]
               })
             rescue Ridley::Errors::FrozenCookbook => ex
               if options[:halt_on_frozen]
@@ -683,7 +712,7 @@ module Berkshelf
 
         unless @skipped.empty?
           Berkshelf.formatter.msg "Skipped uploading some cookbooks because they" <<
-            " already existed on the remote server. Re-run with the `--force`" <<
+            " already exist on the remote server and are frozen. Re-run with the `--force`" <<
             " flag to force overwrite these cookbooks:" <<
             "\n\n" <<
             "  * " << @skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")

@@ -82,6 +82,7 @@ module Berkshelf
       formatter_methods :error,
                         :fetch,
                         :install,
+                        :list,
                         :msg,
                         :outdated,
                         :package,

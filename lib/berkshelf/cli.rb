@@ -111,56 +111,6 @@ module Berkshelf
       aliases: '-d',
       default: false
 
-    method_option :force,
-      type: :boolean,
-      default: false,
-      desc: 'create a new configuration file even if one already exists.'
-    method_option :path,
-      type: :string,
-      default: Berkshelf.config.path,
-      desc: 'The path to save the configuration file'
-    desc 'configure', 'Create a new Berkshelf configuration file'
-    def configure
-      path = File.expand_path(options[:path])
-
-      if File.exist?(path) && !options[:force]
-        raise Berkshelf::ConfigExists, 'A configuration file already exists. Re-run with the --force flag if you wish to overwrite it.'
-      end
-
-      config = Berkshelf::Config.new(path)
-
-      [
-        'chef.chef_server_url',
-        'chef.node_name',
-        'chef.client_key',
-        'chef.validation_client_name',
-        'chef.validation_key_path',
-        'vagrant.vm.box',
-        'vagrant.vm.box_url',
-      ].each do |attribute|
-        default = config.get_attribute(attribute)
-
-        message = "Enter value for #{attribute}"
-        message << " (default: '#{default}')" if default
-        message << ": "
-
-        input = Berkshelf.ui.ask(message)
-
-        if input.present?
-          config.set_attribute(attribute, input)
-        end
-      end
-
-      unless config.valid?
-        raise InvalidConfiguration.new(config.errors)
-      end
-
-      config.save
-      Berkshelf.config = config
-
-      Berkshelf.formatter.msg "Config written to: '#{path}'"
-    end
-
     method_option :except,
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
@@ -252,6 +202,7 @@ module Berkshelf
 
       options[:cookbooks] = cookbook_names
       options[:freeze]    = !options[:no_freeze]
+      options[:validate]  = false if options[:skip_syntax_check]
 
       berksfile.upload(options.symbolize_keys)
     end
@@ -321,15 +272,8 @@ module Berkshelf
       banner: 'PATH'
     desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
     def list
-      berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
-
-      if dependencies.empty?
-        Berkshelf.formatter.msg 'There are no cookbooks installed by your Berksfile'
-      else
-        Berkshelf.formatter.msg 'Cookbooks installed by your Berksfile:'
-        print_list(dependencies)
-      end
+      berksfile = Berksfile.from_file(options[:berksfile])
+      Berkshelf.formatter.list(berksfile.list)
     end
 
     method_option :berksfile,
@@ -341,7 +285,7 @@ module Berkshelf
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def show(name)
       berksfile = Berksfile.from_file(options[:berksfile])
-      cookbook = berksfile.retrieve_locked(name)
+      cookbook = berksfile.retrieve_locked(berksfile.find!(name))
       Berkshelf.formatter.show(cookbook)
     end
 

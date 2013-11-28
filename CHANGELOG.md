@@ -1,6 +1,10 @@
 # 3.0.0
 
-* New "universe" resolver which communicates with an API server to resolve constraint graphs faster and more reliably
+* Enhancements
+  * New "universe" resolver which communicates with an API server to resolve constraint graphs faster and more reliably
+
+* Bug Fixes
+  * Raw metadata will be compiled into metadata.json during vendor process
 
 # 2.0.10
 
@@ -9,6 +13,12 @@
 # 2.0.9
 
 * Update required version of Ridley
+
+# 2.0.8
+
+* Account for API changes to solve
+* Rescue exceptions when parsing the lockfile
+* Fix deprecation errors
 
 # 2.0.7
 
@@ -98,7 +108,7 @@
 
 # 1.3.1
 - Support for Vagrant 1.1.x
-- Move Berkshelf Vagrant plugin into its [own repository](https://github.com/RiotGames/vagrant-berkshelf)
+- Move Berkshelf Vagrant plugin into it's [own repository](https://github.com/berkshelf/vagrant-berkshelf)
 - Added -d flag to output debug information in berks command
 - Various bug fixes in uploading cookbooks
 

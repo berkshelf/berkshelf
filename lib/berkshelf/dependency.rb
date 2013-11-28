@@ -203,8 +203,12 @@ module Berkshelf
       SCM_LOCATIONS.include?(location.class.location_key)
     end
 
+    def <=>(other)
+      [self.name, self.version_constraint] <=> [other.name, other.version_constraint]
+    end
+
     def to_s
-      "#{name} (#{version_constraint})"
+      "#{name} (#{locked_version || version_constraint})"
     end
 
     def inspect

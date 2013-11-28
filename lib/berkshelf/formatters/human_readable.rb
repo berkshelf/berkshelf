@@ -57,7 +57,7 @@ module Berkshelf
       # @param [Berkshelf::CachedCookbook] cookbook
       # @param [Ridley::Connection] conn
       def skip(cookbook, conn)
-        Berkshelf.ui.info "Skipping #{cookbook.cookbook_name} (#{cookbook.version}) (already uploaded)"
+        Berkshelf.ui.info "Skipping #{cookbook.cookbook_name} (#{cookbook.version}) (frozen)"
       end
 
       # Output a list of outdated cookbooks and the most recent version
@@ -84,6 +84,20 @@ module Berkshelf
       # @param [String] destination
       def package(cookbook, destination)
         Berkshelf.ui.info "Cookbook(s) packaged to #{destination}!"
+      end
+
+      # Output a list of cookbooks using {Berkshelf.ui}
+      #
+      # @param [Hash<Dependency, CachedCookbook>] list
+      def list(list)
+        if list.empty?
+          Berkshelf.ui.info "There are no cookbooks installed by your Berksfile"
+        else
+          Berkshelf.ui.info "Cookbooks installed by your Berksfile:"
+          list.each do |dependency, cookbook|
+            Berkshelf.ui.info("  * #{cookbook.cookbook_name} (#{cookbook.version})")
+          end
+        end
       end
 
       # Output Cookbook info message using {Berkshelf.ui}

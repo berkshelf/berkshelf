@@ -319,19 +319,18 @@ Feature: berks install
       """
 
 
+  # GitHub doesn't permit anonymous SSH access, so we are going to get a
+  # failure message back. That's okay, if GitHub tells us our key was denied,
+  # we know the connection has made it that far.
   Scenario: installing a Berksfile that contains a Github location and protocol ssh
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "ssh"
       """
-    When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
-      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
-    And the output should contain:
+    When I run `berks install`
+    Then the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'git@github.com:RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
-      building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) github: 'git@github.com:RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      Permission denied (publickey).
       """
 
 
