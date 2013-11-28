@@ -81,7 +81,7 @@ describe Berkshelf::GitLocation do
       it 'raises a CookbookNotFound error' do
         subject.stub(:clone).and_return {
           FileUtils.mkdir_p(fake_remote)
-          Dir.chdir(fake_remote) { |dir| `git init; echo hi > README; git add README; git commit README -m 'README'`; dir }
+          Dir.chdir(fake_remote) { |dir| `git init && echo hi > README && git add README && git commit README -m 'README'`; dir }
         }
 
         expect { subject.download }.to raise_error(Berkshelf::CookbookNotFound)

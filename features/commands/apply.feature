@@ -1,3 +1,4 @@
+@api_server
 Feature: berks apply
   Scenario: Locking a cookbook version with dependencies
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:

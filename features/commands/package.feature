@@ -1,3 +1,4 @@
+@api_server
 Feature: berks package
   Background:
     * the cookbook store has the cookbooks:

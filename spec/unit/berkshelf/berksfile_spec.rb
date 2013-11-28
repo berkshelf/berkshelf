@@ -68,7 +68,13 @@ describe Berkshelf::Berksfile do
     end
 
     it 'merges the default options into specified options' do
-      subject.should_receive(:add_dependency).with(name, constraint, path: '/Users/reset', group: [])
+      subject.should_receive(:add_dependency)do |arg_name, arg_constraint, arg_options|
+        expect(arg_name).to eq(name)
+        expect(arg_constraint).to eq(constraint)
+        expect(arg_options[:path]).to match(%r{/Users/reset})
+        expect(arg_options[:group]).to eq([])
+      end
+
       subject.cookbook(name, constraint, path: '/Users/reset')
     end
 
@@ -560,7 +566,7 @@ describe Berkshelf::Berksfile do
     context 'when the dependency does not exist' do
       it 'raises a CookbookNotFound exception' do
         expect {
-          subject.package('non-existent', output: '/tmp')
+          subject.package('non-existent', output: Dir.tmpdir)
         }.to raise_error(Berkshelf::CookbookNotFound)
       end
     end
@@ -568,7 +574,7 @@ describe Berkshelf::Berksfile do
     context 'when the dependency exists' do
       let(:dependency) { double('dependency') }
       let(:cached) { double('cached', path: '/foo/bar', cookbook_name: 'cookbook') }
-      let(:options) { { output: '/tmp' } }
+      let(:options) { { output: Dir.tmpdir } }
 
       before do
         FileUtils.stub(:cp_r)
@@ -583,7 +589,7 @@ describe Berkshelf::Berksfile do
       end
 
       it 'returns the output path' do
-        expect(subject.package('non-existent', options)).to eq('/tmp/non-existent.tar.gz')
+        expect(subject.package('non-existent', options)).to eq(File.join(Dir.tmpdir, 'non-existent.tar.gz'))
       end
     end
   end
