@@ -512,34 +512,6 @@ module Berkshelf
       do_upload(cached_cookbooks, options)
     end
 
-    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
-    # target Chef environment
-    #
-    # @param [String] environment_name
-    #
-    # @option options [Hash] :ssl_verify (true)
-    #   Disable/Enable SSL verification during uploads
-    #
-    # @raise [EnvironmentNotFound]
-    #   if the target environment was not found
-    # @raise [ChefConnectionError]
-    #   if you are locking cookbooks with an invalid or not-specified client configuration
-    def apply(environment_name, options = {})
-      ridley_connection(options) do |conn|
-        unless environment = conn.environment.find(environment_name)
-          raise EnvironmentNotFound.new(environment_name)
-        end
-
-        install
-
-        environment.cookbook_versions = {}.tap do |cookbook_versions|
-          lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = "= #{dependency.locked_version.to_s}" }
-        end
-
-        environment.save
-      end
-    end
-
     # Package the given cookbook for distribution outside of berkshelf. If the
     # name attribute is not given, all cookbooks in the Berksfile will be
     # packaged.
@@ -679,7 +651,7 @@ module Berkshelf
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      @lockfile ||= Berkshelf::Lockfile.new(self)
+      @lockfile ||= Lockfile.from_berksfile(self)
     end
 
     private
@@ -687,7 +659,7 @@ module Berkshelf
       def do_upload(cookbooks, options = {})
         @skipped = []
 
-        ridley_connection(options) do |conn|
+        Berkshelf.ridley_connection(options) do |conn|
           cookbooks.each do |cookbook|
             Berkshelf.formatter.upload(cookbook, conn)
             validate_files!(cookbook)
@@ -740,35 +712,6 @@ module Berkshelf
           cookbooks = explicit.uniq
         end
         cookbooks
-      end
-
-      # @raise [Berkshelf::ChefConnectionError]
-      def ridley_connection(options = {}, &block)
-        ridley_options               = options.slice(:ssl)
-
-        ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
-        ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
-        ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
-        ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
-
-        unless ridley_options[:server_url].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
-        end
-
-        unless ridley_options[:client_name].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
-        end
-
-        unless ridley_options[:client_key].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
-        end
-        # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
-        # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
-        Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
-        Ridley.open(ridley_options, &block)
-      rescue Ridley::Errors::RidleyError => ex
-        log_exception(ex)
-        raise ChefConnectionError, ex # todo implement
       end
 
       # Determine if any cookbooks were specified that aren't in our shelf.

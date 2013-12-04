@@ -207,22 +207,26 @@ module Berkshelf
       berksfile.upload(options.symbolize_keys)
     end
 
-    method_option :berksfile,
+    method_option :lockfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
+      default: Berkshelf::Lockfile::DEFAULT_FILENAME,
+      desc: 'Path to a Berksfile.lock to operate off of.',
       aliases: '-b',
       banner: 'PATH'
     method_option :ssl_verify,
       type: :boolean,
       default: nil,
       desc: 'Disable/Enable SSL verification when locking cookbooks.'
-    desc 'apply ENVIRONMENT', 'Apply the cookbook version locks from Berksfile.lock to a Chef environment'
+    desc 'apply ENVIRONMENT', 'Apply version locks from Berksfile.lock to a Chef environment'
     def apply(environment_name)
-      berksfile    = Berkshelf::Berksfile.from_file(options[:berksfile])
+      unless File.exist?(options[:lockfile])
+        raise LockfileNotFound, "No lockfile found at #{options[:lockfile]}"
+      end
+
+      lockfile     = Berkshelf::Lockfile.from_file(options[:lockfile])
       lock_options = Hash[options].symbolize_keys
 
-      berksfile.apply(environment_name, lock_options)
+      lockfile.apply(environment_name, lock_options)
     end
 
     method_option :berksfile,
