@@ -639,6 +639,8 @@ module Berkshelf
         FileUtils.cp_r(files, cookbook_destination)
       end
 
+      FileUtils.cp(lockfile.filepath, File.join(scratch, Lockfile::DEFAULT_FILENAME))
+
       FileUtils.mv(scratch, destination)
       destination
     end
