@@ -651,8 +651,7 @@ module Berkshelf
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      @lockfile ||= Lockfile.new(berksfile: self,
-        filepath: File.join(File.dirname(filepath), Lockfile::DEFAULT_FILENAME))
+      @lockfile ||= Lockfile.from_berksfile(self)
     end
 
     private

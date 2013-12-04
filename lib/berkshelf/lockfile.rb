@@ -13,9 +13,18 @@ module Berkshelf
       def from_file(filepath)
         new(filepath: filepath)
       end
+
+      # Initialize a Lockfile from the given Berksfile
+      #
+      # @param [Berkshelf::Berksfile] berksfile
+      #   the Berksfile associated with the Lockfile
+      def from_berksfile(berksfile)
+        filepath = File.join(File.dirname(File.expand_path(berksfile.filepath)), Lockfile::DEFAULT_FILENAME)
+        new(berksfile: berksfile, filepath: filepath)
+      end
     end
 
-    DEFAULT_FILENAME = "Berkshelf.lock"
+    DEFAULT_FILENAME = "Berksfile.lock"
 
     include Berkshelf::Mixin::Logging
 
@@ -57,6 +66,7 @@ module Berkshelf
     #   if you are locking cookbooks with an invalid or not-specified client configuration
     def apply(environment_name, options = {})
       ridley_connection(options) do |conn|
+        p conn.environment.list
         unless environment = conn.environment.find(environment_name)
           raise EnvironmentNotFound.new(environment_name)
         end
@@ -265,7 +275,6 @@ module Berkshelf
 
       # Save the contents of the lockfile to disk.
       def save
-        p filepath
         File.open(filepath, 'w') do |file|
           file.write to_json + "\n"
         end
