@@ -18,6 +18,7 @@ require_relative 'berkshelf/core_ext'
 require_relative 'berkshelf/thor_ext'
 
 module Berkshelf
+  require_relative 'berkshelf/version'
   require_relative 'berkshelf/errors'
   require_relative 'berkshelf/mixin'
 
@@ -138,6 +139,7 @@ module Berkshelf
   end
 end
 
+require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/api_client'
 require_relative 'berkshelf/base_generator'
 require_relative 'berkshelf/berksfile'
@@ -155,13 +157,11 @@ require_relative 'berkshelf/mercurial'
 require_relative 'berkshelf/init_generator'
 require_relative 'berkshelf/installer'
 require_relative 'berkshelf/location'
-require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/source'
 require_relative 'berkshelf/source_uri'
 require_relative 'berkshelf/ui'
-require_relative 'berkshelf/version'
 
 Ridley.logger = Berkshelf.logger = Logger.new(STDOUT)
 Berkshelf.logger.level = Logger::WARN

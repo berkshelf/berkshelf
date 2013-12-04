@@ -512,34 +512,6 @@ module Berkshelf
       do_upload(cached_cookbooks, options)
     end
 
-    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
-    # target Chef environment
-    #
-    # @param [String] environment_name
-    #
-    # @option options [Hash] :ssl_verify (true)
-    #   Disable/Enable SSL verification during uploads
-    #
-    # @raise [EnvironmentNotFound]
-    #   if the target environment was not found
-    # @raise [ChefConnectionError]
-    #   if you are locking cookbooks with an invalid or not-specified client configuration
-    def apply(environment_name, options = {})
-      ridley_connection(options) do |conn|
-        unless environment = conn.environment.find(environment_name)
-          raise EnvironmentNotFound.new(environment_name)
-        end
-
-        install
-
-        environment.cookbook_versions = {}.tap do |cookbook_versions|
-          lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = "= #{dependency.locked_version.to_s}" }
-        end
-
-        environment.save
-      end
-    end
-
     # Package the given cookbook for distribution outside of berkshelf. If the
     # name attribute is not given, all cookbooks in the Berksfile will be
     # packaged.
@@ -679,7 +651,8 @@ module Berkshelf
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      @lockfile ||= Berkshelf::Lockfile.new(self)
+      @lockfile ||= Lockfile.new(berksfile: self,
+        filepath: File.join(File.dirname(filepath), Lockfile::DEFAULT_FILENAME))
     end
 
     private

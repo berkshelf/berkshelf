@@ -5,6 +5,20 @@ module Berkshelf
   # when working in teams where the same cookbook versions are desired across
   # multiple workstations.
   class Lockfile
+    class << self
+      # Initialize a Lockfile from the given filepath
+      #
+      # @param [String] filepath
+      #   filepath to the lockfile
+      def from_file(filepath)
+        new(filepath: filepath)
+      end
+    end
+
+    DEFAULT_FILENAME = "Berkshelf.lock"
+
+    include Berkshelf::Mixin::Logging
+
     # @return [Pathname]
     #   the path to this Lockfile
     attr_reader :filepath
@@ -17,14 +31,53 @@ module Berkshelf
     # Lockfile exists, it is automatically loaded. Otherwise, an empty instance is
     # created and ready for use.
     #
-    # @param berksfile [Berkshelf::Berksfile]
+    # @option options [String] :filepath
+    #   filepath to the lockfile
+    # @option options [Berkshelf::Berksfile] :berksfile
     #   the Berksfile associated with this Lockfile
-    def initialize(berksfile)
-      @berksfile    = berksfile
-      @filepath     = File.expand_path("#{berksfile.filepath}.lock")
+    def initialize(options = {})
+      @filepath     = options[:filepath].to_s
+      @berksfile    = options[:berksfile]
       @dependencies = {}
 
       load! if File.exists?(@filepath)
+    end
+
+    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
+    # target Chef environment
+    #
+    # @param [String] environment_name
+    #
+    # @option options [Hash] :ssl_verify (true)
+    #   Disable/Enable SSL verification during uploads
+    #
+    # @raise [EnvironmentNotFound]
+    #   if the target environment was not found
+    # @raise [ChefConnectionError]
+    #   if you are locking cookbooks with an invalid or not-specified client configuration
+    def apply(environment_name, options = {})
+      ridley_connection(options) do |conn|
+        unless environment = conn.environment.find(environment_name)
+          raise EnvironmentNotFound.new(environment_name)
+        end
+
+        environment.cookbook_versions = {}.tap do |cookbook_versions|
+          dependencies.each do |dependency|
+            if dependency.locked_version.nil?
+              # A locked version must be present for each entry. Older versions of the lockfile
+              # may have contained dependencies with a special type of location that would attempt
+              # to dynamically determine the locked version. This is incorrect and the Lockfile
+              # should be regenerated if that is the case.
+              raise InvalidLockFile, "Your lockfile contains a dependency without a locked version. This " +
+                "may be because you have an old lockfile. Regenerate your lockfile and try again."
+            end
+
+            cookbook_versions[dependency.name] = "= #{dependency.locked_version.to_s}"
+          end
+        end
+
+        environment.save
+      end
     end
 
     # Load the lockfile from file system.
@@ -181,8 +234,38 @@ module Berkshelf
         end
       end
 
+      # @raise [Berkshelf::ChefConnectionError]
+      def ridley_connection(options = {}, &block)
+        ridley_options               = options.slice(:ssl)
+
+        ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
+        ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
+        ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
+        ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
+
+        unless ridley_options[:server_url].present?
+          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
+        end
+
+        unless ridley_options[:client_name].present?
+          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
+        end
+
+        unless ridley_options[:client_key].present?
+          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
+        end
+        # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
+        # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
+        Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
+        Ridley.open(ridley_options, &block)
+      rescue Ridley::Errors::RidleyError => ex
+        log_exception(ex)
+        raise ChefConnectionError, ex # todo implement
+      end
+
       # Save the contents of the lockfile to disk.
       def save
+        p filepath
         File.open(filepath, 'w') do |file|
           file.write to_json + "\n"
         end

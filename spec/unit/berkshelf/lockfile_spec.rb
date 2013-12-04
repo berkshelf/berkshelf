@@ -11,7 +11,7 @@ describe Berkshelf::Lockfile do
   describe '.initialize' do
     it 'does not throw an exception' do
       expect {
-        Berkshelf::Lockfile.new(berksfile)
+        Berkshelf::Lockfile.new(berksfile: berksfile)
       }.to_not raise_error
     end
 
@@ -21,7 +21,57 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  subject { Berkshelf::Lockfile.new(berksfile) }
+  subject { Berkshelf::Lockfile.new(berksfile: berksfile) }
+
+  describe "#apply" do
+    let(:env_name)    { 'berkshelf-test' }
+    let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
+    let(:client_name) { 'berkshelf' }
+    let(:client_key)  { fixtures_path.join('../config/berkshelf.pem').to_s }
+    let(:ridley)      { Ridley.new(server_url: server_url, client_name: client_name, client_key: client_key) }
+
+    before do
+      subject.stub(:ridley_connection).and_yield(ridley)
+      subject.add_dependency('nginx', '>= 0.1.2')
+      subject.stub(install: nil)
+    end
+
+    context 'when the chef environment exists' do
+      let(:dependencies) do
+        [
+          double(name: 'nginx', locked_version: '1.2.3'),
+          double(name: 'artifact', locked_version: '1.4.0')
+        ]
+      end
+
+      before do
+        chef_environment('berkshelf')
+        subject.lockfile.stub(:dependencies).and_return(dependencies)
+      end
+
+      it 'installs the Berksfile' do
+        subject.should_receive(:install)
+        subject.apply('berkshelf')
+      end
+
+      it 'applys the locked_versions of the Lockfile dependencies to the given Chef environment' do
+        subject.apply('berkshelf')
+
+        environment = ::JSON.parse(chef_server.data_store.get(['environments', 'berkshelf']))
+        expect(environment['cookbook_versions']).to have(2).items
+        expect(environment['cookbook_versions']['nginx']).to eq('= 1.2.3')
+        expect(environment['cookbook_versions']['artifact']).to eq('= 1.4.0')
+      end
+    end
+
+    context 'when the environment does not exist' do
+      it 'raises an EnvironmentNotFound error' do
+        expect {
+          subject.apply(env_name)
+        }.to raise_error(Berkshelf::EnvironmentNotFound)
+      end
+    end
+  end
 
   describe '#dependencies' do
     it 'returns an array' do
