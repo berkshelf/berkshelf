@@ -65,8 +65,7 @@ module Berkshelf
     # @raise [ChefConnectionError]
     #   if you are locking cookbooks with an invalid or not-specified client configuration
     def apply(environment_name, options = {})
-      ridley_connection(options) do |conn|
-        p conn.environment.list
+      Berkshelf.ridley_connection(options) do |conn|
         unless environment = conn.environment.find(environment_name)
           raise EnvironmentNotFound.new(environment_name)
         end
@@ -242,35 +241,6 @@ module Berkshelf
         else
           raise Berkshelf::LockfileParserError.new(filepath, e)
         end
-      end
-
-      # @raise [Berkshelf::ChefConnectionError]
-      def ridley_connection(options = {}, &block)
-        ridley_options               = options.slice(:ssl)
-
-        ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
-        ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
-        ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
-        ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
-
-        unless ridley_options[:server_url].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
-        end
-
-        unless ridley_options[:client_name].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
-        end
-
-        unless ridley_options[:client_key].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
-        end
-        # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
-        # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
-        Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
-        Ridley.open(ridley_options, &block)
-      rescue Ridley::Errors::RidleyError => ex
-        log_exception(ex)
-        raise ChefConnectionError, ex # todo implement
       end
 
       # Save the contents of the lockfile to disk.
