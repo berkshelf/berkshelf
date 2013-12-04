@@ -10,7 +10,8 @@ Feature: berks apply
       """
       cookbook 'fake', '1.0.0'
       """
-    When I successfully run `berks apply my_env`
+    When I successfully run `berks install`
+    And I successfully run `berks apply my_env`
     Then the version locks in the "my_env" environment should be:
       | fake       | = 1.0.0 |
       | dependency | = 2.0.0 |
