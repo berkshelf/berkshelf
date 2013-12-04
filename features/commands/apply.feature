@@ -25,9 +25,18 @@ Feature: berks apply
       """
       cookbook 'fake', '1.0.0'
       """
-    When I run `berks apply my_env`
+    When I successfully run `berks install`
+    And I run `berks apply my_env`
     Then the output should contain:
       """
       The environment 'my_env' does not exist
       """
     And the exit status should be "EnvironmentNotFound"
+
+  Scenario: Locking an environment when no lockfile is present
+    When I run `berks apply my_env`
+    Then the output should contain:
+      """
+      No lockfile found at Berksfile.lock
+      """
+    And the exit status should be "LockfileNotFound"

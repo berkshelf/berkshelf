@@ -219,6 +219,10 @@ module Berkshelf
       desc: 'Disable/Enable SSL verification when locking cookbooks.'
     desc 'apply ENVIRONMENT', 'Apply version locks from Berksfile.lock to a Chef environment'
     def apply(environment_name)
+      unless File.exist?(options[:lockfile])
+        raise LockfileNotFound, "No lockfile found at #{options[:lockfile]}"
+      end
+
       lockfile     = Berkshelf::Lockfile.from_file(options[:lockfile])
       lock_options = Hash[options].symbolize_keys
 
