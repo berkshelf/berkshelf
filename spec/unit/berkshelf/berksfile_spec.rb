@@ -512,38 +512,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#package' do
-    context 'when the dependency does not exist' do
-      it 'raises a CookbookNotFound exception' do
-        expect {
-          subject.package('non-existent', output: Dir.tmpdir)
-        }.to raise_error(Berkshelf::CookbookNotFound)
-      end
-    end
-
-    context 'when the dependency exists' do
-      let(:dependency) { double('dependency') }
-      let(:cached) { double('cached', path: '/foo/bar', cookbook_name: 'cookbook') }
-      let(:options) { { output: Dir.tmpdir } }
-
-      before do
-        FileUtils.stub(:cp_r)
-        FileUtils.stub(:mkdir_p)
-        subject.stub(:find).with('non-existent').and_return(dependency)
-        subject.stub(:install).with(options).and_return([ cached ])
-      end
-
-      it 'resolves the dependencies' do
-        subject.should_receive(:install).with(options)
-        subject.package('non-existent', options)
-      end
-
-      it 'returns the output path' do
-        expect(subject.package('non-existent', options)).to eq(File.join(Dir.tmpdir, 'non-existent.tar.gz'))
-      end
-    end
-  end
-
   describe "#remove_dependency" do
     let(:dependency) { "nginx" }
     before { subject.add_dependency(dependency) }

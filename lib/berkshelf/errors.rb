@@ -504,4 +504,5 @@ module Berkshelf
   end
 
   class InvalidLockFile < BerkshelfError; status_code(142); end
+  class PackageError < BerkshelfError; status_code(143); end
 end

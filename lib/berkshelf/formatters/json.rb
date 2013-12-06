@@ -109,15 +109,6 @@ module Berkshelf
         end
       end
 
-      # Add a Cookbook package entry to delayed output
-      #
-      # @param [String] cookbook
-      # @param [String] destination
-      def package(cookbook, destination)
-        cookbooks[cookbook] ||= {}
-        cookbooks[cookbook][:destination] = destination
-      end
-
       # Output a list of cookbooks to delayed output
       #
       # @param [Hash<Dependency, CachedCookbook>] list

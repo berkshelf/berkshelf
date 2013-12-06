@@ -319,20 +319,24 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    method_option :output,
-      type: :string,
-      default: '.',
-      desc: 'Path to output the tarball',
-      aliases: '-o',
-      banner: 'PATH'
-    method_option :ignore_chefignore,
-      type: :boolean,
-      desc: 'Do not apply the chefignore to the packaged contents',
-      default: false
-    desc "package [COOKBOOK]", "Package a cookbook and its dependencies as a tarball"
-    def package(name = nil)
+    method_option :except,
+      type: :array,
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    desc "package [PATH]", "Vendor and archive the dependencies of a Berksfile"
+    def package(path = nil)
+      if path.nil?
+        path ||= File.join(Dir.pwd, "cookbooks-#{Time.now.to_i}.tar.gz")
+      else
+        path = File.expand_path(path)
+      end
+
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.package(name, options)
+      berksfile.package(path, options)
     end
 
     method_option :except,
