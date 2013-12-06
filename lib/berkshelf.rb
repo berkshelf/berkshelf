@@ -1,5 +1,4 @@
 require 'buff/extensions'
-require 'archive/tar/minitar'
 require 'digest/md5'
 require 'forwardable'
 require 'hashie'
@@ -10,7 +9,6 @@ require 'solve'
 require 'thor'
 require 'tmpdir'
 require 'uri'
-require 'zlib'
 
 JSON.create_id = nil
 

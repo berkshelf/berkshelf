@@ -1,3 +1,5 @@
+require_relative "packager"
+
 module Berkshelf
   class Berksfile
     class << self
@@ -516,60 +518,33 @@ module Berkshelf
     # name attribute is not given, all cookbooks in the Berksfile will be
     # packaged.
     #
-    # @param [String] name
-    #   the name of the cookbook to package
-    # @param [Hash] options
-    #   a list of options
+    # @param [String] path
+    #   the path where the tarball will be created
     #
-    # @option options [String] :output
-    #   the path to output the tarball
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any dependencies marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any dependencies marked as a member of the
+    #   group to be installed and all others to be ignored
+    #
+    # @raise [Berkshelf::PackageError]
     #
     # @return [String]
     #   the path to the package
-    def package(name = nil, options = {})
-      tar_name = "#{name || 'package'}.tar.gz"
-      output   = File.expand_path(File.join(options[:output], tar_name))
+    def package(path, options = {})
+      packager = Packager.new(path)
+      packager.validate!
 
-      cached_cookbooks = unless name.nil?
-        unless dependency = find(name)
-          raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile"
+      outdir = Dir.mktmpdir do |temp_dir|
+        source = Berkshelf.ui.mute do
+          vendor(File.join(temp_dir, "cookbooks"), options.slice(:only, :except))
         end
-
-        options[:cookbooks] = name
-        Berkshelf.ui.mute { install(options) }
-      else
-        Berkshelf.ui.mute { install(options) }
+        packager.run(source)
       end
 
-      cached_cookbooks.each { |cookbook| validate_files!(cookbook) }
-
-      Dir.mktmpdir do |tmp|
-        cookbooks_dir = File.join(tmp, 'cookbooks')
-        FileUtils.mkdir_p(cookbooks_dir)
-
-        cached_cookbooks.each do |cookbook|
-          path        = cookbook.path.to_s
-          destination = File.join(cookbooks_dir, cookbook.cookbook_name)
-
-          FileUtils.cp_r(path, destination)
-
-          chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
-          Dir["#{destination}/**/{*,.[^.]*}"].each do |path|
-            FileUtils.rm_rf(path) if chefignore.ignored?(path)
-          end if chefignore
-        end
-
-        FileUtils.mkdir_p(options[:output])
-
-        Dir.chdir(tmp) do |dir|
-          tgz = Zlib::GzipWriter.new(File.open(output, 'wb'))
-          Archive::Tar::Minitar.pack('.', tgz)
-        end
-      end
-
-      Berkshelf.formatter.package(name, output)
-
-      output
+      Berkshelf.formatter.package(outdir)
+      outdir
     end
 
     # Install the Berksfile or Berksfile.lock and then copy the cached cookbooks into
