@@ -34,6 +34,9 @@ module Berkshelf
     # @param [#to_s] source
     #   the filepath to archive the contents of
     #
+    # @raise [PackageError]
+    #   if an error is encountered while writing the out_file
+    #
     # @return [String]
     #   path to the generated archive
     def run(source)
@@ -43,6 +46,8 @@ module Berkshelf
       end
 
       out_file
+    rescue SystemCallError => ex
+      raise PackageError, ex
     end
 
     # Validate that running the packager would be successful. Returns nil if would be
