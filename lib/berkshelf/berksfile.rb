@@ -523,8 +523,6 @@ module Berkshelf
     #
     # @option options [String] :output
     #   the path to output the tarball
-    # @option options [Boolean] :ignore_chefignore
-    #   do not apply the chefignore file to the packed cookbooks
     #
     # @return [String]
     #   the path to the package
@@ -555,12 +553,10 @@ module Berkshelf
 
           FileUtils.cp_r(path, destination)
 
-          unless options[:ignore_chefignore]
-            chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
-            Dir["#{destination}/**/{*,.[^.]*}"].each do |path|
-              FileUtils.rm_rf(path) if chefignore.ignored?(path)
-            end if chefignore
-          end
+          chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
+          Dir["#{destination}/**/{*,.[^.]*}"].each do |path|
+            FileUtils.rm_rf(path) if chefignore.ignored?(path)
+          end if chefignore
         end
 
         FileUtils.mkdir_p(options[:output])

@@ -325,10 +325,6 @@ module Berkshelf
       desc: 'Path to output the tarball',
       aliases: '-o',
       banner: 'PATH'
-    method_option :ignore_chefignore,
-      type: :boolean,
-      desc: 'Do not apply the chefignore to the packaged contents',
-      default: false
     desc "package [COOKBOOK]", "Package a cookbook and its dependencies as a tarball"
     def package(name = nil)
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
