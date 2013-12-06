@@ -1,5 +1,5 @@
 module Berkshelf
-  # Used to communicate with a remotely hosted [Berkshelf API Server](https://github.com/riotgames/berkshelf-api).
+  # Used to communicate with a remotely hosted [Berkshelf API Server](https://github.com/berkshelf/berkshelf-api).
   #
   # @example
   #   client = Berkshelf::APIClient.new("https://api.berkshelf.com")

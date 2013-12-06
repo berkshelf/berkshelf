@@ -313,7 +313,7 @@ describe Berkshelf::Berksfile do
     end
 
     context "when given the :git option" do
-      let(:options) { { git: "git@github.com:RiotGames/berkshelf.git" } }
+      let(:options) { { git: "git@github.com:berkshelf/berkshelf.git" } }
 
       it "has a GitLocation location" do
         expect(dependency.location).to be_a(Berkshelf::GitLocation)
@@ -321,7 +321,7 @@ describe Berkshelf::Berksfile do
     end
 
     context "when given the :github option" do
-      let(:options) { { github: "RiotGames/berkshelf" } }
+      let(:options) { { github: "berkshelf/berkshelf" } }
 
       it "has a GithubLocation location" do
         expect(dependency.location).to be_a(Berkshelf::GithubLocation)
