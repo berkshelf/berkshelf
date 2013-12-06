@@ -557,7 +557,7 @@ module Berkshelf
 
           unless options[:ignore_chefignore]
             chefignore = Ridley::Chef::Chefignore.new(destination) rescue nil
-            Dir["#{destination}/**/*"].each do |path|
+            Dir["#{destination}/**/{*,.[^.]*}"].each do |path|
               FileUtils.rm_rf(path) if chefignore.ignored?(path)
             end if chefignore
           end
