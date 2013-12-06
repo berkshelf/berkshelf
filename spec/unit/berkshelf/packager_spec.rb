@@ -32,7 +32,7 @@ describe Berkshelf::Packager do
 
       it "raises an error" do
         expect { subject.validate! }.to raise_error(Berkshelf::PackageError,
-          "Directory is not writable: /Users/reset/code/berkshelf/spec/tmp")
+          "Directory is not writable: #{out_dir}")
       end
     end
   end
