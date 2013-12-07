@@ -18,6 +18,9 @@ module Berkshelf
     # @return [Array<APIClient::RemoteCookbook>]
     def build_universe
       @universe = api_client.universe
+    rescue => ex
+      @universe = Array.new
+      raise ex
     end
 
     # Return the universe from the API endpoint.
