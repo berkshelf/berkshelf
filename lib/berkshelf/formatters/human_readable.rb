@@ -129,6 +129,13 @@ module Berkshelf
         Berkshelf.ui.error message
       end
 
+      # Output a warning message using {Berkshelf.ui}
+      #
+      # @param [String] message
+      def warn(message)
+        Berkshelf.ui.warn message
+      end
+
       # Output a deprecation warning
       #
       # @param [String] message
