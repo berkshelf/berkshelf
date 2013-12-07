@@ -5,15 +5,19 @@ module Berkshelf
     # @return [Berkshelf::SourceURI]
     attr_reader :uri
 
+    # @return [Array<APIClient::RemoteCookbook>]
+    attr_reader :universe
+
     # @param [String, Berkshelf::SourceURI] uri
     def initialize(uri)
       @uri        = SourceURI.parse(uri)
       @api_client = APIClient.new(uri)
+      @universe   = Array.new
     end
 
-    # @return [Hash]
-    def universe
-      @universe ||= api_client.universe
+    # @return [Array<APIClient::RemoteCookbook>]
+    def build_universe
+      @universe = api_client.universe
     end
 
     # @param [String] name

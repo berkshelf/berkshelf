@@ -14,7 +14,15 @@ module Berkshelf
     end
 
     def build_universe
-      berksfile.sources.map(&:universe)
+      berksfile.sources.collect do |source|
+        Thread.new do
+          begin
+            source.build_universe
+          rescue APIClient::TimeoutError => ex
+            Berkshelf.formatter.warn(ex.to_s)
+          end
+        end
+      end.map(&:join)
     end
 
     # @option options [Array<String>, String] cookbooks
