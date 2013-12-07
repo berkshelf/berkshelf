@@ -67,6 +67,7 @@ module Berkshelf
       end
 
       if @options[:debug]
+        ENV["BERKSHELF_DEBUG"] = "true"
         Berkshelf.logger.level = ::Logger::DEBUG
       end
 
