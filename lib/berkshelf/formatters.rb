@@ -80,6 +80,7 @@ module Berkshelf
       end
 
       formatter_methods :error,
+                        :warn,
                         :fetch,
                         :install,
                         :list,

@@ -152,6 +152,13 @@ module Berkshelf
         output[:errors] << message
       end
 
+      # Add a warning message entry to delayed output
+      #
+      # @param [String] message
+      def warn(message)
+        output[:warnings] << message
+      end
+
       private
 
         attr_reader :output
