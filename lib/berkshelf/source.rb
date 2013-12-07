@@ -5,19 +5,30 @@ module Berkshelf
     # @return [Berkshelf::SourceURI]
     attr_reader :uri
 
-    # @return [Array<APIClient::RemoteCookbook>]
-    attr_reader :universe
-
     # @param [String, Berkshelf::SourceURI] uri
     def initialize(uri)
       @uri        = SourceURI.parse(uri)
       @api_client = APIClient.new(uri)
-      @universe   = Array.new
+      @universe   = nil
     end
 
+    # Forcefully obtain the universe from the API endpoint and assign it to {#universe}. This
+    # will reload the value of {#universe} even if it has been loaded before.
+    #
     # @return [Array<APIClient::RemoteCookbook>]
     def build_universe
       @universe = api_client.universe
+    end
+
+    # Return the universe from the API endpoint.
+    #
+    # This is lazily loaded so the universe will be retrieved from the API endpoint on the first
+    # call and cached for future calls. Send the {#build_universe} message if you want to reload
+    # the cached universe.
+    #
+    # @return [Array<APIClient::RemoteCookbook>]
+    def universe
+      @universe || build_universe
     end
 
     # @param [String] name

@@ -12,8 +12,8 @@ describe Berkshelf::Installer do
     before { berksfile.stub(sources: sources) }
 
     it "sends the message #universe on each source" do
-      source_one.should_receive(:universe)
-      source_two.should_receive(:universe)
+      source_one.should_receive(:build_universe)
+      source_two.should_receive(:build_universe)
 
       subject.build_universe
     end
