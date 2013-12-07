@@ -2,9 +2,15 @@
 
 * Enhancements
   * New "universe" resolver which communicates with an API server to resolve constraint graphs faster and more reliably
+  * `berks vendor` will now compile cookbook metadata into the cookbook's vendored directory. The raw metadata will not be included in the vendored cookbook to ensure that Chef Client doesn't (wrongly) prioritize the raw metadata over compiled metadata
+  * `berks vendor` now includes the Berksfile.lock alongside the vendored contents
+  * `berks package` will now simply archive the output of `berks vendor`
 
 * Bug Fixes
   * Raw metadata will be compiled into metadata.json during vendor process
+
+* Backwards incompatible changes
+  * `berks package` has had it's argument and options list updated. The first argument is now the name, or fulle path, of the archive file that will be generated. As with before, the first argument is not required.
 
 # 2.0.10
 
