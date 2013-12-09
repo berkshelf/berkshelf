@@ -5,7 +5,10 @@ module Berkshelf
   #   client = Berkshelf::APIClient.new("https://api.berkshelf.com")
   #   client.universe #=> [...]
   class APIClient < Faraday::Connection
-    class TimeoutError < BerkshelfError; status_code(40); end
+    class TimeoutError < BerkshelfError; status_code(41); end
+    class BadResponse < BerkshelfError; status_code(42); end
+    class ServiceUnavaiable < BerkshelfError; status_code(43); end
+    class ServiceNotFound < BerkshelfError; status_code(44); end
 
     require_relative 'api_client/remote_cookbook'
 
@@ -68,8 +71,12 @@ module Berkshelf
             versions.each { |version, attributes| cookbooks << RemoteCookbook.new(name, version, attributes) }
           end
         end
+      when 404
+        raise APIClient::ServiceNotFound, "service not found at: #{url}"
+      when 500..504
+        raise APIClient::ServiceUnavaiable, "service unavailable at: #{url}"
       else
-        raise RuntimeError, "bad response #{response.inspect}"
+        raise APIClient::BadResponse, "bad response #{response.inspect}"
       end
     rescue Faraday::Error::TimeoutError, Errno::ETIMEDOUT
       raise APIClient::TimeoutError, "Unable to connect to: #{url}"
