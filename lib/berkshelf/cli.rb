@@ -306,7 +306,7 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook'
+    desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook in your Berksfile'
     def contingent(name)
       berksfile    = Berksfile.from_file(options[:berksfile])
       dependencies = Berkshelf.ui.mute { berksfile.install }.sort
