@@ -1,7 +1,6 @@
 require 'net/http'
 require 'zlib'
 require 'archive/tar/minitar'
-include Archive::Tar
 
 module Berkshelf
   class Downloader
@@ -71,23 +70,21 @@ module Berkshelf
         Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
         Ridley.open(credentials) { |r| r.cookbook.download(name, version) }
       when :github
-        tmp_dir = "/tmp/#{name}/#{version}"
-        url = URI("https://codeload.github.com/#{remote_cookbook.location_path}/legacy.tar.gz/v#{version}")
-
-        FileUtils.mkdir_p(tmp_dir)
+        tmp_dir = Dir.mktmpdir
+        cb_dir_name = "#{name}-#{version}"
+        url = URI("https://codeload.github.com/#{remote_cookbook.location_path}/tar.gz/v#{version}")
 
         Net::HTTP.start(url.host, :use_ssl => url.scheme == 'https') do |http|
           resp = http.get(url.path)
-          open("/tmp/#{name}-#{version}.tar.gz", "wb") do |file|
+          open("#{tmp_dir}/#{cb_dir_name}.tar.gz", "wb") do |file|
             file.write(resp.body)
           end
         end
 
-        tgz = Zlib::GzipReader.new(File.open("/tmp/#{name}-#{version}.tar.gz", 'rb'))
-        ::Minitar.unpack(tgz, tmp_dir)
+        tgz = Zlib::GzipReader.new(File.open("#{tmp_dir}/#{cb_dir_name}.tar.gz", 'rb'))
+        Archive::Tar::Minitar.unpack(tgz, tmp_dir)
 
-        paths = Dir.entries(tmp_dir).select {|fname| fname.include?("-#{name}-")}
-        "#{tmp_dir}/#{paths.first}"
+        "#{tmp_dir}/#{cb_dir_name}"
       else
         raise RuntimeError, "unknown location type #{remote_cookbook.location_type}"
       end
