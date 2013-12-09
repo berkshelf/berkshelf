@@ -255,6 +255,22 @@ describe Berkshelf::Berksfile do
     end
   end
 
+  describe '#cookbooks' do
+    it 'raises an exception if a cookbook is not installed' do
+      subject.add_dependency('bacon', nil)
+      expect { subject.cookbooks }.to raise_error
+    end
+
+    it 'retrieves the locked (cached) cookbook for each dependency' do
+      subject.add_dependency('bacon', nil)
+      subject.add_dependency('ham', nil)
+      subject.stub(:retrive_locked)
+
+      expect(subject).to receive(:retrieve_locked).twice
+      subject.cookbooks
+    end
+  end
+
   describe '#groups' do
     before do
       subject.stub(:dependencies) { [dependency_one, dependency_two] }

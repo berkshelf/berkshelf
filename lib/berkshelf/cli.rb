@@ -309,13 +309,14 @@ module Berkshelf
     desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook in your Berksfile'
     def contingent(name)
       berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
-      dependencies = dependencies.select { |cookbook| cookbook.dependencies.include?(name) }
+      dependencies = berksfile.cookbooks.select do |cookbook|
+        cookbook.dependencies.include?(name)
+      end
 
       if dependencies.empty?
-        Berkshelf.formatter.msg "There are no cookbooks contingent upon '#{name}' defined in this Berksfile"
+        Berkshelf.formatter.msg "There are no cookbooks in this Berksfile contingent upon '#{name}'."
       else
-        Berkshelf.formatter.msg "Cookbooks in this Berksfile contingent upon #{name}:"
+        Berkshelf.formatter.msg "Cookbooks in this Berksfile contingent upon '#{name}':"
         print_list(dependencies)
       end
     end
@@ -387,7 +388,7 @@ module Berkshelf
       # @param [Array<CachedCookbook>] cookbooks
       #
       def print_list(cookbooks)
-        Array(cookbooks).each do |cookbook|
+        Array(cookbooks).sort.each do |cookbook|
           Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
         end
       end

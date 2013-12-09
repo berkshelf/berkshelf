@@ -264,6 +264,23 @@ module Berkshelf
       end
     end
 
+    #
+    # Behaves the same as {Berksfile#dependencies}, but this method returns an
+    # array of CachedCookbook objects instead of dependency objects. This method
+    # relies on the {Berksfile#retrieve_locked} method to load the proper
+    # cached cookbook from the Berksfile + lockfile combination.
+    #
+    # @see [Berksfile#dependencies]
+    #   for a description of the +options+ hash
+    # @see [Berksfile#retrieve_locked]
+    #   for a list of possible exceptions that might be raised and why
+    #
+    # @return [Array<CachedCookbook>]
+    #
+    def cookbooks(options = {})
+      dependencies(options).map { |dependency| retrieve_locked(dependency) }
+    end
+
     # Find a dependency defined in this berksfile by name.
     #
     # @param [String] name
