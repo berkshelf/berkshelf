@@ -19,12 +19,36 @@ Feature: berks show
            License: none
       """
 
+  Scenario: When the parameter is a transitive dependency
+    Given the cookbook store has the cookbooks:
+      | dep | 1.0.0 |
+    And the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
+      | dep | ~> 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake', '1.0.0'
+      """
+    And the Lockfile has:
+      | fake | 1.0.0 |
+      | dep  | 1.0.0 |
+    And I successfully run `berks install`
+    When I successfully run `berks show dep`
+    Then the output should contain:
+      """
+              Name: dep
+           Version: 1.0.0
+       Description: A fabulous new cookbook
+            Author: YOUR_COMPANY_NAME
+             Email: YOUR_EMAIL
+           License: none
+      """
+
   Scenario: When the cookbook is not in the Berksfile
     Given I have a Berksfile pointing at the local Berkshelf API
     When I run `berks show fake`
     Then the output should contain:
       """
-      Could not find cookbook(s) 'fake' in any of the configured dependencies. Is it in your Berksfile?
+      Could not find cookbook 'fake'. Make sure it is in your Berksfile, then run `berks install` to download and install the missing dependencies.
       """
     And the exit status should be "DependencyNotFound"
 
@@ -36,9 +60,9 @@ Feature: berks show
     When I run `berks show fake`
     Then the output should contain:
       """
-      Could not find cookbook 'fake (= 1.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      Could not find cookbook 'fake'. Make sure it is in your Berksfile, then run `berks install` to download and install the missing dependencies.
       """
-    And the exit status should be "CookbookNotFound"
+    And the exit status should be "DependencyNotFound"
 
   Scenario: When the cookbook is not installed
     Given the cookbook store is empty
@@ -51,6 +75,6 @@ Feature: berks show
     When I run `berks show fake`
     Then the output should contain:
       """
-      Could not find cookbook 'fake (1.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      Could not find cookbook 'fake (1.0.0)'. Run `berks install` to download and install the missing cookbook.
       """
     And the exit status should be "CookbookNotFound"

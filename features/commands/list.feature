@@ -43,9 +43,9 @@ Feature: berks list
     When I run `berks list`
     Then the output should contain:
       """
-      Could not find cookbook 'fake (= 1.0.0)'.
+      Could not find cookbook 'fake'. Make sure it is in your Berksfile, then run `berks install` to download and install the missing dependencies.
       """
-    And the exit status should be "CookbookNotFound"
+    And the exit status should be "DependencyNotFound"
 
   Scenario: Running the list command with no dependencies defined
     Given I have a Berksfile pointing at the local Berkshelf API

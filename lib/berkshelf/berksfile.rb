@@ -403,22 +403,7 @@ module Berkshelf
     # @return [CachedCookbook]
     #   the CachedCookbook that corresponds to the given name parameter
     def retrieve_locked(dependency)
-      locked = lockfile.find(dependency.name)
-
-      unless locked
-        raise CookbookNotFound, "Could not find cookbook '#{dependency.to_s}'."\
-          " Try running `berks install` to download and install the missing"\
-          " dependencies."
-      end
-
-      unless locked.downloaded?
-        raise CookbookNotFound, "Could not find cookbook '#{locked.to_s}'."\
-          " Try running `berks install` to download and install the missing"\
-          " dependencies."
-      end
-
-      @dependencies[dependency.name] = locked
-      locked.cached_cookbook
+      lockfile.retrieve(dependency)
     end
 
     # The cached cookbooks installed by this Berksfile.

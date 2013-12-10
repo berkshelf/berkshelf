@@ -272,9 +272,17 @@ module Berkshelf
     end
 
     def to_s
-      list = @cookbooks.collect {|c| "'#{c}'" }
-      "Could not find cookbook(s) #{list.join(', ')} in any of the configured" <<
-      " dependencies. #{list.size == 1 ? 'Is it' : 'Are they' } in your Berksfile?"
+      list = @cookbooks.collect { |cookbook| "'#{cookbook}'" }.join(', ')
+
+      if @cookbooks.size == 1
+        "Could not find cookbook #{list}. Make sure it is in your " \
+        "Berksfile, then run `berks install` to download and install the " \
+        "missing dependencies."
+      else
+        "Could not find cookbooks #{list}. Make sure they are in your " \
+        "Berksfile, then run `berks install` to download and install the " \
+        "missing dependencies."
+      end
     end
   end
 
