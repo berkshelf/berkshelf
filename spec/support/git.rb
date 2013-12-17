@@ -21,23 +21,23 @@ module Berkshelf
 
           Dir.chdir(path) do
             shell_out "git config receive.denyCurrentBranch ignore"
-            shell_out "echo '# a change!' >> content_file"
+            shell_out "echo \"# a change!\" >> content_file"
             shell_out "git add ."
-            shell_out "git commit -am 'A commit.'"
+            shell_out "git commit -am \"A commit.\""
 
             options[:tags].each do |tag|
-              shell_out "echo '#{tag}' > content_file"
+              shell_out "echo \"#{tag}\" > content_file"
               shell_out "git add content_file"
-              shell_out "git commit -am '#{tag} content'"
-              shell_out "git tag '#{tag}' 2> /dev/null"
+              shell_out "git commit -am \"#{tag} content\""
+              shell_out "git tag \"#{tag}\""
             end if options[:tags]
 
             options[:branches].each do |branch|
-              shell_out "git checkout -b #{branch} master 2> /dev/null"
-              shell_out "echo '#{branch}' > content_file"
+              shell_out "git checkout -b #{branch} master"
+              shell_out "echo \"#{branch}\" > content_file"
               shell_out "git add content_file"
-              shell_out "git commit -am '#{branch} content'"
-              shell_out "git checkout master 2> /dev/null"
+              shell_out "git commit -am \"#{branch} content\""
+              shell_out "git checkout master"
             end if options[:branches]
           end
         end

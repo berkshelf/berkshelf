@@ -80,10 +80,9 @@ module Berkshelf
 
       # Output a Cookbook package message using {Berkshelf.ui}
       #
-      # @param [String] cookbook
       # @param [String] destination
-      def package(cookbook, destination)
-        Berkshelf.ui.info "Cookbook(s) packaged to #{destination}!"
+      def package(destination)
+        Berkshelf.ui.info "Cookbook(s) packaged to #{destination}"
       end
 
       # Output a list of cookbooks using {Berkshelf.ui}
@@ -128,6 +127,13 @@ module Berkshelf
       # @param [String] message
       def error(message)
         Berkshelf.ui.error message
+      end
+
+      # Output a warning message using {Berkshelf.ui}
+      #
+      # @param [String] message
+      def warn(message)
+        Berkshelf.ui.warn message
       end
 
       # Output a deprecation warning

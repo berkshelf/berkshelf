@@ -1,12 +1,16 @@
 require 'spork'
 
+def windows?
+  !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
+end
+
 Spork.prefork do
   require 'aruba/cucumber'
   require 'aruba/in_process'
   require 'aruba/spawn_process'
   require 'cucumber/rspec/doubles'
-  require 'berkshelf/api/rspec'
-  require 'berkshelf/api/cucumber'
+  require 'berkshelf/api/rspec' unless windows?
+  require 'berkshelf/api/cucumber' unless windows?
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
@@ -18,7 +22,7 @@ Spork.prefork do
 
   at_exit do
     Berkshelf::RSpec::ChefServer.stop
-    Berkshelf::API::RSpec::Server.stop
+    Berkshelf::API::RSpec::Server.stop unless windows?
   end
 
   Before do
@@ -50,7 +54,7 @@ Spork.prefork do
     ]
 
     Berkshelf::RSpec::ChefServer.start(port: CHEF_SERVER_PORT)
-    Berkshelf::API::RSpec::Server.start(port: BERKS_API_PORT, endpoints: endpoints)
+    Berkshelf::API::RSpec::Server.start(port: BERKS_API_PORT, endpoints: endpoints) unless windows?
 
     @aruba_io_wait_seconds = Cucumber::JRUBY ? 7 : 5
     @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15

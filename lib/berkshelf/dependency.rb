@@ -222,9 +222,7 @@ module Berkshelf
 
     def to_hash
       {}.tap do |h|
-        unless location.kind_of?(PathLocation)
-          h[:locked_version] = locked_version.to_s
-        end
+        h[:locked_version] = locked_version.to_s
 
         if location.kind_of?(PathLocation)
           h[:path] = location.relative_path(berksfile.filepath)

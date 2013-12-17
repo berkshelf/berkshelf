@@ -1,9 +1,13 @@
 require 'spork'
 
+def windows?
+  !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
+end
+
 Spork.prefork do
   require 'rspec'
   require 'webmock/rspec'
-  require 'berkshelf/api/rspec'
+  require 'berkshelf/api/rspec' unless windows?
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
@@ -13,7 +17,7 @@ Spork.prefork do
     config.include Berkshelf::RSpec::ChefServer
     config.include Berkshelf::RSpec::Git
     config.include Berkshelf::RSpec::PathHelpers
-    config.include Berkshelf::API::RSpec
+    config.include Berkshelf::API::RSpec unless windows?
 
     config.expect_with :rspec do |c|
       c.syntax = :expect
@@ -27,7 +31,7 @@ Spork.prefork do
     config.before(:suite) do
       WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
       Berkshelf::RSpec::ChefServer.start
-      Berkshelf::API::RSpec::Server.start
+      Berkshelf::API::RSpec::Server.start unless windows?
       Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end
@@ -41,7 +45,7 @@ Spork.prefork do
     end
 
     config.before(:each) do
-      Berkshelf::API::RSpec::Server.clear_cache
+      Berkshelf::API::RSpec::Server.clear_cache unless windows?
       clean_tmp_path
       Berkshelf.initialize_filesystem
       Berkshelf::CookbookStore.instance.initialize_filesystem

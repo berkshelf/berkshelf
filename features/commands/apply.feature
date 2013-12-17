@@ -1,3 +1,4 @@
+@api_server
 Feature: berks apply
   Scenario: Locking a cookbook version with dependencies
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
@@ -9,7 +10,8 @@ Feature: berks apply
       """
       cookbook 'fake', '1.0.0'
       """
-    When I successfully run `berks apply my_env`
+    When I successfully run `berks install`
+    And I successfully run `berks apply my_env`
     Then the version locks in the "my_env" environment should be:
       | fake       | = 1.0.0 |
       | dependency | = 2.0.0 |
@@ -23,9 +25,18 @@ Feature: berks apply
       """
       cookbook 'fake', '1.0.0'
       """
-    When I run `berks apply my_env`
+    When I successfully run `berks install`
+    And I run `berks apply my_env`
     Then the output should contain:
       """
       The environment 'my_env' does not exist
       """
     And the exit status should be "EnvironmentNotFound"
+
+  Scenario: Locking an environment when no lockfile is present
+    When I run `berks apply my_env`
+    Then the output should contain:
+      """
+      No lockfile found at Berksfile.lock
+      """
+    And the exit status should be "LockfileNotFound"

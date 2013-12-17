@@ -261,12 +261,12 @@ describe Berkshelf::Dependency do
     subject { described_class.new(berksfile, cookbook_name, options).scm_location? }
 
     context "when the location is a GitLocation" do
-      let(:options) { { git: "git@github.com:RiotGames/berkshelf.git" } }
+      let(:options) { { git: "git@github.com:berkshelf/berkshelf.git" } }
       it { should be_true }
     end
 
     context "when the location is a GithubLocation" do
-      let(:options) { { github: "RiotGames/berkshelf" } }
+      let(:options) { { github: "berkshelf/berkshelf" } }
       it { should be_true }
     end
 
@@ -286,7 +286,7 @@ describe Berkshelf::Dependency do
     end
 
     context "when the location is not a PathLocation" do
-      let(:options) { { github: "RiotGames/berkshelf" } }
+      let(:options) { { github: "berkshelf/berkshelf" } }
       it { should be_false }
     end
   end

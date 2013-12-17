@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::APIClient do
+describe Berkshelf::APIClient, :api_client do
   let(:instance) { described_class.new("http://localhost:26210") }
 
   describe "#universe" do

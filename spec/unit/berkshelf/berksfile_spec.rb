@@ -68,7 +68,13 @@ describe Berkshelf::Berksfile do
     end
 
     it 'merges the default options into specified options' do
-      subject.should_receive(:add_dependency).with(name, constraint, path: '/Users/reset', group: [])
+      subject.should_receive(:add_dependency)do |arg_name, arg_constraint, arg_options|
+        expect(arg_name).to eq(name)
+        expect(arg_constraint).to eq(constraint)
+        expect(arg_options[:path]).to match(%r{/Users/reset})
+        expect(arg_options[:group]).to eq([])
+      end
+
       subject.cookbook(name, constraint, path: '/Users/reset')
     end
 
@@ -307,7 +313,7 @@ describe Berkshelf::Berksfile do
     end
 
     context "when given the :git option" do
-      let(:options) { { git: "git@github.com:RiotGames/berkshelf.git" } }
+      let(:options) { { git: "git@github.com:berkshelf/berkshelf.git" } }
 
       it "has a GitLocation location" do
         expect(dependency.location).to be_a(Berkshelf::GitLocation)
@@ -315,7 +321,7 @@ describe Berkshelf::Berksfile do
     end
 
     context "when given the :github option" do
-      let(:options) { { github: "RiotGames/berkshelf" } }
+      let(:options) { { github: "berkshelf/berkshelf" } }
 
       it "has a GithubLocation location" do
         expect(dependency.location).to be_a(Berkshelf::GithubLocation)
@@ -502,88 +508,6 @@ describe Berkshelf::Berksfile do
         conn.should_receive(:cookbook).and_return(cookbook_resource)
         cookbook_resource.should_receive(:upload).with('path', options )
         upload
-      end
-    end
-  end
-
-  describe "#apply" do
-    let(:env_name)    { 'berkshelf-test' }
-    let(:server_url)  { Berkshelf::RSpec::ChefServer.server_url }
-    let(:client_name) { 'berkshelf' }
-    let(:client_key)  { fixtures_path.join('../config/berkshelf.pem').to_s }
-    let(:ridley)      { Ridley.new(server_url: server_url, client_name: client_name, client_key: client_key) }
-
-    before do
-      subject.stub(:ridley_connection).and_yield(ridley)
-      subject.add_dependency('nginx', '>= 0.1.2')
-      subject.stub(install: nil)
-    end
-
-    context 'when the chef environment exists' do
-      let(:dependencies) do
-        [
-          double(name: 'nginx', locked_version: '1.2.3'),
-          double(name: 'artifact', locked_version: '1.4.0')
-        ]
-      end
-
-      before do
-        chef_environment('berkshelf')
-        subject.lockfile.stub(:dependencies).and_return(dependencies)
-      end
-
-      it 'installs the Berksfile' do
-        subject.should_receive(:install)
-        subject.apply('berkshelf')
-      end
-
-      it 'applys the locked_versions of the Lockfile dependencies to the given Chef environment' do
-        subject.apply('berkshelf')
-
-        environment = ::JSON.parse(chef_server.data_store.get(['environments', 'berkshelf']))
-        expect(environment['cookbook_versions']).to have(2).items
-        expect(environment['cookbook_versions']['nginx']).to eq('= 1.2.3')
-        expect(environment['cookbook_versions']['artifact']).to eq('= 1.4.0')
-      end
-    end
-
-    context 'when the environment does not exist' do
-      it 'raises an EnvironmentNotFound error' do
-        expect {
-          subject.apply(env_name)
-        }.to raise_error(Berkshelf::EnvironmentNotFound)
-      end
-    end
-  end
-
-  describe '#package' do
-    context 'when the dependency does not exist' do
-      it 'raises a CookbookNotFound exception' do
-        expect {
-          subject.package('non-existent', output: '/tmp')
-        }.to raise_error(Berkshelf::CookbookNotFound)
-      end
-    end
-
-    context 'when the dependency exists' do
-      let(:dependency) { double('dependency') }
-      let(:cached) { double('cached', path: '/foo/bar', cookbook_name: 'cookbook') }
-      let(:options) { { output: '/tmp' } }
-
-      before do
-        FileUtils.stub(:cp_r)
-        FileUtils.stub(:mkdir_p)
-        subject.stub(:find).with('non-existent').and_return(dependency)
-        subject.stub(:install).with(options).and_return([ cached ])
-      end
-
-      it 'resolves the dependencies' do
-        subject.should_receive(:install).with(options)
-        subject.package('non-existent', options)
-      end
-
-      it 'returns the output path' do
-        expect(subject.package('non-existent', options)).to eq('/tmp/non-existent.tar.gz')
       end
     end
   end
