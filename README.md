@@ -7,6 +7,9 @@ Manage a Cookbook or an Application's Cookbook dependencies
 
 Installation
 ------------
+
+**WARNING:** It is advised at this time that you [use Berkshelf 3](https://github.com/berkshelf/berkshelf/wiki/Howto:-Use-the-bleeding-edge). Berkshelf 2 is no longer supported.
+
 Add Berkshelf to your repository's `Gemfile`:
 
 ```ruby
