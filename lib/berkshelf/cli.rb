@@ -239,6 +239,11 @@ module Berkshelf
       type: :boolean,
       default: nil,
       desc: 'Disable/Enable SSL verification when locking cookbooks.'
+    method_option :from_file,
+      type: :string,
+      desc: 'Path to an environment to operate off of.',
+      aliases: '-f',
+      banner: 'PATH'
     desc 'apply ENVIRONMENT', 'Apply the cookbook version locks from Berksfile.lock to a Chef environment'
     def apply(environment_name)
       berksfile    = ::Berkshelf::Berksfile.from_file(options[:berksfile])
