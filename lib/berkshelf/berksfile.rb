@@ -566,7 +566,13 @@ module Berkshelf
     # @raise [ChefConnectionError] if you are locking cookbooks with an invalid or not-specified client configuration
     def apply(environment_name, options = {})
       conn        = ridley_connection(options)
-      environment = conn.environment.find(environment_name)
+
+      if options[:from_file]
+        environment_path = options[:from_file]
+        environment = conn.environment.from_file(environment_path)
+      else
+        environment = conn.environment.find(environment_name)
+      end
 
       if environment
         install
