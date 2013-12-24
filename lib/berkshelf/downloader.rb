@@ -70,21 +70,20 @@ module Berkshelf
         Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
         Ridley.open(credentials) { |r| r.cookbook.download(name, version) }
       when :github
-        tmp_dir = Dir.mktmpdir
-        cb_dir_name = "#{name}-#{version}"
-        url = URI("https://codeload.github.com/#{remote_cookbook.location_path}/tar.gz/v#{version}")
+        tmp_dir      = Dir.mktmpdir
+        archive_path = File.join(tmp_dir, "#{name}-#{version}.tar.gz")
+        out_dir      = File.join(tmp_dir, "#{name}-#{version}")
+        url          = URI("https://codeload.github.com/#{remote_cookbook.location_path}/tar.gz/v#{version}")
 
-        Net::HTTP.start(url.host, :use_ssl => url.scheme == 'https') do |http|
+        Net::HTTP.start(url.host, use_ssl: url.scheme == "https") do |http|
           resp = http.get(url.path)
-          open("#{tmp_dir}/#{cb_dir_name}.tar.gz", "wb") do |file|
-            file.write(resp.body)
-          end
+          open(archive_path, "wb") { |file| file.write(resp.body) }
         end
 
-        tgz = Zlib::GzipReader.new(File.open("#{tmp_dir}/#{cb_dir_name}.tar.gz", 'rb'))
+        tgz = Zlib::GzipReader.new(File.open(archive_path, "rb"))
         Archive::Tar::Minitar.unpack(tgz, tmp_dir)
 
-        "#{tmp_dir}/#{cb_dir_name}"
+        out_dir
       else
         raise RuntimeError, "unknown location type #{remote_cookbook.location_type}"
       end
