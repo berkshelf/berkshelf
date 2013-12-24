@@ -99,7 +99,9 @@ module Berkshelf
         options[:path] &&= File.expand_path(options[:path], File.dirname(filepath))
 
         begin
-          add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
+          dependency = Berkshelf::Dependency.new(berksfile, name.to_s, options)
+          next if dependency.location && !dependency.location.valid?
+          add(dependency)
         rescue Berkshelf::CookbookNotFound
           # It's possible that a source is locked that contains a path location, and
           # that path location was renamed or no longer exists. When loading the
@@ -123,6 +125,7 @@ module Berkshelf
     #
     # @param [String, Berkshelf::Dependency] dependency
     #   the cookbook dependency/name to find
+    #
     # @return [Berkshelf::Dependency, nil]
     #   the cookbook dependency from this lockfile or nil if one was not found
     def find(dependency)
@@ -133,6 +136,7 @@ module Berkshelf
     #
     # @param [String, Berkshelf::Dependency] dependency
     #   the cookbook dependency/name to determine existence of
+    #
     # @return [Boolean]
     #   true if the dependency exists, false otherwise
     def has_dependency?(dependency)

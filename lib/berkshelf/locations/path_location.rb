@@ -49,6 +49,13 @@ module Berkshelf
       "./#{new_path}"
     end
 
+    # Valid if the path exists and is readable
+    #
+    # @return [Boolean]
+    def valid?
+      File.exist?(path) && File.readable?(path)
+    end
+
     def to_hash
       super.merge(value: self.path)
     end

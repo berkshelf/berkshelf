@@ -121,6 +121,13 @@ module Berkshelf
         true
       end
 
+      # Determines if the location is well formed and points to an accessible location
+      #
+      # @return [Boolean]
+      def valid?
+        true
+      end
+
       def to_hash
         { type: self.class.location_key }
       end
