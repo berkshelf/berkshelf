@@ -123,6 +123,7 @@ module Berkshelf
     #
     # @param [String, Berkshelf::Dependency] dependency
     #   the cookbook dependency/name to find
+    #
     # @return [Berkshelf::Dependency, nil]
     #   the cookbook dependency from this lockfile or nil if one was not found
     def find(dependency)
@@ -133,6 +134,7 @@ module Berkshelf
     #
     # @param [String, Berkshelf::Dependency] dependency
     #   the cookbook dependency/name to determine existence of
+    #
     # @return [Boolean]
     #   true if the dependency exists, false otherwise
     def has_dependency?(dependency)
