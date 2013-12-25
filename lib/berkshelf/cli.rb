@@ -128,11 +128,17 @@ module Berkshelf
       banner: 'PATH'
     method_option :path,
       type: :string,
-      desc: 'Path to install cookbooks to (i.e. vendor/cookbooks).',
       aliases: '-p',
-      banner: 'PATH'
+      hide: true
     desc 'install', 'Install the cookbooks specified in the Berksfile'
     def install
+      if options[:path]
+        # TODO: Remove in Berkshelf 4.0
+        Berkshelf.formatter.deprecation "`berks install --path [PATH}` has been replaced by `berks vendor`."
+        Berkshelf.formatter.deprecation "Re-run your command as `berks vendor [PATH]` or see `berks help vendor`."
+        exit(1)
+      end
+
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
     end
