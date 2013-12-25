@@ -22,16 +22,19 @@ module Berkshelf
       # @option options [#to_s] :api_source
       #   the berkshelf-api source url
       # @option options [#to_s] :location_path
-      #   the chef server url for a cookbook's location
+      #   endpoint location for the remote cookbook provided by the api server
+      # @option options [#to_s] :location_type
+      #   type of the location provided by the api server for the remote cookbook
       def install(cookbook, version, options = {})
         info_message = "Installing #{cookbook} (#{version})"
 
-        if options.has_key?(:api_source) && options.has_key?(:location_path)
+        if options.has_key?(:api_source) && options.has_key?(:location_path) && options.has_key?(:location_type)
           api_source    = options[:api_source].to_s
           location_path = options[:location_path].to_s
+          location_type = options[:location_type].to_s
 
           unless api_source == Berkshelf::Berksfile::DEFAULT_API_URL
-            info_message << " from [api: #{URI(api_source)}] [endpoint: #{location_path}]"
+            info_message << " from [api: #{URI(api_source)}] ([#{location_type}] #{location_path})"
           end
         end
 
