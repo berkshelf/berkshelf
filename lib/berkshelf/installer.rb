@@ -57,7 +57,8 @@ module Berkshelf
         else
           source = berksfile.sources.find { |source| source.cookbook(name, version) }
           remote_cookbook = source.cookbook(name, version)
-          Berkshelf.formatter.install(name, version, api_source: source.to_s, location_path: remote_cookbook.location_path)
+          Berkshelf.formatter.install(name, version, api_source: source, location_type: remote_cookbook.location_type,
+            location_path: remote_cookbook.location_path)
           temp_filepath = downloader.download(name, version)
           CookbookStore.import(name, version, temp_filepath)
         end
