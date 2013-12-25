@@ -41,11 +41,13 @@ module Berkshelf
       demands.push(demand)
     end
 
-    def add_explicit_dependencies(dependency)
-      unless cookbook = dependency.cached_cookbook
-        return nil
-      end
-
+    # Add dependencies of a locally cached cookbook which will take precedence over anything
+    # found in the universe.
+    #
+    # @param [Berkshelf::CachedCookbook] cookbook
+    #
+    # @return [Hash]
+    def add_explicit_dependencies(cookbook)
       graph.populate_local(cookbook)
     end
 

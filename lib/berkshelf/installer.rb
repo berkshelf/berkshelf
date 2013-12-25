@@ -31,22 +31,21 @@ module Berkshelf
     def run(options = {})
       dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only)))
       resolver     = Resolver.new(berksfile, dependencies)
+      lock_deps    = []
 
       dependencies.each do |dependency|
-        next unless dependency.scm_location?
-        Berkshelf.formatter.fetch(dependency)
-        downloader.download(dependency)
-      end
+        if dependency.scm_location?
+          Berkshelf.formatter.fetch(dependency)
+          downloader.download(dependency)
+        end
 
-      dependencies.each do |dependency|
-        next unless dependency.cached_cookbook
-        resolver.add_explicit_dependencies(dependency)
+        next if (cookbook = dependency.cached_cookbook).nil?
+
+        resolver.add_explicit_dependencies(cookbook)
       end
 
       Berkshelf.formatter.msg("building universe...")
       build_universe
-
-      lock_deps = []
 
       cached_cookbooks = resolver.resolve.collect do |name, version, dependency|
         lock_deps << dependency
