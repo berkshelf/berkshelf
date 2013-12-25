@@ -31,22 +31,21 @@ module Berkshelf
     def run(options = {})
       dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only)))
       resolver     = Resolver.new(berksfile, dependencies)
+      lock_deps    = []
 
       dependencies.each do |dependency|
-        next unless dependency.scm_location?
-        Berkshelf.formatter.fetch(dependency)
-        downloader.download(dependency)
-      end
+        if dependency.scm_location?
+          Berkshelf.formatter.fetch(dependency)
+          downloader.download(dependency)
+        end
 
-      dependencies.each do |dependency|
-        next unless dependency.cached_cookbook
-        resolver.add_explicit_dependencies(dependency)
+        next if (cookbook = dependency.cached_cookbook).nil?
+
+        resolver.add_explicit_dependencies(cookbook)
       end
 
       Berkshelf.formatter.msg("building universe...")
       build_universe
-
-      lock_deps = []
 
       cached_cookbooks = resolver.resolve.collect do |name, version, dependency|
         lock_deps << dependency
@@ -57,7 +56,8 @@ module Berkshelf
         else
           source = berksfile.sources.find { |source| source.cookbook(name, version) }
           remote_cookbook = source.cookbook(name, version)
-          Berkshelf.formatter.install(name, version, api_source: source.to_s, location_path: remote_cookbook.location_path)
+          Berkshelf.formatter.install(name, version, api_source: source, location_type: remote_cookbook.location_type,
+            location_path: remote_cookbook.location_path)
           temp_filepath = downloader.download(name, version)
           CookbookStore.import(name, version, temp_filepath)
         end
@@ -100,6 +100,14 @@ module Berkshelf
 
     private
 
+      # Returns an instance of `Berkshelf::Dependency` with an equality constraint matching
+      # the locked version of the dependency in the lockfile.
+      #
+      # If no matching dependency is found in the lockfile then nil is returned.
+      #
+      # @param [Berkshelf:Dependency] dependency
+      #
+      # @return [Berkshelf::Dependency, nil]
       def dependency_from_lockfile(dependency)
         locked = lockfile.find(dependency)
 
@@ -113,8 +121,7 @@ module Berkshelf
           end
         end
 
-        # Update to the constraint to be a hard one
-        locked.version_constraint = Solve::Constraint.new(locked.locked_version.to_s)
+        locked.version_constraint = Solve::Constraint.new("= #{locked.locked_version}")
         locked
       end
 
@@ -133,13 +140,19 @@ module Berkshelf
       #
       # @return [Array<Berkshelf::Dependency>]
       def lockfile_reduce(dependencies = [])
-        dependencies.collect do |dependency|
-          if dependency.path_location?
-            dependency
-          else
-            dependency_from_lockfile(dependency) || dependency
+        {}.tap do |h|
+          (dependencies + lockfile.dependencies).each do |dependency|
+            next if h.has_key?(dependency.name)
+
+            if dependency.path_location?
+              result = dependency
+            else
+              result = dependency_from_lockfile(dependency) || dependency
+            end
+
+            h[result.name] = result
           end
-        end
+        end.values
       end
 
       # The list of dependencies "locked" by the lockfile.

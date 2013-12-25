@@ -152,6 +152,12 @@ module Berkshelf
     # @return [Berkshelf::CachedCookbook]
     def download
       @cached_cookbook = location.download
+
+      if scm_location?
+        @locked_version = Solve::Version.new(@cached_cookbook.version)
+      end
+
+      @cached_cookbook
     end
 
     # Returns true if the dependency has already been downloaded. A dependency is downloaded when a

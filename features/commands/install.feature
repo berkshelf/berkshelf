@@ -59,8 +59,8 @@ Feature: berks install
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing ruby (1.0.0) from http://localhost:26310/ (via 0.0.0.0)
-      Installing elixir (1.0.0) from http://localhost:26310/ (via 0.0.0.0)
+      Installing ruby (1.0.0) from [api: http://0.0.0.0:26210] ([chef_server] http://localhost:26310/)
+      Installing elixir (1.0.0) from [api: http://0.0.0.0:26210] ([chef_server] http://localhost:26310/)
       """
     And the cookbook store should have the cookbooks:
       | ruby   | 1.0.0 |
