@@ -1,3 +1,5 @@
+require 'berkshelf/api-client'
+
 module Berkshelf
   class Source
     include Comparable
