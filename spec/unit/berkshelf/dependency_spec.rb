@@ -222,7 +222,7 @@ describe Berkshelf::Dependency do
     end
 
     it 'includes the git url and ref' do
-      location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234', rel: nil, download: nil)
+      location = double('git', uri: 'git://github.com/foo/bar.git', branch: nil, ref: 'abcd1234', rel: nil, download: nil)
       location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)
@@ -233,8 +233,21 @@ describe Berkshelf::Dependency do
       expect(hash[:ref]).to eq('abcd1234')
     end
 
+    it 'includes the git url and branch' do
+      location = double('git', uri: 'git://github.com/foo/bar.git', branch: 'bacon', ref: nil, rel: nil, download: nil)
+      location.stub(:kind_of?).and_return(false)
+      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
+      subject.stub(:location).and_return(location)
+
+      expect(hash).to have_key(:git)
+      expect(hash[:git]).to eq('git://github.com/foo/bar.git')
+      expect(hash).to have_key(:branch)
+      expect(hash[:branch]).to eq('bacon')
+
+    end
+
     it 'includes the git url and rel' do
-      location = double('git', uri: 'git://github.com/foo/bar.git', ref: nil, rel: 'cookbooks/foo', download: nil)
+      location = double('git', uri: 'git://github.com/foo/bar.git', branch: nil, ref: nil, rel: 'cookbooks/foo', download: nil)
       location.stub(:kind_of?).and_return(false)
       location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
       subject.stub(:location).and_return(location)

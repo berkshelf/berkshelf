@@ -33,7 +33,7 @@ Then /^the Lockfile should have:$/ do |table|
   hash = JSON.parse(File.read(File.join(current_dir, 'Berksfile.lock')))
   dependencies = hash['dependencies']
 
-  table.raw.each do |name, locked_or_path, ref, rel|
+  table.raw.each do |name, locked_or_path, ref, rel, branch|
     expect(dependencies).to have_key(name)
 
     if locked_or_path =~ /(\d+\.){2}\d/
@@ -49,9 +49,14 @@ Then /^the Lockfile should have:$/ do |table|
       expect(dependencies[name]['ref']).to eq(ref)
     end
 
-    unless rel.nil?
+    unless rel.nil? || rel.empty?
       expect(dependencies[name]).to have_key('rel')
       expect(dependencies[name]['rel']).to eq(rel)
+    end
+
+    unless branch.nil?
+      expect(dependencies[name]).to have_key('branch')
+      expect(dependencies[name]['branch']).to eq(branch)
     end
   end
 end

@@ -211,6 +211,53 @@ Feature: berks install
       """
 
 
+  Scenario: installing a Berksfile that contains a Git location with a branch
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "berkshelf-cookbook-fixture", github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'branch1'
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+      | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 |
+    Then the Lockfile should have:
+      | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 | | branch1 |
+    And the output should contain:
+      """
+      Fetching 'berkshelf-cookbook-fixture' from github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'branch1' over protocol: 'git'
+      building universe...
+      Using berkshelf-cookbook-fixture (1.0.0) github: 'RiotGames/berkshelf-cookbook-fixture' with branch: 'branch1' over protocol: 'git'
+      """
+
+
+  Scenario: installing from Git location when a Berksfile.lock is present and pointing to a specific branch
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "berkshelf-cookbook-fixture", github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'branch1'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "berkshelf-cookbook-fixture": {
+            "locked_version": "1.0.0",
+            "git": "git://github.com/RiotGames/berkshelf-cookbook-fixture.git",
+            "ref": "919afa0c402089df23ebdf36637f12271b8a96b4",
+            "branch": "branch1"
+          }
+        }
+      }
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+        | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 |
+    And the output should contain:
+      """
+      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'branch1' at ref: '919afa0c402089df23ebdf36637f12271b8a96b4'
+      building universe...
+      Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'branch1' at ref: '919afa0c402089df23ebdf36637f12271b8a96b4'
+      """
+
+
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
