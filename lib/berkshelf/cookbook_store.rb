@@ -95,6 +95,14 @@ module Berkshelf
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)
       cookbooks = storage_path.children.collect do |path|
+        begin
+          Solve::Version.split(File.basename(path).slice(CachedCookbook::DIRNAME_REGEXP, 2))
+        rescue Solve::Errors::InvalidVersionFormat
+          # Skip cookbooks that were downloaded by an SCM location. These can not be considered
+          # complete cookbooks.
+          next
+        end
+
         CachedCookbook.from_store_path(path)
       end.compact
 
