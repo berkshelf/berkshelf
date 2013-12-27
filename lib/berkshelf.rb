@@ -1,7 +1,6 @@
 require 'buff/extensions'
 require 'digest/md5'
 require 'forwardable'
-require 'hashie'
 require 'json'
 require 'pathname'
 require 'ridley'
