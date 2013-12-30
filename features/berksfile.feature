@@ -15,7 +15,6 @@ Feature: Evaluating a Berksfile
       If you don't got bacon...
       """
 
-
   Scenario: Containing methods I shouldn't be able to call
     Given I write to "Berksfile" with:
       """
@@ -29,7 +28,6 @@ Feature: Evaluating a Berksfile
         undefined method `add_location' for
       """
     And the exit status should be "BerksfileReadError"
-
 
   Scenario: Containing Ruby syntax errors
     Given I write to "Berksfile" with:

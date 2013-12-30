@@ -16,7 +16,6 @@ Feature: berks apply
       | fake       | = 1.0.0 |
       | dependency | = 2.0.0 |
 
-
   Scenario: Locking cookbook versions to a non-existent Chef Environment
     Given the Chef Server does not have an environment named "my_env"
     And the cookbook store has the cookbooks:

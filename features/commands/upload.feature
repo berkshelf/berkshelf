@@ -7,7 +7,6 @@ Feature: berks upload
       | ekaf | 2.0.0 |
       | oops | 3.0.0 |
 
-
   Scenario: multiple cookbooks with no arguments
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -19,7 +18,6 @@ Feature: berks upload
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
 
-
   Scenario: a cookbook with a path location
     Given a cookbook named "fake"
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -29,7 +27,6 @@ Feature: berks upload
     When I successfully run `berks upload`
     Then the Chef Server should have the cookbooks:
       | fake | 0.0.0 |
-
 
   Scenario: specifying a single cookbook with dependencies
     Given the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
@@ -47,7 +44,6 @@ Feature: berks upload
     And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
 
-
   Scenario: specifying a dependency not defined in the Berksfile
     Given I have a Berksfile pointing at the local Berkshelf API
     When I run `berks upload reset`
@@ -56,7 +52,6 @@ Feature: berks upload
       Could not find cookbook(s) 'reset' in any of the configured dependencies. Is it in your Berksfile?
       """
     And the exit status should be "DependencyNotFound"
-
 
   Scenario: specifying multiple cookbooks to upload
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -72,7 +67,6 @@ Feature: berks upload
     And the Chef Server should not have the cookbooks:
       | oops |
 
-
   Scenario: uploading a single groups of demands with the --only flag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -85,7 +79,6 @@ Feature: berks upload
     And the Chef Server should not have the cookbooks:
       | ekaf | 2.0.0 |
 
-
   Scenario: uploading multiple groups of demands with the --only flag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -96,7 +89,6 @@ Feature: berks upload
     And the Chef Server should have the cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
-
 
   Scenario: skipping a single group to upload with the --except flag
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -110,7 +102,6 @@ Feature: berks upload
     And the Chef Server should not have the cookbooks:
       | ekaf | 2.0.0 |
 
-
   Scenario: skipping multiple groups with the --except flag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -121,7 +112,6 @@ Feature: berks upload
     And the Chef Server should not have the cookbooks:
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
-
 
   Scenario: attempting to upload an invalid cookbook
     Given a cookbook named "cookbook with spaces"
@@ -135,7 +125,6 @@ Feature: berks upload
       The cookbook 'cookbook with spaces' has invalid filenames:
       """
     And the exit status should be "InvalidCookbookFiles"
-
 
   Scenario: With unicode characters
     Given a cookbook named "fake"
@@ -157,7 +146,6 @@ Feature: berks upload
       Uploading fake (0.0.0)
       """
 
-
   Scenario: When the cookbook already exist
     And the Chef Server has frozen cookbooks:
       | fake  | 1.0.0 |
@@ -176,7 +164,6 @@ Feature: berks upload
 
         * fake (1.0.0)
       """
-
 
   Scenario: When the cookbook already exist and is a metadata location
     Given a cookbook named "fake"

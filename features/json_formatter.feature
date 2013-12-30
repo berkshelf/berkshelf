@@ -4,7 +4,6 @@ Feature: --format json
     * the Chef Server is empty
     * the cookbook store is empty
 
-
   Scenario: JSON output installing a cookbook from the default location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -34,7 +33,6 @@ Feature: --format json
       }
       """
 
-
   Scenario: JSON output installing a cookbook we already have
     Given the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture   | 1.0.0 |
@@ -60,7 +58,6 @@ Feature: --format json
         ]
       }
       """
-
 
   Scenario: JSON output when running the show command
     Given the cookbook store has the cookbooks:
@@ -93,7 +90,6 @@ Feature: --format json
       }
       """
 
-
   Scenario: JSON output when running the upload command
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -119,7 +115,6 @@ Feature: --format json
         ]
       }
       """
-
 
   Scenario: JSON output when running the outdated command
     Given the cookbook store has the cookbooks:
