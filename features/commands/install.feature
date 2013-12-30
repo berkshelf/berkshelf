@@ -41,6 +41,28 @@ Feature: berks install
       | berkshelf | 1.0.0 |
 
 
+  Scenario: installing an explicit version demand that cannot be solved
+    Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
+      | unsatisfiable | < 1.0.0 |
+    And the cookbook store contains a cookbook "ekaf" "1.0.0" with dependencies:
+      | unsatisfiable | > 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake', '1.0.0'
+      """
+    And the Berkshelf API server's cache is up to date
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Berkshelf could not find compatible versions for cookbook "unsatisfiable":
+        fake depends on
+          unsatisfiable (< 1.0.0)
+
+        ekaf depends on
+          ekaf (> 1.0.0)
+      """
+
+
   Scenario: installing demands from all groups
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
