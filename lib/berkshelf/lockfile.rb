@@ -89,6 +89,23 @@ module Berkshelf
       end
     end
 
+    # Determines if the given dependency, or list of dependencies, contains a locked
+    # version which would conflict with the dependency's constraint.
+    #
+    # @param [Berkshelf::Dependency, Array<Berkshelf::Dependency>] dependencies
+    #   a dependency or dependencies to check for conflicts against
+    #
+    # @raise [Berkshelf::LockedDependencyConflict]
+    def conflicts?(dependencies)
+      Array(dependencies).each do |dependency|
+        next unless locked_dependency = find(dependency)
+
+        unless dependency.version_constraint.satisfies?(locked_dependency.locked_version)
+          raise LockedDependencyConflict.new(dependency, locked_dependency.locked_version)
+        end
+      end
+    end
+
     # Load the lockfile from file system.
     def load!
       contents = File.read(filepath).strip
