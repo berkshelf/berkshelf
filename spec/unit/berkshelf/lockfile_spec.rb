@@ -8,7 +8,7 @@ describe Berkshelf::Lockfile do
     File.stub(:read).and_return(content)
   end
 
-  describe '.initialize' do
+  describe '::initialize' do
     it 'does not throw an exception' do
       expect {
         Berkshelf::Lockfile.from_berksfile(berksfile)

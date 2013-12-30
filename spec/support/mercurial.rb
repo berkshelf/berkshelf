@@ -77,46 +77,47 @@ module Berkshelf
       end
 
       private
-      # The path to store the local git clones.
-      #
-      # @return [Pathname]
-      def clones
-        ensure_and_return(tmp_path.join('clones'))
-      end
 
-      # The path to store the git remotes.
-      #
-      # @return [Pathname]
-      def remotes
-        ensure_and_return(tmp_path.join('remotes'))
-      end
+        # The path to store the local git clones.
+        #
+        # @return [Pathname]
+        def clones
+          ensure_and_return(tmp_path.join('clones'))
+        end
 
-      # Generate a cookbook by the given name.
-      #
-      # @param [#to_s] name
-      #   the name of the cookbook to create
-      # @param [Hash] options
-      #   the list ooptions to pass to the generator
-      def generate_mercurial_cookbook(name, options = {})
-        options = {
-            skip_vagrant: true,
-            skip_test_kitchen: true,
-            force: true,
-        }.merge(options)
+        # The path to store the git remotes.
+        #
+        # @return [Pathname]
+        def remotes
+          ensure_and_return(tmp_path.join('remotes'))
+        end
 
-        Berkshelf::Cli.new.invoke(:cookbook, [name.to_s], options)
-      end
+        # Generate a cookbook by the given name.
+        #
+        # @param [#to_s] name
+        #   the name of the cookbook to create
+        # @param [Hash] options
+        #   the list ooptions to pass to the generator
+        def generate_mercurial_cookbook(name, options = {})
+          options = {
+              skip_vagrant: true,
+              skip_test_kitchen: true,
+              force: true,
+          }.merge(options)
 
-      # Make sure the given path exists and return the path
-      #
-      # @param [#to_s] path
-      #   the path to create and return
-      #
-      # @return [Pathname]
-      def ensure_and_return(path)
-        FileUtils.mkdir(path) unless File.exist?(path)
-        return Pathname.new(path).expand_path
-      end
+          Berkshelf::Cli.new.invoke(:cookbook, [name.to_s], options)
+        end
+
+        # Make sure the given path exists and return the path
+        #
+        # @param [#to_s] path
+        #   the path to create and return
+        #
+        # @return [Pathname]
+        def ensure_and_return(path)
+          FileUtils.mkdir(path) unless File.exist?(path)
+          return Pathname.new(path).expand_path
+        end
     end
   end
 end

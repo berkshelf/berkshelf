@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Berkshelf do
-  describe '.formatter' do
+  describe '::formatter' do
     context 'with default formatter' do
       before { Berkshelf.instance_variable_set(:@formatter, nil) }
 
@@ -30,7 +30,7 @@ describe Berkshelf do
     end
   end
 
-  describe '.log' do
+  describe '::log' do
     it 'returns Berkshelf::Logger' do
       expect(Berkshelf.log).to eq(Berkshelf::Logger)
     end

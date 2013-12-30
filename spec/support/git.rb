@@ -82,6 +82,7 @@ module Berkshelf
       end
 
       private
+
         # The path to store the local git clones.
         #
         # @return [Pathname]

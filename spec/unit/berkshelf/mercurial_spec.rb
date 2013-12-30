@@ -1,12 +1,11 @@
 require 'spec_helper'
 
 describe Berkshelf::Mercurial do
-
   include Berkshelf::RSpec::Mercurial
 
   let(:hg) { Berkshelf::Mercurial }
 
-  describe '.find_hg' do
+  describe '::find_hg' do
     it 'finds hg' do
       expect(described_class.find_hg).to_not be_nil
     end
@@ -20,7 +19,7 @@ describe Berkshelf::Mercurial do
     end
   end
 
-  describe '.clone' do
+  describe '::clone' do
     let(:target) { clone_path('nginx') }
 
     it 'clones the repository to the target path' do
@@ -33,7 +32,7 @@ describe Berkshelf::Mercurial do
     end
   end
 
-  describe '.checkout' do
+  describe '::checkout' do
     let(:repo_path) { clone_path('nginx') }
     let(:repo) {
       origin_uri = mercurial_origin_for('nginx', tags: ['1.0.1', '1.0.2'], branches: ['topic', 'next_topic'])
@@ -94,7 +93,7 @@ describe Berkshelf::Mercurial do
     end
   end
 
-  describe '.rev_parse' do
+  describe '::rev_parse' do
     let(:repo_path) { clone_path('nginx') }
 
     before(:each) do
@@ -115,7 +114,7 @@ describe Berkshelf::Mercurial do
   let(:http_uri) { 'http://hghub.com/reset/' }
   let(:invalid_uri) { '/something/on/disk' }
 
-  describe '.validate_uri' do
+  describe '::validate_uri' do
     context 'given an invalid URI' do
       it 'returns false' do
         expect(described_class.validate_uri(invalid_uri)).to be_false
@@ -141,7 +140,7 @@ describe Berkshelf::Mercurial do
     end
   end
 
-  describe '.validate_uri!' do
+  describe '::validate_uri!' do
     context 'given an invalid URI' do
       it 'raises InvalidHgURI' do
         expect {
