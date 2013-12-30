@@ -20,8 +20,9 @@ module Berkshelf
         Thread.new do
           begin
             source.build_universe
-          rescue APIClient::TimeoutError => ex
-            Berkshelf.formatter.warn(ex.to_s)
+          rescue Berkshelf::APIClientError => ex
+            Berkshelf.formatter.warn "Error retrieving universe from source: #{source}"
+            Berkshelf.formatter.warn "  * [#{ex.class}] #{ex}"
           end
         end
       end.map(&:join)
