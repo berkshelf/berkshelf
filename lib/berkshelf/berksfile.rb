@@ -118,14 +118,15 @@ module Berkshelf
     # @option options [String] :path
     #   path to the metadata file
     def metadata(options = {})
-      path = options[:path] || File.dirname(filepath)
-
-      metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
-      metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
-
-      name = metadata.name.presence || File.basename(File.expand_path(path))
+      path     = options[:path] || File.dirname(filepath)
+      cookbook = Ridley::Chef::Cookbook.from_path(File.expand_path(path))
+      name     = cookbook.metadata.name.presence || File.basename(File.expand_path(path))
 
       add_dependency(name, nil, path: path, metadata: true)
+
+      cookbook.metadata.dependencies.each do |name, constraint|
+        add_dependency(name, constraint)
+      end
     end
 
     # Add a Berkshelf API source to use when building the index of known cookbooks. The indexes will be
@@ -198,6 +199,8 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::Dependency]
     def add_dependency(name, constraint = nil, options = {})
+      options[:constraint] = constraint
+
       if has_dependency?(name)
         # Only raise an exception if the dependency is a true duplicate
         groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
@@ -206,12 +209,6 @@ module Berkshelf
             "Berksfile contains multiple entries named '#{name}'. Use only one, or put them in different groups."
         end
       end
-
-      if options[:path]
-        metadata_file = File.join(options[:path], 'metadata.rb')
-      end
-
-      options[:constraint] = constraint
 
       @dependencies[name] = Berkshelf::Dependency.new(self, name, options)
     end

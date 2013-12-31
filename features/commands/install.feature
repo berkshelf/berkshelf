@@ -522,3 +522,20 @@ Feature: berks install
       """
       Using bacon (0.2.0)
       """
+
+  Scenario: when a lockfile doesn't exist and a constraint in the Berksfile conflicts with a constraint in the metadata
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "nginx", "= 2.0"
+      metadata
+      """
+    And I write to "metadata.rb" with:
+      """
+      depends 'nginx', '~> 2.2'
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Berksfile contains multiple entries named 'nginx'. Use only one, or put them in different groups.
+      """
+    And the exit status should be "DuplicateDependencyDefined"
