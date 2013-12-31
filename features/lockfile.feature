@@ -215,16 +215,13 @@ Feature: Creating and reading the Berkshelf lockfile
     When I run `berks install`
     Then the output should contain:
       """
-      Berkshelf could not find compatible versions for cookbook 'fake':
-        In Berksfile:
-          fake (~> 1.3.0)
+      You have requested:
+        fake ~> 1.3.0
 
-        In Berksfile.lock:
-          fake (1.0.0)
-
-      Try running `berks update fake`, which will try to find 'fake' matching '~> 1.3.0'
+      The Berksfile.lock currently has fake locked at 1.0.0.
+      Try running `berks update fake`
       """
-    And the exit status should be "OutdatedDependency"
+    And the exit status should be "LockedDependencyConflict"
 
   Scenario: Installing when the Lockfile is empty
     Given I have a Berksfile pointing at the local Berkshelf API with:

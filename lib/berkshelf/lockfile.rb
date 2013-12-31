@@ -99,6 +99,7 @@ module Berkshelf
     def conflicts?(dependencies)
       Array(dependencies).each do |dependency|
         next unless locked_dependency = find(dependency)
+        next if locked_dependency.locked_version.nil?
 
         unless dependency.version_constraint.satisfies?(locked_dependency.locked_version)
           raise LockedDependencyConflict.new(dependency, locked_dependency.locked_version)
