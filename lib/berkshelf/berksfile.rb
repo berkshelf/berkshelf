@@ -18,7 +18,9 @@ module Berkshelf
         raise BerksfileNotFound.new(file) unless File.exist?(file)
 
         begin
-          new(file).dsl_eval_file(file)
+          berksfile = new(file).dsl_eval_file(file)
+          berksfile.finalize_dependencies!
+          berksfile
         rescue => ex
           raise BerksfileReadError.new(ex)
         end
@@ -47,9 +49,10 @@ module Berkshelf
     # @param [String] path
     #   path on disk to the file containing the contents of this Berksfile
     def initialize(path)
-      @filepath         = path
-      @dependencies     = Hash.new
-      @sources          = Array.new
+      @filepath              = path
+      @dependencies          = Hash.new
+      @implicit_dependencies = Hash.new
+      @sources               = Array.new
     end
 
     # Add a cookbook dependency to the Berksfile to be retrieved and have its dependencies recursively retrieved
@@ -125,7 +128,7 @@ module Berkshelf
       add_dependency(name, nil, path: path, metadata: true)
 
       cookbook.metadata.dependencies.each do |name, constraint|
-        add_dependency(name, constraint)
+        add_implicit_dependency(name, constraint)
       end
     end
 
@@ -197,7 +200,7 @@ module Berkshelf
     # @raise [DuplicateDependencyDefined] if a dependency is added whose name conflicts
     #   with a dependency who has already been added.
     #
-    # @return [Array<Berkshelf::Dependency]
+    # @return [Hash]
     def add_dependency(name, constraint = nil, options = {})
       options[:constraint] = constraint
 
@@ -211,6 +214,29 @@ module Berkshelf
       end
 
       @dependencies[name] = Berkshelf::Dependency.new(self, name, options)
+    end
+
+    # @param [String] name
+    #   the name of the dependency to add
+    # @param [String, Solve::Constraint] constraint
+    #   the constraint to lock the dependency to
+    #
+    # @return [Hash]
+    def add_implicit_dependency(name, constraint = nil)
+      @implicit_dependencies[name] = Berkshelf::Dependency.new(self, name, constraint: constraint)
+    end
+
+    # Merges implicit dependencies with explicit dependencies. Explicit dependencies take precedence over
+    # implicit dependencies.
+    #
+    # An implicit dependency is one which can be overridden by an explicit dependency. The dependencies
+    # of a metadata location are added as implicit dependencies.
+    #
+    # @return [Hash]
+    def finalize_dependencies!
+      @dependencies          = @implicit_dependencies.merge(@dependencies)
+      @implicit_dependencies = Hash.new
+      @dependencies
     end
 
     # @param [#to_s] dependency
