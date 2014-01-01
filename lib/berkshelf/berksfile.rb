@@ -502,7 +502,6 @@ module Berkshelf
         force: false,
         freeze: true,
         halt_on_frozen: false,
-        skip_dependencies: false,
         cookbooks: [],
         validate: true
       }.merge(options)
