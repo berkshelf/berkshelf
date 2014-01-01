@@ -16,12 +16,6 @@ describe Berkshelf::MercurialLocation do
     end
   end
 
-  describe '::tmpdir' do
-    it 'creates a temporary directory within the Berkshelf temporary directory' do
-      expect(described_class.tmpdir).to include(Berkshelf.tmp_dir)
-    end
-  end
-
   subject { described_class.new(dependency, hg: cookbook_uri) }
 
   describe '#download' do

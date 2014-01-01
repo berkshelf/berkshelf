@@ -1,6 +1,5 @@
 module Berkshelf
   class GitLocation < Location::ScmLocation
-
     set_location_key :git
     set_valid_options :ref, :branch, :tag, :rel
 
@@ -36,13 +35,19 @@ module Berkshelf
       Git.validate_uri!(@uri)
     end
 
+    # @example
+    #     irb> location.checkout_info
+    #     { kind: "branch", rev: "master" }
+    #
+    # @return [Hash]
     def checkout_info
       if @sha
         kind, rev = "ref", @sha
       else
         kind, rev = "branch", branch
       end
-      { :kind => kind, :rev => rev }
+
+      { kind: kind, rev: rev }
     end
 
     # @param [#to_s] destination
@@ -56,10 +61,12 @@ module Berkshelf
         return local_revision(destination)
       end
 
-      Berkshelf::Git.checkout(clone, ref || checkout_info[:rev])
-      @ref = Berkshelf::Git.rev_parse(clone)
+      repo_path = Berkshelf::Git.clone(uri)
 
-      tmp_path = rel ? File.join(clone, rel) : clone
+      Berkshelf::Git.checkout(repo_path, ref || checkout_info[:rev])
+      @ref = Berkshelf::Git.rev_parse(repo_path)
+
+      tmp_path = rel ? File.join(repo_path, rel) : repo_path
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{dependency.name}' not found at git: #{to_display}"
         msg << " at path '#{rel}'" if rel
@@ -94,20 +101,6 @@ module Berkshelf
         s = "'#{uri}' with #{info[:kind]}: '#{info[:rev]}'"
         s << " at ref: '#{ref}'" if ref && (info[:kind] != "ref" || ref != info[:rev])
         s
-      end
-
-      def git
-        @git ||= Berkshelf::Git.new(uri)
-      end
-
-      def clone
-        tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
-        FileUtils.mkdir_p(File.join(File.split(tmp_clone).shift))
-        unless File.exists?(tmp_clone)
-          Berkshelf::Git.clone(uri, tmp_clone)
-        end
-
-        tmp_clone
       end
 
       def cached?(destination)
