@@ -112,8 +112,8 @@ describe Thor::Base.shell do
         subject.stub(:quiet?).and_return(true)
       end
 
-      it 'does not output anything', :not_supported_on_windows do
-        stdout.should_not_receive(:puts)
+      it "outputs an error message", :not_supported_on_windows do
+        stderr.should_receive(:puts)
         subject.error 'error!'
       end
     end
