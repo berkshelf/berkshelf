@@ -38,8 +38,6 @@ module Berkshelf
     end
 
     def error(message, color = :red)
-      return if quiet?
-
       message = set_color(message, *color) if color
       super(message)
     end
