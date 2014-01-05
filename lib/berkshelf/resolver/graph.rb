@@ -28,6 +28,8 @@ module Berkshelf
       # @param [Array<Berkshelf::Source>, Berkshelf::Source] sources
       def populate(sources)
         universe(sources).each do |cookbook|
+          next if has_artifact?(cookbook.name, cookbook.version)
+
           artifacts(cookbook.name, cookbook.version)
 
           cookbook.dependencies.each do |dependency, constraint|

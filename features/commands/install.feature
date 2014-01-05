@@ -143,6 +143,20 @@ Feature: berks install
       Using example_cookbook (0.5.0) path: '
       """
 
+  Scenario: installing a demand from a path location that also exists in other locations with conflicting dependencies
+    Given the Chef Server has cookbooks:
+      | example_cookbook | 0.5.0 | missing_cookbook >= 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      """
+    And the Berkshelf API server's cache is up to date
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Using example_cookbook (0.5.0) path: '
+      """
+
   Scenario: installing a Berksfile from a remote directory that contains a path location
     Given I have a Berksfile at "subdirectory" pointing at the local Berkshelf API with:
       """
