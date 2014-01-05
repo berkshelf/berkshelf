@@ -143,6 +143,17 @@ Feature: berks install
       Using example_cookbook (0.5.0) path: '
       """
 
+  Scenario: installing a demand from a path location with a conflicting constraint
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'example_cookbook', '~> 1.0.0', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      The cookbook downloaded for example_cookbook (~> 1.0.0) did not satisfy the constraint.
+      """
+
   Scenario: installing a demand from a path location that also exists in other locations with conflicting dependencies
     Given the Chef Server has cookbooks:
       | example_cookbook | 0.5.0 | missing_cookbook >= 1.0.0 |
@@ -155,6 +166,22 @@ Feature: berks install
     Then the output should contain:
       """
       Using example_cookbook (0.5.0) path: '
+      """
+
+  Scenario: installing a demand from a path location locks the graph to that version
+    Given the Chef Server has cookbooks:
+      | example_cookbook | 1.0.0 |                           |
+      | other_cookbook   | 1.0.0 | example_cookbook ~> 1.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'other_cookbook'
+      """
+    And the Berkshelf API server's cache is up to date
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Unable to find a solution for demands: example_cookbook (0.5.0), other_cookbook (>= 0.0.0)
       """
 
   Scenario: installing a Berksfile from a remote directory that contains a path location
