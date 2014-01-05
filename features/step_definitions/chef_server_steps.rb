@@ -5,8 +5,14 @@ Given(/^the Chef Server is empty$/) do
 end
 
 Given /^the Chef Server has cookbooks:$/ do |cookbooks|
-  cookbooks.raw.each do |name, version|
-    chef_cookbook(name, { 'metadata.rb' => "version '#{version}'" })
+  cookbooks.raw.each do |name, version, dependencies|
+    metadata = []
+    metadata << "version '#{version}'"
+    dependencies.to_s.split(',').map { |d| d.split(' ', 2) }.each do |(name, constraint)|
+      metadata << "depends '#{name}', '#{constraint}'"
+    end
+
+    chef_cookbook(name, { 'metadata.rb' => metadata.join("\n") })
   end
 end
 
