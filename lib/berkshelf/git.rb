@@ -152,7 +152,6 @@ module Berkshelf
       #
       # @return [Boolean]
       def validate_uri(uri)
-
         unless uri.is_a?(String)
           return false
         end

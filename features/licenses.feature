@@ -8,7 +8,6 @@ Feature: Installing cookbooks with specific licenses
       cookbook 'fake', '1.0.0'
       """
 
-
   Scenario: when licenses is defined
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 | mit |
@@ -21,7 +20,6 @@ Feature: Installing cookbooks with specific licenses
       """
       is not in your list of allowed licenses
       """
-
 
   Scenario: when a license is not listed
     Given the cookbook store has the cookbooks:
@@ -36,7 +34,6 @@ Feature: Installing cookbooks with specific licenses
       'mit' is not in your list of allowed licenses
       """
 
-
   Scenario: when raise_license_exception is defined
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 | mit |
@@ -49,7 +46,6 @@ Feature: Installing cookbooks with specific licenses
       """
       is not in your list of allowed licenses
       """
-
 
   Scenario: when raise_license_exception is defined and a license is not listed
     Given the cookbook store has the cookbooks:
@@ -64,7 +60,6 @@ Feature: Installing cookbooks with specific licenses
       'mit' is not in your list of allowed licenses
       """
     And the exit status should be "LicenseNotAllowed"
-
 
   Scenario: when the cookbook is a path location
     Given the cookbook store has the cookbooks:

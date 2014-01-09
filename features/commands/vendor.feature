@@ -6,7 +6,6 @@ Feature: Vendoring cookbooks to a directory
       | ekaf | 2.0.0 |
     * the Berkshelf API server's cache is up to date
 
-
   Scenario: successfully vendoring a Berksfile with multiple cookbook demands
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -17,11 +16,9 @@ Feature: Vendoring cookbooks to a directory
     Then the directory "cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
     And the directory "cukebooks/ekaf" should contain version "2.0.0" of the "ekaf" cookbook
 
-
   Scenario: attempting to vendor when no Berksfile is present
     When I run `berks vendor cukebooks`
     Then the exit status should be "BerksfileNotFound"
-
 
   Scenario: vendoring a Berksfile with a metadata demand
     Given a cookbook named "fake"
@@ -33,7 +30,6 @@ Feature: Vendoring cookbooks to a directory
     When I successfully run `berks vendor cukebooks`
     And the directory "cukebooks/fake" should contain version "0.0.0" of the "fake" cookbook
 
-
   Scenario: vendoring without an explicit path to vendor into
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -41,7 +37,6 @@ Feature: Vendoring cookbooks to a directory
       """
     When I successfully run `berks vendor`
     And the directory "berks-cookbooks/fake" should contain version "1.0.0" of the "fake" cookbook
-
 
   Scenario: vendoring to a directory that already exists
     Given I have a Berksfile pointing at the local Berkshelf API with:

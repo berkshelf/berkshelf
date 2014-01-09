@@ -11,7 +11,6 @@ Feature: Creating and reading the Berkshelf lockfile
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
 
-
   Scenario: Writing the Berksfile.lock
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -20,7 +19,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | fake | 1.0.0 |
-
 
   Scenario: Writing the Berksfile.lock when a 1.0 lockfile is present
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -36,7 +34,6 @@ Feature: Creating and reading the Berkshelf lockfile
     And the Lockfile should have:
       | fake | 1.0.0 |
 
-
   Scenario: Writing the Berksfile.lock when a 1.0 lockfile is present and contains a full path
     Given a cookbook named "fake"
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -51,7 +48,6 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the output should warn about the old lockfile format
     Then the Lockfile should have:
       | fake | ./fake |
-
 
   Scenario: Writing the Berksfile.lock when a 2.0 lockfile is present
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -72,7 +68,6 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the Lockfile should have:
       | fake | 1.0.0 |
 
-
   Scenario: Reading the Berksfile.lock when it contains an invalid path location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -83,7 +78,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | fake | 1.0.0 |
-
 
   Scenario: Installing a cookbook with dependencies
     Given the cookbook store has the cookbooks:
@@ -99,7 +93,6 @@ Feature: Creating and reading the Berkshelf lockfile
       | fake | 1.0.0 |
       | dep  | 1.0.0 |
 
-
   Scenario: Writing the Berksfile.lock with a pessimistic lock
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -110,7 +103,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | fake | 1.0.0 |
-
 
   Scenario: Updating with a Berksfile.lock with pessimistic lock
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -123,7 +115,6 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the Lockfile should have:
       | fake | 0.2.0 |
 
-
   Scenario: Updating with a Berksfile.lock with hard lock
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -135,7 +126,6 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the Lockfile should have:
       | fake | 0.1.0 |
 
-
   Scenario: Updating a Berksfile.lock with a git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -144,7 +134,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 |
-
 
   Scenario: Updating a Berksfile.lock with a git location and a branch
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -155,7 +144,6 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the Lockfile should have:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
 
-
   Scenario: Updating a Berksfile.lock with a git location and a branch
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -164,7 +152,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
-
 
   Scenario: Updating a Berksfile.lock with a GitHub location
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -175,7 +162,6 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the Lockfile should have:
       | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 |
 
-
   Scenario: Updating a Berksfile.lock when a git location with :rel
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -184,7 +170,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a | cookbooks/berkshelf-cookbook-fixture |
-
 
   Scenario: Updating a Berksfile.lock with a path location
     Given a cookbook named "fake"
@@ -196,7 +181,6 @@ Feature: Creating and reading the Berkshelf lockfile
     Then the Lockfile should have:
       | fake | ./fake |
 
-
   Scenario: Installing a Berksfile with a metadata location
     Given a cookbook named "fake"
     And I cd to "fake"
@@ -207,7 +191,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | fake | . |
-
 
   Scenario: Installing a Berksfile with a metadata location
     Given a cookbook named "fake"
@@ -221,7 +204,6 @@ Feature: Creating and reading the Berkshelf lockfile
     When I successfully run `berks install`
     Then the Lockfile should have:
       | fake | . |
-
 
   Scenario: Installing when the locked version is no longer satisfied
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -244,7 +226,6 @@ Feature: Creating and reading the Berkshelf lockfile
       """
     And the exit status should be "OutdatedDependency"
 
-
   Scenario: Installing when the Lockfile is empty
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -256,7 +237,6 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       Using fake (1.0.0)
       """
-
 
   Scenario: Installing when the Lockfile is in a bad state
     Given I have a Berksfile pointing at the local Berkshelf API with:

@@ -7,7 +7,6 @@ Feature: berks shelf show
       """
     And the exit status should be "CookbookNotFound"
 
-
   Scenario: With cookbooks in the store
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -27,7 +26,6 @@ Feature: berks shelf show
       """
       Name: ekaf
       """
-
 
   Scenario: With cookbooks in the store and the --version option
     Given the cookbook store has the cookbooks:
@@ -49,7 +47,6 @@ Feature: berks shelf show
       Name: ekaf
       """
 
-
   Scenario: With cookbooks in the store and the --version option doesn't exist
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -60,7 +57,6 @@ Feature: berks shelf show
       Cookbook 'fake' (1.2.3) is not in the Berkshelf shelf
       """
     And the exit status should be "CookbookNotFound"
-
 
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:
@@ -100,7 +96,6 @@ Feature: berks shelf show
              Email: YOUR_EMAIL
            License: none
       """
-
 
   Scenario: With multiple cookbook versions installed and the --version flag
     Given the cookbook store has the cookbooks:

@@ -6,7 +6,6 @@ Feature: berks shelf list
       There are no cookbooks in the Berkshelf shelf
       """
 
-
   Scenario: With two cookbooks in the store
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -18,7 +17,6 @@ Feature: berks shelf list
         * ekaf (2.3.4)
         * fake (1.0.0)
       """
-
 
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:

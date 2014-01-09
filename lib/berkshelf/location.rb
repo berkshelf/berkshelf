@@ -141,19 +141,7 @@ module Berkshelf
       end
     end
 
-    class ScmLocation < Location::Base
-      class << self
-        # Create a temporary directory for the cloned repository within Berkshelf's
-        # temporary directory
-        #
-        # @return [String]
-        #   the path to the created temporary directory
-        def tmpdir
-          @tmpdir ||= Berkshelf.mktmpdir
-        end
-      end
-    end
-
+    class ScmLocation < Location::Base; end
   end
 end
 

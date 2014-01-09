@@ -19,7 +19,6 @@ Feature: berks list
         * fake2 (1.0.1)
       """
 
-
   Scenario: Running the list command when the dependencies aren't downloaded
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -34,7 +33,6 @@ Feature: berks list
       """
     And the exit status should be "CookbookNotFound"
 
-
   Scenario: Running the list command when the lockfile isn't present
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -48,7 +46,6 @@ Feature: berks list
       Could not find cookbook 'fake (= 1.0.0)'.
       """
     And the exit status should be "CookbookNotFound"
-
 
   Scenario: Running the list command with no dependencies defined
     Given I have a Berksfile pointing at the local Berkshelf API

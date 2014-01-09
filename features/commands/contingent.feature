@@ -4,7 +4,6 @@ Feature: berks contingent
     * the Chef Server is empty
     * the cookbook store is empty
 
-
   Scenario: When there are dependent cookbooks
     Given the cookbook store has the cookbooks:
       | dep | 1.0.0 |
@@ -25,7 +24,6 @@ Feature: berks contingent
         * fake (1.0.0)
       """
 
-
   Scenario: When there are no dependent cookbooks
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -38,7 +36,6 @@ Feature: berks contingent
       """
       There are no cookbooks contingent upon 'dep' defined in this Berksfile
       """
-
 
   Scenario: When the cookbook is not in the Berksfile
     Given I have a Berksfile pointing at the local Berkshelf API

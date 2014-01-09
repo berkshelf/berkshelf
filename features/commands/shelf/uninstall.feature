@@ -7,7 +7,6 @@ Feature: berks shelf uninstall
       """
     And the exit status should be "CookbookNotFound"
 
-
   Scenario: With two cookbooks in the store
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -21,7 +20,6 @@ Feature: berks shelf uninstall
       | fake | 1.0.0 |
     And the cookbook store should have the cookbooks:
       | ekaf | 2.3.4 |
-
 
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:
@@ -43,7 +41,6 @@ Feature: berks shelf uninstall
       | fake | 1.2.0 |
       | fake | 2.0.0 |
 
-
   Scenario: When specifying a version
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -61,7 +58,6 @@ Feature: berks shelf uninstall
       | fake | 1.1.0 |
       | fake | 1.2.0 |
       | fake | 2.0.0 |
-
 
   @spawn
   Scenario: With contingencies
@@ -83,7 +79,6 @@ Feature: berks shelf uninstall
       """
     And the cookbook store should not have the cookbooks:
       | ekaf | 2.3.4 |
-
 
   Scenario: With contingencies and the --force flag
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:

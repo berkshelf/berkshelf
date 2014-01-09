@@ -13,7 +13,7 @@ describe Berkshelf::Formatters do
   let(:format_id) { :rspec }
   let(:format_klass) { Class.new { include Berkshelf::Formatters::AbstractFormatter } }
 
-  describe '.register' do
+  describe '::register' do
     it 'adds the class of the includer to the list of registered formatters with the id' do
       Berkshelf::Formatters.register(format_id, format_klass)
 
@@ -41,7 +41,7 @@ describe Berkshelf::Formatters do
     end
   end
 
-  describe '.formatters' do
+  describe '::formatters' do
     before do
       Berkshelf::Formatters.register(format_id, format_klass)
     end
@@ -54,7 +54,7 @@ describe Berkshelf::Formatters do
     end
   end
 
-  describe '.get' do
+  describe '::get' do
     before { Berkshelf::Formatters.register(format_id, format_klass) }
 
     it 'returns the class constant of the given formatter ID' do
@@ -69,7 +69,7 @@ describe Berkshelf::Formatters do
   end
 
   describe Berkshelf::Formatters::AbstractFormatter do
-    describe '.register_formatter' do
+    describe '::register_formatter' do
       it 'delegates to Formatters' do
         Berkshelf::Formatters.should_receive(:register).with(:rspec, format_klass)
 

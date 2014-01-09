@@ -8,7 +8,6 @@ Feature: berks update
       | ekaf | 1.0.0 |
       | ekaf | 1.0.1 |
 
-
   Scenario: Without a cookbook specified
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -23,7 +22,6 @@ Feature: berks update
       | fake | 0.2.0 |
       | ekaf | 1.0.1 |
 
-
   Scenario: With a single cookbook specified
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -37,7 +35,6 @@ Feature: berks update
     Then the Lockfile should have:
       | fake | 0.2.0 |
       | ekaf | 1.0.0 |
-
 
   Scenario: With a cookbook that does not exist
     Given I have a Berksfile pointing at the local Berkshelf API

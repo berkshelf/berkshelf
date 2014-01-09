@@ -11,12 +11,10 @@ Feature: berks init
       """
     And the output should contain "Successfully initialized"
 
-
   Scenario: initializing a path that does not contain a cookbook
     Given a directory named "not_a_cookbook"
     When I run `berks init not_a_cookbook`
     And the exit status should be "NotACookbook"
-
 
   Scenario: initializing with no value given for target
     Given I write to "metadata.rb" with:
