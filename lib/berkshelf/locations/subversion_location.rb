@@ -72,7 +72,7 @@ module Berkshelf
       end
 
       def working_copy
-        tmp_working_copy = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
+        tmp_working_copy = File.join(Berkshelf::CookbookStore.instance.storage_path, uri.gsub(/[\/:]/,'-'))
 
         unless File.exists?(tmp_working_copy)
           Berkshelf::Subversion.checkout(uri, tmp_working_copy, rev)
