@@ -75,9 +75,10 @@ module Berkshelf
         archive_path = File.join(tmp_dir, "#{name}-#{version}.tar.gz")
         unpack_dir   = File.join(tmp_dir, "#{name}-#{version}")
 
-        github_access_token = Berkshelf::Config.instance.github.access_token
-        github_config = {}
+        github_access_token          = Berkshelf::Config.instance.github.access_token
+        github_config                = {}
         github_config[:access_token] = github_access_token unless github_access_token == ''
+
         github_client = Octokit::Client.new github_config
 
         begin
