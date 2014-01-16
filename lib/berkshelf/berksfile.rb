@@ -490,6 +490,8 @@ module Berkshelf
     #   An overriding client name to use for connecting to the chef server
     # @option options [String] :client_key
     #   An overriding client key to use for connecting to the chef server
+    # @option options [Boolean] :update_lockfile (true)
+    #   a boolean method indicating whether we should update the lockfile
     #
     # @raise [Berkshelf::UploadFailure]
     #   if you are uploading cookbooks with an invalid or not-specified client key
@@ -505,7 +507,8 @@ module Berkshelf
         freeze: true,
         halt_on_frozen: false,
         cookbooks: [],
-        validate: true
+        validate: true,
+        update_lockfile: true
       }.merge(options)
 
       validate_cookbook_names!(options)
