@@ -98,7 +98,10 @@ module Berkshelf
 
         # we need to figure out where the cookbook is located in the archive. This is because the directory name
         # pattern is not cosistant between private and public github repositories
-        cookbook_directory = Dir.entries(unpack_dir).select{ |f| f.start_with? "#{remote_cookbook.location_path.sub('/', '-')}"}[0]
+        cookbook_directory = Dir.entries(unpack_dir).select do |f|
+          (! f.start_with?('.')) && (Pathname.new(File.join(unpack_dir, f)).cookbook?)
+        end[0]
+
         File.join(unpack_dir, cookbook_directory)
       else
         raise RuntimeError, "unknown location type #{remote_cookbook.location_type}"
