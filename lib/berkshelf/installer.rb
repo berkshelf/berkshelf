@@ -67,7 +67,7 @@ module Berkshelf
       end
 
       verify_licenses!(lock_deps)
-      lockfile.update(lock_deps)
+      lockfile.update(lock_deps) unless options[:update_lockfile] == false
       cached_cookbooks
     end
 
