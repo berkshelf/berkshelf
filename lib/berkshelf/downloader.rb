@@ -1,6 +1,7 @@
 require 'net/http'
 require 'zlib'
 require 'archive/tar/minitar'
+require 'octokit'
 
 module Berkshelf
   class Downloader
@@ -72,18 +73,36 @@ module Berkshelf
       when :github
         tmp_dir      = Dir.mktmpdir
         archive_path = File.join(tmp_dir, "#{name}-#{version}.tar.gz")
-        out_dir      = File.join(tmp_dir, "#{name}-#{version}")
-        url          = URI("https://codeload.github.com/#{remote_cookbook.location_path}/tar.gz/v#{version}")
+        unpack_dir   = File.join(tmp_dir, "#{name}-#{version}")
+
+        github_access_token          = Berkshelf::Config.instance.github.access_token
+        github_config                = {}
+        github_config[:access_token] = github_access_token unless github_access_token == ''
+
+        github_client = Octokit::Client.new github_config
+
+        begin
+          url = URI(github_client.archive_link(remote_cookbook.location_path, ref: "v#{version}"))
+        rescue Octokit::Unauthorized
+          raise CookbookNotFound
+        end
 
         Net::HTTP.start(url.host, use_ssl: url.scheme == "https") do |http|
-          resp = http.get(url.path)
+          resp = http.get(url.request_uri)
+          raise CookbookNotFound unless resp.is_a?(Net::HTTPSuccess)
           open(archive_path, "wb") { |file| file.write(resp.body) }
         end
 
         tgz = Zlib::GzipReader.new(File.open(archive_path, "rb"))
-        Archive::Tar::Minitar.unpack(tgz, tmp_dir)
+        Archive::Tar::Minitar.unpack(tgz, unpack_dir)
 
-        out_dir
+        # we need to figure out where the cookbook is located in the archive. This is because the directory name
+        # pattern is not cosistant between private and public github repositories
+        cookbook_directory = Dir.entries(unpack_dir).select do |f|
+          (! f.start_with?('.')) && (Pathname.new(File.join(unpack_dir, f)).cookbook?)
+        end[0]
+
+        File.join(unpack_dir, cookbook_directory)
       else
         raise RuntimeError, "unknown location type #{remote_cookbook.location_type}"
       end
