@@ -77,19 +77,18 @@ module Berkshelf
 
         github_access_token          = Berkshelf::Config.instance.github.access_token
         github_config                = {}
-        github_config[:access_token] = github_access_token unless github_access_token == ''
-
-        github_client = Octokit::Client.new github_config
+        github_config[:access_token] = github_access_token unless github_access_token == ""
+        github_client                = Octokit::Client.new(github_config)
 
         begin
           url = URI(github_client.archive_link(remote_cookbook.location_path, ref: "v#{version}"))
         rescue Octokit::Unauthorized
-          raise CookbookNotFound
+          return nil
         end
 
         Net::HTTP.start(url.host, use_ssl: url.scheme == "https") do |http|
           resp = http.get(url.request_uri)
-          raise CookbookNotFound unless resp.is_a?(Net::HTTPSuccess)
+          return nil unless resp.is_a?(Net::HTTPSuccess)
           open(archive_path, "wb") { |file| file.write(resp.body) }
         end
 
