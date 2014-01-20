@@ -1,3 +1,7 @@
+# 2.0.13
+
+* Lock transitive dependency on Faraday
+
 # 2.0.10
 
 * Huge performance increase when resolving a Berksfile when the Berkshelf contains a lot of cookbooks
