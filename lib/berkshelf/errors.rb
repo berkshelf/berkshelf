@@ -144,6 +144,19 @@ module Berkshelf
     end
   end
 
+  class InvalidGitHubIdentifier < BerkshelfError
+    status_code(110)
+
+    # @param [String] repo_identifier
+    def initialize(repo_identifier)
+      @repo_identifier = repo_identifier
+    end
+
+    def to_s
+      "'#{@repo_identifier}' is not a valid GitHub identifier - should not end in '.git'"
+    end
+  end
+
   class UnknownGitHubProtocol < BerkshelfError
     status_code(110)
 
@@ -475,4 +488,21 @@ module Berkshelf
   class DuplicateDemand < BerkshelfError; status_code(138); end
   class VendorError < BerkshelfError; status_code(139); end
   class LockfileNotFound < BerkshelfError; status_code(140); end
+
+  class NotACookbook < BerkshelfError
+    status_code(141)
+
+    # @param [String] path
+    #   the path to the thing that is not a cookbook
+    def initialize(path)
+      @path = File.expand_path(path) rescue path
+    end
+
+    def to_s
+      "#{@path} does not appear to be a valid cookbook. Does it have a `metadata.rb`?"
+    end
+  end
+
+  class InvalidLockFile < BerkshelfError; status_code(142); end
+  class PackageError < BerkshelfError; status_code(143); end
 end

@@ -5,7 +5,7 @@ module Berkshelf
         Berkshelf::Logger
       end
 
-      # Log an exception and it's backtrace to FATAL
+      # Log an exception and its backtrace to FATAL
       #
       # @param [Exception] ex
       def log_exception(ex)

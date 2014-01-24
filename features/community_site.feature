@@ -1,8 +1,4 @@
 Feature: Installing cookbooks from the community site
-  As a user with a Berksfile
-  I want a command to install the cookbooks at the community site
-  So I don't need to run an internal Chef Server as an API endpoint
-
   Scenario: when the cookbook exists
     Given I have a Berksfile pointing at the community API endpoint with:
       """

@@ -32,12 +32,19 @@ _berkshelf_commands() {
 }
 
 _berkshelf_cookbooks() {
-  [ -z $BERKSHELF_BERKSFILE ] && BERKSHELF_BERKSFILE="Berksfile"
-  cat $BERKSHELF_BERKSFILE | grep "cookbook" | cut -d "'" -f 2
+  local file=${BERKSHELF_BERKSFILE:-Berksfile}
+  if [ -e $file ]; then
+    # strip all quotes from cookbook name and remove trailing comma, if any
+    grep -w '^cookbook' $file \
+      | awk '{ print $2 }' \
+      | sed 's/"//g' \
+      | sed "s/'//g" \
+      | sed 's/,$//'
+  fi
 }
 
 _local_cookbooks() {
-  ls -d cookbooks/*/ | cut -d "/" -f 2
+  [ -d cookbooks ] && ls -d cookbooks/*/ | cut -d "/" -f 2
 }
 
 _berkshelf() {

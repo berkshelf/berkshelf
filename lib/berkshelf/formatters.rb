@@ -80,8 +80,10 @@ module Berkshelf
       end
 
       formatter_methods :error,
+                        :warn,
                         :fetch,
                         :install,
+                        :list,
                         :msg,
                         :outdated,
                         :package,

@@ -14,7 +14,7 @@ describe Berkshelf::CookbookGenerator do
       capture(:stdout) { Berkshelf::CookbookGenerator.new([target, name]).invoke_all }
     end
 
-    specify do
+    it "generates a new cookbook" do
       expect(target).to have_structure {
         directory 'attributes'
         directory 'files' do
@@ -39,7 +39,11 @@ describe Berkshelf::CookbookGenerator do
           contains 'All rights reserved - Do Not Redistribute'
         end
         file 'README.md' do
-          contains '# sparkle_motion cookbook'
+          contains '# sparkle_motion-cookbook'
+          contains '### sparkle_motion::default'
+          contains "    <td><tt>['sparkle_motion']['bacon']</tt></td>"
+          contains "Include `sparkle_motion` in your node's `run_list`:"
+          contains '    "recipe[sparkle_motion::default]"'
           contains 'Author:: YOUR_NAME (<YOUR_EMAIL>)'
         end
         file 'metadata.rb' do
@@ -50,7 +54,7 @@ describe Berkshelf::CookbookGenerator do
           contains "description      'Installs/Configures sparkle_motion'"
         end
         file 'Berksfile' do
-          contains 'source "http://api.berkshelf.com"'
+          contains 'source "https://api.berkshelf.com"'
           contains 'metadata'
         end
         file 'Gemfile'

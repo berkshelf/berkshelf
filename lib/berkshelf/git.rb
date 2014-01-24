@@ -41,6 +41,10 @@ module Berkshelf
       # @return [String]
       #   the destination the URI was cloned to
       def clone(uri, destination = Dir.mktmpdir)
+        if File::ALT_SEPARATOR
+          destination = destination.to_s.gsub(File::SEPARATOR, File::ALT_SEPARATOR)
+        end
+
         git('clone', uri, destination.to_s)
 
         destination
@@ -148,7 +152,6 @@ module Berkshelf
       #
       # @return [Boolean]
       def validate_uri(uri)
-
         unless uri.is_a?(String)
           return false
         end

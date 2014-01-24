@@ -10,6 +10,11 @@ module Berkshelf
         end
       end
 
+      # Add dependencies of a locally cached cookbook to the graph
+      #
+      # @param [Berkshelf::CachedCookbook] cookbook
+      #
+      # @return [Hash]
       def populate_local(cookbook)
         name    = cookbook.cookbook_name
         version = cookbook.version
@@ -23,6 +28,8 @@ module Berkshelf
       # @param [Array<Berkshelf::Source>, Berkshelf::Source] sources
       def populate(sources)
         universe(sources).each do |cookbook|
+          next if has_artifact?(cookbook.name, cookbook.version)
+
           artifacts(cookbook.name, cookbook.version)
 
           cookbook.dependencies.each do |dependency, constraint|

@@ -1,3 +1,5 @@
+require_relative "packager"
+
 module Berkshelf
   class Berksfile
     class << self
@@ -23,7 +25,7 @@ module Berkshelf
       end
     end
 
-    DEFAULT_API_URL = "http://api.berkshelf.com".freeze
+    DEFAULT_API_URL = "https://api.berkshelf.com".freeze
 
     include Berkshelf::Mixin::Logging
     include Berkshelf::Mixin::DSLEval
@@ -42,19 +44,15 @@ module Berkshelf
     #   The path on disk to the file representing this instance of Berksfile
     attr_reader :filepath
 
-    # @return [Array<Berkshelf::CachedCookbook>]
-    attr_reader :cached_cookbooks
-
     # @param [String] path
     #   path on disk to the file containing the contents of this Berksfile
     def initialize(path)
       @filepath         = path
       @dependencies     = Hash.new
-      @cached_cookbooks = nil
       @sources          = Array.new
     end
 
-    # Add a cookbook dependency to the Berksfile to be retrieved and have it's dependencies recursively retrieved
+    # Add a cookbook dependency to the Berksfile to be retrieved and have its dependencies recursively retrieved
     # and resolved.
     #
     # @example a cookbook dependency that will be retrieved from one of the default locations
@@ -135,21 +133,21 @@ module Berkshelf
     # in a second source would not be used.
     #
     # @example
-    #   source "http://api.berkshelf.com"
-    #   source "http://berks-api.riotgames.com"
+    #   source "https://api.berkshelf.com"
+    #   source "https://berks-api.riotgames.com"
     #
     # @param [String] api_url
     #   url for the api to add
     #
     # @raise [Berkshelf::InvalidSourceURI]
     #
-    # @return [Array<SourceURI>]
+    # @return [Array<Berkshelf::Source>]
     def source(api_url)
       new_source = Source.new(api_url)
       @sources.push(new_source) unless @sources.include?(new_source)
     end
 
-    # @return [Array<SourceURI>]
+    # @return [Array<Berkshelf::Source>]
     def sources
       @sources.empty? ? self.class.default_sources : @sources
     end
@@ -162,14 +160,14 @@ module Berkshelf
         Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
           "Site (site :opscode). Site locations have been replaced by the source location. Change this to: " +
           "'source \"http://api.berkshelf.com\" to remove this warning. For more information visit " +
-          "https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+          "https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
         source(DEFAULT_API_URL)
         return
       end
 
       raise Berkshelf::DeprecatedError.new "Your Berksfile contains a site location. Site locations have been " +
         " replaced by the source location. Please remove your site location and try again. For more information " +
-        " visit https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+        " visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
 
     # @todo remove in Berkshelf 4.0
@@ -178,7 +176,7 @@ module Berkshelf
     def chef_api(*args)
       raise Berkshelf::DeprecatedError.new "Your Berksfile contains a chef_api location. Chef API locations have " +
         " been replaced by the source location. Please remove your site location and try again. For more " +
-        " information visit https://github.com/RiotGames/berkshelf/wiki/deprecated-locations"
+        " information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
 
     # Add a dependency of the given name and constraint to the array of dependencies.
@@ -276,6 +274,12 @@ module Berkshelf
       @dependencies[name]
     end
 
+    # Find a dependency, raising an exception if it is not found.
+    # @see {find}
+    def find!(name)
+      find(name) || raise(DependencyNotFound.new(name))
+    end
+
     # @return [Hash]
     #   a hash containing group names as keys and an array of Berkshelf::Dependencies
     #   that are a member of that group as values
@@ -342,7 +346,7 @@ module Berkshelf
     #   Names of the cookbooks to retrieve dependencies for
     #
     # @raise [Berkshelf::OutdatedDependency]
-    #   if the lockfile constraints do not satisfy the Berskfile constraints
+    #   if the lockfile constraints do not satisfy the Berksfile constraints
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def install(options = {})
@@ -376,29 +380,41 @@ module Berkshelf
     # @raise [CookbookNotFound]
     #   if there is a lockfile with a cookbook, but the cookbook is not downloaded
     #
-    # @param [String] name
+    # @param [Dependency] name
     #   the name of the cookbook to find
     #
     # @return [CachedCookbook]
     #   the CachedCookbook that corresponds to the given name parameter
-    def retrieve_locked(name)
-      validate_cookbook_names!(cookbooks: name)
+    def retrieve_locked(dependency)
+      locked = lockfile.find(dependency.name)
 
-      locked = lockfile.find(name)
       unless locked
-        raise LockfileNotFound, "Could not find cookbook '#{name} (>= 0.0.0)'."\
+        raise CookbookNotFound, "Could not find cookbook '#{dependency.to_s}'."\
           " Try running `berks install` to download and install the missing"\
           " dependencies."
       end
 
-      cookbook = locked.cached_cookbook
-      unless cookbook
-        raise CookbookNotFound, "Could not find cookbook '#{name} (= #{locked.locked_version})'."\
+      unless locked.downloaded?
+        raise CookbookNotFound, "Could not find cookbook '#{locked.to_s}'."\
           " Try running `berks install` to download and install the missing"\
           " dependencies."
       end
 
-      cookbook
+      @dependencies[dependency.name] = locked
+      locked.cached_cookbook
+    end
+
+    # The cached cookbooks installed by this Berksfile.
+    #
+    # @raise [Berkshelf::LockfileNotFound]
+    #   if there is no lockfile
+    # @raise [Berkshelf::CookbookNotFound]
+    #   if a listed source could not be found
+    #
+    # @return [Hash<Berkshelf::Dependency, Berkshelf::CachedCookbook>]
+    #   the list of dependencies as keys and the cached cookbook as the value
+    def list
+      Hash[*dependencies.sort.collect { |dependency| [dependency, retrieve_locked(dependency)] }.flatten]
     end
 
     # List of all the cookbooks which have a newer version found at a source that satisfies
@@ -426,7 +442,7 @@ module Berkshelf
 
       outdated = {}
       dependencies(options).each do |dependency|
-        locked = retrieve_locked(dependency.name)
+        locked = retrieve_locked(dependency)
         outdated[dependency.name] = {}
 
         sources.each do |source|
@@ -468,6 +484,10 @@ module Berkshelf
     #   on the remote Chef Server and frozen.
     # @option options [String] :server_url
     #   An overriding Chef Server to upload the cookbooks to
+    # @option options [String] :client_name
+    #   An overriding client name to use for connecting to the chef server
+    # @option options [String] :client_key
+    #   An overriding client key to use for connecting to the chef server
     #
     # @raise [Berkshelf::UploadFailure]
     #   if you are uploading cookbooks with an invalid or not-specified client key
@@ -482,8 +502,8 @@ module Berkshelf
         force: false,
         freeze: true,
         halt_on_frozen: false,
-        skip_dependencies: false,
         cookbooks: [],
+        validate: true
       }.merge(options)
 
       validate_cookbook_names!(options)
@@ -493,96 +513,37 @@ module Berkshelf
       do_upload(cached_cookbooks, options)
     end
 
-    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
-    # target Chef environment
-    #
-    # @param [String] environment_name
-    #
-    # @option options [Hash] :ssl_verify (true)
-    #   Disable/Enable SSL verification during uploads
-    #
-    # @raise [EnvironmentNotFound]
-    #   if the target environment was not found
-    # @raise [ChefConnectionError]
-    #   if you are locking cookbooks with an invalid or not-specified client configuration
-    def apply(environment_name, options = {})
-      ridley_connection(options) do |conn|
-        unless environment = conn.environment.find(environment_name)
-          raise EnvironmentNotFound.new(environment_name)
-        end
-
-        install
-
-        environment.cookbook_versions = {}.tap do |cookbook_versions|
-          lockfile.dependencies.each { |dependency| cookbook_versions[dependency.name] = dependency.locked_version }
-        end
-
-        environment.save
-      end
-    end
-
     # Package the given cookbook for distribution outside of berkshelf. If the
     # name attribute is not given, all cookbooks in the Berksfile will be
     # packaged.
     #
-    # @param [String] name
-    #   the name of the cookbook to package
-    # @param [Hash] options
-    #   a list of options
+    # @param [String] path
+    #   the path where the tarball will be created
     #
-    # @option options [String] :output
-    #   the path to output the tarball
-    # @option options [Boolean] :ignore_chefignore
-    #   do not apply the chefignore file to the packed cookbooks
+    # @option options [Symbol, Array] :except
+    #   Group(s) to exclude which will cause any dependencies marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array] :only
+    #   Group(s) to include which will cause any dependencies marked as a member of the
+    #   group to be installed and all others to be ignored
+    #
+    # @raise [Berkshelf::PackageError]
     #
     # @return [String]
     #   the path to the package
-    def package(name = nil, options = {})
-      tar_name = "#{name || 'package'}.tar.gz"
-      output   = File.expand_path(File.join(options[:output], tar_name))
+    def package(path, options = {})
+      packager = Packager.new(path)
+      packager.validate!
 
-      cached_cookbooks = unless name.nil?
-        unless dependency = find(name)
-          raise CookbookNotFound, "Cookbook '#{name}' is not in your Berksfile"
+      outdir = Dir.mktmpdir do |temp_dir|
+        source = Berkshelf.ui.mute do
+          vendor(File.join(temp_dir, "cookbooks"), options.slice(:only, :except))
         end
-
-        options[:cookbooks] = name
-        Berkshelf.ui.mute { install(options) }
-      else
-        Berkshelf.ui.mute { install(options) }
+        packager.run(source)
       end
 
-      cached_cookbooks.each { |cookbook| validate_files!(cookbook) }
-
-      Dir.mktmpdir do |tmp|
-        cookbooks_dir = File.join(tmp, 'cookbooks')
-        FileUtils.mkdir_p(cookbooks_dir)
-
-        cached_cookbooks.each do |cookbook|
-          path        = cookbook.path.to_s
-          destination = File.join(cookbooks_dir, cookbook.cookbook_name)
-
-          FileUtils.cp_r(path, destination)
-
-          unless options[:ignore_chefignore]
-            if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(path)
-              chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
-              chefignore.remove_ignores_from(destination) if chefignore
-            end
-          end
-        end
-
-        FileUtils.mkdir_p(options[:output])
-
-        Dir.chdir(tmp) do |dir|
-          tgz = Zlib::GzipWriter.new(File.open(output, 'wb'))
-          Archive::Tar::Minitar.pack('.', tgz)
-        end
-      end
-
-      Berkshelf.formatter.package(name, output)
-
-      output
+      Berkshelf.formatter.package(outdir)
+      outdir
     end
 
     # Install the Berksfile or Berksfile.lock and then copy the cached cookbooks into
@@ -612,13 +573,7 @@ module Berkshelf
       chefignore       = nil
       cached_cookbooks = install(options.slice(:except, :only))
 
-      if cached_cookbooks.empty?
-        return nil
-      end
-
-      if ignore_file = Berkshelf::Chef::Cookbook::Chefignore.find_relative_to(Dir.pwd)
-        chefignore = Berkshelf::Chef::Cookbook::Chefignore.new(ignore_file)
-      end
+      return nil if cached_cookbooks.empty?
 
       cached_cookbooks.each do |cookbook|
         Berkshelf.formatter.vendor(cookbook, destination)
@@ -629,12 +584,32 @@ module Berkshelf
         src   = cookbook.path.to_s.gsub('\\', '/')
         files = Dir.glob(File.join(src, '*'))
 
-        if chefignore
-          files = chefignore.remove_ignores_from(files)
+        chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
+        chefignore.apply!(files) if chefignore
+
+        unless cookbook.compiled_metadata?
+          cookbook.compile_metadata(cookbook_destination)
         end
+
+        # Don't vendor the raw metadata (metadata.rb). The raw metadata is unecessary for the
+        # client, and this is required until compiled metadata (metadata.json) takes precedence over
+        # raw metadata in the Chef-Client.
+        #
+        # We can change back to including the raw metadata in the future after this has been fixed or
+        # just remove these comments. There is no circumstance that I can currently think of where
+        # raw metadata should ever be read by the client.
+        #
+        # - Jamie
+        #
+        # See the following tickets for more information:
+        #   * https://tickets.opscode.com/browse/CHEF-4811
+        #   * https://tickets.opscode.com/browse/CHEF-4810
+        files.reject! { |file| File.basename(file) == "metadata.rb" }
 
         FileUtils.cp_r(files, cookbook_destination)
       end
+
+      FileUtils.cp(lockfile.filepath, File.join(scratch, Lockfile::DEFAULT_FILENAME))
 
       FileUtils.mv(scratch, destination)
       destination
@@ -648,7 +623,7 @@ module Berkshelf
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
-      @lockfile ||= Berkshelf::Lockfile.new(self)
+      @lockfile ||= Lockfile.from_berksfile(self)
     end
 
     private
@@ -656,7 +631,7 @@ module Berkshelf
       def do_upload(cookbooks, options = {})
         @skipped = []
 
-        ridley_connection(options) do |conn|
+        Berkshelf.ridley_connection(options) do |conn|
           cookbooks.each do |cookbook|
             Berkshelf.formatter.upload(cookbook, conn)
             validate_files!(cookbook)
@@ -666,6 +641,7 @@ module Berkshelf
                 force: options[:force],
                 freeze: options[:freeze],
                 name: cookbook.cookbook_name,
+                validate: options[:validate]
               })
             rescue Ridley::Errors::FrozenCookbook => ex
               if options[:halt_on_frozen]
@@ -680,7 +656,7 @@ module Berkshelf
 
         unless @skipped.empty?
           Berkshelf.formatter.msg "Skipped uploading some cookbooks because they" <<
-            " already existed on the remote server. Re-run with the `--force`" <<
+            " already exist on the remote server and are frozen. Re-run with the `--force`" <<
             " flag to force overwrite these cookbooks:" <<
             "\n\n" <<
             "  * " << @skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
@@ -708,32 +684,6 @@ module Berkshelf
           cookbooks = explicit.uniq
         end
         cookbooks
-      end
-
-      # @raise [Berkshelf::ChefConnectionError]
-      def ridley_connection(options = {}, &block)
-        ridley_options               = options.slice(:ssl)
-        ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
-        ridley_options[:client_name] = Berkshelf.config.chef.node_name
-        ridley_options[:client_key]  = Berkshelf.config.chef.client_key
-        ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
-
-        unless ridley_options[:server_url].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
-        end
-
-        unless ridley_options[:client_name].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
-        end
-
-        unless ridley_options[:client_key].present?
-          raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
-        end
-
-        Ridley.open(ridley_options, &block)
-      rescue Ridley::Errors::RidleyError => ex
-        log_exception(ex)
-        raise ChefConnectionError, ex # todo implement
       end
 
       # Determine if any cookbooks were specified that aren't in our shelf.

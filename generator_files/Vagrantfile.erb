@@ -1,12 +1,29 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Uncomment these lines (and the ones in the generated Gemfile) if you want
+# to live on the Edge:
+#
+# Vagrant.require_plugin "vagrant-berkshelf"
+# Vagrant.require_plugin "vagrant-omnibus"
+
 Vagrant.configure("2") do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
   config.vm.hostname = "<%= "#{cookbook_name.gsub('_','-')}-berkshelf" %>"
+
+  # Set the version of chef to install using the vagrant-omnibus plugin
+<% if berkshelf_config.vagrant.omnibus.enabled -%>
+<% if berkshelf_config.vagrant.omnibus.version == "latest" -%>
+  config.omnibus.chef_version = :latest
+<% else %>
+  config.omnibus.chef_version = "<%= berkshelf_config.vagrant.omnibus.version %>"
+<% end -%>
+<% else %>
+  #config.omnibus.chef_version = :latest
+<% end -%>
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "<%= berkshelf_config.vagrant.vm.box %>"
@@ -62,9 +79,6 @@ Vagrant.configure("2") do |config|
   # View the documentation for the provider you're using for more
   # information on available options.
 
-  config.ssh.max_tries = 40
-  config.ssh.timeout   = 120
-
   # The path to the Berksfile to use with Vagrant Berkshelf
   # config.berkshelf.berksfile_path = "./Berksfile"
 
@@ -96,10 +110,10 @@ Vagrant.configure("2") do |config|
 <% elsif berkshelf_config.vagrant.vm.provision == "chef_solo" -%>
   config.vm.provision :chef_solo do |chef|
     chef.json = {
-      :mysql => {
-        :server_root_password => 'rootpass',
-        :server_debian_password => 'debpass',
-        :server_repl_password => 'replpass'
+      mysql: {
+        server_root_password: 'rootpass',
+        server_debian_password: 'debpass',
+        server_repl_password: 'replpass'
       }
     }
 

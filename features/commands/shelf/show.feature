@@ -1,8 +1,4 @@
-Feature: Displaying information about a cookbook in the Berkshelf shelf
-  As a user with a cookbook store
-  I want to show information about a specific cookbook in my cookbook store
-  So that I can be well informed
-
+Feature: berks shelf show
   Scenario: With a cookbook that is not in the store
     When I run `berks shelf show fake`
     Then the output should contain:
@@ -30,8 +26,6 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
       """
       Name: ekaf
       """
-    And the exit status should be 0
-
 
   Scenario: With cookbooks in the store and the --version option
     Given the cookbook store has the cookbooks:
@@ -52,7 +46,6 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
       """
       Name: ekaf
       """
-    And the exit status should be 0
 
   Scenario: With cookbooks in the store and the --version option doesn't exist
     Given the cookbook store has the cookbooks:
@@ -103,7 +96,6 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
              Email: YOUR_EMAIL
            License: none
       """
-    And the exit status should be 0
 
   Scenario: With multiple cookbook versions installed and the --version flag
     Given the cookbook store has the cookbooks:
@@ -149,4 +141,3 @@ Feature: Displaying information about a cookbook in the Berkshelf shelf
              Email: YOUR_EMAIL
            License: none
       """
-    And the exit status should be 0

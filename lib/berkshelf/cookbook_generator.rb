@@ -84,7 +84,7 @@ module Berkshelf
     private
 
       def commented(content)
-        content.split("\n").collect { |s| "# #{s}" }.join("\n")
+        content.split("\n").collect { |s| s == "" ? "#" : "# #{s}"}.join("\n")
       end
 
       def license_name

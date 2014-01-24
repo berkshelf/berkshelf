@@ -1,9 +1,6 @@
 require 'buff/extensions'
-require 'archive/tar/minitar'
-require 'celluloid'
 require 'digest/md5'
 require 'forwardable'
-require 'hashie'
 require 'json'
 require 'pathname'
 require 'ridley'
@@ -11,7 +8,6 @@ require 'solve'
 require 'thor'
 require 'tmpdir'
 require 'uri'
-require 'zlib'
 
 JSON.create_id = nil
 
@@ -19,6 +15,7 @@ require_relative 'berkshelf/core_ext'
 require_relative 'berkshelf/thor_ext'
 
 module Berkshelf
+  require_relative 'berkshelf/version'
   require_relative 'berkshelf/errors'
   require_relative 'berkshelf/mixin'
 
@@ -42,7 +39,7 @@ module Berkshelf
       @ui ||= Thor::Base.shell.new
     end
 
-    # Returns the filepath to the location Berskhelf will use for
+    # Returns the filepath to the location Berkshelf will use for
     # storage; temp files will go here, Cookbooks will be downloaded
     # to or uploaded from here. By default this is '~/.berkshelf' but
     # can be overridden by specifying a value for the ENV variable
@@ -114,6 +111,36 @@ module Berkshelf
       @formatter ||= Formatters::HumanReadable.new
     end
 
+    # @raise [Berkshelf::ChefConnectionError]
+    def ridley_connection(options = {}, &block)
+      ridley_options               = options.slice(:ssl)
+
+      ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
+      ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
+      ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
+      ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
+
+      unless ridley_options[:server_url].present?
+        raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
+      end
+
+      unless ridley_options[:client_name].present?
+        raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
+      end
+
+      unless ridley_options[:client_key].present?
+        raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
+      end
+
+      # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
+      # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
+      Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
+      Ridley.open(ridley_options, &block)
+    rescue Ridley::Errors::RidleyError => ex
+      log_exception(ex)
+      raise ChefConnectionError, ex # todo implement
+    end
+
     # Specify the format for output
     #
     # @param [#to_sym] format_id
@@ -139,11 +166,10 @@ module Berkshelf
   end
 end
 
-require_relative 'berkshelf/api_client'
+require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/base_generator'
 require_relative 'berkshelf/berksfile'
 require_relative 'berkshelf/cached_cookbook'
-require_relative 'berkshelf/chef'
 require_relative 'berkshelf/cli'
 require_relative 'berkshelf/community_rest'
 require_relative 'berkshelf/cookbook_generator'
@@ -157,13 +183,11 @@ require_relative 'berkshelf/mercurial'
 require_relative 'berkshelf/init_generator'
 require_relative 'berkshelf/installer'
 require_relative 'berkshelf/location'
-require_relative 'berkshelf/lockfile'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/source'
 require_relative 'berkshelf/source_uri'
 require_relative 'berkshelf/ui'
-require_relative 'berkshelf/version'
 
-Ridley.logger = Celluloid.logger = Berkshelf.logger = Logger.new(STDOUT)
+Ridley.logger = Berkshelf.logger = Logger.new(STDOUT)
 Berkshelf.logger.level = Logger::WARN

@@ -139,15 +139,26 @@ module Berkshelf
     # @return [Berkshelf::CachedCookbook]
     def cached_cookbook
       @cached_cookbook ||= if location
-        location.download
+        download
       else
-        Berkshelf::CookbookStore.instance.satisfy(name, Solve::Constraint.new(locked_version.to_s))
+        if locked_version
+          CookbookStore.instance.cookbook(name, locked_version)
+        else
+          Berkshelf::CookbookStore.instance.satisfy(name, version_constraint)
+        end
       end
     end
 
     # @return [Berkshelf::CachedCookbook]
     def download
       @cached_cookbook = location.download
+
+      if scm_location? || path_location?
+        @locked_version = Solve::Version.new(@cached_cookbook.version)
+        @version_constraint = Solve::Constraint.new(@cached_cookbook.version)
+      end
+
+      @cached_cookbook
     end
 
     # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
@@ -181,6 +192,15 @@ module Berkshelf
       @groups ||= []
     end
 
+    # Determines if this dependency has a location and is it a {PathLocation}
+    #
+    # @return [Boolean]
+    def path_location?
+      location.nil? ? false : location.is_a?(PathLocation)
+    end
+
+    # Determines if this dependency has a location and if it is an SCM location
+    #
     # @return [Boolean]
     def scm_location?
       if location.nil?
@@ -190,8 +210,12 @@ module Berkshelf
       SCM_LOCATIONS.include?(location.class.location_key)
     end
 
+    def <=>(other)
+      [self.name, self.version_constraint] <=> [other.name, other.version_constraint]
+    end
+
     def to_s
-      "#{name} (#{version_constraint})"
+      "#{name} (#{locked_version || version_constraint})"
     end
 
     def inspect
@@ -205,9 +229,7 @@ module Berkshelf
 
     def to_hash
       {}.tap do |h|
-        unless location.kind_of?(PathLocation)
-          h[:locked_version] = locked_version.to_s
-        end
+        h[:locked_version] = locked_version.to_s
 
         if location.kind_of?(PathLocation)
           h[:path] = location.relative_path(berksfile.filepath)

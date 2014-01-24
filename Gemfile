@@ -5,7 +5,6 @@ gemspec
 group :guard do
   gem 'coolline',      '~> 0.4.2'
   gem 'guard',         '~> 1.8'
-  gem 'guard-cane'
   gem 'guard-cucumber'
   gem 'guard-rspec'
   gem 'guard-spork'
@@ -33,5 +32,5 @@ group :guard do
 end
 
 group :test do
-  gem 'berkshelf-api', github: "RiotGames/berkshelf-api"
+  gem 'berkshelf-api', github: "berkshelf/berkshelf-api"
 end

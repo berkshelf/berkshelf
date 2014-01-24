@@ -1,6 +1,5 @@
 module Berkshelf
   class MercurialLocation < Location::ScmLocation
-
     set_location_key :hg
     set_valid_options :rev, :branch, :tag, :rel
 
@@ -43,10 +42,12 @@ module Berkshelf
         return local_revision(destination)
       end
 
-      Berkshelf::Mercurial.checkout(clone, rev || branch || tag) if rev || branch || tag
-      @rev = Berkshelf::Mercurial.rev_parse(clone)
+      repo_path = Berkshelf::Mercurial.clone(uri)
 
-      tmp_path = rel ? File.join(clone, rel) : clone
+      Berkshelf::Mercurial.checkout(repo_path, rev || branch || tag) if rev || branch || tag
+      @rev = Berkshelf::Mercurial.rev_parse(repo_path)
+
+      tmp_path = rel ? File.join(repo_path, rel) : repo_path
       unless File.chef_cookbook?(tmp_path)
         msg = "Cookbook '#{dependency.name}' not found at hg: #{uri}"
         msg << " with rev '#{rev}'" if rev
@@ -78,20 +79,6 @@ module Berkshelf
     end
 
     private
-
-      def hg
-        @hg ||= Berkshelf::Mercurial.new(uri)
-      end
-
-      def clone
-        tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
-        FileUtils.mkdir_p(File.join(File.split(tmp_clone).shift))
-        unless File.exists?(tmp_clone)
-          Berkshelf::Mercurial.clone(uri, tmp_clone)
-        end
-
-        tmp_clone
-      end
 
       def cached?(destination)
         revision_path(destination) && File.exists?(revision_path(destination))

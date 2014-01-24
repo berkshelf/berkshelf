@@ -1,24 +1,5 @@
 module Berkshelf
   class PathLocation < Location::Base
-    class << self
-      # Expand and return a string representation of the given path if it is
-      # absolute or a path in the users home directory.
-      #
-      # Returns the given relative path otherwise.
-      #
-      # @param [#to_s] path
-      #
-      # @return [String]
-      def normalize_path(path)
-        path = path.to_s
-        if (path[0] == '~') || Pathname.new(path).absolute?
-          File.expand_path(path)
-        else
-          path
-        end
-      end
-    end
-
     set_location_key :path
     set_valid_options :path, :metadata
 
@@ -66,6 +47,13 @@ module Berkshelf
 
       return new_path if new_path.index('.') == 0
       "./#{new_path}"
+    end
+
+    # Valid if the path exists and is readable
+    #
+    # @return [Boolean]
+    def valid?
+      File.exist?(path) && File.readable?(path)
     end
 
     def to_hash

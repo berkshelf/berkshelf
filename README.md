@@ -1,14 +1,15 @@
 Berkshelf
 =========
 [![Gem Version](https://badge.fury.io/rb/berkshelf.png)](http://badge.fury.io/rb/berkshelf)
-[![Build Status](https://travis-ci.org/RiotGames/berkshelf.png?branch=master)](https://travis-ci.org/RiotGames/berkshelf)
-[![Dependency Status](https://gemnasium.com/RiotGames/berkshelf.png)](https://gemnasium.com/RiotGames/berkshelf)
-[![Code Climate](https://codeclimate.com/github/RiotGames/berkshelf.png)](https://codeclimate.com/github/RiotGames/berkshelf)
+[![Build Status](https://travis-ci.org/berkshelf/berkshelf.png?branch=master)](https://travis-ci.org/berkshelf/berkshelf)
 
 Manage a Cookbook or an Application's Cookbook dependencies
 
 Installation
 ------------
+
+**WARNING:** It is advised at this time that you [use Berkshelf 3](https://github.com/berkshelf/berkshelf/wiki/Howto:-Use-the-bleeding-edge). Berkshelf 2 is no longer being actively developed and has a number of significant issues related to dependency resolution that Berkshelf 3 fixes.
+
 Add Berkshelf to your repository's `Gemfile`:
 
 ```ruby
@@ -33,13 +34,13 @@ Ruby 1.9.1 and 1.9.2 are not officially supported. If you encounter problems, pl
 
 Bash Completion
 ---------------
-There is a [berkshelf bash completion script](https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh). If you're using homebrew, you can install it like this:
+There is a [berkshelf bash completion script](https://raw.github.com/berkshelf/berkshelf/master/berkshelf-complete.sh). If you're using homebrew, you can install it like this:
 
     brew install bash-completion # if you haven't already
 
 Download the latest script
 
-    cd `brew --prefix`/etc/bash_completion.d && wget https://raw.github.com/RiotGames/berkshelf/master/berkshelf-complete.sh
+    cd `brew --prefix`/etc/bash_completion.d && wget https://raw.github.com/berkshelf/berkshelf/master/berkshelf-complete.sh
 
 And make sure you have this in your bash/zsh profile:
 
@@ -47,7 +48,7 @@ And make sure you have this in your bash/zsh profile:
 
 Plugins
 -------
-Please see [Plugins page](https://github.com/RiotGames/berkshelf/blob/master/PLUGINS.md) for more information.
+Please see [Plugins page](https://github.com/berkshelf/berkshelf/blob/master/PLUGINS.md) for more information.
 
 Configuration
 -------------
@@ -61,9 +62,7 @@ $PWD/config.json
 ~/.berkshelf/config.json
 ```
 
-You are encouraged to keep project-specific configuration in the `$PWD/.berkshelf` directory. You can generate a project-configuration file by running:
-
-    $ berks configure --path ./.berkshelf/config.json
+You are encouraged to keep project-specific configuration in the `$PWD/.berkshelf` directory. A default configuration file is generated for you, but you can update the values to suit your needs.
 
 SSL Errors
 ----------
@@ -89,6 +88,6 @@ Authors
 - Justin Campbell (<justin@justincampbell.me>)
 - Seth Vargo (<sethvargo@gmail.com>)
 
-Thank you to all of our [Contributors](https://github.com/RiotGames/berkshelf/graphs/contributors), testers, and users.
+Thank you to all of our [Contributors](https://github.com/berkshelf/berkshelf/graphs/contributors), testers, and users.
 
-If you'd like to contribute, please see our [contribution guidelines](https://github.com/RiotGames/berkshelf/blob/master/CONTRIBUTING.md) first.
+If you'd like to contribute, please see our [contribution guidelines](https://github.com/berkshelf/berkshelf/blob/master/CONTRIBUTING.md) first.

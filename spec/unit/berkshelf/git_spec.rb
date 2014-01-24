@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Berkshelf::Git do
   let(:git) { Berkshelf::Git }
 
-  describe '.find_git' do
+  describe '::find_git' do
     it 'finds git' do
       expect(Berkshelf::Git.find_git).to_not be_nil
     end
@@ -17,7 +17,7 @@ describe Berkshelf::Git do
     end
   end
 
-  describe '.clone' do
+  describe '::clone' do
     let(:target) { clone_path('nginx') }
 
     it 'clones the repository to the target path' do
@@ -29,7 +29,7 @@ describe Berkshelf::Git do
     end
   end
 
-  describe '.checkout' do
+  describe '::checkout' do
     let(:repo_path) { clone_path('nginx') }
     let(:repo) {
       origin_uri = git_origin_for('nginx', tags: ['1.0.1', '1.0.2'], branches: ['topic', 'next_topic'])
@@ -90,7 +90,7 @@ describe Berkshelf::Git do
     end
   end
 
-  describe '.rev_parse' do
+  describe '::rev_parse' do
     let(:repo_path) { clone_path('nginx') }
     before(:each) do |example|
       origin_uri = git_origin_for('nginx', tags: ['1.1.1'])
@@ -106,7 +106,7 @@ describe Berkshelf::Git do
     end
   end
 
-  describe '.show_ref' do
+  describe '::show_ref' do
     let(:repo_path) { clone_path('nginx') }
     let(:tags) { ['1.0.1'] }
     let(:branches) { ['topic'] }
@@ -140,7 +140,7 @@ describe Berkshelf::Git do
     end
   end
 
-  describe '.revision_from_ref' do
+  describe '::revision_from_ref' do
     let(:repo_path) { clone_path('nginx') }
     let(:tags) { ['1.0.1'] }
     let(:branches) { ['topic'] }
@@ -188,7 +188,7 @@ describe Berkshelf::Git do
   let(:http_uri) { 'http://github.com/reset/solve.git' }
   let(:invalid_uri) { '/something/on/disk' }
 
-  describe '.validate_uri' do
+  describe '::validate_uri' do
     context 'given a valid Git read-only URI' do
       it 'returns true' do
         expect(Berkshelf::Git.validate_uri(readonly_uri)).to be_true
@@ -262,7 +262,7 @@ describe Berkshelf::Git do
     end
   end
 
-  describe '.validate_uri!' do
+  describe '::validate_uri!' do
     context 'given a valid Git read-only URI' do
       it 'returns true' do
         expect(Berkshelf::Git.validate_uri!(readonly_uri)).to be_true

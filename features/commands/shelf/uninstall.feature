@@ -1,8 +1,4 @@
-Feature: Removing a cookbook from the Berkshelf shelf
-  As a user with a cookbook store
-  I want to remove a cookbook because it's a bad version
-  So that I don't have to manually touch things in the ~/.berkshelf directory
-
+Feature: berks shelf uninstall
   Scenario: With no cookbooks in the store
     When I run `berks shelf uninstall fake`
     Then the output should contain:
@@ -24,7 +20,6 @@ Feature: Removing a cookbook from the Berkshelf shelf
       | fake | 1.0.0 |
     And the cookbook store should have the cookbooks:
       | ekaf | 2.3.4 |
-    And the exit status should be 0
 
   Scenario: With multiple cookbook versions installed
     Given the cookbook store has the cookbooks:
@@ -45,7 +40,6 @@ Feature: Removing a cookbook from the Berkshelf shelf
       | fake | 1.1.0 |
       | fake | 1.2.0 |
       | fake | 2.0.0 |
-    And the exit status should be 0
 
   Scenario: When specifying a version
     Given the cookbook store has the cookbooks:
@@ -64,7 +58,6 @@ Feature: Removing a cookbook from the Berkshelf shelf
       | fake | 1.1.0 |
       | fake | 1.2.0 |
       | fake | 2.0.0 |
-    And the exit status should be 0
 
   @spawn
   Scenario: With contingencies
@@ -86,7 +79,6 @@ Feature: Removing a cookbook from the Berkshelf shelf
       """
     And the cookbook store should not have the cookbooks:
       | ekaf | 2.3.4 |
-    And the exit status should be 0
 
   Scenario: With contingencies and the --force flag
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
@@ -100,4 +92,3 @@ Feature: Removing a cookbook from the Berkshelf shelf
       """
     And the cookbook store should not have the cookbooks:
       | ekaf | 2.3.4 |
-    And the exit status should be 0

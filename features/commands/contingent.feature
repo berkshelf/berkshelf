@@ -1,12 +1,8 @@
-Feature: Running the contingent command
-  As a user with a Berksfile
-  I want a way to the cookbooks that depend on another
-  So that I can better understand my infrastructure
-
+Feature: berks contingent
   Background:
-    Given the Berkshelf API server's cache is empty
-    And the Chef Server is empty
-    And the cookbook store is empty
+    * the Berkshelf API server's cache is empty
+    * the Chef Server is empty
+    * the cookbook store is empty
 
   Scenario: When there are dependent cookbooks
     Given the cookbook store has the cookbooks:
@@ -15,10 +11,8 @@ Feature: Running the contingent command
       | dep | ~> 1.0.0 |
     And the cookbook store contains a cookbook "ekaf" "1.0.0" with dependencies:
       | dep | ~> 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '1.0.0'
       """
@@ -29,15 +23,12 @@ Feature: Running the contingent command
         * ekaf (1.0.0)
         * fake (1.0.0)
       """
-    And the exit status should be 0
 
   Scenario: When there are no dependent cookbooks
     Given the cookbook store has the cookbooks:
       | fake | 1.0.0 |
-    And I write to "Berksfile" with:
+    And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      source "http://localhost:26210"
-
       cookbook 'fake', '1.0.0'
       """
     And I successfully run `berks contingent dep`
@@ -45,13 +36,9 @@ Feature: Running the contingent command
       """
       There are no cookbooks contingent upon 'dep' defined in this Berksfile
       """
-    And the exit status should be 0
 
   Scenario: When the cookbook is not in the Berksfile
-    Given I write to "Berksfile" with:
-      """
-      source "http://localhost:26210"
-      """
+    Given I have a Berksfile pointing at the local Berkshelf API
     And I successfully run `berks contingent dep`
     Then the output should contain:
       """

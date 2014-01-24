@@ -89,25 +89,28 @@ module Berkshelf
     # Returns an array of the Cookbooks that have been cached to the
     # storage_path of this instance of CookbookStore.
     #
-    # @param [String] filter
+    # @param [String, Regexp] filter
     #   return only the CachedCookbooks whose name match the given filter
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)
-      cookbooks = []
-
-      storage_path.each_child.map do |path|
-        Celluloid::Future.new do
-          cached_cookbook = CachedCookbook.from_store_path(path)
-
-          next unless cached_cookbook
-          next if filter && cached_cookbook.cookbook_name != filter
-
-          cookbooks << cached_cookbook
+      cookbooks = storage_path.children.collect do |path|
+        begin
+          Solve::Version.split(File.basename(path).slice(CachedCookbook::DIRNAME_REGEXP, 2))
+        rescue Solve::Errors::InvalidVersionFormat
+          # Skip cookbooks that were downloaded by an SCM location. These can not be considered
+          # complete cookbooks.
+          next
         end
-      end.each(&:value)
 
-      cookbooks
+        CachedCookbook.from_store_path(path)
+      end.compact
+
+      return cookbooks unless filter
+
+      cookbooks.select do |cookbook|
+        filter === cookbook.cookbook_name
+      end
     end
 
     # Returns an expanded path to the location on disk where the Cookbook
@@ -141,7 +144,7 @@ module Berkshelf
       graph = Solve::Graph.new
       cookbooks(name).each { |cookbook| graph.artifacts(name, cookbook.version) }
 
-      name, version = Solve.it!(graph, [[name, constraint]]).first
+      name, version = Solve.it!(graph, [[name, constraint]], ENV['DEBUG_RESOLVER'] ? { ui: Berkshelf.ui } : {}).first
 
       cookbook(name, version)
     rescue Solve::Errors::NoSolutionError

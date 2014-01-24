@@ -13,11 +13,11 @@ module Berkshelf
 
     class_option :metadata_entry,
       type: :boolean,
-      default: false
+      default: true
 
     class_option :chefignore,
       type: :boolean,
-      default: false
+      default: true
 
     class_option :skip_vagrant,
       type: :boolean,
@@ -59,6 +59,7 @@ module Berkshelf
     end
 
     def generate
+      validate_cookbook
       validate_configuration
       check_option_support
 
@@ -66,7 +67,7 @@ module Berkshelf
       template 'Thorfile.erb', target.join('Thorfile')
 
       if options[:chefignore]
-        copy_file 'chefignore', target.join(Berkshelf::Chef::Cookbook::Chefignore::FILENAME)
+        copy_file 'chefignore', target.join(Ridley::Chef::Chefignore::FILENAME)
       end
 
       unless options[:skip_git]
@@ -95,7 +96,7 @@ module Berkshelf
 
       if defined?(Kitchen::Generator::Init)
         unless options[:skip_test_kitchen]
-          # Temporarily use Dir.chdir to ensure the destionation_root of test kitchen's generator
+          # Temporarily use Dir.chdir to ensure the destination_root of test kitchen's generator
           # is where we expect until this bug can be addressed:
           # https://github.com/opscode/test-kitchen/pull/140
           Dir.chdir target do
@@ -126,6 +127,19 @@ module Berkshelf
           metadata.name.empty? ? File.basename(target) : metadata.name
         rescue CookbookNotFound, IOError
           File.basename(target)
+        end
+      end
+
+      # Assert the current working directory is a cookbook
+      #
+      # @raise [NotACookbook] if the current working directory is
+      #   not a cookbook
+      #
+      # @return [nil]
+      def validate_cookbook
+        path = File.expand_path(File.join(target, 'metadata.rb'))
+        unless File.exists?(path)
+          raise Berkshelf::NotACookbook.new(path)
         end
       end
 

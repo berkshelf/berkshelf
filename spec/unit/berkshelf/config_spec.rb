@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Berkshelf::Config do
-  describe '.file' do
+  describe '::file' do
     context 'when the file does not exist' do
       before { File.stub(:exists?).and_return(false) }
 
@@ -11,13 +11,13 @@ describe Berkshelf::Config do
     end
   end
 
-  describe '.instance' do
+  describe '::instance' do
     it 'should be a Berkshelf::Config' do
       expect(Berkshelf::Config.instance).to be_an_instance_of(Berkshelf::Config)
     end
   end
 
-  describe '.path' do
+  describe '::path' do
     it 'is a string' do
       expect(Berkshelf::Config.path).to be_a(String)
     end
@@ -37,7 +37,7 @@ describe Berkshelf::Config do
       end
 
       it "points to a location within it" do
-        expect(Berkshelf::Config.path).to eq('/tmp/config.json')
+        expect(Berkshelf::Config.path).to match(%r{/tmp/config.json})
       end
     end
   end

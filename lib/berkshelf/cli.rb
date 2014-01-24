@@ -40,12 +40,12 @@ module Berkshelf
 
     class << self
       def dispatch(meth, given_args, given_opts, config)
-        unless (given_args & ['-h', '--help']).empty?
-          if given_args.length == 1
-            # berks --help
-            super
+        if given_args.length > 1 && !(given_args & Thor::HELP_MAPPINGS).empty?
+          command = given_args.first
+
+          if self.subcommands.include?(command)
+            super(meth, [command, 'help'].compact, nil, config)
           else
-            command = given_args.first
             super(meth, ['help', command].compact, nil, config)
           end
         else
@@ -67,6 +67,7 @@ module Berkshelf
       end
 
       if @options[:debug]
+        ENV["BERKSHELF_DEBUG"] = "true"
         Berkshelf.logger.level = ::Logger::DEBUG
       end
 
@@ -111,56 +112,6 @@ module Berkshelf
       aliases: '-d',
       default: false
 
-    method_option :force,
-      type: :boolean,
-      default: false,
-      desc: 'create a new configuration file even if one already exists.'
-    method_option :path,
-      type: :string,
-      default: Berkshelf.config.path,
-      desc: 'The path to save the configuration file'
-    desc 'configure', 'Create a new Berkshelf configuration file'
-    def configure
-      path = File.expand_path(options[:path])
-
-      if File.exist?(path) && !options[:force]
-        raise Berkshelf::ConfigExists, 'A configuration file already exists. Re-run with the --force flag if you wish to overwrite it.'
-      end
-
-      config = Berkshelf::Config.new(path)
-
-      [
-        'chef.chef_server_url',
-        'chef.node_name',
-        'chef.client_key',
-        'chef.validation_client_name',
-        'chef.validation_key_path',
-        'vagrant.vm.box',
-        'vagrant.vm.box_url',
-      ].each do |attribute|
-        default = config.get_attribute(attribute)
-
-        message = "Enter value for #{attribute}"
-        message << " (default: '#{default}')" if default
-        message << ": "
-
-        input = Berkshelf.ui.ask(message)
-
-        if input.present?
-          config.set_attribute(attribute, input)
-        end
-      end
-
-      unless config.valid?
-        raise InvalidConfiguration.new(config.errors)
-      end
-
-      config.save
-      Berkshelf.config = config
-
-      Berkshelf.formatter.msg "Config written to: '#{path}'"
-    end
-
     method_option :except,
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
@@ -177,11 +128,17 @@ module Berkshelf
       banner: 'PATH'
     method_option :path,
       type: :string,
-      desc: 'Path to install cookbooks to (i.e. vendor/cookbooks).',
       aliases: '-p',
-      banner: 'PATH'
+      hide: true
     desc 'install', 'Install the cookbooks specified in the Berksfile'
     def install
+      if options[:path]
+        # TODO: Remove in Berkshelf 4.0
+        Berkshelf.formatter.deprecation "`berks install --path [PATH}` has been replaced by `berks vendor`."
+        Berkshelf.formatter.deprecation "Re-run your command as `berks vendor [PATH]` or see `berks help vendor`."
+        exit(1)
+      end
+
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
       berksfile.install(options)
     end
@@ -252,26 +209,31 @@ module Berkshelf
 
       options[:cookbooks] = cookbook_names
       options[:freeze]    = !options[:no_freeze]
+      options[:validate]  = false if options[:skip_syntax_check]
 
       berksfile.upload(options.symbolize_keys)
     end
 
-    method_option :berksfile,
+    method_option :lockfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile to operate off of.',
+      default: Berkshelf::Lockfile::DEFAULT_FILENAME,
+      desc: 'Path to a Berksfile.lock to operate off of.',
       aliases: '-b',
       banner: 'PATH'
     method_option :ssl_verify,
       type: :boolean,
       default: nil,
       desc: 'Disable/Enable SSL verification when locking cookbooks.'
-    desc 'apply ENVIRONMENT', 'Apply the cookbook version locks from Berksfile.lock to a Chef environment'
+    desc 'apply ENVIRONMENT', 'Apply version locks from Berksfile.lock to a Chef environment'
     def apply(environment_name)
-      berksfile    = Berkshelf::Berksfile.from_file(options[:berksfile])
+      unless File.exist?(options[:lockfile])
+        raise LockfileNotFound, "No lockfile found at #{options[:lockfile]}"
+      end
+
+      lockfile     = Berkshelf::Lockfile.from_file(options[:lockfile])
       lock_options = Hash[options].symbolize_keys
 
-      berksfile.apply(environment_name, lock_options)
+      lockfile.apply(environment_name, lock_options)
     end
 
     method_option :berksfile,
@@ -308,11 +270,6 @@ module Berkshelf
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
 
-      if File.chef_cookbook?(path)
-        options[:chefignore]     = true
-        options[:metadata_entry] = true
-      end
-
       Berkshelf::InitGenerator.new([path], options).invoke_all
 
       Berkshelf.formatter.msg 'Successfully initialized'
@@ -326,15 +283,8 @@ module Berkshelf
       banner: 'PATH'
     desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
     def list
-      berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
-
-      if dependencies.empty?
-        Berkshelf.formatter.msg 'There are no cookbooks installed by your Berksfile'
-      else
-        Berkshelf.formatter.msg 'Cookbooks installed by your Berksfile:'
-        print_list(dependencies)
-      end
+      berksfile = Berksfile.from_file(options[:berksfile])
+      Berkshelf.formatter.list(berksfile.list)
     end
 
     method_option :berksfile,
@@ -346,7 +296,7 @@ module Berkshelf
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def show(name)
       berksfile = Berksfile.from_file(options[:berksfile])
-      cookbook = berksfile.retrieve_locked(name)
+      cookbook = berksfile.retrieve_locked(berksfile.find!(name))
       Berkshelf.formatter.show(cookbook)
     end
 
@@ -376,20 +326,24 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    method_option :output,
-      type: :string,
-      default: '.',
-      desc: 'Path to output the tarball',
-      aliases: '-o',
-      banner: 'PATH'
-    method_option :ignore_chefignore,
-      type: :boolean,
-      desc: 'Do not apply the chefignore to the packaged contents',
-      default: false
-    desc "package [COOKBOOK]", "Package a cookbook and it's dependencies as a tarball"
-    def package(name = nil)
+    method_option :except,
+      type: :array,
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
+    method_option :only,
+      type: :array,
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    desc "package [PATH]", "Vendor and archive the dependencies of a Berksfile"
+    def package(path = nil)
+      if path.nil?
+        path ||= File.join(Dir.pwd, "cookbooks-#{Time.now.to_i}.tar.gz")
+      else
+        path = File.expand_path(path)
+      end
+
       berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.package(name, options)
+      berksfile.package(path, options)
     end
 
     method_option :except,

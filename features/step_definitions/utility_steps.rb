@@ -2,8 +2,8 @@ Given /^pending\s+"([^\"]+)"$/ do |msg|
   pending
 end
 
-Then /^the output should be the same as \`(.+)\`$/ do |command|
-  run_simple(command)
-  output = output_from(command)
-  expect(all_output).to include(output)
+Then /the output from \`(.+)\` should be the same as \`(.+)\`/ do |actual, expected|
+  run_simple(actual)
+  run_simple(expected)
+  expect(output_from(actual)).to eq(output_from(expected))
 end

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Berkshelf::MercurialLocation do
-
   include Berkshelf::RSpec::Mercurial
 
   let(:cookbook_uri) { mercurial_origin_for('fake_cookbook', is_cookbook: true, tags: ["1.0.0"], branches: ["mybranch"]) }
@@ -9,7 +8,7 @@ describe Berkshelf::MercurialLocation do
   let(:dependency) { double('dep', name: "berkshelf-cookbook-fixture", version_constraint: constraint) }
   let(:storage_path) { Berkshelf::CookbookStore.instance.storage_path }
 
-  describe '.initialize' do
+  describe '::initialize' do
     it 'raises InvalidHgURI if given an invalid URI for options[:hg]' do
       expect {
         described_class.new(dependency, hg: '/something/on/disk')
@@ -17,18 +16,10 @@ describe Berkshelf::MercurialLocation do
     end
   end
 
-  describe '.tmpdir' do
-    it 'creates a temporary directory within the Berkshelf temporary directory' do
-      expect(described_class.tmpdir).to include(Berkshelf.tmp_dir)
-    end
-  end
-
   subject { described_class.new(dependency, hg: cookbook_uri) }
 
   describe '#download' do
-
-    before() do
-      # recreate the fake repo
+    before do
       clean_tmp_path
       FileUtils.mkdir_p(storage_path)
       cookbook_uri
@@ -113,13 +104,8 @@ describe Berkshelf::MercurialLocation do
 
     context 'given a value for tag' do
       let(:tag) { '1.0.0' }
+      subject { described_class.new(dependency, hg: cookbook_uri, tag: tag) }
 
-      subject do
-        described_class.new(dependency,
-                                   hg: cookbook_uri,
-                                   tag: tag
-        )
-      end
       let(:cached) { subject.download }
       let(:sha) { subject.rev }
       let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }
@@ -131,13 +117,8 @@ describe Berkshelf::MercurialLocation do
 
     context 'give a value for branch' do
       let(:branch) { 'mybranch' }
+      subject { described_class.new(dependency, hg: cookbook_uri, branch: branch) }
 
-      subject do
-        described_class.new(dependency,
-                                   hg: cookbook_uri,
-                                   branch: branch
-        )
-      end
       let(:cached) { subject.download }
       let(:sha) { subject.rev }
       let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }

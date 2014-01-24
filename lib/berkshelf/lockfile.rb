@@ -5,6 +5,29 @@ module Berkshelf
   # when working in teams where the same cookbook versions are desired across
   # multiple workstations.
   class Lockfile
+    class << self
+      # Initialize a Lockfile from the given filepath
+      #
+      # @param [String] filepath
+      #   filepath to the lockfile
+      def from_file(filepath)
+        new(filepath: filepath)
+      end
+
+      # Initialize a Lockfile from the given Berksfile
+      #
+      # @param [Berkshelf::Berksfile] berksfile
+      #   the Berksfile associated with the Lockfile
+      def from_berksfile(berksfile)
+        filepath = File.join(File.dirname(File.expand_path(berksfile.filepath)), Lockfile::DEFAULT_FILENAME)
+        new(berksfile: berksfile, filepath: filepath)
+      end
+    end
+
+    DEFAULT_FILENAME = "Berksfile.lock"
+
+    include Berkshelf::Mixin::Logging
+
     # @return [Pathname]
     #   the path to this Lockfile
     attr_reader :filepath
@@ -17,14 +40,53 @@ module Berkshelf
     # Lockfile exists, it is automatically loaded. Otherwise, an empty instance is
     # created and ready for use.
     #
-    # @param berksfile [Berkshelf::Berksfile]
+    # @option options [String] :filepath
+    #   filepath to the lockfile
+    # @option options [Berkshelf::Berksfile] :berksfile
     #   the Berksfile associated with this Lockfile
-    def initialize(berksfile)
-      @berksfile    = berksfile
-      @filepath     = File.expand_path("#{berksfile.filepath}.lock")
+    def initialize(options = {})
+      @filepath     = options[:filepath].to_s
+      @berksfile    = options[:berksfile]
       @dependencies = {}
 
       load! if File.exists?(@filepath)
+    end
+
+    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
+    # target Chef environment
+    #
+    # @param [String] environment_name
+    #
+    # @option options [Hash] :ssl_verify (true)
+    #   Disable/Enable SSL verification during uploads
+    #
+    # @raise [EnvironmentNotFound]
+    #   if the target environment was not found
+    # @raise [ChefConnectionError]
+    #   if you are locking cookbooks with an invalid or not-specified client configuration
+    def apply(environment_name, options = {})
+      Berkshelf.ridley_connection(options) do |conn|
+        unless environment = conn.environment.find(environment_name)
+          raise EnvironmentNotFound.new(environment_name)
+        end
+
+        environment.cookbook_versions = {}.tap do |cookbook_versions|
+          dependencies.each do |dependency|
+            if dependency.locked_version.nil?
+              # A locked version must be present for each entry. Older versions of the lockfile
+              # may have contained dependencies with a special type of location that would attempt
+              # to dynamically determine the locked version. This is incorrect and the Lockfile
+              # should be regenerated if that is the case.
+              raise InvalidLockFile, "Your lockfile contains a dependency without a locked version. This " +
+                "may be because you have an old lockfile. Regenerate your lockfile and try again."
+            end
+
+            cookbook_versions[dependency.name] = "= #{dependency.locked_version.to_s}"
+          end
+        end
+
+        environment.save
+      end
     end
 
     # Load the lockfile from file system.
@@ -37,7 +99,9 @@ module Berkshelf
         options[:path] &&= File.expand_path(options[:path], File.dirname(filepath))
 
         begin
-          add(Berkshelf::Dependency.new(berksfile, name.to_s, options))
+          dependency = Berkshelf::Dependency.new(berksfile, name.to_s, options)
+          next if dependency.location && !dependency.location.valid?
+          add(dependency)
         rescue Berkshelf::CookbookNotFound
           # It's possible that a source is locked that contains a path location, and
           # that path location was renamed or no longer exists. When loading the
@@ -61,6 +125,7 @@ module Berkshelf
     #
     # @param [String, Berkshelf::Dependency] dependency
     #   the cookbook dependency/name to find
+    #
     # @return [Berkshelf::Dependency, nil]
     #   the cookbook dependency from this lockfile or nil if one was not found
     def find(dependency)
@@ -71,6 +136,7 @@ module Berkshelf
     #
     # @param [String, Berkshelf::Dependency] dependency
     #   the cookbook dependency/name to determine existence of
+    #
     # @return [Boolean]
     #   true if the dependency exists, false otherwise
     def has_dependency?(dependency)

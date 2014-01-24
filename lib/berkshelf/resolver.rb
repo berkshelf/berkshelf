@@ -41,11 +41,13 @@ module Berkshelf
       demands.push(demand)
     end
 
-    def add_explicit_dependencies(dependency)
-      unless cookbook = dependency.cached_cookbook
-        return nil
-      end
-
+    # Add dependencies of a locally cached cookbook which will take precedence over anything
+    # found in the universe.
+    #
+    # @param [Berkshelf::CachedCookbook] cookbook
+    #
+    # @return [Hash]
+    def add_explicit_dependencies(cookbook)
       graph.populate_local(cookbook)
     end
 
@@ -68,7 +70,7 @@ module Berkshelf
       graph.populate_store
       graph.populate(berksfile.sources)
 
-      Solve.it!(graph, demand_array).collect do |name, version|
+      Solve.it!(graph, demand_array, ENV['DEBUG_RESOLVER'] ? { ui: Berkshelf.ui } : {}).collect do |name, version|
         dependency = get_demand(name) || Dependency.new(berksfile, name, locked_version: version)
         [ name, version, dependency ]
       end

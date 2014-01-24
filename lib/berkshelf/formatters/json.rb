@@ -41,14 +41,17 @@ module Berkshelf
       #
       # @param [String] cookbook
       # @param [String] version
-      # @param [~Location] location
-      def install(cookbook, version, location)
+      # @option options [String] :api_source
+      #   the berkshelf-api source url
+      # @option options [String] :location_path
+      #   the chef server url for a cookbook's location
+      def install(cookbook, version, options = {})
         cookbooks[cookbook] ||= {}
         cookbooks[cookbook][:version] = version
 
-        if location && location.is_a?(PathLocation)
-          cookbooks[cookbook][:metadata] = true if location.metadata?
-          cookbooks[cookbook][:location] = location.relative_path
+        if options.has_key?(:api_source) && options.has_key?(:location_path)
+          cookbooks[cookbook][:api_source] = options[:api_source] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
+          cookbooks[cookbook][:location_path] = options[:location_path] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
         end
       end
 
@@ -106,13 +109,17 @@ module Berkshelf
         end
       end
 
-      # Add a Cookbook package entry to delayed output
+      # Output a list of cookbooks to delayed output
       #
-      # @param [String] cookbook
-      # @param [String] destination
-      def package(cookbook, destination)
-        cookbooks[cookbook] ||= {}
-        cookbooks[cookbook][:destination] = destination
+      # @param [Hash<Dependency, CachedCookbook>] list
+      def list(list)
+        list.each do |dependency, cookbook|
+          cookbooks[cookbook.cookbook_name] ||= {}
+          cookbooks[cookbook.cookbook_name][:version] = cookbook.version
+          if dependency.location
+            cookbooks[cookbook.cookbook_name][:location] = dependency.location
+          end
+        end
       end
 
       # Output Cookbook info entry to delayed output
@@ -143,6 +150,13 @@ module Berkshelf
       # @param [String] message
       def error(message)
         output[:errors] << message
+      end
+
+      # Add a warning message entry to delayed output
+      #
+      # @param [String] message
+      def warn(message)
+        output[:warnings] << message
       end
 
       private

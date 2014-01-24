@@ -121,6 +121,13 @@ module Berkshelf
         true
       end
 
+      # Determines if the location is well formed and points to an accessible location
+      #
+      # @return [Boolean]
+      def valid?
+        true
+      end
+
       def to_hash
         { type: self.class.location_key }
       end
@@ -130,19 +137,7 @@ module Berkshelf
       end
     end
 
-    class ScmLocation < Location::Base
-      class << self
-        # Create a temporary directory for the cloned repository within Berkshelf's
-        # temporary directory
-        #
-        # @return [String]
-        #   the path to the created temporary directory
-        def tmpdir
-          @tmpdir ||= Berkshelf.mktmpdir
-        end
-      end
-    end
-
+    class ScmLocation < Location::Base; end
   end
 end
 

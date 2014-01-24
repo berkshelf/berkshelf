@@ -12,12 +12,6 @@ describe Berkshelf::GitLocation do
         }.to raise_error(Berkshelf::InvalidGitURI)
       end
     end
-
-    describe "::tmpdir" do
-      it 'creates a temporary directory within the Berkshelf temporary directory' do
-        expect(described_class.tmpdir).to include(Berkshelf.tmp_dir)
-      end
-    end
   end
 
   let(:storage_path) { Berkshelf::CookbookStore.instance.storage_path }
@@ -79,9 +73,9 @@ describe Berkshelf::GitLocation do
       subject { described_class.new(dependency, git: "file://#{fake_remote}.git") }
 
       it 'raises a CookbookNotFound error' do
-        subject.stub(:clone).and_return {
+        Berkshelf::Git.stub(:clone).and_return {
           FileUtils.mkdir_p(fake_remote)
-          Dir.chdir(fake_remote) { |dir| `git init; echo hi > README; git add README; git commit README -m 'README'`; dir }
+          Dir.chdir(fake_remote) { |dir| `git init && echo hi > README && git add README && git commit README -m 'README'`; dir }
         }
 
         expect { subject.download }.to raise_error(Berkshelf::CookbookNotFound)
@@ -98,7 +92,7 @@ describe Berkshelf::GitLocation do
     end
 
     context 'given a value for tag' do
-      let(:tag) { '1.0.0' }
+      let(:tag) { 'v1.0.0' }
 
       subject do
         described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', tag: tag)
