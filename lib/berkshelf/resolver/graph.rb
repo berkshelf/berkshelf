@@ -7,6 +7,10 @@ module Berkshelf
 
         store.cookbooks.each do |cookbook|
           artifacts(cookbook.cookbook_name, cookbook.version)
+
+          cookbook.dependencies.each do |dependency, constraint|
+            artifacts(cookbook.cookbook_name, cookbook.version).depends(dependency, constraint)
+          end
         end
       end
 
