@@ -1,3 +1,7 @@
+# 2.0.14
+
+* Backport changes from master to allow detecting cookbooks by metadata.json
+
 # 2.0.13
 
 * Lock transitive dependency on Faraday
