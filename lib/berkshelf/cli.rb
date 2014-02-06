@@ -281,10 +281,20 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
+    method_option :except,
+      type: :array,
+      desc: 'Exclude cookbooks that are in these groups.',
+      aliases: '-e'
+    method_option :only,
+      type: :array,
+      desc: 'Only cookbooks that are in these groups.',
+      aliases: '-o'
+    desc 'list', 'List cookbooks and their dependencies specified by your Berksfile'
     def list
       berksfile = Berksfile.from_file(options[:berksfile])
-      Berkshelf.formatter.list(berksfile.list)
+      cookbooks = berksfile.list(options.symbolize_keys)
+
+      Berkshelf.formatter.list(cookbooks)
     end
 
     method_option :berksfile,
