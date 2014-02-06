@@ -52,6 +52,14 @@ module Berkshelf
       load! if File.exists?(@filepath)
     end
 
+    # Determine if this lockfile actually exists on disk.
+    #
+    # @return [Boolean]
+    #   true if this lockfile exists on the disk, false otherwise
+    def present?
+      File.exists?(filepath) && !File.read(filepath).strip.empty?
+    end
+
     # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
     # target Chef environment
     #
