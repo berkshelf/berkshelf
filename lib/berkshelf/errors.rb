@@ -495,7 +495,13 @@ module Berkshelf
 
   class DuplicateDemand < BerkshelfError; status_code(138); end
   class VendorError < BerkshelfError; status_code(139); end
-  class LockfileNotFound < BerkshelfError; status_code(140); end
+  class LockfileNotFound < BerkshelfError
+    status_code(140)
+
+    def to_s
+      'Lockfile not found! Run `berks install` to create the lockfile.'
+    end
+  end
 
   class NotACookbook < BerkshelfError
     status_code(141)
@@ -513,4 +519,25 @@ module Berkshelf
 
   class InvalidLockFile < BerkshelfError; status_code(142); end
   class PackageError < BerkshelfError; status_code(143); end
+
+  class LockfileOutOfSync < BerkshelfError
+    status_code(144)
+
+    def to_s
+      'The lockfile is out of sync! Run `berks install` to sync the lockfile.'
+    end
+  end
+
+  class DependencyNotInstalled < BerkshelfError
+    status_code(145)
+
+    def initialize(dependency)
+      name    = dependency.name
+      version = dependency.locked_version
+
+      super "The cookbook '#{name} (#{version})' is not installed. Please " \
+            "run `berks install` to download and install the missing " \
+            "dependency."
+    end
+  end
 end
