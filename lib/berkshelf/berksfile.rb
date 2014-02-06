@@ -449,6 +449,13 @@ module Berkshelf
     #   }
     def outdated(options = {})
       validate_cookbook_names!(options)
+      validate_lockfile_present!
+      validate_lockfile_in_sync!(options)
+
+      # TODO: Eventually we want to refactor this method and algorithm, but
+      # that would involve a pretty large lockfile refactor, so it will have
+      # to wait until a later release...
+      validate_dependencies_installed!(options)
 
       outdated = {}
       dependencies(options).each do |dependency|
