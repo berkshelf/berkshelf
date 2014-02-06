@@ -1,4 +1,3 @@
-@focus
 Feature: berks outdated
   Scenario: the dependency is up to date
     Given the Chef Server has cookbooks:
