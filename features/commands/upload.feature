@@ -49,7 +49,7 @@ Feature: berks upload
     When I run `berks upload reset`
     Then the output should contain:
       """
-      Could not find cookbook(s) 'reset' in any of the configured dependencies. Is it in your Berksfile?
+      Could not find cookbook 'reset'. Make sure it is in your Berksfile, then run `berks install` to download and install the missing dependencies.
       """
     And the exit status should be "DependencyNotFound"
 

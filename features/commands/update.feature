@@ -41,6 +41,6 @@ Feature: berks update
     When I run `berks update not_real`
     Then the output should contain:
       """
-      Could not find cookbook(s) 'not_real' in any of the configured dependencies. Is it in your Berksfile?
+      Could not find cookbook 'not_real'. Make sure it is in your Berksfile, then run `berks install` to download and install the missing dependencies.
       """
     And the exit status should be "DependencyNotFound"

@@ -281,10 +281,20 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    desc 'list', 'List all cookbooks and their dependencies specified by your Berksfile'
+    method_option :except,
+      type: :array,
+      desc: 'Exclude cookbooks that are in these groups.',
+      aliases: '-e'
+    method_option :only,
+      type: :array,
+      desc: 'Only cookbooks that are in these groups.',
+      aliases: '-o'
+    desc 'list', 'List cookbooks and their dependencies specified by your Berksfile'
     def list
       berksfile = Berksfile.from_file(options[:berksfile])
-      Berkshelf.formatter.list(berksfile.list)
+      cookbooks = berksfile.list(options.symbolize_keys)
+
+      Berkshelf.formatter.list(cookbooks)
     end
 
     method_option :berksfile,
@@ -296,7 +306,7 @@ module Berkshelf
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def show(name)
       berksfile = Berksfile.from_file(options[:berksfile])
-      cookbook = berksfile.retrieve_locked(berksfile.find!(name))
+      cookbook  = berksfile.retrieve_locked(name)
       Berkshelf.formatter.show(cookbook)
     end
 
@@ -306,16 +316,17 @@ module Berkshelf
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
-    desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook'
+    desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook in your Berksfile'
     def contingent(name)
       berksfile    = Berksfile.from_file(options[:berksfile])
-      dependencies = Berkshelf.ui.mute { berksfile.install }.sort
-      dependencies = dependencies.select { |cookbook| cookbook.dependencies.include?(name) }
+      dependencies = berksfile.cookbooks.select do |cookbook|
+        cookbook.dependencies.include?(name)
+      end
 
       if dependencies.empty?
-        Berkshelf.formatter.msg "There are no cookbooks contingent upon '#{name}' defined in this Berksfile"
+        Berkshelf.formatter.msg "There are no cookbooks in this Berksfile contingent upon '#{name}'."
       else
-        Berkshelf.formatter.msg "Cookbooks in this Berksfile contingent upon #{name}:"
+        Berkshelf.formatter.msg "Cookbooks in this Berksfile contingent upon '#{name}':"
         print_list(dependencies)
       end
     end
@@ -387,7 +398,7 @@ module Berkshelf
       # @param [Array<CachedCookbook>] cookbooks
       #
       def print_list(cookbooks)
-        Array(cookbooks).each do |cookbook|
+        Array(cookbooks).sort.each do |cookbook|
           Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
         end
       end

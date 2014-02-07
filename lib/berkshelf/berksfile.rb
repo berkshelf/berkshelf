@@ -264,6 +264,23 @@ module Berkshelf
       end
     end
 
+    #
+    # Behaves the same as {Berksfile#dependencies}, but this method returns an
+    # array of CachedCookbook objects instead of dependency objects. This method
+    # relies on the {Berksfile#retrieve_locked} method to load the proper
+    # cached cookbook from the Berksfile + lockfile combination.
+    #
+    # @see [Berksfile#dependencies]
+    #   for a description of the +options+ hash
+    # @see [Berksfile#retrieve_locked]
+    #   for a list of possible exceptions that might be raised and why
+    #
+    # @return [Array<CachedCookbook>]
+    #
+    def cookbooks(options = {})
+      dependencies(options).map { |dependency| retrieve_locked(dependency) }
+    end
+
     # Find a dependency defined in this berksfile by name.
     #
     # @param [String] name
@@ -386,22 +403,7 @@ module Berkshelf
     # @return [CachedCookbook]
     #   the CachedCookbook that corresponds to the given name parameter
     def retrieve_locked(dependency)
-      locked = lockfile.find(dependency.name)
-
-      unless locked
-        raise CookbookNotFound, "Could not find cookbook '#{dependency.to_s}'."\
-          " Try running `berks install` to download and install the missing"\
-          " dependencies."
-      end
-
-      unless locked.downloaded?
-        raise CookbookNotFound, "Could not find cookbook '#{locked.to_s}'."\
-          " Try running `berks install` to download and install the missing"\
-          " dependencies."
-      end
-
-      @dependencies[dependency.name] = locked
-      locked.cached_cookbook
+      lockfile.retrieve(dependency)
     end
 
     # The cached cookbooks installed by this Berksfile.
@@ -413,8 +415,16 @@ module Berkshelf
     #
     # @return [Hash<Berkshelf::Dependency, Berkshelf::CachedCookbook>]
     #   the list of dependencies as keys and the cached cookbook as the value
-    def list
-      Hash[*dependencies.sort.collect { |dependency| [dependency, retrieve_locked(dependency)] }.flatten]
+    def list(options = {})
+      validate_lockfile_present!
+      validate_lockfile_in_sync!(options)
+      validate_dependencies_installed!(options)
+
+      items = dependencies(options).sort.collect do |dependency|
+        [dependency, retrieve_locked(dependency)]
+      end
+
+      Hash[*items.flatten]
     end
 
     # List of all the cookbooks which have a newer version found at a source that satisfies
@@ -439,6 +449,13 @@ module Berkshelf
     #   }
     def outdated(options = {})
       validate_cookbook_names!(options)
+      validate_lockfile_present!
+      validate_lockfile_in_sync!(options)
+
+      # TODO: Eventually we want to refactor this method and algorithm, but
+      # that would involve a pretty large lockfile refactor, so it will have
+      # to wait until a later release...
+      validate_dependencies_installed!(options)
 
       outdated = {}
       dependencies(options).each do |dependency|
@@ -684,6 +701,53 @@ module Berkshelf
           cookbooks = explicit.uniq
         end
         cookbooks
+      end
+
+      # Ensure the lockfile is present on disk.
+      #
+      # @raise [LockfileNotFound]
+      #   if the lockfile does not exist on disk
+      #
+      # @return [true]
+      def validate_lockfile_present!
+        raise LockfileNotFound unless lockfile.present?
+        true
+      end
+
+      # Ensure that all dependencies defined in the Berksfile exist in this
+      # lockfile.
+      #
+      # @raise [LockfileOutOfSync]
+      #   if there are dependencies specified in the Berksfile which do not
+      #   exist (or are not satisifed by) the lockfile
+      #
+      # @return [true]
+      def validate_lockfile_in_sync!(options = {})
+        dependencies(options).each do |dependency|
+          raise LockfileOutOfSync unless lockfile.has_dependency?(dependency)
+        end
+
+        true
+      end
+
+      # Ensure that all dependencies in the lockfile are installed on this
+      # system.
+      #
+      # @raise [DependencyNotInstalled]
+      #   if the dependency in the lockfile is not in the Berkshelf shelf on
+      #   this system
+      #
+      # @return [true]
+      def validate_dependencies_installed!(options = {})
+        dependencies(options).each do |dependency|
+          locked = lockfile.find(dependency)
+
+          if locked.nil? || !locked.downloaded?
+            raise DependencyNotInstalled.new(locked)
+          end
+        end
+
+        true
       end
 
       # Determine if any cookbooks were specified that aren't in our shelf.

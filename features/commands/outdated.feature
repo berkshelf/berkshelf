@@ -59,20 +59,34 @@ Feature: berks outdated
         * bacon (1.5.8)
       """
 
-  Scenario: When there is no lockfile present
-    And I have a Berksfile pointing at the local Berkshelf API with:
+  Scenario: When the lockfile is not present
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'bacon', '1.0.0'
       """
     When I run `berks outdated`
     Then the output should contain:
       """
-      Could not find cookbook 'bacon (= 1.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      Lockfile not found! Run `berks install` to create the lockfile.
       """
-    And the exit status should be "CookbookNotFound"
+    And the exit status should be "LockfileNotFound"
 
-  Scenario: When the cookbook is not installed
-    And I have a Berksfile pointing at the local Berkshelf API with:
+  Scenario: When a dependency is not in the lockfile
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'bacon', '1.0.0'
+      """
+    And the Lockfile has:
+      | not_fake | 1.0.0 |
+    When I run `berks outdated`
+    Then the output should contain:
+      """
+      The lockfile is out of sync! Run `berks install` to sync the lockfile.
+      """
+    And the exit status should be "LockfileOutOfSync"
+
+  Scenario: When a dependency is not installed
+    Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'bacon', '1.0.0'
       """
@@ -81,6 +95,6 @@ Feature: berks outdated
     When I run `berks outdated`
     Then the output should contain:
       """
-      Could not find cookbook 'bacon (1.0.0)'. Try running `berks install` to download and install the missing dependencies.
+      The cookbook 'bacon (1.0.0)' is not installed. Please run `berks install` to download and install the missing dependency.
       """
-    And the exit status should be "CookbookNotFound"
+    And the exit status should be "DependencyNotInstalled"

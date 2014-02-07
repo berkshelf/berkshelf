@@ -36,6 +36,6 @@ Feature: berks apply
     When I run `berks apply my_env`
     Then the output should contain:
       """
-      No lockfile found at Berksfile.lock
+      Lockfile not found! Run `berks install` to create the lockfile.
       """
     And the exit status should be "LockfileNotFound"

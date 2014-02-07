@@ -255,6 +255,22 @@ describe Berkshelf::Berksfile do
     end
   end
 
+  describe '#cookbooks' do
+    it 'raises an exception if a cookbook is not installed' do
+      subject.add_dependency('bacon', nil)
+      expect { subject.cookbooks }.to raise_error
+    end
+
+    it 'retrieves the locked (cached) cookbook for each dependency' do
+      subject.add_dependency('bacon', nil)
+      subject.add_dependency('ham', nil)
+      subject.stub(:retrive_locked)
+
+      expect(subject).to receive(:retrieve_locked).twice
+      subject.cookbooks
+    end
+  end
+
   describe '#groups' do
     before do
       subject.stub(:dependencies) { [dependency_one, dependency_two] }
@@ -338,7 +354,7 @@ describe Berkshelf::Berksfile do
   end
 
   describe '#retrieve_locked' do
-    let(:lockfile) { double('lockfile', find: locked) }
+    let(:lockfile) { double('lockfile') }
     let(:dependency) { double('dependency', name: 'bacon') }
     let(:locked) { double('locked', cached_cookbook: cached, locked_version: '1.0.0') }
     let(:cached) { double('cached') }
@@ -347,18 +363,9 @@ describe Berkshelf::Berksfile do
       subject.stub(:lockfile).and_return(lockfile)
     end
 
-    it 'raises an error when the lockfile does not have the source' do
-      lockfile.stub(:find)
-      expect {
-        subject.retrieve_locked(dependency)
-      }.to raise_error(Berkshelf::CookbookNotFound)
-    end
-
-    it 'raises an error when the cookbook is not downloaded' do
-      locked.stub(:downloaded?).and_return(false)
-      expect {
-        subject.retrieve_locked(dependency)
-      }.to raise_error(Berkshelf::CookbookNotFound)
+    it 'delegates to the lockfile' do
+      expect(lockfile).to receive(:retrieve).with(dependency)
+      subject.retrieve_locked(dependency)
     end
   end
 
