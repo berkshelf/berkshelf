@@ -505,4 +505,23 @@ module Berkshelf
 
   class InvalidLockFile < BerkshelfError; status_code(142); end
   class PackageError < BerkshelfError; status_code(143); end
+
+  class LockedDependencyConflict < BerkshelfError
+    status_code(160)
+
+    attr_reader :dependency
+    attr_reader :locked_version
+
+    def initialize(dependency, locked_version)
+      @dependency     = dependency
+      @locked_version = locked_version
+    end
+
+    def to_s
+      "You have requested:\n" +
+      "  #{dependency.name} #{dependency.version_constraint}\n\n" +
+      "The Berksfile.lock currently has #{dependency.name} locked at #{locked_version}.\n" +
+      "Try running `berks update #{dependency.name}`"
+    end
+  end
 end

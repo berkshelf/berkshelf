@@ -32,7 +32,10 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def run(options = {})
-      dependencies = lockfile_reduce(berksfile.dependencies(options.slice(:except, :only)))
+      top_level_dependencies = berksfile.dependencies(options.slice(:except, :only))
+      lockfile.conflicts?(top_level_dependencies)
+
+      dependencies = lockfile_reduce(top_level_dependencies)
       resolver     = Resolver.new(berksfile, dependencies)
       lock_deps    = []
 
