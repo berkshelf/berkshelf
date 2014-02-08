@@ -68,6 +68,7 @@ module Berkshelf
       template 'metadata.rb.erb', target.join('metadata.rb')
       template license_file, target.join('LICENSE')
       template 'README.md.erb', target.join('README.md')
+      template 'CHANGELOG.md.erb', target.join('CHANGELOG.md')
 
       Berkshelf::InitGenerator.new([target], options.merge(default_options)).invoke_all
     end
