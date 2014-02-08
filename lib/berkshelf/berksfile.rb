@@ -586,6 +586,9 @@ module Berkshelf
           "different filepath."
       end
 
+      # Ensure the parent directory exists, in case a nested path was given
+      FileUtils.mkdir_p(File.expand_path(File.join(destination, '..')))
+
       scratch          = Berkshelf.mktmpdir
       chefignore       = nil
       cached_cookbooks = install(options.slice(:except, :only))
