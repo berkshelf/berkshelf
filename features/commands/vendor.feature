@@ -46,3 +46,11 @@ Feature: Vendoring cookbooks to a directory
     And a directory named "cukebooks"
     When I run `berks vendor cukebooks`
     And the exit status should be "VendorError"
+
+  Scenario: vendoring into a nested directory
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake'
+      """
+    When I successfully run `berks vendor path/to/cukebooks`
+    Then the directory "path/to/cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
