@@ -152,12 +152,6 @@ module Berkshelf
     # @return [Berkshelf::CachedCookbook]
     def download
       @cached_cookbook = location.download
-
-      if scm_location? || path_location?
-        @locked_version = Solve::Version.new(@cached_cookbook.version)
-        @version_constraint = Solve::Constraint.new(@cached_cookbook.version)
-      end
-
       @cached_cookbook
     end
 
@@ -225,6 +219,28 @@ module Berkshelf
         "groups: #{groups}",
         "location: #{location || 'default'}>"
       ].join(', ')
+    end
+
+    def to_lock
+      out = "  #{name}"
+
+      if version_constraint.to_s == '>= 0.0.0'
+        out << "\n"
+      else
+        out << " (#{version_constraint})\n"
+      end
+
+      if location.kind_of?(PathLocation)
+        out << "    path: #{location.relative_path(berksfile.filepath)}\n"
+      end
+
+      if location.kind_of?(GitLocation)
+        out << "    git: #{location.uri}\n"
+        out << "    ref: #{location.ref}\n"
+        out << "    rel: #{location.rel}\n" if location.rel
+      end
+
+      out
     end
 
     def to_hash

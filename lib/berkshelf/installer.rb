@@ -67,7 +67,11 @@ module Berkshelf
       end
 
       verify_licenses!(lock_deps)
-      lockfile.update(lock_deps)
+
+      lockfile.update_graph(cached_cookbooks)
+      lockfile.update_dependencies(berksfile.dependencies)
+      lockfile.save
+
       cached_cookbooks
     end
 
@@ -124,7 +128,6 @@ module Berkshelf
           end
         end
 
-        locked.version_constraint = Solve::Constraint.new("= #{locked.locked_version}")
         locked
       end
 
