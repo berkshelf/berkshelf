@@ -139,8 +139,8 @@ module Berkshelf
         exit(1)
       end
 
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.install(options)
+      berksfile = Berksfile.from_options(options)
+      berksfile.install
     end
 
     method_option :berksfile,
@@ -159,13 +159,8 @@ module Berkshelf
       aliases: '-o'
     desc 'update [COOKBOOKS]', 'Update the cookbooks (and dependencies) specified in the Berksfile'
     def update(*cookbook_names)
-      berksfile = Berksfile.from_file(options[:berksfile])
-
-      update_options = {
-        cookbooks: cookbook_names
-      }.merge(options).symbolize_keys
-
-      berksfile.update(update_options)
+      berksfile = Berksfile.from_options(options)
+      berksfile.update(*cookbook_names)
     end
 
     method_option :berksfile,
@@ -252,7 +247,7 @@ module Berkshelf
       aliases: '-o'
     desc 'outdated [COOKBOOKS]', 'List dependencies that have new versions available that satisfy their constraints'
     def outdated(*cookbook_names)
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_options(options)
       options[:cookbooks] = cookbook_names
       outdated = berksfile.outdated(options.symbolize_keys)
 
@@ -291,10 +286,8 @@ module Berkshelf
       aliases: '-o'
     desc 'list', 'List cookbooks and their dependencies specified by your Berksfile'
     def list
-      berksfile = Berksfile.from_file(options[:berksfile])
-      cookbooks = berksfile.list(options.symbolize_keys)
-
-      Berkshelf.formatter.list(cookbooks)
+      berksfile = Berksfile.from_options(options)
+      Berkshelf.formatter.list(berksfile.list)
     end
 
     method_option :berksfile,
@@ -305,7 +298,7 @@ module Berkshelf
       banner: "PATH"
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
     def show(name)
-      berksfile = Berksfile.from_file(options[:berksfile])
+      berksfile = Berksfile.from_options(options)
       cookbook  = berksfile.retrieve_locked(name)
       Berkshelf.formatter.show(cookbook)
     end
@@ -318,7 +311,7 @@ module Berkshelf
       banner: 'PATH'
     desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook in your Berksfile'
     def contingent(name)
-      berksfile    = Berksfile.from_file(options[:berksfile])
+      berksfile    = Berksfile.from_options(options)
       dependencies = berksfile.cookbooks.select do |cookbook|
         cookbook.dependencies.include?(name)
       end
@@ -353,8 +346,8 @@ module Berkshelf
         path = File.expand_path(path)
       end
 
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.package(path, options)
+      berksfile = Berksfile.from_options(options)
+      berksfile.package(path)
     end
 
     method_option :except,
@@ -373,8 +366,8 @@ module Berkshelf
       banner: 'PATH'
     desc "vendor [PATH]", "Vendor the cookbooks specified by the Berksfile into a directory"
     def vendor(path = File.join(Dir.pwd, "berks-cookbooks"))
-      berksfile = Berkshelf::Berksfile.from_file(options[:berksfile])
-      berksfile.vendor(path, options)
+      berksfile = Berkshelf::Berksfile.from_options(options)
+      berksfile.vendor(path)
     end
 
     desc 'version', 'Display version and copyright information'
