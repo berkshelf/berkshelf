@@ -14,9 +14,12 @@ module Berkshelf
     end
 
     def build_universe
+      print 'Building universe...'
+
       berksfile.sources.collect do |source|
         Thread.new do
           begin
+            print '.'
             source.build_universe
           rescue Berkshelf::APIClientError => ex
             Berkshelf.formatter.warn "Error retrieving universe from source: #{source}"
