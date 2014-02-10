@@ -178,6 +178,12 @@ module Berkshelf
       @sources.empty? ? self.class.default_sources : @sources
     end
 
+    # @param [Dependency] dependency
+    #   the dependency to find the source for
+    def source_for(name, version)
+      sources.find { |source| source.cookbook(name, version) }
+    end
+
     # @todo remove in Berkshelf 4.0
     #
     # @raise [Berkshelf::DeprecatedError]
