@@ -24,83 +24,137 @@ module Berkshelf
           end
         end
       end.map(&:join)
+
+      puts
     end
 
-    # @option options [Array<String>, String] cookbooks
-    #
     # @return [Array<Berkshelf::CachedCookbook>]
-    def run(options = {})
-      dependencies = lockfile_reduce(berksfile.dependencies)
-      resolver     = Resolver.new(berksfile, dependencies)
-      lock_deps    = []
+    def run
+      reduce_lockfile!
 
-      dependencies.each do |dependency|
-        if dependency.scm_location?
-          Berkshelf.formatter.fetch(dependency)
-          downloader.download(dependency)
-        end
-
-        next if (cookbook = dependency.cached_cookbook).nil?
-
-        resolver.add_explicit_dependencies(cookbook)
+      cookbooks = if lockfile.trusted?
+        install_from_lockfile
+      else
+        install_from_universe
       end
 
-      Berkshelf.formatter.msg("building universe...")
-      build_universe
-
-      cached_cookbooks = resolver.resolve.collect do |name, version, dependency|
-        lock_deps << dependency
-        dependency.locked_version ||= Solve::Version.new(version)
-        if dependency.downloaded?
-          Berkshelf.formatter.use(dependency.name, dependency.cached_cookbook.version, dependency.location)
-          dependency.cached_cookbook
-        else
-          source = berksfile.sources.find { |source| source.cookbook(name, version) }
-          remote_cookbook = source.cookbook(name, version)
-          Berkshelf.formatter.install(name, version, api_source: source, location_type: remote_cookbook.location_type,
-            location_path: remote_cookbook.location_path)
-          temp_filepath = downloader.download(name, version)
-          CookbookStore.import(name, version, temp_filepath)
-        end
-      end
-
-      verify_licenses!(lock_deps)
-
-      lockfile.update_graph(cached_cookbooks)
+      lockfile.graph.update(cookbooks)
       lockfile.update_dependencies(berksfile.dependencies)
       lockfile.save
 
-      cached_cookbooks
+      verify_licenses!(cookbooks)
+
+      cookbooks
+    end
+
+    # Install all the dependencies from the lockfile graph.
+    #
+    # @return [Array<CachedCookbook>]
+    #   the list of installed cookbooks
+    def install_from_lockfile
+      locks = lockfile.graph.locks
+
+      # Only construct the universe if we are going to download things
+      unless locks.all? { |_, dependency| dependency.downloaded? }
+        build_universe
+      end
+
+      locks.sort.collect do |name, dependency|
+        install(dependency)
+      end
+    end
+
+    # Resolve and install the dependencies from the "universe", updating the
+    # lockfile appropiately.
+    #
+    # @return [Array<CachedCookbook>]
+    #   the list of installed cookbooks
+    def install_from_universe
+      # Unlike when installing from the lockfile, we _always_ need to build
+      # the universe when installing from the universe... duh
+      build_universe
+
+      dependencies = lockfile.graph.locks.values + berksfile.dependencies
+      dependencies = dependencies.inject({}) do |hash, dependency|
+        # Fancy way of ensuring no duplicate dependencies are used...
+        hash[dependency.name] ||= dependency
+        hash
+      end.values
+
+      resolver = Resolver.new(berksfile, dependencies)
+
+      # Download all SCM locations first, since they might have additional
+      # constraints that we don't yet know about
+      dependencies.select(&:scm_location?).each do |dependency|
+        Berkshelf.formatter.fetch(dependency)
+        downloader.download(dependency)
+      end
+
+      # Add any explicit dependencies for already-downloaded cookbooks (like
+      # path locations)
+      dependencies.each do |dependency|
+        if cookbook = dependency.cached_cookbook
+          resolver.add_explicit_dependencies(cookbook)
+        end
+      end
+
+      resolver.resolve.sort.collect do |dependency|
+        install(dependency)
+      end
+    end
+
+    # Install a specific dependency.
+    #
+    # @param [Dependency]
+    #   the dependency to install
+    # @return [CachedCookbook]
+    #   the installed cookbook
+    def install(dependency)
+      if dependency.downloaded?
+        Berkshelf.formatter.use(dependency)
+        dependency.cached_cookbook
+      else
+        # Berkshelf.formatter.install()
+        puts "Installing #{dependency}..."
+
+        name, version = dependency.name, dependency.locked_version.to_s
+        source   = berksfile.source_for(name, version)
+        cookbook = source.cookbook(name, version)
+        stash    = downloader.download(name, version)
+
+        CookbookStore.import(name, version, stash)
+      end
     end
 
     # Verify that the licenses of all the cached cookbooks fall in the realm of
     # allowed licenses from the Berkshelf Config.
     #
-    # @param [Array<Berkshelf::Dependencies>] dependencies
+    # @param [Array<CachedCookbook>] cookbooks
     #
-    # @raise [Berkshelf::LicenseNotAllowed]
+    # @raise [LicenseNotAllowed]
     #   if the license is not permitted and `raise_license_exception` is true
-    def verify_licenses!(dependencies)
+    #
+    # @return [true]
+    def verify_licenses!(cookbooks)
       licenses = Array(Berkshelf.config.allowed_licenses)
-      return if licenses.empty?
+      return true if licenses.empty?
 
-      dependencies.each do |dependency|
-        next if dependency.location.is_a?(Berkshelf::PathLocation)
-        cached = dependency.cached_cookbook
-
+      cookbooks.each do |cookbook|
         begin
-          unless licenses.include?(cached.metadata.license)
-            raise Berkshelf::LicenseNotAllowed.new(cached)
+          unless licenses.include?(cookbook.metadata.license)
+            raise Berkshelf::LicenseNotAllowed.new(cookbook)
           end
         rescue Berkshelf::LicenseNotAllowed => e
           if Berkshelf.config.raise_license_exception
-            FileUtils.rm_rf(cached.path)
+            FileUtils.rm_rf(cookbook.path)
             raise
           end
 
           Berkshelf.ui.warn(e.to_s)
         end
       end
+
+      true
     end
 
     private

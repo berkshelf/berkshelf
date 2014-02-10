@@ -94,6 +94,30 @@ module Berkshelf
       File.exists?(filepath) && !File.read(filepath).strip.empty?
     end
 
+    # Determine if we can "trust" this lockfile. A lockfile is trustworthy if:
+    #
+    #   1. All dependencies defined in the Berksfile are present in this
+    #      lockfile
+    #   2. Each dependency's constraint in the Berksfile is still satisifed by
+    #      the currently locked version
+    #
+    # This method does _not_ account for leaky dependencies (i.e. dependencies
+    # defined in the lockfile that are no longer present in the Berksfile); this
+    # edge case is handed by the installer.
+    #
+    # @return [Boolean]
+    #   true if this lockfile is trusted, false otherwise
+    #
+    def trusted?
+      berksfile.dependencies.all? do |dependency|
+        locked     = find(dependency)
+        graphed    = graph.find(dependency)
+        constraint = dependency.version_constraint
+
+        locked && graphed && constraint.satisfies?(graphed.version)
+      end
+    end
+
     # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
     # target Chef environment
     #
