@@ -144,23 +144,19 @@ module Berkshelf
       end
     end
 
-    # @return [Berkshelf::CachedCookbook]
+    # The cached (downloaded) cookbook for this dependency.
+    #
+    # @return [CachedCookbook, nil]
     def cached_cookbook
       @cached_cookbook ||= if location
-        download
+        location.download
       else
         if locked_version
           CookbookStore.instance.cookbook(name, locked_version)
         else
-          Berkshelf::CookbookStore.instance.satisfy(name, version_constraint)
+          CookbookStore.instance.satisfy(name, version_constraint)
         end
       end
-    end
-
-    # @return [Berkshelf::CachedCookbook]
-    def download
-      @cached_cookbook = location.download
-      @cached_cookbook
     end
 
     # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
