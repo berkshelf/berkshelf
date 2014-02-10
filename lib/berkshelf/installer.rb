@@ -2,16 +2,14 @@ require 'berkshelf/api-client'
 
 module Berkshelf
   class Installer
-    extend Forwardable
-
     attr_reader :berksfile
+    attr_reader :lockfile
     attr_reader :downloader
-
-    def_delegator :berksfile, :lockfile
 
     # @param [Berkshelf::Berksfile] berksfile
     def initialize(berksfile)
       @berksfile  = berksfile
+      @lockfile   = berksfile.lockfile
       @downloader = Downloader.new(berksfile)
     end
 
