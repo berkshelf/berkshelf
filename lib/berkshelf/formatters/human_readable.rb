@@ -43,12 +43,10 @@ module Berkshelf
 
       # Output a Cookbook use message using {Berkshelf.ui}
       #
-      # @param [String] cookbook
-      # @param [String] version
-      # @param [~Location] location
-      def use(cookbook, version, location = nil)
-        message = "Using #{cookbook} (#{version})"
-        message += " #{location}" if location
+      # @param [Dependency] dependency
+      def use(dependency)
+        message = "Using #{dependency.name} (#{dependency.cached_cookbook.version})"
+        message += " #{dependency.location}" if dependency.location
         Berkshelf.ui.info message
       end
 

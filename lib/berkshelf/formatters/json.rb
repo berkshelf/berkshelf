@@ -57,16 +57,14 @@ module Berkshelf
 
       # Add a Cookbook use entry to delayed output
       #
-      # @param [String] cookbook
-      # @param [String] version
-      # @param [~Location] location
-      def use(cookbook, version, location = nil)
-        cookbooks[cookbook] ||= {}
-        cookbooks[cookbook][:version] = version
+      # @param [Dependency] dependency
+      def use(dependency)
+        cookbooks[dependency.name] ||= {}
+        cookbooks[dependency.name][:version] = dependency.cached_cookbook.version
 
-        if location && location.is_a?(PathLocation)
-          cookbooks[cookbook][:metadata] = true if location.metadata?
-          cookbooks[cookbook][:location] = location.relative_path
+        if dependency.location.is_a?(PathLocation)
+          cookbooks[dependency.name][:metadata] = true if dependency.location.metadata?
+          cookbooks[dependency.name][:location] = dependency.location.relative_path
         end
       end
 
