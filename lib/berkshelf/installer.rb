@@ -105,70 +105,39 @@ module Berkshelf
 
     private
 
-      # Returns an instance of `Berkshelf::Dependency` with an equality constraint matching
-      # the locked version of the dependency in the lockfile.
-      #
-      # If no matching dependency is found in the lockfile then nil is returned.
-      #
-      # @param [Berkshelf:Dependency] dependency
-      #
-      # @return [Berkshelf::Dependency, nil]
-      def dependency_from_lockfile(dependency)
-        locked = lockfile.find(dependency)
+    # Iterate over each top-level dependency defined in the lockfile and
+    # check if that dependency is still defined in the Berksfile.
+    #
+    # If the dependency is no longer present in the Berksfile, it is "safely"
+    # removed using {Lockfile#unlock} and {Lockfile#remove}. This prevents
+    # the lockfile from "leaking" dependencies when they have been removed
+    # from the Berksfile, but still remained locked in the lockfile.
+    #
+    # If the dependency exists, a constraint comparison is conducted to verify
+    # that the locked dependency still satisifes the original constraint. This
+    # handles the edge case where a user has updated or removed a constraint
+    # on a dependency that already existed in the lockfile.
+    #
+    # @raise [OutdatedDependency]
+    #   if the constraint exists, but is no longer satisifed by the existing
+    #   locked version
+    #
+    # @return [Array<Dependency>]
+    def reduce_lockfile!
+      lockfile.dependencies.each do |dependency|
+        if berksfile.dependencies.map(&:name).include?(dependency.name)
+          locked = lockfile.graph.find(dependency)
+          next if locked.nil?
 
-        return nil unless locked
-
-        # If there's a locked_version, make sure it's still satisfied
-        # by the constraint
-        if locked.locked_version
-          unless dependency.version_constraint.satisfies?(locked.locked_version)
-            raise Berkshelf::OutdatedDependency.new(locked, dependency)
+          unless dependency.version_constraint.satisfies?(locked.version)
+            raise OutdatedDependency.new(locked, dependency)
           end
+        else
+          lockfile.unlock(dependency)
         end
-
-        locked
       end
 
-      # Merge the locked dependencies against the given dependencies.
-      #
-      # For each the given dependencies, check if there's a locked version that
-      # still satisfies the version constraint. If it does, "lock" that dependency
-      # because we should just use the locked version.
-      #
-      # If a locked dependency exists, but doesn't satisfy the constraint, raise a
-      # {Berkshelf::OutdatedDependency} and tell the user to run update.
-      #
-      # Never use the locked constraint for a dependency with a {PathLocation}
-      #
-      # @param [Array<Berkshelf::Dependency>] dependencies
-      #
-      # @return [Array<Berkshelf::Dependency>]
-      def lockfile_reduce(dependencies = [])
-        {}.tap do |h|
-          (dependencies + lockfile.dependencies).each do |dependency|
-            next if h.has_key?(dependency.name)
-
-            if dependency.path_location?
-              result = dependency
-            else
-              result = dependency_from_lockfile(dependency) || dependency
-            end
-
-            h[result.name] = result
-          end
-        end.values
-      end
-
-      # The list of dependencies "locked" by the lockfile.
-      #
-      # @return [Array<Berkshelf::Dependency>]
-      #   the list of dependencies in this lockfile
-      def locked_dependencies
-        lockfile.dependencies
-      end
-
-      def reduce_scm_locations(dependencies)
-        dependencies.select { |dependency| SCM_LOCATIONS.include?(dependency.class.location_key) }
-      end
+      lockfile.save
+    end
   end
 end
