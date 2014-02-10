@@ -289,12 +289,16 @@ module Berkshelf
       type: :array,
       desc: 'Only cookbooks that are in these groups.',
       aliases: '-o'
+    method_option :verbose,
+      type: :boolean,
+      desc: 'Give more information about the cookbooks (eg. path)',
+      aliases: '-v'
     desc 'list', 'List cookbooks and their dependencies specified by your Berksfile'
     def list
       berksfile = Berksfile.from_file(options[:berksfile])
       cookbooks = berksfile.list(options.symbolize_keys)
 
-      Berkshelf.formatter.list(cookbooks)
+      Berkshelf.formatter.list(cookbooks, options[:verbose])
     end
 
     method_option :berksfile,
