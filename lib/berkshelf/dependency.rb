@@ -63,6 +63,21 @@ module Berkshelf
 
         true
       end
+
+      # Returns the name of this cookbook (because it's the key in hash tables).
+      #
+      # @param [Dependency, #to_s] dependency
+      #   the dependency to find the name from
+      #
+      # @return [String]
+      #   the name of the cookbook
+      def name(dependency)
+        if dependency.is_a?(Dependency)
+          dependency.name.to_s
+        else
+          dependency.to_s
+        end
+      end
     end
 
     DEFAULT_CONSTRAINT = '>= 0.0.0'.freeze
