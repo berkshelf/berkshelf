@@ -71,6 +71,7 @@ module Berkshelf
         h[:license]       = license unless license.blank?
         h[:platforms]     = platforms.to_hash unless platforms.blank?
         h[:dependencies]  = dependencies.to_hash unless dependencies.blank?
+        h[:path ]         = path unless path.blank?
       end
     end
 

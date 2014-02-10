@@ -116,6 +116,7 @@ module Berkshelf
         list.each do |dependency, cookbook|
           cookbooks[cookbook.cookbook_name] ||= {}
           cookbooks[cookbook.cookbook_name][:version] = cookbook.version
+          cookbooks[cookbook.cookbook_name][:path] = cookbook.path
           if dependency.location
             cookbooks[cookbook.cookbook_name][:location] = dependency.location
           end
