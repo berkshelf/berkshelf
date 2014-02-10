@@ -77,7 +77,7 @@ module Berkshelf
     # @return [Berkshelf::Location]
     attr_reader :location
     # @return [Solve::Version]
-    attr_accessor :locked_version
+    attr_reader :locked_version
     # @return [Solve::Constraint]
     attr_accessor :version_constraint
     # @return [Berkshelf::CachedCookbook]
@@ -125,6 +125,14 @@ module Berkshelf
     # @return [Boolean]
     def metadata?
       !!@metadata
+    end
+
+    # Set this dependency's locked version.
+    #
+    # @param [#to_s] version
+    #   the version to set
+    def locked_version=(version)
+      @locked_version = Solve::Version.new(version.to_s)
     end
 
     def add_group(*local_groups)
