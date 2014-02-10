@@ -376,7 +376,7 @@ module Berkshelf
 
       # Calculate the list of cookbooks to unlock
       if names.empty?
-        list = dependencies.each { |dependency| lockfile.unlock(dependency) }
+        list = dependencies
       else
         list = dependencies.select { |dependency| names.include?(dependency.name) }
       end
