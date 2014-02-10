@@ -1,9 +1,6 @@
 require_relative 'dependency'
 
 module Berkshelf
-  # The object representation of the Berkshelf lockfile. The lockfile is useful
-  # when working in teams where the same cookbook versions are desired across
-  # multiple workstations.
   class Lockfile
     class << self
       # Initialize a Lockfile from the given filepath
@@ -28,12 +25,6 @@ module Berkshelf
 
     DEPENDENCIES = 'DEPENDENCIES'
     GRAPH        = 'GRAPH'
-
-    NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'
-    DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/
-    DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/
-    OPTION_PATTERN       = /^ {4}(.+)\: (.+)/
-
 
     include Berkshelf::Mixin::Logging
 
@@ -61,29 +52,17 @@ module Berkshelf
       @filepath     = options[:filepath].to_s
       @berksfile    = options[:berksfile]
       @dependencies = {}
+      @graph        = Graph.new(self)
 
       parse if File.exists?(@filepath)
     end
 
+    # Parse the lockfile.
     #
-    #
+    # @return true
     def parse
-      @parsed_dependencies = {}
-      @parsed_graph = {}
-
-      File.read(filepath).split(/(?:\r?\n)+/).each do |line|
-        if line == DEPENDENCIES
-          @state = :dependency
-        elsif line == GRAPH
-          @state = :graph
-        else
-          send("parse_#{@state}", line)
-        end
-      end
-
-      @parsed_dependencies.each do |name, options|
-        @dependencies[name] = Dependency.new(berksfile, name, options)
-      end
+      LockfileParser.new(self).run
+      true
     end
 
     # Determine if this lockfile actually exists on disk.
@@ -173,7 +152,9 @@ module Berkshelf
     # @return [Berkshelf::Dependency, nil]
     #   the cookbook dependency from this lockfile or nil if one was not found
     def find(dependency)
-      @dependencies[cookbook_name(dependency).to_s]
+      @dependencies[Dependency.name(dependency)]
+    end
+
     # Determine if this lockfile contains the given dependency.
     #
     # @param [String, Berkshelf::Dependency] dependency
@@ -185,6 +166,15 @@ module Berkshelf
       !find(dependency).nil?
     end
 
+    # Add a new cookbok to the lockfile. If an entry already exists by the
+    # given name, it will be overwritten.
+    #
+    # @param [Dependency] dependency
+    #   the dependency to add
+    #
+    # @return [Dependency]
+    def add(dependency)
+      @dependencies[Dependency.name(dependency)] = dependency
     end
 
     # Retrieve information about a given cookbook that is in this lockfile.
@@ -203,7 +193,7 @@ module Berkshelf
       locked = find(dependency)
 
       unless locked
-        raise DependencyNotFound.new(cookbook_name(dependency))
+        raise DependencyNotFound.new(Dependency.name(dependency))
       end
 
       unless locked.downloaded?
@@ -214,51 +204,39 @@ module Berkshelf
       locked.cached_cookbook
     end
 
-    # Replace the current dependency graph.
-    #
-    # @param [Array<CachedCookbook>] cookbooks
-    #   the list of cookbooks to update the graph with
-    def update_graph(cookbooks)
-      @graph = cookbooks.sort.inject({}) do |hash, cookbook|
-        hash[cookbook.cookbook_name] ||= {}
-        hash[cookbook.cookbook_name][:version] = cookbook.version
-
-        cookbook.dependencies.each do |name, constraint|
-          hash[cookbook.cookbook_name][:dependencies] ||= {}
-          hash[cookbook.cookbook_name][:dependencies][name] = constraint
-        end
-
-        hash
-      end
-    end
-
     # Replace the list of dependencies.
     #
     # @param [Array<Berkshelf::Dependency>] dependencies
     #   the list of dependencies to update
     def update_dependencies(dependencies)
+      @dependencies = {}
+
       dependencies.each do |dependency|
-        @dependencies[cookbook_name(dependency)] = dependency
+        @dependencies[Dependency.name(dependency)] = dependency
       end
     end
 
-    # Remove the given dependency from this lockfile. This method accepts a dependency
-    # attribute which may either be the name of a cookbook (String) or an
-    # actual cookbook dependency.
+    # Remove the given dependency from this lockfile. This method accepts a
+    # +dependency+ attribute which may either be the name of a cookbook, as a
+    # String or an actual {Dependency} object.
     #
-    # @param [String, Berkshelf::Dependency] dependency
-    #   the cookbook dependency/name to remove
+    # This method first removes the dependency from the list of top-level
+    # dependencies. Then it uses a recursive algorithm to safely remove any
+    # other dependencies from the graph that are no longer needed.
     #
     # @raise [Berkshelf::CookbookNotFound]
     #   if the provided dependency does not exist
-    def remove(dependency)
+    #
+    # @param [String] dependency
+    #   the name of the cookbook to remove
+    def unlock(dependency)
       unless dependency?(dependency)
         raise Berkshelf::CookbookNotFound, "'#{dependency}' does not exist in this lockfile!"
       end
 
-      @dependencies.delete(cookbook_name(dependency))
+      @dependencies.delete(Dependency.name(dependency))
+      graph.remove(dependency)
     end
-    alias_method :unlock, :remove
 
     # Write the contents of the current statue of the lockfile to disk. This
     # method uses an atomic file write. A temporary file is created, written,
@@ -279,18 +257,7 @@ module Berkshelf
         end
 
         tempfile.write("\n")
-        tempfile.write(GRAPH)
-        tempfile.write("\n")
-
-        graph.sort.each do |cookbook, info|
-          tempfile.write("  #{cookbook} (#{info[:version]})\n")
-
-          if info[:dependencies]
-            info[:dependencies].each do |name, constraint|
-              tempfile.write("    #{name} (#{constraint})\n")
-            end
-          end
-        end
+        tempfile.write(graph.to_lock)
       end
 
       tempfile.rewind
@@ -339,6 +306,51 @@ module Berkshelf
 
     private
 
+    # The class responsible for parsing the lockfile and turning it into a
+    # useful data structure.
+    class LockfileParser
+      NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'
+      DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/
+      DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/
+      OPTION_PATTERN       = /^ {4}(.+)\: (.+)/
+
+      # Create a new lockfile parser.
+      #
+      # @param [Lockfile]
+      def initialize(lockfile)
+        @lockfile  = lockfile
+        @berksfile = lockfile.berksfile
+      end
+
+      # Parse the lockfile contents, adding the correct things to the lockfile.
+      #
+      # @return [true]
+      def run
+        @parsed_dependencies = {}
+
+        File.read(@lockfile.filepath).split(/(?:\r?\n)+/).each do |line|
+          if line == Lockfile::DEPENDENCIES
+            @state = :dependency
+          elsif line == Lockfile::GRAPH
+            @state = :graph
+          else
+            send("parse_#{@state}", line)
+          end
+        end
+
+        @parsed_dependencies.each do |name, options|
+          dependency = Dependency.new(@berksfile, name, options)
+          @lockfile.add(dependency)
+        end
+
+        true
+      end
+
+      private
+
+      # Parse a dependency line.
+      #
+      # @param [String] line
       def parse_dependency(line)
         if line =~ DEPENDENCY_PATTERN
           name, version = $1, $2
@@ -352,121 +364,199 @@ module Berkshelf
         end
       end
 
+      # Parse a graph line.
+      #
+      # @param [String] line
       def parse_graph(line)
         if line =~ DEPENDENCY_PATTERN
           name, version = $1, $2
 
-          @parsed_graph[name] ||= {}
-          @parsed_graph[name][:version] = version
-          @current_graph = @parsed_graph[name]
+          @lockfile.graph.find(name) || @lockfile.graph.add(name, version)
+          @current_lock = name
         elsif line =~ DEPENDENCIES_PATTERN
           name, constraint = $1, $2
-          @current_graph[:dependencies] ||= {}
-          @current_graph[:dependencies][name] = constraint
+          @lockfile.graph.find(@current_lock).add_dependency(name, constraint)
+        end
+      end
+    end
+
+    # The class representing an internal graph.
+    class Graph
+      # Create a new Lockfile graph.
+      #
+      # Some clarifying terminology:
+      #
+      #     yum-epel (0.2.0) <- lock
+      #       yum (~> 3.0)   <- dependency
+      #
+      # @return [Graph]
+      def initialize(lockfile)
+        @lockfile  = lockfile
+        @berksfile = lockfile.berksfile
+        @graph     = {}
+      end
+
+      # The list of locks for this graph. Dependencies are retrieved from the
+      # lockfile, then the Berksfile, and finally a new dependency object is
+      # created if none of those exist.
+      #
+      # @return [Hash<String, Dependency>]
+      #   a key-value hash where the key is the name of the cookbook and the
+      #   value is the locked dependency
+      def locks
+        @graph.inject({}) do |hash, (name, item)|
+          dependency = @lockfile.find(name)  ||
+                       @berksfile.find(name) ||
+                       Dependency.new(@berksfile, name)
+          dependency.locked_version = item.version
+
+          hash[item.name] = dependency
+          hash
         end
       end
 
-      def reset_dependencies!
-        @dependencies = {}
+      # Find a given dependency in the graph.
+      #
+      # @param [Dependency, String]
+      #   the name/dependency to find
+      #
+      # @return [GraphItem, nil]
+      #   the item for the name
+      def find(dependency)
+        @graph[Dependency.name(dependency)]
       end
 
-      # Return the name of this cookbook (because it's the key in our
-      # table).
+      # Determine if this graph contains the given dependency. This method is
+      # used by the lockfile when adding or removing dependencies to see if a
+      # dependency can be safely removed.
       #
-      # @param [Berkshelf::Dependency, #to_s] dependency
-      #   the dependency to find the name from
+      # @param [Dependency, String] dependency
+      #   the name/dependency to find
+      def dependency?(dependency)
+        @graph.values.any? do |item|
+          item.dependencies.key?(Dependency.name(dependency))
+        end
+      end
+
+      # Add each a new {GraphItem} to the graph.
+      #
+      # @param [#to_s] name
+      #   the name of the cookbook
+      # @param [#to_s] version
+      #   the version of the lock
+      #
+      # @return [GraphItem]
+      def add(name, version)
+        @graph[name.to_s] = GraphItem.new(name, version)
+      end
+
+      # Recursively remove any dependencies from the graph unless they exist as
+      # top-level dependencies or nested dependencies.
+      #
+      # @param [Dependency, String] dependency
+      #   the name/dependency to remove
+      def remove(dependency)
+        name = Dependency.name(dependency)
+
+        return if @lockfile.dependency?(name) || dependency?(name)
+
+        # Grab the nested dependencies for this particular entry so we can
+        # recurse and try to remove them from the graph.
+        nested_dependencies = @graph[name].dependencies.keys
+
+        # Now delete the entry
+        @graph.delete(name)
+
+        # Recursively try to delete the remaining dependencies for this item
+        nested_dependencies.each(&method(:remove))
+      end
+
+      # Update the graph with the given cookbooks. This method destroys the
+      # existing dependency graph with this new result!
+      #
+      # @param [Array<CachedCookbook>]
+      #   the list of cookbooks to populate the graph with
+      def update(cookbooks)
+        @graph = {}
+
+        cookbooks.each do |cookbook|
+          @graph[cookbook.cookbook_name.to_s] = GraphItem.new(
+            cookbook.name,
+            cookbook.version,
+            cookbook.dependencies,
+          )
+        end
+      end
+
+      # Write the contents of the graph to the lockfile format.
+      #
+      # The resulting format looks like:
+      #
+      #     GRAPH
+      #       apache2 (1.8.14)
+      #       yum-epel (0.2.0)
+      #         yum (~> 3.0)
+      #
+      # @example lockfile.graph.to_lock #=> "GRAPH\n  apache2 (1.18.14)\n..."
       #
       # @return [String]
-      #   the name of the cookbook
-      def cookbook_name(dependency)
-        dependency.is_a?(Berkshelf::Dependency) ? dependency.name : dependency.to_s
-      end
-
-      # Legacy support for old lockfiles
       #
-      # @todo Remove this class in Berkshelf 3.0.0
-      class LockfileLegacy
-        class << self
-          # Read the old lockfile content and instance eval in context.
-          #
-          # @param [Berkshelf::Berksfile] berksfile
-          #   the associated berksfile
-          # @param [String] content
-          #   the string content read from a legacy lockfile
-          def parse(berksfile, content)
-            dependencies = {}.tap do |hash|
-              content.split("\n").each do |line|
-                next if line.empty?
-                source            = new(berksfile, line)
-                hash[source.name] = source.options
-              end
+      def to_lock
+        out = "#{Lockfile::GRAPH}\n"
+        @graph.sort.each do |name, item|
+          out << "  #{name} (#{item.version})\n"
+
+          unless item.dependencies.empty?
+            item.dependencies.each do |name, constraint|
+              out << "    #{name} (#{constraint})\n"
             end
-
-            {
-              dependencies: dependencies,
-            }
           end
-
-          # Warn the user they he/she is using an old Lockfile format.
-          #
-          # This automatically outputs to the {Berkshelf.ui}; nothing is
-          # returned.
-          #
-          # @return [nil]
-          def warn!
-            Berkshelf.ui.warn(warning_message)
-          end
-
-          private
-            # @return [String]
-            def warning_message
-              'You are using the old lockfile format. Attempting to convert...'
-            end
         end
 
-        # @return [Hash]
-        #   the hash of options
-        attr_reader :options
+        out
+      end
 
+      private
+
+      # A single item inside the graph.
+      class GraphItem
+        # The name of the cookbook that corresponds to this graph item.
+        #
         # @return [String]
-        #   the name of this cookbook
+        #   the name of the cookbook
         attr_reader :name
 
-        # @return [Berkshelf::Berksfile]
-        #   the berksfile
-        attr_reader :berksfile
-
-        # Create a new legacy lockfile for processing
+        # The locked version for this graph item.
         #
-        # @param [String] content
-        #   the content to parse out and convert to a hash
-        def initialize(berksfile, content)
-          @berksfile = berksfile
-          instance_eval(content).to_hash
+        # @return [String]
+        #   the locked version of the graph item (as a string)
+        attr_reader :version
+
+        # The list of dependencies and their constraints.
+        #
+        # @return [Hash<String, String>]
+        #   the list of dependencies for this graph item, where the key
+        #   corresponds to the name of the dependency and the value is the
+        #   version constraint.
+        attr_reader :dependencies
+
+        # Create a new graph item.
+        def initialize(name, version, dependencies = {})
+          @name         = name.to_s
+          @version      = version.to_s
+          @dependencies = dependencies
         end
 
-        # Method defined in legacy lockfiles (since we are using instance_eval).
+        # Add a new dependency to the list.
         #
-        # @param [String] name
-        #   the name of this cookbook
-        # @option options [String] :locked_version
-        #   the locked version of this cookbook
-        def cookbook(name, options = {})
-          @name    = name
-          @options = manipulate(options)
+        # @param [#to_s] name
+        #   the name to use
+        # @param [#to_s] constraint
+        #   the version constraint to use
+        def add_dependency(name, constraint)
+          @dependencies[name.to_s] = constraint.to_s
         end
-
-        private
-
-          # Perform various manipulations on the hash.
-          #
-          # @param [Hash] options
-          def manipulate(options = {})
-            if options[:path]
-              options[:path] = berksfile.find(name).instance_variable_get(:@options)[:path] || options[:path]
-            end
-            options
-          end
       end
+    end
   end
 end
