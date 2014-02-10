@@ -703,7 +703,7 @@ module Berkshelf
       # @return [true]
       def validate_lockfile_in_sync!
         dependencies.each do |dependency|
-          raise LockfileOutOfSync unless lockfile.has_dependency?(dependency)
+          raise LockfileOutOfSync unless lockfile.dependency?(dependency)
         end
 
         true

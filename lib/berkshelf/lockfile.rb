@@ -150,6 +150,17 @@ module Berkshelf
     #   the cookbook dependency from this lockfile or nil if one was not found
     def find(dependency)
       @dependencies[cookbook_name(dependency).to_s]
+    # Determine if this lockfile contains the given dependency.
+    #
+    # @param [String, Berkshelf::Dependency] dependency
+    #   the cookbook dependency/name to determine existence of
+    #
+    # @return [Boolean]
+    #   true if the dependency exists, false otherwise
+    def dependency?(dependency)
+      !find(dependency).nil?
+    end
+
     end
 
     # Retrieve information about a given cookbook that is in this lockfile.
@@ -177,17 +188,6 @@ module Berkshelf
       end
 
       locked.cached_cookbook
-    end
-
-    # Determine if this lockfile contains the given dependency.
-    #
-    # @param [String, Berkshelf::Dependency] dependency
-    #   the cookbook dependency/name to determine existence of
-    #
-    # @return [Boolean]
-    #   true if the dependency exists, false otherwise
-    def has_dependency?(dependency)
-      !find(dependency).nil?
     end
 
     # Replace the current dependency graph.
@@ -228,8 +228,8 @@ module Berkshelf
     # @raise [Berkshelf::CookbookNotFound]
     #   if the provided dependency does not exist
     def remove(dependency)
-      unless has_dependency?(dependency)
-        raise Berkshelf::CookbookNotFound, "'#{cookbook_name(dependency)}' does not exist in this lockfile!"
+      unless dependency?(dependency)
+        raise Berkshelf::CookbookNotFound, "'#{dependency}' does not exist in this lockfile!"
       end
 
       @dependencies.delete(cookbook_name(dependency))
