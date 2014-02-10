@@ -71,8 +71,10 @@ module Berkshelf
       graph.populate(berksfile.sources)
 
       Solve.it!(graph, demand_array, ENV['DEBUG_RESOLVER'] ? { ui: Berkshelf.ui } : {}).collect do |name, version|
-        dependency = get_demand(name) || Dependency.new(berksfile, name, locked_version: version)
-        [ name, version, dependency ]
+        dependency = get_demand(name) || Dependency.new(berksfile, name)
+        dependency.locked_version = version
+
+        dependency
       end
     rescue Solve::Errors::NoSolutionError
       raise Berkshelf::NoSolutionError.new(demands)
