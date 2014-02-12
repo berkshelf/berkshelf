@@ -321,7 +321,16 @@ module Berkshelf
       def run
         @parsed_dependencies = {}
 
-        File.read(@lockfile.filepath).split(/(?:\r?\n)+/).each do |line|
+        contents = File.read(@lockfile.filepath)
+
+        if contents.strip.empty?
+          Berkshelf.ui.warn "Your lockfile at '#{@lockfile.filepath}' is " \
+            "empty. I am going to parse it anyway, but there is a chance " \
+            "that a larger problem is at play. If you manually edited your " \
+            "lockfile, you may have corrupted it."
+        end
+
+        contents.split(/(?:\r?\n)+/).each do |line|
           if line == Lockfile::DEPENDENCIES
             @state = :dependency
           elsif line == Lockfile::GRAPH
