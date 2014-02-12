@@ -157,6 +157,7 @@ module Berkshelf
     def dependency?(dependency)
       !find(dependency).nil?
     end
+    alias_method :has_dependency?, :dependency?
 
     # Add a new cookbok to the lockfile. If an entry already exists by the
     # given name, it will be overwritten.
@@ -418,6 +419,17 @@ module Berkshelf
         @graph[Dependency.name(dependency)]
       end
 
+      # Find if the given lock exists?
+      #
+      # @param [Dependency, String]
+      #   the name/dependency to find
+      #
+      # @return [true, false]
+      def lock?(dependency)
+        !find(dependency).nil?
+      end
+      alias_method :has_lock?, :lock?
+
       # Determine if this graph contains the given dependency. This method is
       # used by the lockfile when adding or removing dependencies to see if a
       # dependency can be safely removed.
@@ -429,6 +441,7 @@ module Berkshelf
           item.dependencies.key?(Dependency.name(dependency))
         end
       end
+      alias_method :has_dependency?, :dependency?
 
       # Add each a new {GraphItem} to the graph.
       #
