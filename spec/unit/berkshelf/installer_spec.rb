@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Berkshelf::Installer do
-  let(:berksfile) { double('berksfile') }
+  let(:berksfile) { double('berksfile', lockfile: lockfile) }
+  let(:lockfile) { double('lockfile') }
   subject { described_class.new(berksfile) }
 
   describe "#build_universe" do
