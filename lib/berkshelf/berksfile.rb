@@ -476,12 +476,6 @@ module Berkshelf
     #   target Chef Server
     # @option options [Boolean] :freeze (true)
     #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be overwritten
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
     # @option options [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve dependencies for
     # @option options [Hash] :ssl_verify (true)
@@ -513,7 +507,7 @@ module Berkshelf
         validate: true
       }.merge(options)
 
-      validate_cookbook_names!(options)
+      validate_cookbook_names!(options[:cookbooks])
 
       cached_cookbooks = install(options)
       cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
