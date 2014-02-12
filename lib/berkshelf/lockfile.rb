@@ -86,7 +86,6 @@ module Berkshelf
     #
     # @return [Boolean]
     #   true if this lockfile is trusted, false otherwise
-    #
     def trusted?
       berksfile.dependencies.all? do |dependency|
         locked     = find(dependency)
@@ -97,39 +96,32 @@ module Berkshelf
       end
     end
 
-    # Resolve this Berksfile and apply the locks found in the generated Berksfile.lock to the
-    # target Chef environment
+    # Resolve this Berksfile and apply the locks found in the generated
+    # +Berksfile.lock+ to the target Chef environment
     #
-    # @param [String] environment_name
+    # @param [String] name
+    #   the name of the environment to apply the locks to
     #
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
     #
     # @raise [EnvironmentNotFound]
-    #   if the target environment was not found
+    #   if the target environment was not found on the remote Chef Server
     # @raise [ChefConnectionError]
-    #   if you are locking cookbooks with an invalid or not-specified client configuration
-    def apply(environment_name, options = {})
-      Berkshelf.ridley_connection(options) do |conn|
-        unless environment = conn.environment.find(environment_name)
-          raise EnvironmentNotFound.new(environment_name)
+    #   if you are locking cookbooks with an invalid or not-specified client
+    #   configuration
+    def apply(name, options = {})
+      Berkshelf.ridley_connection(options) do |connection|
+        environment = connection.environment.find(name)
+
+        raise EnvironmentNotFound.new(name) if environment.nil?
+
+        locks = graph.locks.inject({}) do |hash, dependency|
+          hash[dependency.name] = "= #{dependency.locked_version.to_s}"
+          hash
         end
 
-        environment.cookbook_versions = {}.tap do |cookbook_versions|
-          dependencies.each do |dependency|
-            if dependency.locked_version.nil?
-              # A locked version must be present for each entry. Older versions of the lockfile
-              # may have contained dependencies with a special type of location that would attempt
-              # to dynamically determine the locked version. This is incorrect and the Lockfile
-              # should be regenerated if that is the case.
-              raise InvalidLockFile, "Your lockfile contains a dependency without a locked version. This " +
-                "may be because you have an old lockfile. Regenerate your lockfile and try again."
-            end
-
-            cookbook_versions[dependency.name] = "= #{dependency.locked_version.to_s}"
-          end
-        end
-
+        environment.cookbook_versions = locks
         environment.save
       end
     end
