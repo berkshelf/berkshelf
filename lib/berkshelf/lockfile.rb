@@ -330,6 +330,35 @@ module Berkshelf
             "lockfile, you may have corrupted it."
         end
 
+        if contents =~ /^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/
+          Berkshelf.ui.warn "It looks like you are using an older version of " \
+            "the lockfile. This is a problem. You see, previous versions of " \
+            "the lockfile were actually a lie. It lied to you about your " \
+            "version locks, and we are really sorry about that.\n\n" \
+            "Here's the good news - we fixed it!\n\n" \
+            "Here's the bad news - you probably should not trust your old " \
+            "lockfile. I am going to convert it for you, but you should know " \
+            "that it is not going to be as accurate as if you just deleted " \
+            "your existing lockfile and re-ran the installer."
+
+          dependencies = "#{Lockfile::DEPENDENCIES}\n"
+          graph        = "#{Lockfile::GRAPH}\n"
+
+          hash = JSON.parse(contents)
+          hash['dependencies'] && hash['dependencies'].sort .each do |name, info|
+            dependencies << "  #{name} (>= 0.0.0)\n"
+            info.each do |key, value|
+              unless key == 'locked_version'
+                dependencies << "    #{key}: #{value}\n"
+              end
+            end
+
+            graph << "  #{name} (#{info['locked_version']})\n"
+          end
+
+          contents = "#{dependencies}\n#{graph}"
+        end
+
         contents.split(/(?:\r?\n)+/).each do |line|
           if line == Lockfile::DEPENDENCIES
             @state = :dependency
