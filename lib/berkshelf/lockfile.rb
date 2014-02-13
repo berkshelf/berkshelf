@@ -550,7 +550,7 @@ module Berkshelf
           out << "  #{name} (#{item.version})\n"
 
           unless item.dependencies.empty?
-            item.dependencies.each do |name, constraint|
+            item.dependencies.sort.each do |name, constraint|
               out << "    #{name} (#{constraint})\n"
             end
           end
