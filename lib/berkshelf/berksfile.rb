@@ -509,7 +509,7 @@ module Berkshelf
 
       validate_cookbook_names!(options[:cookbooks])
 
-      cached_cookbooks = install(options)
+      cached_cookbooks = install
       cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
       do_upload(cached_cookbooks, options)
     end
