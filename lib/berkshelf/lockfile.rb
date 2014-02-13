@@ -264,14 +264,12 @@ module Berkshelf
       tempfile.unlink if tempfile
     end
 
-    # @return [String]
-    #   the string representation of the lockfile
+    # @private
     def to_s
       "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}>"
     end
 
-    # @return [String]
-    #   the detailed string representation of the lockfile
+    # @private
     def inspect
       "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}, dependencies: #{dependencies.inspect}>"
     end
