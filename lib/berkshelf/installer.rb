@@ -14,12 +14,11 @@ module Berkshelf
     end
 
     def build_universe
-      print 'Building universe...'
+      Berkshelf.ui.info 'Building universe...'
 
       berksfile.sources.collect do |source|
         Thread.new do
           begin
-            print '.'
             source.build_universe
           rescue Berkshelf::APIClientError => ex
             Berkshelf.formatter.warn "Error retrieving universe from source: #{source}"
@@ -27,8 +26,6 @@ module Berkshelf
           end
         end
       end.map(&:join)
-
-      puts
     end
 
     # @return [Array<Berkshelf::CachedCookbook>]
@@ -116,7 +113,7 @@ module Berkshelf
         dependency.cached_cookbook
       else
         # Berkshelf.formatter.install()
-        puts "Installing #{dependency}..."
+        Berkshelf.ui.info "Installing #{dependency}..."
 
         name, version = dependency.name, dependency.locked_version.to_s
         source   = berksfile.source_for(name, version)
