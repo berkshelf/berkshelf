@@ -225,7 +225,7 @@ module Berkshelf
         raise LockfileNotFound, "No lockfile found at #{options[:lockfile]}"
       end
 
-      lockfile     = Berkshelf::Lockfile.from_file(options[:lockfile])
+      lockfile     = Lockfile.from_file(options[:lockfile])
       lock_options = Hash[options].symbolize_keys
 
       lockfile.apply(environment_name, lock_options)
