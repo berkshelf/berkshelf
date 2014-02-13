@@ -274,27 +274,6 @@ module Berkshelf
       "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}, dependencies: #{dependencies.inspect}>"
     end
 
-    # Write the current lockfile to a hash
-    #
-    # @return [Hash]
-    #   the hash representation of this lockfile
-    #   * :dependencies [Array<Berkshelf::Dependency>] the list of dependencies
-    def to_hash
-      {
-        dependencies: @dependencies
-      }
-    end
-
-    # The JSON representation of this lockfile
-    #
-    # Relies on {#to_hash} to generate the json
-    #
-    # @return [String]
-    #   the JSON representation of this lockfile
-    def to_json(options = {})
-      JSON.pretty_generate(to_hash, options)
-    end
-
     private
 
     # The class responsible for parsing the lockfile and turning it into a
