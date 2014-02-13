@@ -33,8 +33,4 @@ describe Berkshelf::Installer do
       pending
     end
   end
-
-  describe "#verify_licenses!" do
-    pending
-  end
 end

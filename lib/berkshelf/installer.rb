@@ -45,8 +45,6 @@ module Berkshelf
       lockfile.update(berksfile.dependencies)
       lockfile.save
 
-      verify_licenses!(cookbooks)
-
       cookbooks
     end
 
@@ -127,37 +125,6 @@ module Berkshelf
 
         CookbookStore.import(name, version, stash)
       end
-    end
-
-    # Verify that the licenses of all the cached cookbooks fall in the realm of
-    # allowed licenses from the Berkshelf Config.
-    #
-    # @param [Array<CachedCookbook>] cookbooks
-    #
-    # @raise [LicenseNotAllowed]
-    #   if the license is not permitted and `raise_license_exception` is true
-    #
-    # @return [true]
-    def verify_licenses!(cookbooks)
-      licenses = Array(Berkshelf.config.allowed_licenses)
-      return true if licenses.empty?
-
-      cookbooks.each do |cookbook|
-        begin
-          unless licenses.include?(cookbook.metadata.license)
-            raise Berkshelf::LicenseNotAllowed.new(cookbook)
-          end
-        rescue Berkshelf::LicenseNotAllowed => e
-          if Berkshelf.config.raise_license_exception
-            FileUtils.rm_rf(cookbook.path)
-            raise
-          end
-
-          Berkshelf.ui.warn(e.to_s)
-        end
-      end
-
-      true
     end
 
     private
