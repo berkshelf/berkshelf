@@ -118,7 +118,7 @@ describe Berkshelf::Lockfile do
     it 'locks the environment cookbook versions' do
       apt = double(name: 'apt', locked_version: '1.0.0')
       jenkins = double(name: 'jenkins', locked_version: '1.4.5')
-      subject.graph.stub(:locks).and_return([apt, jenkins])
+      subject.graph.stub(:locks).and_return('apt' => apt, 'jenkins' => jenkins)
 
       environment = double('environment', :cookbook_versions= => nil, save: true)
       connection.stub(:environment).and_return(double(find: environment))

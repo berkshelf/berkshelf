@@ -116,8 +116,8 @@ module Berkshelf
 
         raise EnvironmentNotFound.new(name) if environment.nil?
 
-        locks = graph.locks.inject({}) do |hash, dependency|
-          hash[dependency.name] = "= #{dependency.locked_version.to_s}"
+        locks = graph.locks.inject({}) do |hash, (name, dependency)|
+          hash[name] = "= #{dependency.locked_version.to_s}"
           hash
         end
 
@@ -414,7 +414,7 @@ module Berkshelf
       def locks
         @graph.inject({}) do |hash, (name, item)|
           dependency = @lockfile.find(name)  ||
-                       @berksfile.find(name) ||
+                       @berksfile && @berksfile.find(name) ||
                        Dependency.new(@berksfile, name)
           dependency.locked_version = item.version
 
