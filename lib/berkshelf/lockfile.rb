@@ -63,6 +63,8 @@ module Berkshelf
     def parse
       LockfileParser.new(self).run
       true
+    rescue => e
+      raise LockfileParserError.new(e)
     end
 
     # Determine if this lockfile actually exists on disk.
