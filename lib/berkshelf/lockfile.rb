@@ -505,7 +505,8 @@ module Berkshelf
 
         # Grab the nested dependencies for this particular entry so we can
         # recurse and try to remove them from the graph.
-        nested_dependencies = @graph[name].dependencies.keys
+        locked = @graph[name]
+        nested_dependencies = locked && locked.dependencies.keys || []
 
         # Now delete the entry
         @graph.delete(name)
