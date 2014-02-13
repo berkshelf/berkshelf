@@ -260,6 +260,10 @@ module Berkshelf
         out << "    path: #{location.relative_path(berksfile.filepath)}\n"
       end
 
+      if metadata?
+        out << "    metadata: true\n"
+      end
+
       if location.kind_of?(GitLocation)
         out << "    git: #{location.uri}\n"
         out << "    ref: #{location.ref}\n"
