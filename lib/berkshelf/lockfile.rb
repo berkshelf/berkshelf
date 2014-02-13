@@ -201,7 +201,7 @@ module Berkshelf
     #
     # @param [Array<Berkshelf::Dependency>] dependencies
     #   the list of dependencies to update
-    def update_dependencies(dependencies)
+    def update(dependencies)
       @dependencies = {}
 
       dependencies.each do |dependency|

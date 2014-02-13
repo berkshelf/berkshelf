@@ -42,7 +42,7 @@ module Berkshelf
       end
 
       lockfile.graph.update(cookbooks)
-      lockfile.update_dependencies(berksfile.dependencies)
+      lockfile.update(berksfile.dependencies)
       lockfile.save
 
       verify_licenses!(cookbooks)
