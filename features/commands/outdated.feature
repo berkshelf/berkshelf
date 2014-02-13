@@ -10,8 +10,15 @@ Feature: berks outdated
       """
       cookbook 'bacon', '~> 1.1.0'
       """
-    And the Lockfile has:
-      | bacon | 1.1.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        bacon (~> 1.1.0)
+
+      GRAPH
+        bacon (1.1.0)
+      """
+
     When I successfully run `berks outdated`
     Then the output should contain:
       """
@@ -29,8 +36,14 @@ Feature: berks outdated
       """
       cookbook 'bacon'
       """
-    And the Lockfile has:
-      | bacon | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        bacon
+
+      GRAPH
+        bacon (1.0.0)
+      """
     When I successfully run `berks outdated`
     Then the output should contain:
       """
@@ -50,8 +63,14 @@ Feature: berks outdated
       """
       cookbook 'bacon', '~> 1.0'
       """
-    And the Lockfile has:
-      | bacon | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        bacon (~> 1.0)
+
+      GRAPH
+        bacon (1.0.0)
+      """
     When I successfully run `berks outdated`
     Then the output should contain:
       """
@@ -76,8 +95,13 @@ Feature: berks outdated
       """
       cookbook 'bacon', '1.0.0'
       """
-    And the Lockfile has:
-      | not_fake | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+
+      GRAPH
+        not_fake (1.0.0)
+      """
     When I run `berks outdated`
     Then the output should contain:
       """
@@ -90,8 +114,14 @@ Feature: berks outdated
       """
       cookbook 'bacon', '1.0.0'
       """
-    And the Lockfile has:
-      | bacon | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        bacon (= 1.0.0)
+
+      GRAPH
+        bacon (1.0.0)
+      """
     When I run `berks outdated`
     Then the output should contain:
       """

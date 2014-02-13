@@ -66,8 +66,14 @@ Feature: --format json
       """
       cookbook 'fake', '1.0.0'
       """
-    And the Lockfile has:
-      | fake | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake (= 1.0.0)
+
+      GRAPH
+        fake (1.0.0)
+      """
     When I successfully run `berks show fake --format json`
     Then the output should contain JSON:
       """
@@ -128,8 +134,14 @@ Feature: --format json
       """
       cookbook 'seth', '~> 0.1'
       """
-    And the Lockfile has:
-      | seth | 0.1.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        seth (~> 0.1)
+
+      GRAPH
+        seth (0.1.0)
+      """
     And I successfully run `berks outdated --format json`
     Then the output should contain JSON:
       """

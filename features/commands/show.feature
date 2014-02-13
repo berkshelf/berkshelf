@@ -6,8 +6,14 @@ Feature: berks show
       """
       cookbook 'fake', '1.0.0'
       """
-    And the Lockfile has:
-      | fake | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake (= 1.0.0)
+
+      GRAPH
+        fake (1.0.0)
+      """
     When I successfully run `berks show fake`
     Then the output should contain:
       """
@@ -28,9 +34,16 @@ Feature: berks show
       """
       cookbook 'fake', '1.0.0'
       """
-    And the Lockfile has:
-      | fake | 1.0.0 |
-      | dep  | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake (= 1.0.0)
+
+      GRAPH
+        dep (1.0.0)
+        fake (1.0.0)
+          dep (~> 1.0.0)
+      """
     And I successfully run `berks install`
     When I successfully run `berks show dep`
     Then the output should contain:
@@ -70,8 +83,14 @@ Feature: berks show
       """
       cookbook 'fake', '1.0.0'
       """
-    And the Lockfile has:
-      | fake | 1.0.0 |
+    And the I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake (= 1.0.0)
+
+      GRAPH
+        fake (1.0.0)
+      """
     When I run `berks show fake`
     Then the output should contain:
       """
