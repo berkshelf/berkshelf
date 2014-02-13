@@ -174,6 +174,13 @@ module Berkshelf
       end
     end
 
+    # Download the dependency.
+    #
+    # @return [CachedCookbook, nil]
+    def download
+      cached_cookbook
+    end
+
     # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
     # cached cookbook is present.
     #
