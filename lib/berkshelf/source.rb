@@ -44,6 +44,15 @@ module Berkshelf
       universe.find { |cookbook| cookbook.name == name && cookbook.version == version }
     end
 
+    # Determine if this source is a "default" source, as defined in the
+    # {Berksfile}.
+    #
+    # @return [true, false]
+    #   true if this a default source, false otherwise
+    def default?
+      uri == Berksfile::DEFAULT_API_URL
+    end
+
     # @param [String] name
     #
     # @return [APIClient::RemoteCookbook]
