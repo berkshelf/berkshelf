@@ -71,6 +71,13 @@ module Berkshelf
       end
     end
 
+    def ==(other)
+      other.is_a?(MercurialLocation) &&
+      other.uri == uri &&
+      other.rev == rev &&
+      other.rel == rel
+    end
+
     def to_s
       if rel
         "#{uri} (at #{rev}/#{rel})"

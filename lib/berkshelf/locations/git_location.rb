@@ -90,6 +90,14 @@ module Berkshelf
       end
     end
 
+    def ==(other)
+      other.is_a?(GitLocation) &&
+      other.uri == uri &&
+      other.branch == branch &&
+      other.ref == ref &&
+      other.rel == rel
+    end
+
     def to_s
       if rel
         "#{uri} (at #{branch || ref[0...7]}/#{rel})"
