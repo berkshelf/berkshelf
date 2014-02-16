@@ -187,9 +187,9 @@ module Berkshelf
     # @return [CachedCookbook]
     #   the CachedCookbook that corresponds to the given name parameter
     def retrieve(dependency)
-      locked = find(dependency)
+      locked = graph.locks[Dependency.name(dependency)]
 
-      unless locked
+      if locked.nil?
         raise DependencyNotFound.new(Dependency.name(dependency))
       end
 
