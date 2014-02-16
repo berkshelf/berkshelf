@@ -420,11 +420,7 @@ module Berkshelf
       validate_lockfile_trusted!
       validate_dependencies_installed!
 
-      items = dependencies.collect do |dependency|
-        [dependency, retrieve_locked(dependency)]
-      end
-
-      Hash[*items.flatten]
+      lockfile.graph.locks.values
     end
 
     # List of all the cookbooks which have a newer version found at a source that satisfies
