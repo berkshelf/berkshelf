@@ -246,10 +246,9 @@ module Berkshelf
       desc: 'Only cookbooks that are in these groups.',
       aliases: '-o'
     desc 'outdated [COOKBOOKS]', 'List dependencies that have new versions available that satisfy their constraints'
-    def outdated(*cookbook_names)
+    def outdated(*names)
       berksfile = Berksfile.from_options(options)
-      options[:cookbooks] = cookbook_names
-      outdated = berksfile.outdated(options.symbolize_keys)
+      outdated  = berksfile.outdated(*names)
 
       if outdated.empty?
         Berkshelf.formatter.msg "All cookbooks up to date!"
