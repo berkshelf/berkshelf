@@ -15,7 +15,7 @@ module Berkshelf
     #   true if this is a metadata source
     def initialize(dependency, options = {})
       super
-      @path     = File.expand_path(options[:path].to_s, File.dirname(dependency.berksfile.filepath))
+      @path     = options[:path].to_s
       @metadata = options[:metadata]
     end
 
@@ -49,6 +49,15 @@ module Berkshelf
       "./#{new_path}"
     end
 
+    #
+    # The expanded path of this path on disk, relative to the berksfile.
+    #
+    # @return [String]
+    #
+    def expanded_path
+      relative_path(dependency.berksfile.filepath)
+    end
+
     # Valid if the path exists and is readable
     #
     # @return [Boolean]
@@ -63,7 +72,7 @@ module Berkshelf
     def ==(other)
       other.is_a?(PathLocation) &&
       other.metadata? == metadata? &&
-      other.path == path
+      other.expanded_path == expanded_path
     end
 
     def to_lock
