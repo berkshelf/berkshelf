@@ -68,10 +68,6 @@ module Berkshelf
     # @return [Array<CachedCookbook>]
     #   the list of installed cookbooks
     def install_from_universe
-      # Unlike when installing from the lockfile, we _always_ need to build
-      # the universe when installing from the universe... duh
-      build_universe
-
       dependencies = lockfile.graph.locks.values + berksfile.dependencies
       dependencies = dependencies.inject({}) do |hash, dependency|
         # Fancy way of ensuring no duplicate dependencies are used...
@@ -87,6 +83,10 @@ module Berkshelf
         Berkshelf.formatter.fetch(dependency)
         dependency.download
       end
+
+      # Unlike when installing from the lockfile, we _always_ need to build
+      # the universe when installing from the universe... duh
+      build_universe
 
       # Add any explicit dependencies for already-downloaded cookbooks (like
       # path locations)
