@@ -98,6 +98,14 @@ module Berkshelf
       end
     end
 
+    def to_lock
+      out =  "    git: #{uri}\n"
+      out << "    branch: #{branch}\n" if branch
+      out << "    ref: #{ref}\n"       if ref
+      out << "    rel: #{rel}\n"       if rel
+      out
+    end
+
     private
 
       def cached?(destination)

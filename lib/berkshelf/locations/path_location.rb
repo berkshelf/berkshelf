@@ -60,6 +60,12 @@ module Berkshelf
       super.merge(value: self.path)
     end
 
+    def to_lock
+      out =  "    path: #{relative_path(dependency.berksfile.filepath)}\n"
+      out << "    metadata: true\n" if metadata?
+      out
+    end
+
     def to_s
       "source at #{relative_path(dependency.berksfile.filepath)}"
     end

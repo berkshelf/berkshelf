@@ -267,28 +267,13 @@ module Berkshelf
     end
 
     def to_lock
-      out = "  #{name}"
-
-      if version_constraint.to_s == '>= 0.0.0'
-        out << "\n"
+      out = if path_location? || scm_location? || version_constraint.to_s == '>= 0.0.0'
+        "  #{name}\n"
       else
-        out << " (#{version_constraint})\n"
+        "  #{name} (#{version_constraint})\n"
       end
 
-      if location.kind_of?(PathLocation)
-        out << "    path: #{location.relative_path(berksfile.filepath)}\n"
-      end
-
-      if metadata?
-        out << "    metadata: true\n"
-      end
-
-      if location.kind_of?(GitLocation)
-        out << "    git: #{location.uri}\n"
-        out << "    ref: #{location.ref}\n"
-        out << "    rel: #{location.rel}\n" if location.rel
-      end
-
+      out << location.to_lock if location
       out
     end
 

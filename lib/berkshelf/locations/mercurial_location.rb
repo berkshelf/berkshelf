@@ -79,6 +79,13 @@ module Berkshelf
       end
     end
 
+    def to_lock
+      out =  "    hg: #{uri}\n"
+      out << "    rev: #{rev}\n" if rev
+      out << "    rel: #{rel}\n" if rel
+      out
+    end
+
     private
 
       def cached?(destination)
