@@ -10,7 +10,7 @@ Feature: berks outdated
       """
       cookbook 'bacon', '~> 1.1.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         bacon (~> 1.1.0)
@@ -36,7 +36,7 @@ Feature: berks outdated
       """
       cookbook 'bacon'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         bacon
@@ -63,7 +63,7 @@ Feature: berks outdated
       """
       cookbook 'bacon', '~> 1.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         bacon (~> 1.0)
@@ -95,7 +95,7 @@ Feature: berks outdated
       """
       cookbook 'bacon', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
 
@@ -114,7 +114,7 @@ Feature: berks outdated
       """
       cookbook 'bacon', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         bacon (= 1.0.0)

@@ -6,7 +6,7 @@ Feature: berks show
       """
       cookbook 'fake', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         fake (= 1.0.0)
@@ -34,7 +34,7 @@ Feature: berks show
       """
       cookbook 'fake', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         fake (= 1.0.0)
@@ -83,7 +83,7 @@ Feature: berks show
       """
       cookbook 'fake', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         fake (= 1.0.0)
