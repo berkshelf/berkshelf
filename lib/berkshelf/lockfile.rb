@@ -239,21 +239,21 @@ module Berkshelf
     # or failures do no affect the lockfile. The temporary file is ensured
     # deletion.
     #
-    # @return [String]
-    #   the path where the lockfile was saved
+    # @return [true, false]
+    #   true if the lockfile was saved, false otherwise
     def save
+      return false if dependencies.empty?
+
       tempfile = Tempfile.new(['Berksfile',  '.lock'])
 
-      unless dependencies.empty?
-        tempfile.write(DEPENDENCIES)
-        tempfile.write("\n")
-        dependencies.sort.each do |dependency|
-          tempfile.write(dependency.to_lock)
-        end
-
-        tempfile.write("\n")
-        tempfile.write(graph.to_lock)
+      tempfile.write(DEPENDENCIES)
+      tempfile.write("\n")
+      dependencies.sort.each do |dependency|
+        tempfile.write(dependency.to_lock)
       end
+
+      tempfile.write("\n")
+      tempfile.write(graph.to_lock)
 
       tempfile.rewind
       tempfile.close
