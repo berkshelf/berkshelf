@@ -85,7 +85,7 @@ module Berkshelf
       # constraints that we don't yet know about
       dependencies.select(&:scm_location?).each do |dependency|
         Berkshelf.formatter.fetch(dependency)
-        downloader.download(dependency)
+        dependency.download
       end
 
       # Add any explicit dependencies for already-downloaded cookbooks (like

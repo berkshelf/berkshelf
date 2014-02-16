@@ -94,7 +94,9 @@ module Berkshelf
     # @return [Solve::Version]
     attr_reader :locked_version
     # @return [Solve::Constraint]
-    attr_accessor :version_constraint
+    attr_reader :version_constraint
+    # @return [Source]
+    attr_accessor :source
     # @return [Berkshelf::CachedCookbook]
     attr_accessor :cached_cookbook
 
@@ -150,6 +152,14 @@ module Berkshelf
       @locked_version = Solve::Version.new(version.to_s)
     end
 
+    # Set this dependency's constraint(s).
+    #
+    # @param [#to_s] constraint
+    #   the constraint to set
+    def version_constraint=(constraint)
+      @version_constraint = Solve::Constraint.new(constraint.to_s)
+    end
+
     def add_group(*local_groups)
       local_groups = local_groups.first if local_groups.first.is_a?(Array)
 
@@ -162,8 +172,8 @@ module Berkshelf
     # The cached (downloaded) cookbook for this dependency.
     #
     # @return [CachedCookbook, nil]
-    def cached_cookbook
-      @cached_cookbook ||= if location
+    def download
+      @cached_cookbook = if location
         location.download
       else
         if locked_version
@@ -172,13 +182,22 @@ module Berkshelf
           CookbookStore.instance.satisfy(name, version_constraint)
         end
       end
+
+      if scm_location? || path_location?
+        self.locked_version     = @cached_cookbook.version
+        self.version_constraint = @cached_cookbook.version
+      end
+
+      @cached_cookbook
     end
 
-    # Download the dependency.
+    # Download the dependency. If this dependency is an SCM location or Path
+    # location, the constraints are also updated to correspond to the cookbook
+    # on disk.
     #
     # @return [CachedCookbook, nil]
-    def download
-      cached_cookbook
+    def cached_cookbook
+      @cached_cookbook ||= download
     end
 
     # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
