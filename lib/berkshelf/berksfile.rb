@@ -701,7 +701,8 @@ module Berkshelf
       end
 
       # Ensure that all dependencies in the lockfile are installed on this
-      # system.
+      # system. You should validate that the lockfile can be trusted before
+      # using this method.
       #
       # @raise [DependencyNotInstalled]
       #   if the dependency in the lockfile is not in the Berkshelf shelf on
@@ -709,11 +710,9 @@ module Berkshelf
       #
       # @return [true]
       def validate_dependencies_installed!
-        dependencies.each do |dependency|
-          locked = lockfile.find(dependency)
-
-          if locked.nil? || !locked.downloaded?
-            raise DependencyNotInstalled.new(locked)
+        lockfile.graph.locks.each do |_, dependency|
+          unless dependency.downloaded?
+            raise DependencyNotInstalled.new(dependency)
           end
         end
 
