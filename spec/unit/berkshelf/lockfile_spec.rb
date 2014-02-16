@@ -57,7 +57,8 @@ describe Berkshelf::Lockfile do
     it 'returns true when the lockfile is trusted' do
       apt = double('apt',
         version_constraint: Solve::Constraint.new('>= 0.0.0'),
-        version: '1.0.0'
+        version: '1.0.0',
+        location: 'api',
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
@@ -88,11 +89,28 @@ describe Berkshelf::Lockfile do
     it 'returns false if the constraint is not satisfied' do
       apt = double('apt',
         version_constraint: Solve::Constraint.new('< 1.0.0'),
-        version: '1.0.0'
+        version: '1.0.0',
+        location: 'api'
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       subject.stub(:find).with(apt).and_return(apt)
+      subject.graph.stub(:find).with(apt).and_return(apt)
+
+      expect(subject.trusted?).to be_false
+    end
+
+    it 'returns false if the locations are different' do
+      apt = double('apt',
+        version_constraint: Solve::Constraint.new('< 1.0.0'),
+        version: '1.0.0',
+        location: 'api'
+      )
+      apt_master = apt.dup
+      apt_master.stub(location: 'github')
+      berksfile = double('berksfile', dependencies: [apt])
+      subject.instance_variable_set(:@berksfile, berksfile)
+      subject.stub(:find).with(apt).and_return(apt_master)
       subject.graph.stub(:find).with(apt).and_return(apt)
 
       expect(subject.trusted?).to be_false
