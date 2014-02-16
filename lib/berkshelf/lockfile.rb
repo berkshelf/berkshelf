@@ -309,7 +309,7 @@ module Berkshelf
             "lockfile, you may have corrupted it."
         end
 
-        if contents =~ /^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/
+        if contents.strip[0] == '{'
           Berkshelf.ui.warn "It looks like you are using an older version of " \
             "the lockfile. This is a problem. You see, previous versions of " \
             "the lockfile were actually a lie. It lied to you about your " \
