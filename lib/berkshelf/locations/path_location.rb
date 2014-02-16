@@ -15,7 +15,7 @@ module Berkshelf
     #   true if this is a metadata source
     def initialize(dependency, options = {})
       super
-      @path     = options[:path].to_s
+      @path     = File.expand_path(options[:path].to_s, File.dirname(dependency.berksfile.filepath))
       @metadata = options[:metadata]
     end
 

@@ -94,7 +94,9 @@ module Berkshelf
         graphed    = graph.find(dependency)
         constraint = dependency.version_constraint
 
-        locked && graphed && constraint.satisfies?(graphed.version)
+        locked && graphed &&
+        dependency.location == locked.location &&
+        constraint.satisfies?(graphed.version)
       end
     end
 
