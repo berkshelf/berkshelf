@@ -416,7 +416,7 @@ module Berkshelf
       #   a key-value hash where the key is the name of the cookbook and the
       #   value is the locked dependency
       def locks
-        @graph.inject({}) do |hash, (name, item)|
+        @graph.sort.inject({}) do |hash, (name, item)|
           dependency = @lockfile.find(name)  ||
                        @berksfile && @berksfile.find(name) ||
                        Dependency.new(@berksfile, name)
