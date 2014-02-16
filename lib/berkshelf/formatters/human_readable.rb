@@ -84,15 +84,13 @@ module Berkshelf
 
       # Output a list of cookbooks using {Berkshelf.ui}
       #
-      # @param [Hash<Dependency, CachedCookbook>] list
-      def list(list)
-        if list.empty?
-          Berkshelf.ui.info "There are no cookbooks installed by your Berksfile"
-        else
-          Berkshelf.ui.info "Cookbooks installed by your Berksfile:"
-          list.each do |dependency, cookbook|
-            Berkshelf.ui.info("  * #{cookbook.cookbook_name} (#{cookbook.version})")
-          end
+      # @param [Array<Dependency>] list
+      def list(dependencies)
+        Berkshelf.ui.info "Cookbooks installed by your Berksfile:"
+        dependencies.each do |dependency|
+          out =  "  * #{dependency}"
+          out << " from #{dependency.location}" if dependency.location
+          Berkshelf.ui.info(out)
         end
       end
 

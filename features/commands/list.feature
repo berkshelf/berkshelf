@@ -8,7 +8,7 @@ Feature: berks list
       cookbook 'fake1', '1.0.0'
       cookbook 'fake2', '1.0.1'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         fake1 (= 1.0.0)
@@ -43,7 +43,7 @@ Feature: berks list
       """
       cookbook 'fake', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
 
@@ -62,7 +62,7 @@ Feature: berks list
       """
       cookbook 'fake', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         fake (= 1.0.0)
@@ -76,19 +76,3 @@ Feature: berks list
       The cookbook 'fake (1.0.0)' is not installed. Please run `berks install` to download and install the missing dependency.
       """
     And the exit status should be "DependencyNotInstalled"
-
-  Scenario: When there are no dependencies
-    Given I have a Berksfile pointing at the local Berkshelf API
-    And the I write to "Berksfile.lock" with:
-      """
-      DEPENDENCIES
-        fake (= 1.0.0)
-
-      GRAPH
-        fake (1.0.0)
-      """
-    When I successfully run `berks list`
-    Then the output should contain:
-      """
-      There are no cookbooks installed by your Berksfile
-      """
