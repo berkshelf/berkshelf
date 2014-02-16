@@ -423,46 +423,47 @@ module Berkshelf
       lockfile.graph.locks.values
     end
 
-    # List of all the cookbooks which have a newer version found at a source that satisfies
-    # the constraints of your dependencies
+    # List of all the cookbooks which have a newer version found at a source
+    # that satisfies the constraints of your dependencies.
     #
     # @return [Hash]
-    #   a hash of cached cookbooks and their latest version. An empty hash is returned
-    #   if there are no newer cookbooks for any of your dependencies
+    #   a hash of cached cookbooks and their latest version. An empty hash is
+    #   returned if there are no newer cookbooks for any of your dependencies
     #
     # @example
     #   berksfile.outdated #=> {
     #     #<CachedCookbook name="artifact"> => "0.11.2"
     #   }
-    def outdated
+    def outdated(*names)
       validate_lockfile_present!
       validate_lockfile_trusted!
-
-      # TODO: Eventually we want to refactor this method and algorithm, but
-      # that would involve a pretty large lockfile refactor, so it will have
-      # to wait until a later release...
       validate_dependencies_installed!
+      validate_cookbook_names!(names)
 
-      outdated = {}
-      dependencies.each do |dependency|
-        locked = retrieve_locked(dependency)
-        outdated[dependency.name] = {}
+      # Calculate the list of cookbooks to unlock
+      if names.empty?
+        list = dependencies
+      else
+        list = dependencies.select { |dependency| names.include?(dependency.name) }
+      end
 
+      lockfile.graph.locks.inject({}) do |hash, (name, dependency)|
         sources.each do |source|
-          cookbooks = source.versions(dependency.name)
+          cookbooks = source.versions(name)
 
           latest = cookbooks.select do |cookbook|
             dependency.version_constraint.satisfies?(cookbook.version) &&
-            cookbook.version != locked.version
+            cookbook.version.to_s != dependency.locked_version.to_s
           end.sort_by { |cookbook| cookbook.version }.last
 
           unless latest.nil?
-            outdated[dependency.name][source.uri.to_s] = latest
+            hash[name] ||= {}
+            hash[name][source.uri.to_s] = latest
           end
         end
-      end
 
-      outdated.reject { |name, newer| newer.empty? }
+        hash
+      end
     end
 
     # Upload the cookbooks installed by this Berksfile
