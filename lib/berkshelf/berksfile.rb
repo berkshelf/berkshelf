@@ -417,7 +417,7 @@ module Berkshelf
     #   the list of dependencies as keys and the cached cookbook as the value
     def list
       validate_lockfile_present!
-      validate_lockfile_in_sync!
+      validate_lockfile_trusted!
       validate_dependencies_installed!
 
       items = dependencies.collect do |dependency|
@@ -440,7 +440,7 @@ module Berkshelf
     #   }
     def outdated
       validate_lockfile_present!
-      validate_lockfile_in_sync!
+      validate_lockfile_trusted!
 
       # TODO: Eventually we want to refactor this method and algorithm, but
       # that would involve a pretty large lockfile refactor, so it will have
@@ -695,11 +695,8 @@ module Berkshelf
       #   exist (or are not satisifed by) the lockfile
       #
       # @return [true]
-      def validate_lockfile_in_sync!
-        dependencies.each do |dependency|
-          raise LockfileOutOfSync unless lockfile.dependency?(dependency)
-        end
-
+      def validate_lockfile_trusted!
+        raise LockfileOutOfSync unless lockfile.trusted?
         true
       end
 
