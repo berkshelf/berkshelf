@@ -28,14 +28,14 @@ Feature: --format json
 
         ],
         "messages": [
-          "building universe..."
+          "Fetching cookbook index from http://0.0.0.0:26210..."
         ]
       }
       """
 
   Scenario: JSON output installing a cookbook we already have
     Given the cookbook store has the cookbooks:
-      | berkshelf-cookbook-fixture   | 1.0.0 |
+      | berkshelf-cookbook-fixture | 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
@@ -54,7 +54,7 @@ Feature: --format json
 
         ],
         "messages": [
-          "building universe..."
+          "Fetching cookbook index from http://0.0.0.0:26210..."
         ]
       }
       """
@@ -66,7 +66,7 @@ Feature: --format json
       """
       cookbook 'fake', '1.0.0'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         fake (= 1.0.0)
@@ -117,7 +117,7 @@ Feature: --format json
 
         ],
         "messages": [
-          "building universe..."
+          "Fetching cookbook index from http://0.0.0.0:26210..."
         ]
       }
       """
@@ -134,7 +134,7 @@ Feature: --format json
       """
       cookbook 'seth', '~> 0.1'
       """
-    And the I write to "Berksfile.lock" with:
+    And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         seth (~> 0.1)
