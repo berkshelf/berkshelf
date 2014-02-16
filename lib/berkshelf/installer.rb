@@ -17,7 +17,7 @@ module Berkshelf
       berksfile.sources.collect do |source|
         Thread.new do
           begin
-            Berkshelf.ui.info("Fetching cookbook index from #{source.uri}...")
+            Berkshelf.formatter.msg("Fetching cookbook index from #{source.uri}...")
             source.build_universe
           rescue Berkshelf::APIClientError => ex
             Berkshelf.formatter.warn "Error retrieving universe from source: #{source}"
