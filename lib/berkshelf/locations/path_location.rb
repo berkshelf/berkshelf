@@ -60,14 +60,8 @@ module Berkshelf
       super.merge(value: self.path)
     end
 
-    # The string representation of this PathLocation
-    #
-    # @example
-    #   loc.to_s #=> artifact (1.4.0) at path: '/Users/Seth/Dev/artifact'
-    #
-    # @return [String]
     def to_s
-      "#{self.class.location_key}: '#{File.expand_path(path)}'"
+      "source at #{relative_path(dependency.berksfile.filepath)}"
     end
   end
 end

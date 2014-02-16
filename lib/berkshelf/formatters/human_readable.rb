@@ -17,36 +17,27 @@ module Berkshelf
 
       # Output a Cookbook installation message using {Berkshelf.ui}
       #
-      # @param [String] cookbook
-      # @param [String] version
-      # @option options [#to_s] :api_source
-      #   the berkshelf-api source url
-      # @option options [#to_s] :location_path
-      #   endpoint location for the remote cookbook provided by the api server
-      # @option options [#to_s] :location_type
-      #   type of the location provided by the api server for the remote cookbook
-      def install(cookbook, version, options = {})
-        info_message = "Installing #{cookbook} (#{version})"
+      # @param [Source] source
+      #   the source the dependency is being downloaded from
+      # @param [RemoteCookbook] cookbook
+      #   the cookbook to be downloaded
+      def install(source, cookbook)
+        message = "Installing #{cookbook.name} (#{cookbook.version})"
 
-        if options.has_key?(:api_source) && options.has_key?(:location_path) && options.has_key?(:location_type)
-          api_source    = options[:api_source].to_s
-          location_path = options[:location_path].to_s
-          location_type = options[:location_type].to_s
-
-          unless api_source == Berkshelf::Berksfile::DEFAULT_API_URL
-            info_message << " from [api: #{URI(api_source)}] ([#{location_type}] #{location_path})"
-          end
+        unless source.default?
+          message << " from #{source}"
+          message << " ([#{cookbook.location_type}] #{cookbook.location_path})"
         end
 
-        Berkshelf.ui.info info_message
+        Berkshelf.ui.info(message)
       end
 
       # Output a Cookbook use message using {Berkshelf.ui}
       #
       # @param [Dependency] dependency
       def use(dependency)
-        message = "Using #{dependency.name} (#{dependency.cached_cookbook.version})"
-        message += " #{dependency.location}" if dependency.location
+        message =  "Using #{dependency.name} (#{dependency.locked_version})"
+        message << " from #{dependency.location}" if dependency.location
         Berkshelf.ui.info message
       end
 

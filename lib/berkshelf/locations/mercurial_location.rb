@@ -49,8 +49,7 @@ module Berkshelf
 
       tmp_path = rel ? File.join(repo_path, rel) : repo_path
       unless File.chef_cookbook?(tmp_path)
-        msg = "Cookbook '#{dependency.name}' not found at hg: #{uri}"
-        msg << " with rev '#{rev}'" if rev
+        msg = "Cookbook '#{dependency.name}' not found at #{to_s}"
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
@@ -73,9 +72,11 @@ module Berkshelf
     end
 
     def to_s
-      s = "#{self.class.location_key}: '#{uri}'"
-      s << " at rev: '#{rev}'" if rev
-      s
+      if rel
+        "#{uri} (at #{rev}/#{rel})"
+      else
+        "#{uri} (at #{rev})"
+      end
     end
 
     private

@@ -68,7 +68,7 @@ module Berkshelf
     end
 
     def to_s
-      uri.to_s
+      "#{uri}"
     end
 
     def ==(other)

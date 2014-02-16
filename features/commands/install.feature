@@ -56,8 +56,8 @@ Feature: berks install
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Installing ruby (1.0.0) from [api: http://0.0.0.0:26210] ([chef_server] http://localhost:26310/)
-      Installing elixir (1.0.0) from [api: http://0.0.0.0:26210] ([chef_server] http://localhost:26310/)
+      Installing elixir (1.0.0) from http://0.0.0.0:26210 ([chef_server] http://localhost:26310/)
+      Installing ruby (1.0.0) from http://0.0.0.0:26210 ([chef_server] http://localhost:26310/)
       """
     And the cookbook store should have the cookbooks:
       | ruby   | 1.0.0 |
@@ -101,7 +101,7 @@ Feature: berks install
       cookbook 'takeme', group: :take_me
       cookbook 'notme', group: :not_me
       """
-    When I successfully run `berks upload --only take_me not_me`
+    When I successfully run `berks install --only take_me not_me`
     Then the output should contain "Using takeme (1.0.0)"
     Then the output should contain "Using notme (1.0.0)"
 
@@ -114,7 +114,7 @@ Feature: berks install
       cookbook 'takeme', group: :take_me
       cookbook 'notme', group: :not_me
       """
-    When I successfully run `berks upload --except not_me`
+    When I successfully run `berks install --except not_me`
     Then the output should contain "Using takeme (1.0.0)"
     Then the output should not contain "Using notme (1.0.0)"
 
@@ -127,7 +127,7 @@ Feature: berks install
       cookbook 'takeme', group: :take_me
       cookbook 'notme', group: :not_me
       """
-    When I successfully run `berks upload --except take_me not_me`
+    When I successfully run `berks install --except take_me not_me`
     Then the output should not contain "Using takeme (1.0.0)"
     Then the output should not contain "Using notme (1.0.0)"
 
@@ -140,7 +140,7 @@ Feature: berks install
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using example_cookbook (0.5.0) path: '
+      Using example_cookbook (0.5.0) from source at ../../fixtures/cookbooks/example_cookbook-0.5.0
       """
 
   Scenario: installing a demand from a path location with a conflicting constraint
@@ -165,12 +165,12 @@ Feature: berks install
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using example_cookbook (0.5.0) path: '
+      Using example_cookbook (0.5.0) from source at ../../fixtures/cookbooks/example_cookbook-0.5.0
       """
 
   Scenario: installing a demand from a path location locks the graph to that version
     Given the Chef Server has cookbooks:
-      | example_cookbook | 1.0.0 |                           |
+      # | example_cookbook | 1.0.0 |                           |
       | other_cookbook   | 1.0.0 | example_cookbook ~> 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -192,7 +192,7 @@ Feature: berks install
     When I successfully run `berks install -b subdirectory/Berksfile`
     Then the output should contain:
       """
-      Using example_cookbook (0.5.0) path: '
+      Using example_cookbook (0.5.0) from source at ../../../fixtures/cookbooks/example_cookbook-0.5.0
       """
 
   Scenario: installing a demand from a Git location
@@ -205,9 +205,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
-      building universe...
-      Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       """
 
   Scenario: installing a demand from a Git location that has already been installed
@@ -220,7 +220,7 @@ Feature: berks install
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'master'
+      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       """
 
   Scenario: installing a Berksfile that contains a Git location with a rel
@@ -233,9 +233,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'rel'
-      building universe...
-      Using berkshelf-cookbook-fixture (1.0.0) github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'rel' at ref: '93f5768b7d14df45e10d16c8bf6fe98ba3ff809a'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
       """
 
   Scenario: installing a Berksfile that contains a Git location with a tag
@@ -248,9 +248,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
-      building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
   Scenario: installing a Berksfile that contains a Git location with a ref
@@ -263,24 +263,24 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with ref: '70a527e17d91f01f031204562460ad1c17f972ee'
-      building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
   Scenario: installing a Berksfile that contains a Git location with an abbreviated ref
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", ref: "70a527"
+      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", ref: "70a527e"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with ref: '70a527'
-      building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with ref: '70a527' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
   Scenario: installing a Berksfile that contains a GitHub location
@@ -293,9 +293,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
-      building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
   Scenario: installing a Berksfile that contains a GitHub location ending in .git
@@ -320,9 +320,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
-      building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) github: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
   Scenario: installing a Berksfile that contains a Github location and protocol https
@@ -335,9 +335,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from github: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
-      building universe...
-      Using berkshelf-cookbook-fixture (0.2.0) github: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0' at ref: '70a527e17d91f01f031204562460ad1c17f972ee'
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
   # GitHub doesn't permit anonymous SSH access, so we are going to get a
@@ -471,7 +471,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v0.2.0'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
       """
     And the exit status should be "CookbookValidationFailure"
@@ -486,9 +486,9 @@ Feature: berks install
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v1.0.0'
-      building universe...
-      Using berkshelf-cookbook-fixture (1.0.0) git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git' with branch: 'v1.0.0' at ref: 'b4f968c9001ad8de30f564a2107fab9cfa91f771'
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
       """
 
   Scenario: with a cookbook definition containing an invalid option
@@ -512,7 +512,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'doesntexist' from git: 'git://github.com/asdjhfkljashflkjashfakljsf' with branch: 'master'
+      Fetching 'doesntexist' from git://github.com/asdjhfkljashflkjashfakljsf (at master)
       An error occurred during Git execution:
       """
       And the exit status should be "GitError"

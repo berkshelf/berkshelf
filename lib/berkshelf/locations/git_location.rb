@@ -68,7 +68,7 @@ module Berkshelf
 
       tmp_path = rel ? File.join(repo_path, rel) : repo_path
       unless File.chef_cookbook?(tmp_path)
-        msg = "Cookbook '#{dependency.name}' not found at git: #{to_display}"
+        msg = "Cookbook '#{dependency.name}' not found at #{to_s}"
         msg << " at path '#{rel}'" if rel
         raise CookbookNotFound, msg
       end
@@ -91,17 +91,14 @@ module Berkshelf
     end
 
     def to_s
-      "#{self.class.location_key}: #{to_display}"
+      if rel
+        "#{uri} (at #{branch || ref[0...7]}/#{rel})"
+      else
+        "#{uri} (at #{branch || ref[0...7]})"
+      end
     end
 
     private
-
-      def to_display
-        info = checkout_info
-        s = "'#{uri}' with #{info[:kind]}: '#{info[:rev]}'"
-        s << " at ref: '#{ref}'" if ref && (info[:kind] != "ref" || ref != info[:rev])
-        s
-      end
 
       def cached?(destination)
         revision_path(destination) && File.exists?(revision_path(destination))

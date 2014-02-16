@@ -112,14 +112,13 @@ module Berkshelf
         Berkshelf.formatter.use(dependency)
         dependency.cached_cookbook
       else
-        # Berkshelf.formatter.install()
-        Berkshelf.ui.info "Installing #{dependency}..."
-
         name, version = dependency.name, dependency.locked_version.to_s
         source   = berksfile.source_for(name, version)
         cookbook = source.cookbook(name, version)
-        stash    = downloader.download(name, version)
 
+        Berkshelf.formatter.install(source, cookbook)
+
+        stash = downloader.download(name, version)
         CookbookStore.import(name, version, stash)
       end
     end
