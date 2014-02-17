@@ -1,7 +1,6 @@
 require 'net/http'
 require 'zlib'
 require 'archive/tar/minitar'
-require 'octokit'
 
 module Berkshelf
   class Downloader
@@ -71,6 +70,8 @@ module Berkshelf
         Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
         Ridley.open(credentials) { |r| r.cookbook.download(name, version) }
       when :github
+        require 'octokit' unless defined?(Octokit)
+
         tmp_dir      = Dir.mktmpdir
         archive_path = File.join(tmp_dir, "#{name}-#{version}.tar.gz")
         unpack_dir   = File.join(tmp_dir, "#{name}-#{version}")
