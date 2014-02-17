@@ -19,6 +19,11 @@ module Berkshelf
   require_relative 'berkshelf/errors'
   require_relative 'berkshelf/mixin'
 
+  autoload :BaseFormatter,  'berkshelf/formatters/base'
+  autoload :HumanFormatter, 'berkshelf/formatters/human'
+  autoload :JsonFormatter,  'berkshelf/formatters/json'
+  autoload :NullFormatter,  'berkshelf/formatters/null'
+
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
@@ -108,7 +113,7 @@ module Berkshelf
     #
     # @return [~Formatter]
     def formatter
-      @formatter ||= Formatters::HumanReadable.new
+      @formatter ||= HumanFormatter.new
     end
 
     # @raise [Berkshelf::ChefConnectionError]
@@ -149,8 +154,9 @@ module Berkshelf
     # @example Berkshelf.set_format :json
     #
     # @return [~Formatter]
-    def set_format(format_id)
-      @formatter = Formatters[format_id].new
+    def set_format(name)
+      id = name.to_s.capitalize
+      @formatter = Berkshelf.const_get("#{id}Formatter").new
     end
 
     private
@@ -177,7 +183,6 @@ require_relative 'berkshelf/cookbook_store'
 require_relative 'berkshelf/config'
 require_relative 'berkshelf/dependency'
 require_relative 'berkshelf/downloader'
-require_relative 'berkshelf/formatters'
 require_relative 'berkshelf/git'
 require_relative 'berkshelf/mercurial'
 require_relative 'berkshelf/init_generator'

@@ -14,7 +14,7 @@ describe Berkshelf::Lockfile do
     end
 
     it 'warns the user' do
-      expect(Berkshelf.ui).to receive(:warn)
+      expect(Berkshelf.formatter).to receive(:warn)
       subject.parse
     end
 
@@ -49,7 +49,7 @@ describe Berkshelf::Lockfile do
     let(:fixture) { fixtures_path.join('lockfiles/blank.lock') }
 
     it 'warns the user' do
-      expect(Berkshelf.ui).to receive(:warn)
+      expect(Berkshelf.formatter).to receive(:warn)
       subject.parse
     end
 
@@ -66,7 +66,7 @@ describe Berkshelf::Lockfile do
     let(:fixture) { fixtures_path.join('lockfiles/empty.lock') }
 
     it 'does not warn the user' do
-      expect(Berkshelf.ui).to_not receive(:warn)
+      expect(Berkshelf.formatter).to_not receive(:warn)
       subject.parse
     end
 

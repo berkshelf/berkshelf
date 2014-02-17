@@ -28,16 +28,15 @@ Spork.prefork do
     config.filter_run focus: true
     config.run_all_when_everything_filtered = true
 
-    config.before(:suite) do
-      WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
-      Berkshelf::RSpec::ChefServer.start
-      Berkshelf::API::RSpec::Server.start unless windows?
+    config.before(:each) do
       Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end
 
-    config.after(:suite) do
-      Berkshelf.ui.unmute!
+    config.before(:suite) do
+      WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
+      Berkshelf::RSpec::ChefServer.start
+      Berkshelf::API::RSpec::Server.start unless windows?
     end
 
     config.before(:all) do

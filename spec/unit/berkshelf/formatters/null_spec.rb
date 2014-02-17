@@ -1,17 +1,13 @@
 require 'spec_helper'
 
-describe Berkshelf::Formatters::Null do
-  before { Berkshelf.set_format(:null) }
+module Berkshelf
+  describe NullFormatter do
+    it_behaves_like 'a formatter object'
 
-  [:install, :package, :foo, :bar, :bacon].each do |meth|
-    it "does not raise an error for :#{meth}" do
-      expect {
-        subject.send(meth)
-      }.to_not raise_error
-    end
-
-    it "returns nil for :#{meth}" do
-      expect(subject.send(meth)).to be_nil
+    it 'does not raise an error for abstract metods methods' do
+      expect { subject.install }.to_not raise_error
+      expect { subject.use }.to_not raise_error
+      expect { subject.msg }.to_not raise_error
     end
   end
 end
