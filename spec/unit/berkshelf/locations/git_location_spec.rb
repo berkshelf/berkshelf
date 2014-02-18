@@ -28,19 +28,15 @@ describe Berkshelf::GitLocation do
       let(:cached) { double('cached') }
 
       before do
+        subject.stub(:cached?).and_return(true)
+        subject.stub(:validate_cached).and_return(true)
         Berkshelf::Git.stub(:rev_parse).and_return('abcd1234')
-        described_class.any_instance.stub(:cached?).and_return(true)
-        described_class.any_instance.stub(:validate_cached).with(cached).and_return(cached)
-        Berkshelf::CachedCookbook.stub(:from_store_path).with(any_args()).and_return(cached)
+        Berkshelf::CachedCookbook.stub(:from_store_path).and_return(cached)
       end
 
       it 'returns the cached cookbook' do
         expect(subject.download).to eq(cached)
       end
-    end
-
-    it 'returns an instance of Berkshelf::CachedCookbook' do
-      expect(subject.download).to be_a(Berkshelf::CachedCookbook)
     end
 
     it 'downloads the cookbook to the given destination' do
@@ -57,9 +53,9 @@ describe Berkshelf::GitLocation do
     context 'given no ref/branch/tag options is given' do
       subject { described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 
-      it 'sets the ref attribute to the HEAD revision of the cloned repo' do
+      it 'sets the revision attribute to the HEAD revision of the cloned repo' do
         subject.download
-        expect(subject.ref).to_not be_nil
+        expect(subject.revision).to_not be_nil
       end
     end
 
@@ -105,8 +101,8 @@ describe Berkshelf::GitLocation do
       end
 
       let(:cached) { subject.download }
-      let(:sha) { subject.revision }
-      let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }
+      let(:revision) { subject.revision }
+      let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{revision}") }
 
       it 'returns a cached cookbook with a path that contains the revision' do
         expect(cached.path).to eq(expected_path)
@@ -121,8 +117,8 @@ describe Berkshelf::GitLocation do
           branch: branch)
       end
       let(:cached) { subject.download }
-      let(:sha) { subject.revision }
-      let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }
+      let(:revision) { subject.revision }
+      let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{revision}") }
 
       it 'returns a cached cookbook with a path that contains the revision' do
         expect(cached.path).to eq(expected_path)

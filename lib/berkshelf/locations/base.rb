@@ -52,5 +52,13 @@ module Berkshelf
     def scm_location?
       false
     end
+
+    # The lockfile representation of this location.
+    #
+    # @return [string]
+    def to_lock
+      raise AbstractFunction,
+        "#to_lock must be implemented on #{self.class.name}!"
+    end
   end
 end

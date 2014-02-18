@@ -297,22 +297,10 @@ Feature: berks install
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
-  Scenario: installing a Berksfile that contains a GitHub location ending in .git
+  Scenario: installing a Berksfile that contains a Github location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      'RiotGames/berkshelf-cookbook-fixture.git' is not a valid GitHub identifier - should not end in '.git'
-      """
-    And the exit status should be "InvalidGitHubIdentifier"
-
-  Scenario: installing a Berksfile that contains a Github location and protocol git
-    Given I have a Berksfile pointing at the local Berkshelf API with:
-      """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "git"
+      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
@@ -323,47 +311,6 @@ Feature: berks install
       Fetching cookbook index from http://0.0.0.0:26210...
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
-
-  Scenario: installing a Berksfile that contains a Github location and protocol https
-    Given I have a Berksfile pointing at the local Berkshelf API with:
-      """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "https"
-      """
-    When I successfully run `berks install`
-    Then the cookbook store should have the git cookbooks:
-      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
-    And the output should contain:
-      """
-      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      Fetching cookbook index from http://0.0.0.0:26210...
-      Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      """
-
-  # GitHub doesn't permit anonymous SSH access, so we are going to get a
-  # failure message back. That's okay, if GitHub tells us our key was denied,
-  # we know the connection has made it that far.
-  Scenario: installing a Berksfile that contains a Github location and protocol ssh
-    Given I have a Berksfile pointing at the local Berkshelf API with:
-      """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "ssh"
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      Permission denied (publickey).
-      """
-
-  Scenario: installing a Berksfile that contains a Github location and an unsupported protocol
-    Given I have a Berksfile pointing at the local Berkshelf API with:
-      """
-      cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0", protocol: "somethingabsurd"
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      'somethingabsurd' is not supported for the 'github' location key - please use 'git' instead
-      """
-    And the exit status should be "InvalidGitURI"
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified
     Given a cookbook named "sparkle_motion"

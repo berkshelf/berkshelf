@@ -201,7 +201,7 @@ Feature: Creating and reading the Berkshelf lockfile
         berkshelf-cookbook-fixture (1.0.0)
       """
 
-  Scenario: Updating a Berksfile.lock with a git location and a branch
+  Scenario: Updating a Berksfile.lock with a git location and a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', tag: 'v0.2.0'
