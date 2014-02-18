@@ -490,18 +490,6 @@ Feature: berks install
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
       """
 
-  Scenario: with a cookbook definition containing an invalid option
-    Given I have a Berksfile pointing at the local Berkshelf API with:
-      """
-      cookbook "berkshelf-cookbook-fixture", whatisthis: "I don't even know", anotherwat: "isthat"
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      Invalid options for dependency: 'whatisthis', 'anotherwat'.
-      """
-    And the exit status should be "InternalError"
-
   Scenario: with a git error during download
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """

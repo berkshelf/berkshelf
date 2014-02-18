@@ -28,6 +28,12 @@ module Berkshelf
   autoload :JsonFormatter,  'berkshelf/formatters/json'
   autoload :NullFormatter,  'berkshelf/formatters/null'
 
+  autoload :Location,       'berkshelf/location'
+  autoload :BaseLocation,   'berkshelf/locations/base'
+  autoload :GitLocation,    'berkshelf/locations/git'
+  autoload :GithubLocation, 'berkshelf/locations/github'
+  autoload :PathLocation,   'berkshelf/locations/path'
+
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
@@ -189,7 +195,6 @@ require_relative 'berkshelf/downloader'
 require_relative 'berkshelf/git'
 require_relative 'berkshelf/init_generator'
 require_relative 'berkshelf/installer'
-require_relative 'berkshelf/location'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/source'

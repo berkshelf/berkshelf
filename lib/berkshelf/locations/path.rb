@@ -1,26 +1,24 @@
 module Berkshelf
-  class PathLocation < Location::Base
-    set_location_key :path
-    set_valid_options :path, :metadata
-
-    attr_accessor :path
-
-    # @param [#to_s] dependency
-    # @param [Solve::Constraint] version_constraint
-    # @param [Hash] options
+  class PathLocation < BaseLocation
+    # A Path location is valid if the path exists and is readable by the
+    # current process.
     #
-    # @option options [#to_s] :path
-    #   a filepath to the cookbook on your local disk
-    # @option options [Boolean] :metadata
-    #   true if this is a metadata source
-    def initialize(dependency, options = {})
-      super
-      @path     = options[:path].to_s
-      @metadata = options[:metadata]
+    # @return (see BaseLocation#valid?)
+    def valid?
+      File.exist?(path) && File.readable?(path)
     end
 
-    def do_download
-      CachedCookbook.from_path(path, name: name)
+    #
+    #
+    def download
+      super(CachedCookbook.from_path(path, name: dependency.name))
+    end
+
+    # The path to the cookbook on disk.
+    #
+    # @return [String]
+    def path
+      options[:path]
     end
 
     # Returns true if the location is a metadata location. By default, no
@@ -28,7 +26,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def metadata?
-      !!@metadata
+      !!options[:metadata]
     end
 
     # Return this PathLocation's path relative to the given target.
