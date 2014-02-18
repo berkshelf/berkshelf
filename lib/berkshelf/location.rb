@@ -12,8 +12,6 @@ module Berkshelf
       #   Location.init('nginx', '>= 0.0.0', git: 'git://github.com/RiotGames/artifact-cookbook.git') =>
       #     instantiates a GitLocation
       #
-      #   Location.init('nginx', '>= 0.0.0', hg: 'http://hghub.com/RiotGames/') =>
-      #     instantiates a MercurialLocation
       #
       #   Location.init('nginx', '>= 0.0.0', path: '/Users/reset/code/nginx-cookbook') =>
       #     instantiates a PathLocation
