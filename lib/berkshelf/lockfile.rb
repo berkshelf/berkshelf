@@ -305,27 +305,32 @@ module Berkshelf
         contents = File.read(@lockfile.filepath)
 
         if contents.strip.empty?
-          Berkshelf.ui.warn "Your lockfile at '#{@lockfile.filepath}' is " \
-            "empty. I am going to parse it anyway, but there is a chance " \
+          Berkshelf.formatter.warn "Your lockfile at '#{@lockfile.filepath}' " \
+            "is empty. I am going to parse it anyway, but there is a chance " \
             "that a larger problem is at play. If you manually edited your " \
             "lockfile, you may have corrupted it."
         end
 
         if contents.strip[0] == '{'
-          Berkshelf.ui.warn "It looks like you are using an older version of " \
-            "the lockfile. This is a problem. You see, previous versions of " \
-            "the lockfile were actually a lie. It lied to you about your " \
-            "version locks, and we are really sorry about that.\n\n" \
-            "Here's the good news - we fixed it!\n\n" \
-            "Here's the bad news - you probably should not trust your old " \
-            "lockfile. I am going to convert it for you, but you should know " \
-            "that it is not going to be as accurate as if you just deleted " \
-            "your existing lockfile and re-ran the installer."
+          Berkshelf.formatter.warn "It looks like you are using an older " \
+            "version of the lockfile. Attempting to convert..."
 
           dependencies = "#{Lockfile::DEPENDENCIES}\n"
           graph        = "#{Lockfile::GRAPH}\n"
 
-          hash = JSON.parse(contents)
+          begin
+            hash = JSON.parse(contents)
+          rescue JSON::ParserError
+            Berkshelf.formatter.warn "Could not convert lockfile! This is a " \
+            "problem. You see, previous versions of the lockfile were " \
+            "actually a lie. It lied to you about your version locks, and we " \
+            "are really sorry about that.\n\n" \
+            "Here's the good news - we fixed it!\n\n" \
+            "Here's the bad news - you probably should not trust your old " \
+            "lockfile. You should manually delete your old lockfile and " \
+            "re-run the installer."
+          end
+
           hash['dependencies'] && hash['dependencies'].sort .each do |name, info|
             dependencies << "  #{name} (>= 0.0.0)\n"
             info.each do |key, value|
