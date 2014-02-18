@@ -35,6 +35,7 @@ module Berkshelf
     expose_method :source
     expose_method :site     # @todo remove in Berkshelf 4.0
     expose_method :chef_api # @todo remove in Berkshelf 4.0
+    expose_method :extension
     expose_method :metadata
     expose_method :cookbook
     expose_method :group
@@ -70,6 +71,26 @@ module Berkshelf
       else
         @filter = ->(dependency) { true }
       end
+    end
+
+    # Activate a Berkshelf extension at runtime.
+    #
+    # @example Activate the Mercurial extension
+    #   extension 'hg'
+    #
+    # @raise [LoadError]
+    #   if the extension cannot be loaded
+    #
+    # @param [String] name
+    #   the name of the extension to activate
+    #
+    # @return [true]
+    def extension(name)
+      require "berkshelf-#{name}"
+      true
+    rescue LoadError
+      raise LoadError, "Could not load an extension by the name `#{name}'. " \
+        "Please make sure it is installed."
     end
 
     # Add a cookbook dependency to the Berksfile to be retrieved and have its dependencies recursively retrieved
