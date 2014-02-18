@@ -67,7 +67,7 @@ module Berkshelf
         hash.keys.each do |name|
           hash[name].each do |source, newest|
             string = "  * #{newest.name} (#{newest.version})"
-            unless Berksfile.default_sources.map { |s| s.uri.to_s }.include?(source)
+            unless source == Berksfile::DEFAULT_API_URL
               string << " [#{source}]"
             end
             Berkshelf.ui.info string

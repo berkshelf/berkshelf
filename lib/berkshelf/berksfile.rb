@@ -3,13 +3,6 @@ require_relative "packager"
 module Berkshelf
   class Berksfile
     class << self
-      # The sources to use if no sources are explicitly provided
-      #
-      # @return [Array<Berkshelf::Source>]
-      def default_sources
-        @default_sources ||= [ Source.new(DEFAULT_API_URL) ]
-      end
-
       # Instantiate a Berksfile from the given options. This method is used
       # heavily by the CLI to reduce duplication.
       #
@@ -63,7 +56,7 @@ module Berkshelf
     def initialize(path, options = {})
       @filepath         = path
       @dependencies     = Hash.new
-      @sources          = Array.new
+      @sources          = Hash.new
 
       if options[:except] && options[:only]
         raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only!'
@@ -169,13 +162,16 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::Source>]
     def source(api_url)
-      new_source = Source.new(api_url)
-      @sources.push(new_source) unless @sources.include?(new_source)
+      @sources[api_url] = Source.new(api_url)
     end
 
     # @return [Array<Berkshelf::Source>]
     def sources
-      @sources.empty? ? self.class.default_sources : @sources
+      if @sources.empty?
+        raise NoAPISourcesDefined
+      else
+        @sources.values
+      end
     end
 
     # @param [Dependency] dependency
