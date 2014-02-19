@@ -29,17 +29,13 @@ module Berkshelf
       options = args.last.is_a?(Hash) ? args.pop : Hash.new
       dependency, version = args
 
-      if dependency.is_a?(Berkshelf::Dependency)
-        dependency.download
-      else
-        sources.each do |source|
-          if result = try_download(source, dependency, version)
-            return result
-          end
+      sources.each do |source|
+        if result = try_download(source, dependency, version)
+          return result
         end
-
-        raise CookbookNotFound, "#{dependency} (#{version}) not found in any sources"
       end
+
+      raise CookbookNotFound, "#{dependency} (#{version}) not found in any sources"
     end
 
     # @param [Berkshelf::Source] source

@@ -10,15 +10,23 @@ module Berkshelf
         @default_sources ||= [ Source.new(DEFAULT_API_URL) ]
       end
 
+      # Instantiate a Berksfile from the given options. This method is used
+      # heavily by the CLI to reduce duplication.
+      #
+      # @param (see Berksfile#initialize)
+      def from_options(options = {})
+        from_file(options[:berksfile], options.slice(:except, :only))
+      end
+
       # @param [#to_s] file
       #   a path on disk to a Berksfile to instantiate from
       #
       # @return [Berksfile]
-      def from_file(file)
+      def from_file(file, options = {})
         raise BerksfileNotFound.new(file) unless File.exist?(file)
 
         begin
-          new(file).dsl_eval_file(file)
+          new(file, options).dsl_eval_file(file)
         rescue => ex
           raise BerksfileReadError.new(ex)
         end
@@ -38,18 +46,36 @@ module Berkshelf
     expose_method :cookbook
     expose_method :group
 
-    @@active_group = nil
-
     # @return [String]
     #   The path on disk to the file representing this instance of Berksfile
     attr_reader :filepath
 
+    # Create a new Berksfile object.
+    #
+    # @option options [Symbol, Array<String>] :except
+    #   Group(s) to exclude which will cause any dependencies marked as a member of the
+    #   group to not be installed
+    # @option options [Symbol, Array<String>] :only
+    #   Group(s) to include which will cause any dependencies marked as a member of the
+    #   group to be installed and all others to be ignored
     # @param [String] path
     #   path on disk to the file containing the contents of this Berksfile
-    def initialize(path)
+    def initialize(path, options = {})
       @filepath         = path
       @dependencies     = Hash.new
       @sources          = Array.new
+
+      if options[:except] && options[:only]
+        raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only!'
+      elsif options[:except]
+        except = Array(options[:except]).collect(&:to_sym)
+        @filter = ->(dependency) { (except & dependency.groups).empty? }
+      elsif options[:only]
+        only = Array(options[:only]).collect(&:to_sym)
+        @filter = ->(dependency) { !(only & dependency.groups).empty? }
+      else
+        @filter = ->(dependency) { true }
+      end
     end
 
     # Add a cookbook dependency to the Berksfile to be retrieved and have its dependencies recursively retrieved
@@ -96,17 +122,17 @@ module Berkshelf
       options[:path] &&= File.expand_path(options[:path], File.dirname(filepath))
       options[:group] = Array(options[:group])
 
-      if @@active_group
-        options[:group] += @@active_group
+      if @active_group
+        options[:group] += @active_group
       end
 
       add_dependency(name, constraint, options)
     end
 
     def group(*args)
-      @@active_group = args
+      @active_group = args
       yield
-      @@active_group = nil
+      @active_group = nil
     end
 
     # Use a Cookbook metadata file to determine additional cookbook dependencies to retrieve. All
@@ -150,6 +176,12 @@ module Berkshelf
     # @return [Array<Berkshelf::Source>]
     def sources
       @sources.empty? ? self.class.default_sources : @sources
+    end
+
+    # @param [Dependency] dependency
+    #   the dependency to find the source for
+    def source_for(name, version)
+      sources.find { |source| source.cookbook(name, version) }
     end
 
     # @todo remove in Berkshelf 4.0
@@ -232,36 +264,10 @@ module Berkshelf
       @dependencies.has_key?(dependency.to_s)
     end
 
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve dependencies for
-    #
-    # @return [Array<Berkshelf::Dependency>]
-    def dependencies(options = {})
-      cookbooks = Array(options[:cookbooks])
-      except    = Array(options[:except]).collect(&:to_sym)
-      only      = Array(options[:only]).collect(&:to_sym)
 
-      case
-      when !except.empty? && !only.empty?
-        raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only'
-      when !cookbooks.empty?
-        if !except.empty? && !only.empty?
-          Berkshelf.ui.warn 'Cookbooks were specified, ignoring :except and :only'
-        end
-        @dependencies.values.select { |dependency| cookbooks.include?(dependency.name) }
-      when !except.empty?
-        @dependencies.values.select { |dependency| (except & dependency.groups).empty? }
-      when !only.empty?
-        @dependencies.values.select { |dependency| !(only & dependency.groups).empty? }
-      else
-        @dependencies.values
-      end
+    # @return [Array<Berkshelf::Dependency>]
+    def dependencies
+      @dependencies.values.sort.select(&@filter)
     end
 
     #
@@ -277,8 +283,8 @@ module Berkshelf
     #
     # @return [Array<CachedCookbook>]
     #
-    def cookbooks(options = {})
-      dependencies(options).map { |dependency| retrieve_locked(dependency) }
+    def cookbooks
+      dependencies.map { |dependency| retrieve_locked(dependency) }
     end
 
     # Find a dependency defined in this berksfile by name.
@@ -353,36 +359,30 @@ module Berkshelf
     #
     # 3. Write out a new lockfile.
     #
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve dependencies for
-    #
     # @raise [Berkshelf::OutdatedDependency]
     #   if the lockfile constraints do not satisfy the Berksfile constraints
     #
     # @return [Array<Berkshelf::CachedCookbook>]
-    def install(options = {})
-      Installer.new(self).run(options)
+    def install
+      Installer.new(self).run
     end
 
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
+    # Update the given set of dependencies (or all if no names are given).
+    #
+    # @option options [String, Array<String>] :cookbooks
     #   Names of the cookbooks to retrieve dependencies for
-    def update(options = {})
-      validate_cookbook_names!(options)
+    def update(*names)
+      validate_cookbook_names!(names)
+
+      # Calculate the list of cookbooks to unlock
+      if names.empty?
+        list = dependencies
+      else
+        list = dependencies.select { |dependency| names.include?(dependency.name) }
+      end
 
       # Unlock any/all specified cookbooks
-      dependencies(options).each { |dependency| lockfile.unlock(dependency) }
+      list.each { |dependency| lockfile.unlock(dependency) }
 
       # NOTE: We intentionally do NOT pass options to the installer
       self.install
@@ -415,68 +415,55 @@ module Berkshelf
     #
     # @return [Hash<Berkshelf::Dependency, Berkshelf::CachedCookbook>]
     #   the list of dependencies as keys and the cached cookbook as the value
-    def list(options = {})
+    def list
       validate_lockfile_present!
-      validate_lockfile_in_sync!(options)
-      validate_dependencies_installed!(options)
+      validate_lockfile_trusted!
+      validate_dependencies_installed!
 
-      items = dependencies(options).sort.collect do |dependency|
-        [dependency, retrieve_locked(dependency)]
-      end
-
-      Hash[*items.flatten]
+      lockfile.graph.locks.values
     end
 
-    # List of all the cookbooks which have a newer version found at a source that satisfies
-    # the constraints of your dependencies
-    #
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
-    # @option cookbooks [String, Array] :cookbooks
-    #   Whitelist of cookbooks to to check for updated versions for
+    # List of all the cookbooks which have a newer version found at a source
+    # that satisfies the constraints of your dependencies.
     #
     # @return [Hash]
-    #   a hash of cached cookbooks and their latest version. An empty hash is returned
-    #   if there are no newer cookbooks for any of your dependencies
+    #   a hash of cached cookbooks and their latest version. An empty hash is
+    #   returned if there are no newer cookbooks for any of your dependencies
     #
     # @example
     #   berksfile.outdated #=> {
     #     #<CachedCookbook name="artifact"> => "0.11.2"
     #   }
-    def outdated(options = {})
-      validate_cookbook_names!(options)
+    def outdated(*names)
       validate_lockfile_present!
-      validate_lockfile_in_sync!(options)
+      validate_lockfile_trusted!
+      validate_dependencies_installed!
+      validate_cookbook_names!(names)
 
-      # TODO: Eventually we want to refactor this method and algorithm, but
-      # that would involve a pretty large lockfile refactor, so it will have
-      # to wait until a later release...
-      validate_dependencies_installed!(options)
+      # Calculate the list of cookbooks to unlock
+      if names.empty?
+        list = dependencies
+      else
+        list = dependencies.select { |dependency| names.include?(dependency.name) }
+      end
 
-      outdated = {}
-      dependencies(options).each do |dependency|
-        locked = retrieve_locked(dependency)
-        outdated[dependency.name] = {}
-
+      lockfile.graph.locks.inject({}) do |hash, (name, dependency)|
         sources.each do |source|
-          cookbooks = source.versions(dependency.name)
+          cookbooks = source.versions(name)
 
           latest = cookbooks.select do |cookbook|
             dependency.version_constraint.satisfies?(cookbook.version) &&
-            cookbook.version != locked.version
+            cookbook.version.to_s != dependency.locked_version.to_s
           end.sort_by { |cookbook| cookbook.version }.last
 
           unless latest.nil?
-            outdated[dependency.name][source.uri.to_s] = latest
+            hash[name] ||= {}
+            hash[name][source.uri.to_s] = latest
           end
         end
-      end
 
-      outdated.reject { |name, newer| newer.empty? }
+        hash
+      end
     end
 
     # Upload the cookbooks installed by this Berksfile
@@ -486,12 +473,6 @@ module Berkshelf
     #   target Chef Server
     # @option options [Boolean] :freeze (true)
     #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be overwritten
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
     # @option options [String, Array] :cookbooks
     #   Names of the cookbooks to retrieve dependencies for
     # @option options [Hash] :ssl_verify (true)
@@ -523,9 +504,9 @@ module Berkshelf
         validate: true
       }.merge(options)
 
-      validate_cookbook_names!(options)
+      validate_cookbook_names!(options[:cookbooks])
 
-      cached_cookbooks = install(options)
+      cached_cookbooks = install
       cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
       do_upload(cached_cookbooks, options)
     end
@@ -537,24 +518,17 @@ module Berkshelf
     # @param [String] path
     #   the path where the tarball will be created
     #
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
-    #
     # @raise [Berkshelf::PackageError]
     #
     # @return [String]
     #   the path to the package
-    def package(path, options = {})
+    def package(path)
       packager = Packager.new(path)
       packager.validate!
 
       outdir = Dir.mktmpdir do |temp_dir|
         source = Berkshelf.ui.mute do
-          vendor(File.join(temp_dir, "cookbooks"), options.slice(:only, :except))
+          vendor(File.join(temp_dir, 'cookbooks'))
         end
         packager.run(source)
       end
@@ -569,16 +543,9 @@ module Berkshelf
     # @param [String] destination
     #   filepath to vendor cookbooks to
     #
-    # @option options [Symbol, Array] :except
-    #   Group(s) to exclude which will cause any dependencies marked as a member of the
-    #   group to not be installed
-    # @option options [Symbol, Array] :only
-    #   Group(s) to include which will cause any dependencies marked as a member of the
-    #   group to be installed and all others to be ignored
-    #
     # @return [String, nil]
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
-    def vendor(destination, options = {})
+    def vendor(destination)
       destination = File.expand_path(destination)
 
       if Dir.exist?(destination)
@@ -591,7 +558,7 @@ module Berkshelf
 
       scratch          = Berkshelf.mktmpdir
       chefignore       = nil
-      cached_cookbooks = install(options.slice(:except, :only))
+      cached_cookbooks = install
 
       return nil if cached_cookbooks.empty?
 
@@ -725,28 +692,24 @@ module Berkshelf
       #   exist (or are not satisifed by) the lockfile
       #
       # @return [true]
-      def validate_lockfile_in_sync!(options = {})
-        dependencies(options).each do |dependency|
-          raise LockfileOutOfSync unless lockfile.has_dependency?(dependency)
-        end
-
+      def validate_lockfile_trusted!
+        raise LockfileOutOfSync unless lockfile.trusted?
         true
       end
 
       # Ensure that all dependencies in the lockfile are installed on this
-      # system.
+      # system. You should validate that the lockfile can be trusted before
+      # using this method.
       #
       # @raise [DependencyNotInstalled]
       #   if the dependency in the lockfile is not in the Berkshelf shelf on
       #   this system
       #
       # @return [true]
-      def validate_dependencies_installed!(options = {})
-        dependencies(options).each do |dependency|
-          locked = lockfile.find(dependency)
-
-          if locked.nil? || !locked.downloaded?
-            raise DependencyNotInstalled.new(locked)
+      def validate_dependencies_installed!
+        lockfile.graph.locks.each do |_, dependency|
+          unless dependency.downloaded?
+            raise DependencyNotInstalled.new(dependency)
           end
         end
 
@@ -755,13 +718,13 @@ module Berkshelf
 
       # Determine if any cookbooks were specified that aren't in our shelf.
       #
-      # @option options [Array<String>] :cookbooks
-      #   a list of strings of cookbook names
+      # @param [Array<String>] names
+      #   a list of cookbook names
       #
       # @raise [Berkshelf::DependencyNotFound]
       #   if a cookbook name is given that does not exist
-      def validate_cookbook_names!(options = {})
-        missing = (Array(options[:cookbooks]) - dependencies.map(&:name))
+      def validate_cookbook_names!(names)
+        missing = names - dependencies.map(&:name)
 
         unless missing.empty?
           raise Berkshelf::DependencyNotFound.new(missing)

@@ -39,34 +39,30 @@ module Berkshelf
 
       # Add a Cookbook installation entry to delayed output
       #
-      # @param [String] cookbook
-      # @param [String] version
-      # @option options [String] :api_source
-      #   the berkshelf-api source url
-      # @option options [String] :location_path
-      #   the chef server url for a cookbook's location
-      def install(cookbook, version, options = {})
-        cookbooks[cookbook] ||= {}
-        cookbooks[cookbook][:version] = version
+      # @param [Source] source
+      #   the source the dependency is being downloaded from
+      # @param [RemoteCookbook] cookbook
+      #   the cookbook to be downloaded
+      def install(source, cookbook)
+        cookbooks[cookbook.name] ||= {}
+        cookbooks[cookbook.name][:version] = cookbook.version
 
-        if options.has_key?(:api_source) && options.has_key?(:location_path)
-          cookbooks[cookbook][:api_source] = options[:api_source] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
-          cookbooks[cookbook][:location_path] = options[:location_path] unless options[:api_source] == Berkshelf::Berksfile::DEFAULT_API_URL
+        unless source.default?
+          cookbooks[cookbook.name][:api_source]    = source.uri
+          cookbooks[cookbook.name][:location_path] = cookbook.location_path
         end
       end
 
       # Add a Cookbook use entry to delayed output
       #
-      # @param [String] cookbook
-      # @param [String] version
-      # @param [~Location] location
-      def use(cookbook, version, location = nil)
-        cookbooks[cookbook] ||= {}
-        cookbooks[cookbook][:version] = version
+      # @param [Dependency] dependency
+      def use(dependency)
+        cookbooks[dependency.name] ||= {}
+        cookbooks[dependency.name][:version] = dependency.cached_cookbook.version
 
-        if location && location.is_a?(PathLocation)
-          cookbooks[cookbook][:metadata] = true if location.metadata?
-          cookbooks[cookbook][:location] = location.relative_path
+        if dependency.location.is_a?(PathLocation)
+          cookbooks[dependency.name][:metadata] = true if dependency.location.metadata?
+          cookbooks[dependency.name][:location] = dependency.location.relative_path
         end
       end
 
@@ -111,13 +107,13 @@ module Berkshelf
 
       # Output a list of cookbooks to delayed output
       #
-      # @param [Hash<Dependency, CachedCookbook>] list
-      def list(list)
-        list.each do |dependency, cookbook|
-          cookbooks[cookbook.cookbook_name] ||= {}
-          cookbooks[cookbook.cookbook_name][:version] = cookbook.version
+      # @param [Array<Dependency>] dependencies
+      def list(dependencies)
+        dependencies.each do |dependency, cookbook|
+          cookbooks[dependency.name] ||= {}
+          cookbooks[dependency.name][:version] = dependency.locked_version.to_s
           if dependency.location
-            cookbooks[cookbook.cookbook_name][:location] = dependency.location
+            cookbooks[dependency.name][:location] = dependency.location
           end
         end
       end

@@ -11,30 +11,58 @@ Feature: berks update
   Scenario: Without a cookbook specified
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'fake', '~> 0.1'
       cookbook 'ekaf', '~> 1.0.0'
+      cookbook 'fake', '~> 0.1'
       """
-    And the Lockfile has:
-      | fake | 0.1.0 |
-      | ekaf | 1.0.0 |
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf (~> 1.0.0)
+        fake (~> 0.1)
+
+      GRAPH
+        ekaf (1.0.0)
+        fake (0.1.0)
+      """
     When I successfully run `berks update`
-    Then the Lockfile should have:
-      | fake | 0.2.0 |
-      | ekaf | 1.0.1 |
+    Then the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        ekaf (~> 1.0.0)
+        fake (~> 0.1)
+
+      GRAPH
+        ekaf (1.0.1)
+        fake (0.2.0)
+      """
 
   Scenario: With a single cookbook specified
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'fake', '~> 0.1'
       cookbook 'ekaf', '~> 1.0.0'
+      cookbook 'fake', '~> 0.1'
       """
-    And the Lockfile has:
-      | fake | 0.1.0 |
-      | ekaf | 1.0.0 |
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf (~> 1.0.0)
+        fake (~> 0.1)
+
+      GRAPH
+        ekaf (1.0.0)
+        fake (0.1.0)
+      """
     When I successfully run `berks update fake`
-    Then the Lockfile should have:
-      | fake | 0.2.0 |
-      | ekaf | 1.0.0 |
+    Then the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        ekaf (~> 1.0.0)
+        fake (~> 0.1)
+
+      GRAPH
+        ekaf (1.0.0)
+        fake (0.2.0)
+      """
 
   Scenario: With a cookbook that does not exist
     Given I have a Berksfile pointing at the local Berkshelf API

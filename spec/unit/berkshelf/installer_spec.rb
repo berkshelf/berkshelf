@@ -1,12 +1,13 @@
 require 'spec_helper'
 
 describe Berkshelf::Installer do
-  let(:berksfile) { double('berksfile') }
+  let(:berksfile) { double('berksfile', lockfile: lockfile) }
+  let(:lockfile) { double('lockfile') }
   subject { described_class.new(berksfile) }
 
   describe "#build_universe" do
-    let(:source_one) { double('one') }
-    let(:source_two) { double('two') }
+    let(:source_one) { double('one', uri: 'https://api.berkshelf.com') }
+    let(:source_two) { double('two', uri: 'https://api.chef.org') }
     let(:sources) { [ source_one, source_two ] }
 
     before { berksfile.stub(sources: sources) }
@@ -31,9 +32,5 @@ describe Berkshelf::Installer do
     context 'when a value for :only is given' do
       pending
     end
-  end
-
-  describe "#verify_licenses!" do
-    pending
   end
 end

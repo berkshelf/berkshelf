@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "jenkins": {
+      "locked_version": "2.0.3",
+      "path": "."
+    },
+    "apt": {
+      "locked_version": "2.3.6"
+    },
+    "runit": {
+      "locked_version": "1.5.8"
+    },
+    "yum": {
+      "locked_version": "3.0.6"
+    }
+  }
+}

@@ -213,46 +213,6 @@ describe Berkshelf::Berksfile do
       expect(subject).to have_dependency(dependency_one.name)
       expect(subject).to have_dependency(dependency_two.name)
     end
-
-    context 'given the option :except' do
-      before do
-        dependency_one.stub(:groups) { [:default, :skarner] }
-        dependency_two.stub(:groups) { [:default, :nautilus] }
-      end
-
-      it 'returns all of the dependencies except the ones in the given groups' do
-        subject.add_dependency(dependency_one.name, nil, group: [:default, :skarner])
-        subject.add_dependency(dependency_two.name, nil, group: [:default, :nautilus])
-        filtered = subject.dependencies(except: :nautilus)
-
-        expect(filtered).to have(1).item
-        expect(filtered.first.name).to eq(dependency_one.name)
-      end
-    end
-
-    context 'given the option :only' do
-      before do
-        dependency_one.stub(:groups) { [:default, :skarner] }
-        dependency_two.stub(:groups) { [:default, :nautilus] }
-      end
-
-      it 'returns only the dependencies in the givne groups' do
-        subject.add_dependency(dependency_one.name, nil, group: [:default, :skarner])
-        subject.add_dependency(dependency_two.name, nil, group: [:default, :nautilus])
-        filtered = subject.dependencies(only: :nautilus)
-
-        expect(filtered).to have(1).item
-        expect(filtered.first.name).to eq(dependency_two.name)
-      end
-    end
-
-    context 'when a value for :only and :except is given' do
-      it 'raises an ArgumentError' do
-        expect {
-          subject.dependencies(only: [:default], except: [:other])
-        }.to raise_error(Berkshelf::ArgumentError, "Cannot specify both :except and :only")
-      end
-    end
   end
 
   describe '#cookbooks' do

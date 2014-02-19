@@ -49,6 +49,15 @@ module Berkshelf
       "./#{new_path}"
     end
 
+    #
+    # The expanded path of this path on disk, relative to the berksfile.
+    #
+    # @return [String]
+    #
+    def expanded_path
+      relative_path(dependency.berksfile.filepath)
+    end
+
     # Valid if the path exists and is readable
     #
     # @return [Boolean]
@@ -60,14 +69,20 @@ module Berkshelf
       super.merge(value: self.path)
     end
 
-    # The string representation of this PathLocation
-    #
-    # @example
-    #   loc.to_s #=> artifact (1.4.0) at path: '/Users/Seth/Dev/artifact'
-    #
-    # @return [String]
+    def ==(other)
+      other.is_a?(PathLocation) &&
+      other.metadata? == metadata? &&
+      other.expanded_path == expanded_path
+    end
+
+    def to_lock
+      out =  "    path: #{relative_path(dependency.berksfile.filepath)}\n"
+      out << "    metadata: true\n" if metadata?
+      out
+    end
+
     def to_s
-      "#{self.class.location_key}: '#{File.expand_path(path)}'"
+      "source at #{relative_path(dependency.berksfile.filepath)}"
     end
   end
 end
