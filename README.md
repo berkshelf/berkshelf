@@ -32,7 +32,7 @@ Ruby 1.9 mode is required on all interpreters.
 
 Ruby 1.9.1 and 1.9.2 are not officially supported. If you encounter problems, please upgrade to Ruby 2.0 or 1.9.3.
 
-Bash Completion
+Bash & Zsh Completion
 ---------------
 There is a [berkshelf bash completion script](https://raw.github.com/berkshelf/berkshelf/master/berkshelf-complete.sh). If you're using homebrew, you can install it like this:
 
@@ -45,6 +45,8 @@ Download the latest script
 And make sure you have this in your bash/zsh profile:
 
     [ -f `brew --prefix`/etc/bash_completion ] && source `brew --prefix`/etc/bash_completion
+
+If you prefer zsh, there is an [oh-my-zsh plugin](https://github.com/berkshelf/berkshelf-zsh-plugin) for command completion. Check the [README](https://github.com/berkshelf/berkshelf-zsh-plugin/blob/master/README.md) for details.
 
 Plugins
 -------
