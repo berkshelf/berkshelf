@@ -52,14 +52,15 @@ module Berkshelf
 
     # Create a new Berksfile object.
     #
+    # @param [String] path
+    #   path on disk to the file containing the contents of this Berksfile
+    #
     # @option options [Symbol, Array<String>] :except
     #   Group(s) to exclude which will cause any dependencies marked as a member of the
     #   group to not be installed
     # @option options [Symbol, Array<String>] :only
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
-    # @param [String] path
-    #   path on disk to the file containing the contents of this Berksfile
     def initialize(path, options = {})
       @filepath         = path
       @dependencies     = Hash.new
