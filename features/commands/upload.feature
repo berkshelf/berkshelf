@@ -169,6 +169,7 @@ Feature: berks upload
     Given a cookbook named "fake"
     And the cookbook "fake" has the file "Berksfile" with:
       """
+      source 'https://api.berkshelf.com'
       metadata
       """
     And the Chef Server has frozen cookbooks:
@@ -182,6 +183,7 @@ Feature: berks upload
 
         * fake (0.0.0)
       """
+
   Scenario: When the syntax check is skipped
     Given a cookbook named "fake"
     And the cookbook "fake" has the file "recipes/default.rb" with:
@@ -200,6 +202,7 @@ Feature: berks upload
       """
     And the cookbook "fake" has the file "Berksfile" with:
       """
+      source 'https://api.berkshelf.com'
       metadata
       """
     And I cd to "fake"

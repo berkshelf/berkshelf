@@ -2,16 +2,6 @@ require 'spec_helper'
 
 describe Berkshelf::Berksfile do
   describe "ClassMethods" do
-    describe "::default_sources" do
-      subject { described_class.default_sources }
-
-      it "returns an array including the default sources" do
-        expect(subject).to be_a(Array)
-        expect(subject).to have(1).item
-        expect(subject.map(&:to_s)).to include("https://api.berkshelf.com")
-      end
-    end
-
     describe '::from_file' do
       let(:content) do
         <<-EOF.strip
@@ -152,14 +142,6 @@ describe Berkshelf::Berksfile do
       expect(subject.sources[1].to_s).to_not eq(new_source)
     end
 
-    context "when a source is explicitly specified" do
-      it "does not include the default sources in the list" do
-        subject.source(new_source)
-        expect(subject.sources).to have(1).item
-        expect(subject.sources).to_not include(described_class.default_sources)
-      end
-    end
-
     context "adding an invalid source" do
       let(:invalid_uri) { ".....$1233...." }
 
@@ -170,18 +152,26 @@ describe Berkshelf::Berksfile do
   end
 
   describe "#sources" do
-    it "returns an Array" do
-      expect(subject.sources).to be_a(Array)
-    end
-
-    it "contains a collection of Berkshelf::Source" do
-      subject.sources.each do |source|
-        expect(source).to be_a(Berkshelf::Source)
+    context "when there are no sources" do
+      it "raises an exception" do
+        expect {
+          subject.sources
+        }.to raise_error(Berkshelf::NoAPISourcesDefined)
       end
     end
 
-    it "includes the default sources" do
-      expect(subject.sources).to include(*described_class.default_sources)
+    context "when there are sources" do
+      before { subject.source("https://api.berkshelf.org") }
+
+      it "returns an Array" do
+        expect(subject.sources).to be_a(Array)
+      end
+
+      it "contains a collection of Berkshelf::Source" do
+        subject.sources.each do |source|
+          expect(source).to be_a(Berkshelf::Source)
+        end
+      end
     end
   end
 

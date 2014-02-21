@@ -540,4 +540,17 @@ module Berkshelf
             "dependency."
     end
   end
+
+  class NoAPISourcesDefined < BerkshelfError
+    status_code(146)
+
+    def initialize
+      super "Your Berksfile does not define any API sources! You must define " \
+        "at least one source in order to download cookbooks. To add the " \
+        "default Berkshelf API server, add the following code to the top of " \
+        "your Berksfile:" \
+        "\n\n" \
+        "    source 'https://api.berkshelf.com'"
+    end
+  end
 end
