@@ -30,6 +30,24 @@ Feature: Vendoring cookbooks to a directory
     When I successfully run `berks vendor cukebooks`
     And the directory "cukebooks/fake" should contain version "0.0.0" of the "fake" cookbook
 
+  Scenario: vendoring a cookbook with transitive dependencies
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      """
+    And I write to "metadata.rb" with:
+      """
+      name 'bacon'
+      version '1.0.0'
+
+      depends 'fake'
+      depends 'ekaf'
+      """
+    When I successfully run `berks vendor vendor`
+    Then the directory "vendor/bacon" should contain version "1.0.0" of the "bacon" cookbook
+    And the directory "vendor/fake" should contain version "1.0.0" of the "fake" cookbook
+    And the directory "vendor/ekaf" should contain version "2.0.0" of the "ekaf" cookbook
+
   Scenario: vendoring without an explicit path to vendor into
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -54,3 +72,4 @@ Feature: Vendoring cookbooks to a directory
       """
     When I successfully run `berks vendor path/to/cukebooks`
     Then the directory "path/to/cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
+
