@@ -101,7 +101,6 @@ module Berkshelf
         def generate_mercurial_cookbook(name, options = {})
           options = {
               skip_vagrant: true,
-              skip_test_kitchen: true,
               force: true,
           }.merge(options)
 

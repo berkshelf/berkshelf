@@ -141,8 +141,6 @@ module Berkshelf
         raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
       end
 
-      # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
-      # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
       Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
       Ridley.open(ridley_options, &block)
     rescue Ridley::Errors::RidleyError => ex

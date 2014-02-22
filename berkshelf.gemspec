@@ -49,7 +49,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake',          '~> 0.9'
   s.add_development_dependency 'rspec',         '~> 2.13'
   s.add_development_dependency 'spork',         '~> 0.9'
-  s.add_development_dependency 'test-kitchen',  '>= 1.0.0.alpha7'
   s.add_development_dependency 'webmock',       '~> 1.11'
   s.add_development_dependency 'yard',          '~> 0.8'
 end

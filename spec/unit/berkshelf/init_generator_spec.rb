@@ -3,10 +3,8 @@ require 'spec_helper'
 describe Berkshelf::InitGenerator do
   let(:target) { tmp_path.join("some_cookbook") }
   let(:resolver) { double('resolver') }
-  let(:kitchen_generator) { double('kitchen-generator', invoke_all: nil) }
 
   before do
-    Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
     FileUtils.mkdir_p(target)
     File.open(File.join(target, 'metadata.rb'), 'w') do |f|
       f.write("name 'some_cookbook'")
