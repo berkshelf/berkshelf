@@ -8,7 +8,10 @@ notifications:
       - "irc.freenode.org#berkshelf"
     skip_join: true
     use_notice: true
-bundler_args: --without guard
+branches:
+  only:
+    - master
+bundler_args: --without guard --jobs 7
 before_install:
   - sudo apt-get install -qq libarchive12 libarchive-dev
 before_script:
