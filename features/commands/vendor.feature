@@ -48,6 +48,38 @@ Feature: Vendoring cookbooks to a directory
     And the directory "vendor/fake" should contain version "1.0.0" of the "fake" cookbook
     And the directory "vendor/ekaf" should contain version "2.0.0" of the "ekaf" cookbook
 
+  Scenario: vendoring a cookbook with transitive dependencies when a lockfile is present
+    Given a cookbook named "bacon"
+    And the cookbook "bacon" has the file "metadata.rb" with:
+      """
+      name 'bacon'
+      version '1.0.0'
+
+      depends 'fake'
+      depends 'ekaf'
+      """
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'bacon', path: './bacon'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        bacon
+          path: ./bacon
+
+      GRAPH
+        bacon (1.0.0)
+          ekaf (>= 0.0.0)
+          fake (>= 0.0.0)
+        ekaf (2.0.0)
+        fake (1.0.0)
+      """
+    When I successfully run `berks vendor vendor`
+    Then the directory "vendor/bacon" should contain version "1.0.0" of the "bacon" cookbook
+    And the directory "vendor/fake" should contain version "1.0.0" of the "fake" cookbook
+    And the directory "vendor/ekaf" should contain version "2.0.0" of the "ekaf" cookbook
+
   Scenario: vendoring without an explicit path to vendor into
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
