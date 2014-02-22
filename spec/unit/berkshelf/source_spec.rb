@@ -1,23 +1,37 @@
 require 'spec_helper'
 
-describe Berkshelf::Source do
-  describe "#universe"
-  describe "#cookbook"
-  describe "#versions"
+module Berkshelf
+  describe Source do
+    describe "#universe"
+    describe "#cookbook"
+    describe "#versions"
 
-  describe "#==" do
-    it "is the same if the uri matches" do
-      first = described_class.new("http://localhost:8080")
-      other = described_class.new("http://localhost:8080")
+    describe "#==" do
+      it "is the same if the uri matches" do
+        first = described_class.new("http://localhost:8080")
+        other = described_class.new("http://localhost:8080")
 
-      expect(first).to eq(other)
+        expect(first).to eq(other)
+      end
+
+      it "is not the same if the uri is different" do
+        first = described_class.new("http://localhost:8089")
+        other = described_class.new("http://localhost:8080")
+
+        expect(first).to_not eq(other)
+      end
     end
 
-    it "is not the same if the uri is different" do
-      first = described_class.new("http://localhost:8089")
-      other = described_class.new("http://localhost:8080")
+    describe '.default?' do
+      it 'returns true when the source is the default' do
+        instance = described_class.new(Berksfile::DEFAULT_API_URL)
+        expect(instance).to be_default
+      end
 
-      expect(first).to_not eq(other)
+      it 'returns false when the source is not the default' do
+        instance = described_class.new('http://localhost:8080')
+        expect(instance).to_not be_default
+      end
     end
   end
 end
