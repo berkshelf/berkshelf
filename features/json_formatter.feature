@@ -24,12 +24,11 @@ Feature: --format json
             "name": "berkshelf"
           }
         ],
-        "errors": [
-
-        ],
+        "errors": [],
         "messages": [
           "Fetching cookbook index from http://0.0.0.0:26210..."
-        ]
+        ],
+        "warnings": []
       }
       """
 
@@ -50,12 +49,11 @@ Feature: --format json
             "version": "1.0.0"
           }
         ],
-        "errors": [
-
-        ],
+        "errors": [],
         "messages": [
           "Fetching cookbook index from http://0.0.0.0:26210..."
-        ]
+        ],
+        "warnings": []
       }
       """
 
@@ -88,11 +86,9 @@ Feature: --format json
             "license": "none"
           }
         ],
-        "errors": [
-
-        ],
-        "messages": [
-        ]
+        "errors": [],
+        "messages": [],
+        "warnings": []
       }
       """
 
@@ -113,12 +109,11 @@ Feature: --format json
             "uploaded_to": "http://localhost:26310/"
           }
         ],
-        "errors": [
-
-        ],
+        "errors": [],
         "messages": [
           "Fetching cookbook index from http://0.0.0.0:26210..."
-        ]
+        ],
+        "warnings": []
       }
       """
 
@@ -158,11 +153,10 @@ Feature: --format json
             "name": "seth"
           }
         ],
-        "errors": [
-
-        ],
+        "errors": [],
         "messages": [
           "The following cookbooks have newer versions:"
-        ]
+        ],
+        "warnings": []
       }
       """

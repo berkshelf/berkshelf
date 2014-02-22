@@ -14,11 +14,7 @@ module Berkshelf
   class DeprecatedError < BerkshelfError; status_code(10); end
   class InternalError < BerkshelfError; status_code(99); end
   class ArgumentError < InternalError; end
-  class AbstractFunction < InternalError
-    def to_s
-      'Function must be implemented on includer'
-    end
-  end
+  class AbstractFunction < InternalError; end
 
   class BerksfileNotFound < BerkshelfError
     status_code(100)

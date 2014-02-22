@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe Berkshelf do
-  describe '::formatter' do
+module Berkshelf
+  describe '.formatter' do
     context 'with default formatter' do
       before { Berkshelf.instance_variable_set(:@formatter, nil) }
 
-      it 'should be human readable' do
-        expect(Berkshelf.formatter).to be_an_instance_of(Berkshelf::Formatters::HumanReadable)
+      it 'is human readable' do
+        expect(Berkshelf.formatter).to be_an_instance_of(HumanFormatter)
       end
     end
 
@@ -15,10 +15,7 @@ describe Berkshelf do
         Berkshelf.instance_eval { @formatter = nil }
       end
 
-      class CustomFormatter
-        include Berkshelf::Formatters::AbstractFormatter
-        register_formatter :custom
-      end
+      class CustomFormatter < BaseFormatter; end
 
       before do
         Berkshelf.set_format :custom
