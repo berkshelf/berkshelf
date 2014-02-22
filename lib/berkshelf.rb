@@ -17,7 +17,11 @@ require_relative 'berkshelf/thor_ext'
 module Berkshelf
   require_relative 'berkshelf/version'
   require_relative 'berkshelf/errors'
-  require_relative 'berkshelf/mixin'
+
+  module Mixin
+    autoload :DSLEval, 'berkshelf/mixin/dsl_eval'
+    autoload :Logging, 'berkshelf/mixin/logging'
+  end
 
   autoload :BaseFormatter,  'berkshelf/formatters/base'
   autoload :HumanFormatter, 'berkshelf/formatters/human'
