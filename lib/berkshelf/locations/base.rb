@@ -9,7 +9,7 @@ module Berkshelf
     end
 
     def download(cookbook = nil)
-      validate_cached(cookbook)
+      validate_cached!(cookbook)
       cookbook
     end
 
@@ -24,7 +24,7 @@ module Berkshelf
     # @todo Change MismatchedCookbookName to raise instead of warn
     #
     # @return [true]
-    def validate_cached(cookbook)
+    def validate_cached!(cookbook)
       unless @dependency.version_constraint.satisfies?(cookbook.version)
         raise CookbookValidationFailure.new(dependency, cookbook)
       end
@@ -32,6 +32,23 @@ module Berkshelf
       unless @dependency.name == cookbook.cookbook_name
         message = MismatchedCookbookName.new(dependency, cookbook).to_s
         Berkshelf.ui.warn(message)
+      end
+
+      true
+    end
+
+    # Validate that the given path contains a valid Chef cookbook.
+    #
+    # @raise [CookbookNotFound]
+    #   if the path does not appear to contain a cookbook
+    #
+    # @param [String] path
+    #   the path to check if is a cookbook
+    #
+    # @return [true]
+    def validate_cookbook!(path)
+      unless File.cookbook?(path)
+        raise CookbookNotFound, "#{dependency.name} not found at #{to_s}"
       end
 
       true
