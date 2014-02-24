@@ -48,75 +48,7 @@ module Berkshelf
     end
   end
 
-  class GitError < BerkshelfError
-    status_code(104)
-
-    # @param [#to_s] stderr
-    #   the error that came from stderr
-    def initialize(stderr)
-      @stderr = stderr.to_s
-    end
-
-    # A common header for all git errors. The #to_s method should
-    # use this before outputting any specific errors.
-    #
-    # @return [String]
-    def header
-      'An error occurred during Git execution:'
-    end
-
-    def to_s
-      [
-        header,
-        "",
-        "  " + @stderr.to_s.split("\n").map(&:strip).join("\n  "),
-        ""
-      ].join("\n")
-    end
-  end
-
-  class AmbiguousGitRef < GitError
-    def initialize(ref)
-      @ref = ref
-    end
-
-    def to_s
-      [
-        header,
-        "",
-        "  Ambiguous Git ref: '#{@ref}'",
-        "",
-      ].join("\n")
-    end
-  end
-
-  class InvalidGitRef < GitError
-    def initialize(ref)
-      @ref = ref
-    end
-
-    def to_s
-      [
-        header,
-        "",
-        "  Invalid Git ref: '#{@ref}'",
-        "",
-      ].join("\n")
-    end
-  end
-
-  class DuplicateDependencyDefined < BerkshelfError
-    status_code(105)
-
-    def initialize(name)
-      @name = name
-    end
-
-    def to_s
-      "Your Berksfile contains multiple entries named '#{@name}'. Please " \
-      "remove duplicate dependencies, or put them in different groups."
-    end
-  end
+  class DuplicateDependencyDefined < BerkshelfError; status_code(105); end
 
   class NoSolutionError < BerkshelfError
     status_code(106)
@@ -134,54 +66,7 @@ module Berkshelf
   end
 
   class CookbookSyntaxError < BerkshelfError; status_code(107); end
-
-  class InvalidGitURI < BerkshelfError
-    status_code(110)
-
-    # @param [String] uri
-    def initialize(uri)
-      @uri = uri
-    end
-
-    def to_s
-      "'#{@uri}' is not a valid Git URI"
-    end
-  end
-
-  class InvalidGitHubIdentifier < BerkshelfError
-    status_code(110)
-
-    # @param [String] repo_identifier
-    def initialize(repo_identifier)
-      @repo_identifier = repo_identifier
-    end
-
-    def to_s
-      "'#{@repo_identifier}' is not a valid GitHub identifier - should not end in '.git'"
-    end
-  end
-
-  class UnknownGitHubProtocol < BerkshelfError
-    status_code(110)
-
-    # @param [String] protocol
-    def initialize(protocol)
-      @protocol = protocol
-    end
-
-    def to_s
-      "'#{@protocol}' is not supported for the 'github' location key - please use 'git' instead"
-    end
-  end
-
-  class GitNotFound < BerkshelfError
-    status_code(110)
-
-    def to_s
-      'Could not find a Git executable in your path - please add it and try again'
-    end
-  end
-
+  class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
   class BerksfileReadError < BerkshelfError
     status_code(113)
 
