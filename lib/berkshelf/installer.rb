@@ -31,14 +31,18 @@ module Berkshelf
     def run
       reduce_lockfile!
 
-      cookbooks = if lockfile.trusted?
+      dependencies, cookbooks = if lockfile.trusted?
         install_from_lockfile
       else
         install_from_universe
       end
 
+      to_lock = dependencies.select do |dependency|
+        berksfile_dependencies.include?(dependency.name)
+      end
+
       lockfile.graph.update(cookbooks)
-      lockfile.update(berksfile.dependencies)
+      lockfile.update(to_lock)
       lockfile.save
 
       cookbooks
@@ -49,16 +53,18 @@ module Berkshelf
     # @return [Array<CachedCookbook>]
     #   the list of installed cookbooks
     def install_from_lockfile
-      locks = lockfile.graph.locks
+      dependencies = lockfile.graph.locks.values
 
       # Only construct the universe if we are going to download things
-      unless locks.all? { |_, dependency| dependency.downloaded? }
+      unless dependencies.all?(&:downloaded?)
         build_universe
       end
 
-      locks.sort.collect do |name, dependency|
+      cookbooks = dependencies.sort.collect do |dependency|
         install(dependency)
       end
+
+      [dependencies, cookbooks]
     end
 
     # Resolve and install the dependencies from the "universe", updating the
@@ -95,9 +101,11 @@ module Berkshelf
         end
       end
 
-      resolver.resolve.sort.collect do |dependency|
+      cookbooks = resolver.resolve.sort.collect do |dependency|
         install(dependency)
       end
+
+      [dependencies, cookbooks]
     end
 
     # Install a specific dependency.
@@ -144,7 +152,7 @@ module Berkshelf
     # @return [Array<Dependency>]
     def reduce_lockfile!
       lockfile.dependencies.each do |dependency|
-        if berksfile.dependencies.map(&:name).include?(dependency.name)
+        if berksfile_dependencies.include?(dependency.name)
           locked = lockfile.graph.find(dependency)
           next if locked.nil?
 
@@ -157,6 +165,10 @@ module Berkshelf
       end
 
       lockfile.save
+    end
+
+    def berksfile_dependencies
+      @berksfile_dependencies ||= berksfile.dependencies.map(&:name)
     end
   end
 end

@@ -1,53 +1,26 @@
 module Berkshelf
   class GitLocation < Location::ScmLocation
     set_location_key :git
-    set_valid_options :ref, :branch, :tag, :rel
+    set_valid_options :ref, :branch, :tag, :revision, :rel
 
-    attr_accessor :uri
-    attr_accessor :branch
-    attr_accessor :rel
-    attr_accessor :ref
-    attr_reader :options
+    attr_reader :uri
+    attr_reader :branch
+    attr_reader :tag
+    attr_reader :ref
+    attr_reader :revision
+    attr_reader :rel
 
-    alias_method :tag, :branch
-
-    # @param [Dependency] dependency
-    # @param [Hash] options
-    #
-    # @option options [String] :git
-    #   the Git URL to clone
-    # @option options [String] :ref
-    #   the commit hash or an alias to a commit hash to clone
-    # @option options [String] :branch
-    #   same as ref
-    # @option options [String] :tag
-    #   same as tag
-    # @option options [String] :rel
-    #   the path within the repository to find the cookbook
     def initialize(dependency, options = {})
       super
-      @uri    = options[:git]
-      @ref    = options[:ref]
-      @branch = options[:branch] || options[:tag] || "master" unless ref
-      @sha    = ref
-      @rel    = options[:rel]
+
+      @uri      = options[:git]
+      @branch   = options[:branch]
+      @tag      = options[:tag]
+      @ref      = options[:ref] || options[:branch] || options[:tag] || 'master'
+      @revision = options[:revision]
+      @rel      = options[:rel]
 
       Git.validate_uri!(@uri)
-    end
-
-    # @example
-    #     irb> location.checkout_info
-    #     { kind: "branch", rev: "master" }
-    #
-    # @return [Hash]
-    def checkout_info
-      if @sha
-        kind, rev = "ref", @sha
-      else
-        kind, rev = "branch", branch
-      end
-
-      { kind: kind, rev: rev }
     end
 
     # @param [#to_s] destination
@@ -57,14 +30,14 @@ module Berkshelf
       destination = Berkshelf::CookbookStore.instance.storage_path
 
       if cached?(destination)
-        @ref ||= Berkshelf::Git.rev_parse(revision_path(destination))
+        @revision ||= Berkshelf::Git.rev_parse(revision_path(destination))
         return local_revision(destination)
       end
 
       repo_path = Berkshelf::Git.clone(uri)
 
-      Berkshelf::Git.checkout(repo_path, ref || checkout_info[:rev])
-      @ref = Berkshelf::Git.rev_parse(repo_path)
+      Berkshelf::Git.checkout(repo_path, ref)
+      @revision = Berkshelf::Git.rev_parse(repo_path)
 
       tmp_path = rel ? File.join(repo_path, rel) : repo_path
       unless File.chef_cookbook?(tmp_path)
@@ -83,33 +56,30 @@ module Berkshelf
       cached
     end
 
-    def to_hash
-      super.tap do |h|
-        h[:value]  = self.uri
-        h[:branch] = self.branch if branch
-      end
-    end
-
     def ==(other)
       other.is_a?(GitLocation) &&
       other.uri == uri &&
       other.branch == branch &&
+      other.tag == tag &&
       other.ref == ref &&
       other.rel == rel
     end
 
     def to_s
+      info = tag || branch || ref[0...7]
+
       if rel
-        "#{uri} (at #{branch || ref[0...7]}/#{rel})"
+        "#{uri} (at #{info}/#{rel})"
       else
-        "#{uri} (at #{branch || ref[0...7]})"
+        "#{uri} (at #{info})"
       end
     end
 
     def to_lock
       out =  "    git: #{uri}\n"
+      out << "    revision: #{revision}\n"
       out << "    branch: #{branch}\n" if branch
-      out << "    ref: #{ref}\n"       if ref
+      out << "    tag: #{tag}\n"       if tag
       out << "    rel: #{rel}\n"       if rel
       out
     end
@@ -128,8 +98,8 @@ module Berkshelf
       end
 
       def revision_path(destination)
-        return unless ref
-        File.join(destination, "#{dependency.name}-#{ref}")
+        return unless revision
+        File.join(destination, "#{dependency.name}-#{revision}")
       end
   end
 end

@@ -39,10 +39,10 @@ describe Berkshelf::GitLocation do
 
     it 'downloads the cookbook to the given destination' do
       cached_cookbook = subject.download
-      ref = subject.ref
+      revision = subject.revision
 
       expect(storage_path).to have_structure {
-        directory "#{cached_cookbook.cookbook_name}-#{ref}" do
+        directory "#{cached_cookbook.cookbook_name}-#{revision}" do
           file 'metadata.rb'
         end
       }
@@ -51,9 +51,9 @@ describe Berkshelf::GitLocation do
     context 'given no ref/branch/tag options is given' do
       subject { described_class.new(dependency, git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git') }
 
-      it 'sets the branch attribute to the HEAD revision of the cloned repo' do
+      it 'sets the ref attribute to the HEAD revision of the cloned repo' do
         subject.download
-        expect(subject.branch).to_not be_nil
+        expect(subject.ref).to_not be_nil
       end
     end
 
@@ -99,10 +99,10 @@ describe Berkshelf::GitLocation do
       end
 
       let(:cached) { subject.download }
-      let(:sha) { subject.ref }
+      let(:sha) { subject.revision }
       let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }
 
-      it 'returns a cached cookbook with a path that contains the ref' do
+      it 'returns a cached cookbook with a path that contains the revision' do
         expect(cached.path).to eq(expected_path)
       end
     end
@@ -115,10 +115,10 @@ describe Berkshelf::GitLocation do
           branch: branch)
       end
       let(:cached) { subject.download }
-      let(:sha) { subject.ref }
+      let(:sha) { subject.revision }
       let(:expected_path) { storage_path.join("#{cached.cookbook_name}-#{sha}") }
 
-      it 'returns a cached cookbook with a path that contains the ref' do
+      it 'returns a cached cookbook with a path that contains the revision' do
         expect(cached.path).to eq(expected_path)
       end
     end
