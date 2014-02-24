@@ -170,7 +170,6 @@ Feature: berks install
 
   Scenario: installing a demand from a path location locks the graph to that version
     Given the Chef Server has cookbooks:
-      # | example_cookbook | 1.0.0 |                           |
       | other_cookbook   | 1.0.0 | example_cookbook ~> 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
       """

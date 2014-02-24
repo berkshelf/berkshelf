@@ -177,7 +177,7 @@ Feature: Creating and reading the Berkshelf lockfile
       DEPENDENCIES
         berkshelf-cookbook-fixture
           git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
-          ref: 919afa0c402089df23ebdf36637f12271b8a96b4
+          revision: 919afa0c402089df23ebdf36637f12271b8a96b4
 
       GRAPH
         berkshelf-cookbook-fixture (1.0.0)
@@ -194,8 +194,8 @@ Feature: Creating and reading the Berkshelf lockfile
       DEPENDENCIES
         berkshelf-cookbook-fixture
           git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          revision: a97b9447cbd41a5fe58eee2026e48ccb503bd3bc
           branch: master
-          ref: a97b9447cbd41a5fe58eee2026e48ccb503bd3bc
 
       GRAPH
         berkshelf-cookbook-fixture (1.0.0)
@@ -212,8 +212,8 @@ Feature: Creating and reading the Berkshelf lockfile
       DEPENDENCIES
         berkshelf-cookbook-fixture
           git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
-          branch: v0.2.0
-          ref: 70a527e17d91f01f031204562460ad1c17f972ee
+          revision: 70a527e17d91f01f031204562460ad1c17f972ee
+          tag: v0.2.0
 
       GRAPH
         berkshelf-cookbook-fixture (0.2.0)
@@ -230,7 +230,7 @@ Feature: Creating and reading the Berkshelf lockfile
       DEPENDENCIES
         berkshelf-cookbook-fixture
           git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
-          ref: 919afa0c402089df23ebdf36637f12271b8a96b4
+          revision: 919afa0c402089df23ebdf36637f12271b8a96b4
 
       GRAPH
         berkshelf-cookbook-fixture (1.0.0)
@@ -247,8 +247,8 @@ Feature: Creating and reading the Berkshelf lockfile
       DEPENDENCIES
         berkshelf-cookbook-fixture
           git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          revision: 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a
           branch: rel
-          ref: 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a
           rel: cookbooks/berkshelf-cookbook-fixture
 
       GRAPH
