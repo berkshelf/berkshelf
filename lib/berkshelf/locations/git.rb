@@ -30,10 +30,9 @@ module Berkshelf
         @revision = Git.rev_parse(repo_path)
 
         tmp_path = rel ? File.join(repo_path, rel) : repo_path
-        unless File.chef_cookbook?(tmp_path)
-          raise CookbookNotFound,
-            "Cookbook '#{dependency.name}' not found at #{to_s}"
-        end
+
+        # Validate the thing we are copying is a Chef cookbook
+        validate_cookbook!(tmp_path)
 
         FileUtils.rm_rf(revision_path)
         FileUtils.mv(tmp_path, revision_path)
