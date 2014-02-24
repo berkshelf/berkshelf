@@ -86,7 +86,7 @@ module Berkshelf
     #
     # @return [true]
     def extension(name)
-      require "berkshelf-#{name}"
+      require "berkshelf/#{name}"
       true
     rescue LoadError
       raise LoadError, "Could not load an extension by the name `#{name}'. " \
