@@ -1,5 +1,22 @@
 module Berkshelf
   class GitLocation < BaseLocation
+    class GitError < BerkshelfError; status_code(400); end
+
+    class GitNotInstalled < GitError
+      def initialize
+        super 'You need to install Git before you can download ' \
+          'cookbooks from git repositories. For more information, please ' \
+          'see the Git docs: http://git-scm.org.'
+      end
+    end
+
+    class GitCommandError < GitError
+      def initialize(command, path = nil)
+        super "Git error: command `git #{command}` failed. If this error " \
+          "persists, try removing the cache directory at `#{path}'."
+      end
+    end
+
     attr_reader :uri
     attr_reader :branch
     attr_reader :tag
@@ -16,41 +33,58 @@ module Berkshelf
       @ref      = options[:ref] || options[:branch] || options[:tag] || 'master'
       @revision = options[:revision]
       @rel      = options[:rel]
-
-      Git.validate_uri!(uri)
     end
 
     def download
-      if cached?
-        @revision ||= Git.rev_parse(revision_path)
-      else
-        repo_path = Git.clone(uri)
-
-        Git.checkout(repo_path, ref)
-        @revision = Git.rev_parse(repo_path)
-
-        tmp_path = rel ? File.join(repo_path, rel) : repo_path
-
-        # Validate the thing we are copying is a Chef cookbook
-        validate_cookbook!(tmp_path)
-
-        FileUtils.rm_rf(revision_path)
-        FileUtils.mv(tmp_path, revision_path)
+      if installed?
+        cookbook = CachedCookbook.from_store_path(install_path)
+        return super(cookbook)
       end
 
-      cookbook = CachedCookbook.from_store_path(revision_path)
+      if cached?
+        # Update and checkout the correct ref
+        Dir.chdir(cache_path) do
+          git %|fetch --all|
+        end
+      else
+        # Ensure the cache directory is present before doing anything
+        FileUtils.mkdir_p(cache_path)
+
+        Dir.chdir(cache_path) do
+          git %|clone #{uri} .|
+        end
+      end
+
+      Dir.chdir(cache_path) do
+        git %|checkout #{revision || ref}|
+        @revision ||= git %|rev-parse HEAD|
+      end
+
+      # Gab the path where we should copy from (since it might be relative to
+      # the root).
+      copy_path = rel ? cache_path.join(rel) : cache_path
+
+      # Validate the thing we are copying is a Chef cookbook
+      validate_cookbook!(copy_path)
+
+      # Remove the current cookbook at this location (this is required or else
+      # FileUtils will copy into a subdirectory in the next step)
+      FileUtils.rm_rf(install_path)
+
+      # Copy whatever is in the current cache over to the store
+      FileUtils.cp_r(copy_path, install_path)
+
+      # Remove the .git directory to save storage space
+      if (git_path = install_path.join('.git')).exist?
+        FileUtils.rm_r(git_path)
+      end
+
+      cookbook = CachedCookbook.from_store_path(install_path)
       super(cookbook)
     end
 
     def scm_location?
       true
-    end
-
-    def to_hash
-      super.tap do |h|
-        h[:value]  = self.uri
-        h[:branch] = self.branch if branch
-      end
     end
 
     def ==(other)
@@ -83,16 +117,54 @@ module Berkshelf
 
     private
 
+    # Perform a mercurial command.
+    #
+    # @param [String] command
+    #   the command to run
+    # @param [Boolean] error
+    #   whether to raise error if the command fails
+    #
+    # @raise [String]
+    #   the +$stdout+ from the command
+    def git(command, error = true)
+      unless Berkshelf.which('git') || Berkshelf.which('git.exe')
+        raise GitNotInstalled.new
+      end
+
+      out = %x|git #{command}|
+      raise GitCommandError.new(command, cache_path) if error && !$?.success?
+      out.strip
+    end
+
+    # Determine if this git repo has already been downloaded.
+    #
+    # @return [Boolean]
     def cached?
-      revision && File.exists?(revision_path)
+      cache_path.exist?
     end
 
-    def revision_path
-      cache_path.join("#{dependency.name}-#{revision}").to_s
+    # Determine if this revision is installed.
+    #
+    # @return [Boolean]
+    def installed?
+      revision && install_path.exist?
     end
 
-    def cache_path
+    # The path where this cookbook would live in the store, if it were
+    # installed.
+    #
+    # @return [Pathname, nil]
+    def install_path
       Berkshelf.cookbook_store.storage_path
+        .join("#{dependency.name}-#{revision}")
+    end
+
+    # The path where this git repository is cached.
+    #
+    # @return [Pathname]
+    def cache_path
+      Pathname.new(Berkshelf.berkshelf_path)
+        .join('.cache', 'git', Digest::SHA1.hexdigest(uri))
     end
   end
 end

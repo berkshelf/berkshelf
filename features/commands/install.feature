@@ -384,18 +384,6 @@ Feature: berks install
       """
     And the exit status should be "NoSolutionError"
 
-  Scenario: installing a Berksfile that has a Git location source with an invalid Git URI
-    Given I have a Berksfile pointing at the local Berkshelf API with:
-      """
-      cookbook 'nginx', git: '/something/on/disk'
-      """
-    When I run `berks install`
-    Then the output should contain:
-      """
-      '/something/on/disk' is not a valid Git URI
-      """
-    And the exit status should be "InvalidGitURI"
-
   Scenario: installing when there are sources with duplicate names defined in the same group
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -447,9 +435,9 @@ Feature: berks install
     Then the output should contain:
       """
       Fetching 'doesntexist' from git://github.com/asdjhfkljashflkjashfakljsf (at master)
-      An error occurred during Git execution:
+      Git error: command `git clone git://github.com/asdjhfkljashflkjashfakljsf .` failed.
       """
-      And the exit status should be "GitError"
+      And the exit status should be "GitLocation::gGitError"
 
   Scenario: transitive dependencies in metadata
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
