@@ -77,6 +77,7 @@ module Berkshelf
 
           return [cached, location]
         rescue => e
+          raise if e.kind_of?(GitNotFound)
           raise if e.kind_of?(CookbookValidationFailure)
           Berkshelf.formatter.error "Failed to download '#{source.name}' from #{source.location}"
         end
@@ -117,6 +118,9 @@ module Berkshelf
       #   the downloaded cached cookbook, or nil if one was not found
       def download_location(source, location, raise_if_not_found = false)
         location.download(storage_path)
+      rescue Berkshelf::GitNotFound
+        raise
+        nil
       rescue Berkshelf::CookbookNotFound
         raise if raise_if_not_found
         nil
