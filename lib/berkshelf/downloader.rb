@@ -72,18 +72,28 @@ module Berkshelf
         archive_path = File.join(tmp_dir, "#{name}-#{version}.tar.gz")
         unpack_dir   = File.join(tmp_dir, "#{name}-#{version}")
 
-        github_access_token          = Berkshelf::Config.instance.github.access_token
-        github_config                = {}
-        github_config[:access_token] = github_access_token unless github_access_token == ""
-        github_client                = Octokit::Client.new(github_config)
+        # Find the correct github connection options for this specific cookbook.
+        cookbook_uri = URI.parse(remote_cookbook.location_path)
+        if cookbook_uri.host == "github.com"
+          options = Berkshelf::Config.instance.github.detect { |opts| opts["web_endpoint"] == nil }
+          options = {} if options == nil
+        else
+          options = Berkshelf::Config.instance.github.detect { |opts| opts["web_endpoint"] == "#{cookbook_uri.scheme}://#{cookbook_uri.host}" }
+          raise ConfigurationError.new "Missing github endpoint configuration for #{cookbook_uri.scheme}://#{cookbook_uri.host}" if options == nil
+        end
+
+        github_client = Octokit::Client.new(access_token: options[:access_token],
+          api_endpoint: options[:api_endpoint], web_endpoint: options[:web_endpoint],
+          connection_options: {ssl: {verify: options[:ssl_verify].nil? ? true : options[:ssl_verify]}})
 
         begin
-          url = URI(github_client.archive_link(remote_cookbook.location_path, ref: "v#{version}"))
+          url = URI(github_client.archive_link(cookbook_uri.path.gsub(/^\//, ""), ref: "v#{version}"))
         rescue Octokit::Unauthorized
           return nil
         end
 
-        Net::HTTP.start(url.host, use_ssl: url.scheme == "https") do |http|
+        Net::HTTP.start(url.host, use_ssl: url.scheme == "https",
+          verify_mode: (options[:ssl_verify].nil? || options[:ssl_verify]) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE) do |http|
           resp = http.get(url.request_uri)
           return nil unless resp.is_a?(Net::HTTPSuccess)
           open(archive_path, "wb") { |file| file.write(resp.body) }
