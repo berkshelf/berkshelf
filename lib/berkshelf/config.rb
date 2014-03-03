@@ -125,7 +125,7 @@ module Berkshelf
       required: true
     attribute 'github',
       type: Array,
-      default: "",
+      default: [],
       required: false
   end
 end
