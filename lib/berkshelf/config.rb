@@ -123,9 +123,9 @@ module Berkshelf
       type: Boolean,
       default: true,
       required: true
-    attribute 'github.access_token',
-      type: String,
-      default: '',
+    attribute 'github',
+      type: Array,
+      default: "",
       required: false
   end
 end
