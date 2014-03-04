@@ -320,6 +320,14 @@ describe Berkshelf::Berksfile do
   end
 
   describe '#upload' do
+    let(:graph)    { double(locks: []) }
+    let(:lockfile) { double(present?: true, trusted?: true, graph: graph) }
+
+    before do
+      Berkshelf.stub(:config).and_return(berkshelf_config)
+      subject.stub(:lockfile).and_return(lockfile)
+    end
+
     let(:options) { Hash.new }
     let(:chef_config) do
       double('chef-config',
@@ -343,14 +351,8 @@ describe Berkshelf::Berksfile do
         }
       }
     end
-    let(:installed_cookbooks) { Array.new }
 
     let(:upload) { subject.upload(options) }
-
-    before do
-      Berkshelf.stub(:config).and_return(berkshelf_config)
-      subject.should_receive(:install).and_return(installed_cookbooks)
-    end
 
     context 'when there is no value for :chef_server_url' do
       before { chef_config.stub(chef_server_url: nil) }
@@ -443,28 +445,33 @@ describe Berkshelf::Berksfile do
     end
 
     context 'when validate is passed' do
+      let(:mysql_dependency) { double(name: 'mysql', metadata?: false, dependencies: []) }
+      let(:mysql_cookbook)   { double(cookbook_name: 'mysql', path: 'path') }
+
       let(:options) do
         {
-          force: false,
-          freeze: true,
+          force:    false,
+          freeze:   true,
           validate: false,
-          name: "cookbook"
+          name:     mysql_cookbook.cookbook_name
         }
       end
       let(:ridley_options) do
-        default_ridley_options.merge(
-            { server_url: 'http://configured-chef-server/'})
+        default_ridley_options.merge({ server_url: 'http://configured-chef-server/'})
       end
-      let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path', version: '1.0.0') }
-      let(:installed_cookbooks) { [ cookbook ] }
-      let(:cookbook_resource) { double('cookbook') }
       let(:conn) { double('conn') }
 
+      before do
+        subject.stub(:dependencies).and_return([mysql_dependency])
+        graph.stub(:find).with(mysql_dependency).and_return(mysql_dependency)
+        lockfile.stub(:retrieve).with(mysql_dependency).and_return(mysql_cookbook)
+      end
+
       it 'uses the passed in :validate' do
-        Ridley.should_receive(:open).with(ridley_options).and_yield(conn)
-        conn.should_receive(:cookbook).and_return(cookbook_resource)
-        cookbook_resource.should_receive(:upload).with('path', options )
-        upload
+        expect(Ridley).to receive(:open).and_yield(conn)
+        expect(conn).to receive(:cookbook).and_return(mysql_cookbook)
+        expect(mysql_cookbook).to receive(:upload).with('path', options)
+        subject.upload('mysql', options)
       end
     end
   end

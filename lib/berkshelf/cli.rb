@@ -199,14 +199,13 @@ module Berkshelf
       default: false,
       desc: 'Halt uploading and exit if the Chef Server has a frozen version of the cookbook(s).'
     desc 'upload [COOKBOOKS]', 'Upload the cookbook specified in the Berksfile to the Chef Server'
-    def upload(*cookbook_names)
+    def upload(*names)
       berksfile = Berksfile.from_options(options)
 
-      options[:cookbooks] = cookbook_names
       options[:freeze]    = !options[:no_freeze]
       options[:validate]  = false if options[:skip_syntax_check]
 
-      berksfile.upload(options.symbolize_keys)
+      berksfile.upload(names, options.symbolize_keys)
     end
 
     method_option :lockfile,

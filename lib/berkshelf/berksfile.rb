@@ -492,20 +492,45 @@ module Berkshelf
     #   if the cookbook being uploaded is a {metadata} cookbook and is already
     #   frozen on the remote Chef Server; indirect dependencies or non-metadata
     #   dependencies are just skipped
-    def upload(options = {})
+    def upload(*args)
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      names   = args.flatten
+
       options = {
-        force: false,
-        freeze: true,
+        force:          false,
+        freeze:         true,
         halt_on_frozen: false,
-        cookbooks: [],
-        validate: true
+        cookbooks:      [],
+        validate:       true,
       }.merge(options)
 
-      validate_cookbook_names!(options[:cookbooks])
+      validate_lockfile_present!
+      validate_lockfile_trusted!
+      validate_dependencies_installed!
+      validate_cookbook_names!(names)
 
-      cached_cookbooks = install
-      cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
-      do_upload(cached_cookbooks, options)
+      # Calculate the list of cookbooks from the options
+      if names.empty?
+        list = dependencies
+      else
+        list = dependencies.select { |dependency| names.include?(dependency.name) }
+      end
+
+      cookbooks = list.reduce({}) do |hash, dependency|
+        if hash[dependency.name].nil?
+          # TODO: make this a configurable option for advanced users to save
+          # time.
+          lockfile.graph.find(dependency).dependencies.each do |direct, _|
+            hash[direct] ||= lockfile.retrieve(direct)
+          end
+
+          hash[dependency.name] = lockfile.retrieve(dependency)
+        end
+
+        hash
+      end.values
+
+      ridley_upload(cookbooks, options)
     end
 
     # Package the given cookbook for distribution outside of berkshelf. If the
@@ -612,8 +637,8 @@ module Berkshelf
 
     private
 
-      def do_upload(cookbooks, options = {})
-        @skipped = []
+      def ridley_upload(cookbooks, options = {})
+        skipped = []
 
         Berkshelf.ridley_connection(options) do |conn|
           cookbooks.each do |cookbook|
@@ -628,46 +653,21 @@ module Berkshelf
                 validate: options[:validate]
               })
             rescue Ridley::Errors::FrozenCookbook => ex
-              if options[:halt_on_frozen]
-                raise Berkshelf::FrozenCookbook.new(cookbook)
-              end
+              raise FrozenCookbook.new(cookbook) if options[:halt_on_frozen]
 
               Berkshelf.formatter.skip(cookbook, conn)
-              @skipped << cookbook
+              skipped << cookbook
             end
           end
         end
 
-        unless @skipped.empty?
+        unless skipped.empty?
           Berkshelf.formatter.msg "Skipped uploading some cookbooks because they" <<
             " already exist on the remote server and are frozen. Re-run with the `--force`" <<
             " flag to force overwrite these cookbooks:" <<
             "\n\n" <<
-            "  * " << @skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
+            "  * " << skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
         end
-      end
-
-      # Filter the cookbooks to upload based on a set of given names. The dependencies of a cookbook
-      # will always be included in the filtered results even if the dependency's name is not
-      # explicitly provided.
-      #
-      # @param [Array<Berkshelf::CachedCookbooks>] cookbooks
-      #   set of cookbooks to filter
-      # @param [Array<String>] names
-      #   names of cookbooks to include in the filtered results
-      #
-      # @return [Array<Berkshelf::CachedCookbooks]
-      def filter_to_upload(cookbooks, names)
-        unless names.empty?
-          explicit = cookbooks.select { |cookbook| names.include?(cookbook.cookbook_name) }
-          explicit.each do |cookbook|
-            cookbook.dependencies.each do |name, version|
-              explicit += cookbooks.select { |cookbook| cookbook.cookbook_name == name }
-            end
-          end
-          cookbooks = explicit.uniq
-        end
-        cookbooks
       end
 
       # Ensure the lockfile is present on disk.
