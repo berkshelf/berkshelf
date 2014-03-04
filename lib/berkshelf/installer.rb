@@ -163,8 +163,6 @@ module Berkshelf
           lockfile.unlock(dependency)
         end
       end
-
-      lockfile.save
     end
 
     def berksfile_dependencies
