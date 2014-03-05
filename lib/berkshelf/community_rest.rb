@@ -107,7 +107,7 @@ module Berkshelf
       when 404
         raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
       else
-        raise CommunitySiteError, "Error finding cookbook '#{name}' (#{version}) at site: '#{api_uri}'"
+        raise CommunitySiteError.new(api_uri, "'#{name}' (#{version})")
       end
     end
 
@@ -123,7 +123,7 @@ module Berkshelf
       when 404
         raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
       else
-        raise CommunitySiteError, "Error retrieving latest version of cookbook '#{name}' at site: '#{api_uri}'"
+        raise CommunitySiteError.new(api_uri, "the latest version of '#{name}'")
       end
     end
 
@@ -141,7 +141,7 @@ module Berkshelf
       when 404
         raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
       else
-        raise CommunitySiteError, "Error retrieving versions of cookbook '#{name}' at site: '#{api_uri}'"
+        raise CommunitySiteError.new(api_uri, "versions of '#{name}'")
       end
     end
 

@@ -327,7 +327,19 @@ module Berkshelf
 
   class ValidationFailed < BerkshelfError; status_code(121); end
   class InvalidVersionConstraint < BerkshelfError; status_code(122); end
-  class CommunitySiteError < BerkshelfError; status_code(123); end
+  class CommunitySiteError < BerkshelfError
+    status_code(123)
+
+    def initialize(uri, message)
+      @uri     = uri
+      @message = message
+    end
+
+    def to_s
+      "An unexpected error occurred retrieving #{@message} from the cookbook " \
+      "site at `#{@api_uri}'."
+    end
+  end
 
   class CookbookValidationFailure < BerkshelfError
     status_code(124)
