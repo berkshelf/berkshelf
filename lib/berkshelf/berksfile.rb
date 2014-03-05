@@ -28,8 +28,8 @@ module Berkshelf
 
     DEFAULT_API_URL = "https://api.berkshelf.com".freeze
 
-    include Berkshelf::Mixin::Logging
-    include Berkshelf::Mixin::DSLEval
+    include Mixin::Logging
+    include Mixin::DSLEval
     extend Forwardable
 
     expose_method :source
@@ -60,7 +60,7 @@ module Berkshelf
       @sources          = Hash.new
 
       if options[:except] && options[:only]
-        raise Berkshelf::ArgumentError, 'Cannot specify both :except and :only!'
+        raise ArgumentError, 'Cannot specify both :except and :only!'
       elsif options[:except]
         except = Array(options[:except]).collect(&:to_sym)
         @filter = ->(dependency) { (except & dependency.groups).empty? }
@@ -159,14 +159,14 @@ module Berkshelf
     # @param [String] api_url
     #   url for the api to add
     #
-    # @raise [Berkshelf::InvalidSourceURI]
+    # @raise [InvalidSourceURI]
     #
-    # @return [Array<Berkshelf::Source>]
+    # @return [Array<Source>]
     def source(api_url)
       @sources[api_url] = Source.new(api_url)
     end
 
-    # @return [Array<Berkshelf::Source>]
+    # @return [Array<Source>]
     def sources
       if @sources.empty?
         raise NoAPISourcesDefined
@@ -183,7 +183,7 @@ module Berkshelf
 
     # @todo remove in Berkshelf 4.0
     #
-    # @raise [Berkshelf::DeprecatedError]
+    # @raise [DeprecatedError]
     def site(*args)
       if args.first == :opscode
         Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
@@ -194,16 +194,16 @@ module Berkshelf
         return
       end
 
-      raise Berkshelf::DeprecatedError.new "Your Berksfile contains a site location. Site locations have been " +
+      raise DeprecatedError.new "Your Berksfile contains a site location. Site locations have been " +
         " replaced by the source location. Please remove your site location and try again. For more information " +
         " visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
 
     # @todo remove in Berkshelf 4.0
     #
-    # @raise [Berkshelf::DeprecatedError]
+    # @raise [DeprecatedError]
     def chef_api(*args)
-      raise Berkshelf::DeprecatedError.new "Your Berksfile contains a chef_api location. Chef API locations have " +
+      raise DeprecatedError.new "Your Berksfile contains a chef_api location. Chef API locations have " +
         " been replaced by the source location. Please remove your site location and try again. For more " +
         " information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
@@ -225,7 +225,7 @@ module Berkshelf
     # @raise [DuplicateDependencyDefined] if a dependency is added whose name conflicts
     #   with a dependency who has already been added.
     #
-    # @return [Array<Berkshelf::Dependency]
+    # @return [Array<Dependency]
     def add_dependency(name, constraint = nil, options = {})
       if has_dependency?(name)
         # Only raise an exception if the dependency is a true duplicate
@@ -241,13 +241,13 @@ module Berkshelf
 
       options[:constraint] = constraint
 
-      @dependencies[name] = Berkshelf::Dependency.new(self, name, options)
+      @dependencies[name] = Dependency.new(self, name, options)
     end
 
     # @param [#to_s] dependency
     #   the dependency to remove
     #
-    # @return [Berkshelf::Dependency]
+    # @return [Dependency]
     def remove_dependency(dependency)
       @dependencies.delete(dependency.to_s)
     end
@@ -261,7 +261,7 @@ module Berkshelf
     end
 
 
-    # @return [Array<Berkshelf::Dependency>]
+    # @return [Array<Dependency>]
     def dependencies
       @dependencies.values.sort.select(&@filter)
     end
@@ -287,30 +287,24 @@ module Berkshelf
     #
     # @param [String] name
     #   the name of the cookbook dependency to search for
-    # @return [Berkshelf::Dependency, nil]
+    # @return [Dependency, nil]
     #   the cookbook dependency, or nil if one does not exist
     def find(name)
       @dependencies[name]
     end
 
-    # Find a dependency, raising an exception if it is not found.
-    # @see {find}
-    def find!(name)
-      find(name) || raise(DependencyNotFound.new(name))
-    end
-
     # @return [Hash]
-    #   a hash containing group names as keys and an array of Berkshelf::Dependencies
+    #   a hash containing group names as keys and an array of Dependencies
     #   that are a member of that group as values
     #
     #   Example:
     #     {
     #       nautilus: [
-    #         #<Berkshelf::Dependency: nginx (~> 1.0.0)>,
-    #         #<Berkshelf::Dependency: mysql (~> 1.2.4)>
+    #         #<Dependency: nginx (~> 1.0.0)>,
+    #         #<Dependency: mysql (~> 1.2.4)>
     #       ],
     #       skarner: [
-    #         #<Berkshelf::Dependency: nginx (~> 1.0.0)>
+    #         #<Dependency: nginx (~> 1.0.0)>
     #       ]
     #     }
     def groups
@@ -327,7 +321,7 @@ module Berkshelf
     # @param [String] name
     #   name of the dependency to return
     #
-    # @return [Berkshelf::Dependency]
+    # @return [Dependency]
     def [](name)
       @dependencies[name]
     end
@@ -346,7 +340,7 @@ module Berkshelf
     #      sources. If not, then either a version constraint has changed,
     #      or a new source has been added to the Berksfile. In the event that
     #      a locked_source exists, but it no longer satisfies the constraint,
-    #      this method will raise a {Berkshelf::OutdatedCookbookSource}, and
+    #      this method will raise a {OutdatedCookbookSource}, and
     #      inform the user to run <tt>berks update COOKBOOK</tt> to remedy the issue.
     #    - Remove any locked sources that no longer exist in the Berksfile
     #      (i.e. a cookbook source was removed from the Berksfile).
@@ -355,10 +349,10 @@ module Berkshelf
     #
     # 3. Write out a new lockfile.
     #
-    # @raise [Berkshelf::OutdatedDependency]
+    # @raise [OutdatedDependency]
     #   if the lockfile constraints do not satisfy the Berksfile constraints
     #
-    # @return [Array<Berkshelf::CachedCookbook>]
+    # @return [Array<CachedCookbook>]
     def install
       Installer.new(self).run
     end
@@ -546,7 +540,7 @@ module Berkshelf
     # @param [String] path
     #   the path where the tarball will be created
     #
-    # @raise [Berkshelf::PackageError]
+    # @raise [PackageError]
     #
     # @return [String]
     #   the path to the package
@@ -634,7 +628,7 @@ module Berkshelf
     # the user can specify a different path to the Berksfile. So assuming the lockfile
     # is named "Berksfile.lock" is a poor assumption.
     #
-    # @return [Berkshelf::Lockfile]
+    # @return [Lockfile]
     #   the lockfile corresponding to this berksfile, or a new Lockfile if one does
     #   not exist
     def lockfile
@@ -666,7 +660,9 @@ module Berkshelf
                 validate: options[:validate]
               })
             rescue Ridley::Errors::FrozenCookbook => ex
-              raise FrozenCookbook.new(cookbook) if options[:halt_on_frozen]
+              if options[:halt_on_frozen]
+                raise FrozenCookbook.new(cookbook)
+              end
 
               Berkshelf.formatter.skip(cookbook, conn)
               skipped << cookbook
@@ -756,20 +752,20 @@ module Berkshelf
       # @param [Array<String>] names
       #   a list of cookbook names
       #
-      # @raise [Berkshelf::DependencyNotFound]
+      # @raise [DependencyNotFound]
       #   if a cookbook name is given that does not exist
       def validate_cookbook_names!(names)
         missing = names - dependencies.map(&:name)
 
         unless missing.empty?
-          raise Berkshelf::DependencyNotFound.new(missing)
+          raise DependencyNotFound.new(missing)
         end
       end
 
       # Validate that the given cookbook does not have "bad" files. Currently
       # this means including spaces in filenames (such as recipes)
       #
-      # @param [Berkshelf::CachedCookbook] cookbook
+      # @param [CachedCookbook] cookbook
       #  the Cookbook to validate
       def validate_files!(cookbook)
         path = cookbook.path.to_s
@@ -779,7 +775,7 @@ module Berkshelf
           f.gsub(parent, '') =~ /[[:space:]]/
         end
 
-        raise Berkshelf::InvalidCookbookFiles.new(cookbook, files) unless files.empty?
+        raise InvalidCookbookFiles.new(cookbook, files) unless files.empty?
       end
   end
 end

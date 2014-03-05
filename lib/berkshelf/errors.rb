@@ -123,7 +123,7 @@ module Berkshelf
 
     attr_reader :demands
 
-    # @param [Array<Berkshelf::Dependency>] demands
+    # @param [Array<Dependency>] demands
     def initialize(demands)
       @demands = demands
     end
@@ -236,9 +236,9 @@ module Berkshelf
   class MismatchedCookbookName < BerkshelfError
     status_code(114)
 
-    # @param [Berkshelf::Dependency] dependency
+    # @param [Dependency] dependency
     #   the dependency with the expected name
-    # @param [Berkshelf::CachedCookbook] cached_cookbook
+    # @param [CachedCookbook] cached_cookbook
     #   the cached_cookbook with the mismatched name
     def initialize(dependency, cached_cookbook)
       @dependency      = dependency
@@ -339,9 +339,9 @@ module Berkshelf
   class CookbookValidationFailure < BerkshelfError
     status_code(124)
 
-    # @param [Berkshelf::Location] location
+    # @param [Location] location
     #   the location (or any subclass) raising this validation error
-    # @param [Berkshelf::CachedCookbook] cached_cookbook
+    # @param [CachedCookbook] cached_cookbook
     #   the cached_cookbook that does not satisfy the constraint
     def initialize(dependency, cached_cookbook)
       @dependency      = dependency
@@ -372,9 +372,9 @@ module Berkshelf
   class OutdatedDependency < BerkshelfError
     status_code(128)
 
-    # @param [Berkshelf::Dependency] locked_dependency
+    # @param [Dependency] locked_dependency
     #   the locked dependency
-    # @param [Berkshelf::Dependency] dependency
+    # @param [Dependency] dependency
     #   the dependency that is outdated
     def initialize(locked, dependency)
       @locked     = locked
@@ -427,7 +427,7 @@ module Berkshelf
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   #
-  # @param [Berkshelf::CachedCookbook] cookbook
+  # @param [CachedCookbook] cookbook
   #   the cookbook that failed validation
   # @param [Array<#to_s>] files
   #   the list of files that were not valid
@@ -461,7 +461,7 @@ module Berkshelf
 
     def to_s
       "Unknown license: '#{license}'\n" +
-      "Available licenses: #{Berkshelf::CookbookGenerator::LICENSES.join(', ')}"
+      "Available licenses: #{CookbookGenerator::LICENSES.join(', ')}"
     end
   end
 
