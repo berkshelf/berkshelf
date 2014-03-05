@@ -88,8 +88,7 @@ module Berkshelf
       FileUtils.mkdir_p(berkshelf_path, mode: 0755)
 
       unless File.writable?(berkshelf_path)
-        raise InsufficientPrivledges, "You do not have permission to write to '#{berkshelf_path}'!" +
-          " Please either chown the directory or use a different filepath."
+        raise InsufficientPrivledges.new(berkshelf_path)
       end
     end
 

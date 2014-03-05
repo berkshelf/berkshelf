@@ -283,7 +283,19 @@ module Berkshelf
 
   class ConfigExists < BerkshelfError; status_code(116); end
   class ConfigurationError < BerkshelfError; status_code(117); end
-  class InsufficientPrivledges < BerkshelfError; status_code(119); end
+  class InsufficientPrivledges < BerkshelfError
+    status_code(119)
+
+    def initialize(path)
+      @path = path
+    end
+
+    def to_s
+      "You do not have permission to write to `#{@path}'! Please chown the " \
+      "path to the current user, chmod the permissions to include the " \
+      "user, or choose a different path."
+    end
+  end
 
   class DependencyNotFound < BerkshelfError
     status_code(120)
