@@ -458,7 +458,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Berksfile contains multiple entries named 'berkshelf-cookbook-fixture'. Use only one, or put them in different groups.
+      Your Berksfile contains multiple entries named 'berkshelf-cookbook-fixture'. Please remove duplicate dependencies, or put them in different groups.
       """
     And the exit status should be "DuplicateDependencyDefined"
 
