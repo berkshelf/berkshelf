@@ -30,8 +30,6 @@ module Berkshelf
     end
   end
 
-  class NoVersionForConstraints < BerkshelfError; status_code(101); end
-  class DuplicateLocationDefined < BerkshelfError; status_code(102); end
   class CookbookNotFound < BerkshelfError
     status_code(103)
 
@@ -135,8 +133,6 @@ module Berkshelf
     end
   end
 
-  class CookbookSyntaxError < BerkshelfError; status_code(107); end
-
   class MercurialError < BerkshelfError
     status_code(108);
   end
@@ -209,7 +205,6 @@ module Berkshelf
     end
   end
 
-  class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
   class BerksfileReadError < BerkshelfError
     status_code(113)
 
@@ -219,7 +214,6 @@ module Berkshelf
       @error_message   = original_error.to_s
       @error_backtrace = original_error.backtrace
     end
-
 
     def status_code
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
@@ -281,8 +275,6 @@ module Berkshelf
     end
   end
 
-  class ConfigExists < BerkshelfError; status_code(116); end
-  class ConfigurationError < BerkshelfError; status_code(117); end
   class InsufficientPrivledges < BerkshelfError
     status_code(119)
 
@@ -325,8 +317,6 @@ module Berkshelf
     end
   end
 
-  class ValidationFailed < BerkshelfError; status_code(121); end
-  class InvalidVersionConstraint < BerkshelfError; status_code(122); end
   class CommunitySiteError < BerkshelfError
     status_code(123)
 
@@ -358,10 +348,7 @@ module Berkshelf
     end
   end
 
-  class ClientKeyFileNotFound < BerkshelfError; status_code(125); end
-
   class UploadFailure < BerkshelfError; end
-
   class FrozenCookbook < UploadFailure
     status_code(126)
 
@@ -458,25 +445,6 @@ module Berkshelf
     end
   end
 
-  # Raised when a CachedCookbook has a license file that isn't allowed
-  # by the Berksfile.
-  #
-  # @param [Berkshelf::CachedCookbook] cookbook
-  #   the cookbook that failed license validation
-  class LicenseNotAllowed < BerkshelfError
-    status_code(133)
-
-    def initialize(cookbook)
-      @cookbook = cookbook
-    end
-
-    def to_s
-      msg =  "'#{@cookbook.cookbook_name}' has a license of '#{@cookbook.metadata.license}', but"
-      msg << " '#{@cookbook.metadata.license}' is not in your list of allowed licenses"
-      msg
-    end
-  end
-
   class LicenseNotFound < BerkshelfError
     status_code(134)
 
@@ -568,7 +536,6 @@ module Berkshelf
     end
   end
 
-  class InvalidLockFile < BerkshelfError; status_code(142); end
   class PackageError < BerkshelfError; status_code(143); end
 
   class LockfileOutOfSync < BerkshelfError
