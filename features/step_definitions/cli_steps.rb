@@ -1,4 +1,4 @@
 Then /^the exit status should be "(.+)"$/ do |name|
-  code = Berkshelf.const_get(name).status_code
-  assert_exit_status(code)
+  error = name.split('::').reduce(Berkshelf) { |klass, id| klass.const_get(id) }
+  assert_exit_status(error.status_code)
 end
