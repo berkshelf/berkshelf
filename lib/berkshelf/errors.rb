@@ -277,23 +277,27 @@ module Berkshelf
   class DependencyNotFound < BerkshelfError
     status_code(120)
 
-    # @param [String, Array<String>] cookbooks
-    #   the list of cookbooks that were not defined
-    def initialize(cookbooks)
-      @cookbooks = Array(cookbooks)
+    # @param [String, Array<String>] names
+    #   the list of cookbook names that were not defined
+    def initialize(names)
+      @names = Array(names)
     end
 
     def to_s
-      list = @cookbooks.collect { |cookbook| "'#{cookbook}'" }.join(', ')
-
-      if @cookbooks.size == 1
-        "Could not find cookbook #{list}. Make sure it is in your " \
-        "Berksfile, then run `berks install` to download and install the " \
-        "missing dependencies."
+      if @names.size == 1
+        "Dependency '#{@names.first}' was not found. Please make sure it is " \
+        "in your Berksfile, and then run `berks install' to download and " \
+        "install the missing dependencies."
       else
-        "Could not find cookbooks #{list}. Make sure they are in your " \
-        "Berksfile, then run `berks install` to download and install the " \
-        "missing dependencies."
+        out = "The following dependencies were not found:\n"
+        @names.each do |name|
+          out << "  * #{name}\n"
+        end
+        out << "\n"
+        out << "Please make sure they are in your Berksfile, and then run "
+        out << "`berks install' to download and install the missing "
+        out << "dependencies."
+        out
       end
     end
   end

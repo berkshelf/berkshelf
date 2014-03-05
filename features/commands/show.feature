@@ -61,7 +61,7 @@ Feature: berks show
     When I run `berks show fake`
     Then the output should contain:
       """
-      Could not find cookbook 'fake'. Make sure it is in your Berksfile, then run `berks install` to download and install the missing dependencies.
+      Dependency 'fake' was not found. Please make sure it is in your Berksfile, and then run `berks install' to download and install the missing dependencies.
       """
     And the exit status should be "DependencyNotFound"
 
@@ -73,7 +73,7 @@ Feature: berks show
     When I run `berks show fake`
     Then the output should contain:
       """
-      Could not find cookbook 'fake'. Make sure it is in your Berksfile, then run `berks install` to download and install the missing dependencies.
+      Dependency 'fake' was not found. Please make sure it is in your Berksfile, and then run `berks install' to download and install the missing dependencies.
       """
     And the exit status should be "DependencyNotFound"
 
