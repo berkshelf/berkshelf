@@ -297,7 +297,7 @@ Feature: berks install
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
-  Scenario: installing a Berksfile that contains a Github location
+  Scenario: installing a Berksfile that contains a GitHub location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook "berkshelf-cookbook-fixture", github: "RiotGames/berkshelf-cookbook-fixture", tag: "v0.2.0"
