@@ -1,3 +1,5 @@
+require 'buff/shell_out'
+
 module Berkshelf
   class GitLocation < BaseLocation
     class GitError < BerkshelfError; status_code(400); end
@@ -131,9 +133,13 @@ module Berkshelf
         raise GitNotInstalled.new
       end
 
-      out = %x|git #{command}|
-      raise GitCommandError.new(command, cache_path) if error && !$?.success?
-      out.strip
+      response = Buff::ShellOut.shell_out(%|git #{command}|)
+
+      if error && !response.success?
+        raise GitCommandError.new(command, cache_path)
+      end
+
+      response.stdout.strip
     end
 
     # Determine if this git repo has already been downloaded.
