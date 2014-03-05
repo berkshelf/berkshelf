@@ -437,7 +437,7 @@ Feature: berks install
       Fetching 'doesntexist' from git://github.com/asdjhfkljashflkjashfakljsf (at master)
       Git error: command `git clone git://github.com/asdjhfkljashflkjashfakljsf .` failed.
       """
-      And the exit status should be "GitLocation::gGitError"
+      And the exit status should be "GitLocation::GitError"
 
   Scenario: transitive dependencies in metadata
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
