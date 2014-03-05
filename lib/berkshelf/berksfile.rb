@@ -231,8 +231,7 @@ module Berkshelf
         # Only raise an exception if the dependency is a true duplicate
         groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
         if !(@dependencies[name].groups & groups).empty?
-          raise DuplicateDependencyDefined,
-            "Berksfile contains multiple entries named '#{name}'. Use only one, or put them in different groups."
+          raise DuplicateDependencyDefined.new(name)
         end
       end
 
