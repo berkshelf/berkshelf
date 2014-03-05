@@ -246,12 +246,6 @@ describe Berkshelf::Lockfile do
   end
 
   describe '#unlock' do
-    it 'raises an exception when the dependency does not exist' do
-      expect {
-        subject.unlock('foo')
-      }.to raise_error(Berkshelf::CookbookNotFound)
-    end
-
     it 'removes the dependency from the graph' do
       subject.add('apache2')
       subject.unlock('apache2')

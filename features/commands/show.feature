@@ -94,6 +94,6 @@ Feature: berks show
     When I run `berks show fake`
     Then the output should contain:
       """
-      Could not find cookbook 'fake (1.0.0)'. Run `berks install` to download and install the missing cookbook.
+      Cookbook 'fake' (1.0.0) not found in the cookbook store!
       """
     And the exit status should be "CookbookNotFound"

@@ -32,7 +32,23 @@ module Berkshelf
 
   class NoVersionForConstraints < BerkshelfError; status_code(101); end
   class DuplicateLocationDefined < BerkshelfError; status_code(102); end
-  class CookbookNotFound < BerkshelfError; status_code(103); end
+  class CookbookNotFound < BerkshelfError
+    status_code(103)
+
+    def initialize(name, version, location)
+      @name     = name
+      @version  = version
+      @location = location
+    end
+
+    def to_s
+      if @version
+        "Cookbook '#{@name}' (#{@version}) not found #{@location}!"
+      else
+        "Cookbook '#{@name}' not found #{@location}!"
+      end
+    end
+  end
 
   class GitError < BerkshelfError
     status_code(104)

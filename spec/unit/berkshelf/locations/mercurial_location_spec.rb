@@ -5,7 +5,13 @@ describe Berkshelf::MercurialLocation, :hg do
 
   let(:cookbook_uri) { mercurial_origin_for('fake_cookbook', is_cookbook: true, tags: ["1.0.0"], branches: ["mybranch"]) }
   let(:constraint) { double('comp-vconstraint', satisfies?: true) }
-  let(:dependency) { double('dep', name: "berkshelf-cookbook-fixture", version_constraint: constraint) }
+  let(:dependency) do
+    double('dep',
+      name: "berkshelf-cookbook-fixture",
+      version_constraint: constraint,
+      locked_version: nil,
+    )
+  end
   let(:storage_path) { Berkshelf::CookbookStore.instance.storage_path }
 
   describe '::initialize' do

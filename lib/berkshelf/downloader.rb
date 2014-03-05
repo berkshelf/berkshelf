@@ -35,7 +35,7 @@ module Berkshelf
         end
       end
 
-      raise CookbookNotFound, "#{dependency} (#{version}) not found in any sources"
+      raise CookbookNotFound.new(dependency, version, 'in any of the sources')
     end
 
     # @param [Berkshelf::Source] source

@@ -3,7 +3,7 @@ Feature: berks shelf uninstall
     When I run `berks shelf uninstall fake`
     Then the output should contain:
       """
-      Cookbook 'fake' is not in the Berkshelf shelf
+      Cookbook 'fake' not found in the Berkshelf shelf!
       """
     And the exit status should be "CookbookNotFound"
 

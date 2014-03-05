@@ -232,8 +232,9 @@ module Berkshelf
       end
 
       unless locked.downloaded?
-        raise CookbookNotFound, "Could not find cookbook '#{locked.to_s}'. " \
-          "Run `berks install` to download and install the missing cookbook."
+        name    = locked.name
+        version = locked.locked_version || locked.version_constraint
+        raise CookbookNotFound.new(name, version, 'in the cookbook store')
       end
 
       locked.cached_cookbook
@@ -259,16 +260,12 @@ module Berkshelf
     # dependencies. Then it uses a recursive algorithm to safely remove any
     # other dependencies from the graph that are no longer needed.
     #
-    # @raise [Berkshelf::CookbookNotFound]
+    # @raise [CookbookNotFound]
     #   if the provided dependency does not exist
     #
     # @param [String] dependency
     #   the name of the cookbook to remove
     def unlock(dependency)
-      unless dependency?(dependency)
-        raise Berkshelf::CookbookNotFound, "'#{dependency}' does not exist in this lockfile!"
-      end
-
       @dependencies.delete(Dependency.name(dependency))
       graph.remove(dependency)
     end

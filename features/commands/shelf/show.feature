@@ -3,7 +3,7 @@ Feature: berks shelf show
     When I run `berks shelf show fake`
     Then the output should contain:
       """
-      Cookbook 'fake' is not in the Berkshelf shelf
+      Cookbook 'fake' not found in the Berkshelf shelf!
       """
     And the exit status should be "CookbookNotFound"
 
@@ -54,7 +54,7 @@ Feature: berks shelf show
     When I run `berks shelf show fake --version 1.2.3`
     Then the output should contain:
       """
-      Cookbook 'fake' (1.2.3) is not in the Berkshelf shelf
+      Cookbook 'fake' (1.2.3) not found in the Berkshelf shelf!
       """
     And the exit status should be "CookbookNotFound"
 

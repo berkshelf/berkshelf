@@ -60,10 +60,10 @@ module Berkshelf
       # @param [String, nil] version
       #   the version of the cookbook to find
       #
-      # @raise [Berkshelf::CookbookNotFound]
+      # @raise [CookbookNotFound]
       #   if the cookbook does not exist
       #
-      # @return [Array<Berkshelf::CachedCookbook>]
+      # @return [Array<CachedCookbook>]
       #   the list of cookbooks that match the parameters - this is always an
       #   array!
       def find(name, version = nil)
@@ -74,11 +74,7 @@ module Berkshelf
         end
 
         if cookbooks.empty?
-          if version
-            raise Berkshelf::CookbookNotFound, "Cookbook '#{name}' (#{version}) is not in the Berkshelf shelf"
-          else
-            raise Berkshelf::CookbookNotFound, "Cookbook '#{name}' is not in the Berkshelf shelf"
-          end
+          raise CookbookNotFound.new(name, version, 'in the Berkshelf shelf')
         end
 
         cookbooks

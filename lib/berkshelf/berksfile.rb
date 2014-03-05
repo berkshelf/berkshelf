@@ -405,12 +405,12 @@ module Berkshelf
 
     # The cached cookbooks installed by this Berksfile.
     #
-    # @raise [Berkshelf::LockfileNotFound]
+    # @raise [LockfileNotFound]
     #   if there is no lockfile
-    # @raise [Berkshelf::CookbookNotFound]
+    # @raise [CookbookNotFound]
     #   if a listed source could not be found
     #
-    # @return [Hash<Berkshelf::Dependency, Berkshelf::CachedCookbook>]
+    # @return [Hash<Dependency, CachedCookbook>]
     #   the list of dependencies as keys and the cached cookbook as the value
     def list
       validate_lockfile_present!
