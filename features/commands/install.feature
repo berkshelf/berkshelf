@@ -420,7 +420,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      No Berksfile or Berksfile.lock found at '
+      No Berksfile or Berksfile.lock found at `
       """
     And the exit status should be "BerksfileNotFound"
 

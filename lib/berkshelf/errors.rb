@@ -26,7 +26,7 @@ module Berkshelf
     end
 
     def to_s
-      "No Berksfile or Berksfile.lock found at '#{@filepath}'!"
+      "No Berksfile or Berksfile.lock found at `#{@filepath}'!"
     end
   end
 
@@ -246,17 +246,18 @@ module Berkshelf
     end
 
     def to_s
-      [
-        "In your Berksfile, you have:",
-        "",
-        "  cookbook '#{@dependency.name}'",
-        "",
-        "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'",
-        "",
-        "This can cause potentially unwanted side-effects in the future",
-        "",
-        "NOTE: If you don't explicitly set the `name` attribute in the metadata, the name of the directory will be used!",
-      ].join("\n")
+      out =  "In your Berksfile, you have:\n"
+      out << "\n"
+      out << "  cookbook '#{@dependency.name}'\n"
+      out << "\n"
+      out << "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'\n"
+      out << "\n"
+      out << "This can cause potentially unwanted side-effects in the future.\n"
+      out << "\n"
+      out << "NOTE: If you do not explicitly set the `name' attribute in the "
+      out << "metadata, the name of the directory will be used instead. This "
+      out << "is often a cause of confusion for dependency solving."
+      out
     end
   end
 
@@ -268,10 +269,14 @@ module Berkshelf
     end
 
     def to_s
-      [
-        'Invalid configuration:',
-        @errors.map { |key, errors| errors.map { |error| "  #{key} #{error}" } },
-      ].join("\n")
+      out = "Invalid configuration:\n"
+      @errors.each do |key, errors|
+        errors.each do |error|
+          out << "  #{key} #{error}\n"
+        end
+      end
+
+      out.strip
     end
   end
 
@@ -358,9 +363,9 @@ module Berkshelf
     end
 
     def to_s
-      "The cookbook #{@cookbook.cookbook_name} (#{@cookbook.version})" <<
-        " already exists and is frozen on the Chef Server. Use the --force" <<
-        " option to override."
+      "The cookbook #{@cookbook.cookbook_name} (#{@cookbook.version}) " \
+      "already exists and is frozen on the Chef Server. Use the --force " \
+      "option to override."
     end
   end
 
@@ -395,7 +400,7 @@ module Berkshelf
     end
 
     def to_s
-      "The environment '#{@environment_name}' does not exist"
+      "The environment `#{@environment_name}' does not exist"
     end
   end
 
@@ -415,7 +420,7 @@ module Berkshelf
     end
 
     def to_s
-      "The file at '#{@destination}' is not a known compression type"
+      "The file at `#{@destination}' is not a known compression type"
     end
   end
 
@@ -499,16 +504,15 @@ module Berkshelf
   class InvalidSourceURI < BerkshelfError
     status_code(137)
 
-    attr_reader :reason
-
     def initialize(url, reason = nil)
       @url    = url
       @reason = reason
     end
 
     def to_s
-      msg = "'#{@url}' is not a valid Berkshelf source URI."
-      msg + " #{reason}." unless reason.nil?
+      msg =  "'#{@url}' is not a valid Berkshelf source URI."
+      msg << " #{@reason}." unless @reason.nil?
+      msg
     end
   end
 
@@ -532,7 +536,8 @@ module Berkshelf
     end
 
     def to_s
-      "#{@path} does not appear to be a valid cookbook. Does it have a `metadata.rb`?"
+      "The resource at `#{@path}' does not appear to be a valid cookbook. " \
+      "Does it have a metadata.rb?"
     end
   end
 
@@ -550,25 +555,26 @@ module Berkshelf
     status_code(145)
 
     def initialize(dependency)
-      name    = dependency.name
-      version = dependency.locked_version
+      @name    = dependency.name
+      @version = dependency.locked_version
+    end
 
-      super "The cookbook '#{name} (#{version})' is not installed. Please " \
-            "run `berks install` to download and install the missing " \
-            "dependency."
+    def to_s
+      "The cookbook '#{@name} (#{@version})' is not installed. Please run " \
+      "`berks install` to download and install the missing dependency."
     end
   end
 
   class NoAPISourcesDefined < BerkshelfError
     status_code(146)
 
-    def initialize
-      super "Your Berksfile does not define any API sources! You must define " \
-        "at least one source in order to download cookbooks. To add the " \
-        "default Berkshelf API server, add the following code to the top of " \
-        "your Berksfile:" \
-        "\n\n" \
-        "    source 'https://api.berkshelf.com'"
+    def to_s
+      "Your Berksfile does not define any API sources! You must define " \
+      "at least one source in order to download cookbooks. To add the " \
+      "default Berkshelf API server, add the following code to the top of " \
+      "your Berksfile:" \
+      "\n\n" \
+      "    source 'https://api.berkshelf.com'"
     end
   end
 end

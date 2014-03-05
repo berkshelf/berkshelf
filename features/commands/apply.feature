@@ -28,7 +28,7 @@ Feature: berks apply
     And I run `berks apply my_env`
     Then the output should contain:
       """
-      The environment 'my_env' does not exist
+      The environment `my_env' does not exist
       """
     And the exit status should be "EnvironmentNotFound"
 
