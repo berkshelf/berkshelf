@@ -307,7 +307,20 @@ module Berkshelf
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
-    desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
+    desc "info [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
+    def info(name)
+      berksfile = Berksfile.from_options(options)
+      cookbook  = berksfile.retrieve_locked(name)
+      Berkshelf.formatter.info(cookbook)
+    end
+
+    method_option :berksfile,
+      type: :string,
+      default: nil,
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    desc "show [COOKBOOK]", "Display the path to a cookbook on disk"
     def show(name)
       berksfile = Berksfile.from_options(options)
       cookbook  = berksfile.retrieve_locked(name)

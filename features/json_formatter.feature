@@ -81,11 +81,7 @@ Feature: --format json
         "cookbooks": [
           {
             "name": "fake",
-            "version": "1.0.0",
-            "description": "A fabulous new cookbook",
-            "author": "YOUR_COMPANY_NAME",
-            "email": "YOUR_EMAIL",
-            "license": "none"
+            "path": "<%= Berkshelf.cookbook_store.storage_path.join('fake-1.0.0') %>"
           }
         ],
         "errors": [],

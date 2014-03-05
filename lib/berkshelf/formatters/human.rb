@@ -77,6 +77,13 @@ module Berkshelf
       Berkshelf.ui.info "Cookbook(s) packaged to #{destination}"
     end
 
+    # Output the important information about a cookbook using {Berkshelf.ui}.
+    #
+    # @param [CachedCookbook] cookbook
+    def info(cookbook)
+      Berkshelf.ui.info(cookbook.pretty_print)
+    end
+
     # Output a list of cookbooks using {Berkshelf.ui}
     #
     # @param [Array<Dependency>] list
@@ -98,11 +105,12 @@ module Berkshelf
       end
     end
 
-    # Output Cookbook info message using {Berkshelf.ui}
+    # Output Cookbook path using {Berkshelf.ui}
     #
     # @param [CachedCookbook] cookbook
     def show(cookbook)
-      Berkshelf.ui.info(cookbook.pretty_print)
+      path = File.expand_path(cookbook.path)
+      Berkshelf.ui.info(path)
     end
 
     # Output Cookbook vendor info message using {Berkshelf.ui}

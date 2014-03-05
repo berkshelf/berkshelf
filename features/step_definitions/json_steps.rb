@@ -15,7 +15,8 @@ class Hash
 end
 
 Then /^the output should contain JSON:$/ do |data|
-  target = JSON.pretty_generate(JSON.parse(data).sort_by_key)
+  parsed = ERB.new(data).result
+  target = JSON.pretty_generate(JSON.parse(parsed).sort_by_key)
   actual = JSON.pretty_generate(JSON.parse(all_output).sort_by_key)
 
   expect(actual).to eq(target)

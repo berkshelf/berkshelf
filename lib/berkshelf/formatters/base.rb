@@ -24,6 +24,7 @@ module Berkshelf
 
     # Object methods
     formatter_method :fetch
+    formatter_method :info
     formatter_method :install
     formatter_method :list
     formatter_method :outdated
