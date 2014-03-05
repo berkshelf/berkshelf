@@ -73,6 +73,9 @@ module Berkshelf
       # FileUtils will copy into a subdirectory in the next step)
       FileUtils.rm_rf(install_path)
 
+      # Create the containing parent directory
+      FileUtils.mkdir_p(install_path.parent)
+
       # Copy whatever is in the current cache over to the store
       FileUtils.cp_r(copy_path, install_path)
 
