@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::MercurialLocation do
+describe Berkshelf::MercurialLocation, :hg do
   include Berkshelf::RSpec::Mercurial
 
   let(:cookbook_uri) { mercurial_origin_for('fake_cookbook', is_cookbook: true, tags: ["1.0.0"], branches: ["mybranch"]) }
