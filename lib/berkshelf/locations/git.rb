@@ -122,7 +122,7 @@ module Berkshelf
 
     private
 
-    # Perform a mercurial command.
+    # Perform a git command.
     #
     # @param [String] command
     #   the command to run
