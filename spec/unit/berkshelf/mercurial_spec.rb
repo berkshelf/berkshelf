@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Berkshelf::Mercurial do
+describe Berkshelf::Mercurial, :hg do
   include Berkshelf::RSpec::Mercurial
 
   let(:hg) { Berkshelf::Mercurial }
