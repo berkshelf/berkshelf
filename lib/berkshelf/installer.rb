@@ -153,11 +153,19 @@ module Berkshelf
     def reduce_lockfile!
       lockfile.dependencies.each do |dependency|
         if berksfile_dependencies.include?(dependency.name)
-          locked = lockfile.graph.find(dependency)
-          next if locked.nil?
+          graphed = lockfile.graph.find(dependency)
+          next if graphed.nil?
 
-          unless dependency.version_constraint.satisfies?(locked.version)
-            raise OutdatedDependency.new(locked, dependency)
+          unless dependency.version_constraint.satisfies?(graphed.version)
+            raise OutdatedDependency.new(graphed, dependency)
+          end
+
+          if dependency.cached_cookbook
+            graphed.dependencies.each do |name, constraint|
+              unless dependency.cached_cookbook.dependencies[name]
+                lockfile.graph.remove(name, ignore: dependency.name)
+              end
+            end
           end
         else
           lockfile.unlock(dependency)
