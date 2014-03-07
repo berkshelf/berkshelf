@@ -55,10 +55,14 @@ describe Berkshelf::Lockfile do
 
   describe '#trusted?' do
     it 'returns true when the lockfile is trusted' do
+      cookbook = double('apt-1.0.0', dependencies: {})
       apt = double('apt',
+        name: 'apt',
         version_constraint: Solve::Constraint.new('>= 0.0.0'),
         version: '1.0.0',
         location: 'api',
+        dependencies: {},
+        cached_cookbook: cookbook,
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
@@ -68,8 +72,46 @@ describe Berkshelf::Lockfile do
       expect(subject.trusted?).to be_true
     end
 
+    it 'returns true when the lockfile is trusted with transitive dependencies' do
+      cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0' })
+      apt = double('apt',
+        name: 'apt',
+        version_constraint: Solve::Constraint.new('>= 0.0.0'),
+        version: '1.0.0',
+        location: 'api',
+        dependencies: { 'bacon' => '1.0.0' },
+        cached_cookbook: cookbook,
+      )
+      bacon = double(name: 'bacon', version: '1.0.0', dependencies: {})
+      berksfile = double('berksfile', dependencies: [apt])
+      subject.instance_variable_set(:@berksfile, berksfile)
+      subject.stub(:find).with(apt).and_return(apt)
+      subject.graph.stub(:find).with('bacon').and_return(bacon)
+      subject.graph.stub(:find).with(apt).and_return(apt)
+
+      expect(subject.trusted?).to be_true
+    end
+
+    it 'returns false when the lockfile is not trusted because of transitive dependencies' do
+      cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0', 'flip' => '2.0.0' })
+      apt = double('apt',
+        name: 'apt',
+        version_constraint: Solve::Constraint.new('>= 0.0.0'),
+        version: '1.0.0',
+        location: 'api',
+        dependencies: { 'bacon' => '1.0.0' },
+        cached_cookbook: cookbook,
+      )
+      berksfile = double('berksfile', dependencies: [apt])
+      subject.instance_variable_set(:@berksfile, berksfile)
+      subject.stub(:find).with(apt).and_return(apt)
+      subject.graph.stub(:find).with(apt).and_return(apt)
+
+      expect(subject.trusted?).to be_false
+    end
+
     it 'returns false if the dependency is not in the lockfile' do
-      apt = double('apt', version_constraint: nil)
+      apt = double('apt', name: 'apt', version_constraint: nil)
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
 
@@ -77,20 +119,24 @@ describe Berkshelf::Lockfile do
     end
 
     it 'returns false if the dependency is not in the graph' do
-      apt = double('apt', version_constraint: nil)
+      apt = double('apt', name: 'apt', version_constraint: nil)
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       subject.stub(:find).with(apt).and_return(true)
-      subject.graph.stub(:find).with(apt).and_return(false)
+      subject.graph.stub(:find).with(apt).and_return(nil)
 
       expect(subject.trusted?).to be_false
     end
 
     it 'returns false if the constraint is not satisfied' do
+      cookbook = double('apt-1.0.0', dependencies: {})
       apt = double('apt',
+        name: 'apt',
         version_constraint: Solve::Constraint.new('< 1.0.0'),
         version: '1.0.0',
-        location: 'api'
+        location: 'api',
+        dependencies: {},
+        cached_cookbook: cookbook,
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
@@ -101,10 +147,14 @@ describe Berkshelf::Lockfile do
     end
 
     it 'returns false if the locations are different' do
+      cookbook = double('apt-1.0.0', dependencies: {})
       apt = double('apt',
+        name: 'apt',
         version_constraint: Solve::Constraint.new('< 1.0.0'),
         version: '1.0.0',
-        location: 'api'
+        location: 'api',
+        dependencies: {},
+        cached_cookbook: cookbook,
       )
       apt_master = apt.dup
       apt_master.stub(location: 'github')
