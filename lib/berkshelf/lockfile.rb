@@ -498,9 +498,16 @@ module Berkshelf
       #
       # @param [Dependency, String] dependency
       #   the name/dependency to find
-      def dependency?(dependency)
+      #
+      # @option options [String, Array<String>] :ignore
+      #   the list of dependencies to ignore
+      def dependency?(dependency, options = {})
+        name   = Dependency.name(dependency)
+        ignore = Array(options[:ignore])
+
         @graph.values.any? do |item|
-          item.dependencies.key?(Dependency.name(dependency))
+          next if ignore.include?(item.name)
+          item.dependencies.key?(name)
         end
       end
       alias_method :has_dependency?, :dependency?
@@ -522,10 +529,13 @@ module Berkshelf
       #
       # @param [Dependency, String] dependency
       #   the name/dependency to remove
-      def remove(dependency)
+      #
+      # @option options [String, Array<String>] :ignore
+      #   the list of dependencies to ignore
+      def remove(dependency, options = {})
         name = Dependency.name(dependency)
 
-        return if @lockfile.dependency?(name) || dependency?(name)
+        return if @lockfile.dependency?(name) || dependency?(name, options)
 
         # Grab the nested dependencies for this particular entry so we can
         # recurse and try to remove them from the graph.
