@@ -516,6 +516,9 @@ module Berkshelf
     #   if the cookbook being uploaded is a {metadata} cookbook and is already
     #   frozen on the remote Chef Server; indirect dependencies or non-metadata
     #   dependencies are just skipped
+    #
+    # @return [Array<CachedCookbook>]
+    #   the list of cookbooks that were uploaded to the Chef Server
     def upload(*args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       names   = args.flatten
@@ -555,6 +558,8 @@ module Berkshelf
       end.values
 
       ridley_upload(cookbooks, options)
+
+      cookbooks
     end
 
     # Package the given cookbook for distribution outside of berkshelf. If the
