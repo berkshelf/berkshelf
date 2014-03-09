@@ -535,22 +535,8 @@ module Berkshelf
         list = dependencies.select { |dependency| names.include?(dependency.name) }
       end
 
-      cookbooks = list.reduce({}) do |hash, dependency|
-        if hash[dependency.name].nil?
-          # TODO: make this a configurable option for advanced users to save
-          # time.
-          lockfile.graph.find(dependency).dependencies.each do |direct, _|
-            hash[direct] ||= lockfile.retrieve(direct)
-          end
-
-          hash[dependency.name] = lockfile.retrieve(dependency)
-        end
-
-        hash
-      end.values
-
+      cookbooks = cookbooks_for_upload(list)
       ridley_upload(cookbooks, options)
-
       cookbooks
     end
 
@@ -696,6 +682,31 @@ module Berkshelf
             "\n\n" <<
             "  * " << skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
         end
+      end
+
+      # Filter the given dependencies for upload. The dependencies of a cookbook
+      # will always be included in the filtered results, even if that
+      # dependency's name is not explicitly provided.
+      #
+      # @param [Array<Dependency>] dependencies
+      #   the list of dependencies to filter for upload
+      #
+      # @return [Array<CachedCookbook>]
+      #   the cookbook objects for uploading
+      def cookbooks_for_upload(dependencies)
+        dependencies.reduce({}) do |hash, dependency|
+          if hash[dependency.name].nil?
+            # TODO: make this a configurable option for advanced users to save
+            # time.
+            lockfile.graph.find(dependency).dependencies.each do |direct, _|
+              hash[direct] ||= lockfile.retrieve(direct)
+            end
+
+            hash[dependency.name] = lockfile.retrieve(dependency)
+          end
+
+          hash
+        end.values
       end
 
       # Ensure the lockfile is present on disk.
