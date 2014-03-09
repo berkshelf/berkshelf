@@ -465,30 +465,54 @@ module Berkshelf
 
     # Upload the cookbooks installed by this Berksfile
     #
-    # @option options [Boolean] :force (false)
-    #   Upload the Cookbook even if the version already exists and is frozen on the
-    #   target Chef Server
-    # @option options [Boolean] :freeze (true)
-    #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be overwritten
-    # @option options [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve dependencies for
-    # @option options [Hash] :ssl_verify (true)
-    #   Disable/Enable SSL verification during uploads
-    # @option options [Boolean] :halt_on_frozen (false)
-    #   Raise a FrozenCookbook error if one of the cookbooks being uploaded is already located
-    #   on the remote Chef Server and frozen.
-    # @option options [String] :server_url
-    #   An overriding Chef Server to upload the cookbooks to
-    # @option options [String] :client_name
-    #   An overriding client name to use for connecting to the chef server
-    # @option options [String] :client_key
-    #   An overriding client key to use for connecting to the chef server
+    # @overload upload(names = [])
+    #   @param [Array<String>] names
+    #     the list of cookbooks (by name) to upload to the remote Chef Server
     #
-    # @raise [Berkshelf::UploadFailure]
+    #
+    # @overload upload(names = [], options = {})
+    #   @param [Array<String>] names
+    #     the list of cookbooks (by name) to upload to the remote Chef Server
+    #   @param [Hash<Symbol, Object>] options
+    #     the list of options to pass to the uploader
+    #
+    #   @option options [Boolean] :force (false)
+    #     upload the cookbooks even if the version already exists and is frozen
+    #     on the remote Chef Server
+    #   @option options [Boolean] :freeze (true)
+    #     freeze the uploaded cookbooks on the remote Chef Server so that it
+    #     cannot be overwritten on future uploads
+    #   @option options [Hash] :ssl_verify (true)
+    #     use SSL verification while connecting to the remote Chef Server
+    #   @option options [Boolean] :halt_on_frozen (false)
+    #     raise an exception ({FrozenCookbook}) if one of the cookbooks already
+    #     exists on the remote Chef Server and is frozen
+    #   @option options [String] :server_url
+    #     the URL (endpoint) to the remote Chef Server
+    #   @option options [String] :client_name
+    #     the client name for the remote Chef Server
+    #   @option options [String] :client_key
+    #     the client key (pem) for the remote Chef Server
+    #
+    #
+    # @example Upload all cookbooks
+    #   berksfile.upload
+    #
+    # @example Upload the 'apache2' and 'mysql' cookbooks
+    #   berksfile.upload('apache2', 'mysql')
+    #
+    # @example Upload and freeze all cookbooks
+    #   berksfile.upload(freeze: true)
+    #
+    # @example Upload and freeze the `chef-sugar` cookbook
+    #   berksfile.upload('chef-sugar', freeze: true)
+    #
+    #
+    # @raise [UploadFailure]
     #   if you are uploading cookbooks with an invalid or not-specified client key
-    # @raise [Berkshelf::DependencyNotFound]
+    # @raise [DependencyNotFound]
     #   if one of the given cookbooks is not a dependency defined in the Berksfile
-    # @raise [Berkshelf::FrozenCookbook]
+    # @raise [FrozenCookbook]
     #   if the cookbook being uploaded is a {metadata} cookbook and is already
     #   frozen on the remote Chef Server; indirect dependencies or non-metadata
     #   dependencies are just skipped
@@ -509,7 +533,7 @@ module Berkshelf
       validate_dependencies_installed!
       validate_cookbook_names!(names)
 
-      # Calculate the list of cookbooks from the options
+      # Calculate the list of cookbooks from the given arguments
       if names.empty?
         list = dependencies
       else
