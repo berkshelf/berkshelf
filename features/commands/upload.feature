@@ -1,6 +1,5 @@
 Feature: berks upload
   Background:
-    * the Berkshelf API server's cache is empty
     * the Chef Server is empty
     * the cookbook store has the cookbooks:
       | fake | 1.0.0 |
@@ -13,6 +12,16 @@ Feature: berks upload
       cookbook 'fake', '1.0.0'
       cookbook 'ekaf', '2.0.0'
       """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake (= 1.0.0)
+        ekaf (= 2.0.0)
+
+      GRAPH
+        fake (1.0.0)
+        ekaf (2.0.0)
+      """
     When I successfully run `berks upload`
     Then the Chef Server should have the cookbooks:
       | fake | 1.0.0 |
@@ -24,6 +33,15 @@ Feature: berks upload
       """
       cookbook 'fake', path: './fake'
       """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake
+          path: ./fake
+
+      GRAPH
+        fake (0.0.0)
+      """
     When I successfully run `berks upload`
     Then the Chef Server should have the cookbooks:
       | fake | 0.0.0 |
@@ -33,9 +51,22 @@ Feature: berks upload
       | fake | = 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'fake', '1.0.0'
-      cookbook 'ekaf', '2.0.0'
+      cookbook 'fake',  '1.0.0'
+      cookbook 'ekaf',  '2.0.0'
       cookbook 'reset', '3.4.5'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf (= 2.0.0)
+        fake (= 1.0.0)
+        reset (= 3.4.5)
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+        reset (3.4.5)
+          fake (= 1.0.0)
       """
     When I successfully run `berks upload reset`
     Then the Chef Server should have the cookbooks:
@@ -46,6 +77,14 @@ Feature: berks upload
 
   Scenario: specifying a dependency not defined in the Berksfile
     Given I have a Berksfile pointing at the local Berkshelf API
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake (= 1.0.0)
+
+      GRAPH
+        fake (1.0.0)
+      """
     When I run `berks upload reset`
     Then the output should contain:
       """
@@ -60,6 +99,18 @@ Feature: berks upload
       cookbook 'ekaf', '2.0.0'
       cookbook 'oops', '3.0.0'
       """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf (= 2.0.0)
+        fake (= 1.0.0)
+        oops (= 3.0.0)
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+        oops (3.0.0)
+      """
     When I successfully run `berks upload fake ekaf`
     Then the Chef Server should have the cookbooks:
       | fake |
@@ -67,11 +118,49 @@ Feature: berks upload
     And the Chef Server should not have the cookbooks:
       | oops |
 
+  Scenario: uploading a filter does not change the lockfile
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake', group: :take_me
+      cookbook 'ekaf', group: :not_me
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf
+        fake
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+      """
+    When I run `berks upload --only take_me`
+    Then the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        ekaf
+        fake
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+      """
+
   Scenario: uploading a single groups of demands with the --only flag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'fake', group: :take_me
       cookbook 'ekaf', group: :not_me
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf
+        fake
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
       """
     When I successfully run `berks upload --only take_me`
     Then the Chef Server should have the cookbooks:
@@ -85,6 +174,16 @@ Feature: berks upload
       cookbook 'fake', group: :take_me
       cookbook 'ekaf', group: :not_me
       """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf
+        fake
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+      """
     When I successfully run `berks upload --only take_me not_me`
     And the Chef Server should have the cookbooks:
       | fake | 1.0.0 |
@@ -95,6 +194,16 @@ Feature: berks upload
       """
       cookbook 'fake', group: :take_me
       cookbook 'ekaf', group: :not_me
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf
+        fake
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
       """
     When I successfully run `berks upload --except not_me`
     And the Chef Server should have the cookbooks:
@@ -108,6 +217,16 @@ Feature: berks upload
       cookbook 'fake', group: :take_me
       cookbook 'ekaf', group: :not_me
       """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        ekaf
+        fake
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+      """
     When I successfully run `berks upload --except take_me not_me`
     And the Chef Server should not have the cookbooks:
       | fake | 1.0.0 |
@@ -118,6 +237,15 @@ Feature: berks upload
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'cookbook with spaces', path: './cookbook with spaces'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        cookbook with spaces
+          path: ./cookbook with spaces
+
+      GRAPH
+        cookbook with spaces (0.0.0)
       """
     When I run `berks upload`
     Then the output should contain:
@@ -140,6 +268,16 @@ Feature: berks upload
       """
       metadata
       """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (0.0.0)
+      """
     When I successfully run `berks upload fake`
     Then the output should contain:
       """
@@ -152,6 +290,14 @@ Feature: berks upload
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'fake', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake (= 1.0.0)
+
+      GRAPH
+        fake (1.0.0)
       """
     When I successfully run `berks upload`
     Then the output should contain:
@@ -169,12 +315,21 @@ Feature: berks upload
     Given a cookbook named "fake"
     And the cookbook "fake" has the file "Berksfile" with:
       """
-      source 'https://api.berkshelf.com'
       metadata
       """
-    And the Chef Server has frozen cookbooks:
-      | fake  | 0.0.0 |
     And I cd to "fake"
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (0.0.0)
+      """
+    And the Chef Server has frozen cookbooks:
+      | fake | 0.0.0 |
     When I successfully run `berks upload`
     Then the output should contain:
       """
@@ -204,6 +359,16 @@ Feature: berks upload
       """
       source 'https://api.berkshelf.com'
       metadata
+      """
+    And the cookbook "fake" has the file "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (0.0.0)
       """
     And I cd to "fake"
     When I successfully run `berks upload --skip-syntax-check`

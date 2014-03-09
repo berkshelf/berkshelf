@@ -465,47 +465,79 @@ module Berkshelf
 
     # Upload the cookbooks installed by this Berksfile
     #
-    # @option options [Boolean] :force (false)
-    #   Upload the Cookbook even if the version already exists and is frozen on the
-    #   target Chef Server
-    # @option options [Boolean] :freeze (true)
-    #   Freeze the uploaded Cookbook on the Chef Server so that it cannot be overwritten
-    # @option options [String, Array] :cookbooks
-    #   Names of the cookbooks to retrieve dependencies for
-    # @option options [Hash] :ssl_verify (true)
-    #   Disable/Enable SSL verification during uploads
-    # @option options [Boolean] :halt_on_frozen (false)
-    #   Raise a FrozenCookbook error if one of the cookbooks being uploaded is already located
-    #   on the remote Chef Server and frozen.
-    # @option options [String] :server_url
-    #   An overriding Chef Server to upload the cookbooks to
-    # @option options [String] :client_name
-    #   An overriding client name to use for connecting to the chef server
-    # @option options [String] :client_key
-    #   An overriding client key to use for connecting to the chef server
+    # @overload upload(names = [])
+    #   @param [Array<String>] names
+    #     the list of cookbooks (by name) to upload to the remote Chef Server
     #
-    # @raise [Berkshelf::UploadFailure]
+    #
+    # @overload upload(names = [], options = {})
+    #   @param [Array<String>] names
+    #     the list of cookbooks (by name) to upload to the remote Chef Server
+    #   @param [Hash<Symbol, Object>] options
+    #     the list of options to pass to the uploader
+    #
+    #   @option options [Boolean] :force (false)
+    #     upload the cookbooks even if the version already exists and is frozen
+    #     on the remote Chef Server
+    #   @option options [Boolean] :freeze (true)
+    #     freeze the uploaded cookbooks on the remote Chef Server so that it
+    #     cannot be overwritten on future uploads
+    #   @option options [Hash] :ssl_verify (true)
+    #     use SSL verification while connecting to the remote Chef Server
+    #   @option options [Boolean] :halt_on_frozen (false)
+    #     raise an exception ({FrozenCookbook}) if one of the cookbooks already
+    #     exists on the remote Chef Server and is frozen
+    #   @option options [String] :server_url
+    #     the URL (endpoint) to the remote Chef Server
+    #   @option options [String] :client_name
+    #     the client name for the remote Chef Server
+    #   @option options [String] :client_key
+    #     the client key (pem) for the remote Chef Server
+    #
+    #
+    # @example Upload all cookbooks
+    #   berksfile.upload
+    #
+    # @example Upload the 'apache2' and 'mysql' cookbooks
+    #   berksfile.upload('apache2', 'mysql')
+    #
+    # @example Upload and freeze all cookbooks
+    #   berksfile.upload(freeze: true)
+    #
+    # @example Upload and freeze the `chef-sugar` cookbook
+    #   berksfile.upload('chef-sugar', freeze: true)
+    #
+    #
+    # @raise [UploadFailure]
     #   if you are uploading cookbooks with an invalid or not-specified client key
-    # @raise [Berkshelf::DependencyNotFound]
+    # @raise [DependencyNotFound]
     #   if one of the given cookbooks is not a dependency defined in the Berksfile
-    # @raise [Berkshelf::FrozenCookbook]
+    # @raise [FrozenCookbook]
     #   if the cookbook being uploaded is a {metadata} cookbook and is already
     #   frozen on the remote Chef Server; indirect dependencies or non-metadata
     #   dependencies are just skipped
-    def upload(options = {})
-      options = {
-        force: false,
-        freeze: true,
-        halt_on_frozen: false,
-        cookbooks: [],
-        validate: true
-      }.merge(options)
+    #
+    # @return [Array<CachedCookbook>]
+    #   the list of cookbooks that were uploaded to the Chef Server
+    def upload(*args)
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      names   = args.flatten
 
-      validate_cookbook_names!(options[:cookbooks])
+      validate_lockfile_present!
+      validate_lockfile_trusted!
+      validate_dependencies_installed!
+      validate_cookbook_names!(names)
 
-      cached_cookbooks = install
-      cached_cookbooks = filter_to_upload(cached_cookbooks, options[:cookbooks]) if options[:cookbooks]
-      do_upload(cached_cookbooks, options)
+      # Calculate the list of cookbooks from the given arguments
+      if names.empty?
+        list = dependencies
+      else
+        list = dependencies.select { |dependency| names.include?(dependency.name) }
+      end
+
+      cookbooks = cookbooks_for_upload(list)
+      ridley_upload(cookbooks, options)
+      cookbooks
     end
 
     # Package the given cookbook for distribution outside of berkshelf. If the
@@ -612,8 +644,15 @@ module Berkshelf
 
     private
 
-      def do_upload(cookbooks, options = {})
-        @skipped = []
+      def ridley_upload(cookbooks, options = {})
+        options = {
+          force:          false,
+          freeze:         true,
+          halt_on_frozen: false,
+          validate:       true,
+        }.merge(options)
+
+        skipped = []
 
         Berkshelf.ridley_connection(options) do |conn|
           cookbooks.each do |cookbook|
@@ -628,46 +667,46 @@ module Berkshelf
                 validate: options[:validate]
               })
             rescue Ridley::Errors::FrozenCookbook => ex
-              if options[:halt_on_frozen]
-                raise Berkshelf::FrozenCookbook.new(cookbook)
-              end
+              raise FrozenCookbook.new(cookbook) if options[:halt_on_frozen]
 
               Berkshelf.formatter.skip(cookbook, conn)
-              @skipped << cookbook
+              skipped << cookbook
             end
           end
         end
 
-        unless @skipped.empty?
+        unless skipped.empty?
           Berkshelf.formatter.msg "Skipped uploading some cookbooks because they" <<
             " already exist on the remote server and are frozen. Re-run with the `--force`" <<
             " flag to force overwrite these cookbooks:" <<
             "\n\n" <<
-            "  * " << @skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
+            "  * " << skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
         end
       end
 
-      # Filter the cookbooks to upload based on a set of given names. The dependencies of a cookbook
-      # will always be included in the filtered results even if the dependency's name is not
-      # explicitly provided.
+      # Filter the given dependencies for upload. The dependencies of a cookbook
+      # will always be included in the filtered results, even if that
+      # dependency's name is not explicitly provided.
       #
-      # @param [Array<Berkshelf::CachedCookbooks>] cookbooks
-      #   set of cookbooks to filter
-      # @param [Array<String>] names
-      #   names of cookbooks to include in the filtered results
+      # @param [Array<Dependency>] dependencies
+      #   the list of dependencies to filter for upload
       #
-      # @return [Array<Berkshelf::CachedCookbooks]
-      def filter_to_upload(cookbooks, names)
-        unless names.empty?
-          explicit = cookbooks.select { |cookbook| names.include?(cookbook.cookbook_name) }
-          explicit.each do |cookbook|
-            cookbook.dependencies.each do |name, version|
-              explicit += cookbooks.select { |cookbook| cookbook.cookbook_name == name }
+      # @return [Array<CachedCookbook>]
+      #   the cookbook objects for uploading
+      def cookbooks_for_upload(dependencies)
+        dependencies.reduce({}) do |hash, dependency|
+          if hash[dependency.name].nil?
+            # TODO: make this a configurable option for advanced users to save
+            # time.
+            lockfile.graph.find(dependency).dependencies.each do |direct, _|
+              hash[direct] ||= lockfile.retrieve(direct)
             end
+
+            hash[dependency.name] = lockfile.retrieve(dependency)
           end
-          cookbooks = explicit.uniq
-        end
-        cookbooks
+
+          hash
+        end.values
       end
 
       # Ensure the lockfile is present on disk.
