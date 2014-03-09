@@ -523,14 +523,6 @@ module Berkshelf
       options = args.last.is_a?(Hash) ? args.pop : {}
       names   = args.flatten
 
-      options = {
-        force:          false,
-        freeze:         true,
-        halt_on_frozen: false,
-        cookbooks:      [],
-        validate:       true,
-      }.merge(options)
-
       validate_lockfile_present!
       validate_lockfile_trusted!
       validate_dependencies_installed!
@@ -667,6 +659,13 @@ module Berkshelf
     private
 
       def ridley_upload(cookbooks, options = {})
+        options = {
+          force:          false,
+          freeze:         true,
+          halt_on_frozen: false,
+          validate:       true,
+        }.merge(options)
+
         skipped = []
 
         Berkshelf.ridley_connection(options) do |conn|
