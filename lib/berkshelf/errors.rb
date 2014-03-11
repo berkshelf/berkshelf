@@ -26,7 +26,7 @@ module Berkshelf
     end
 
     def to_s
-      "No Berksfile or Berksfile.lock found at `#{@filepath}'!"
+      "No Berksfile or Berksfile.lock found at '#{@filepath}'!"
     end
   end
 
@@ -254,7 +254,7 @@ module Berkshelf
       out << "\n"
       out << "This can cause potentially unwanted side-effects in the future.\n"
       out << "\n"
-      out << "NOTE: If you do not explicitly set the `name' attribute in the "
+      out << "NOTE: If you do not explicitly set the 'name' attribute in the "
       out << "metadata, the name of the directory will be used instead. This "
       out << "is often a cause of confusion for dependency solving."
       out
@@ -288,7 +288,7 @@ module Berkshelf
     end
 
     def to_s
-      "You do not have permission to write to `#{@path}'! Please chown the " \
+      "You do not have permission to write to '#{@path}'! Please chown the " \
       "path to the current user, chmod the permissions to include the " \
       "user, or choose a different path."
     end
@@ -306,7 +306,7 @@ module Berkshelf
     def to_s
       if @names.size == 1
         "Dependency '#{@names.first}' was not found. Please make sure it is " \
-        "in your Berksfile, and then run `berks install' to download and " \
+        "in your Berksfile, and then run `berks install` to download and " \
         "install the missing dependencies."
       else
         out = "The following dependencies were not found:\n"
@@ -315,7 +315,7 @@ module Berkshelf
         end
         out << "\n"
         out << "Please make sure they are in your Berksfile, and then run "
-        out << "`berks install' to download and install the missing "
+        out << "`berks install` to download and install the missing "
         out << "dependencies."
         out
       end
@@ -332,7 +332,7 @@ module Berkshelf
 
     def to_s
       "An unexpected error occurred retrieving #{@message} from the cookbook " \
-      "site at `#{@api_uri}'."
+      "site at '#{@api_uri}'."
     end
   end
 
@@ -400,7 +400,7 @@ module Berkshelf
     end
 
     def to_s
-      "The environment `#{@environment_name}' does not exist"
+      "The environment '#{@environment_name}' does not exist"
     end
   end
 
@@ -420,7 +420,7 @@ module Berkshelf
     end
 
     def to_s
-      "The file at `#{@destination}' is not a known compression type"
+      "The file at '#{@destination}' is not a known compression type"
     end
   end
 
@@ -536,7 +536,7 @@ module Berkshelf
     end
 
     def to_s
-      "The resource at `#{@path}' does not appear to be a valid cookbook. " \
+      "The resource at '#{@path}' does not appear to be a valid cookbook. " \
       "Does it have a metadata.rb?"
     end
   end
