@@ -81,7 +81,7 @@ module Berkshelf
     end
 
     DEFAULT_CONSTRAINT = '>= 0.0.0'.freeze
-    SCM_LOCATIONS      = [ :git, :github ].freeze
+    SCM_LOCATIONS      = [ :git, :github, :svn ].freeze
 
     # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
@@ -295,6 +295,11 @@ module Berkshelf
           h[:git] = location.uri
           h[:ref] = location.ref
           h[:rel] = location.rel if location.rel
+        end
+
+        if location.kind_of?(SubversionLocation)
+          h[:svn] = location.uri
+          h[:rev] = location.rev if location.rev
         end
       end.reject { |k,v| v.blank? }
     end
