@@ -79,7 +79,9 @@ module Berkshelf
     #
     #   1. All dependencies defined in the Berksfile are present in this
     #      lockfile
-    #   2. Each dependency's constraint in the Berksfile is still satisifed by
+    #   2. Each dependency's transitive dependencies are contained and locked
+    #      in the lockfile
+    #   3. Each dependency's constraint in the Berksfile is still satisifed by
     #      the currently locked version
     #
     # This method does _not_ account for leaky dependencies (i.e. dependencies
@@ -89,14 +91,50 @@ module Berkshelf
     # @return [Boolean]
     #   true if this lockfile is trusted, false otherwise
     def trusted?
-      berksfile.dependencies.all? do |dependency|
-        locked     = find(dependency)
-        graphed    = graph.find(dependency)
-        constraint = dependency.version_constraint
+      checked = {}
 
-        locked && graphed &&
+      berksfile.dependencies.all? do |dependency|
+        checked[dependency.name] = true
+
+        locked = find(dependency)
+        return false if locked.nil?
+
+        graphed = graph.find(dependency)
+        return false if graphed.nil?
+
+        if cookbook = dependency.cached_cookbook
+          unless (cookbook.dependencies.keys - graphed.dependencies.keys).empty?
+            return false
+          end
+        end
+
         dependency.location == locked.location &&
-        constraint.satisfies?(graphed.version)
+        dependency.version_constraint.satisfies?(graphed.version) &&
+        satisfies_transitive?(graphed, checked)
+      end
+    end
+
+    # Recursive helper method for checking if transitive dependencies (i.e.
+    # those dependencies defined in the metadata) are satisfied. This method is
+    # used in calculating the trustworthiness of a lockfile.
+    #
+    # @param [GraphItem] graph_item
+    #   the graph item to check transitive dependencies for
+    # @param [Hash] checked
+    #   the list of already checked dependencies
+    #
+    # @return [Boolean]
+    def satisfies_transitive?(graph_item, checked)
+      graph_item.dependencies.all? do |name, constraint|
+        return true if checked[name]
+
+        checked[name] = true
+
+        graphed = graph.find(name)
+        return false if graphed.nil?
+
+        Solve::Constraint.new(constraint).satisfies?(graphed.version) &&
+        satisfies_transitive?(graphed, checked)
       end
     end
 
@@ -460,9 +498,16 @@ module Berkshelf
       #
       # @param [Dependency, String] dependency
       #   the name/dependency to find
-      def dependency?(dependency)
+      #
+      # @option options [String, Array<String>] :ignore
+      #   the list of dependencies to ignore
+      def dependency?(dependency, options = {})
+        name   = Dependency.name(dependency)
+        ignore = Array(options[:ignore])
+
         @graph.values.any? do |item|
-          item.dependencies.key?(Dependency.name(dependency))
+          next if ignore.include?(item.name)
+          item.dependencies.key?(name)
         end
       end
       alias_method :has_dependency?, :dependency?
@@ -484,10 +529,13 @@ module Berkshelf
       #
       # @param [Dependency, String] dependency
       #   the name/dependency to remove
-      def remove(dependency)
+      #
+      # @option options [String, Array<String>] :ignore
+      #   the list of dependencies to ignore
+      def remove(dependency, options = {})
         name = Dependency.name(dependency)
 
-        return if @lockfile.dependency?(name) || dependency?(name)
+        return if @lockfile.dependency?(name) || dependency?(name, options)
 
         # Grab the nested dependencies for this particular entry so we can
         # recurse and try to remove them from the graph.
