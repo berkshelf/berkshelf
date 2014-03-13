@@ -99,6 +99,30 @@ module Berkshelf
         end[0]
 
         File.join(unpack_dir, cookbook_directory)
+      when :uri
+        require 'open-uri' unless defined?(OpenURI)
+
+        tmp_dir      = Dir.mktmpdir
+        archive_path = Pathname.new(tmp_dir) + "#{name}-#{version}.tar.gz"
+        unpack_dir   = Pathname.new(tmp_dir) + "#{name}-#{version}"
+
+        url = remote_cookbook.location_path
+        open(url, 'rb') do |remote_file|
+          archive_path.open('wb') { |local_file| local_file.write remote_file.read }
+        end
+
+        archive_path.open('rb') do |file|
+          tgz = Zlib::GzipReader.new(file)
+          Archive::Tar::Minitar.unpack(tgz, unpack_dir.to_s)
+        end
+
+        # The top level directory is inconsistant. So we unpack it and
+        # use the only directory created in the unpack_dir.
+        cookbook_directory = unpack_dir.entries.select do |filename|
+          (! filename.to_s.start_with?('.')) && (unpack_dir + filename).cookbook?
+        end.first
+
+        (unpack_dir + cookbook_directory).to_s
       else
         raise RuntimeError, "unknown location type #{remote_cookbook.location_type}"
       end
