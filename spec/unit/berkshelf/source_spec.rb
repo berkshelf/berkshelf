@@ -28,6 +28,11 @@ module Berkshelf
         expect(instance).to be_default
       end
 
+      it 'returns true when the scheme is different' do
+        instance = described_class.new('http://api.berkshelf.com')
+        expect(instance).to be_default
+      end
+
       it 'returns false when the source is not the default' do
         instance = described_class.new('http://localhost:8080')
         expect(instance).to_not be_default
