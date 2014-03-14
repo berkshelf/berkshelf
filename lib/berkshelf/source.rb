@@ -50,7 +50,7 @@ module Berkshelf
     # @return [true, false]
     #   true if this a default source, false otherwise
     def default?
-      uri.to_s == Berksfile::DEFAULT_API_URL
+      @default_ ||= @uri.host == URI.parse(Berksfile::DEFAULT_API_URL).host
     end
 
     # @param [String] name
