@@ -208,3 +208,42 @@ Feature: Lifecycle commands
       """
     * the output should not contain "Using ekaf (1.0.0)"
     * the output should contain "Using fake (1.0.0)"
+
+  Scenario: Bumping the version of a local cookbook
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      """
+    * I write to "metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.0'
+      """
+    * I successfully run `berks install`
+    * the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        fake
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (1.0.0)
+      """
+    * I write to "metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.1'
+      """
+    * I successfully run `berks install`
+    * the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        fake
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (1.0.1)
+      """
+    * the output should contain "Using fake (1.0.1)"
