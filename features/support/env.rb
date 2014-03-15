@@ -15,7 +15,6 @@ Spork.prefork do
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
 
   World(Berkshelf::RSpec::PathHelpers)
-  World(Berkshelf::RSpec::Kitchen)
 
   CHEF_SERVER_PORT = 26310
   BERKS_API_PORT   = 26210
@@ -35,7 +34,6 @@ Spork.prefork do
     Aruba.process               = Aruba::InProcess
     @dirs                       = ["spec/tmp/aruba"] # set aruba's temporary directory
 
-    stub_kitchen!
     clean_tmp_path
     Berkshelf.initialize_filesystem
     Berkshelf::CookbookStore.instance.initialize_filesystem

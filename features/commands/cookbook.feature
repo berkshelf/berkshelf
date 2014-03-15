@@ -12,11 +12,8 @@ Feature: berks cookbook
     | chef-minitest     | Chef-Minitest   |
     | scmversion        | SCMVersion      |
     | no-bundler        | no Bundler      |
-    # Disable testing of skip git until Test Kitchen supports the skip_git flag in its generator
-    # https://github.com/opscode/test-kitchen/issues/141
-    # | skip-git          | no Git          |
+    | skip-git          | no Git          |
     | skip-vagrant      | no Vagrant      |
-    | skip-test-kitchen | no Test Kitchen |
 
   Scenario Outline: When a required supporting gem is not installed
     Given the gem "<gem>" is not installed

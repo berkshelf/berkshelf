@@ -106,7 +106,6 @@ module Berkshelf
         def generate_git_cookbook(name, options = {})
           options = {
             skip_vagrant: true,
-            skip_test_kitchen: true,
             force: true,
           }.merge(options)
 

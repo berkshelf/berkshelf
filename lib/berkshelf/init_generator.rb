@@ -1,7 +1,3 @@
-begin
-  require 'kitchen/generator/init'
-rescue LoadError; end
-
 module Berkshelf
   class InitGenerator < BaseGenerator
     def initialize(*args)
@@ -51,13 +47,6 @@ module Berkshelf
     class_option :cookbook_name,
       type: :string
 
-    if defined?(Kitchen::Generator::Init)
-      class_option :skip_test_kitchen,
-        type: :boolean,
-        default: false,
-        desc: 'Skip adding a testing environment to your cookbook'
-    end
-
     def generate
       validate_cookbook
       validate_configuration
@@ -92,18 +81,6 @@ module Berkshelf
 
       unless options[:no_bundler]
         template 'Gemfile.erb', target.join('Gemfile')
-      end
-
-      if defined?(Kitchen::Generator::Init)
-        unless options[:skip_test_kitchen]
-          # Temporarily use Dir.chdir to ensure the destination_root of test kitchen's generator
-          # is where we expect until this bug can be addressed:
-          # https://github.com/opscode/test-kitchen/pull/140
-          Dir.chdir target do
-            # Kitchen::Generator::Init.new([], {}, destination_root: target).invoke_all
-            Kitchen::Generator::Init.new([], {}).invoke_all
-          end
-        end
       end
 
       unless options[:skip_vagrant]

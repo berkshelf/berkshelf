@@ -208,16 +208,6 @@ Then /^I should have a new cookbook skeleton "(.*?)" with no Vagrant support$/ d
   }
 end
 
-Then(/^I should have a new cookbook skeleton "(.*?)" with no Test Kitchen support$/) do |name|
-  expect(Pathname.new(current_dir).join(name)).to have_structure {
-    file "Gemfile" do
-      does_not_contain "gem 'test-kitchen'"
-    end
-    no_file ".kitchen.yml"
-    no_file ".kitchen.yml.local"
-  }
-end
-
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
   check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, true)
 end
