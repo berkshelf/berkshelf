@@ -28,6 +28,12 @@ module Berkshelf
   autoload :JsonFormatter,  'berkshelf/formatters/json'
   autoload :NullFormatter,  'berkshelf/formatters/null'
 
+  autoload :Location,       'berkshelf/location'
+  autoload :BaseLocation,   'berkshelf/locations/base'
+  autoload :GitLocation,    'berkshelf/locations/git'
+  autoload :GithubLocation, 'berkshelf/locations/github'
+  autoload :PathLocation,   'berkshelf/locations/path'
+
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
@@ -162,6 +168,21 @@ module Berkshelf
       @formatter = Berkshelf.const_get("#{id}Formatter").new
     end
 
+    # Location an executable in the current user's $PATH
+    #
+    # @return [String, nil]
+    #   the path to the executable, or +nil+ if not present
+    def which(executable)
+      if File.file?(executable) && File.executable?(executable)
+        executable
+      elsif ENV['PATH']
+        path = ENV['PATH'].split(File::PATH_SEPARATOR).find do |p|
+          File.executable?(File.join(p, executable))
+        end
+        path && File.expand_path(executable, path)
+      end
+    end
+
     private
 
       def null_stream
@@ -186,11 +207,8 @@ require_relative 'berkshelf/cookbook_store'
 require_relative 'berkshelf/config'
 require_relative 'berkshelf/dependency'
 require_relative 'berkshelf/downloader'
-require_relative 'berkshelf/git'
-require_relative 'berkshelf/mercurial'
 require_relative 'berkshelf/init_generator'
 require_relative 'berkshelf/installer'
-require_relative 'berkshelf/location'
 require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/source'

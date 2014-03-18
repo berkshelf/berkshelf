@@ -1,69 +1,6 @@
 module Berkshelf
   class Dependency
     class << self
-      @@valid_options = [:constraint, :locations, :group, :locked_version]
-      @@location_keys = Hash.new
-
-      # Returns an array of valid options to pass to the initializer
-      #
-      # @return [Array<Symbol>]
-      def valid_options
-        @@valid_options
-      end
-
-      # Returns an array of the registered source location keys. Every source
-      # location is identified by a key (symbol) to differentiate which class
-      # to instantiate for the location of a Dependency at initialization.
-      #
-      # @return [Array<Symbol>]
-      def location_keys
-        @@location_keys
-      end
-
-      # Add a option to the list of valid options
-      # @see #valid_options
-      #
-      # @param [Symbol] option
-      #
-      # @return [Array<Symbol>]
-      def add_valid_option(option)
-        @@valid_options.push(option) unless @@valid_options.include?(option)
-        @@valid_options
-      end
-
-      # Register a location key with the Dependency class
-      # @see #location_keys
-      #
-      # @param [Symbol] location
-      #
-      # @raise [ArgumentError] if the location key has already been defined
-      #
-      # @return [Array<Symbol>]
-      def add_location_key(location, klass)
-        unless @@location_keys.has_key?(location)
-          add_valid_option(location)
-          @@location_keys[location] = klass
-        end
-
-        @@location_keys
-      end
-
-      def validate_options(options)
-        invalid_options = (options.keys - valid_options)
-
-        unless invalid_options.empty?
-          invalid_options.collect! { |opt| "'#{opt}'" }
-          raise InternalError, "Invalid options for dependency: #{invalid_options.join(', ')}."
-        end
-
-        if (options.keys & location_keys.keys).size > 1
-          invalid = (options.keys & location_keys.keys).map { |opt| "'#{opt}'" }
-          raise InternalError, "Cannot specify #{invalid.join(' and ')} for a dependency!"
-        end
-
-        true
-      end
-
       # Returns the name of this cookbook (because it's the key in hash tables).
       #
       # @param [Dependency, #to_s] dependency
@@ -123,8 +60,6 @@ module Berkshelf
     #   same as tag
     # @option options [String] :locked_version
     def initialize(berksfile, name, options = {})
-      self.class.validate_options(options)
-
       @options            = options
       @berksfile          = berksfile
       @name               = name
@@ -242,11 +177,7 @@ module Berkshelf
     #
     # @return [Boolean]
     def scm_location?
-      if location.nil?
-        return false
-      end
-
-      SCM_LOCATIONS.include?(location.class.location_key)
+      location && location.scm_location?
     end
 
     def <=>(other)
@@ -283,12 +214,6 @@ module Berkshelf
 
         if location.kind_of?(PathLocation)
           h[:path] = location.relative_path(berksfile.filepath)
-        end
-
-        if location.kind_of?(MercurialLocation)
-          h[:hg] = location.uri
-          h[:rev] = location.rev
-          h[:rel] = location.rel if location.rel
         end
 
         if location.kind_of?(GitLocation)

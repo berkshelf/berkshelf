@@ -61,28 +61,6 @@ describe Berkshelf::Dependency do
           end
         end
 
-        context 'given an invalid option' do
-          it 'raises BerkshelfError with a friendly message' do
-            expect {
-              described_class.new(berksfile, cookbook_name, invalid_opt: 'thisisnotvalid')
-            }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for dependency: 'invalid_opt'.")
-          end
-
-          it 'raises BerkshelfError with a messaging containing all of the invalid options' do
-            expect {
-              described_class.new(berksfile, cookbook_name, invalid_one: 'one', invalid_two: 'two')
-            }.to raise_error(Berkshelf::BerkshelfError, "Invalid options for dependency: 'invalid_one', 'invalid_two'.")
-          end
-        end
-
-        context 'given multiple location options' do
-          it 'raises with an Berkshelf::BerkshelfError' do
-            expect {
-              described_class.new(berksfile, cookbook_name, path: '/something', git: 'something')
-            }.to raise_error(Berkshelf::BerkshelfError)
-          end
-        end
-
         context 'given a group option containing a single group' do
           let(:group) { :production }
           let(:source) { described_class.new(berksfile, cookbook_name, group: group) }
@@ -108,58 +86,6 @@ describe Berkshelf::Dependency do
             expect(source.groups).to include(:default)
           end
         end
-      end
-    end
-
-    describe "::add_valid_option" do
-      before do
-        @original = described_class.class_variable_get :@@valid_options
-        described_class.class_variable_set :@@valid_options, []
-      end
-
-      after do
-        described_class.class_variable_set :@@valid_options, @original
-      end
-
-      it 'adds an option to the list of valid options' do
-        described_class.add_valid_option(:one)
-
-        expect(described_class.valid_options).to have(1).item
-        expect(described_class.valid_options).to include(:one)
-      end
-
-      it 'does not add duplicate options to the list of valid options' do
-        described_class.add_valid_option(:one)
-        described_class.add_valid_option(:one)
-
-        expect(described_class.valid_options).to have(1).item
-      end
-    end
-
-    describe "::add_location_key" do
-      before do
-        @original = described_class.class_variable_get :@@location_keys
-        described_class.class_variable_set :@@location_keys, {}
-      end
-
-      after do
-        described_class.class_variable_set :@@location_keys, @original
-      end
-
-      it 'adds a location key and the associated class to the list of valid locations' do
-        described_class.add_location_key(:git, described_class)
-
-        expect(described_class.location_keys).to have(1).item
-        expect(described_class.location_keys).to include(:git)
-        expect(described_class.location_keys[:git]).to eq(described_class)
-      end
-
-      it 'does not add duplicate location keys to the list of location keys' do
-        described_class.add_location_key(:git, described_class)
-        described_class.add_location_key(:git, described_class)
-
-        expect(described_class.location_keys).to have(1).item
-        expect(described_class.location_keys).to include(:git)
       end
     end
   end
