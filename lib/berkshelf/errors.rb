@@ -30,9 +30,23 @@ module Berkshelf
     end
   end
 
-  class NoVersionForConstraints < BerkshelfError; status_code(101); end
-  class DuplicateLocationDefined < BerkshelfError; status_code(102); end
-  class CookbookNotFound < BerkshelfError; status_code(103); end
+  class CookbookNotFound < BerkshelfError
+    status_code(103)
+
+    def initialize(name, version, location)
+      @name     = name
+      @version  = version
+      @location = location
+    end
+
+    def to_s
+      if @version
+        "Cookbook '#{@name}' (#{@version}) not found #{@location}!"
+      else
+        "Cookbook '#{@name}' not found #{@location}!"
+      end
+    end
+  end
 
   class GitError < BerkshelfError
     status_code(104)
@@ -91,14 +105,25 @@ module Berkshelf
     end
   end
 
-  class DuplicateDependencyDefined < BerkshelfError; status_code(105); end
+  class DuplicateDependencyDefined < BerkshelfError
+    status_code(105)
+
+    def initialize(name)
+      @name = name
+    end
+
+    def to_s
+      "Your Berksfile contains multiple entries named '#{@name}'. Please " \
+      "remove duplicate dependencies, or put them in different groups."
+    end
+  end
 
   class NoSolutionError < BerkshelfError
     status_code(106)
 
     attr_reader :demands
 
-    # @param [Array<Berkshelf::Dependency>] demands
+    # @param [Array<Dependency>] demands
     def initialize(demands)
       @demands = demands
     end
@@ -107,8 +132,6 @@ module Berkshelf
       "Unable to find a solution for demands: #{demands.join(', ')}"
     end
   end
-
-  class CookbookSyntaxError < BerkshelfError; status_code(107); end
 
   class MercurialError < BerkshelfError
     status_code(108);
@@ -182,7 +205,6 @@ module Berkshelf
     end
   end
 
-  class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
   class BerksfileReadError < BerkshelfError
     status_code(113)
 
@@ -192,7 +214,6 @@ module Berkshelf
       @error_message   = original_error.to_s
       @error_backtrace = original_error.backtrace
     end
-
 
     def status_code
       @original_error.respond_to?(:status_code) ? @original_error.status_code : 113
@@ -215,9 +236,9 @@ module Berkshelf
   class MismatchedCookbookName < BerkshelfError
     status_code(114)
 
-    # @param [Berkshelf::Dependency] dependency
+    # @param [Dependency] dependency
     #   the dependency with the expected name
-    # @param [Berkshelf::CachedCookbook] cached_cookbook
+    # @param [CachedCookbook] cached_cookbook
     #   the cached_cookbook with the mismatched name
     def initialize(dependency, cached_cookbook)
       @dependency      = dependency
@@ -225,17 +246,18 @@ module Berkshelf
     end
 
     def to_s
-      [
-        "In your Berksfile, you have:",
-        "",
-        "  cookbook '#{@dependency.name}'",
-        "",
-        "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'",
-        "",
-        "This can cause potentially unwanted side-effects in the future",
-        "",
-        "NOTE: If you don't explicitly set the `name` attribute in the metadata, the name of the directory will be used!",
-      ].join("\n")
+      out =  "In your Berksfile, you have:\n"
+      out << "\n"
+      out << "  cookbook '#{@dependency.name}'\n"
+      out << "\n"
+      out << "But that cookbook is actually named '#{@cached_cookbook.cookbook_name}'\n"
+      out << "\n"
+      out << "This can cause potentially unwanted side-effects in the future.\n"
+      out << "\n"
+      out << "NOTE: If you do not explicitly set the 'name' attribute in the "
+      out << "metadata, the name of the directory will be used instead. This "
+      out << "is often a cause of confusion for dependency solving."
+      out
     end
   end
 
@@ -247,51 +269,79 @@ module Berkshelf
     end
 
     def to_s
-      [
-        'Invalid configuration:',
-        @errors.map { |key, errors| errors.map { |error| "  #{key} #{error}" } },
-      ].join("\n")
+      out = "Invalid configuration:\n"
+      @errors.each do |key, errors|
+        errors.each do |error|
+          out << "  #{key} #{error}\n"
+        end
+      end
+
+      out.strip
     end
   end
 
-  class ConfigExists < BerkshelfError; status_code(116); end
-  class ConfigurationError < BerkshelfError; status_code(117); end
-  class InsufficientPrivledges < BerkshelfError; status_code(119); end
+  class InsufficientPrivledges < BerkshelfError
+    status_code(119)
+
+    def initialize(path)
+      @path = path
+    end
+
+    def to_s
+      "You do not have permission to write to '#{@path}'! Please chown the " \
+      "path to the current user, chmod the permissions to include the " \
+      "user, or choose a different path."
+    end
+  end
 
   class DependencyNotFound < BerkshelfError
     status_code(120)
 
-    # @param [String, Array<String>] cookbooks
-    #   the list of cookbooks that were not defined
-    def initialize(cookbooks)
-      @cookbooks = Array(cookbooks)
+    # @param [String, Array<String>] names
+    #   the list of cookbook names that were not defined
+    def initialize(names)
+      @names = Array(names)
     end
 
     def to_s
-      list = @cookbooks.collect { |cookbook| "'#{cookbook}'" }.join(', ')
-
-      if @cookbooks.size == 1
-        "Could not find cookbook #{list}. Make sure it is in your " \
-        "Berksfile, then run `berks install` to download and install the " \
-        "missing dependencies."
+      if @names.size == 1
+        "Dependency '#{@names.first}' was not found. Please make sure it is " \
+        "in your Berksfile, and then run `berks install` to download and " \
+        "install the missing dependencies."
       else
-        "Could not find cookbooks #{list}. Make sure they are in your " \
-        "Berksfile, then run `berks install` to download and install the " \
-        "missing dependencies."
+        out = "The following dependencies were not found:\n"
+        @names.each do |name|
+          out << "  * #{name}\n"
+        end
+        out << "\n"
+        out << "Please make sure they are in your Berksfile, and then run "
+        out << "`berks install` to download and install the missing "
+        out << "dependencies."
+        out
       end
     end
   end
 
-  class ValidationFailed < BerkshelfError; status_code(121); end
-  class InvalidVersionConstraint < BerkshelfError; status_code(122); end
-  class CommunitySiteError < BerkshelfError; status_code(123); end
+  class CommunitySiteError < BerkshelfError
+    status_code(123)
+
+    def initialize(uri, message)
+      @uri     = uri
+      @message = message
+    end
+
+    def to_s
+      "An unexpected error occurred retrieving #{@message} from the cookbook " \
+      "site at '#{@api_uri}'."
+    end
+  end
 
   class CookbookValidationFailure < BerkshelfError
     status_code(124)
 
-    # @param [Berkshelf::Location] location
+    # @param [Location] location
     #   the location (or any subclass) raising this validation error
-    # @param [Berkshelf::CachedCookbook] cached_cookbook
+    # @param [CachedCookbook] cached_cookbook
     #   the cached_cookbook that does not satisfy the constraint
     def initialize(dependency, cached_cookbook)
       @dependency      = dependency
@@ -303,10 +353,7 @@ module Berkshelf
     end
   end
 
-  class ClientKeyFileNotFound < BerkshelfError; status_code(125); end
-
   class UploadFailure < BerkshelfError; end
-
   class FrozenCookbook < UploadFailure
     status_code(126)
 
@@ -316,18 +363,18 @@ module Berkshelf
     end
 
     def to_s
-      "The cookbook #{@cookbook.cookbook_name} (#{@cookbook.version})" <<
-        " already exists and is frozen on the Chef Server. Use the --force" <<
-        " option to override."
+      "The cookbook #{@cookbook.cookbook_name} (#{@cookbook.version}) " \
+      "already exists and is frozen on the Chef Server. Use the --force " \
+      "option to override."
     end
   end
 
   class OutdatedDependency < BerkshelfError
     status_code(128)
 
-    # @param [Berkshelf::Dependency] locked_dependency
+    # @param [Dependency] locked_dependency
     #   the locked dependency
-    # @param [Berkshelf::Dependency] dependency
+    # @param [Dependency] dependency
     #   the dependency that is outdated
     def initialize(locked, dependency)
       @locked     = locked
@@ -380,7 +427,7 @@ module Berkshelf
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   #
-  # @param [Berkshelf::CachedCookbook] cookbook
+  # @param [CachedCookbook] cookbook
   #   the cookbook that failed validation
   # @param [Array<#to_s>] files
   #   the list of files that were not valid
@@ -403,25 +450,6 @@ module Berkshelf
     end
   end
 
-  # Raised when a CachedCookbook has a license file that isn't allowed
-  # by the Berksfile.
-  #
-  # @param [Berkshelf::CachedCookbook] cookbook
-  #   the cookbook that failed license validation
-  class LicenseNotAllowed < BerkshelfError
-    status_code(133)
-
-    def initialize(cookbook)
-      @cookbook = cookbook
-    end
-
-    def to_s
-      msg =  "'#{@cookbook.cookbook_name}' has a license of '#{@cookbook.metadata.license}', but"
-      msg << " '#{@cookbook.metadata.license}' is not in your list of allowed licenses"
-      msg
-    end
-  end
-
   class LicenseNotFound < BerkshelfError
     status_code(134)
 
@@ -433,7 +461,7 @@ module Berkshelf
 
     def to_s
       "Unknown license: '#{license}'\n" +
-      "Available licenses: #{Berkshelf::CookbookGenerator::LICENSES.join(', ')}"
+      "Available licenses: #{CookbookGenerator::LICENSES.join(', ')}"
     end
   end
 
@@ -476,16 +504,15 @@ module Berkshelf
   class InvalidSourceURI < BerkshelfError
     status_code(137)
 
-    attr_reader :reason
-
     def initialize(url, reason = nil)
       @url    = url
       @reason = reason
     end
 
     def to_s
-      msg = "'#{@url}' is not a valid Berkshelf source URI."
-      msg + " #{reason}." unless reason.nil?
+      msg =  "'#{@url}' is not a valid Berkshelf source URI."
+      msg << " #{@reason}." unless @reason.nil?
+      msg
     end
   end
 
@@ -509,11 +536,11 @@ module Berkshelf
     end
 
     def to_s
-      "#{@path} does not appear to be a valid cookbook. Does it have a `metadata.rb`?"
+      "The resource at '#{@path}' does not appear to be a valid cookbook. " \
+      "Does it have a metadata.rb?"
     end
   end
 
-  class InvalidLockFile < BerkshelfError; status_code(142); end
   class PackageError < BerkshelfError; status_code(143); end
 
   class LockfileOutOfSync < BerkshelfError
@@ -528,25 +555,26 @@ module Berkshelf
     status_code(145)
 
     def initialize(dependency)
-      name    = dependency.name
-      version = dependency.locked_version
+      @name    = dependency.name
+      @version = dependency.locked_version
+    end
 
-      super "The cookbook '#{name} (#{version})' is not installed. Please " \
-            "run `berks install` to download and install the missing " \
-            "dependency."
+    def to_s
+      "The cookbook '#{@name} (#{@version})' is not installed. Please run " \
+      "`berks install` to download and install the missing dependency."
     end
   end
 
   class NoAPISourcesDefined < BerkshelfError
     status_code(146)
 
-    def initialize
-      super "Your Berksfile does not define any API sources! You must define " \
-        "at least one source in order to download cookbooks. To add the " \
-        "default Berkshelf API server, add the following code to the top of " \
-        "your Berksfile:" \
-        "\n\n" \
-        "    source 'https://api.berkshelf.com'"
+    def to_s
+      "Your Berksfile does not define any API sources! You must define " \
+      "at least one source in order to download cookbooks. To add the " \
+      "default Berkshelf API server, add the following code to the top of " \
+      "your Berksfile:" \
+      "\n\n" \
+      "    source 'https://api.berkshelf.com'"
     end
   end
 end

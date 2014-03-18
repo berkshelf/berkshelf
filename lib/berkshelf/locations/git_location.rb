@@ -41,9 +41,9 @@ module Berkshelf
 
       tmp_path = rel ? File.join(repo_path, rel) : repo_path
       unless File.chef_cookbook?(tmp_path)
-        msg = "Cookbook '#{dependency.name}' not found at #{to_s}"
-        msg << " at path '#{rel}'" if rel
-        raise CookbookNotFound, msg
+        name    = dependency.name
+        version = dependency.locked_version || dependency.version_constraint
+        raise CookbookNotFound.new(name, version, "at #{to_s}")
       end
 
       cb_path = revision_path(destination)

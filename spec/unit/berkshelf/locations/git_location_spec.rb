@@ -2,7 +2,13 @@ require 'spec_helper'
 
 describe Berkshelf::GitLocation do
   let(:constraint) { double('comp-vconstraint', satisfies?: true) }
-  let(:dependency) { double('dep', name: "berkshelf-cookbook-fixture", version_constraint: constraint) }
+  let(:dependency) do
+    double('dep',
+      name: "berkshelf-cookbook-fixture",
+      version_constraint: constraint,
+      locked_version: nil,
+    )
+  end
 
   describe "ClassMethods" do
     describe "::new" do
