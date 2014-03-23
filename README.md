@@ -55,6 +55,35 @@ $PWD/config.json
 
 You are encouraged to keep project-specific configuration in the `$PWD/.berkshelf` directory. A default configuration file is generated for you, but you can update the values to suit your needs.
 
+Github Cookbooks
+----------------
+With Berkshelf 3 you can query a Berkshelf-API server (a server which indexes cookbooks from various sources and
+hosts it over a REST API) in order to resolve the cookbook dependencies. When you choose to host your own Berkshelf-API
+server, you can configure it to also index cookbooks hosted in various Github and/or Github Enterprise organizations.
+
+When doing so you should also configure Berkshelf so it can download cookbooks from your indexed Github organizations:
+
+```
+{
+  "github":[
+    {
+      "access_token": ""
+    },
+    {
+      "access_token": "",
+      "api_endpoint": "https://github.enterprise.local/api/v3",
+      "web_endpoint": "https://github.enterprise.local",
+      "ssl_verify": true
+    }
+  ]
+}
+```
+
+The first subsection is used for any organization hosted on github.com. As this is the default, you do not have to set the
+endpoint info (these are known values for github.com). The second subsection is used when you also index cookbooks from
+organizations hosted on Github Enterprise. In this case you will need to specify the specific endpoint info so Berkshelf
+knows where to connect to. You can add as many subsections as you have endpoints.
+
 SSL Errors
 ----------
 
