@@ -225,7 +225,10 @@ Feature: berks install
   Scenario: installing a Berksfile that contains a Git location with a rel
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
+      cookbook 'berkshelf-cookbook-fixture',
+        github: 'RiotGames/berkshelf-cookbook-fixture',
+        branch: 'rel',
+        rel:    'cookbooks/berkshelf-cookbook-fixture'
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:

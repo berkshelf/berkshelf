@@ -48,7 +48,20 @@ module Berkshelf
     end
   end
 
-  class DuplicateDependencyDefined < BerkshelfError; status_code(105); end
+  class DuplicateDependencyDefined < BerkshelfError
+    status_code(105)
+
+    def initialize(name)
+      @name = name
+    end
+
+    def to_s
+      out  = "Your Berksfile contains multiple entries named "
+      out << "'#{@name}'. Please remove duplicate dependencies, or put them in "
+      out << "different groups."
+      out
+    end
+  end
 
   class NoSolutionError < BerkshelfError
     status_code(106)
