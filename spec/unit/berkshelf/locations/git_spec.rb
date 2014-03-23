@@ -206,8 +206,8 @@ module Berkshelf
       end
 
       it 'raises an error if the command fails' do
-        subject.stub(:`)
-        $?.stub(:success?).and_return(false)
+        shell_out = double('shell_out', success?: false)
+        Buff::ShellOut.stub(:shell_out).and_return(shell_out)
         expect { subject.git('foo') }.to raise_error(GitLocation::GitCommandError)
       end
     end
