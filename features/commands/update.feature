@@ -64,6 +64,34 @@ Feature: berks update
         fake (0.2.0)
       """
 
+  Scenario: With a git location
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        berkshelf-cookbook-fixture
+          git: git://github.com/RiotGames/berkshelf-cookbook-fixture
+          revision: 70a527e17d91f01f031204562460ad1c17f972ee
+
+      GRAPH
+        berkshelf-cookbook-fixture (0.2.0)
+      """
+    And I successfully run `berks install`
+    When I successfully run `berks update`
+    Then the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        berkshelf-cookbook-fixture
+          git: git://github.com/RiotGames/berkshelf-cookbook-fixture
+          revision: a97b9447cbd41a5fe58eee2026e48ccb503bd3bc
+
+      GRAPH
+        berkshelf-cookbook-fixture (1.0.0)
+      """
+
   Scenario: With a cookbook that does not exist
     Given I have a Berksfile pointing at the local Berkshelf API
     When I run `berks update not_real`
