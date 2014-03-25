@@ -68,6 +68,7 @@ module Berkshelf
     describe '#download' do
       before do
         CachedCookbook.stub(:from_store_path)
+        File.stub(:chmod)
         FileUtils.stub(:cp_r)
         subject.stub(:validate_cached!)
         subject.stub(:validate_cookbook!)
@@ -89,15 +90,22 @@ module Berkshelf
           Dir.stub(:chdir) { |args, &b| b.call } # Force eval the chdir block
 
           subject.stub(:cached?).and_return(true)
-          expect(subject).to receive(:git).with('fetch --all')
+          expect(subject).to receive(:git).with(
+            'fetch --force --tags https://repo.com "refs/heads/*:refs/heads/*"'
+          )
           subject.download
         end
       end
 
       context 'when the revision is not cached' do
         it 'clones the repository' do
+          Dir.stub(:chdir) { |args, &b| b.call } # Force eval the chdir block
+
+          cache_path = subject.send(:cache_path)
           subject.stub(:cached?).and_return(false)
-          expect(subject).to receive(:git).with('clone https://repo.com .')
+          expect(subject).to receive(:git).with(
+            %|clone https://repo.com "#{cache_path}" --bare --no-hardlinks|
+          )
           subject.download
         end
       end
@@ -206,7 +214,7 @@ module Berkshelf
       end
 
       it 'raises an error if the command fails' do
-        shell_out = double('shell_out', success?: false)
+        shell_out = double('shell_out', success?: false, stderr: nil)
         Buff::ShellOut.stub(:shell_out).and_return(shell_out)
         expect { subject.git('foo') }.to raise_error(GitLocation::GitCommandError)
       end

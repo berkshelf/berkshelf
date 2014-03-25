@@ -66,12 +66,14 @@ Feature: berks install
   Scenario: installing a demand that has already been installed
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'deps'
+      cookbook 'berkshelf-cookbook-fixture',
+        github: 'RiotGames/berkshelf-cookbook-fixture',
+        branch: 'deps'
       """
     And the cookbook store contains a cookbook "berkshelf" "1.0.0" with dependencies:
-      | hostsfile    | = 1.0.1 |
+      | hostsfile | = 1.0.1 |
     And the cookbook store has the cookbooks:
-      | hostsfile    | 1.0.1 |
+      | hostsfile | 1.0.1 |
     And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
@@ -437,8 +439,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'doesntexist' from git://github.com/asdjhfkljashflkjashfakljsf (at master)
-      Git error: command `git clone git://github.com/asdjhfkljashflkjashfakljsf .` failed.
+      Repository not found.
       """
       And the exit status should be "GitLocation::GitError"
 
