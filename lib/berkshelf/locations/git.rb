@@ -13,9 +13,16 @@ module Berkshelf
     end
 
     class GitCommandError < GitError
-      def initialize(command, path = nil)
-        super "Git error: command `git #{command}` failed. If this error " \
-          "persists, try removing the cache directory at `#{path}'."
+      def initialize(command, path, stderr = nil)
+        out =  "Git error: command `git #{command}` failed. If this error "
+        out << "persists, try removing the cache directory at '#{path}'."
+
+        if stderr
+          out << "Output from the command:\n\n"
+          out << stderr
+        end
+
+        super(out)
       end
     end
 
@@ -44,44 +51,30 @@ module Berkshelf
       end
 
       if cached?
-        # Update and checkout the correct ref
         Dir.chdir(cache_path) do
-          git %|fetch --all|
+          git %|fetch --force --tags #{uri} "refs/heads/*:refs/heads/*"|
         end
       else
-        # Ensure the cache directory is present before doing anything
-        FileUtils.mkdir_p(cache_path)
-
-        Dir.chdir(cache_path) do
-          git %|clone #{uri} .|
-        end
+        git %|clone #{uri} "#{cache_path}" --bare --no-hardlinks|
       end
 
       Dir.chdir(cache_path) do
-        git %|checkout #{revision || ref}|
-        @revision ||= git %|rev-parse HEAD|
+        @revision ||= git %|rev-parse #{ref}|
       end
 
-      # Gab the path where we should copy from (since it might be relative to
-      # the root).
-      copy_path = rel ? cache_path.join(rel) : cache_path
+      unless install_path.join('.git').exist?
+        FileUtils.rm_rf(install_path)
+        git %|clone --no-checkout "#{cache_path}" "#{install_path}"|
+        install_path.chmod(0777 & ~File.umask)
+      end
 
-      # Validate the thing we are copying is a Chef cookbook
-      validate_cookbook!(copy_path)
+      Dir.chdir(install_path) do
+        git %|fetch --force --tags "#{cache_path}"|
+        git %|reset --hard #{@revision}|
 
-      # Remove the current cookbook at this location (this is required or else
-      # FileUtils will copy into a subdirectory in the next step)
-      FileUtils.rm_rf(install_path)
-
-      # Create the containing parent directory
-      FileUtils.mkdir_p(install_path.parent)
-
-      # Copy whatever is in the current cache over to the store
-      FileUtils.cp_r(copy_path, install_path)
-
-      # Remove the .git directory to save storage space
-      if (git_path = install_path.join('.git')).exist?
-        FileUtils.rm_r(git_path)
+        if rel
+          git %|filter-branch --subdirectory-filter "#{rel}"|
+        end
       end
 
       cookbook = CachedCookbook.from_store_path(install_path)
@@ -139,7 +132,7 @@ module Berkshelf
       response = Buff::ShellOut.shell_out(%|git #{command}|)
 
       if error && !response.success?
-        raise GitCommandError.new(command, cache_path)
+        raise GitCommandError.new(command, cache_path, stderr = response.stderr)
       end
 
       response.stdout.strip
