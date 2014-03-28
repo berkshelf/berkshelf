@@ -1,17 +1,12 @@
 module Berkshelf
   module Mixin
     module Logging
-      def log
-        Berkshelf::Logger
-      end
+      attr_writer :logger
 
-      # Log an exception and its backtrace to FATAL
-      #
-      # @param [Exception] ex
-      def log_exception(ex)
-        log.fatal("#{ex.class}: #{ex}")
-        log.fatal(ex.backtrace.join("\n")) unless ex.backtrace.nil?
+      def logger
+        @logger ||= Berkshelf::Logger.new(STDOUT)
       end
+      alias_method :log, :logger
     end
   end
 end
