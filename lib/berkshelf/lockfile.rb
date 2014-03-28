@@ -579,11 +579,11 @@ module Berkshelf
           next if ignore[item.name]
 
           if item.dependencies.key?(name)
-            return false
+            return true
           end
         end
 
-        true
+        false
       end
       alias_method :has_dependency?, :dependency?
 
