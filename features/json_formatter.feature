@@ -26,6 +26,7 @@ Feature: --format json
         ],
         "errors": [],
         "messages": [
+          "Resolving cookbook dependencies...",
           "Fetching cookbook index from http://0.0.0.0:26210..."
         ],
         "warnings": []
@@ -51,6 +52,7 @@ Feature: --format json
         ],
         "errors": [],
         "messages": [
+          "Resolving cookbook dependencies...",
           "Fetching cookbook index from http://0.0.0.0:26210..."
         ],
         "warnings": []
