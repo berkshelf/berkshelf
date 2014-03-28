@@ -5,19 +5,15 @@ describe Berkshelf::Mixin::Logging do
     Class.new { include Berkshelf::Mixin::Logging }.new
   end
 
-  describe '#log' do
+  describe '#logger' do
     it 'returns the Berkshelf::Logger' do
-      expect(subject.log).to eq(Berkshelf::Logger)
+      expect(subject.logger).to be_a(Berkshelf::Logger)
     end
   end
 
-  describe '#log_exception' do
-    it 'logs the exception and backtrace as fatal' do
-      ex = Exception.new('msg')
-      ex.stub(:backtrace).and_return(['one', 'two'])
-      subject.log.should_receive(:fatal).exactly(2).times
-
-      subject.log_exception(ex)
+  describe '#log' do
+    it 'returns the Berkshelf::Logger' do
+      expect(subject.log).to be_a(Berkshelf::Logger)
     end
   end
 end

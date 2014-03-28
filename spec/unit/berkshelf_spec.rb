@@ -29,7 +29,7 @@ module Berkshelf
 
   describe '::log' do
     it 'returns Berkshelf::Logger' do
-      expect(Berkshelf.log).to eq(Berkshelf::Logger)
+      expect(Berkshelf.log).to be_a(Berkshelf::Logger)
     end
   end
 end

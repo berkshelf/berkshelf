@@ -37,11 +37,10 @@ module Berkshelf
   DEFAULT_FILENAME = 'Berksfile'.freeze
 
   class << self
-    include Berkshelf::Mixin::Logging
+    include Mixin::Logging
 
     attr_writer :berkshelf_path
     attr_accessor :ui
-    attr_accessor :logger
 
     # @return [Pathname]
     def root
@@ -151,7 +150,7 @@ module Berkshelf
       Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
       Ridley.open(ridley_options, &block)
     rescue Ridley::Errors::RidleyError => ex
-      log_exception(ex)
+      log.exception(ex)
       raise ChefConnectionError, ex # todo implement
     end
 
@@ -215,5 +214,5 @@ require_relative 'berkshelf/source'
 require_relative 'berkshelf/source_uri'
 require_relative 'berkshelf/ui'
 
-Ridley.logger = Berkshelf.logger = Logger.new(STDOUT)
+Ridley.logger = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
