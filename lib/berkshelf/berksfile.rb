@@ -248,7 +248,7 @@ module Berkshelf
     #
     # @return [Array<Dependency]
     def add_dependency(name, constraint = nil, options = {})
-      if has_dependency?(name)
+      if @dependencies[name]
         # Only raise an exception if the dependency is a true duplicate
         groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
         if !(@dependencies[name].groups & groups).empty?
@@ -265,22 +265,17 @@ module Berkshelf
       @dependencies[name] = Dependency.new(self, name, options)
     end
 
-    # @param [#to_s] dependency
-    #   the dependency to remove
+    # Check if the Berksfile has the given dependency, taking into account
+    # +group+ and --only/--except flags.
     #
-    # @return [Dependency]
-    def remove_dependency(dependency)
-      @dependencies.delete(dependency.to_s)
-    end
-
-    # @param [#to_s] dependency
-    #   the dependency to check presence of
+    # @param [String, Dependency] dependency
+    #   the dependency or name of dependency to check presence of
     #
     # @return [Boolean]
     def has_dependency?(dependency)
-      @dependencies.has_key?(dependency.to_s)
+      name = Dependency.name(dependency)
+      dependencies.map(&:name).include?(name)
     end
-
 
     # @return [Array<Dependency>]
     def dependencies
