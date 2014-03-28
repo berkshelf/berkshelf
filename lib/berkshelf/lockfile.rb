@@ -21,10 +21,10 @@ module Berkshelf
       end
     end
 
-    DEFAULT_FILENAME = 'Berksfile.lock'
+    DEFAULT_FILENAME = 'Berksfile.lock'.freeze
 
-    DEPENDENCIES = 'DEPENDENCIES'
-    GRAPH        = 'GRAPH'
+    DEPENDENCIES = 'DEPENDENCIES'.freeze
+    GRAPH        = 'GRAPH'.freeze
 
     include Berkshelf::Mixin::Logging
 
@@ -318,10 +318,10 @@ module Berkshelf
     # The class responsible for parsing the lockfile and turning it into a
     # useful data structure.
     class LockfileParser
-      NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'
-      DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/
-      DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/
-      OPTION_PATTERN       = /^ {4}(.+)\: (.+)/
+      NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'.freeze
+      DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/.freeze
+      DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/.freeze
+      OPTION_PATTERN       = /^ {4}(.+)\: (.+)/.freeze
 
       # Create a new lockfile parser.
       #
