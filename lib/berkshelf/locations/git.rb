@@ -107,6 +107,7 @@ module Berkshelf
     def to_lock
       out =  "    git: #{uri}\n"
       out << "    revision: #{revision}\n"
+      out << "    ref: #{ref}\n"       if ref
       out << "    branch: #{branch}\n" if branch
       out << "    tag: #{tag}\n"       if tag
       out << "    rel: #{rel}\n"       if rel
