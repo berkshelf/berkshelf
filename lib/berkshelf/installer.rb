@@ -31,6 +31,8 @@ module Berkshelf
     def run
       lockfile.reduce!
 
+      Berkshelf.formatter.msg('Resolving cookbook dependencies...')
+
       dependencies, cookbooks = if lockfile.trusted?
         install_from_lockfile
       else
