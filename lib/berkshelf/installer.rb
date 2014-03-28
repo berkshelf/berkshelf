@@ -50,6 +50,30 @@ module Berkshelf
       cookbooks
     end
 
+    private
+
+    # Install a specific dependency.
+    #
+    # @param [Dependency]
+    #   the dependency to install
+    # @return [CachedCookbook]
+    #   the installed cookbook
+    def install(dependency)
+      if dependency.downloaded?
+        Berkshelf.formatter.use(dependency)
+        dependency.cached_cookbook
+      else
+        name, version = dependency.name, dependency.locked_version.to_s
+        source   = berksfile.source_for(name, version)
+        cookbook = source.cookbook(name, version)
+
+        Berkshelf.formatter.install(source, cookbook)
+
+        stash = downloader.download(name, version)
+        CookbookStore.import(name, version, stash)
+      end
+    end
+
     # Install all the dependencies from the lockfile graph.
     #
     # @return [Array<CachedCookbook>]
@@ -109,29 +133,5 @@ module Berkshelf
 
       [dependencies, cookbooks]
     end
-
-    # Install a specific dependency.
-    #
-    # @param [Dependency]
-    #   the dependency to install
-    # @return [CachedCookbook]
-    #   the installed cookbook
-    def install(dependency)
-      if dependency.downloaded?
-        Berkshelf.formatter.use(dependency)
-        dependency.cached_cookbook
-      else
-        name, version = dependency.name, dependency.locked_version.to_s
-        source   = berksfile.source_for(name, version)
-        cookbook = source.cookbook(name, version)
-
-        Berkshelf.formatter.install(source, cookbook)
-
-        stash = downloader.download(name, version)
-        CookbookStore.import(name, version, stash)
-      end
-    end
-
-    private
   end
 end
