@@ -352,14 +352,7 @@ module Berkshelf
 
       tempfile = Tempfile.new(['Berksfile',  '.lock'])
 
-      tempfile.write(DEPENDENCIES)
-      tempfile.write("\n")
-      dependencies.sort.each do |dependency|
-        tempfile.write(dependency.to_lock)
-      end
-
-      tempfile.write("\n")
-      tempfile.write(graph.to_lock)
+      tempfile.write(to_lock)
 
       tempfile.rewind
       tempfile.close
@@ -370,6 +363,17 @@ module Berkshelf
       true
     ensure
       tempfile.unlink if tempfile
+    end
+
+    # @private
+    def to_lock
+      out = "#{DEPENDENCIES}\n"
+      dependencies.sort.each do |dependency|
+        out << dependency.to_lock
+      end
+      out << "\n"
+      out << graph.to_lock
+      out
     end
 
     # @private
