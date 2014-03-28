@@ -60,7 +60,7 @@ Feature: berks update
         fake (~> 0.1)
 
       GRAPH
-        ekaf (1.0.1)
+        ekaf (1.0.0)
         fake (0.2.0)
       """
 
