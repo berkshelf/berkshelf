@@ -39,9 +39,12 @@ module Berkshelf
       @uri      = options[:git]
       @branch   = options[:branch]
       @tag      = options[:tag]
-      @ref      = options[:ref] || options[:branch] || options[:tag] || 'master'
+      @ref      = options[:ref]
       @revision = options[:revision]
       @rel      = options[:rel]
+
+      # The revision to parse
+      @rev_parse = options[:ref] || options[:branch] || options[:tag] || 'master'
     end
 
     def download
@@ -59,7 +62,7 @@ module Berkshelf
       end
 
       Dir.chdir(cache_path) do
-        @revision ||= git %|rev-parse #{ref}|
+        @revision ||= git %|rev-parse #{@rev_parse}|
       end
 
       unless install_path.join('.git').exist?
@@ -90,12 +93,12 @@ module Berkshelf
       other.uri == uri &&
       other.branch == branch &&
       other.tag == tag &&
-      other.ref == ref &&
+      other.shortref == shortref &&
       other.rel == rel
     end
 
     def to_s
-      info = tag || branch || ref[0...7]
+      info = tag || branch || shortref || @rev_parse
 
       if rel
         "#{uri} (at #{info}/#{rel})"
@@ -107,10 +110,20 @@ module Berkshelf
     def to_lock
       out =  "    git: #{uri}\n"
       out << "    revision: #{revision}\n"
+      out << "    ref: #{shortref}\n"  if shortref
       out << "    branch: #{branch}\n" if branch
       out << "    tag: #{tag}\n"       if tag
       out << "    rel: #{rel}\n"       if rel
       out
+    end
+
+    protected
+
+    # The short ref (if one was given).
+    #
+    # @return [String, nil]
+    def shortref
+      ref && ref[0...7]
     end
 
     private
