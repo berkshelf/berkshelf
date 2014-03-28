@@ -298,7 +298,12 @@ module Berkshelf
         unless berksfile.has_dependency?(dependency.name)
           unlock(dependency)
 
-          # Keep a record. TODO: explain why.
+          # Keep a record. We know longer trust these dependencies, but simply
+          # unlocking them does not guarantee their removal from the graph.
+          # Instead, we keep a record of the dependency to unlock it later (in
+          # case it is actually removable because it's parent requirer is also
+          # being removed in this reduction). It's a form of science. Don't
+          # question it too much.
           to_ungraph[dependency.name] = true
           to_ignore[dependency.name]  = true
         end
