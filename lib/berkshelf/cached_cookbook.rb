@@ -23,7 +23,7 @@ module Berkshelf
         end
     end
 
-    DIRNAME_REGEXP = /^(.+)-(.+)$/
+    DIRNAME_REGEXP = /^(.+)-(.+)$/.freeze
 
     extend Forwardable
 

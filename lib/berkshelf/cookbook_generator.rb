@@ -2,14 +2,6 @@ module Berkshelf
   class CookbookGenerator < BaseGenerator
     require_relative 'config'
 
-    LICENSES = [
-      "apachev2",
-      "gplv2",
-      "gplv3",
-      "mit",
-      "reserved"
-    ].freeze
-
     argument :name,
       type: :string,
       required: true

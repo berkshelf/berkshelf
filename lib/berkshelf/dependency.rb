@@ -18,7 +18,6 @@ module Berkshelf
     end
 
     DEFAULT_CONSTRAINT = '>= 0.0.0'.freeze
-    SCM_LOCATIONS      = [ :git, :github ].freeze
 
     # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
