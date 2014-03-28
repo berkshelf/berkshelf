@@ -40,7 +40,7 @@ module Berkshelf
       end
 
       to_lock = dependencies.select do |dependency|
-        berksfile_dependencies.include?(dependency.name)
+        berksfile.has_dependency?(dependency)
       end
 
       lockfile.graph.update(cookbooks)
