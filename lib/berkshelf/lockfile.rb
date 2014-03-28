@@ -21,10 +21,10 @@ module Berkshelf
       end
     end
 
-    DEFAULT_FILENAME = 'Berksfile.lock'
+    DEFAULT_FILENAME = 'Berksfile.lock'.freeze
 
-    DEPENDENCIES = 'DEPENDENCIES'
-    GRAPH        = 'GRAPH'
+    DEPENDENCIES = 'DEPENDENCIES'.freeze
+    GRAPH        = 'GRAPH'.freeze
 
     include Berkshelf::Mixin::Logging
 
@@ -270,6 +270,80 @@ module Berkshelf
       graph.remove(dependency)
     end
 
+    # Iterate over each top-level dependency defined in the lockfile and
+    # check if that dependency is still defined in the Berksfile.
+    #
+    # If the dependency is no longer present in the Berksfile, it is "safely"
+    # removed using {Lockfile#unlock} and {Lockfile#remove}. This prevents
+    # the lockfile from "leaking" dependencies when they have been removed
+    # from the Berksfile, but still remained locked in the lockfile.
+    #
+    # If the dependency exists, a constraint comparison is conducted to verify
+    # that the locked dependency still satisifes the original constraint. This
+    # handles the edge case where a user has updated or removed a constraint
+    # on a dependency that already existed in the lockfile.
+    #
+    # @raise [OutdatedDependency]
+    #   if the constraint exists, but is no longer satisifed by the existing
+    #   locked version
+    #
+    # @return [Array<Dependency>]
+    def reduce!
+      # Store a list of cookbooks to ungraph
+      to_ungraph = {}
+      to_ignore  = {}
+
+      # Unlock any locked dependencies that are no longer in the Berksfile
+      dependencies.each do |dependency|
+        unless berksfile.has_dependency?(dependency.name)
+          unlock(dependency)
+
+          # Keep a record. We know longer trust these dependencies, but simply
+          # unlocking them does not guarantee their removal from the graph.
+          # Instead, we keep a record of the dependency to unlock it later (in
+          # case it is actually removable because it's parent requirer is also
+          # being removed in this reduction). It's a form of science. Don't
+          # question it too much.
+          to_ungraph[dependency.name] = true
+          to_ignore[dependency.name]  = true
+        end
+      end
+
+      # Remove any transitive dependencies
+      berksfile.dependencies.each do |dependency|
+        graphed = graph.find(dependency)
+        next if graphed.nil?
+
+        unless dependency.version_constraint.satisfies?(graphed.version)
+          raise OutdatedDependency.new(graphed, dependency)
+        end
+
+        if cookbook = dependency.cached_cookbook
+          graphed.dependencies.each do |name, constraint|
+            # Unless the cookbook still depends on this key, we want to queue it
+            # for unlocking. This is the magic that prevents transitive
+            # dependency leaking.
+            unless cookbook.dependencies.has_key?(name)
+              to_ungraph[name] = true
+
+              # We also want to ignore the top-level dependency. We can no
+              # longer trust the graph that we have been given for that
+              # dependency and therefore need to reduce it.
+              to_ignore[dependency.name] = true
+            end
+          end
+        end
+      end
+
+      # Now remove all the unlockable items
+      ignore = to_ungraph.merge(to_ignore).keys
+
+      to_ungraph.each do |name, _|
+        graph.remove(name, ignore: ignore)
+      end
+    end
+
+
     # Write the contents of the current statue of the lockfile to disk. This
     # method uses an atomic file write. A temporary file is created, written,
     # and then copied over the existing one. This ensures any partial updates
@@ -283,14 +357,7 @@ module Berkshelf
 
       tempfile = Tempfile.new(['Berksfile',  '.lock'])
 
-      tempfile.write(DEPENDENCIES)
-      tempfile.write("\n")
-      dependencies.sort.each do |dependency|
-        tempfile.write(dependency.to_lock)
-      end
-
-      tempfile.write("\n")
-      tempfile.write(graph.to_lock)
+      tempfile.write(to_lock)
 
       tempfile.rewind
       tempfile.close
@@ -301,6 +368,17 @@ module Berkshelf
       true
     ensure
       tempfile.unlink if tempfile
+    end
+
+    # @private
+    def to_lock
+      out = "#{DEPENDENCIES}\n"
+      dependencies.sort.each do |dependency|
+        out << dependency.to_lock
+      end
+      out << "\n"
+      out << graph.to_lock
+      out
     end
 
     # @private
@@ -318,10 +396,10 @@ module Berkshelf
     # The class responsible for parsing the lockfile and turning it into a
     # useful data structure.
     class LockfileParser
-      NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'
-      DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/
-      DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/
-      OPTION_PATTERN       = /^ {4}(.+)\: (.+)/
+      NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'.freeze
+      DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/.freeze
+      DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/.freeze
+      OPTION_PATTERN       = /^ {4}(.+)\: (.+)/.freeze
 
       # Create a new lockfile parser.
       #
@@ -500,12 +578,17 @@ module Berkshelf
       #   the list of dependencies to ignore
       def dependency?(dependency, options = {})
         name   = Dependency.name(dependency)
-        ignore = Array(options[:ignore])
+        ignore = Hash[*Array(options[:ignore]).map { |i| [i, true] }.flatten]
 
-        @graph.values.any? do |item|
-          next if ignore.include?(item.name)
-          item.dependencies.key?(name)
+        @graph.values.each do |item|
+          next if ignore[item.name]
+
+          if item.dependencies.key?(name)
+            return true
+          end
         end
+
+        false
       end
       alias_method :has_dependency?, :dependency?
 
@@ -532,7 +615,13 @@ module Berkshelf
       def remove(dependency, options = {})
         name = Dependency.name(dependency)
 
-        return if @lockfile.dependency?(name) || dependency?(name, options)
+        if @lockfile.dependency?(name)
+          return
+        end
+
+        if dependency?(name, options)
+          return
+        end
 
         # Grab the nested dependencies for this particular entry so we can
         # recurse and try to remove them from the graph.

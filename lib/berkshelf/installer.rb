@@ -29,7 +29,9 @@ module Berkshelf
 
     # @return [Array<Berkshelf::CachedCookbook>]
     def run
-      reduce_lockfile!
+      lockfile.reduce!
+
+      Berkshelf.formatter.msg('Resolving cookbook dependencies...')
 
       dependencies, cookbooks = if lockfile.trusted?
         install_from_lockfile
@@ -38,7 +40,7 @@ module Berkshelf
       end
 
       to_lock = dependencies.select do |dependency|
-        berksfile_dependencies.include?(dependency.name)
+        berksfile.has_dependency?(dependency)
       end
 
       lockfile.graph.update(cookbooks)
@@ -46,6 +48,30 @@ module Berkshelf
       lockfile.save
 
       cookbooks
+    end
+
+    private
+
+    # Install a specific dependency.
+    #
+    # @param [Dependency]
+    #   the dependency to install
+    # @return [CachedCookbook]
+    #   the installed cookbook
+    def install(dependency)
+      if dependency.downloaded?
+        Berkshelf.formatter.use(dependency)
+        dependency.cached_cookbook
+      else
+        name, version = dependency.name, dependency.locked_version.to_s
+        source   = berksfile.source_for(name, version)
+        cookbook = source.cookbook(name, version)
+
+        Berkshelf.formatter.install(source, cookbook)
+
+        stash = downloader.download(name, version)
+        CookbookStore.import(name, version, stash)
+      end
     end
 
     # Install all the dependencies from the lockfile graph.
@@ -106,75 +132,6 @@ module Berkshelf
       end
 
       [dependencies, cookbooks]
-    end
-
-    # Install a specific dependency.
-    #
-    # @param [Dependency]
-    #   the dependency to install
-    # @return [CachedCookbook]
-    #   the installed cookbook
-    def install(dependency)
-      if dependency.downloaded?
-        Berkshelf.formatter.use(dependency)
-        dependency.cached_cookbook
-      else
-        name, version = dependency.name, dependency.locked_version.to_s
-        source   = berksfile.source_for(name, version)
-        cookbook = source.cookbook(name, version)
-
-        Berkshelf.formatter.install(source, cookbook)
-
-        stash = downloader.download(name, version)
-        CookbookStore.import(name, version, stash)
-      end
-    end
-
-    private
-
-    # Iterate over each top-level dependency defined in the lockfile and
-    # check if that dependency is still defined in the Berksfile.
-    #
-    # If the dependency is no longer present in the Berksfile, it is "safely"
-    # removed using {Lockfile#unlock} and {Lockfile#remove}. This prevents
-    # the lockfile from "leaking" dependencies when they have been removed
-    # from the Berksfile, but still remained locked in the lockfile.
-    #
-    # If the dependency exists, a constraint comparison is conducted to verify
-    # that the locked dependency still satisifes the original constraint. This
-    # handles the edge case where a user has updated or removed a constraint
-    # on a dependency that already existed in the lockfile.
-    #
-    # @raise [OutdatedDependency]
-    #   if the constraint exists, but is no longer satisifed by the existing
-    #   locked version
-    #
-    # @return [Array<Dependency>]
-    def reduce_lockfile!
-      lockfile.dependencies.each do |dependency|
-        if berksfile_dependencies.include?(dependency.name)
-          graphed = lockfile.graph.find(dependency)
-          next if graphed.nil?
-
-          unless dependency.version_constraint.satisfies?(graphed.version)
-            raise OutdatedDependency.new(graphed, dependency)
-          end
-
-          if dependency.cached_cookbook
-            graphed.dependencies.each do |name, constraint|
-              unless dependency.cached_cookbook.dependencies[name]
-                lockfile.graph.remove(name, ignore: dependency.name)
-              end
-            end
-          end
-        else
-          lockfile.unlock(dependency)
-        end
-      end
-    end
-
-    def berksfile_dependencies
-      @berksfile_dependencies ||= berksfile.dependencies.map(&:name)
     end
   end
 end
