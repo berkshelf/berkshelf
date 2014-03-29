@@ -131,57 +131,6 @@ describe Berkshelf::Dependency do
     end
   end
 
-  describe '#to_hash' do
-    let(:hash) { subject.to_hash }
-
-    it 'does not include default values' do
-      [:constraint, :locked_version, :site, :git, :ref, :path].each do |key|
-        expect(hash).to_not have_key(key)
-      end
-    end
-
-    it 'includes the locked version' do
-      subject.stub(locked_version: double('cached', to_s: '1.2.3'))
-
-      expect(hash).to have_key(:locked_version)
-      expect(hash[:locked_version]).to eq('1.2.3')
-    end
-
-    it 'includes the git url and ref' do
-      location = double('git', uri: 'git://github.com/foo/bar.git', ref: 'abcd1234', rel: nil, download: nil)
-      location.stub(:kind_of?).and_return(false)
-      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
-      subject.stub(:location).and_return(location)
-
-      expect(hash).to have_key(:git)
-      expect(hash[:git]).to eq('git://github.com/foo/bar.git')
-      expect(hash).to have_key(:ref)
-      expect(hash[:ref]).to eq('abcd1234')
-    end
-
-    it 'includes the git url and rel' do
-      location = double('git', uri: 'git://github.com/foo/bar.git', ref: nil, rel: 'cookbooks/foo', download: nil)
-      location.stub(:kind_of?).and_return(false)
-      location.stub(:kind_of?).with(Berkshelf::GitLocation).and_return(true)
-      subject.stub(:location).and_return(location)
-
-      expect(hash).to have_key(:git)
-      expect(hash[:git]).to eq('git://github.com/foo/bar.git')
-      expect(hash).to have_key(:rel)
-      expect(hash[:rel]).to eq('cookbooks/foo')
-    end
-
-    it 'includes a relative path' do
-      location = double('path', relative_path: '../dev/foo')
-      location.stub(:kind_of?).and_return(false)
-      location.stub(:kind_of?).with(Berkshelf::PathLocation).and_return(true)
-      subject.stub(:location).and_return(location)
-
-      expect(hash).to have_key(:path)
-      expect(hash[:path]).to eq('../dev/foo')
-    end
-  end
-
   describe "#scm_location?" do
     let(:options) { Hash.new }
     subject { described_class.new(berksfile, cookbook_name, options).scm_location? }
