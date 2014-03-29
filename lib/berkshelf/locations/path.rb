@@ -38,6 +38,15 @@ module Berkshelf
       "./#{new_path}"
     end
 
+    # The fully expanded path of this cookbook on disk, relative to the
+    # Berksfile.
+    #
+    # @return [String]
+    def expanded_path
+      parent = File.expand_path(File.dirname(dependency.berksfile.filepath))
+      File.expand_path(relative_path, parent)
+    end
+
     # A Path location is valid if the path exists and is readable by the
     # current process.
     #
