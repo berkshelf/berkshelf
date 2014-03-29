@@ -1,13 +1,5 @@
 module Berkshelf
   class PathLocation < BaseLocation
-    # A Path location is valid if the path exists and is readable by the
-    # current process.
-    #
-    # @return (see BaseLocation#valid?)
-    def valid?
-      File.exist?(path) && File.readable?(path)
-    end
-
     #
     #
     def download
@@ -47,18 +39,10 @@ module Berkshelf
       "./#{new_path}"
     end
 
+    # A Path location is valid if the path exists and is readable by the
+    # current process.
     #
-    # The expanded path of this path on disk, relative to the berksfile.
-    #
-    # @return [String]
-    #
-    def expanded_path
-      relative_path(dependency.berksfile.filepath)
-    end
-
-    # Valid if the path exists and is readable
-    #
-    # @return [Boolean]
+    # @return (see BaseLocation#valid?)
     def valid?
       File.exist?(path) && File.readable?(path)
     end
