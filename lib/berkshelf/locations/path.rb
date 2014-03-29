@@ -3,7 +3,8 @@ module Berkshelf
     #
     #
     def download
-      super(CachedCookbook.from_path(path, name: dependency.name))
+      cookbook = CachedCookbook.from_path(expanded_path, name: dependency.name)
+      super(cookbook)
     end
 
     # The path to the cookbook on disk.
