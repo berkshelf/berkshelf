@@ -47,10 +47,6 @@ module Berkshelf
       File.exist?(path) && File.readable?(path)
     end
 
-    def to_hash
-      super.merge(value: self.path)
-    end
-
     def ==(other)
       other.is_a?(PathLocation) &&
       other.metadata? == metadata? &&
