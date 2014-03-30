@@ -206,25 +206,5 @@ module Berkshelf
       out << location.to_lock if location
       out
     end
-
-    def to_hash
-      {}.tap do |h|
-        h[:locked_version] = locked_version.to_s
-
-        if location.kind_of?(PathLocation)
-          h[:path] = location.relative_path(berksfile.filepath)
-        end
-
-        if location.kind_of?(GitLocation)
-          h[:git] = location.uri
-          h[:ref] = location.ref
-          h[:rel] = location.rel if location.rel
-        end
-      end.reject { |k,v| v.blank? }
-    end
-
-    def to_json(options = {})
-      JSON.pretty_generate(to_hash, options)
-    end
   end
 end

@@ -1,17 +1,10 @@
 module Berkshelf
   class PathLocation < BaseLocation
-    # A Path location is valid if the path exists and is readable by the
-    # current process.
-    #
-    # @return (see BaseLocation#valid?)
-    def valid?
-      File.exist?(path) && File.readable?(path)
-    end
-
     #
     #
     def download
-      super(CachedCookbook.from_path(path, name: dependency.name))
+      cookbook = CachedCookbook.from_path(expanded_path, name: dependency.name)
+      super(cookbook)
     end
 
     # The path to the cookbook on disk.
@@ -29,16 +22,15 @@ module Berkshelf
       !!options[:metadata]
     end
 
-    # Return this PathLocation's path relative to the given target.
-    #
-    # @param [#to_s] target
-    #   the path to a file or directory to be relative to
+    # Return this PathLocation's path relative to the associated Berksfile. It
+    # is actually the path reative to the associated Berksfile's parent
+    # directory.
     #
     # @return [String]
     #   the relative path relative to the target
-    def relative_path(target = '.')
+    def relative_path
       my_path     = Pathname.new(path).expand_path
-      target_path = Pathname.new(target.to_s).expand_path
+      target_path = Pathname.new(dependency.berksfile.filepath).expand_path
       target_path = target_path.dirname if target_path.file?
 
       new_path = my_path.relative_path_from(target_path).to_s
@@ -47,40 +39,41 @@ module Berkshelf
       "./#{new_path}"
     end
 
-    #
-    # The expanded path of this path on disk, relative to the berksfile.
+    # The fully expanded path of this cookbook on disk, relative to the
+    # Berksfile.
     #
     # @return [String]
-    #
     def expanded_path
-      relative_path(dependency.berksfile.filepath)
+      parent = File.expand_path(File.dirname(dependency.berksfile.filepath))
+      File.expand_path(relative_path, parent)
     end
 
-    # Valid if the path exists and is readable
+    # A Path location is valid if the path exists and is readable by the
+    # current process.
     #
-    # @return [Boolean]
+    # @return (see BaseLocation#valid?)
     def valid?
       File.exist?(path) && File.readable?(path)
-    end
-
-    def to_hash
-      super.merge(value: self.path)
     end
 
     def ==(other)
       other.is_a?(PathLocation) &&
       other.metadata? == metadata? &&
-      other.expanded_path == expanded_path
+      other.relative_path == relative_path
     end
 
     def to_lock
-      out =  "    path: #{relative_path(dependency.berksfile.filepath)}\n"
+      out =  "    path: #{relative_path}\n"
       out << "    metadata: true\n" if metadata?
       out
     end
 
     def to_s
-      "source at #{relative_path(dependency.berksfile.filepath)}"
+      "source at #{relative_path}"
+    end
+
+    def inspect
+      "#<Berkshelf::PathLocation metadata: #{metadata?}, path: #{relative_path}>"
     end
   end
 end
