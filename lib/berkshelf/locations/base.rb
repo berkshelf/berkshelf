@@ -19,11 +19,8 @@ module Berkshelf
     # Install the given cookbook. Subclasses that implement this method should
     # perform all the installation and validation steps required.
     #
-    # @param [CachedCookbook] cookbook
-    #   the cookbook to be installed
-    #
     # @return [void]
-    def install(cookbook)
+    def install
       raise AbstractFunction,
         "#install must be implemented on #{self.class.name}!"
     end
