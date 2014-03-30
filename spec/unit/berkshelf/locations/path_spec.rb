@@ -16,9 +16,23 @@ module Berkshelf
 
     subject { described_class.new(dependency, path: path) }
 
+    describe '#installed?' do
+      it 'returns false' do
+        expect(subject.installed?).to be_false
+      end
+    end
+
     describe '#install' do
-      it 'returns a CachedCookbook' do
-        expect(subject.install).to be_a(CachedCookbook)
+      it 'validates the cached cookbook' do
+        expect(subject).to receive(:validate_cached!).with(path)
+        subject.install
+      end
+    end
+
+    describe '#cached_cookbook' do
+      it 'loads the cached cookbook at the path' do
+        expect(CachedCookbook).to receive(:from_path).with(path)
+        subject.cached_cookbook
       end
     end
 
