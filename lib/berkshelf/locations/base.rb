@@ -33,11 +33,13 @@ module Berkshelf
         "#cached_cookbook must be implemented on #{self.class.name}!"
     end
 
-    # def download(cookbook = nil)
-    #   validate_cached!(cookbook)
-    #   validate_cookbook!(cookbook)
-    #   cookbook
-    # end
+    # The lockfile representation of this location.
+    #
+    # @return [string]
+    def to_lock
+      raise AbstractFunction,
+        "#to_lock must be implemented on #{self.class.name}!"
+    end
 
     # Ensure the given {CachedCookbook} is valid
     #
@@ -68,14 +70,6 @@ module Berkshelf
       end
 
       true
-    end
-
-    # The lockfile representation of this location.
-    #
-    # @return [string]
-    def to_lock
-      raise AbstractFunction,
-        "#to_lock must be implemented on #{self.class.name}!"
     end
   end
 end
