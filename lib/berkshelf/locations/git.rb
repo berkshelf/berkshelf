@@ -47,11 +47,18 @@ module Berkshelf
       @rev_parse = options[:ref] || options[:branch] || options[:tag] || 'master'
     end
 
-    def download
-      if installed?
-        cookbook = CachedCookbook.from_store_path(install_path)
-        return super(cookbook)
-      end
+    # @see BaseLoation#installed?
+    def installed?
+      revision && install_path.exist?
+    end
+
+    # Install this git cookbook into the cookbook store. This method leverages
+    # a cached git copy and a scratch directory to prevent bad cookbooks from
+    # making their way into the cookbook store.
+    #
+    # @see BaseLOcation#install
+    def install
+      scratch_path = Pathname.new(Dir.mktmpdir)
 
       if cached?
         Dir.chdir(cache_path) do
@@ -65,23 +72,38 @@ module Berkshelf
         @revision ||= git %|rev-parse #{@rev_parse}|
       end
 
-      unless install_path.join('.git').exist?
-        FileUtils.rm_rf(install_path)
-        git %|clone --no-checkout "#{cache_path}" "#{install_path}"|
-        install_path.chmod(0777 & ~File.umask)
-      end
+      # Clone into a scratch directory for validations
+      git %|clone --no-checkout "#{cache_path}" "#{scratch_path}"|
 
-      Dir.chdir(install_path) do
+      # Make sure the scratch directory is up-to-date and account for rel paths
+      Dir.chdir(scratch_path) do
         git %|fetch --force --tags "#{cache_path}"|
         git %|reset --hard #{@revision}|
 
         if rel
-          git %|filter-branch --subdirectory-filter "#{rel}"|
+          git %|filter-branch --subdirectory-filter "#{rel}" --force|
         end
       end
 
-      cookbook = CachedCookbook.from_store_path(install_path)
-      super(cookbook)
+      # Validate the scratched path is a valid cookbook
+      validate_cached!(scratch_path)
+
+      # If we got this far, we should cop
+      FileUtils.rm_rf(install_path) if install_path.exist?
+      FileUtils.cp_r(scratch_path, install_path)
+      install_path.chmod(0777 & ~File.umask)
+    ensure
+      # Ensure the scratch directory is cleaned up
+      FileUtils.rm_rf(scratch_path)
+    end
+
+    # @see BaseLocation#cached_cookbook
+    def cached_cookbook
+      if installed?
+        @cached_cookbook ||= CachedCookbook.from_path(install_path)
+      else
+        nil
+      end
     end
 
     def scm_location?
@@ -156,13 +178,6 @@ module Berkshelf
     # @return [Boolean]
     def cached?
       cache_path.exist?
-    end
-
-    # Determine if this revision is installed.
-    #
-    # @return [Boolean]
-    def installed?
-      revision && install_path.exist?
     end
 
     # The path where this cookbook would live in the store, if it were
