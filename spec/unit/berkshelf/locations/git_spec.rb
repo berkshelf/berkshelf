@@ -27,29 +27,10 @@ module Berkshelf
         expect(instance.tag).to eq('v1.2.3')
       end
 
-      context 'ref' do
-        it 'uses the :ref option with priority' do
-          instance = described_class.new(dependency,
-            git: 'https://repo.com', ref: 'abc123', branch: 'magic_new_feature')
-          expect(instance.ref).to eq('abc123')
-        end
-
-        it 'uses the :branch option with priority' do
-          instance = described_class.new(dependency,
-            git: 'https://repo.com', branch: 'magic_new_feature', tag: 'v1.2.3')
-          expect(instance.ref).to eq('magic_new_feature')
-        end
-
-        it 'uses the :tag option' do
-          instance = described_class.new(dependency,
-            git: 'https://repo.com', tag: 'v1.2.3')
-          expect(instance.ref).to eq('v1.2.3')
-        end
-
-        it 'uses "master" when none is given' do
-          instance = described_class.new(dependency, git: 'https://repo.com')
-          expect(instance.ref).to eq('master')
-        end
+      it 'adds the ref' do
+        instance = described_class.new(dependency,
+          git: 'https://repo.com', ref: 'abc123')
+        expect(instance.ref).to eq('abc123')
       end
 
       it 'sets the revision' do
@@ -62,6 +43,35 @@ module Berkshelf
         instance = described_class.new(dependency,
           git: 'https://repo.com', rel: 'internal/path')
         expect(instance.rel).to eq('internal/path')
+      end
+
+      context 'rev_parse' do
+        def rev_parse(instance)
+          instance.instance_variable_get(:@rev_parse)
+        end
+
+        it 'uses the :ref option with priority' do
+          instance = described_class.new(dependency,
+            git: 'https://repo.com', ref: 'abc123', branch: 'magic_new_feature')
+          expect(rev_parse(instance)).to eq('abc123')
+        end
+
+        it 'uses the :branch option with priority' do
+          instance = described_class.new(dependency,
+            git: 'https://repo.com', branch: 'magic_new_feature', tag: 'v1.2.3')
+          expect(rev_parse(instance)).to eq('magic_new_feature')
+        end
+
+        it 'uses the :tag option' do
+          instance = described_class.new(dependency,
+            git: 'https://repo.com', tag: 'v1.2.3')
+          expect(rev_parse(instance)).to eq('v1.2.3')
+        end
+
+        it 'uses "master" when none is given' do
+          instance = described_class.new(dependency, git: 'https://repo.com')
+          expect(rev_parse(instance)).to eq('master')
+        end
       end
     end
 
@@ -183,6 +193,7 @@ module Berkshelf
         expect(subject.to_lock).to eq <<-EOH.gsub(/^ {8}/, '')
             git: https://repo.com
             revision: defjkl123456
+            ref: abc123
             branch: ham
             tag: v1.2.3
             rel: hi

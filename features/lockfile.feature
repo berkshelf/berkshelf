@@ -178,6 +178,7 @@ Feature: Creating and reading the Berkshelf lockfile
         berkshelf-cookbook-fixture
           git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
           revision: 919afa0c402089df23ebdf36637f12271b8a96b4
+          ref: 919afa0
 
       GRAPH
         berkshelf-cookbook-fixture (1.0.0)
@@ -231,6 +232,7 @@ Feature: Creating and reading the Berkshelf lockfile
         berkshelf-cookbook-fixture
           git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
           revision: 919afa0c402089df23ebdf36637f12271b8a96b4
+          ref: 919afa0
 
       GRAPH
         berkshelf-cookbook-fixture (1.0.0)

@@ -91,27 +91,55 @@ module Berkshelf
     # @return [Boolean]
     #   true if this lockfile is trusted, false otherwise
     def trusted?
+      Berkshelf.log.info 'Checking if lockfile is trusted'
+
       checked = {}
 
-      berksfile.dependencies.all? do |dependency|
+      berksfile.dependencies.each do |dependency|
+        Berkshelf.log.debug "Checking #{dependency}"
+
         checked[dependency.name] = true
 
         locked = find(dependency)
-        return false if locked.nil?
+        if locked.nil?
+          Berkshelf.log.debug "  Not in lockfile - cannot be trusted!"
+          return false
+        end
 
         graphed = graph.find(dependency)
-        return false if graphed.nil?
+        if graphed.nil?
+          Berkshelf.log.debug "  Not in graph - cannot be trusted!"
+          return false
+        end
 
         if cookbook = dependency.cached_cookbook
+          Berkshelf.log.debug "  Detected there is a cached cookbook"
+
           unless (cookbook.dependencies.keys - graphed.dependencies.keys).empty?
+            Berkshelf.log.debug "  Cached cookbook has different dependencies - cannot be trusted!"
             return false
           end
         end
 
-        dependency.location == locked.location &&
-        dependency.version_constraint.satisfies?(graphed.version) &&
-        satisfies_transitive?(graphed, checked)
+        unless dependency.location == locked.location
+          Berkshelf.log.debug "  Different location - cannot be trusted!"
+          Berkshelf.log.debug "    Dependency location: #{dependency.location.inspect}"
+          Berkshelf.log.debug "    Locked location:     #{locked.location.inspect}"
+          return false
+        end
+
+        unless dependency.version_constraint.satisfies?(graphed.version)
+          Berkshelf.log.debug "  Version constraint is not satisified - cannot be trusted!"
+          return false
+        end
+
+        unless satisfies_transitive?(graphed, checked)
+          Berkshelf.log.debug "  Transitive dependencies not satisfies - cannot be trusted!"
+          return false
+        end
       end
+
+      true
     end
 
     # Recursive helper method for checking if transitive dependencies (i.e.
