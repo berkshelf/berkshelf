@@ -162,13 +162,6 @@ module Berkshelf
       @groups ||= []
     end
 
-    # Determines if this dependency has a location and if it is an SCM location
-    #
-    # @return [Boolean]
-    def scm_location?
-      location && location.scm_location?
-    end
-
     def <=>(other)
       [self.name, self.version_constraint] <=> [other.name, other.version_constraint]
     end

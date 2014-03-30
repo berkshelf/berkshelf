@@ -106,10 +106,6 @@ module Berkshelf
       end
     end
 
-    def scm_location?
-      true
-    end
-
     def ==(other)
       other.is_a?(GitLocation) &&
       other.uri == uri &&

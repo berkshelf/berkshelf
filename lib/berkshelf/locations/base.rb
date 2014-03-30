@@ -73,14 +73,6 @@ module Berkshelf
       true
     end
 
-    # Identifier to determine if this location is an SCM location (i.e. does
-    # it consume external resources)
-    #
-    # @return [Boolean]
-    def scm_location?
-      false
-    end
-
     # The lockfile representation of this location.
     #
     # @return [string]

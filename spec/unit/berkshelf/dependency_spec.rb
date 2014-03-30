@@ -130,39 +130,4 @@ describe Berkshelf::Dependency do
       expect(subject.installed?).to be_false
     end
   end
-
-  describe "#scm_location?" do
-    let(:options) { Hash.new }
-    subject { described_class.new(berksfile, cookbook_name, options).scm_location? }
-
-    context "when the location is a GitLocation" do
-      let(:options) { { git: "git@github.com:berkshelf/berkshelf.git" } }
-      it { should be_true }
-    end
-
-    context "when the location is a GithubLocation" do
-      let(:options) { { github: "berkshelf/berkshelf" } }
-      it { should be_true }
-    end
-
-    context "when the location is a PathLocation" do
-      let(:options) { { path: fixtures_path.join('cookbooks', 'example_cookbook') } }
-      it { should be_false }
-    end
-  end
-
-  describe "#path_location?" do
-    let(:options) { Hash.new }
-    subject { described_class.new(berksfile, cookbook_name, options).path_location? }
-
-    context "when the location is a PathLocation" do
-      let(:options) { { path: fixtures_path.join("cookbooks", "example_cookbook") } }
-      it { should be_true }
-    end
-
-    context "when the location is not a PathLocation" do
-      let(:options) { { github: "berkshelf/berkshelf" } }
-      it { should be_false }
-    end
-  end
 end
