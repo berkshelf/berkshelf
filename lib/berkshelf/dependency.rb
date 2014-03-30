@@ -136,11 +136,6 @@ module Berkshelf
         end
       end
 
-      if scm_location? || path_location?
-        self.locked_version     = @cached_cookbook.version
-        self.version_constraint = @cached_cookbook.version
-      end
-
       @cached_cookbook
     end
 
@@ -165,13 +160,6 @@ module Berkshelf
     # @return [Array<Symbol>]
     def groups
       @groups ||= []
-    end
-
-    # Determines if this dependency has a location and is it a {PathLocation}
-    #
-    # @return [Boolean]
-    def path_location?
-      location.nil? ? false : location.is_a?(PathLocation)
     end
 
     # Determines if this dependency has a location and if it is an SCM location
@@ -199,7 +187,7 @@ module Berkshelf
     end
 
     def to_lock
-      out = if path_location? || scm_location? || version_constraint.to_s == '>= 0.0.0'
+      out = if location || version_constraint.to_s == '>= 0.0.0'
         "  #{name}\n"
       else
         "  #{name} (#{version_constraint})\n"
