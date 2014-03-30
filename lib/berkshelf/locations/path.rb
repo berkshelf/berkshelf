@@ -9,7 +9,7 @@ module Berkshelf
       false
     end
 
-    # The instalation for a path location is actually just a noop
+    # The installation for a path location is actually just a noop
     #
     # @see BaseLocation#install
     def install
