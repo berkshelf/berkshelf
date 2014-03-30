@@ -57,7 +57,7 @@ describe Berkshelf::Dependency do
           end
 
           it 'points to the specified path' do
-            expect(location.path).to eq(path)
+            expect(location.options[:path]).to eq(path)
           end
         end
 
