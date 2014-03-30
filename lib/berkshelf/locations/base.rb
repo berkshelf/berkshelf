@@ -8,57 +8,68 @@ module Berkshelf
       @options    = options
     end
 
-    def download(cookbook = nil)
-      validate_cached!(cookbook)
-      cookbook
+    # Determine if this revision is installed.
+    #
+    # @return [Boolean]
+    def installed?
+      raise AbstractFunction,
+        "#installed? must be implemented on #{self.class.name}!"
     end
+
+    # Install the given cookbook. Subclasses that implement this method should
+    # perform all the installation and validation steps required.
+    #
+    # @param [CachedCookbook] cookbook
+    #   the cookbook to be installed
+    #
+    # @return [void]
+    def install(cookbook)
+      raise AbstractFunction,
+        "#install must be implemented on #{self.class.name}!"
+    end
+
+    # The cached cookbook for this location.
+    #
+    # @return [CachedCookbook]
+    def cached_cookbook
+      raise AbstractFunction,
+        "#cached_cookbook must be implemented on #{self.class.name}!"
+    end
+
+    # def download(cookbook = nil)
+    #   validate_cached!(cookbook)
+    #   validate_cookbook!(cookbook)
+    #   cookbook
+    # end
 
     # Ensure the given {CachedCookbook} is valid
     #
-    # @param [CachedCookbook] cached_cookbook
-    #   the downloaded cookbook to validate
+    # @param [String] path
+    #   the path to the possible cookbook
     #
+    # @raise [NotACookbook]
+    #   if the cookbook at the path does not have a metadata
     # @raise [CookbookValidationFailure]
     #   if given CachedCookbook does not satisfy the constraint of the location
-    #
-    # @todo Change MismatchedCookbookName to raise instead of warn
+    # @raise [MismatcheCookboookName]
+    #   if the cookbook does not have a name or if the name is different
     #
     # @return [true]
-    def validate_cached!(cookbook)
+    def validate_cached!(path)
+      unless File.cookbook?(path)
+        raise NotACookbook.new(path)
+      end
+
+      cookbook = CachedCookbook.from_path(path)
+
       unless @dependency.version_constraint.satisfies?(cookbook.version)
         raise CookbookValidationFailure.new(dependency, cookbook)
       end
 
       unless @dependency.name == cookbook.cookbook_name
-        message = MismatchedCookbookName.new(dependency, cookbook).to_s
-        Berkshelf.ui.warn(message)
+        raise MismatchedCookbookName.new(dependency, cookbook)
       end
 
-      true
-    end
-
-    # Validate that the given path contains a valid Chef cookbook.
-    #
-    # @raise [CookbookNotFound]
-    #   if the path does not appear to contain a cookbook
-    #
-    # @param [String] path
-    #   the path to check if is a cookbook
-    #
-    # @return [true]
-    def validate_cookbook!(path)
-      unless File.cookbook?(path)
-        raise CookbookNotFound, "#{dependency.name} not found at #{to_s}"
-      end
-
-      true
-    end
-
-    # Logic to determine if the current location is "valid". Subclasses should
-    # override this method with magical logic.
-    #
-    # @return [Boolean]
-    def valid?
       true
     end
 
