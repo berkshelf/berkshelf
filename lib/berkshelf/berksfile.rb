@@ -753,7 +753,7 @@ module Berkshelf
       # @return [true]
       def validate_dependencies_installed!
         lockfile.graph.locks.each do |_, dependency|
-          unless dependency.downloaded?
+          unless dependency.installed?
             raise DependencyNotInstalled.new(dependency)
           end
         end

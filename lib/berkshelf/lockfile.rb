@@ -245,7 +245,7 @@ module Berkshelf
     # @raise [DependencyNotFound]
     #   if this lockfile does not have the given dependency
     # @raise [CookbookNotFound]
-    #   if this lockfile has the dependency, but the cookbook is not downloaded
+    #   if this lockfile has the dependency, but the cookbook is not installed
     #
     # @param [String, Dependency] dependency
     #   the dependency or name of the dependency to find
@@ -259,7 +259,7 @@ module Berkshelf
         raise DependencyNotFound.new(Dependency.name(dependency))
       end
 
-      unless locked.downloaded?
+      unless locked.installed?
         name    = locked.name
         version = locked.locked_version || locked.version_constraint
         raise CookbookNotFound.new(name, version, 'in the cookbook store')

@@ -75,7 +75,7 @@ module Berkshelf
       end
     end
 
-    describe '#download' do
+    describe '#install' do
       before do
         CachedCookbook.stub(:from_store_path)
         File.stub(:chmod)
@@ -91,7 +91,7 @@ module Berkshelf
           expect(CachedCookbook).to receive(:from_store_path)
           expect(subject).to receive(:validate_cached!)
           expect(subject).to_not receive(:git)
-          subject.download
+          subject.install
         end
       end
 
@@ -103,7 +103,7 @@ module Berkshelf
           expect(subject).to receive(:git).with(
             'fetch --force --tags https://repo.com "refs/heads/*:refs/heads/*"'
           )
-          subject.download
+          subject.install
         end
       end
 
@@ -116,7 +116,7 @@ module Berkshelf
           expect(subject).to receive(:git).with(
             %|clone https://repo.com "#{cache_path}" --bare --no-hardlinks|
           )
-          subject.download
+          subject.install
         end
       end
     end

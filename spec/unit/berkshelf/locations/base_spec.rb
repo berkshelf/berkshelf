@@ -7,20 +7,6 @@ module Berkshelf
 
     subject { described_class.new(dependency) }
 
-    describe '#download' do
-      let(:cached) { double }
-
-      it 'validates the returned cached cookbook' do
-        expect(subject).to receive(:validate_cached!).with(cached)
-        subject.download(cached)
-      end
-
-      it 'returns the cached cookbook' do
-        subject.stub(:validate_cached!)
-        expect(subject.download(cached)).to eq(cached)
-      end
-    end
-
     describe '#validate_cached!' do
       let(:cached) { double(name: 'bacon', cookbook_name: 'bacon', version: '0.1.0') }
 

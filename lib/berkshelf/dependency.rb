@@ -103,7 +103,18 @@ module Berkshelf
       end
     end
 
-    # The cached (downloaded) cookbook for this dependency.
+    # Determine if this dependency is installed. A dependency is "installed" if
+    # the associated {CachedCookbook} exists on disk.
+    #
+    # @return [Boolean]
+    def installed?
+      !cached_cookbook.nil?
+    end
+
+    # Attempt to load the cached_cookbook for this dependency. For SCM/path
+    # locations, this method delegates to {BaseLocation#cached_cookbook}. For
+    # generic dependencies, this method tries attemps to load a matching
+    # cookbook from the {CookbookStore}.
     #
     # @return [CachedCookbook, nil]
     def download
@@ -132,14 +143,6 @@ module Berkshelf
     # @return [CachedCookbook, nil]
     def cached_cookbook
       @cached_cookbook ||= download
-    end
-
-    # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
-    # cached cookbook is present.
-    #
-    # @return [Boolean]
-    def downloaded?
-      !cached_cookbook.nil?
     end
 
     # Returns true if this dependency has the given group.

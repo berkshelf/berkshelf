@@ -16,9 +16,9 @@ module Berkshelf
 
     subject { described_class.new(dependency, path: path) }
 
-    describe '#download' do
+    describe '#install' do
       it 'returns a CachedCookbook' do
-        expect(subject.download).to be_a(CachedCookbook)
+        expect(subject.install).to be_a(CachedCookbook)
       end
     end
 

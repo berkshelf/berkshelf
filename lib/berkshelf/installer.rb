@@ -68,8 +68,8 @@ module Berkshelf
       def install(dependency)
         Berkshelf.log.info "Installing #{dependency}"
 
-        if dependency.downloaded?
-          Berkshelf.log.debug "  Already downloaded - skipping download"
+        if dependency.installed?
+          Berkshelf.log.debug "  Already installed - skipping install"
 
           Berkshelf.formatter.use(dependency)
           dependency.cached_cookbook
@@ -104,9 +104,9 @@ module Berkshelf
           Berkshelf.log.debug "    #{dependency}"
         end
 
-        # Only construct the universe if we are going to download things
-        unless dependencies.all?(&:downloaded?)
-          Berkshelf.log.debug "  Not all dependencies are downloaded"
+        # Only construct the universe if we are going to install things
+        unless dependencies.all?(&:installed?)
+          Berkshelf.log.debug "  Not all dependencies are installed"
           build_universe
         end
 
