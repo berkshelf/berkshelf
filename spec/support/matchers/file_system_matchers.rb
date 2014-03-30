@@ -115,6 +115,10 @@ module Berkshelf
           end
         end
 
+        def description
+          "have structure"
+        end
+
         def matches?(root)
           @failure = catch :failure do
             super
