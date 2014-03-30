@@ -2,34 +2,78 @@ require 'spec_helper'
 
 module Berkshelf
   describe BaseLocation do
-    let(:constraint) { double }
-    let(:dependency) { double(name: 'bacon', version_constraint: constraint) }
+    let(:constraint) { double('constraint') }
+    let(:dependency) { double('dependency', name: 'cookbook', version_constraint: constraint) }
 
     subject { described_class.new(dependency) }
 
+    describe '#installed?' do
+      it 'is an abstract function' do
+        expect { subject.installed? }.to raise_error(AbstractFunction)
+      end
+    end
+
+    describe '#install' do
+      it 'is an abstract function' do
+        expect { subject.install }.to raise_error(AbstractFunction)
+      end
+    end
+
+    describe '#cached_cookbook' do
+      it 'is an abstract function' do
+        expect { subject.cached_cookbook }.to raise_error(AbstractFunction)
+      end
+    end
+
+    describe '#to_lock' do
+      it 'is an abstract function' do
+        expect { subject.to_lock }.to raise_error(AbstractFunction)
+      end
+    end
+
     describe '#validate_cached!' do
-      let(:cached) { double(name: 'bacon', cookbook_name: 'bacon', version: '0.1.0') }
+      context 'when the path is not a cookbook' do
+        before { File.stub(:cookbook?).and_return(false) }
 
-      it 'raises an error if the version constraint does not satisfy' do
-        expect(constraint).to receive(:satisfies?).with(cached.version).and_return(false)
-
-        expect {
-          subject.validate_cached!(cached)
-        }.to raise_error(CookbookValidationFailure)
+        it 'raises an error' do
+          expect {
+            subject.validate_cached!('/foo/bar')
+          }.to raise_error(NotACookbook)
+        end
       end
 
-      it 'returns true if the cached cookbook satisfies the constraint' do
-        expect(constraint).to receive(:satisfies?).with(cached.version).and_return(true)
-        expect(subject.validate_cached!(cached)).to be_true
-      end
+      context 'when the path is a cookbook' do
+        let(:cookbook) do
+          double('cookbook',
+            cookbook_name: 'cookbook',
+            version: '0.1.0',
+          )
+        end
 
-      it 'warns a if the cookbook names do not match' do
-        expect(constraint).to receive(:satisfies?).with(cached.version).and_return(true)
-        cached.stub(:cookbook_name).and_return('ham')
-        msg = Berkshelf::MismatchedCookbookName.new(dependency, cached).to_s
+        before do
+          File.stub(:cookbook?).and_return(true)
+          CachedCookbook.stub(:from_path).and_return(cookbook)
+        end
 
-        Berkshelf.ui.should_receive(:warn).with(msg)
-        subject.validate_cached!(cached)
+        it 'raises an error if the constraint does not satisfy' do
+          constraint.stub(:satisfies?).with('0.1.0').and_return(false)
+          expect {
+            subject.validate_cached!(cookbook)
+          }.to raise_error(CookbookValidationFailure)
+        end
+
+        it 'raises an error if the names do not match' do
+          constraint.stub(:satisfies?).with('0.1.0').and_return(true)
+          cookbook.stub(:cookbook_name).and_return('different_name')
+          expect {
+            subject.validate_cached!(cookbook)
+          }.to raise_error(MismatchedCookbookName)
+        end
+
+        it 'returns true when the validation succeeds' do
+          constraint.stub(:satisfies?).with('0.1.0').and_return(true)
+          expect(subject.validate_cached!(cookbook)).to be_true
+        end
       end
     end
   end
