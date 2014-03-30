@@ -33,8 +33,6 @@ module Berkshelf
     attr_reader :version_constraint
     # @return [Source]
     attr_accessor :source
-    # @return [Berkshelf::CachedCookbook]
-    attr_accessor :cached_cookbook
 
     # @param [Berkshelf::Berksfile] berksfile
     #   the berksfile this dependency belongs to
@@ -117,9 +115,19 @@ module Berkshelf
     # cookbook from the {CookbookStore}.
     #
     # @return [CachedCookbook, nil]
-    def download
+    def cached_cookbook
+      return @cached_cookbook if @cached_cookbook
+
       @cached_cookbook = if location
-        location.download
+        cookbook = location.cached_cookbook
+
+        # If we have a cached cookbook, tighten our constraints
+        if cookbook
+          self.locked_version     = cookbook.version
+          self.version_constraint = cookbook.version
+        end
+
+        cookbook
       else
         if locked_version
           CookbookStore.instance.cookbook(name, locked_version)
@@ -134,15 +142,6 @@ module Berkshelf
       end
 
       @cached_cookbook
-    end
-
-    # Download the dependency. If this dependency is an SCM location or Path
-    # location, the constraints are also updated to correspond to the cookbook
-    # on disk.
-    #
-    # @return [CachedCookbook, nil]
-    def cached_cookbook
-      @cached_cookbook ||= download
     end
 
     # Returns true if this dependency has the given group.
