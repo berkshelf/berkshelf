@@ -128,6 +128,16 @@ module Berkshelf
       cookbooks[cookbook.cookbook_name] = cookbook.pretty_hash
     end
 
+    # Ouput Cookbook search results to delayed output
+    #
+    # @param [Array<APIClient::RemoteCookbook>] results
+    def search(results)
+      results.sort_by(&:name).each do |remote_cookbook|
+        cookbooks[remote_cookbook.name] ||= {}
+        cookbooks[remote_cookbook.name][:version] = remote_cookbook.version
+      end
+    end
+
     # Add a vendor message to delayed output
     #
     # @param [CachedCookbook] cookbook

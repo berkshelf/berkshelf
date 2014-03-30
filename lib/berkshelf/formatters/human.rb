@@ -89,6 +89,15 @@ module Berkshelf
       end
     end
 
+    # Ouput Cookbook search results using {Berkshelf.ui}
+    #
+    # @param [Array<APIClient::RemoteCookbook>] results
+    def search(results)
+      results.sort_by(&:name).each do |remote_cookbook|
+        Berkshelf.ui.info "#{remote_cookbook.name} (#{remote_cookbook.version})"
+      end
+    end
+
     # Output Cookbook info message using {Berkshelf.ui}
     #
     # @param [CachedCookbook] cookbook
