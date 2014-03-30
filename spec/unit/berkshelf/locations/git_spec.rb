@@ -75,24 +75,31 @@ module Berkshelf
       end
     end
 
+    describe '#installed?' do
+      it 'returns false when there is no revision' do
+        subject.stub(:revision).and_return(nil)
+        expect(subject.installed?).to be_false
+      end
+
+      it 'returns false when the install_path does not exist' do
+        subject.stub(:revision).and_return('abcd1234')
+        subject.stub(:install_path).and_return(double(exist?: false))
+        expect(subject.installed?).to be_false
+      end
+
+      it 'returns true when the location is installed' do
+        subject.stub(:revision).and_return('abcd1234')
+        subject.stub(:install_path).and_return(double(exist?: true))
+        expect(subject.installed?).to be_true
+      end
+    end
+
     describe '#install' do
       before do
-        CachedCookbook.stub(:from_store_path)
         File.stub(:chmod)
         FileUtils.stub(:cp_r)
         subject.stub(:validate_cached!)
-        subject.stub(:validate_cookbook!)
         subject.stub(:git)
-      end
-
-      context 'when the cookbook is already installed' do
-        it 'loads the cookbook from the store' do
-          subject.stub(:installed?).and_return(true)
-          expect(CachedCookbook).to receive(:from_store_path)
-          expect(subject).to receive(:validate_cached!)
-          expect(subject).to_not receive(:git)
-          subject.install
-        end
       end
 
       context 'when the repository is cached' do
@@ -121,10 +128,18 @@ module Berkshelf
       end
     end
 
-    describe '#scm_location?' do
-      it 'returns true' do
-        instance = described_class.new(dependency, git: 'https://repo.com')
-        expect(instance).to be_scm_location
+    describe '#cached_cookbook' do
+      it 'returns nil if the cookbook is not installed' do
+        subject.stub(:installed?).and_return(false)
+        expect(subject.cached_cookbook).to be_nil
+      end
+
+      it 'returns the cookbook at the install_path' do
+        subject.stub(:installed?).and_return(true)
+        CachedCookbook.stub(:from_path)
+
+        expect(CachedCookbook).to receive(:from_path).once
+        subject.cached_cookbook
       end
     end
 
