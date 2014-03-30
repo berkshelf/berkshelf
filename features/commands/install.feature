@@ -242,6 +242,31 @@ Feature: berks install
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
       """
 
+  Scenario: instaling a Berksfile that contains multiple Git locations with rel
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'mysql',
+        github: 'aws/opsworks-cookbooks',
+        rel:    'mysql',
+        ref:    '945499863560cac1e2c4454adc4a5601b1094e63'
+      cookbook 'nginx',
+        github: 'aws/opsworks-cookbooks',
+        rel:    'nginx',
+        ref:    '945499863560cac1e2c4454adc4a5601b1094e63'
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+      | mysql | 1.0.0 | 945499863560cac1e2c4454adc4a5601b1094e63 |
+      | nginx | 1.0.0 | 945499863560cac1e2c4454adc4a5601b1094e63 |
+    And the output should contain:
+      """
+      Fetching 'mysql' from git://github.com/aws/opsworks-cookbooks.git (at 9454998/mysql)
+      Fetching 'nginx' from git://github.com/aws/opsworks-cookbooks.git (at 9454998/nginx)
+      Fetching cookbook index from http://0.0.0.0:26210...
+      Using mysql (1.0.0) from git://github.com/aws/opsworks-cookbooks.git (at 9454998/mysql)
+      Using nginx (1.0.0) from git://github.com/aws/opsworks-cookbooks.git (at 9454998/nginx)
+      """
+
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
