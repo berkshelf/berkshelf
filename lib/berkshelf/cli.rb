@@ -395,6 +395,7 @@ module Berkshelf
     tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
 
     private
+
       # Print a list of the given cookbooks. This is used by various
       # methods like {list} and {contingent}.
       #

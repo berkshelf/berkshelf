@@ -28,20 +28,20 @@ module Berkshelf
 
       private
 
-      # Load the correct location from the given options.
-      #
-      # @return [Class, nil]
-      def klass_from_options(options)
-        options.each do |key, _|
-          id = key.to_s.capitalize
+        # Load the correct location from the given options.
+        #
+        # @return [Class, nil]
+        def klass_from_options(options)
+          options.each do |key, _|
+            id = key.to_s.capitalize
 
-          begin
-            return Berkshelf.const_get("#{id}Location")
-          rescue NameError; end
+            begin
+              return Berkshelf.const_get("#{id}Location")
+            rescue NameError; end
+          end
+
+          nil
         end
-
-        nil
-      end
     end
   end
 end
