@@ -258,6 +258,18 @@ module Berkshelf
       Berkshelf.formatter.outdated(outdated)
     end
 
+    method_option :source,
+      type: :string,
+      default: Berksfile::DEFAULT_API_URL,
+      desc: 'URL to search for sources',
+      banner: 'URL'
+    desc 'search NAME', 'Search the remote source for cookbooks matching the partial name'
+    def search(name)
+      source = Source.new(options[:source])
+      cookbooks = source.search(name)
+      Berkshelf.formatter.search(cookbooks)
+    end
+
     desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
     def init(path = '.')
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]

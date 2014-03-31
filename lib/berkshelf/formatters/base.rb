@@ -28,8 +28,9 @@ module Berkshelf
     formatter_method :list
     formatter_method :outdated
     formatter_method :package
-    formatter_method :skip
+    formatter_method :search
     formatter_method :show
+    formatter_method :skip
     formatter_method :upload
     formatter_method :use
     formatter_method :vendor

@@ -44,6 +44,18 @@ module Berkshelf
       universe.find { |cookbook| cookbook.name == name && cookbook.version == version }
     end
 
+    # The list of remote cookbooks that match the given query.
+    #
+    # @param [String] name
+    #
+    # @return [Array<APIClient::RemoteCookbook]
+    def search(name)
+      universe
+        .select { |cookbook| cookbook.name =~ Regexp.new(name) }
+        .group_by(&:name)
+        .collect { |name, versions| versions.max_by(&:version) }
+    end
+
     # Determine if this source is a "default" source, as defined in the
     # {Berksfile}.
     #
