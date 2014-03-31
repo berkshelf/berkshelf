@@ -25,3 +25,4 @@ rerun.txt
 .rspec
 .kitchen
 vendor/ruby
+.ruby-version
