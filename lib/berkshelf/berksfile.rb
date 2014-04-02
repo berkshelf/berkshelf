@@ -565,10 +565,8 @@ module Berkshelf
       packager.validate!
 
       outdir = Dir.mktmpdir do |temp_dir|
-        source = Berkshelf.ui.mute do
-          vendor(File.join(temp_dir, 'cookbooks'))
-        end
-        packager.run(source)
+        Berkshelf.ui.mute { vendor(File.join(temp_dir, 'cookbooks')) }
+        packager.run(temp_dir)
       end
 
       Berkshelf.formatter.package(outdir)
