@@ -3,7 +3,7 @@ module Berkshelf
     #
     #
     def download
-      cookbook = CachedCookbook.from_path(expanded_path, name: dependency.name)
+      cookbook = CachedCookbook.from_path(expanded_path)
       super(cookbook)
     end
 

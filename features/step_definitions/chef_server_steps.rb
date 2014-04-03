@@ -7,6 +7,7 @@ end
 Given /^the Chef Server has cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, dependencies|
     metadata = []
+    metadata << "name '#{name}'"
     metadata << "version '#{version}'"
     dependencies.to_s.split(',').map { |d| d.split(' ', 2) }.each do |(name, constraint)|
       metadata << "depends '#{name}', '#{constraint}'"

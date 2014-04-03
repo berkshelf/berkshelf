@@ -72,7 +72,7 @@ module Berkshelf
       @retries        = options.delete(:retries)
       @retry_interval = options.delete(:retry_interval)
 
-      options[:builder] ||= Faraday::Builder.new do |b|
+      options[:builder] ||= Faraday::RackBuilder.new do |b|
         b.response :parse_json
         b.response :gzip
         b.request :retry,

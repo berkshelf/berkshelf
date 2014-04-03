@@ -452,6 +452,7 @@ Feature: berks install
       """
     And I write to "metadata.rb" with:
       """
+      name "myface"
       depends 'fake', '1.0.0'
       depends 'bacon', '0.2.0'
       """
@@ -481,6 +482,7 @@ Feature: berks install
       """
     And I write to "metadata.rb" with:
       """
+      name "myface"
       depends 'fake', '1.0.0'
       depends 'bacon', '0.2.0'
       """
