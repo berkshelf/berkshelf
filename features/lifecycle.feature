@@ -247,3 +247,39 @@ Feature: Lifecycle commands
         fake (1.0.1)
       """
     * the output should contain "Using fake (1.0.1)"
+
+  Scenario: Switching a dependency to a new location
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake'
+      """
+    * I write to "Berksfile.lock" with:
+       """
+      DEPENDENCIES
+        fake
+
+      GRAPH
+        fake (1.0.0)
+       """
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake', path: './fake'
+      """
+    * I write to "fake/metadata.rb" with:
+
+      """
+      name 'fake'
+      version '2.0.0'
+      """
+    * I successfully run `berks install`
+    * the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        fake
+          path: ./fake
+
+      GRAPH
+        fake (2.0.0)
+      """
+    * the output should not contain "Using fake (1.0.0)"
+    * the output should contain "Using fake (2.0.0)"
