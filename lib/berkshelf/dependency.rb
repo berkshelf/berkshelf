@@ -33,8 +33,6 @@ module Berkshelf
     attr_reader :version_constraint
     # @return [Source]
     attr_accessor :source
-    # @return [Berkshelf::CachedCookbook]
-    attr_accessor :cached_cookbook
 
     # @param [Berkshelf::Berksfile] berksfile
     #   the berksfile this dependency belongs to
@@ -103,12 +101,33 @@ module Berkshelf
       end
     end
 
-    # The cached (downloaded) cookbook for this dependency.
+    # Determine if this dependency is installed. A dependency is "installed" if
+    # the associated {CachedCookbook} exists on disk.
+    #
+    # @return [Boolean]
+    def installed?
+      !cached_cookbook.nil?
+    end
+
+    # Attempt to load the cached_cookbook for this dependency. For SCM/path
+    # locations, this method delegates to {BaseLocation#cached_cookbook}. For
+    # generic dependencies, this method tries attemps to load a matching
+    # cookbook from the {CookbookStore}.
     #
     # @return [CachedCookbook, nil]
-    def download
+    def cached_cookbook
+      return @cached_cookbook if @cached_cookbook
+
       @cached_cookbook = if location
-        location.download
+        cookbook = location.cached_cookbook
+
+        # If we have a cached cookbook, tighten our constraints
+        if cookbook
+          self.locked_version     = cookbook.version
+          self.version_constraint = cookbook.version
+        end
+
+        cookbook
       else
         if locked_version
           CookbookStore.instance.cookbook(name, locked_version)
@@ -117,29 +136,7 @@ module Berkshelf
         end
       end
 
-      if scm_location? || path_location?
-        self.locked_version     = @cached_cookbook.version
-        self.version_constraint = @cached_cookbook.version
-      end
-
       @cached_cookbook
-    end
-
-    # Download the dependency. If this dependency is an SCM location or Path
-    # location, the constraints are also updated to correspond to the cookbook
-    # on disk.
-    #
-    # @return [CachedCookbook, nil]
-    def cached_cookbook
-      @cached_cookbook ||= download
-    end
-
-    # Returns true if the dependency has already been downloaded. A dependency is downloaded when a
-    # cached cookbook is present.
-    #
-    # @return [Boolean]
-    def downloaded?
-      !cached_cookbook.nil?
     end
 
     # Returns true if this dependency has the given group.
@@ -165,20 +162,6 @@ module Berkshelf
       @groups ||= []
     end
 
-    # Determines if this dependency has a location and is it a {PathLocation}
-    #
-    # @return [Boolean]
-    def path_location?
-      location.nil? ? false : location.is_a?(PathLocation)
-    end
-
-    # Determines if this dependency has a location and if it is an SCM location
-    #
-    # @return [Boolean]
-    def scm_location?
-      location && location.scm_location?
-    end
-
     def <=>(other)
       [self.name, self.version_constraint] <=> [other.name, other.version_constraint]
     end
@@ -197,7 +180,7 @@ module Berkshelf
     end
 
     def to_lock
-      out = if path_location? || scm_location? || version_constraint.to_s == '>= 0.0.0'
+      out = if location || version_constraint.to_s == '>= 0.0.0'
         "  #{name}\n"
       else
         "  #{name} (#{version_constraint})\n"

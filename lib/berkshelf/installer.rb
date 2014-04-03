@@ -68,8 +68,8 @@ module Berkshelf
       def install(dependency)
         Berkshelf.log.info "Installing #{dependency}"
 
-        if dependency.downloaded?
-          Berkshelf.log.debug "  Already downloaded - skipping download"
+        if dependency.installed?
+          Berkshelf.log.debug "  Already installed - skipping install"
 
           Berkshelf.formatter.use(dependency)
           dependency.cached_cookbook
@@ -104,9 +104,11 @@ module Berkshelf
           Berkshelf.log.debug "    #{dependency}"
         end
 
-        # Only construct the universe if we are going to download things
-        unless dependencies.all?(&:downloaded?)
-          Berkshelf.log.debug "  Not all dependencies are downloaded"
+        download_locations(dependencies)
+
+        # Only construct the universe if we are going to install things
+        unless dependencies.all?(&:installed?)
+          Berkshelf.log.debug "  Not all dependencies are installed"
           build_universe
         end
 
@@ -132,23 +134,10 @@ module Berkshelf
           hash
         end.values
 
-        Berkshelf.log.debug "  Dependencies"
-        dependencies.map do |dependency|
-          Berkshelf.log.debug "    #{dependency}"
-        end
+        download_locations(dependencies)
 
         Berkshelf.log.debug "  Creating a resolver"
-
         resolver = Resolver.new(berksfile, dependencies)
-
-        # Download all SCM locations first, since they might have additional
-        # constraints that we don't yet know about
-        dependencies.select(&:scm_location?).each do |dependency|
-          Berkshelf.log.debug "  Downloading SCM dependency #{dependency}"
-
-          Berkshelf.formatter.fetch(dependency)
-          dependency.download
-        end
 
         # Unlike when installing from the lockfile, we _always_ need to build
         # the universe when installing from the universe... duh
@@ -170,6 +159,15 @@ module Berkshelf
         end
 
         [dependencies, cookbooks]
+      end
+
+      def download_locations(dependencies)
+        dependencies.select(&:location).each do |dependency|
+          unless dependency.location.installed?
+            Berkshelf.formatter.fetch(dependency)
+            dependency.location.install
+          end
+        end
       end
   end
 end

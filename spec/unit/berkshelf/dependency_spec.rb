@@ -57,7 +57,7 @@ describe Berkshelf::Dependency do
           end
 
           it 'points to the specified path' do
-            expect(location.path).to eq(path)
+            expect(location.options[:path]).to eq(path)
           end
         end
 
@@ -119,50 +119,15 @@ describe Berkshelf::Dependency do
   describe "#cached_cookbook"
   describe "#download"
 
-  describe '#downloaded?' do
+  describe '#installed?' do
     it 'returns true if self.cached_cookbook is not nil' do
       subject.stub(:cached_cookbook) { double('cb') }
-      expect(subject.downloaded?).to be_true
+      expect(subject.installed?).to be_true
     end
 
     it 'returns false if self.cached_cookbook is nil' do
       subject.stub(:cached_cookbook) { nil }
-      expect(subject.downloaded?).to be_false
-    end
-  end
-
-  describe "#scm_location?" do
-    let(:options) { Hash.new }
-    subject { described_class.new(berksfile, cookbook_name, options).scm_location? }
-
-    context "when the location is a GitLocation" do
-      let(:options) { { git: "git@github.com:berkshelf/berkshelf.git" } }
-      it { should be_true }
-    end
-
-    context "when the location is a GithubLocation" do
-      let(:options) { { github: "berkshelf/berkshelf" } }
-      it { should be_true }
-    end
-
-    context "when the location is a PathLocation" do
-      let(:options) { { path: fixtures_path.join('cookbooks', 'example_cookbook') } }
-      it { should be_false }
-    end
-  end
-
-  describe "#path_location?" do
-    let(:options) { Hash.new }
-    subject { described_class.new(berksfile, cookbook_name, options).path_location? }
-
-    context "when the location is a PathLocation" do
-      let(:options) { { path: fixtures_path.join("cookbooks", "example_cookbook") } }
-      it { should be_true }
-    end
-
-    context "when the location is not a PathLocation" do
-      let(:options) { { github: "berkshelf/berkshelf" } }
-      it { should be_false }
+      expect(subject.installed?).to be_false
     end
   end
 end

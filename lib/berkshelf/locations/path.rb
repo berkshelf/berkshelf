@@ -1,17 +1,24 @@
 module Berkshelf
   class PathLocation < BaseLocation
+    # Technically path locations are always installed, but this method
+    # intentionally returns +false+ to force validation of the cookbook at the
+    # path.
     #
-    #
-    def download
-      cookbook = CachedCookbook.from_path(expanded_path)
-      super(cookbook)
+    # @see BaseLocation#installed?
+    def installed?
+      false
     end
 
-    # The path to the cookbook on disk.
+    # The installation for a path location is actually just a noop
     #
-    # @return [String]
-    def path
-      options[:path]
+    # @see BaseLocation#install
+    def install
+      validate_cached!(expanded_path)
+    end
+
+    # @see BaseLocation#cached_cookbook
+    def cached_cookbook
+      @cached_cookbook ||= CachedCookbook.from_path(expanded_path)
     end
 
     # Returns true if the location is a metadata location. By default, no
@@ -29,7 +36,7 @@ module Berkshelf
     # @return [String]
     #   the relative path relative to the target
     def relative_path
-      my_path     = Pathname.new(path).expand_path
+      my_path     = Pathname.new(options[:path]).expand_path
       target_path = Pathname.new(dependency.berksfile.filepath).expand_path
       target_path = target_path.dirname if target_path.file?
 
@@ -46,14 +53,6 @@ module Berkshelf
     def expanded_path
       parent = File.expand_path(File.dirname(dependency.berksfile.filepath))
       File.expand_path(relative_path, parent)
-    end
-
-    # A Path location is valid if the path exists and is readable by the
-    # current process.
-    #
-    # @return (see BaseLocation#valid?)
-    def valid?
-      File.exist?(path) && File.readable?(path)
     end
 
     def ==(other)
