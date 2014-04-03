@@ -5,10 +5,8 @@ World(Berkshelf::RSpec::ChefAPI)
 World(Berkshelf::RSpec::FileSystemMatchers)
 
 Given /^a cookbook named "(.*?)"$/ do |name|
-  steps %{
-    Given a directory named "#{name}"
-    And an empty file named "#{name}/metadata.rb"
-  }
+  create_dir(name)
+  write_file(File.join(name, "metadata.rb"), "name '#{name}'")
 end
 
 Given /^the cookbook "(.*?)" has the file "(.*?)" with:$/ do |cookbook_name, file_name, content|

@@ -12,7 +12,7 @@ module Berkshelf
         cached_name = File.basename(path.to_s).slice(DIRNAME_REGEXP, 1)
         return nil if cached_name.nil?
 
-        loaded_cookbooks[path.to_s] ||= from_path(path, name: cached_name)
+        loaded_cookbooks[path.to_s] ||= from_path(path)
       end
 
       private
