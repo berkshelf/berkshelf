@@ -4,14 +4,6 @@ guard 'spork' do
   watch(%r{^features/support/}) { :cucumber }
 end
 
-unless RUBY_PLATFORM =~ /mswin|mingw|windows/
-  guard 'yard', stdout: '/dev/null', stderr: '/dev/null' do
-    watch(%r{app/.+\.rb})
-    watch(%r{lib/.+\.rb})
-    watch(%r{ext/.+\.c})
-  end
-end
-
 rspec_cli = '--color --drb --format Fuubar'
 rspec_cli += ' --tag ~@api_client --tag ~@not_supported_on_windows' if RUBY_PLATFORM =~ /mswin|mingw|windows/
 guard 'rspec', cli: rspec_cli, all_on_start: false, all_after_pass: false do
