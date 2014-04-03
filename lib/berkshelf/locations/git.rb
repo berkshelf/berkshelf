@@ -88,7 +88,7 @@ module Berkshelf
       # Validate the scratched path is a valid cookbook
       validate_cached!(scratch_path)
 
-      # If we got this far, we should cop
+      # If we got this far, we should copy
       FileUtils.rm_rf(install_path) if install_path.exist?
       FileUtils.cp_r(scratch_path, install_path)
       install_path.chmod(0777 & ~File.umask)
