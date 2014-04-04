@@ -1,13 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Uncomment these lines (and the ones in the generated Gemfile) if you want
-# to live on the Edge:
-#
-# Vagrant.require_plugin "vagrant-berkshelf"
-# Vagrant.require_plugin "vagrant-omnibus"
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
 
-Vagrant.configure("2") do |config|
+Vagrant.require_version ">= 1.5.0"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
@@ -36,20 +35,7 @@ Vagrant.configure("2") do |config|
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
   # network interface) by any external networks.
-<% if berkshelf_config.vagrant.vm.network.hostonly.present? -%>
-  config.vm.network :private_network, ip: "<%= berkshelf_config.vagrant.vm.network.hostonly %>"
-<% else %>
-  config.vm.network :private_network, ip: "192.168.33.10"
-<% end -%>
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-<% if berkshelf_config.vagrant.vm.network.bridged -%>
-  config.vm.network :public_network
-<% else %>
-  # config.vm.network :public_network
-<% end -%>
+  config.vm.network :private_network, type: "dhcp"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,

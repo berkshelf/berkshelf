@@ -104,12 +104,6 @@ module Berkshelf
     attribute 'vagrant.vm.forward_port',
       type: Hash,
       default: Hash.new
-    attribute 'vagrant.vm.network.bridged',
-      type: Boolean,
-      default: false
-    attribute 'vagrant.vm.network.hostonly',
-      type: String,
-      default: '33.33.33.10'
     attribute 'vagrant.vm.provision',
       type: String,
       default: 'chef_solo'
