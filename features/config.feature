@@ -20,10 +20,6 @@ Feature: Reading a Berkshelf configuration file
           "box_url": "http://files.vagrantup.com/lucid64.box",
           "forward_port": {
             "12345": "54321"
-          },
-          "network": {
-            "bridged": true,
-            "hostonly": "12.34.56.78"
           }
         }
       }
@@ -35,8 +31,7 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
-      | config.vm.network :private_network, ip: "12.34.56.78" |
-      | config.vm.network :public_network |
+      | config.vm.network :private_network, type: "dhcp" |
     And the exit status should be 0
 
   Scenario: Using a Berkshelf configuration file that sets the vagrant-omnibus plugin chef version
@@ -53,10 +48,6 @@ Feature: Reading a Berkshelf configuration file
           "box_url": "http://files.vagrantup.com/lucid64.box",
           "forward_port": {
             "12345": "54321"
-          },
-          "network": {
-            "bridged": true,
-            "hostonly": "12.34.56.78"
           }
         }
       }
@@ -68,8 +59,7 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
-      | config.vm.network :private_network, ip: "12.34.56.78" |
-      | config.vm.network :public_network |
+      | config.vm.network :private_network, type: "dhcp" |
     And the exit status should be 0
 
   Scenario: Using a Berkshelf configuration file that sets the vagrant-omnibus plugin chef version to latest
@@ -86,10 +76,6 @@ Feature: Reading a Berkshelf configuration file
           "box_url": "http://files.vagrantup.com/lucid64.box",
           "forward_port": {
             "12345": "54321"
-          },
-          "network": {
-            "bridged": true,
-            "hostonly": "12.34.56.78"
           }
         }
       }
@@ -101,8 +87,7 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.box = "my_box" |
       | config.vm.box_url = "http://files.vagrantup.com/lucid64.box" |
       | config.vm.network :forwarded_port, guest: 12345, host: 54321 |
-      | config.vm.network :private_network, ip: "12.34.56.78" |
-      | config.vm.network :public_network |
+      | config.vm.network :private_network, type: "dhcp" |
 
   Scenario: Using a partial Berkshelf configuration file
     Given I have a Berkshelf config file containing:
