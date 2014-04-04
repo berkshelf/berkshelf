@@ -1,7 +1,10 @@
 Berkshelf
 =========
-[![Gem Version](https://badge.fury.io/rb/berkshelf.png)](http://badge.fury.io/rb/berkshelf)
-[![Build Status](https://travis-ci.org/berkshelf/berkshelf.png?branch=master)](https://travis-ci.org/berkshelf/berkshelf)
+[![Gem Version](https://img.shields.io/gem/v/berkshelf.svg)][gem]
+[![Build Status](https://img.shields.io/travis/berkshelf/berkshelf.svg)][travis]
+
+[gem]: https://rubygems.org/gems/berkshelf
+[travis]: https://travis-ci.org/berkshelf/berkshelf
 
 Manage a Cookbook or an Application's Cookbook dependencies
 
