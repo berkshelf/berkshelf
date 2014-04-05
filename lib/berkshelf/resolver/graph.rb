@@ -9,6 +9,7 @@ module Berkshelf
           artifact(cookbook.cookbook_name, cookbook.version)
 
           cookbook.dependencies.each do |dependency, constraint|
+            constraint = nil if constraint.empty?
             artifact(cookbook.cookbook_name, cookbook.version).depends(dependency, constraint)
           end
         end
@@ -25,6 +26,7 @@ module Berkshelf
 
         artifact(name, version)
         cookbook.dependencies.each do |dependency, constraint|
+          constraint = nil if constraint.empty?
           artifact(name, version).depends(dependency, constraint)
         end
       end
@@ -37,6 +39,7 @@ module Berkshelf
           artifact(cookbook.name, cookbook.version)
 
           cookbook.dependencies.each do |dependency, constraint|
+            constraint = nil if constraint.empty?
             artifact(cookbook.name, cookbook.version).depends(dependency, constraint)
           end
         end
