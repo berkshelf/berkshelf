@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gemspec
 
+gem "solve", github: "berkshelf/solve"
+
 group :guard do
   gem 'coolline',      '~> 0.4.2'
   gem 'guard',         '~> 1.8'

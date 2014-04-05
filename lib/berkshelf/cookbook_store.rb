@@ -141,7 +141,7 @@ module Berkshelf
     # @return [Berkshelf::CachedCookbook, nil]
     def satisfy(name, constraint)
       graph = Solve::Graph.new
-      cookbooks(name).each { |cookbook| graph.artifacts(name, cookbook.version) }
+      cookbooks(name).each { |cookbook| graph.artifact(name, cookbook.version) }
 
       name, version = Solve.it!(graph, [[name, constraint]], ENV['DEBUG_RESOLVER'] ? { ui: Berkshelf.ui } : {}).first
 

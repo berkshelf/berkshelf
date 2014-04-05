@@ -6,10 +6,11 @@ module Berkshelf
         store ||= Berkshelf::CookbookStore.instance
 
         store.cookbooks.each do |cookbook|
-          artifacts(cookbook.cookbook_name, cookbook.version)
+          artifact(cookbook.cookbook_name, cookbook.version)
 
           cookbook.dependencies.each do |dependency, constraint|
-            artifacts(cookbook.cookbook_name, cookbook.version).depends(dependency, constraint)
+            constraint = nil if constraint.empty?
+            artifact(cookbook.cookbook_name, cookbook.version).depends(dependency, constraint)
           end
         end
       end
@@ -23,9 +24,10 @@ module Berkshelf
         name    = cookbook.cookbook_name
         version = cookbook.version
 
-        artifacts(name, version)
+        artifact(name, version)
         cookbook.dependencies.each do |dependency, constraint|
-          artifacts(name, version).depends(dependency, constraint)
+          constraint = nil if constraint.empty?
+          artifact(name, version).depends(dependency, constraint)
         end
       end
 
@@ -34,10 +36,11 @@ module Berkshelf
         universe(sources).each do |cookbook|
           next if has_artifact?(cookbook.name, cookbook.version)
 
-          artifacts(cookbook.name, cookbook.version)
+          artifact(cookbook.name, cookbook.version)
 
           cookbook.dependencies.each do |dependency, constraint|
-            artifacts(cookbook.name, cookbook.version).depends(dependency, constraint)
+            constraint = nil if constraint.empty?
+            artifact(cookbook.name, cookbook.version).depends(dependency, constraint)
           end
         end
       end
