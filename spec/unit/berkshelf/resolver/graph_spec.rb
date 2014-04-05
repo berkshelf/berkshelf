@@ -19,7 +19,7 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
 
     it "adds the dependencies of each dependency to the graph" do
       subject.populate(sources)
-      expect(subject.artifacts("ruby", "1.0.0").dependencies).to have(1).item
+      expect(subject.artifact("ruby", "1.0.0").dependencies).to have(1).item
     end
   end
 
