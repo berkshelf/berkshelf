@@ -56,7 +56,7 @@ module Berkshelf
     # a cached git copy and a scratch directory to prevent bad cookbooks from
     # making their way into the cookbook store.
     #
-    # @see BaseLOcation#install
+    # @see BaseLocation#install
     def install
       scratch_path = Pathname.new(Dir.mktmpdir)
 
