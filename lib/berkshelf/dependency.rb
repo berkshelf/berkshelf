@@ -17,8 +17,6 @@ module Berkshelf
       end
     end
 
-    DEFAULT_CONSTRAINT = '>= 0.0.0'.freeze
-
     # @return [Berkshelf::Berksfile]
     attr_reader :berksfile
     # @return [String]
@@ -27,9 +25,9 @@ module Berkshelf
     attr_reader :groups
     # @return [Berkshelf::Location]
     attr_reader :location
-    # @return [Solve::Version]
+    # @return [Semverse::Version]
     attr_reader :locked_version
-    # @return [Solve::Constraint]
+    # @return [Semverse::Constraint]
     attr_reader :version_constraint
     # @return [Source]
     attr_accessor :source
@@ -39,7 +37,7 @@ module Berkshelf
     # @param [String] name
     #   the name of dependency
     #
-    # @option options [String, Solve::Constraint] :constraint
+    # @option options [String, Semverse::Constraint] :constraint
     #   version constraint for this dependency
     # @option options [String] :git
     #   the Git URL to clone
@@ -62,8 +60,14 @@ module Berkshelf
       @name               = name
       @metadata           = options[:metadata]
       @location           = Location.init(self, options)
-      @locked_version     = Solve::Version.new(options[:locked_version]) if options[:locked_version]
-      @version_constraint = Solve::Constraint.new(options[:constraint] || DEFAULT_CONSTRAINT)
+
+      if options[:locked_version]
+        @locked_version = Semverse::Version.coerce(options[:locked_version])
+      end
+
+      # The coerce method automatically gives us a default constraint of
+      # >= 0.0.0 if the constraint is not set.
+      @version_constraint = Semverse::Constraint.coerce(options[:constraint])
 
       add_group(options[:group]) if options[:group]
       add_group(:default) if groups.empty?
@@ -81,7 +85,7 @@ module Berkshelf
     # @param [#to_s] version
     #   the version to set
     def locked_version=(version)
-      @locked_version = Solve::Version.new(version.to_s)
+      @locked_version = Semverse::Version.coerce(version)
     end
 
     # Set this dependency's constraint(s).
@@ -89,7 +93,7 @@ module Berkshelf
     # @param [#to_s] constraint
     #   the constraint to set
     def version_constraint=(constraint)
-      @version_constraint = Solve::Constraint.new(constraint.to_s)
+      @version_constraint = Semverse::Constraint.coerce(constraint)
     end
 
     def add_group(*local_groups)

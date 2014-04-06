@@ -146,7 +146,7 @@ module Berkshelf
     end
 
     # @param [String] name
-    # @param [String, Solve::Constraint] constraint
+    # @param [String, Semverse::Constraint] constraint
     #
     # @return [String]
     def satisfy(name, constraint)

@@ -96,7 +96,7 @@ module Berkshelf
     def cookbooks(filter = nil)
       cookbooks = storage_path.children.collect do |path|
         begin
-          Solve::Version.split(File.basename(path).slice(CachedCookbook::DIRNAME_REGEXP, 2))
+          Semverse::Version.split(File.basename(path).slice(CachedCookbook::DIRNAME_REGEXP, 2))
         rescue Solve::Errors::InvalidVersionFormat
           # Skip cookbooks that were downloaded by an SCM location. These can not be considered
           # complete cookbooks.
@@ -136,7 +136,7 @@ module Berkshelf
     # constraint. Nil is returned if no matching CachedCookbook is found.
     #
     # @param [#to_s] name
-    # @param [Solve::Constraint] constraint
+    # @param [Semverse::Constraint] constraint
     #
     # @return [Berkshelf::CachedCookbook, nil]
     def satisfy(name, constraint)

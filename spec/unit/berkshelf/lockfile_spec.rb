@@ -58,7 +58,7 @@ describe Berkshelf::Lockfile do
       cookbook = double('apt-1.0.0', dependencies: {})
       apt = double('apt',
         name: 'apt',
-        version_constraint: Solve::Constraint.new('>= 0.0.0'),
+        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
         version: '1.0.0',
         location: 'api',
         dependencies: {},
@@ -76,7 +76,7 @@ describe Berkshelf::Lockfile do
       cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0' })
       apt = double('apt',
         name: 'apt',
-        version_constraint: Solve::Constraint.new('>= 0.0.0'),
+        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
         version: '1.0.0',
         location: 'api',
         dependencies: { 'bacon' => '1.0.0' },
@@ -96,7 +96,7 @@ describe Berkshelf::Lockfile do
       cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0', 'flip' => '2.0.0' })
       apt = double('apt',
         name: 'apt',
-        version_constraint: Solve::Constraint.new('>= 0.0.0'),
+        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
         version: '1.0.0',
         location: 'api',
         dependencies: { 'bacon' => '1.0.0' },
@@ -132,7 +132,7 @@ describe Berkshelf::Lockfile do
       cookbook = double('apt-1.0.0', dependencies: {})
       apt = double('apt',
         name: 'apt',
-        version_constraint: Solve::Constraint.new('< 1.0.0'),
+        version_constraint: Semverse::Constraint.new('< 1.0.0'),
         version: '1.0.0',
         location: 'api',
         dependencies: {},
@@ -150,7 +150,7 @@ describe Berkshelf::Lockfile do
       cookbook = double('apt-1.0.0', dependencies: {})
       apt = double('apt',
         name: 'apt',
-        version_constraint: Solve::Constraint.new('< 1.0.0'),
+        version_constraint: Semverse::Constraint.new('< 1.0.0'),
         version: '1.0.0',
         location: 'api',
         dependencies: {},
