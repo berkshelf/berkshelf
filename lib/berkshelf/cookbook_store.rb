@@ -97,7 +97,7 @@ module Berkshelf
       cookbooks = storage_path.children.collect do |path|
         begin
           Semverse::Version.split(File.basename(path).slice(CachedCookbook::DIRNAME_REGEXP, 2))
-        rescue Solve::Errors::InvalidVersionFormat
+        rescue Semverse::InvalidVersionFormat
           # Skip cookbooks that were downloaded by an SCM location. These can not be considered
           # complete cookbooks.
           next
