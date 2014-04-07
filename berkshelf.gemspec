@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'faraday',              '~> 0.9.0'
   s.add_dependency 'minitar',              '~> 0.5.4'
   s.add_dependency 'retryable',            '~> 1.3.3'
-  s.add_dependency 'ridley',               '~> 3.0.0.rc1'
+  s.add_dependency 'ridley',               '~> 3.0'
   s.add_dependency 'solve',                '~> 1.0.0.dev'
   s.add_dependency 'thor',                 '~> 0.18.0'
   s.add_dependency 'octokit',              '~> 2.6'
