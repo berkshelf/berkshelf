@@ -9,6 +9,9 @@ notifications:
       - "irc.freenode.org#berkshelf"
     skip_join: true
     use_notice: true
+  webhooks:
+    urls:
+      - "https://webhooks.gitter.im/e/cdd41ff6c4d1f062c2f1"
 branches:
   only:
     - master
