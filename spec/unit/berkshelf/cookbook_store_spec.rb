@@ -38,9 +38,9 @@ describe Berkshelf::CookbookStore do
   describe '#satisfy' do
     let(:name) { 'nginx' }
     let(:version) { '0.101.4' }
-    let(:constraint) { Solve::Constraint.new('~> 0.101.2') }
-    let(:cached_one) { double('cached-one', name: name, version: Solve::Version.new(version)) }
-    let(:cached_two) { double('cached-two', name: 'mysql', version: Solve::Version.new('1.2.6')) }
+    let(:constraint) { Semverse::Constraint.new('~> 0.101.2') }
+    let(:cached_one) { double('cached-one', name: name, version: Semverse::Version.new(version)) }
+    let(:cached_two) { double('cached-two', name: 'mysql', version: Semverse::Version.new('1.2.6')) }
 
     before { subject.stub(:cookbooks).and_return([cached_one, cached_two]) }
 
@@ -61,8 +61,8 @@ describe Berkshelf::CookbookStore do
     end
 
     context 'when there is no matching cookbook for the given name and constraint' do
-      let(:version) { Solve::Version.new('1.0.0') }
-      let(:constraint) { Solve::Constraint.new('= 0.1.0') }
+      let(:version) { Semverse::Version.new('1.0.0') }
+      let(:constraint) { Semverse::Constraint.new('= 0.1.0') }
 
       before { subject.stub(:cookbooks).and_return([ double('badcache', name: 'none', version: version) ]) }
 

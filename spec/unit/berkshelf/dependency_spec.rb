@@ -29,7 +29,7 @@ describe Berkshelf::Dependency do
       context 'given a value for :constraint' do
         let(:source) { described_class.new(berksfile, cookbook_name, constraint: '~> 1.0.84') }
 
-        it 'returns a Solve::Constraint for the given version for version_constraint' do
+        it 'returns a Semverse::Constraint for the given version for version_constraint' do
           expect(source.version_constraint.to_s).to eq('~> 1.0.84')
         end
       end

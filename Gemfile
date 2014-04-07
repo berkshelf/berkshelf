@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gemspec
 
 gem "solve", github: "berkshelf/solve"
+gem "ridley", github: "RiotGames/ridley"
+gem "semverse", github: "berkshelf/semverse"
 
 group :guard do
   gem 'coolline',      '~> 0.4.2'

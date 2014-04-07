@@ -233,7 +233,7 @@ module Berkshelf
     #
     # @param [String] name
     #   the name of the dependency to add
-    # @param [String, Solve::Constraint] constraint
+    # @param [String, Semverse::Constraint] constraint
     #   the constraint to lock the dependency to
     #
     # @option options [Symbol, Array] :group

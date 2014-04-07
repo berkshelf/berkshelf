@@ -146,12 +146,12 @@ module Berkshelf
     end
 
     # @param [String] name
-    # @param [String, Solve::Constraint] constraint
+    # @param [String, Semverse::Constraint] constraint
     #
     # @return [String]
     def satisfy(name, constraint)
-      Solve::Solver.satisfy_best(constraint, versions(name)).to_s
-    rescue Solve::Errors::NoSolutionError
+      Semverse::Constraint.satisfy_best(constraint, versions(name)).to_s
+    rescue Semverse::NoSolutionError
       nil
     end
 

@@ -161,7 +161,7 @@ module Berkshelf
         graphed = graph.find(name)
         return false if graphed.nil?
 
-        Solve::Constraint.new(constraint).satisfies?(graphed.version) &&
+        Semverse::Constraint.new(constraint).satisfies?(graphed.version) &&
         satisfies_transitive?(graphed, checked)
       end
     end
