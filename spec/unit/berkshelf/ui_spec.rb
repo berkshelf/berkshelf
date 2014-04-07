@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Thor::Base.shell do
-  let(:stdout) { double('stdout') }
+  let(:stdout) { double('stdout', tty?: true) }
   let(:stderr) { double('stderr') }
 
   before do
@@ -30,7 +30,7 @@ describe Thor::Base.shell do
       end
 
       it 'does not output anything', :not_supported_on_windows do
-        stdout.should_not_receive(:puts)
+        stdout.should_not_receive(:print)
         subject.say 'message'
       end
     end
@@ -41,7 +41,7 @@ describe Thor::Base.shell do
       end
 
       it 'prints to stdout' do
-        stdout.should_receive(:puts).with('message').once
+        stdout.should_receive(:print).once
         stdout.should_receive(:flush).with(no_args())
         subject.say 'message'
       end
@@ -66,7 +66,7 @@ describe Thor::Base.shell do
       end
 
       it 'prints to stdout' do
-        stdout.should_receive(:puts).with(windows? ? "           5  message" : "\e[1m\e[32m           5\e[0m  message")
+        stdout.should_receive(:print).once
         stdout.should_receive(:flush).with(no_args())
         subject.say_status 5, 'message'
       end
@@ -80,7 +80,7 @@ describe Thor::Base.shell do
       end
 
       it 'does not output anything' do
-        stdout.should_not_receive(:puts)
+        stdout.should_not_receive(:print)
         subject.warn 'warning'
       end
     end
@@ -91,8 +91,7 @@ describe Thor::Base.shell do
       end
 
       it 'calls #say with yellow coloring' do
-        stdout.stub :tty?
-        stdout.should_receive(:puts).with("warning")
+        stdout.should_receive(:print)
         stdout.should_receive(:flush).with(no_args())
         subject.warn 'warning'
       end
