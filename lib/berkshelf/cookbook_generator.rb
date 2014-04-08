@@ -63,6 +63,7 @@ module Berkshelf
       when "wrapper"
         empty_directory target.join("attributes")
         empty_directory target.join("recipes")
+        template "default_recipe.erb", target.join("recipes/default.rb")
       when "environment", "application"
         empty_directory target.join("files/default")
         empty_directory target.join("templates/default")
