@@ -279,6 +279,7 @@ module Berkshelf
 
       Berkshelf.formatter.msg 'Successfully initialized'
     end
+    tasks['init'].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
