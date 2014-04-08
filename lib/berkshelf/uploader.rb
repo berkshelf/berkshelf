@@ -83,21 +83,24 @@ module Berkshelf
         # Create a copy of the dependencies. We need to make a copy, or else
         # we would be adding dependencies directly to the Berksfile object, and
         # that would be a bad idea...
-        dependencies = Array(berksfile.dependencies)
+        dependencies = berksfile.dependencies.map(&:name)
 
-        berksfile.dependencies.inject({}) do |hash, dependency|
-          # Skip dependencies that are already added
-          next if hash[dependency.name]
+        checked   = {}
+        cookbooks = {}
 
-          lockfile.graph.find(dependency).dependencies.each do |name, dependency|
-            hash[name] ||= lockfile.retrieve(name)
-            dependencies << dependency
+        dependencies.each do |dependency|
+          next if checked[dependency]
+
+          lockfile.graph.find(dependency).dependencies.each do |name, _|
+            cookbooks[name] ||= lockfile.retrieve(name)
+            dependencies << name
           end
 
-          hash[dependency.name] = lockfile.retrieve(dependency)
+          checked[dependency] = true
+          cookbooks[dependency] ||= lockfile.retrieve(dependency)
+        end
 
-          hash
-        end.values
+        cookbooks.values.sort
       end
 
       # Validate that the given cookbook does not have "bad" files. Currently
