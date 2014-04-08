@@ -66,7 +66,7 @@ module Berkshelf
     #
     # @param [Berkshelf::CachedCookbook] cookbook
     # @param [Ridley::Connection] conn
-    def upload(cookbook, conn)
+    def uploaded(cookbook, conn)
       name = cookbook.cookbook_name
       cookbooks[name] ||= {}
       cookbooks[name][:version] = cookbook.version
@@ -77,7 +77,7 @@ module Berkshelf
     #
     # @param [Berkshelf::CachedCookbook] cookbook
     # @param [Ridley::Connection] conn
-    def skip(cookbook, conn)
+    def skipping(cookbook, conn)
       name = cookbook.cookbook_name
       cookbooks[name] ||= {}
       cookbooks[name][:version] = cookbook.version
