@@ -4,7 +4,8 @@ module Berkshelf
   describe Uploader do
     let(:berksfile) do
       double(Berksfile,
-        lockfile: lockfile
+        lockfile: lockfile,
+        dependencies: [],
       )
     end
 
