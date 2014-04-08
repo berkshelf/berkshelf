@@ -8,6 +8,13 @@ module Berkshelf
       end
     end
 
+    TYPES = [
+      "environment",
+      "application",
+      "library",
+      "wrapper"
+    ].freeze
+
     shell = Berkshelf.ui
 
     argument :path,

@@ -6,6 +6,13 @@ module Berkshelf
       type: :string,
       required: true
 
+    class_option :pattern,
+      type: :string,
+      default: "application",
+      desc: "Modifies the generated skeleton based on the given pattern.",
+      aliases: "-p",
+      enum: BaseGenerator::TYPES
+
     class_option :skip_vagrant,
       type: :boolean,
       default: false
@@ -48,15 +55,25 @@ module Berkshelf
       default: Berkshelf.config.cookbook.email
 
     def generate
-      empty_directory target.join('files/default')
-      empty_directory target.join('templates/default')
-      empty_directory target.join('attributes')
-      empty_directory target.join('libraries')
-      empty_directory target.join('providers')
-      empty_directory target.join('recipes')
-      empty_directory target.join('resources')
+      case options[:pattern]
+      when "library"
+        empty_directory target.join("libraries")
+        empty_directory target.join("providers")
+        empty_directory target.join("resources")
+      when "wrapper"
+        empty_directory target.join("attributes")
+        empty_directory target.join("recipes")
+      when "environment", "application"
+        empty_directory target.join("files/default")
+        empty_directory target.join("templates/default")
+        empty_directory target.join("attributes")
+        empty_directory target.join("libraries")
+        empty_directory target.join("providers")
+        empty_directory target.join("recipes")
+        empty_directory target.join("resources")
+        template "default_recipe.erb", target.join("recipes/default.rb")
+      end
 
-      template 'default_recipe.erb', target.join('recipes/default.rb')
       template 'metadata.rb.erb', target.join('metadata.rb')
       template license_file, target.join('LICENSE')
       template 'README.md.erb', target.join('README.md')
