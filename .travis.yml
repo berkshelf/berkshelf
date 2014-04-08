@@ -15,6 +15,7 @@ notifications:
 branches:
   only:
     - master
+env: USE_SYSTEM_GECODE=1
 bundler_args: --without guard --jobs 7
 before_install:
   - sudo apt-get install -qq libarchive12 libarchive-dev libgecode-dev
