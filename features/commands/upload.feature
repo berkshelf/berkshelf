@@ -75,6 +75,30 @@ Feature: berks upload
     And the Chef Server should not have the cookbooks:
       | ekaf  | 2.0.0 |
 
+  Scenario: specifying a single cookbook that is a transitive dependency
+    Given the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'reset', '3.4.5'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        reset (= 3.4.5)
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+        reset (3.4.5)
+          ekaf (= 2.0.0)
+          fake (= 1.0.0)
+      """
+    When I successfully run `berks upload fake`
+    Then the Chef Server should have the cookbooks:
+      | fake  | 1.0.0 |
+
   Scenario: specifying a dependency not defined in the Berksfile
     Given I have a Berksfile pointing at the local Berkshelf API
     And I write to "Berksfile.lock" with:
