@@ -197,7 +197,7 @@ module Berkshelf
     method_option :halt_on_frozen,
       type: :boolean,
       default: false,
-      desc: 'Halt uploading and exit if the Chef Server has a frozen version of the cookbook(s).'
+      desc: 'Exit with a non zero exit code if the Chef Server already has the version of the cookbook(s).'
     desc 'upload [COOKBOOKS]', 'Upload the cookbook specified in the Berksfile to the Chef Server'
     def upload(*names)
       berksfile = Berksfile.from_options(options)
