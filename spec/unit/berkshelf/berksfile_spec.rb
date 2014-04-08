@@ -320,187 +320,36 @@ describe Berkshelf::Berksfile do
   end
 
   describe '#upload' do
-    let(:graph)    { double(locks: []) }
-    let(:lockfile) { double(present?: true, trusted?: true, graph: graph) }
+    let(:uploader) { double(Berkshelf::Uploader, run: nil) }
 
     before do
-      Berkshelf.stub(:config).and_return(berkshelf_config)
-      subject.stub(:lockfile).and_return(lockfile)
+      subject.stub(:validate_lockfile_present!)
+      subject.stub(:validate_lockfile_trusted!)
+      subject.stub(:validate_dependencies_installed!)
+
+      Berkshelf::Uploader.stub(:new).and_return(uploader)
     end
 
-    let(:options) { Hash.new }
-    let(:chef_config) do
-      double('chef-config',
-        node_name: 'fake-client',
-        client_key: 'client-key',
-        chef_server_url: 'http://configured-chef-server/',
-        validation_client_name: 'validator',
-        validation_key: 'validator.pem',
-        cookbook_copyright: 'user',
-        cookbook_email: 'user@example.com',
-        cookbook_license: 'apachev2',
-      )
-    end
-    let(:berkshelf_config) { double('berkshelf-config', ssl: double(verify: true), chef: chef_config) }
-    let(:default_ridley_options) do
-      {
-        client_name: 'fake-client',
-        client_key: 'client-key',
-        ssl: {
-          verify: true
-        }
-      }
+    it 'validates the lockfile is present' do
+      expect(subject).to receive(:validate_lockfile_present!).once
+      subject.upload
     end
 
-    let(:upload) { subject.upload(options) }
-
-    context 'when there is no value for :chef_server_url' do
-      before { chef_config.stub(chef_server_url: nil) }
-      let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.server_url' }
-
-      it 'raises an error' do
-        expect { upload }.to raise_error(Berkshelf::ChefConnectionError, message)
-      end
+    it 'validates the lockfile is trusted' do
+      expect(subject).to receive(:validate_lockfile_trusted!).once
+      subject.upload
     end
 
-    context 'when there is no value for :client_name' do
-      before { chef_config.stub(node_name: nil) }
-      let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.node_name' }
-
-      it 'raises an error' do
-        expect { upload }.to raise_error(Berkshelf::ChefConnectionError, message)
-      end
+    it 'validates the dependencies are installed' do
+      expect(subject).to receive(:validate_dependencies_installed!).once
+      subject.upload
     end
 
-    context 'when there is no value for :client_key' do
-      before { chef_config.stub(client_key: nil) }
-      let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.client_key' }
+    it 'creates a new Uploader' do
+      expect(Berkshelf::Uploader).to receive(:new).with(subject)
+      expect(uploader).to receive(:run)
 
-      it 'raises an error' do
-        expect {
-          upload
-        }.to raise_error(Berkshelf::ChefConnectionError, message)
-      end
-    end
-
-    context 'when a Chef Server url is not passed as an option' do
-      let(:ridley_options) do
-        { server_url: 'http://configured-chef-server/' }.merge(default_ridley_options)
-      end
-
-      it 'uses Berkshelf::Config configured server_url' do
-        Ridley.should_receive(:open).with(ridley_options)
-        upload
-      end
-    end
-
-    context 'when a Chef Server url is passed as an option' do
-      let(:options) do
-        {
-          server_url: 'http://fake-chef-server.com/'
-        }
-      end
-      let(:ridley_options) do
-        { server_url: 'http://fake-chef-server.com/'}.merge(default_ridley_options)
-      end
-
-      it 'uses the passed in :server_url' do
-        Ridley.should_receive(:open).with(ridley_options)
-        upload
-      end
-    end
-
-    context 'when a client name is passed as an option' do
-      let(:options) do
-        {
-            client_name: 'passed-in-client-name'
-        }
-      end
-      let(:ridley_options) do
-        default_ridley_options.merge(
-            { server_url: 'http://configured-chef-server/', client_name: 'passed-in-client-name'})
-      end
-
-      it 'uses the passed in :client_name' do
-        Ridley.should_receive(:open).with(ridley_options)
-        upload
-      end
-    end
-
-    context 'when a client key is passed as an option' do
-      let(:options) do
-        {
-            client_key: 'passed-in-client-key'
-        }
-      end
-      let(:ridley_options) do
-        default_ridley_options.merge(
-            { server_url: 'http://configured-chef-server/', client_key: 'passed-in-client-key'})
-      end
-
-      it 'uses the passed in :client_key' do
-        Ridley.should_receive(:open).with(ridley_options)
-        upload
-      end
-    end
-
-    context 'when validate is passed' do
-      let(:mysql_dependency) { double(name: 'mysql', metadata?: false, dependencies: []) }
-      let(:mysql_cookbook)   { double(cookbook_name: 'mysql', path: 'path') }
-
-      let(:options) do
-        {
-          force:    false,
-          freeze:   true,
-          validate: false,
-          name:     mysql_cookbook.cookbook_name
-        }
-      end
-      let(:ridley_options) do
-        default_ridley_options.merge({ server_url: 'http://configured-chef-server/'})
-      end
-      let(:conn) { double('conn') }
-
-      before do
-        subject.stub(:dependencies).and_return([mysql_dependency])
-        graph.stub(:find).with(mysql_dependency).and_return(mysql_dependency)
-        lockfile.stub(:retrieve).with(mysql_dependency).and_return(mysql_cookbook)
-      end
-
-      it 'uses the passed in :validate' do
-        expect(Ridley).to receive(:open).and_yield(conn)
-        expect(conn).to receive(:cookbook).and_return(mysql_cookbook)
-        expect(mysql_cookbook).to receive(:upload).with('path', options)
-        subject.upload('mysql', options)
-      end
-    end
-  end
-
-  describe '#validate_files!' do
-    before { described_class.send(:public, :validate_files!) }
-    let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path') }
-
-    it 'raises an error when the cookbook has spaces in the files' do
-      Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
-      expect {
-        subject.validate_files!(cookbook)
-      }.to raise_error
-    end
-
-    it 'does not raise an error when the cookbook is valid' do
-      Dir.stub(:glob).and_return(['/there-are/no-spaces/in-this/recipes/default.rb'])
-      expect {
-        subject.validate_files!(cookbook)
-      }.to_not raise_error
-    end
-
-    it 'does not raise an exception with spaces in the path' do
-      Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
-      Pathname.any_instance.stub(:dirname).and_return('/there are/spaces/in this')
-
-      expect {
-        subject.validate_files!(cookbook)
-      }.to_not raise_error
+      subject.upload
     end
   end
 end

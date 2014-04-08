@@ -40,15 +40,15 @@ module Berkshelf
     #
     # @param [Berkshelf::CachedCookbook] cookbook
     # @param [Ridley::Connection] conn
-    def upload(cookbook, conn)
-      Berkshelf.ui.info "Uploading #{cookbook.cookbook_name} (#{cookbook.version}) to: '#{conn.server_url}'"
+    def uploaded(cookbook, conn)
+      Berkshelf.ui.info "Uploaded #{cookbook.cookbook_name} (#{cookbook.version}) to: '#{conn.server_url}'"
     end
 
     # Output a Cookbook skip message using {Berkshelf.ui}
     #
     # @param [Berkshelf::CachedCookbook] cookbook
     # @param [Ridley::Connection] conn
-    def skip(cookbook, conn)
+    def skipping(cookbook, conn)
       Berkshelf.ui.info "Skipping #{cookbook.cookbook_name} (#{cookbook.version}) (frozen)"
     end
 

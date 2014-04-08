@@ -30,8 +30,8 @@ module Berkshelf
     formatter_method :package
     formatter_method :search
     formatter_method :show
-    formatter_method :skip
-    formatter_method :upload
+    formatter_method :skipping
+    formatter_method :uploaded
     formatter_method :use
     formatter_method :vendor
     formatter_method :version

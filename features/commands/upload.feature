@@ -71,9 +71,33 @@ Feature: berks upload
     When I successfully run `berks upload reset`
     Then the Chef Server should have the cookbooks:
       | reset | 3.4.5 |
-      | fake  | 1.0.0 |
     And the Chef Server should not have the cookbooks:
+      | fake  | 1.0.0 |
       | ekaf  | 2.0.0 |
+
+  Scenario: specifying a single cookbook that is a transitive dependency
+    Given the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
+      | fake | 1.0.0 |
+      | ekaf | 2.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'reset', '3.4.5'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        reset (= 3.4.5)
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+        reset (3.4.5)
+          ekaf (= 2.0.0)
+          fake (= 1.0.0)
+      """
+    When I successfully run `berks upload fake`
+    Then the Chef Server should have the cookbooks:
+      | fake  | 1.0.0 |
 
   Scenario: specifying a dependency not defined in the Berksfile
     Given I have a Berksfile pointing at the local Berkshelf API
@@ -232,6 +256,41 @@ Feature: berks upload
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
 
+  Scenario: specifying cookbooks with transitive dependencies in a group
+    Given the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
+      | fake | 1.0.0 |
+    And the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
+      | ekaf | 2.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      group :rockstars do
+        cookbook 'reset', '3.4.5'
+      end
+
+      group :losers do
+        cookbook 'seth', '1.0.0'
+      end
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        reset (= 3.4.5)
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+          ekaf (= 2.0.0)
+        reset (3.4.5)
+          fake (= 1.0.0)
+      """
+    When I successfully run `berks upload --only rockstars`
+    Then the Chef Server should have the cookbooks:
+      | reset | 3.4.5 |
+      | fake  | 1.0.0 |
+      | ekaf  | 2.0.0 |
+    And the Chef Server should not have the cookbooks:
+      | seth | 1.0.0 |
+
   Scenario: attempting to upload an invalid cookbook
     Given a cookbook named "cookbook with spaces"
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -281,7 +340,7 @@ Feature: berks upload
     When I successfully run `berks upload fake`
     Then the output should contain:
       """
-      Uploading fake (0.0.0)
+      Uploaded fake (0.0.0)
       """
 
   Scenario: When the cookbook already exist
@@ -303,12 +362,6 @@ Feature: berks upload
     Then the output should contain:
       """
       Skipping fake (1.0.0) (frozen)
-      """
-    And the output should contain:
-      """
-      Skipped uploading some cookbooks because they already exist on the remote server and are frozen. Re-run with the `--force` flag to force overwrite these cookbooks:
-
-        * fake (1.0.0)
       """
 
   Scenario: When the cookbook already exist and is a metadata location
@@ -334,9 +387,6 @@ Feature: berks upload
     Then the output should contain:
       """
       Skipping fake (0.0.0) (frozen)
-      Skipped uploading some cookbooks because they already exist on the remote server and are frozen. Re-run with the `--force` flag to force overwrite these cookbooks:
-
-        * fake (0.0.0)
       """
 
   Scenario: When the syntax check is skipped
