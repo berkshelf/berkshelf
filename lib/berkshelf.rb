@@ -24,6 +24,8 @@ module Berkshelf
     autoload :Logging, 'berkshelf/mixin/logging'
   end
 
+  autoload :Uploader, 'berkshelf/uploader'
+
   autoload :BaseFormatter,  'berkshelf/formatters/base'
   autoload :HumanFormatter, 'berkshelf/formatters/human'
   autoload :JsonFormatter,  'berkshelf/formatters/json'

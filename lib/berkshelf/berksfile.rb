@@ -529,24 +529,11 @@ module Berkshelf
     # @return [Array<CachedCookbook>]
     #   the list of cookbooks that were uploaded to the Chef Server
     def upload(*args)
-      options = args.last.is_a?(Hash) ? args.pop : {}
-      names   = args.flatten
-
       validate_lockfile_present!
       validate_lockfile_trusted!
       validate_dependencies_installed!
-      validate_cookbook_names!(names)
 
-      # Calculate the list of cookbooks from the given arguments
-      if names.empty?
-        list = dependencies
-      else
-        list = dependencies.select { |dependency| names.include?(dependency.name) }
-      end
-
-      cookbooks = cookbooks_for_upload(list)
-      ridley_upload(cookbooks, options)
-      cookbooks
+      Uploader.new(self, *args).run
     end
 
     # Package the given cookbook for distribution outside of berkshelf. If the
@@ -651,73 +638,6 @@ module Berkshelf
 
     private
 
-      def ridley_upload(cookbooks, options = {})
-        options = {
-          force:          false,
-          freeze:         true,
-          halt_on_frozen: false,
-          validate:       true,
-        }.merge(options)
-
-        skipped = []
-
-        Berkshelf.ridley_connection(options) do |conn|
-          cookbooks.each do |cookbook|
-            Berkshelf.formatter.upload(cookbook, conn)
-            validate_files!(cookbook)
-
-            begin
-              conn.cookbook.upload(cookbook.path, {
-                force: options[:force],
-                freeze: options[:freeze],
-                name: cookbook.cookbook_name,
-                validate: options[:validate]
-              })
-            rescue Ridley::Errors::FrozenCookbook => ex
-              if options[:halt_on_frozen]
-                raise FrozenCookbook.new(cookbook)
-              end
-
-              Berkshelf.formatter.skip(cookbook, conn)
-              skipped << cookbook
-            end
-          end
-        end
-
-        unless skipped.empty?
-          Berkshelf.formatter.msg "Skipped uploading some cookbooks because they" <<
-            " already exist on the remote server and are frozen. Re-run with the `--force`" <<
-            " flag to force overwrite these cookbooks:" <<
-            "\n\n" <<
-            "  * " << skipped.map { |c| "#{c.cookbook_name} (#{c.version})" }.join("\n  * ")
-        end
-      end
-
-      # Filter the given dependencies for upload. The dependencies of a cookbook
-      # will always be included in the filtered results, even if that
-      # dependency's name is not explicitly provided.
-      #
-      # @param [Array<Dependency>] dependencies
-      #   the list of dependencies to filter for upload
-      #
-      # @return [Array<CachedCookbook>]
-      #   the cookbook objects for uploading
-      def cookbooks_for_upload(dependencies)
-        dependencies.reduce({}) do |hash, dependency|
-          if hash[dependency.name].nil?
-            # TODO: make this a configurable option for advanced users to save
-            # time.
-            lockfile.graph.find(dependency).dependencies.each do |direct, _|
-              hash[direct] ||= lockfile.retrieve(direct)
-            end
-
-            hash[dependency.name] = lockfile.retrieve(dependency)
-          end
-
-          hash
-        end.values
-      end
-
       # Ensure the lockfile is present on disk.
       #
       # @raise [LockfileNotFound]
@@ -774,22 +694,6 @@ module Berkshelf
         unless missing.empty?
           raise DependencyNotFound.new(missing)
         end
-      end
-
-      # Validate that the given cookbook does not have "bad" files. Currently
-      # this means including spaces in filenames (such as recipes)
-      #
-      # @param [CachedCookbook] cookbook
-      #  the Cookbook to validate
-      def validate_files!(cookbook)
-        path = cookbook.path.to_s
-
-        files = Dir.glob(File.join(path, '**', '*.rb')).select do |f|
-          parent = Pathname.new(path).dirname.to_s
-          f.gsub(parent, '') =~ /[[:space:]]/
-        end
-
-        raise InvalidCookbookFiles.new(cookbook, files) unless files.empty?
       end
   end
 end
