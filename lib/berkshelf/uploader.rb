@@ -24,7 +24,7 @@ module Berkshelf
 
       cookbooks = if names.empty?
                     Berkshelf.log.debug "  No names given, using all cookbooks"
-                    lockfile.graph.locks.map { |_, lock| lockfile.retrieve(lock) }
+                    filtered_cookbooks
                   else
                     Berkshelf.log.debug "  Names given (#{names.join(', ')})"
                     names.map { |name| lockfile.retrieve(name) }
@@ -68,6 +68,36 @@ module Berkshelf
             end
           end
         end
+      end
+
+      # Filter cookbooks based off the list of dependencies in the Berksfile.
+      #
+      # This method is secretly recursive. It iterates over each dependency in
+      # the Berksfile (using {Berksfile#dependencies} to account for filters)
+      # and retrieves that cookbook, it's dependencies, and the recusive
+      # dependencies, but iteratively.
+      #
+      # @return [Array<CachedCookbook>]
+      #
+      def filtered_cookbooks
+        # Create a copy of the dependencies. We need to make a copy, or else
+        # we would be adding dependencies directly to the Berksfile object, and
+        # that would be a bad idea...
+        dependencies = Array(berksfile.dependencies)
+
+        berksfile.dependencies.inject({}) do |hash, dependency|
+          # Skip dependencies that are already added
+          next if hash[dependency.name]
+
+          lockfile.graph.find(dependency).dependencies.each do |name, dependency|
+            hash[name] ||= lockfile.retrieve(name)
+            dependencies << dependency
+          end
+
+          hash[dependency.name] = lockfile.retrieve(dependency)
+
+          hash
+        end.values
       end
 
       # Validate that the given cookbook does not have "bad" files. Currently
