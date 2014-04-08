@@ -256,6 +256,41 @@ Feature: berks upload
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
 
+  Scenario: specifying cookbooks with transitive dependencies in a group
+    Given the cookbook store contains a cookbook "reset" "3.4.5" with dependencies:
+      | fake | 1.0.0 |
+    And the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
+      | ekaf | 2.0.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      group :rockstars do
+        cookbook 'reset', '3.4.5'
+      end
+
+      group :losers do
+        cookbook 'seth', '1.0.0'
+      end
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        reset (= 3.4.5)
+
+      GRAPH
+        ekaf (2.0.0)
+        fake (1.0.0)
+          ekaf (= 2.0.0)
+        reset (3.4.5)
+          fake (= 1.0.0)
+      """
+    When I successfully run `berks upload --only rockstars`
+    Then the Chef Server should have the cookbooks:
+      | reset | 3.4.5 |
+      | fake  | 1.0.0 |
+      | ekaf  | 2.0.0 |
+    And the Chef Server should not have the cookbooks:
+      | seth | 1.0.0 |
+
   Scenario: attempting to upload an invalid cookbook
     Given a cookbook named "cookbook with spaces"
     And I have a Berksfile pointing at the local Berkshelf API with:
