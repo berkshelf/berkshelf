@@ -11,8 +11,8 @@ module Berkshelf
     #
     # @param [Exception] ex
     def exception(ex)
-      log.fatal("#{ex.class}: #{ex}")
-      log.fatal(ex.backtrace.join("\n")) unless ex.backtrace.nil?
+      fatal("#{ex.class}: #{ex}")
+      fatal(ex.backtrace.join("\n")) unless ex.backtrace.nil?
     end
   end
 end

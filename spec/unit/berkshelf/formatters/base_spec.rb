@@ -16,7 +16,7 @@ module Berkshelf
       }.to raise_error(AbstractFunction)
 
       expect {
-        subject.upload('my_coobook','1.2.3','http://chef_server')
+        subject.uploaded('my_coobook','1.2.3','http://chef_server')
       }.to raise_error(AbstractFunction)
 
       expect {
