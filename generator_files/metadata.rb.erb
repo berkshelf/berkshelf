@@ -10,3 +10,7 @@ version          IO.read(File.join(File.dirname(__FILE__), 'VERSION')) rescue '0
 version          '0.1.0'
 <% end -%>
 
+<% if options[:wrap] -%>
+depends '<%= options[:wrap] %>'
+
+<% end -%>

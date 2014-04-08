@@ -7,16 +7,18 @@ Feature: berks cookbook
     When I successfully run `berks cookbook sparkle_motion --<option>`
     Then I should have a new cookbook skeleton "sparkle_motion" with <feature> support
   Examples:
-    | option            | feature         |
-    | foodcritic        | Foodcritic      |
-    | chef-minitest     | Chef-Minitest   |
-    | scmversion        | SCMVersion      |
-    | no-bundler        | no Bundler      |
-    # Disable testing of skip git until Test Kitchen supports the skip_git flag in its generator
+    | option            | feature          |
+    | foodcritic        | Foodcritic       |
+    | chef-minitest     | Chef-Minitest    |
+    | scmversion        | SCMVersion       |
+    | no-bundler        | no Bundler       |
+    # Disable testing of skip git until Test Kitchen supports the skip_git flag in it's generator
     # https://github.com/opscode/test-kitchen/issues/141
     # | skip-git          | no Git          |
-    | skip-vagrant      | no Vagrant      |
-    | skip-test-kitchen | no Test Kitchen |
+    | skip-vagrant      | no Vagrant       |
+    | skip-test-kitchen | no Test Kitchen  |
+    | bare              | minimal cookbook |
+    | wrap              | wrapped cookbook |
 
   Scenario Outline: When a required supporting gem is not installed
     Given the gem "<gem>" is not installed

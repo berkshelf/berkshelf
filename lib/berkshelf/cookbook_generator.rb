@@ -47,14 +47,23 @@ module Berkshelf
       type: :string,
       default: Berkshelf.config.cookbook.email
 
+    class_option :bare,
+      type: :boolean,
+      default: false
+
+    class_option :wrap,
+      type: :string
+
     def generate
-      empty_directory target.join('files/default')
-      empty_directory target.join('templates/default')
+      unless options[:bare]
+        empty_directory target.join('files/default')
+        empty_directory target.join('templates/default')
+        empty_directory target.join('libraries')
+        empty_directory target.join('providers')
+        empty_directory target.join('resources')
+      end
       empty_directory target.join('attributes')
-      empty_directory target.join('libraries')
-      empty_directory target.join('providers')
       empty_directory target.join('recipes')
-      empty_directory target.join('resources')
 
       template 'default_recipe.erb', target.join('recipes/default.rb')
       template 'metadata.rb.erb', target.join('metadata.rb')
