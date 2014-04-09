@@ -96,13 +96,7 @@ module Berkshelf
 
       if defined?(Kitchen::Generator::Init)
         unless options[:skip_test_kitchen]
-          # Temporarily use Dir.chdir to ensure the destination_root of test kitchen's generator
-          # is where we expect until this bug can be addressed:
-          # https://github.com/opscode/test-kitchen/pull/140
-          Dir.chdir target do
-            # Kitchen::Generator::Init.new([], {}, destination_root: target).invoke_all
-            Kitchen::Generator::Init.new([], {}).invoke_all
-          end
+          Kitchen::Generator::Init.new([], {}, destination_root: target).invoke_all
         end
       end
 
