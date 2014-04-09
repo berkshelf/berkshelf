@@ -293,9 +293,15 @@ module Berkshelf
     #
     # @param [String] dependency
     #   the name of the cookbook to remove
-    def unlock(dependency)
+    def unlock(dependency, force = false)
       @dependencies.delete(Dependency.name(dependency))
-      graph.remove(dependency)
+
+      if force
+        graph.remove(dependency, ignore: graph.locks.keys)
+      else
+        graph.remove(dependency)
+      end
+    end
     end
 
     # Iterate over each top-level dependency defined in the lockfile and
