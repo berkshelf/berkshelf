@@ -363,7 +363,7 @@ module Berkshelf
         end
 
         unless dependency.version_constraint.satisfies?(graphed.version)
-          Berkshelf.log.debuig "    Constraints are not satisfied!"
+          Berkshelf.log.debug "    Constraints are not satisfied!"
           raise OutdatedDependency.new(graphed, dependency)
         end
 
