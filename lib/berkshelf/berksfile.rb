@@ -378,17 +378,21 @@ module Berkshelf
     # @option options [String, Array<String>] :cookbooks
     #   Names of the cookbooks to retrieve dependencies for
     def update(*names)
+      validate_lockfile_present!
       validate_cookbook_names!(names)
+
+      Berkshelf.log.info "Updating cookbooks"
 
       # Calculate the list of cookbooks to unlock
       if names.empty?
-        list = dependencies
+        Berkshelf.log.debug "  Unlocking all the things!"
+        lockfile.unlock_all
       else
-        list = dependencies.select { |dependency| names.include?(dependency.name) }
+        names.each do |name|
+          Berkshelf.log.debug "  Unlocking #{name}"
+          lockfile.unlock(name, true)
+        end
       end
-
-      # Unlock any/all specified cookbooks
-      list.each { |dependency| lockfile.unlock(dependency) }
 
       # NOTE: We intentionally do NOT pass options to the installer
       self.install
@@ -689,7 +693,7 @@ module Berkshelf
       # @raise [DependencyNotFound]
       #   if a cookbook name is given that does not exist
       def validate_cookbook_names!(names)
-        missing = names - dependencies.map(&:name)
+        missing = names - lockfile.graph.locks.keys
 
         unless missing.empty?
           raise DependencyNotFound.new(missing)

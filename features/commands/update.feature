@@ -64,6 +64,35 @@ Feature: berks update
         fake (0.2.0)
       """
 
+  Scenario: With a transitive dependency specified
+    Given the cookbook store contains a cookbook "seth" "1.0.0" with dependencies:
+      | fake | ~> 0.1 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'seth', '1.0.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        seth (= 1.0.0)
+
+      GRAPH
+        fake (0.1.0)
+        seth (1.0.0)
+          fake (~> 0.1)
+      """
+    When I successfully run `berks update fake`
+    Then the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        seth (= 1.0.0)
+
+      GRAPH
+        fake (0.2.0)
+        seth (1.0.0)
+          fake (~> 0.1)
+      """
+
   Scenario: With a git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
@@ -93,7 +122,18 @@ Feature: berks update
       """
 
   Scenario: With a cookbook that does not exist
-    Given I have a Berksfile pointing at the local Berkshelf API
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake
+
+      GRAPH
+        fake (0.2.0)
+      """
     When I run `berks update not_real`
     Then the output should contain:
       """

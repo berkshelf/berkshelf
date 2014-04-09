@@ -288,14 +288,22 @@ module Berkshelf
     # dependencies. Then it uses a recursive algorithm to safely remove any
     # other dependencies from the graph that are no longer needed.
     #
-    # @raise [CookbookNotFound]
-    #   if the provided dependency does not exist
-    #
     # @param [String] dependency
     #   the name of the cookbook to remove
-    def unlock(dependency)
+    def unlock(dependency, force = false)
       @dependencies.delete(Dependency.name(dependency))
-      graph.remove(dependency)
+
+      if force
+        graph.remove(dependency, ignore: graph.locks.keys)
+      else
+        graph.remove(dependency)
+      end
+    end
+
+    # Completely remove all dependencies from the lockfile and underlying graph.
+    def unlock_all
+      @dependencies = {}
+      @graph        = Graph.new(self)
     end
 
     # Iterate over each top-level dependency defined in the lockfile and
@@ -566,6 +574,10 @@ module Berkshelf
             dependency = @lockfile.find(name)  ||
                          @berksfile && @berksfile.find(name) ||
                          Dependency.new(@berksfile, name)
+
+            # We need to make a copy of the dependency, or else we could be
+            # modifying an existing object that other processes depend on!
+            dependency = dependency.dup
             dependency.locked_version = item.version
 
             hash[item.name] = dependency
