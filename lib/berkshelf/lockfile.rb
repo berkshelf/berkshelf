@@ -98,8 +98,6 @@ module Berkshelf
       berksfile.dependencies.each do |dependency|
         Berkshelf.log.debug "Checking #{dependency}"
 
-        checked[dependency.name] = true
-
         locked = find(dependency)
         if locked.nil?
           Berkshelf.log.debug "  Not in lockfile - cannot be trusted!"
@@ -152,17 +150,36 @@ module Berkshelf
     #   the list of already checked dependencies
     #
     # @return [Boolean]
-    def satisfies_transitive?(graph_item, checked)
-      graph_item.dependencies.all? do |name, constraint|
-        return true if checked[name]
+    def satisfies_transitive?(graph_item, checked, level = 0)
+      indent = ' '*(level + 2)
 
-        checked[name] = true
+      Berkshelf.log.debug "#{indent}Checking transitive dependencies for #{graph_item}"
+
+      if checked[graph_item.name]
+        Berkshelf.log.debug "#{indent}  Already checked - skipping"
+        return true
+      end
+
+      graph_item.dependencies.each do |name, constraint|
+        Berkshelf.log.debug "#{indent}  Checking #{name} (#{constraint})"
 
         graphed = graph.find(name)
-        return false if graphed.nil?
+        if graphed.nil?
+          Berkshelf.log.debug "#{indent}  Not graphed - cannot be satisifed"
+          return false
+        end
 
-        Semverse::Constraint.new(constraint).satisfies?(graphed.version) &&
-        satisfies_transitive?(graphed, checked)
+        unless Semverse::Constraint.new(constraint).satisfies?(graphed.version)
+          Berkshelf.log.debug "#{indent}  Version constraint is not satisfied"
+          return false
+        end
+
+        unless satisfies_transitive?(graphed, checked, level + 2)
+          Berkshelf.log.debug "#{indent}  Transitive are not satisifed"
+          return false
+        end
+
+        checked[name] = true
       end
     end
 
@@ -773,6 +790,10 @@ module Berkshelf
             #   the version constraint to use
             def add_dependency(name, constraint)
               @dependencies[name.to_s] = constraint.to_s
+            end
+
+            def to_s
+              "#{name} (#{version})"
             end
           end
       end
