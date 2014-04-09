@@ -146,7 +146,8 @@ module Berkshelf
         # Add any explicit dependencies for already-downloaded cookbooks (like
         # path locations)
         dependencies.each do |dependency|
-          if cookbook = dependency.cached_cookbook
+          if dependency.location
+            cookbook = dependency.cached_cookbook
             Berkshelf.log.debug "  Adding explicit dependency on #{cookbook}"
             resolver.add_explicit_dependencies(cookbook)
           end
