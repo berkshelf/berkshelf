@@ -325,58 +325,72 @@ module Berkshelf
     #
     # @return [Array<Dependency>]
     def reduce!
-      # Store a list of cookbooks to ungraph
-      to_ungraph = {}
-      to_ignore  = {}
+      Berkshelf.log.info "Reducing lockfile"
+
+      Berkshelf.log.debug "Current lockfile:"
+      Berkshelf.log.debug ""
+      to_lock.each_line do |line|
+        Berkshelf.log.debug "  #{line.chomp}"
+      end
+      Berkshelf.log.debug ""
+
 
       # Unlock any locked dependencies that are no longer in the Berksfile
-      dependencies.each do |dependency|
-        unless berksfile.has_dependency?(dependency.name)
-          unlock(dependency)
+      Berkshelf.log.debug "Unlocking dependencies no longer in the Berksfile"
 
-          # Keep a record. We know longer trust these dependencies, but simply
-          # unlocking them does not guarantee their removal from the graph.
-          # Instead, we keep a record of the dependency to unlock it later (in
-          # case it is actually removable because it's parent requirer is also
-          # being removed in this reduction). It's a form of science. Don't
-          # question it too much.
-          to_ungraph[dependency.name] = true
-          to_ignore[dependency.name]  = true
+      dependencies.each do |dependency|
+        Berkshelf.log.debug "  Checking #{dependency}"
+
+        if berksfile.has_dependency?(dependency.name)
+          Berkshelf.log.debug "    Skipping unlock for #{dependency.name} (exists in the Berksfile)"
+        else
+          Berkshelf.log.debug "    Unlocking #{dependency.name}"
+          unlock(dependency, true)
         end
       end
 
       # Remove any transitive dependencies
+      Berkshelf.log.debug "Removing transitive dependencies"
+
       berksfile.dependencies.each do |dependency|
+        Berkshelf.log.debug "  Checking #{dependency}"
+
         graphed = graph.find(dependency)
-        next if graphed.nil?
+
+        if graphed.nil?
+          Berkshelf.log.debug "    Skipping (not graphed)"
+          next
+        end
 
         unless dependency.version_constraint.satisfies?(graphed.version)
+          Berkshelf.log.debuig "    Constraints are not satisfied!"
           raise OutdatedDependency.new(graphed, dependency)
         end
 
         if cookbook = dependency.cached_cookbook
+          Berkshelf.log.debug "    Cached cookbook exists"
+          Berkshelf.log.debug "    Checking dependencies on the cached cookbook"
+
           graphed.dependencies.each do |name, constraint|
+            Berkshelf.log.debug "      Checking #{name} (#{constraint})"
+
             # Unless the cookbook still depends on this key, we want to queue it
             # for unlocking. This is the magic that prevents transitive
             # dependency leaking.
             unless cookbook.dependencies.has_key?(name)
-              to_ungraph[name] = true
-
-              # We also want to ignore the top-level dependency. We can no
-              # longer trust the graph that we have been given for that
-              # dependency and therefore need to reduce it.
-              to_ignore[dependency.name] = true
+              Berkshelf.log.debug "        Not found!"
+              unlock(name, true)
             end
           end
         end
       end
 
-      # Now remove all the unlockable items
-      ignore = to_ungraph.merge(to_ignore).keys
-
-      to_ungraph.each do |name, _|
-        graph.remove(name, ignore: ignore)
+      Berkshelf.log.debug "New lockfile:"
+      Berkshelf.log.debug ""
+      to_lock.each_line do |line|
+        Berkshelf.log.debug "  #{line.chomp}"
       end
+      Berkshelf.log.debug ""
     end
 
 
