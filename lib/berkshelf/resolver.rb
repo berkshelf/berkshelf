@@ -57,7 +57,10 @@ module Berkshelf
     #
     # @return [Array<String, String>]
     def demand_array
-      demands.collect { |demand| [ demand.name, demand.version_constraint ] }
+      demands.collect do |demand|
+        constraint = demand.locked_version || demand.version_constraint
+        [demand.name, constraint]
+      end
     end
 
     # Finds a solution for the currently added dependencies and their dependencies and
