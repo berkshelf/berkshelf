@@ -47,8 +47,8 @@ describe Berkshelf::CookbookGenerator do
           contains 'Author:: YOUR_NAME (<YOUR_EMAIL>)'
         end
         file 'CHANGELOG.md' do
-          contains '# sparkle_motion cookbook CHANGELOG'
-          contains "## v0.1.0 (#{Time.now.strftime('%Y-%m-%d')})"
+          contains '# 0.1.0'
+          contains "Initial release of sparkle_motion"
         end
         file 'metadata.rb' do
           contains "name             'sparkle_motion'"
