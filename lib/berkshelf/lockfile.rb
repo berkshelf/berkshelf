@@ -288,9 +288,6 @@ module Berkshelf
     # dependencies. Then it uses a recursive algorithm to safely remove any
     # other dependencies from the graph that are no longer needed.
     #
-    # @raise [CookbookNotFound]
-    #   if the provided dependency does not exist
-    #
     # @param [String] dependency
     #   the name of the cookbook to remove
     def unlock(dependency, force = false)
