@@ -792,6 +792,7 @@ module Berkshelf
               @dependencies[name.to_s] = constraint.to_s
             end
 
+            # @private
             def to_s
               "#{name} (#{version})"
             end
