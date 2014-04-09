@@ -574,6 +574,10 @@ module Berkshelf
             dependency = @lockfile.find(name)  ||
                          @berksfile && @berksfile.find(name) ||
                          Dependency.new(@berksfile, name)
+
+            # We need to make a copy of the dependency, or else we could be
+            # modifying an existing object that other processes depend on!
+            dependency = dependency.dup
             dependency.locked_version = item.version
 
             hash[item.name] = dependency
