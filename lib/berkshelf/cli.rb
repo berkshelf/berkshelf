@@ -279,6 +279,7 @@ module Berkshelf
 
       Berkshelf.formatter.msg 'Successfully initialized'
     end
+    tasks['init'].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
@@ -385,12 +386,13 @@ module Berkshelf
       Berkshelf.formatter.version
     end
 
-    desc 'cookbook NAME', 'Create a skeleton for a new cookbook'
-    def cookbook(name)
+    desc 'cookbook NAME [PATH]', 'Create a skeleton for a new cookbook'
+    def cookbook(name, path = nil)
+      path = File.join(Dir.pwd, name) if path.nil?
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
 
-      Berkshelf::CookbookGenerator.new([File.join(Dir.pwd, name), name], options).invoke_all
+      Berkshelf::CookbookGenerator.new([path, name], options).invoke_all
     end
     tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
 

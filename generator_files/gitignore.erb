@@ -1,12 +1,17 @@
-.vagrant
-Berksfile.lock
 *~
 *#
 .#*
 \#*#
 .*.sw[a-z]
 *.un~
+pkg/
+
+# Berkshelf
+.vagrant
 /cookbooks
+<% unless options[:pattern] == "environment" -%>
+Berksfile.lock
+<% end -%>
 
 # Bundler
 Gemfile.lock
