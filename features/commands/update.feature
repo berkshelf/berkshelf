@@ -122,7 +122,18 @@ Feature: berks update
       """
 
   Scenario: With a cookbook that does not exist
-    Given I have a Berksfile pointing at the local Berkshelf API
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'fake'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        fake
+
+      GRAPH
+        fake (0.2.0)
+      """
     When I run `berks update not_real`
     Then the output should contain:
       """
