@@ -8,7 +8,7 @@ module Berkshelf
       end
     end
 
-    TYPES = [
+    PATTERNS = [
       "environment",
       "application",
       "library",

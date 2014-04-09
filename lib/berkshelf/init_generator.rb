@@ -24,7 +24,7 @@ module Berkshelf
       default: "application",
       desc: "Modifies the generated skeleton based on the given pattern.",
       aliases: "-p",
-      enum: BaseGenerator::TYPES
+      enum: BaseGenerator::PATTERNS
 
     class_option :skip_vagrant,
       type: :boolean,
