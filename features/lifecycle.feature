@@ -276,7 +276,7 @@ Feature: Lifecycle commands
     * I write to "fake/metadata.rb" with:
       """
       name 'fake'
-      version '2.0.0'
+      version '1.0.0'
       """
     * I have a Berksfile pointing at the local Berkshelf API with:
       """
