@@ -289,6 +289,18 @@ Feature: Lifecycle commands
       metadata
       """
     * I successfully run `berks install`
+    * the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        transitive
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (1.0.0)
+        transitive (1.2.3)
+          fake (>= 0.0.0)
+      """
 
   Scenario: Bumping the version of a local cookbook
     * I have a Berksfile pointing at the local Berkshelf API with:
