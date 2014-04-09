@@ -299,6 +299,11 @@ module Berkshelf
         graph.remove(dependency)
       end
     end
+
+    # Completely remove all dependencies from the lockfile and underlying graph.
+    def unlock_all
+      @dependencies = {}
+      @graph        = Graph.new(self)
     end
 
     # Iterate over each top-level dependency defined in the lockfile and
