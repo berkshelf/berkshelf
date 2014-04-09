@@ -209,6 +209,99 @@ Feature: Lifecycle commands
     * the output should not contain "Using ekaf (1.0.0)"
     * the output should contain "Using fake (1.0.0)"
 
+  Scenario: Moving a transitive dependency to a direct dependency
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      """
+    * I write to "metadata.rb" with:
+      """
+      name 'transitive'
+      version '1.2.3'
+      depends 'fake', '1.0.0'
+      """
+    * I successfully run `berks install`
+    * the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        transitive
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (1.0.0)
+        transitive (1.2.3)
+          fake (= 1.0.0)
+      """
+    * the output should not contain "Using ekaf (1.0.0)"
+    * the output should contain "Using fake (1.0.0)"
+    * I write to "fake/metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.0'
+      """
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      cookbook 'fake', path: 'fake'
+      """
+    * I successfully run `berks install`
+    * the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        fake
+          path: ./fake
+        transitive
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (1.0.0)
+        transitive (1.2.3)
+          fake (= 1.0.0)
+      """
+
+  Scenario: Moving a transitive dependency to a direct dependency and then removing it
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      """
+    * I write to "metadata.rb" with:
+      """
+      name 'transitive'
+      version '1.2.3'
+      depends 'fake'
+      """
+    * I successfully run `berks install`
+    * I write to "fake/metadata.rb" with:
+      """
+      name 'fake'
+      version '1.0.0'
+      """
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      cookbook 'fake', path: 'fake'
+      """
+    * I successfully run `berks install`
+    * I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      """
+    * I successfully run `berks install`
+    * the file "Berksfile.lock" should contain:
+      """
+      DEPENDENCIES
+        transitive
+          path: .
+          metadata: true
+
+      GRAPH
+        fake (1.0.0)
+        transitive (1.2.3)
+          fake (>= 0.0.0)
+      """
+
   Scenario: Bumping the version of a local cookbook
     * I have a Berksfile pointing at the local Berkshelf API with:
       """
