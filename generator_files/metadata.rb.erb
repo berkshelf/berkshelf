@@ -3,7 +3,7 @@ maintainer       '<%= maintainer %>'
 maintainer_email '<%= maintainer_email %>'
 license          '<%= license_name %>'
 description      'Installs/Configures <%= name %>'
-long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+long_description 'Installs/Configures <%= name %>'
 <% if options[:scmversion] -%>
 version          IO.read(File.join(File.dirname(__FILE__), 'VERSION'))
 <% else -%>
