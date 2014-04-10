@@ -86,14 +86,27 @@ module Berkshelf
       super(api_uri, options)
     end
 
-    # @param [String] name
-    # @param [String] version
+    # Download and extract target cookbook archive to the local file system,
+    # returning its filepath.
     #
-    # @return [String]
+    # @param [String] name
+    #   the name of the cookbook
+    # @param [String] version
+    #   the targeted version of the cookbook
+    #
+    # @return [String, nil]
+    #   cookbook filepath, or nil if archive does not contain a cookbook
     def download(name, version)
       archive   = stream(find(name, version)[:file])
       extracted = self.class.unpack(archive.path)
-      Dir.glob(File.join(extracted, name)).first
+
+      if File.cookbook?(extracted)
+        extracted
+      else
+        Dir.glob(File.join(extracted, '*')).find do |dir|
+          File.cookbook?(dir)
+        end
+      end
     ensure
       archive.unlink unless archive.nil?
     end
