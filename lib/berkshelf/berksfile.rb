@@ -56,7 +56,7 @@ module Berkshelf
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
     def initialize(path, options = {})
-      @filepath         = path
+      @filepath         = File.expand_path(path)
       @dependencies     = Hash.new
       @sources          = Hash.new
 
@@ -159,14 +159,11 @@ module Berkshelf
     # @option options [String] :path
     #   path to the metadata file
     def metadata(options = {})
-      path = options[:path] || File.dirname(filepath)
-
+      path          = options[:path] || File.dirname(filepath)
       metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
-      metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
+      metadata      = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
 
-      name = metadata.name.presence || File.basename(File.expand_path(path))
-
-      add_dependency(name, nil, path: path, metadata: true)
+      add_dependency(metadata.name, nil, path: path, metadata: true)
     end
 
     # Add a Berkshelf API source to use when building the index of known cookbooks. The indexes will be

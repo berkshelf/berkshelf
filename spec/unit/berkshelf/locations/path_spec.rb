@@ -11,8 +11,8 @@ module Berkshelf
         berksfile: berksfile,
       )
     end
-    let(:path) { fixtures_path.join('cookbooks', 'example_cookbook').to_s }
-    let(:relative_path) { '../../../fixtures/cookbooks/example_cookbook' }
+    let(:path) { fixtures_path.join('cookbooks', 'example_cookbook') }
+    let(:relative_path) { Pathname.new('../../../fixtures/cookbooks/example_cookbook') }
 
     subject { described_class.new(dependency, path: path) }
 
@@ -44,7 +44,7 @@ module Berkshelf
 
     describe '#expanded_path' do
       it 'returns the expanded path, relative to the Berksfile' do
-        absolute_path = File.expand_path(relative_path, File.dirname(berksfile.filepath))
+        absolute_path = Pathname.new(File.expand_path(relative_path, File.dirname(berksfile.filepath)))
         expect(subject.expanded_path).to eq(absolute_path)
       end
     end
@@ -93,7 +93,7 @@ module Berkshelf
 
     describe '#to_s' do
       it 'uses the expanded path' do
-        expect(subject.to_s).to eq("source at #{relative_path}")
+        expect(subject.to_s).to eq("source at #{path}")
       end
     end
 
