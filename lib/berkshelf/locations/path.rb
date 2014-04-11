@@ -60,7 +60,7 @@ module Berkshelf
     end
 
     def to_s
-      "source at #{expanded_path}"
+      "source at #{relative_path}"
     end
 
     def inspect

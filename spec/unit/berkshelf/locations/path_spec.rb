@@ -92,8 +92,8 @@ module Berkshelf
     end
 
     describe '#to_s' do
-      it 'uses the expanded path' do
-        expect(subject.to_s).to eq("source at #{path}")
+      it 'uses the relative path' do
+        expect(subject.to_s).to eq("source at #{relative_path}")
       end
     end
 
