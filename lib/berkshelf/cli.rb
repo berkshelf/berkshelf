@@ -79,6 +79,8 @@ module Berkshelf
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
 
+    DEFAULT_BERKSFILE_PATH = File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME).freeze
+
     namespace 'berkshelf'
 
     map 'in'   => :install
@@ -122,7 +124,7 @@ module Berkshelf
       aliases: '-o'
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -145,7 +147,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -165,7 +167,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -232,7 +234,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -283,7 +285,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -303,7 +305,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -316,7 +318,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -337,7 +339,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -371,7 +373,7 @@ module Berkshelf
       aliases: '-o'
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: DEFAULT_BERKSFILE_PATH,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
