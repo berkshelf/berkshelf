@@ -268,7 +268,7 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       DEPENDENCIES
         fake
-          path: ./fake
+          path: fake
 
       GRAPH
         fake (0.0.0)

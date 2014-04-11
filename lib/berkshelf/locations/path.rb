@@ -33,26 +33,18 @@ module Berkshelf
     # is actually the path reative to the associated Berksfile's parent
     # directory.
     #
-    # @return [String]
+    # @return [Pathname]
     #   the relative path relative to the target
     def relative_path
-      my_path     = Pathname.new(options[:path]).expand_path
-      target_path = Pathname.new(dependency.berksfile.filepath).expand_path
-      target_path = target_path.dirname if target_path.file?
-
-      new_path = my_path.relative_path_from(target_path).to_s
-
-      return new_path if new_path.index('.') == 0
-      "./#{new_path}"
+      @relative_path ||= expanded_path.relative_path_from(Pathname.new(File.dirname(dependency.berksfile.filepath)))
     end
 
     # The fully expanded path of this cookbook on disk, relative to the
     # Berksfile.
     #
-    # @return [String]
+    # @return [Pathname]
     def expanded_path
-      parent = File.expand_path(File.dirname(dependency.berksfile.filepath))
-      File.expand_path(relative_path, parent)
+      @expanded_path ||= Pathname.new File.expand_path(options[:path], File.dirname(dependency.berksfile.filepath))
     end
 
     def ==(other)

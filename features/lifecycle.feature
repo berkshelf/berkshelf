@@ -250,7 +250,7 @@ Feature: Lifecycle commands
       """
       DEPENDENCIES
         fake
-          path: ./fake
+          path: fake
         transitive
           path: .
           metadata: true
@@ -369,7 +369,7 @@ Feature: Lifecycle commands
       """
       DEPENDENCIES
         fake
-          path: ./fake
+          path: fake
 
       GRAPH
         fake (2.0.0)

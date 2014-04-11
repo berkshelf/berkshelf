@@ -122,7 +122,7 @@ module Berkshelf
       aliases: '-o'
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -145,7 +145,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -165,7 +165,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -232,7 +232,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -283,7 +283,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -303,7 +303,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: "Path to a Berksfile to operate off of.",
       aliases: "-b",
       banner: "PATH"
@@ -316,7 +316,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -337,7 +337,7 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'
@@ -371,7 +371,7 @@ module Berkshelf
       aliases: '-o'
     method_option :berksfile,
       type: :string,
-      default: Berkshelf::DEFAULT_FILENAME,
+      default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',
       banner: 'PATH'

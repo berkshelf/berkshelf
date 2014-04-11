@@ -34,10 +34,10 @@ module Berkshelf
       Berkshelf.formatter.msg('Resolving cookbook dependencies...')
 
       dependencies, cookbooks = if lockfile.trusted?
-                                  install_from_lockfile
-                                else
-                                  install_from_universe
-                                end
+        install_from_lockfile
+      else
+        install_from_universe
+      end
 
       Berkshelf.log.debug "  Finished resolving, calculating locks"
 
