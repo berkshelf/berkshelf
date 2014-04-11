@@ -8,6 +8,7 @@ module Berkshelf
       #
       # @param (see Berksfile#initialize)
       def from_options(options = {})
+        options[:berksfile] ||= File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
         from_file(options[:berksfile], options.slice(:except, :only))
       end
 
