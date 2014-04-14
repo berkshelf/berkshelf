@@ -6,38 +6,27 @@ If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a br
     Successfully installed berkshelf-3.0.0
     1 gem installed
 
-**NOTE:** Berkshelf 2 is no longer under active development. If you are experiencing dependency resolution errors, you may wish to [install Berkshelf 3](https://github.com/berkshelf/berkshelf/wiki/Howto:-Use-the-bleeding-edge).
+Generate a Berksfile in a pre-exisitng cookbook
 
-Specify your dependencies in a Berksfile in your cookbook's root
+    $ cd my-cookbook
+    $ berks init .
 
-    site :opscode
+Or create a new cookbook
 
-    cookbook 'mysql'
-    cookbook 'nginx', '~> 0.101.5'
+    $ berks cookbook myapp
+
+And specify your dependencies in a Berksfile in your cookbook's root
+
+    source "https://api.berkshelf.com"
+
+    metadata
+
+    cookbook "mysql"
+    cookbook "nginx", "~> 2.6"
 
 Install the cookbooks you specified in the Berksfile and their dependencies
 
     $ berks install
-
-Add the Berksfile to your project
-
-    $ git add Berksfile
-    $ git commit -m "add Berksfile to project"
-
-> A Berksfile.lock will also be created. Add this to version control if you want to ensure that
-> other developers (or your build server) will use the same versions of all cookbook dependencies.
-
-### Managing an existing Cookbook
-
-If you already have a cookbook and it's not managed by Berkshelf it's easy to get up and running. Just locate your cookbook and initialize it!
-
-    $ berks init ~/code/my_face-cookbook
-
-### Creating a new Cookbook
-
-Want to start a new cookbook for a new application or supporting application?
-
-    $ berks cookbook new_application
 
 ## Getting Help
 
@@ -45,39 +34,25 @@ If at anytime you are stuck or if you're just curious about what Berkshelf can d
 
     $ berks help
 
-    Commands:
-      berks apply ENVIRONMENT     # Apply the cookbook version locks from Berksfile.lock to a Chef environment
-      berks configure             # Create a new Berkshelf configuration file
-      berks contingent COOKBOOK   # List all cookbooks that depend on the given cookbook
-      berks cookbook NAME         # Create a skeleton for a new cookbook
-      berks help [COMMAND]        # Describe available commands or one specific command
-      berks init [PATH]           # Initialize Berkshelf in the given directory
-      berks install               # Install the cookbooks specified in the Berksfile
-      berks list                  # List all cookbooks (and dependencies) specified in the Berksfile
-      berks outdated [COOKBOOKS]  # Show outdated cookbooks (from the community site)
-      berks package [COOKBOOK]    # Package a cookbook (and dependencies) as a tarball
-      berks shelf SUBCOMMAND      # Interact with the cookbook store
-      berks show [COOKBOOK]       # Display name, author, copyright, and dependency information about a cookbook
-      berks update [COOKBOOKS]    # Update the cookbooks (and dependencies) specified in the Berksfile
-      berks upload [COOKBOOKS]    # Upload the cookbook specified in the Berksfile to the Chef Server
-      berks version               # Display version and copyright information
-
-    Options:
-      -c, [--config=PATH]    # Path to Berkshelf configuration to use.
-      -F, [--format=FORMAT]  # Output format to use.
-                             # Default: human
-      -q, [--quiet]          # Silence all informational output.
-      -d, [--debug]          # Output debug information
-
 You can get more detailed information about a command, or a sub command, but asking it for help
 
-    $ berks shelf help
+    $ berks install help
 
-    Commands:
-      berks shelf help [COMMAND]  # Describe subcommands or one specific subcommand
-      berks shelf list            # List all cookbooks and their versions
-      berks shelf show            # Display information about a cookbook in the Berkshelf shelf
-      berks shelf uninstall       # Remove a cookbook from the Berkshelf shelf
+    Usage:
+      berks install
+
+    Options:
+      -e, [--except=one two three]  # Exclude cookbooks that are in these groups.
+      -o, [--only=one two three]    # Only cookbooks that are in these groups.
+      -b, [--berksfile=PATH]        # Path to a Berksfile to operate off of.
+                                    # Default: Berksfile
+      -c, [--config=PATH]           # Path to Berkshelf configuration to use.
+      -F, [--format=FORMAT]         # Output format to use.
+                                    # Default: human
+      -q, [--quiet], [--no-quiet]   # Silence all informational output.
+      -d, [--debug], [--no-debug]   # Output debug information
+
+    Install the cookbooks specified in the Berksfile
 
 ## The Berkshelf
 
@@ -91,64 +66,39 @@ This central location is not the typical pattern of cookbook storage that you ma
 
 Given you have the cookbooks installed:
 
-    * nginx - 0.101.2
-    * mysql - 1.2.4
+    * nginx - 2.6.4
+    * mysql - 5.1.9
 
 These cookbooks will be located at:
 
-    ~/.berkshelf/cookbooks/nginx-0.101.2
-    ~/.berkshelf/cookbooks/mysql-1.2.4
+    ~/.berkshelf/cookbooks/nginx-2.6.4
+    ~/.berkshelf/cookbooks/mysql-5.1.9
 
-By default Chef interprets the name of a cookbook by the directory name. Some Chef internals weigh the name of the directory more heavily than if a cookbook developer were to explicitly set the `name` attribute in their metadata. Because the directory structure contains the cookbook's version number, do not treat The Berkshelf as just another entry in your `Chef::Config#cookbooks_path`.
+> It is now *REQUIRED* for the name attribute to be set in your cookbook's metadata. If you have a cookbook which does not specify this, it will need to be added.
+
+### Packaging Cookbooks
+
+A single archive containing all of your required cookbooks can be created with the package command
+
+    $ cd ~/code/berkshelf-api/cookbook
+    $ berks package
+    Cookbook(s) packaged to /Users/reset/code/berkshelf-api/cookbook/cookbooks-1397512169.tar.gz
+
+This archive an be given directly to Chef-Solo or extracted and uploaded to a Chef Server.
 
 ### Vendoring Cookbooks
 
-You can easily install your Cookbooks and their dependencies to a location other than The Berkshelf. A good case for this is when you want to "vendor" your cookbooks to be packaged and distributed.
+If you don't want to create a package but you want to install the cookbooks to a location on disk that is not the berkshelf, you can use the vendor command
 
-    $ berks install --path vendor/cookbooks
+    $ berks vendor
 
-This will install your Cookbooks to the `vendor/cookbooks` directory relative to where you ran the command from. Inside the vendored cookbooks directory you will find a directory named after the cookbook it contains.
+This will output all of the cookbooks to `pwd/berks-cookbooks`
 
 ## Configuring Berkshelf
 
 Berkshelf will run with a default configuration unless you explicitly generate one. By default, Berkshelf uses the values found in your Knife configuration (if you have one).
 
-You can override this default behavior by generating an explicit Berkshelf configuration file with the `configure` command
-
-    $ berks configure
-
-Answer each question prompt with a value or press enter to accept the default value.  As with Berkshelf's default behavior, Berkshelf attempts to populate the default values from your Knife configuration (otherwise using something else sensible).
-
-    Config written to: '/Users/reset/.berkshelf/config.json'
-
-You will only be prompted to fill in the most travelled configuration options. Looking in the generated configuration will give you some insight to some other configurable values.
-
-    {
-      "chef": {
-        "chef_server_url": "https://api.opscode.com/organizations/vialstudios",
-        "validation_client_name": "chef-validator",
-        "validation_key_path": "/etc/chef/validation.pem",
-        "client_key": "/Users/reset/.chef/reset.pem",
-        "node_name": "reset"
-      },
-      "vagrant": {
-        "vm": {
-          "box": "Berkshelf-CentOS-6.3-x86_64-minimal",
-          "box_url": "https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box",
-          "forward_port": {
-
-          },
-          "network": {
-            "bridged": true,
-            "hostonly": "33.33.33.10"
-          },
-          "provision": "chef_solo"
-        }
-      },
-      "ssl": {
-        "verify": true
-      }
-    }
+You can override this default behavior by create a configuratio file and placing it at `~/.berkshelf/config.json`
 
 ### Configurable options
 
@@ -160,13 +110,12 @@ You will only be prompted to fill in the most travelled configuration options. L
 * `vagrant.vm.box` - name of the VirtualBox box to use when provisioning Vagrant virtual machines. (default: Berkshelf-CentOS-6.3-x86_64-minimal)
 * `vagrant.vm.box_url` - URL to the VirtualBox box (default: https://dl.dropbox.com/u/31081437/Berkshelf-CentOS-6.3-x86_64-minimal.box)
 * `vagrant.vm.forward_port` - a Hash of ports to forward where the key is the port to forward to on the guest and value is the host port which forwards to the guest on your host.
-* `vagrant.vm.network.bridged` - use a bridged connection to connect to your virtual machine?
-* `vagrant.vm.network.hostonly` - use a hostonly network for your virtual machine? (default: 33.33.33.10)
 * `vagrant.vm.provision` - use the `chef_solo` or `chef_client` provisioner? (default: chef_solo)
 * `ssl.verify` - should we verify all SSL http connections? (default: true)
 * `cookbook.copyright` - the copyright information should be included when you generate new cookbooks. (default: whatever is in your Knife file if you have one)
 * `cookbook.email` - the email address to include when you generate new cookbooks. (default: whatever is in your Knife file if you have one)
 * `cookbook.license` - the license to use when you generate new cookbooks. (default: whatever is in your Knife file if you have one)
+* `github` - an array of hashes containing Github credentials to authenticate against downloading cached Github cookbooks.
 
 > The configuration values are notated in 'dotted path' format. These translate to a nested JSON structure.
 
@@ -182,13 +131,9 @@ Visit the [Vagrant downloads page](http://downloads.vagrantup.com/) and download
 
 ### Install the Vagrant Berkshelf plugin
 
-As of Berkshelf 1.3.0 there is now a separate gem which includes the [Vagrant Berkshelf plugin](https://github.com/riotgames/vagrant-berkshelf). This plugin supports Vagrant 1.1.0 and greater.
-
-To install the plugin run the Vagrant plugin install command
-
     $ vagrant plugin install vagrant-berkshelf
     Installing the 'vagrant-berkshelf' plugin. This can take a few minutes...
-    Installed the plugin 'vagrant-berkshelf (1.2.0)!'
+    Installed the plugin 'vagrant-berkshelf (2.0.0)!'
 
 ### Using the Vagrant Berkshelf plugin
 
@@ -206,7 +151,7 @@ The plugin will look in your current working directory for your `Berksfile` by d
 
     $ vagrant provision
     [Berkshelf] Updating Vagrant's berkshelf: '/Users/reset/.berkshelf/vagrant/berkshelf-20130320-28478-sy1k0n'
-    [Berkshelf] Installing nginx (1.2.0)
+    [Berkshelf] Installing nginx (2.6.0)
     ...
 
 You can use both the Vagrant provided Chef Solo and Chef Client provisioners with the Vagrant Berkshelf plugin.
@@ -219,33 +164,24 @@ The Chef Solo provisioner's `cookbook_path` attribute is hijacked when using the
 
 Cookbooks will automatically be uploaded to the Chef Server you have configured in the Vagrantfile's Chef Client provisioner block. Your Berkshelf configuration's `chef.node_name` and `chef.client_key` credentials will be used to authenticate the upload.
 
-#### Setting a Berksfile location
-
-By default, the Vagrant Berkshelf plugin will assume that the Vagrantfile is located in the same directory as a Berksfile. If your Berksfile is located in another directory you can override this behavior
-
-    Vagrant.configure("2") do |config|
-      ...
-      config.berkshelf.berksfile_path = "/Users/reset/code/my_face/Berksfile"
-    end
-
-The above example will use an absolute path to the Berksfile of a sweet application called MyFace.
-
 ## The Berksfile
 
 Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berskfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
 
+    source "https://api.berkshelf.com"
+
     metadata
+
     cookbook 'memcached'
     cookbook 'nginx'
     cookbook 'pvpnet', path: '/Users/reset/code/riot-cookbooks/pvpnet-cookbook'
     cookbook 'mysql', git: 'git://github.com/opscode-cookbooks/mysql.git'
-    cookbook 'myapp', chef_api: :config
 
-All sources _and_ their dependencies will be retrieved, recursively. Two kinds of sources can be defined.
+All dependencies _and_ their dependencies (and their dependencies, etc) will be downloaded, recursively. Two keywords can be used for defining dependencies.
 
-### Metadata Source
+### Metadata keyword
 
-The metadata source is like saying `gemspec` in Bundler's [Gemfile](http://gembundler.com/man/gemfile.5.html). It says, "There is a metadata.rb file within the same relative path of my Berksfile". This allows you to resolve a Cookbook's dependencies that you are currently working on just like you would resolve the dependencies of a Gem that you are currently working on with Bundler.
+The metadata keyword is like saying `gemspec` in Bundler's [Gemfile](http://gembundler.com/man/gemfile.5.html). It says, "There is a metadata.rb file within the same relative path of my Berksfile". This allows you to resolve a Cookbook's dependencies that you are currently working on just like you would resolve the dependencies of a Gem that you are currently working on with Bundler.
 
 Given a Berksfile at `~/code/nginx-cookbook` containing:
 
@@ -253,9 +189,9 @@ Given a Berksfile at `~/code/nginx-cookbook` containing:
 
 A `metadata.rb` file is assumed to be located at `~/code/nginx-cookbook/metadata.rb` describing your nginx cookbook.
 
-### Cookbook Source
+### Cookbook keyword
 
-A cookbook source is a way to describe a cookbook to install or a way to override the location of a dependency.
+The cookbook keyword is a way to describe a cookbook to install or a way to override the location of a dependency.
 
 Cookbook sources are defined with the format:
 
@@ -286,33 +222,14 @@ Options passed to a source can contain a location or a group(s).
 
 #### Locations
 
-By default a cookbook source is assumed to come from the Opscode Community site `http://cookbooks.opscode.com/api/v1/cookbooks`. This behavior can be customized with a different location type. You might want to use a different location type if the cookbook is stored in a git repository, at a local file path, or at a different community site.
+By default the location of a cookbook is assumed to come from one of the api sources that you have configured. For example
 
-##### Chef API Location
+    source "https://berks-api.vialstudios.com"
+    source "https://api.berkshelf.com"
 
-The Chef API location allows you to treat your Chef Server like an [artifact](http://en.wikipedia.org/wiki/Artifact_%28software_development%29) server. Cookbooks or dependencies can be pulled directly out of a Chef Server. This is super useful if your organization has cookbooks that isn't available to the community but may be a dependency of other proprietary cookbooks in your organization.
+If a cookbook which satisfies all demands is found in `berks-api.vialstudios.com` then it will be retrieved and used in resolution. If it is not, then any subsequent defined sources will be used. If no sources can satisfy the demand a no solution error will be returned.
 
-A Chef API Location is expressed with the `chef_api` key followed by some options. You can tell Berkshelf to use the Chef credentials found in your Berkshelf config by passing the symbol `:config` to `chef_api`.
-
-    cookbook "artifact", chef_api: :config
-
-The Berkshelf configuration is by default located at `~/.berkshelf/config.json`. You can specify a different configuration file with the `-c` flag.
-
-    $ berks install -c /Users/reset/.berkshelf/production-config.json
-
-You can also explicitly define the `chef_server_url`, `node_name`, and `client_key` to use:
-
-    cookbook "artifact", chef_api: "https://api.opscode.com/organizations/vialstudios", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem"
-
-##### Site Location
-
-The Site location can be used to specify a community site API to retrieve cookbooks from
-
-    cookbook "artifact", site: "http://cookbooks.opscode.com/api/v1/cookbooks"
-
-The symbol `:opscode` is an alias for "Opscode's newest community API" and can be provided in place of a URL
-
-    cookbook "artifact", site: :opscode
+Explicit locations can be used to override the cookbooks found at these sources
 
 ##### Path Location
 
@@ -368,43 +285,6 @@ The `git` protocol will be used if no protocol is explicity set. To access a pri
 
 > You will receive a repository not found error if you are referencing a private repository and have not set the protocol to `https` or `ssh`.
 
-### Default Locations
-
-Any source that does not explicit define a location will attempted to be retrieved at the latest Opscode community API. Any source not explicitly defined in the Berksfile but found in the `metadata.rb` of the current cookbook or a dependency will also attempt to use this default location.
-
-Additional site locations can be specified with the `site` keyword in the Berksfile
-
-    site "http://cookbooks.opscode.com/api/v1/cookbooks"
-
-This same entry could also have been written
-
-    site :opscode
-
-A Chef API default location can also be specified to attempt to retrieve your cookbook and it's dependencies from
-
-    chef_api "https://api.opscode.com/organizations/vialstudios", node_name: "reset", client_key: "/Users/reset/.chef/reset.pem"
-
-Provided my Berkshelf config contains these Chef credentials - this could have been simplified by using the `:config` symbol
-
-    chef_api :config
-
-> Specifying a Chef API default location is particularly useful if you have cookbooks that are
-> private to your organization that are not shared on the Opscode community site.
->
-> It is highly recommended that you upload your cookbooks to your organization's Chef Server
-> and then set a chef_api default location at the top of every application cookbook's Berksfile
-
-#### Multiple default locations
-
-A combination of default locations can be specified in case a location is unavailable or does not contain the desired cookbook or version
-
-    chef_api :config
-    site :opscode
-
-    cookbook "artifact", "= 0.10.0"
-
-The order in which the default locations keywords appear in the Berksfile is the order in which sources will be tried. In the above example Berkshelf would first try a Chef API using my Berkshelf configuration to find the "artifact" cookbook. If the Chef API didn't contain the "artifact" cookbook, or version 0.10.0 of the cookbook, it will try the Opscode community site.
-
 ### Groups
 
 Adding sources to a group is useful if you want to ignore a cookbook or a set of cookbooks at install or upload time.
@@ -422,33 +302,3 @@ Groups can also be defined inline as an option:
 To exclude the groups when installing or updating just add the `--without` flag.
 
     $ berks install --without solo
-
-## Generating a New Cookbook
-
-Berkshelf includes a command to help you quickly generate a cookbook with a number of helpful supporting tools
-
-    $ berks cookbook my_face --foodcritic
-
-This will generate a cookbook called "my_face" in your current directory with Vagrant, Git, and Foodcritic support. Check out [this guide](http://vialstudios.com/guide-authoring-cookbooks.html) for more information and the help provided in the Berkshelf CLI for the cookbook command.
-
-## Build Integration
-
-Instead of invoking Berkshelf directly on the command-line, you can also run Berkshelf from within a Thor process.
-
-### Thor
-
-Just add the following line to your Thorfile:
-
-    require 'berkshelf/thor'
-
-Now you have access to common Berkshelf tasks without shelling out
-
-    $ thor list
-
-    $ berkshelf
-    $ ---------
-    $ thor berkshelf:init [PATH]  # Prepare a local path to have it's Cook...
-    $ thor berkshelf:install      # Install the Cookbooks specified by a B...
-    $ thor berkshelf:update       # Update all Cookbooks and their depende...
-    $ thor berkshelf:upload       # Upload the Cookbooks specified by a Be...
-    $ thor berkshelf:version      # Display version and copyright informat...
