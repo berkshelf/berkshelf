@@ -3,7 +3,7 @@
 If you're familiar with [Bundler](http://gembundler.com), then Berkshelf is a breeze.
 
     $ gem install berkshelf
-    Successfully installed berkshelf-3.0.0
+    Successfully installed berkshelf-2.0.0
     1 gem installed
 
 **NOTE:** Berkshelf 2 is no longer under active development. If you are experiencing dependency resolution errors, you may wish to [install Berkshelf 3](https://github.com/berkshelf/berkshelf/wiki/Howto:-Use-the-bleeding-edge).

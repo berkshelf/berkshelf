@@ -1,0 +1,7 @@
+---
+layout: default
+---
+{% capture index %}{% include index-2.0.md %}{% endcapture %}{{ index | markdownify }}
+
+<h2 id="authors">Authors</h2>
+{% capture authors %}{% include authors.md %}{% endcapture %}{{ authors | markdownify }}
