@@ -220,4 +220,4 @@ require_relative 'berkshelf/ui'
 
 Ridley.logger          = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
-Celluloid.logger.level = Logger::FATAL
+Celluloid.logger.level = Logger::ERROR
