@@ -1,4 +1,5 @@
 require 'berkshelf/api-client'
+require 'parallel'
 
 module Berkshelf
   class Installer
@@ -90,6 +91,19 @@ module Berkshelf
         end
       end
 
+      # Install (download) cookbooks using a thread pool to improve performance.
+      #
+      # @param [Array<Dependency>] dependencies
+      #   the list of dependencies to install
+      #
+      # @return [Array<CachedCookbook>]
+      #   the list of cached cookbooks
+      def parallel_install(dependencies)
+        Parallel.map(dependencies) do |dependency|
+          install(dependency)
+        end
+      end
+
       # Install all the dependencies from the lockfile graph.
       #
       # @return [Array<Array<Dependency> Array<CachedCookbook>>]
@@ -112,9 +126,7 @@ module Berkshelf
           build_universe
         end
 
-        cookbooks = dependencies.sort.collect do |dependency|
-          install(dependency)
-        end
+        cookbooks = parallel_install(dependencies)
 
         [dependencies, cookbooks]
       end
@@ -155,9 +167,9 @@ module Berkshelf
 
         Berkshelf.log.debug "  Starting resolution..."
 
-        cookbooks = resolver.resolve.sort.collect do |dependency|
-          install(dependency)
-        end
+        dependencies = resolver.resolve
+
+        cookbooks = parallel_install(dependencies)
 
         [dependencies, cookbooks]
       end
