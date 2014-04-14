@@ -10,7 +10,7 @@ module Berkshelf
     def initialize(berksfile)
       @berksfile  = berksfile
       @lockfile   = berksfile.lockfile
-      @worker     = Worker.pool(size: [(Celluloid.cores - 1), 1].max, args: [berksfile])
+      @worker     = Worker.pool(size: [(Celluloid.cores - 1), 2].max, args: [berksfile])
     end
 
     def build_universe
