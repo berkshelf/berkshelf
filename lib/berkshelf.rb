@@ -9,6 +9,7 @@ require 'solve'
 require 'thor'
 require 'tmpdir'
 require 'uri'
+require 'celluloid'
 
 JSON.create_id = nil
 
@@ -217,5 +218,6 @@ require_relative 'berkshelf/source'
 require_relative 'berkshelf/source_uri'
 require_relative 'berkshelf/ui'
 
-Ridley.logger = Berkshelf.logger
+Ridley.logger          = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
+Celluloid.logger.level = Logger::ERROR
