@@ -10,7 +10,7 @@ module Berkshelf
     def initialize(berksfile)
       @berksfile  = berksfile
       @lockfile   = berksfile.lockfile
-      @downloader = Downloader.new(berksfile)
+      @worker     = Worker.pool(size: [(Celluloid.cores - 1), 1].max, args: [berksfile])
     end
 
     def build_universe
@@ -59,34 +59,48 @@ module Berkshelf
 
     private
 
-      # Install a specific dependency.
-      #
-      # @param [Dependency]
-      #   the dependency to install
-      # @return [CachedCookbook]
-      #   the installed cookbook
-      def install(dependency)
-        Berkshelf.log.info "Installing #{dependency}"
+      attr_reader :worker
 
-        if dependency.installed?
-          Berkshelf.log.debug "  Already installed - skipping install"
+      class Worker
+        include Celluloid
 
-          Berkshelf.formatter.use(dependency)
-          dependency.cached_cookbook
-        else
-          name, version = dependency.name, dependency.locked_version.to_s
-          source = berksfile.source_for(name, version)
+        attr_reader :berksfile
+        attr_reader :downloader
 
-          Berkshelf.log.debug "  Downloading #{dependency.name} (#{dependency.locked_version}) from #{source}"
+        def initialize(berksfile)
+          @berksfile  = berksfile
+          @downloader = Downloader.new(berksfile)
+        end
 
-          cookbook = source.cookbook(name, version)
+        # Install a specific dependency.
+        #
+        # @param [Dependency]
+        #   the dependency to install
+        # @return [CachedCookbook]
+        #   the installed cookbook
+        def install(dependency)
+          Berkshelf.log.info "Installing #{dependency}"
 
-          Berkshelf.log.debug "    => #{cookbook.inspect}"
+          if dependency.installed?
+            Berkshelf.log.debug "  Already installed - skipping install"
 
-          Berkshelf.formatter.install(source, cookbook)
+            Berkshelf.formatter.use(dependency)
+            dependency.cached_cookbook
+          else
+            name, version = dependency.name, dependency.locked_version.to_s
+            source = berksfile.source_for(name, version)
 
-          stash = downloader.download(name, version)
-          CookbookStore.import(name, version, stash)
+            Berkshelf.log.debug "  Downloading #{dependency.name} (#{dependency.locked_version}) from #{source}"
+
+            cookbook = source.cookbook(name, version)
+
+            Berkshelf.log.debug "    => #{cookbook.inspect}"
+
+            Berkshelf.formatter.install(source, cookbook)
+
+            stash = downloader.download(name, version)
+            CookbookStore.import(name, version, stash)
+          end
         end
       end
 
@@ -112,9 +126,7 @@ module Berkshelf
           build_universe
         end
 
-        cookbooks = dependencies.sort.collect do |dependency|
-          install(dependency)
-        end
+        cookbooks = dependencies.sort.map { |dependency| worker.future.install(dependency) }.map(&:value)
 
         [dependencies, cookbooks]
       end
@@ -155,9 +167,7 @@ module Berkshelf
 
         Berkshelf.log.debug "  Starting resolution..."
 
-        cookbooks = resolver.resolve.sort.collect do |dependency|
-          install(dependency)
-        end
+        cookbooks = resolver.resolve.sort.map { |dependency| worker.future.install(dependency) }.map(&:value)
 
         [dependencies, cookbooks]
       end
