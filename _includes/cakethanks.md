@@ -2,4 +2,4 @@
 ---
 ![ERMAGERD BERKSHELF](./images/ermahgerd.jpg)
 
-Courtesy of [@RiotSorrmi](https://twitter.com/RiotSorrmi)
+Courtesy of Michaela Morris
