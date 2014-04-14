@@ -98,11 +98,7 @@ If you need to disable SSL, you can in `~/.berkshelf/config.json` like so:
 
 ## Authors
 
-- Jamie Winsor (<jamie@vialstudios.com>)
-- Josiah Kiehl (<jkiehl@riotgames.com>)
-- Michael Ivey (<michael.ivey@riotgames.com>)
-- Justin Campbell (<justin@justincampbell.me>)
-- Seth Vargo (<sethvargo@gmail.com>)
+[The Berkshelf Core Team](https://github.com/berkshelf/berkshelf/wiki/Core-Team)
 
 Thank you to all of our [Contributors](https://github.com/berkshelf/berkshelf/graphs/contributors), testers, and users.
 
