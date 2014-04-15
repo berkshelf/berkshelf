@@ -9,10 +9,6 @@ Manage a Cookbook or an Application's Cookbook dependencies
 
 ## Installation
 
-**WARNING:** It is advised at this time that you [use Berkshelf 3](https://github.com/berkshelf/berkshelf/wiki/Howto:-Use-the-bleeding-edge). Berkshelf 2 is no longer being actively developed and has a number of significant issues related to dependency resolution that Berkshelf 3 fixes.
-
-### Gem Installation
-
 Add Berkshelf to your repository's `Gemfile`:
 
 ```ruby
