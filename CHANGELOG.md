@@ -1,3 +1,8 @@
+# 3.0.1
+
+* Bug Fixes
+  * Installation will no longer fail on machines with just 1 or 2 cores
+
 # 3.0.0
 
 * Enhancements
