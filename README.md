@@ -29,7 +29,7 @@ See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
 ## Supported Platforms
 
-Berkshelf is tested on Ruby 1.9.3, 2.0.0, and JRuby 1.6+.
+Berkshelf is tested on Ruby 1.9.3, 2.0, and 2.1.
 
 Ruby 1.9 mode is required on all interpreters.
 
