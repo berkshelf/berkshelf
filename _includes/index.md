@@ -98,7 +98,7 @@ This will output all of the cookbooks to `pwd/berks-cookbooks`
 
 Berkshelf will run with a default configuration unless you explicitly generate one. By default, Berkshelf uses the values found in your Knife configuration (if you have one).
 
-You can override this default behavior by create a configuratio file and placing it at `~/.berkshelf/config.json`
+You can override this default behavior by create a configuration file and placing it at `~/.berkshelf/config.json`
 
 ### Configurable options
 
@@ -237,7 +237,7 @@ The Path location is useful for rapid iteration because it does not download, co
 
     cookbook "artifact", path: "/Users/reset/code/artifact-cookbook"
 
-The value given to `:path` can only contain a single cookbook and _must_ contain a `metadata.rb` file.
+The value given to the `path` key can only contain a single cookbook and _must_ contain a `metadata.rb` file.
 
 ##### Git Location
 
