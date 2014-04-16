@@ -98,7 +98,7 @@ This will output all of the cookbooks to `pwd/berks-cookbooks`
 
 Berkshelf will run with a default configuration unless you explicitly generate one. By default, Berkshelf uses the values found in your Knife configuration (if you have one).
 
-You can override this default behavior by create a configuratio file and placing it at `~/.berkshelf/config.json`
+You can override this default behavior by create a configuration file and placing it at `~/.berkshelf/config.json`
 
 ### Configurable options
 
