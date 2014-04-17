@@ -579,6 +579,8 @@ module Berkshelf
 
       # The class representing an internal graph.
       class Graph
+        include Enumerable
+
         # Create a new Lockfile graph.
         #
         # Some clarifying terminology:
@@ -591,6 +593,11 @@ module Berkshelf
           @lockfile  = lockfile
           @berksfile = lockfile.berksfile
           @graph     = {}
+        end
+
+        # @yield [Hash<String]
+        def each(&block)
+          @graph.values.each(&block)
         end
 
         # The list of locks for this graph. Dependencies are retrieved from the
