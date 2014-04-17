@@ -79,8 +79,8 @@ module Berkshelf
 
         dependency
       end
-    rescue Solve::Errors::NoSolutionError
-      raise NoSolutionError.new(demands)
+    rescue Solve::Errors::NoSolutionError => e
+      raise NoSolutionError.new(demands, e)
     end
 
     # Retrieve the given demand from the resolver
