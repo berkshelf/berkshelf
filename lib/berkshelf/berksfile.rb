@@ -627,6 +627,21 @@ module Berkshelf
       destination
     end
 
+    # Visualize the current Berksfile as a "graph" using DOT.
+    #
+    # @param [String] outfile
+    #   the name/path to outfile the file
+    #
+    # @return [String] path
+    #   the path where the image was written
+    def viz(outfile = nil)
+      outfile = File.join(Dir.pwd, outfile || 'graph.png')
+
+      validate_lockfile_present!
+      validate_lockfile_trusted!
+      Visualizer.from_lockfile(lockfile).to_png(outfile)
+    end
+
     # Get the lockfile corresponding to this Berksfile. This is necessary because
     # the user can specify a different path to the Berksfile. So assuming the lockfile
     # is named "Berksfile.lock" is a poor assumption.
