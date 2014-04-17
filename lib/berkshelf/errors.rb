@@ -69,11 +69,13 @@ module Berkshelf
     attr_reader :demands
 
     # @param [Array<Dependency>] demands
-    def initialize(demands)
+    def initialize(demands, original_exception)
       @demands = demands
+      @original_exception = original_exception
     end
 
     def to_s
+      @original_exception.to_s +
       "Unable to find a solution for demands: #{demands.join(', ')}"
     end
   end
