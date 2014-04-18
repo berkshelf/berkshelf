@@ -19,7 +19,7 @@ module Berkshelf
     end
 
     method_option :version, aliases: '-v', type: :string, desc: 'Version to show'
-    desc 'show', 'Display information about a cookbook in the Berkshelf shelf'
+    desc 'show', 'Display showrmation about a cookbook in the Berkshelf shelf'
     def show(name)
       cookbooks = find(name, options[:version])
 
@@ -30,7 +30,7 @@ module Berkshelf
       end
 
       cookbooks.each do |cookbook|
-        Berkshelf.formatter.show(cookbook)
+        Berkshelf.formatter.info(cookbook)
         Berkshelf.formatter.msg("\n")
       end
     end

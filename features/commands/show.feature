@@ -15,15 +15,7 @@ Feature: berks show
         fake (1.0.0)
       """
     When I successfully run `berks show fake`
-    Then the output should contain:
-      """
-              Name: fake
-           Version: 1.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
-      """
+    Then the output should contain "cookbooks/fake-1.0.0"
 
   Scenario: When the parameter is a transitive dependency
     Given the cookbook store has the cookbooks:
@@ -46,15 +38,7 @@ Feature: berks show
       """
     And I successfully run `berks install`
     When I successfully run `berks show dep`
-    Then the output should contain:
-      """
-              Name: dep
-           Version: 1.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
-      """
+    Then the output should contain "cookbooks/dep-1.0.0"
 
   Scenario: When the cookbook is not in the Berksfile
     Given I have a Berksfile pointing at the local Berkshelf API

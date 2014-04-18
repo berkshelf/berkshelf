@@ -26,7 +26,6 @@ module Berkshelf
     DIRNAME_REGEXP = /^(.+)-(.+)$/.freeze
 
     extend Forwardable
-
     def_delegator :metadata, :description
     def_delegator :metadata, :maintainer
     def_delegator :metadata, :maintainer_email

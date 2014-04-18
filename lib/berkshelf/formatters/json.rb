@@ -101,6 +101,14 @@ module Berkshelf
       end
     end
 
+    # Output Cookbook info entry to delayed output.
+    #
+    # @param [CachedCookbook] cookbook
+    def info(cookbook)
+      path = File.expand_path(cookbook.path)
+      cookbooks[cookbook.cookbook_name] = { path: path }
+    end
+
     # Output a package message using
     #
     # @param [String] destination
@@ -121,11 +129,12 @@ module Berkshelf
       end
     end
 
-    # Output Cookbook info entry to delayed output
+    # Output Cookbook path entry to delayed output
     #
     # @param [CachedCookbook] cookbook
     def show(cookbook)
-      cookbooks[cookbook.cookbook_name] = cookbook.pretty_hash
+      path = File.expand_path(cookbook.path)
+      cookbooks[cookbook.cookbook_name] = { path: path }
     end
 
     # Ouput Cookbook search results to delayed output
