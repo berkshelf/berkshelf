@@ -381,7 +381,7 @@ module Berkshelf
       berksfile.vendor(path)
     end
 
-    desc 'version', 'Display version and copyright information'
+    desc 'version', 'Display version'
     def version
       Berkshelf.formatter.version
     end
