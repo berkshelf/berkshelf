@@ -1,3 +1,4 @@
+require 'buff/shell_out'
 require 'set'
 require 'tempfile'
 
@@ -16,6 +17,8 @@ module Berkshelf
         end
       end
     end
+
+    include Buff::ShellOut
 
     def initialize
       @nodes = {}
@@ -78,7 +81,16 @@ module Berkshelf
       tempfile.write(to_dot)
       tempfile.rewind
 
-      system("dot -T png #{tempfile.path} -o #{outfile}")
+      unless Berkshelf.which('dot')
+        raise GraphvizNotInstalled.new
+      end
+
+      command = "dot -T png #{tempfile.path} -o #{outfile}"
+      response = shell_out(command)
+
+      unless response.success?
+        raise GraphvizCommandFailed.new(command, response.stderr)
+      end
 
       File.expand_path(outfile)
     ensure
