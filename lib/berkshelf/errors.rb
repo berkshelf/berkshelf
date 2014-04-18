@@ -454,4 +454,29 @@ module Berkshelf
       "    source 'https://api.berkshelf.com'"
     end
   end
+
+  class GraphvizNotInstalled < BerkshelfError
+    status_code(147)
+
+    def to_s
+      "Graphviz is not installed! In order to generate a dependency graph, " \
+      "you must install Graphviz. Please visit the Graphviz homepage at " \
+      "http://www.graphviz.org/ or consult your package manager for more " \
+      "information on how to install Graphviz."
+    end
+  end
+
+  class GraphvizCommandFailed < BerkshelfError
+    status_code(148)
+
+    def initialize(command, output)
+      @command = command
+      @output  = output
+    end
+
+    def to_s
+      "The Graphviz command `#{@command}` failed to execute properly. Here " \
+      "is the standard error from the command:\n\n#{@output}"
+    end
+  end
 end

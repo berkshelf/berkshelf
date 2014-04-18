@@ -381,6 +381,26 @@ module Berkshelf
       berksfile.vendor(path)
     end
 
+    method_option :berksfile,
+      type: :string,
+      default: nil,
+      desc: 'Path to a Berksfile to operate off of.',
+      aliases: '-b',
+      banner: 'PATH'
+    method_option :outfile,
+      type: :string,
+      default: 'graph.png',
+      desc: 'The name of the output file',
+      aliases: '-o',
+      banner: 'NAME'
+    desc "viz", "Visualize the dependency graph"
+    def viz
+      berksfile = Berksfile.from_options(options)
+      path = berksfile.viz(options[:outfile])
+
+      Berkshelf.ui.info(path)
+    end
+
     desc 'version', 'Display version'
     def version
       Berkshelf.formatter.version
