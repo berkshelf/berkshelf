@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Berkshelf
-  describe Visualizer, :focus do
+  describe Visualizer do
     describe '#to_png' do
       context 'when graphviz is not installed' do
         before do
