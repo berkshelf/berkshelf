@@ -248,13 +248,6 @@ module Berkshelf
     def outdated(*names)
       berksfile = Berksfile.from_options(options)
       outdated  = berksfile.outdated(*names)
-
-      if outdated.empty?
-        Berkshelf.formatter.msg "All cookbooks up to date!"
-      else
-        Berkshelf.formatter.msg "The following cookbooks have newer versions:"
-      end
-
       Berkshelf.formatter.outdated(outdated)
     end
 
