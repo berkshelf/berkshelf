@@ -87,6 +87,10 @@ module Berkshelf
       "#<#{self.class.name} uri: #{@uri.to_s.inspect}>"
     end
 
+    def hash
+      @uri.host.hash
+    end
+
     def ==(other)
       return false unless other.is_a?(self.class)
       uri == other.uri
