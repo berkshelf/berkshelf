@@ -1,3 +1,15 @@
+# 3.1.0
+
+* Enhancements
+  * Added `berks viz` command which will output a visualized dependency graph
+  * Added `berks info` command which outputs what `berks show` used to output
+  * Changed `berks show` command to output the filepath where the cookbook is found
+  * Improve error output when a solution couldn't be found
+
+* Bug Fixes
+  * Various documentation updates
+  * Update description of version command
+
 # 3.0.1
 
 * Bug Fixes
