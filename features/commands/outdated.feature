@@ -48,7 +48,7 @@ Feature: berks outdated
     Then the output should contain:
       """
       The following cookbooks have newer versions:
-        * bacon (1.1.0)
+        * bacon (1.0.0 => 1.1.0)
       """
 
   Scenario: the dependency has a version constraint and there are new items that satisfy it
@@ -75,7 +75,7 @@ Feature: berks outdated
     Then the output should contain:
       """
       The following cookbooks have newer versions:
-        * bacon (1.5.8)
+        * bacon (1.0.0 => 1.5.8)
       """
 
   Scenario: When the lockfile is not present
