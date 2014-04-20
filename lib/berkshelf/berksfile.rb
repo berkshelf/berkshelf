@@ -465,7 +465,7 @@ module Berkshelf
           end.sort_by { |cookbook| cookbook.version }.last
 
           unless latest.nil?
-            hash[name] = {
+            hash[name] ||= {
               'local' => dependency.locked_version,
               'remote' => {
                 source => Semverse::Version.coerce(latest.version)
