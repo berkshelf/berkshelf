@@ -1,3 +1,9 @@
+# master
+
+* Bug Fixes
+  * Fix issue reading metadata which was compiled using an older (bugged) version of Knife
+  * Fix issue with incorrectly reporting outdated cookbooks with the outdated command
+
 # 3.1.0
 
 * Enhancements
