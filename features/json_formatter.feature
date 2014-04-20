@@ -147,8 +147,8 @@ Feature: --format json
       {
         "cookbooks": [
           {
-            "local_version": "0.1.0",
-            "sources": {
+            "local": "0.1.0",
+            "remote": {
               "http://0.0.0.0:26210": "0.2.9"
             },
             "name": "seth"

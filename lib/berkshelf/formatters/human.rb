@@ -65,8 +65,8 @@ module Berkshelf
         Berkshelf.ui.info('The following cookbooks have newer versions:')
 
         hash.each do |name, info|
-          info['remote_versions'].each do |remote_source, remote_version|
-            out = "  * #{name} (#{info['local_version']} => #{remote_version})"
+          info['remote'].each do |remote_source, remote_version|
+            out = "  * #{name} (#{info['local']} => #{remote_version})"
 
             unless remote_source.default?
               out << " [#{remote_source.uri}]"

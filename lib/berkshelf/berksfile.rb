@@ -443,9 +443,9 @@ module Berkshelf
     # @example
     #   berksfile.outdated #=> {
     #     "nginx" => {
-    #       "local_version" => #<Semverse::Version 1.8.0>,
-    #       "remote_versions" => {
-    #         #<Source uri: "https://api.berkshelf.com"> => #<Semverse::Version 2.6.2>
+    #       "local" => #<Version 1.8.0>,
+    #       "remote" => {
+    #         #<Source uri: "https://api.berkshelf.com"> #=> #<Version 2.6.2>
     #       }
     #     }
     #   }
@@ -454,13 +454,6 @@ module Berkshelf
       validate_lockfile_trusted!
       validate_dependencies_installed!
       validate_cookbook_names!(names)
-
-      # Calculate the list of cookbooks to unlock
-      if names.empty?
-        list = dependencies
-      else
-        list = dependencies.select { |dependency| names.include?(dependency.name) }
-      end
 
       lockfile.graph.locks.inject({}) do |hash, (name, dependency)|
         sources.each do |source|
@@ -472,10 +465,12 @@ module Berkshelf
           end.sort_by { |cookbook| cookbook.version }.last
 
           unless latest.nil?
-            hash[name] ||= {}
-            hash[name]['local_version'] = dependency.locked_version
-            hash[name]['remote_versions'] ||= {}
-            hash[name]['remote_versions'][source] = Semverse::Version.coerce(latest.version)
+            hash[name] = {
+              'local' => dependency.locked_version,
+              'remote' => {
+                source => Semverse::Version.coerce(latest.version)
+              }
+            }
           end
         end
 
