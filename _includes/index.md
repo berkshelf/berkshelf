@@ -133,9 +133,9 @@ Visit the [Vagrant downloads page](http://downloads.vagrantup.com/) and download
 
 ### Install the Vagrant Berkshelf plugin
 
-    $ vagrant plugin install vagrant-berkshelf
+    $ vagrant plugin install vagrant-berkshelf --plugin-version 2.0.0.rc4
     Installing the 'vagrant-berkshelf' plugin. This can take a few minutes...
-    Installed the plugin 'vagrant-berkshelf (2.0.0)!'
+    Installed the plugin 'vagrant-berkshelf (2.0.0.rc4)!'
 
 ### Using the Vagrant Berkshelf plugin
 
