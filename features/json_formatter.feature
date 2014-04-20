@@ -147,20 +147,15 @@ Feature: --format json
       {
         "cookbooks": [
           {
-            "version": "0.2.9",
-            "sources": {
-              "http://0.0.0.0:26210": {
-                "name": "seth",
-                "version": "0.2.9"
-              }
+            "local": "0.1.0",
+            "remote": {
+              "http://0.0.0.0:26210": "0.2.9"
             },
             "name": "seth"
           }
         ],
         "errors": [],
-        "messages": [
-          "The following cookbooks have newer versions:"
-        ],
+        "messages": [],
         "warnings": []
       }
       """

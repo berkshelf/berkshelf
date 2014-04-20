@@ -91,12 +91,14 @@ module Berkshelf
     #   the list of outdated cookbooks in the format
     #   { 'cookbook' => { 'api.berkshelf.com' => #<Cookbook> } }
     def outdated(hash)
-      hash.keys.each do |name|
-        hash[name].each do |source, cookbook|
+      hash.each do |name, info|
+        info['remote'].each do |remote_source, remote_version|
+          source = remote_source.uri.to_s
+
           cookbooks[name] ||= {}
-          cookbooks[name][:version] = cookbook.version
-          cookbooks[name][:sources] ||= {}
-          cookbooks[name][:sources][source] = cookbook
+          cookbooks[name][:local] = info['local'].to_s
+          cookbooks[name][:remote] ||= {}
+          cookbooks[name][:remote][source] = remote_version.to_s
         end
       end
     end

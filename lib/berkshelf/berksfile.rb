@@ -435,12 +435,19 @@ module Berkshelf
     # that satisfies the constraints of your dependencies.
     #
     # @return [Hash]
-    #   a hash of cached cookbooks and their latest version. An empty hash is
-    #   returned if there are no newer cookbooks for any of your dependencies
+    #   a hash of cached cookbooks and their latest version grouped by their
+    #   remote API source. The hash will be empty if there are no newer
+    #   cookbooks for any of your dependencies (that still satisfy the given)
+    #   constraints in the +Berksfile+.
     #
     # @example
     #   berksfile.outdated #=> {
-    #     #<CachedCookbook name="artifact"> => "0.11.2"
+    #     "nginx" => {
+    #       "local" => #<Version 1.8.0>,
+    #       "remote" => {
+    #         #<Source uri: "https://api.berkshelf.com"> #=> #<Version 2.6.2>
+    #       }
+    #     }
     #   }
     def outdated(*names)
       validate_lockfile_present!
@@ -448,25 +455,22 @@ module Berkshelf
       validate_dependencies_installed!
       validate_cookbook_names!(names)
 
-      # Calculate the list of cookbooks to unlock
-      if names.empty?
-        list = dependencies
-      else
-        list = dependencies.select { |dependency| names.include?(dependency.name) }
-      end
-
       lockfile.graph.locks.inject({}) do |hash, (name, dependency)|
         sources.each do |source|
           cookbooks = source.versions(name)
 
           latest = cookbooks.select do |cookbook|
             dependency.version_constraint.satisfies?(cookbook.version) &&
-            cookbook.version.to_s != dependency.locked_version.to_s
+            Semverse::Version.coerce(cookbook.version) > dependency.locked_version
           end.sort_by { |cookbook| cookbook.version }.last
 
           unless latest.nil?
-            hash[name] ||= {}
-            hash[name][source.uri.to_s] = latest
+            hash[name] ||= {
+              'local' => dependency.locked_version,
+              'remote' => {
+                source => Semverse::Version.coerce(latest.version)
+              }
+            }
           end
         end
 

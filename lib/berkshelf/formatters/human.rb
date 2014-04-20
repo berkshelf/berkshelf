@@ -59,13 +59,21 @@ module Berkshelf
     #   the list of outdated cookbooks in the format
     #   { 'cookbook' => { 'api.berkshelf.com' => #<Cookbook> } }
     def outdated(hash)
-      hash.keys.each do |name|
-        hash[name].each do |source, newest|
-          string = "  * #{newest.name} (#{newest.version})"
-          unless source == Berksfile::DEFAULT_API_URL
-            string << " [#{source}]"
+      if hash.empty?
+        Berkshelf.ui.info('All cookbooks up to date!')
+      else
+        Berkshelf.ui.info('The following cookbooks have newer versions:')
+
+        hash.each do |name, info|
+          info['remote'].each do |remote_source, remote_version|
+            out = "  * #{name} (#{info['local']} => #{remote_version})"
+
+            unless remote_source.default?
+              out << " [#{remote_source.uri}]"
+            end
+
+            Berkshelf.ui.info(out)
           end
-          Berkshelf.ui.info string
         end
       end
     end
