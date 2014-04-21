@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'hashie',            '>= 2.0.2'
   s.add_dependency 'minitar',           '~> 0.5.4'
   s.add_dependency 'retryable',         '~> 1.3.3'
-  s.add_dependency 'ridley',            '~> 1.5.0'
+  s.add_dependency 'ridley',            '~> 1.7.0'
   s.add_dependency 'solve',             '~> 0.8.2'
   s.add_dependency 'thor',              '~> 0.18.0'
   s.add_dependency 'rbzip2',            '~> 0.2.0'

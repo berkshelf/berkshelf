@@ -146,3 +146,4 @@ require_relative 'berkshelf/version'
 
 Ridley.logger = Berkshelf.logger = Logger.new(STDOUT)
 Berkshelf.logger.level = Logger::WARN
+Celluloid.logger.level = Logger::FATAL if defined?(Celluloid)
