@@ -2,12 +2,6 @@
 
 Berkshelf is now included as part of the [Chef-DK](http://getchef.com/downloads/chef-dk). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
 
-Add the Chef-DK binaries directory to your path once you've installed the Chef-DK.
-
-    $ export PATH=/opt/chefdk/embedded/bin:$PATH
-    $ which berks
-    /opt/chefdk/embedded/bin/berks
-
 Generate a Berksfile in a pre-exisitng cookbook
 
     $ cd my-cookbook
