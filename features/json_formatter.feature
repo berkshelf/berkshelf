@@ -9,7 +9,7 @@ Feature: --format json
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install --format json`
-    Then the output should contain JSON:
+    Then the stdout should contain JSON:
       """
       {
         "cookbooks": [
@@ -36,7 +36,7 @@ Feature: --format json
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
       """
     When I successfully run `berks install --format json`
-    Then the output should contain JSON:
+    Then the stdout should contain JSON:
       """
       {
         "cookbooks": [
@@ -61,7 +61,7 @@ Feature: --format json
     And the Chef server does not have the cookbooks:
       | example_cookbook | 0.5.0 |
     When I successfully run `berks upload --format json`
-    Then the output should contain JSON:
+    Then the stdout should contain JSON:
       """
       {
         "cookbooks": [

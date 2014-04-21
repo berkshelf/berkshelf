@@ -237,7 +237,7 @@ Feature: install cookbooks from a Berksfile
       """
     When I cd to "sparkle_motion"
     And I successfully run `berks install`
-    Then the output should contain exactly:
+    Then the stdout should contain exactly:
       """
       Using sparkle_motion (0.0.0) from metadata
 
@@ -251,7 +251,7 @@ Feature: install cookbooks from a Berksfile
       metadata path: './fake'
       """
     When I successfully run `berks install`
-    Then the output should contain exactly:
+    Then the stdout should contain exactly:
       """
       Using fake (0.0.0) from metadata at './fake'
 
