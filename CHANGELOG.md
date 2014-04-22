@@ -36,6 +36,18 @@
 * Backwards incompatible changes
   * `berks package` has had it's argument and options list updated. The first argument is now the name, or fulle path, of the archive file that will be generated. As with before, the first argument is not required.
 
+# 2.0.16
+
+* Update constraint on Ridley
+
+# 2.0.14
+
+* Backport changes from master to allow detecting cookbooks by metadata.json
+
+# 2.0.13
+
+* Lock transitive dependency on Faraday
+
 # 2.0.10
 
 * Huge performance increase when resolving a Berksfile when the Berkshelf contains a lot of cookbooks
