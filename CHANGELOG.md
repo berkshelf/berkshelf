@@ -1,3 +1,7 @@
+# 2.0.16
+
+* Update constraint on Ridley
+
 # 2.0.14
 
 * Backport changes from master to allow detecting cookbooks by metadata.json
