@@ -24,6 +24,5 @@ module Berkshelf
       message = set_color(message, *color) if color
       super(message)
     end
-    alias_method :fatal, :error
   end
 end
