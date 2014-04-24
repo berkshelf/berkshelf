@@ -98,13 +98,6 @@ describe Thor::Base.shell do
     end
   end
 
-  describe '#deprecated' do
-    it 'prefixes the message with "[DEPRECATED]"' do
-      subject.should_receive(:warn).with('[DEPRECATION] That was deprecated!')
-      subject.deprecated 'That was deprecated!'
-    end
-  end
-
   context '#error' do
     context 'when quiet?' do
       before do

@@ -10,37 +10,19 @@ module Berkshelf
       @mute = false
     end
 
-    def say(message = '', color = nil, force_new_line = (message.to_s !~ /( |\t)\Z/))
+    def say(*args)
       return if quiet?
-
-      super(message, color, force_new_line)
+      super(*args)
     end
-
-    # @see {say}
-    def info(message = '', color = nil, force_new_line = (message.to_s !~ /( |\t)\Z/))
-      say(message, color, force_new_line)
-    end
-
-    def say_status(status, message, log_status = true)
-      return if quiet?
-
-      super(status, message, log_status)
-    end
+    alias_method :info, :say
 
     def warn(message, color = :yellow)
-      return if quiet?
-
       say(message, color)
-    end
-
-    def deprecated(message)
-      warn("[DEPRECATION] #{message}")
     end
 
     def error(message, color = :red)
       message = set_color(message, *color) if color
       super(message)
     end
-    alias_method :fatal, :error
   end
 end
