@@ -7,7 +7,7 @@ This is a list of community-contributed plugins for Berkshelf. A few notes:
 
 Plugins
 -------
-- [berkshelf-bzr](https://github.com/Da-Wei/berkshelf-bzr) - Add support for downloading cookbooks from bazaar locations.
+- [berkshelf-bzr](https://github.com/berkshelf/berkshelf-bzr) - Add support for downloading cookbooks from bazaar locations.
 - [berkshelf-shims](https://github.com/JeffBellegarde/berkshelf-shims) - Provide shims functionality for Berkshelf.
 - [vagrant-berkshelf](https://github.com/berkshelf/vagrant-berkshelf) - A Vagrant plugin to add Berkshelf integration to the Chef provisioners.
 
