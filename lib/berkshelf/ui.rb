@@ -20,10 +20,6 @@ module Berkshelf
       say(message, color)
     end
 
-    def deprecated(message)
-      warn("[DEPRECATION] #{message}")
-    end
-
     def error(message, color = :red)
       message = set_color(message, *color) if color
       super(message)
