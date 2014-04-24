@@ -15,7 +15,7 @@ module Berkshelf
         end
       end
 
-      context 'when the graphviz command fails' do
+      context 'when the graphviz command fails', :graphviz do
         before do
           response = double(success?: false, stderr: 'Something happened!')
           subject.stub(:shell_out).and_return(response)
