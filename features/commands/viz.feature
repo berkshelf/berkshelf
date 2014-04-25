@@ -1,3 +1,4 @@
+@graphviz
 Feature: berks viz
   Scenario: With no options
     * I have a Berksfile pointing at the local Berkshelf API with:
