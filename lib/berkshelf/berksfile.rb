@@ -207,7 +207,7 @@ module Berkshelf
       if args.first == :opscode
         Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
           "Site (site :opscode). Site locations have been replaced by the source location. Change this to: " +
-          "'source \"http://api.berkshelf.com\"' to remove this warning. For more information visit " +
+          "'source \"https://api.berkshelf.com\"' to remove this warning. For more information visit " +
           "https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
         source(DEFAULT_API_URL)
         return
