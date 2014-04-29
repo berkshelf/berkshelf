@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'addressable',       '~> 2.3.4'
   s.add_dependency 'buff-shell_out',    '~> 0.1'
   s.add_dependency 'chozo',             '>= 0.6.1'
-  s.add_dependency 'faraday',           '~> 0.8.5'
   s.add_dependency 'hashie',            '>= 2.0.2'
   s.add_dependency 'minitar',           '~> 0.5.4'
   s.add_dependency 'retryable',         '~> 1.3.3'
@@ -42,7 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve',             '~> 0.8.2'
   s.add_dependency 'thor',              '~> 0.18.0'
   s.add_dependency 'rbzip2',            '~> 0.2.0'
-  s.add_dependency 'faraday',           '~> 0.8.0' # lock tranisitive dependency of Ridley
+  s.add_dependency 'faraday',           '~> 0.8.5' # lock tranisitive dependency of Ridley
 
   s.add_development_dependency 'aruba',         '~> 0.5'
   s.add_development_dependency 'cane',          '~> 2.5'
