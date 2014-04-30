@@ -25,6 +25,7 @@ module Berkshelf
     autoload :Logging, 'berkshelf/mixin/logging'
   end
 
+  autoload :Shell,      'berkshelf/shell'
   autoload :Uploader,   'berkshelf/uploader'
   autoload :Visualizer, 'berkshelf/visualizer'
 
@@ -52,10 +53,9 @@ module Berkshelf
       @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
     end
 
-    # @return [Thor::Shell::Color, Thor::Shell::Basic]
-    #   A basic shell on Windows, colored everywhere else
+    # @return [Berkshelf::Shell]
     def ui
-      @ui ||= Thor::Base.shell.new
+      @ui ||= Berkshelf::Shell.new
     end
 
     # Returns the filepath to the location Berkshelf will use for
@@ -217,7 +217,6 @@ require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/source'
 require_relative 'berkshelf/source_uri'
-require_relative 'berkshelf/ui'
 
 Ridley.logger          = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
