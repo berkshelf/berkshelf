@@ -180,7 +180,6 @@ module Berkshelf
           Berkshelf.log.debug "#{indent}  Transitive are not satisifed"
           return false
         end
-
       end
     end
 
