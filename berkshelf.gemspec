@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'addressable',          '~> 2.3.4'
   s.add_dependency 'berkshelf-api-client', '~> 1.2'
-  s.add_dependency 'buff-config',          '~> 0.2'
+  s.add_dependency 'buff-config',          '~> 0.4'
   s.add_dependency 'buff-extensions',      '~> 0.4'
   s.add_dependency 'buff-shell_out',       '~> 0.1'
   s.add_dependency 'faraday',              '~> 0.9.0'
