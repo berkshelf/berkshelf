@@ -1,5 +1,8 @@
+require 'thor'
+
 module Berkshelf
-  module UI
+  # Subclass the current shell (which is different based on the OS)
+  Shell = Class.new(Thor::Base.shell) do
     # Mute the output of this instance of UI until {#unmute!} is called
     def mute!
       @mute = true
