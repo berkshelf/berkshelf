@@ -92,6 +92,32 @@ describe Berkshelf::Lockfile do
       expect(subject.trusted?).to be_true
     end
 
+    it 'returns true when the lockfile is trusted with cyclic transitive dependencies' do
+      cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0' })
+      apt = double('apt',
+        name: 'apt',
+        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
+        version: '1.0.0',
+        location: 'api',
+        dependencies: { 'bacon' => '1.0.0' },
+        cached_cookbook: cookbook,
+      )
+      bacon = double('bacon',
+        name: 'bacon',
+        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
+        version: '1.0.0',
+        location: 'api',
+        dependencies: { 'apt' => '1.0.0' }
+      )
+      berksfile = double('berksfile', dependencies: [apt])
+      subject.instance_variable_set(:@berksfile, berksfile)
+      subject.stub(:find).with(apt).and_return(apt)
+      subject.graph.stub(:find).with('bacon').and_return(bacon)
+      subject.graph.stub(:find).with(apt).and_return(apt)
+
+      expect(subject.trusted?).to be_true
+    end
+
     it 'returns false when the lockfile is not trusted because of transitive dependencies' do
       cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0', 'flip' => '2.0.0' })
       apt = double('apt',

@@ -174,12 +174,13 @@ module Berkshelf
           return false
         end
 
+        checked[name] = true
+
         unless satisfies_transitive?(graphed, checked, level + 2)
           Berkshelf.log.debug "#{indent}  Transitive are not satisifed"
           return false
         end
 
-        checked[name] = true
       end
     end
 
