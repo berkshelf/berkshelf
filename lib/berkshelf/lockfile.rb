@@ -723,7 +723,7 @@ module Berkshelf
 
           cookbooks.each do |cookbook|
             @graph[cookbook.cookbook_name.to_s] = GraphItem.new(
-              cookbook.name,
+              cookbook.cookbook_name,
               cookbook.version,
               cookbook.dependencies,
             )
