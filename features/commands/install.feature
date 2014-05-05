@@ -54,11 +54,8 @@ Feature: berks install
       | elixir | 1.0.0 |
     And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
-    Then the output should contain:
-      """
-      Installing elixir (1.0.0) from http://0.0.0.0:26210 ([chef_server] http://localhost:26310/)
-      Installing ruby (1.0.0) from http://0.0.0.0:26210 ([chef_server] http://localhost:26310/)
-      """
+    Then the output should contain "Installing elixir (1.0.0)"
+    And the output should contain "Installing ruby (1.0.0)"
     And the cookbook store should have the cookbooks:
       | ruby   | 1.0.0 |
       | elixir | 1.0.0 |
