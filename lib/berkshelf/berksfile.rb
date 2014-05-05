@@ -569,7 +569,11 @@ module Berkshelf
 
       if options[:from_file]
         environment_path = options[:from_file]
-        environment = conn.environment.from_file(environment_path)
+        begin
+          environment = conn.environment.from_file(environment_path)
+        rescue Ridley::Errors::RidleyError => ex
+          raise 'Local environment file #{environment_path} not found'
+        end
       else
         environment = conn.environment.find(environment_name)
       end
