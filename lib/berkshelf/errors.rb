@@ -294,6 +294,8 @@ module Berkshelf
     end
   end
 
+  class EnvironmentFileNotFound < BerkshelfError; status_code(137); end
+
   class ChefConnectionError < BerkshelfError
     status_code(130)
 
