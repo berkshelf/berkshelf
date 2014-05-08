@@ -242,7 +242,9 @@ Feature: berks install
   Scenario: installing a Berksfile that contains a Git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
+      cookbook 'berkshelf-cookbook-fixture', 
+        git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', 
+        tag: 'v0.2.0'
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
