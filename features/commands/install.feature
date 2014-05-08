@@ -239,6 +239,19 @@ Feature: berks install
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
       """
 
+  Scenario: installing a Berksfile that contains a Git location
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'berkshelf-cookbook-fixture', 
+        git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', 
+        tag: 'v0.2.0'
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+      | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
+    And the git cookbook "berkshelf-cookbook-fixture-70a527e17d91f01f031204562460ad1c17f972ee" should not have the following directories:
+      | .git | 
+
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
