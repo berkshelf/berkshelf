@@ -1,3 +1,17 @@
+> This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
+
+# 3.1.2
+
+* Enhancements
+  * SCM history is now stripped from cookbooks retrieved from an SCM location which will conserve disk space for cookbooks with a large history
+* Bug Fixes
+  * Fix formatting issue with console output on some systems
+  * Handle crash on install on some machines which do not properly report their number of CPU cores
+  * Fix infinite loop in checking if the lockfile is synced under certain conditions
+  * Fix console output crash on Windows
+  * Fix issue where updating a cookbook would result in a non resolvable lockfile
+  * Various spelling mistakes in console output
+
 # 3.1.1
 
 * Bug Fixes
