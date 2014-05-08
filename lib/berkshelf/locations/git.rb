@@ -91,6 +91,10 @@ module Berkshelf
       # If we got this far, we should copy
       FileUtils.rm_rf(install_path) if install_path.exist?
       FileUtils.cp_r(scratch_path, install_path)
+
+      # Remove the git history
+      FileUtils.rm_rf(File.join(install_path, '.git')) 
+
       install_path.chmod(0777 & ~File.umask)
     ensure
       # Ensure the scratch directory is cleaned up

@@ -224,6 +224,10 @@ Then /^the cookbook "(.*?)" should not have the following files:$/ do |name, fil
   check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, false)
 end
 
+Then /^the git cookbook "(.*?)" should not have the following directories:$/ do |name, directories|
+  check_directory_presence(directories.raw.map{|directory_row| ::File.join(name, directory_row[0])}, false)
+end
+
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|
   expect(Pathname.new(current_dir).join(cookbook_name)).to have_structure {
     file "Berksfile" do
