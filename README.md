@@ -39,15 +39,6 @@ Ruby 1.9 mode is required on all interpreters.
 
 Ruby 1.9.1 and 1.9.2 are not officially supported. If you encounter problems, please upgrade to Ruby 2.0 or 1.9.3.
 
-## Shell Completion
-
-- [Bash](https://github.com/berkshelf/berkshelf-bash-plugin)
-- [ZSH](https://github.com/berkshelf/berkshelf-zsh-plugin)
-
-## Plugins
-
-Please see [Plugins page](https://github.com/berkshelf/berkshelf/blob/master/PLUGINS.md) for more information.
-
 ## Configuration
 
 Berkshelf will search in specific locations for a configuration file. In order:
@@ -60,45 +51,19 @@ Berkshelf will search in specific locations for a configuration file. In order:
 
 You are encouraged to keep project-specific configuration in the `$PWD/.berkshelf` directory. A default configuration file is generated for you, but you can update the values to suit your needs.
 
-## Github Cookbooks
+## Shell Completion
 
-With Berkshelf 3 you can query a Berkshelf-API server (a server which indexes cookbooks from various sources and
-hosts it over a REST API) in order to resolve the cookbook dependencies. When you choose to host your own Berkshelf-API
-server, you can configure it to also index cookbooks hosted in various Github and/or Github Enterprise organizations.
+- [Bash](https://github.com/berkshelf/berkshelf-bash-plugin)
+- [ZSH](https://github.com/berkshelf/berkshelf-zsh-plugin)
 
-When doing so you should also configure Berkshelf so it can download cookbooks from your indexed Github organizations:
+## Plugins
 
-    {
-      "github":[
-        {
-          "access_token": ""
-        },
-        {
-          "access_token": "",
-          "api_endpoint": "https://github.enterprise.local/api/v3",
-          "web_endpoint": "https://github.enterprise.local",
-          "ssl_verify": true
-        }
-      ]
-    }
+Please see [Plugins page](https://github.com/berkshelf/berkshelf/blob/master/PLUGINS.md) for more information.
 
-The first subsection is used for any organization hosted on github.com. As this is the default, you do not have to set the
-endpoint info (these are known values for github.com). The second subsection is used when you also index cookbooks from
-organizations hosted on Github Enterprise. In this case you will need to specify the specific endpoint info so Berkshelf
-knows where to connect to. You can add as many subsections as you have endpoints.
+## Getting Help
 
-## SSL Errors
-
-If you have trouble getting Berkshelf to successfully talk to an SSL Chef Server, you can try making sure you
-have a certificate bundle available to your shell. `export SSL_CERT_FILE=...path/to/cert/file...`
-
-If you need to disable SSL, you can in `~/.berkshelf/config.json` like so:
-
-    {
-      "ssl": {
-        "verify": false
-      }
-    }
+* If you have an issue: report it on the [issue tracker](https://github.com/berkshelf/berkshelf/issues)
+* If you have a question: visit the #chef or #berkshelf channel on irc.freenode.net
 
 ## Authors
 
