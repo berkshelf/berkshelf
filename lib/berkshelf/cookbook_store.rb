@@ -103,7 +103,12 @@ module Berkshelf
           next
         end
 
-        CachedCookbook.from_store_path(path)
+        begin
+          CachedCookbook.from_store_path(path)
+        rescue Ridley::Errors::MissingNameAttribute
+          # Skip cached cookbooks that do not have a name attribute.
+          next
+        end
       end.compact
 
       return cookbooks unless filter
