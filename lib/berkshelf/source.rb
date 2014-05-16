@@ -10,7 +10,7 @@ module Berkshelf
     # @param [String, Berkshelf::SourceURI] uri
     def initialize(uri)
       @uri        = SourceURI.parse(uri)
-      @api_client = APIClient.new(uri, :ssl => {:verify => Berkshelf::Config.instance.ssl.verify})
+      @api_client = APIClient.new(uri, ssl: {verify: Berkshelf::Config.instance.ssl.verify})
       @universe   = nil
     end
 
