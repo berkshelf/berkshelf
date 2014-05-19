@@ -109,7 +109,7 @@ describe Berkshelf::CookbookStore do
 
     context 'when a there is a cookbook without a name attribute' do
       before do
-        generate_cookbook_without_name(subject.storage_path, 'foo', '3.0.1')
+        generate_cookbook(subject.storage_path, 'foo', '3.0.1', without_name: true)
       end
 
       it 'omits the broken cookbook' do

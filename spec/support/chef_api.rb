@@ -76,59 +76,7 @@ module Berkshelf
         end
 
         metadata = [].tap do |a|
-          a << "name     '#{name}'"
-          a << "version  '#{version}'"
-          a << "license  '#{options[:license]}'" if options[:license]
-          a << "" # ensure newline
-        end.join("\n")
-
-
-        if options[:dependencies]
-          options[:dependencies].each do |name, constraint|
-            metadata << "depends '#{name}', '#{constraint}'\n"
-          end
-        end
-
-        if options[:recommendations]
-          options[:recommendations].each do |name, constraint|
-            metadata << "recommends '#{name}', '#{constraint}'\n"
-          end
-        end
-
-        File.open(cookbook_path.join("metadata.rb"), 'w+') do |f|
-          f.write metadata
-        end
-
-        cookbook_path
-      end
-
-      def generate_cookbook_without_name(path, name, version, options = {})
-        path = Pathname.new(path)
-        cookbook_path = path.join("#{name}-#{version}")
-        directories = [
-          "recipes",
-          "templates/default",
-          "files/default",
-          "attributes",
-          "providers",
-          "resources"
-        ]
-        files = [
-          "recipes/default.rb",
-          "templates/default/template.erb",
-          "files/default/file.h",
-          "attributes/default.rb"
-        ]
-
-        directories.each do |directory|
-          FileUtils.mkdir_p(cookbook_path.join(directory))
-        end
-
-        files.each do |file|
-          FileUtils.touch(cookbook_path.join(file))
-        end
-
-        metadata = [].tap do |a|
+          a << "name     '#{name}'" unless options[:without_name]
           a << "version  '#{version}'"
           a << "license  '#{options[:license]}'" if options[:license]
           a << "" # ensure newline
