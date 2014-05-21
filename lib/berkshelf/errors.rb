@@ -479,4 +479,32 @@ module Berkshelf
       "is the standard error from the command:\n\n#{@output}"
     end
   end
+
+  # Git errors
+  # ------------------------------
+  class GitError < BerkshelfError; status_code(400); end
+
+  class GitNotInstalled < GitError
+    def initialize
+      super 'You need to install Git before you can download ' \
+        'cookbooks from git repositories. For more information, please ' \
+        'see the Git docs: http://git-scm.org. If you have git installed, ' \
+        'please make sure it is in your $PATH and accessible by the user ' \
+        'running this command.'
+    end
+  end
+
+  class GitCommandError < GitError
+    def initialize(command, path, stderr = nil)
+      out =  "Git error: command `git #{command}` failed. If this error "
+      out << "persists, try removing the cache directory at '#{path}'."
+
+      if stderr
+        out << "Output from the command:\n\n"
+        out << stderr
+      end
+
+      super(out)
+    end
+  end
 end

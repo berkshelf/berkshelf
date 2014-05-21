@@ -236,13 +236,13 @@ module Berkshelf
 
       it 'raises an error if Git is not installed' do
         Berkshelf.stub(:which).and_return(false)
-        expect { subject.git('foo') }.to raise_error(GitLocation::GitNotInstalled)
+        expect { subject.git('foo') }.to raise_error(GitNotInstalled)
       end
 
       it 'raises an error if the command fails' do
         shell_out = double('shell_out', success?: false, stderr: nil)
         Buff::ShellOut.stub(:shell_out).and_return(shell_out)
-        expect { subject.git('foo') }.to raise_error(GitLocation::GitCommandError)
+        expect { subject.git('foo') }.to raise_error(GitCommandError)
       end
     end
   end
