@@ -451,7 +451,7 @@ Feature: berks install
       """
       Repository not found.
       """
-      And the exit status should be "GitLocation::GitError"
+      And the exit status should be "GitError"
 
   Scenario: transitive dependencies in metadata
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:

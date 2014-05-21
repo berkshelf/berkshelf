@@ -2,29 +2,7 @@ require 'buff/shell_out'
 
 module Berkshelf
   class GitLocation < BaseLocation
-    class GitError < BerkshelfError; status_code(400); end
-
-    class GitNotInstalled < GitError
-      def initialize
-        super 'You need to install Git before you can download ' \
-          'cookbooks from git repositories. For more information, please ' \
-          'see the Git docs: http://git-scm.org.'
-      end
-    end
-
-    class GitCommandError < GitError
-      def initialize(command, path, stderr = nil)
-        out =  "Git error: command `git #{command}` failed. If this error "
-        out << "persists, try removing the cache directory at '#{path}'."
-
-        if stderr
-          out << "Output from the command:\n\n"
-          out << stderr
-        end
-
-        super(out)
-      end
-    end
+    include Mixin::Git
 
     attr_reader :uri
     attr_reader :branch
@@ -149,29 +127,6 @@ module Berkshelf
     end
 
     private
-
-    # Perform a git command.
-    #
-    # @param [String] command
-    #   the command to run
-    # @param [Boolean] error
-    #   whether to raise error if the command fails
-    #
-    # @raise [String]
-    #   the +$stdout+ from the command
-    def git(command, error = true)
-      unless Berkshelf.which('git') || Berkshelf.which('git.exe')
-        raise GitNotInstalled.new
-      end
-
-      response = Buff::ShellOut.shell_out(%|git #{command}|)
-
-      if error && !response.success?
-        raise GitCommandError.new(command, cache_path, stderr = response.stderr)
-      end
-
-      response.stdout.strip
-    end
 
     # Determine if this git repo has already been downloaded.
     #

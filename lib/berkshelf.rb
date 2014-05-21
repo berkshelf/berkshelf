@@ -22,6 +22,7 @@ module Berkshelf
 
   module Mixin
     autoload :DSLEval, 'berkshelf/mixin/dsl_eval'
+    autoload :Git,     'berkshelf/mixin/git'
     autoload :Logging, 'berkshelf/mixin/logging'
   end
 

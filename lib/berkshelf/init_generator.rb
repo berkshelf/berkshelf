@@ -4,6 +4,8 @@ rescue LoadError; end
 
 module Berkshelf
   class InitGenerator < BaseGenerator
+    include Mixin::Git
+
     def initialize(*args)
       super(*args)
       if @options[:cookbook_name]
@@ -75,7 +77,7 @@ module Berkshelf
 
         unless File.exists?(target.join('.git'))
           inside target do
-            run 'git init', capture: true
+            git 'init'
           end
         end
       end
