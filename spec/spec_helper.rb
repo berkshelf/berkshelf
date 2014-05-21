@@ -30,6 +30,7 @@ Spork.prefork do
     config.run_all_when_everything_filtered = true
 
     config.before(:each) do
+      Berkshelf.logger = Berkshelf::Logger.new(nil)
       Berkshelf.set_format(:null)
       Berkshelf.ui.mute!
     end

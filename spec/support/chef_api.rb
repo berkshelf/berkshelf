@@ -76,7 +76,7 @@ module Berkshelf
         end
 
         metadata = [].tap do |a|
-          a << "name     '#{name}'"
+          a << "name     '#{name}'" unless options[:without_name]
           a << "version  '#{version}'"
           a << "license  '#{options[:license]}'" if options[:license]
           a << "" # ensure newline

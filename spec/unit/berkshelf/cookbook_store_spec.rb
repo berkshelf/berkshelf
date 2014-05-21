@@ -106,6 +106,16 @@ describe Berkshelf::CookbookStore do
         expect(subject.cookbooks('mysql')).to have(1).item
       end
     end
+
+    context 'when a there is a cookbook without a name attribute' do
+      before do
+        generate_cookbook(subject.storage_path, 'foo', '3.0.1', without_name: true)
+      end
+
+      it 'omits the broken cookbook' do
+        expect(subject.cookbooks('foo')).to be_empty
+      end
+    end
   end
 
   describe "#import"

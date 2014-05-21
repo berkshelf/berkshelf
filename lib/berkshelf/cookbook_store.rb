@@ -94,6 +94,7 @@ module Berkshelf
     #
     # @return [Array<Berkshelf::CachedCookbook>]
     def cookbooks(filter = nil)
+      skipped_cookbooks = []
       cookbooks = storage_path.children.collect do |path|
         begin
           Semverse::Version.split(File.basename(path).slice(CachedCookbook::DIRNAME_REGEXP, 2))
@@ -103,8 +104,26 @@ module Berkshelf
           next
         end
 
-        CachedCookbook.from_store_path(path)
+        begin
+          CachedCookbook.from_store_path(path)
+        rescue Ridley::Errors::MissingNameAttribute
+          # Skip cached cookbooks that do not have a name attribute.
+          skipped_cookbooks << File.basename(path)
+          next
+        end
       end.compact
+
+      if skipped_cookbooks.any?
+        msg = "Skipping cookbooks #{skipped_cookbooks}. Berkshelf can only interact "
+        msg << "with cookbooks which have defined the `name` attribute in their metadata.rb. If you "
+        msg << "are the maintainer of any of the above cookbooks, please add the name attribute to "
+        msg << "your cookbook. If you are not the maintainer, please file an issue or report the lack "
+        msg << "of a name attribute as a bug.\n\n"
+        msg << "You can remove each cookbook in #{skipped_cookbooks} from the Berkshelf shelf "
+        msg << "by using the `berks shelf uninstall` command:\n\n"
+        msg << "    $ berkshelf shelf uninstall <name>"
+        Berkshelf.log.warn msg
+      end
 
       return cookbooks unless filter
 
