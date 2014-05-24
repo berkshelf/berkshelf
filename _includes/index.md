@@ -162,7 +162,7 @@ Cookbooks will automatically be uploaded to the Chef Server you have configured 
 
 ## The Berksfile
 
-Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berskfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
+Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berksfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
 
     source "https://api.berkshelf.com"
 
