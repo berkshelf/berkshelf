@@ -10,7 +10,7 @@ module Berkshelf
 
       # @return [String]
       def local_location
-        ENV['BERKSHELF_CONFIG'] || File.join('.', '.berkshelf', 'config.json')
+        ENV['BERKSHELF_CONFIG'] || File.join('.', 'config.json') || File.join('.', '.berkshelf', 'config.json')
       end
 
       # @return [String]
