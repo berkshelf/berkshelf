@@ -1,5 +1,15 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 3.1.3
+
+* Enhancements
+  * Updated out of date dependencies
+
+* Bug fixes
+  * Skip loading of cached cookbooks that do not have a value for metadata
+  * SSL Verify option will be respected when communicating to an API server
+  * Fixed issue where some commands were unexpectedly crashing instead of informing the user that Git is not installed
+
 # 3.1.2
 
 * Enhancements
