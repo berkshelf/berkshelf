@@ -25,11 +25,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 <% end -%>
 
   # Every Vagrant virtual environment requires a box to build off of.
+  # If this value is a shorthand to a box in Vagrant Cloud then 
+  # config.vm.box_url doesn't need to be specified.
   config.vm.box = "<%= berkshelf_config.vagrant.vm.box %>"
 
   # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  config.vm.box_url = "<%= berkshelf_config.vagrant.vm.box_url %>"
+  # is not a Vagrant Cloud box and if it doesn't already exist on the 
+  # user's system.
+  # config.vm.box_url = "<%= berkshelf_config.vagrant.vm.box_url %>"
 
   # Assign this VM to a host-only network IP, allowing you to access it
   # via the IP. Host-only networks can talk to the host machine as well as

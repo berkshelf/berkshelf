@@ -95,11 +95,11 @@ module Berkshelf
       default: false
     attribute 'vagrant.vm.box',
       type: String,
-      default: 'opscode_ubuntu-12.04_provisionerless',
+      default: 'chef/ubuntu-14.04',
       required: true
     attribute 'vagrant.vm.box_url',
       type: String,
-      default: 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box',
+      default: 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box',
       required: true
     attribute 'vagrant.vm.forward_port',
       type: Hash,
