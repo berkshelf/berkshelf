@@ -91,7 +91,7 @@ module Berkshelf
       type: Array,
       default: Array.new
     attribute 'raise_license_exception',
-      type: Boolean,
+      type: Buff::Boolean,
       default: false
     attribute 'vagrant.vm.box',
       type: String,
@@ -108,13 +108,13 @@ module Berkshelf
       type: String,
       default: 'chef_solo'
     attribute 'vagrant.omnibus.enabled',
-      type: Boolean,
+      type: Buff::Boolean,
       default: true
     attribute 'vagrant.omnibus.version',
       type: String,
       default: 'latest'
     attribute 'ssl.verify',
-      type: Boolean,
+      type: Buff::Boolean,
       default: true,
       required: true
     attribute 'github',
