@@ -480,6 +480,27 @@ module Berkshelf
     end
   end
 
+  class InvalidLockfileCookbookVersion < BerkshelfError
+    status_code(149)
+
+    def initialize(name, expected_version)
+      @name = name
+      @expected_version = expected_version
+    end
+
+    def to_s
+      <<MSG
+Berksfile.lock has a cookbook version that cannot be found:
+
+              cookbook: #{@name}
+      expected version: #{@expected_version}
+
+  Please run `berks update` to generate a new lock file with valid versions.
+MSG
+    end
+  end
+
+
   # Git errors
   # ------------------------------
   class GitError < BerkshelfError; status_code(400); end
