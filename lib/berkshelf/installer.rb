@@ -88,7 +88,9 @@ module Berkshelf
             dependency.cached_cookbook
           else
             name, version = dependency.name, dependency.locked_version.to_s
-            source = berksfile.source_for(name, version)
+            unless source = berksfile.source_for(name, version)
+              raise InvalidLockfileCookbookVersion.new(name, version)
+            end
 
             Berkshelf.log.debug "  Downloading #{dependency.name} (#{dependency.locked_version}) from #{source}"
 

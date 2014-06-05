@@ -242,15 +242,15 @@ Feature: berks install
   Scenario: installing a Berksfile that contains a Git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', 
-        git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git', 
+      cookbook 'berkshelf-cookbook-fixture',
+        git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git',
         tag: 'v0.2.0'
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the git cookbook "berkshelf-cookbook-fixture-70a527e17d91f01f031204562460ad1c17f972ee" should not have the following directories:
-      | .git | 
+      | .git |
 
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -398,6 +398,61 @@ Feature: berks install
       Unable to find a solution for demands: doesntexist (>= 0.0.0), other-failure (>= 0.0.0)
       """
     And the exit status should be "NoSolutionError"
+
+  Scenario: running install when the Cookbook from lockfile is not found on the remote site
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'foo'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "foo": {
+            "locked_version": "0.1.0"
+          }
+        }
+      }
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Berksfile.lock has a cookbook version that cannot be found:
+
+                    cookbook: foo
+            expected version: 0.1.0
+
+        Please run `berks update` to generate a new lock file with valid versions.
+      """
+
+  Scenario: running install when the version from lockfile is not found on the remote site
+    Given the Chef Server has cookbooks:
+      | foo | 0.2.0 |
+    And the Berkshelf API server's cache is up to date
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'foo'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      {
+        "dependencies": {
+          "foo": {
+            "locked_version": "0.1.0"
+          }
+        }
+      }
+      """
+    When I run `berks install`
+    Then the output should contain:
+      """
+      Berksfile.lock has a cookbook version that cannot be found:
+
+                    cookbook: foo
+            expected version: 0.1.0
+
+        Please run `berks update` to generate a new lock file with valid versions.
+      """
 
   Scenario: installing when there are sources with duplicate names defined in the same group
     Given I have a Berksfile pointing at the local Berkshelf API with:
