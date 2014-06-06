@@ -364,13 +364,11 @@ Feature: berks install
       """
     And I write to "Berksfile.lock" with:
       """
-      {
-        "dependencies": {
-          "bacon": {
-            "locked_version": "0.2.0"
-          }
-        }
-      }
+      DEPENDENCIES
+        bacon (~> 0.1)
+
+      GRAPH
+        bacon (0.2.0)
       """
     When I successfully run `berks install`
     Then the output should contain:
@@ -406,13 +404,11 @@ Feature: berks install
       """
     And I write to "Berksfile.lock" with:
       """
-      {
-        "dependencies": {
-          "foo": {
-            "locked_version": "0.1.0"
-          }
-        }
-      }
+      DEPENDENCIES
+        foo
+
+      GRAPH
+        foo (0.1.0)
       """
     When I run `berks install`
     Then the output should contain:
@@ -431,13 +427,11 @@ Feature: berks install
       """
     And I write to "Berksfile.lock" with:
       """
-      {
-        "dependencies": {
-          "foo": {
-            "locked_version": "0.1.0"
-          }
-        }
-      }
+      DEPENDENCIES
+        foo
+
+      GRAPH
+        foo (0.1.0)
       """
     When I run `berks install`
     Then the output should contain:
