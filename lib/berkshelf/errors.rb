@@ -480,41 +480,19 @@ module Berkshelf
     end
   end
 
-  class InvalidLockfileCookbook < BerkshelfError
+  class InvalidLockfileCookbookVersion < BerkshelfError
     status_code(149)
 
-    def initialize(name, expected_version)
-      @name = name
-      @expected_version = expected_version
+    def initialize(name, version, location)
+      @name     = name
+      @version  = version
+      @location = location
     end
 
     def to_s
-      <<MSG
-Berksfile.lock cookbook '#{@name}' not found!
-  Please remove Berksfile.lock and re-run `berks install`.
-MSG
-    end
-  end
-
-  class InvalidLockfileCookbookVersion < BerkshelfError
-    status_code(150)
-
-    def initialize(name, expected_version, available_versions = [])
-      @name = name
-      @expected_version = expected_version
-      @available_versions = available_versions
-    end
-
-    def to_s
-      <<MSG
-Berksfile.lock has a cookbook version that cannot be found:
-
-              cookbook: #{@name}
-      expected version: #{@expected_version}
-    available versions: [#{@available_versions.join(', ')}]
-
-  Please run `berks update` to generate a new lock file with valid versions.
-MSG
+      "Could not find #{@name} (#{@version}) #{@location}! " \
+      "This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. " \
+      "Please run `berks update #{@name}` to resolve to a valid version."
     end
   end
 
