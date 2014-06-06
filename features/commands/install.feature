@@ -399,7 +399,7 @@ Feature: berks install
       """
     And the exit status should be "NoSolutionError"
 
-  Scenario: running install when the Cookbook from lockfile is not found on the remote site
+  Scenario: running install when the Cookbook from Berksfile.lock is not found in the sources
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'foo'
@@ -420,7 +420,7 @@ Feature: berks install
       Could not find foo (0.1.0) in any of the sources! This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. Please run `berks update foo` to resolve to a valid version.
       """
 
-  Scenario: running install when the version from lockfile is not found on the remote site
+  Scenario: running install when the version from Berksfile.lock is not found in the sources
     Given the Chef Server has cookbooks:
       | foo | 0.3.0 |
       | foo | 0.2.0 |
