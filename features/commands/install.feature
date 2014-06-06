@@ -417,8 +417,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Berksfile.lock cookbook 'foo' not found!
-        Please remove Berksfile.lock and re-run `berks install`.
+      Could not find foo (0.1.0) in any of the sources! This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. Please run `berks update foo` to resolve to a valid version.
       """
 
   Scenario: running install when the version from lockfile is not found on the remote site
@@ -443,13 +442,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Berksfile.lock has a cookbook version that cannot be found:
-
-                    cookbook: foo
-            expected version: 0.1.0
-          available versions: [0.2.0, 0.3.0]
-
-        Please run `berks update` to generate a new lock file with valid versions.
+      Could not find foo (0.1.0) in any of the sources! This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. Please run `berks update foo` to resolve to a valid version.
       """
 
   Scenario: installing when there are sources with duplicate names defined in the same group
