@@ -480,7 +480,7 @@ module Berkshelf
     end
   end
 
-  class InvalidLockfileCookbookVersion < BerkshelfError
+  class MissingLockfileCookbookVersion < BerkshelfError
     status_code(149)
 
     def initialize(name, version, location)
