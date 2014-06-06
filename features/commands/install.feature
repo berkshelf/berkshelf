@@ -417,16 +417,13 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Berksfile.lock has a cookbook version that cannot be found:
-
-                    cookbook: foo
-            expected version: 0.1.0
-
-        Please run `berks update` to generate a new lock file with valid versions.
+      Berksfile.lock cookbook 'foo' not found!
+        Please remove Berksfile.lock and re-run `berks install`.
       """
 
   Scenario: running install when the version from lockfile is not found on the remote site
     Given the Chef Server has cookbooks:
+      | foo | 0.3.0 |
       | foo | 0.2.0 |
     And the Berkshelf API server's cache is up to date
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -450,6 +447,7 @@ Feature: berks install
 
                     cookbook: foo
             expected version: 0.1.0
+          available versions: [0.2.0, 0.3.0]
 
         Please run `berks update` to generate a new lock file with valid versions.
       """
