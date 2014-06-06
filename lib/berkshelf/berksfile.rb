@@ -200,12 +200,6 @@ module Berkshelf
       sources.find { |source| source.cookbook(name, version) }
     end
 
-    # @param [String] name
-    #   the cookbook to find all the versions for
-    def versions_for(name)
-      sources.map { |source| source.versions(name) }.flatten.map(&:version).sort
-    end
-
     # @todo remove in Berkshelf 4.0
     #
     # @raise [DeprecatedError]
