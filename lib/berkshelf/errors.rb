@@ -2,7 +2,7 @@ module Berkshelf
   class BerkshelfError < StandardError
     class << self
       # @param [Integer] code
-      def status_code(code)
+      def set_status_code(code)
         define_method(:status_code) { code }
         define_singleton_method(:status_code) { code }
       end
@@ -11,13 +11,13 @@ module Berkshelf
     alias_method :message, :to_s
   end
 
-  class DeprecatedError < BerkshelfError; status_code(10); end
-  class InternalError < BerkshelfError; status_code(99); end
+  class DeprecatedError < BerkshelfError; set_status_code(10); end
+  class InternalError < BerkshelfError; set_status_code(99); end
   class ArgumentError < InternalError; end
   class AbstractFunction < InternalError; end
 
   class BerksfileNotFound < BerkshelfError
-    status_code(100)
+    set_status_code(100)
 
     # @param [#to_s] filepath
     #   the path where a Berksfile was not found
@@ -31,7 +31,7 @@ module Berkshelf
   end
 
   class CookbookNotFound < BerkshelfError
-    status_code(103)
+    set_status_code(103)
 
     def initialize(name, version, location)
       @name     = name
@@ -49,7 +49,7 @@ module Berkshelf
   end
 
   class DuplicateDependencyDefined < BerkshelfError
-    status_code(105)
+    set_status_code(105)
 
     def initialize(name)
       @name = name
@@ -64,7 +64,7 @@ module Berkshelf
   end
 
   class NoSolutionError < BerkshelfError
-    status_code(106)
+    set_status_code(106)
 
     attr_reader :demands
 
@@ -80,12 +80,12 @@ module Berkshelf
     end
   end
 
-  class CookbookSyntaxError < BerkshelfError; status_code(107); end
-  class ConstraintNotSatisfied < BerkshelfError; status_code(111); end
+  class CookbookSyntaxError < BerkshelfError; set_status_code(107); end
+  class ConstraintNotSatisfied < BerkshelfError; set_status_code(111); end
   class BerksfileReadError < BerkshelfError
-    status_code(113)
+    set_status_code(113)
 
-    # @param [#status_code] original_error
+    # @param [#set_status_code] original_error
     def initialize(original_error)
       @original_error  = original_error
       @error_message   = original_error.to_s
@@ -111,7 +111,7 @@ module Berkshelf
   end
 
   class MismatchedCookbookName < BerkshelfError
-    status_code(114)
+    set_status_code(114)
 
     # @param [Dependency] dependency
     #   the dependency with the expected name
@@ -139,7 +139,7 @@ module Berkshelf
   end
 
   class InvalidConfiguration < BerkshelfError
-    status_code(115)
+    set_status_code(115)
 
     def initialize(errors)
       @errors = errors
@@ -158,7 +158,7 @@ module Berkshelf
   end
 
   class InsufficientPrivledges < BerkshelfError
-    status_code(119)
+    set_status_code(119)
 
     def initialize(path)
       @path = path
@@ -172,7 +172,7 @@ module Berkshelf
   end
 
   class DependencyNotFound < BerkshelfError
-    status_code(120)
+    set_status_code(120)
 
     # @param [String, Array<String>] names
     #   the list of cookbook names that were not defined
@@ -200,7 +200,7 @@ module Berkshelf
   end
 
   class CommunitySiteError < BerkshelfError
-    status_code(123)
+    set_status_code(123)
 
     def initialize(uri, message)
       @uri     = uri
@@ -214,7 +214,7 @@ module Berkshelf
   end
 
   class CookbookValidationFailure < BerkshelfError
-    status_code(124)
+    set_status_code(124)
 
     # @param [Location] location
     #   the location (or any subclass) raising this validation error
@@ -232,7 +232,7 @@ module Berkshelf
 
   class UploadFailure < BerkshelfError; end
   class FrozenCookbook < UploadFailure
-    status_code(126)
+    set_status_code(126)
 
     # @param [CachedCookbook] cookbook
     def initialize(cookbook)
@@ -247,7 +247,7 @@ module Berkshelf
   end
 
   class OutdatedDependency < BerkshelfError
-    status_code(128)
+    set_status_code(128)
 
     # @param [Dependency] locked_dependency
     #   the locked dependency
@@ -270,7 +270,7 @@ module Berkshelf
   end
 
   class EnvironmentNotFound < BerkshelfError
-    status_code(129)
+    set_status_code(129)
 
     def initialize(environment_name)
       @environment_name = environment_name
@@ -282,7 +282,7 @@ module Berkshelf
   end
 
   class ChefConnectionError < BerkshelfError
-    status_code(130)
+    set_status_code(130)
 
     def to_s
       'There was an error connecting to the Chef Server'
@@ -290,7 +290,7 @@ module Berkshelf
   end
 
   class UnknownCompressionType < BerkshelfError
-    status_code(131)
+    set_status_code(131)
 
     def initialize(destination)
       @destination = destination
@@ -309,7 +309,7 @@ module Berkshelf
   # @param [Array<#to_s>] files
   #   the list of files that were not valid
   class InvalidCookbookFiles < BerkshelfError
-    status_code(132)
+    set_status_code(132)
 
     def initialize(cookbook, files)
       @cookbook = cookbook
@@ -328,7 +328,7 @@ module Berkshelf
   end
 
   class LicenseNotFound < BerkshelfError
-    status_code(134)
+    set_status_code(134)
 
     attr_reader :license
 
@@ -345,7 +345,7 @@ module Berkshelf
   # Raised when a cookbook or its recipes contain a space or invalid
   # character in the path.
   class ConfigNotFound < BerkshelfError
-    status_code(135)
+    set_status_code(135)
 
     # @param [String] type
     #   the type of config that was not found (Berkshelf, Chef, etc)
@@ -362,7 +362,7 @@ module Berkshelf
   end
 
   class LockfileParserError < BerkshelfError
-    status_code(136)
+    set_status_code(136)
 
     # @param [String] lockfile
     #   the path to the Lockfile
@@ -379,7 +379,7 @@ module Berkshelf
   end
 
   class InvalidSourceURI < BerkshelfError
-    status_code(137)
+    set_status_code(137)
 
     def initialize(url, reason = nil)
       @url    = url
@@ -393,10 +393,10 @@ module Berkshelf
     end
   end
 
-  class DuplicateDemand < BerkshelfError; status_code(138); end
-  class VendorError < BerkshelfError; status_code(139); end
+  class DuplicateDemand < BerkshelfError; set_status_code(138); end
+  class VendorError < BerkshelfError; set_status_code(139); end
   class LockfileNotFound < BerkshelfError
-    status_code(140)
+    set_status_code(140)
 
     def to_s
       'Lockfile not found! Run `berks install` to create the lockfile.'
@@ -404,7 +404,7 @@ module Berkshelf
   end
 
   class NotACookbook < BerkshelfError
-    status_code(141)
+    set_status_code(141)
 
     # @param [String] path
     #   the path to the thing that is not a cookbook
@@ -418,10 +418,10 @@ module Berkshelf
     end
   end
 
-  class PackageError < BerkshelfError; status_code(143); end
+  class PackageError < BerkshelfError; set_status_code(143); end
 
   class LockfileOutOfSync < BerkshelfError
-    status_code(144)
+    set_status_code(144)
 
     def to_s
       'The lockfile is out of sync! Run `berks install` to sync the lockfile.'
@@ -429,7 +429,7 @@ module Berkshelf
   end
 
   class DependencyNotInstalled < BerkshelfError
-    status_code(145)
+    set_status_code(145)
 
     def initialize(dependency)
       @name    = dependency.name
@@ -443,7 +443,7 @@ module Berkshelf
   end
 
   class NoAPISourcesDefined < BerkshelfError
-    status_code(146)
+    set_status_code(146)
 
     def to_s
       "Your Berksfile does not define any API sources! You must define " \
@@ -456,7 +456,7 @@ module Berkshelf
   end
 
   class GraphvizNotInstalled < BerkshelfError
-    status_code(147)
+    set_status_code(147)
 
     def to_s
       "Graphviz is not installed! In order to generate a dependency graph, " \
@@ -467,7 +467,7 @@ module Berkshelf
   end
 
   class GraphvizCommandFailed < BerkshelfError
-    status_code(148)
+    set_status_code(148)
 
     def initialize(command, output)
       @command = command
@@ -481,7 +481,7 @@ module Berkshelf
   end
 
   class MissingLockfileCookbookVersion < BerkshelfError
-    status_code(149)
+    set_status_code(149)
 
     def initialize(name, version, location)
       @name     = name
@@ -499,7 +499,7 @@ module Berkshelf
 
   # Git errors
   # ------------------------------
-  class GitError < BerkshelfError; status_code(400); end
+  class GitError < BerkshelfError; set_status_code(400); end
 
   class GitNotInstalled < GitError
     def initialize
