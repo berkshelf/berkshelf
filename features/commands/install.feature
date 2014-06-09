@@ -413,7 +413,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Could not find foo (0.1.0) in any of the sources! This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. Please run `berks update foo` to resolve to a valid version.
+      Cookbook 'foo' (0.1.0) not found in any of the sources! This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. Please run `berks update foo` to resolve to a valid version.
       """
 
   Scenario: running install when the version from Berksfile.lock is not found in the sources
@@ -436,7 +436,7 @@ Feature: berks install
     When I run `berks install`
     Then the output should contain:
       """
-      Could not find foo (0.1.0) in any of the sources! This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. Please run `berks update foo` to resolve to a valid version.
+      Cookbook 'foo' (0.1.0) not found in any of the sources! This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. Please run `berks update foo` to resolve to a valid version.
       """
 
   Scenario: installing when there are sources with duplicate names defined in the same group

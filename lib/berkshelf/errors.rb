@@ -480,17 +480,11 @@ module Berkshelf
     end
   end
 
-  class MissingLockfileCookbookVersion < BerkshelfError
+  class MissingLockfileCookbookVersion < CookbookNotFound
     set_status_code(149)
 
-    def initialize(name, version, location)
-      @name     = name
-      @version  = version
-      @location = location
-    end
-
     def to_s
-      "Could not find #{@name} (#{@version}) #{@location}! " \
+      super + " " \
       "This can happen if the remote cookbook has been deleted or if the sources inside the Berksfile have changed. " \
       "Please run `berks update #{@name}` to resolve to a valid version."
     end
