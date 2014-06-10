@@ -31,5 +31,5 @@ group :guard do
 end
 
 group :test do
-  gem "berkshelf-api", github: "berkshelf/berkshelf-api"
+  gem "berkshelf-api", "~> 1.4"
 end
