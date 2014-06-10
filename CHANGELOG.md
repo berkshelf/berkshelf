@@ -1,3 +1,7 @@
+# 2.0.17
+
+* Fix constraint on Hashie
+
 # 2.0.16
 
 * Update constraint on Ridley
