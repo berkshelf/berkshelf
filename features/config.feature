@@ -3,8 +3,8 @@ Feature: Reading a Berkshelf configuration file
     When I successfully run `berks cookbook sparkle_motion`
     Then the resulting "sparkle_motion" Vagrantfile should contain:
       | config.omnibus.chef_version = :latest |
-      | config.vm.box = "opscode_ubuntu-12.04_provisionerless" |
-      | config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box" |
+      | config.vm.box = "chef/ubuntu-14.04" |
+      | config.vm.box_url = "https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box" |
 
   Scenario: Using a Berkshelf configuration file that disables the vagrant-omnibus plugin
     Given I have a Berkshelf config file containing:

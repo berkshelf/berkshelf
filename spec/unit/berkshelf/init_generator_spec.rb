@@ -30,8 +30,8 @@ describe Berkshelf::InitGenerator do
         file 'Vagrantfile' do
           contains 'recipe[some_cookbook::default]'
           contains ' config.omnibus.chef_version = :latest'
-          contains 'config.vm.box = "opscode_ubuntu-12.04_provisionerless"'
-          contains 'config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box"'
+          contains 'config.vm.box = "chef/ubuntu-14.04"'
+          contains 'config.vm.box_url = "https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box"'
         end
         file 'chefignore'
       }
