@@ -54,7 +54,7 @@ module Berkshelf
       @dependencies = {}
       @graph        = Graph.new(self)
 
-      parse if File.exists?(@filepath)
+      parse if File.exist?(@filepath)
     end
 
     # Parse the lockfile.
@@ -72,7 +72,7 @@ module Berkshelf
     # @return [Boolean]
     #   true if this lockfile exists on the disk, false otherwise
     def present?
-      File.exists?(filepath) && !File.read(filepath).strip.empty?
+      File.exist?(filepath) && !File.read(filepath).strip.empty?
     end
 
     # Determine if we can "trust" this lockfile. A lockfile is trustworthy if:
@@ -634,7 +634,7 @@ module Berkshelf
           @graph[Dependency.name(dependency)]
         end
 
-        # Find if the given lock exists?
+        # Find if the given lock exist?
         #
         # @param [Dependency, String]
         #   the name/dependency to find

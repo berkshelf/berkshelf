@@ -121,13 +121,13 @@ describe Berkshelf::Dependency do
 
   describe '#installed?' do
     it 'returns true if self.cached_cookbook is not nil' do
-      subject.stub(:cached_cookbook) { double('cb') }
-      expect(subject.installed?).to be_true
+      allow(subject).to receive(:cached_cookbook) { double('cb') }
+      expect(subject.installed?).to be_truthy
     end
 
     it 'returns false if self.cached_cookbook is nil' do
-      subject.stub(:cached_cookbook) { nil }
-      expect(subject.installed?).to be_false
+      allow(subject).to receive(:cached_cookbook) { nil }
+      expect(subject.installed?).to be_falsey
     end
   end
 end

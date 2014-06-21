@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Berkshelf::Downloader do
   describe "#download" do
-    pending
+    skip
   end
 
   describe "#try_download" do
-    pending
+    skip
   end
 end

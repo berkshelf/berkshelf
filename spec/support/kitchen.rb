@@ -5,7 +5,7 @@ module Berkshelf
 
       def stub_kitchen!
         generator = double('kitchen-generator', invoke_all: nil)
-        ::Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(generator)
+        allow(::Kitchen::Generator::Init).to receive(:new).with(any_args()).and_return(generator)
       end
     end
   end

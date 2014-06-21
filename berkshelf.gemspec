@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'chef-zero',     '~> 1.5.0'
   s.add_development_dependency 'fuubar',        '~> 1.1'
   s.add_development_dependency 'rake',          '~> 0.9'
-  s.add_development_dependency 'rspec',         '~> 2.13'
+  s.add_development_dependency 'rspec',         '~> 3.0.0'
   s.add_development_dependency 'spork',         '~> 0.9'
   s.add_development_dependency 'test-kitchen',  '~> 1.2'
   s.add_development_dependency 'webmock',       '~> 1.11'

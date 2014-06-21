@@ -33,8 +33,8 @@ module Berkshelf
       it 'saves the options' do
         instance = Uploader.new(berksfile, force: true, validate: false)
         options = instance.options
-        expect(options[:force]).to be_true
-        expect(options[:validate]).to be_false
+        expect(options[:force]).to be_truthy
+        expect(options[:validate]).to be_falsey
       end
 
       it 'saves the names' do
@@ -49,22 +49,22 @@ module Berkshelf
       let(:cookbook) { double('cookbook', cookbook_name: 'cookbook', path: 'path') }
 
       it 'raises an error when the cookbook has spaces in the files' do
-        Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
+        allow(Dir).to receive(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
         expect {
           subject.validate_files!(cookbook)
         }.to raise_error
       end
 
       it 'does not raise an error when the cookbook is valid' do
-        Dir.stub(:glob).and_return(['/there-are/no-spaces/in-this/recipes/default.rb'])
+        allow(Dir).to receive(:glob).and_return(['/there-are/no-spaces/in-this/recipes/default.rb'])
         expect {
           subject.validate_files!(cookbook)
         }.to_not raise_error
       end
 
       it 'does not raise an exception with spaces in the path' do
-        Dir.stub(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
-        Pathname.any_instance.stub(:dirname).and_return('/there are/spaces/in this')
+        allow(Dir).to receive(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
+        allow_any_instance_of(Pathname).to receive(:dirname).and_return('/there are/spaces/in this')
 
         expect {
           subject.validate_files!(cookbook)
@@ -106,11 +106,11 @@ module Berkshelf
       end
 
       before do
-        Berkshelf.stub(:config).and_return(berkshelf_config)
+        allow(Berkshelf).to receive(:config).and_return(berkshelf_config)
       end
 
       context 'when there is no value for :chef_server_url' do
-        before { chef_config.stub(chef_server_url: nil) }
+        before { allow(chef_config).to receive(:chef_server_url).and_return(nil) }
         let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.server_url' }
 
         it 'raises an error' do
@@ -119,7 +119,7 @@ module Berkshelf
       end
 
       context 'when there is no value for :client_name' do
-        before { chef_config.stub(node_name: nil) }
+        before { allow(chef_config).to receive(:node_name).and_return(nil) }
         let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.node_name' }
 
         it 'raises an error' do
@@ -128,7 +128,7 @@ module Berkshelf
       end
 
       context 'when there is no value for :client_key' do
-        before { chef_config.stub(client_key: nil) }
+        before { allow(chef_config).to receive(:client_key).and_return(nil) }
         let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.client_key' }
 
         it 'raises an error' do

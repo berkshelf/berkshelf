@@ -6,7 +6,7 @@ describe Berkshelf::CookbookGenerator do
   let(:kitchen_generator) { double('kitchen-generator', invoke_all: nil) }
 
   before do
-    Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
+    allow(Kitchen::Generator::Init).to receive(:new).with(any_args()).and_return(kitchen_generator)
   end
 
   context 'with default options' do
@@ -69,7 +69,7 @@ describe Berkshelf::CookbookGenerator do
 
   context "given a 'maintainer_email' option" do
     before do
-      Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
+      allow(Kitchen::Generator::Init).to receive(:new).with(any_args()).and_return(kitchen_generator)
       capture(:stdout) {
         Berkshelf::CookbookGenerator.new([target, name], maintainer_email: 'jamie@vialstudios.com').invoke_all
       }

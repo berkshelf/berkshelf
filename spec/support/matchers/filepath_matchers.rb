@@ -1,3 +1,4 @@
+if defined?(RSpec) && RSpec.respond_to?(:configure)
 require 'pathname'
 
 RSpec::Matchers.define :be_relative_path do
@@ -17,3 +18,5 @@ RSpec::Matchers.define :be_relative_path do
     "Expected '#{given}' to not be a relative path but got an absolute path."
   end
 end
+end
+

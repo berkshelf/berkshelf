@@ -6,7 +6,7 @@ describe Berkshelf::InitGenerator do
   let(:kitchen_generator) { double('kitchen-generator', invoke_all: nil) }
 
   before do
-    Kitchen::Generator::Init.stub(:new).with(any_args()).and_return(kitchen_generator)
+    allow(Kitchen::Generator::Init).to receive(:new).with(any_args()).and_return(kitchen_generator)
     FileUtils.mkdir_p(target)
     File.open(File.join(target, 'metadata.rb'), 'w') do |f|
       f.write("name 'some_cookbook'")
@@ -230,8 +230,8 @@ describe Berkshelf::InitGenerator do
 
   context 'with the chef_minitest option true' do
     before(:each) do
-        Berkshelf::Resolver.stub(:resolve) { resolver }
-        pending 'Runs fine with no mock for the HTTP call on the first pass, subsequent passes throw errors'
+        allow(Berkshelf::Resolver).to receive(:resolve) { resolver }
+        skip 'Runs fine with no mock for the HTTP call on the first pass, subsequent passes throw errors'
         capture(:stdout) {
           Berkshelf::InitGenerator.new([target], chef_minitest: true).invoke_all
         }

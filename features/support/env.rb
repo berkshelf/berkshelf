@@ -8,7 +8,26 @@ Spork.prefork do
   require 'aruba/cucumber'
   require 'aruba/in_process'
   require 'aruba/spawn_process'
-  require 'cucumber/rspec/doubles'
+  require 'rspec/mocks'
+
+  # Support for RSpec3. Can be removed after cucumber got this stuff by default.
+  World(RSpec::Mocks::ExampleMethods)
+
+  Before do
+    if RSpec::Mocks::Version::STRING.split('.').first.to_i > 2
+      RSpec::Mocks.setup
+    else
+      RSpec::Mocks.setup(self)
+    end
+  end
+
+  After do
+    begin
+      RSpec::Mocks.verify
+    ensure
+      RSpec::Mocks.teardown
+    end
+  end
   require 'berkshelf/api/rspec' unless windows?
   require 'berkshelf/api/cucumber' unless windows?
 
@@ -18,7 +37,7 @@ Spork.prefork do
   World(Berkshelf::RSpec::Kitchen)
 
   CHEF_SERVER_PORT = 26310
-  BERKS_API_PORT   = 26210
+  BERKS_API_PORT = 26210
 
   at_exit do
     Berkshelf::RSpec::ChefServer.stop
@@ -32,8 +51,8 @@ Spork.prefork do
     ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path.to_s
 
     Aruba::InProcess.main_class = Berkshelf::Cli::Runner
-    Aruba.process               = Aruba::InProcess
-    @dirs                       = ["spec/tmp/aruba"] # set aruba's temporary directory
+    Aruba.process = Aruba::InProcess
+    @dirs = ["spec/tmp/aruba"] # set aruba's temporary directory
 
     stub_kitchen!
     clean_tmp_path
@@ -43,14 +62,14 @@ Spork.prefork do
     Berkshelf::CachedCookbook.instance_variable_set(:@loaded_cookbooks, nil)
 
     endpoints = [
-      {
-        type: "chef_server",
-        options: {
-          url: "http://localhost:#{CHEF_SERVER_PORT}",
-          client_name: "reset",
-          client_key: File.expand_path("spec/config/berkshelf.pem")
+        {
+            type: "chef_server",
+            options: {
+                url: "http://localhost:#{CHEF_SERVER_PORT}",
+                client_name: "reset",
+                client_key: File.expand_path("spec/config/berkshelf.pem")
+            }
         }
-      }
     ]
 
     Berkshelf::RSpec::ChefServer.start(port: CHEF_SERVER_PORT)

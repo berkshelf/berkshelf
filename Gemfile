@@ -4,9 +4,9 @@ gemspec
 
 group :guard do
   gem 'coolline',      '~> 0.4.2'
-  gem 'guard',         '~> 1.8'
+  gem 'guard',         '~> 2.6.1'
   gem 'guard-cucumber'
-  gem 'guard-rspec'
+  gem 'guard-rspec', '>= 4.2.10'
   gem 'guard-spork'
 
   require 'rbconfig'

@@ -4,14 +4,17 @@ describe Berkshelf::Packager do
   let(:target) { tmp_path.join("cookbooks.tar.gz").to_s }
   subject { described_class.new(target) }
 
-  its(:out_file) { should eql(target) }
+  describe '#out_file' do
+    subject { super().out_file }
+    it { is_expected.to eql(target) }
+  end
 
   describe "#run" do
     let(:cookbooks) { fixtures_path.join("cookbooks") }
 
     it "writes a tar to the #out_file" do
       subject.run(cookbooks)
-      expect(File.exist?(subject.out_file)).to be_true
+      expect(File.exist?(subject.out_file)).to be_truthy
     end
   end
 
@@ -19,7 +22,7 @@ describe Berkshelf::Packager do
     let(:out_dir) { File.dirname(target) }
 
     context "when the out_file's directory is not writable" do
-      before { File.stub(:directory?).with(out_dir).and_return(false) }
+      before { allow(File).to receive(:directory?).with(out_dir).and_return(false) }
 
       it "raises an error" do
         expect { subject.validate! }.to raise_error(Berkshelf::PackageError,
@@ -28,7 +31,7 @@ describe Berkshelf::Packager do
     end
 
     context "when the out_file's directory is not a directory" do
-      before { File.stub(:writable?).with(out_dir).and_return(false) }
+      before { allow(File).to receive(:writable?).with(out_dir).and_return(false) }
 
       it "raises an error" do
         expect { subject.validate! }.to raise_error(Berkshelf::PackageError,

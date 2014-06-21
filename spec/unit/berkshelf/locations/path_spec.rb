@@ -18,7 +18,7 @@ module Berkshelf
 
     describe '#installed?' do
       it 'returns false' do
-        expect(subject.installed?).to be_false
+        expect(subject.installed?).to be_falsey
       end
     end
 
@@ -83,7 +83,7 @@ module Berkshelf
       end
 
       it 'includes the metadata attribute' do
-        subject.stub(:metadata?).and_return(true)
+        allow(subject).to receive(:metadata?).and_return(true)
         expect(subject.to_lock).to eq <<-EOH.gsub(/^ {10}/, '')
               path: #{relative_path}
               metadata: true
@@ -99,7 +99,7 @@ module Berkshelf
 
     describe '#inspect' do
       it 'includes the right information' do
-        subject.stub(:metadata?).and_return(true)
+        allow(subject).to receive(:metadata?).and_return(true)
         expect(subject.inspect).to eq("#<Berkshelf::PathLocation metadata: true, path: #{relative_path}>")
       end
     end
