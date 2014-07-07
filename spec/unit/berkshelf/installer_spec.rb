@@ -6,7 +6,7 @@ describe Berkshelf::Installer do
   subject { described_class.new(berksfile) }
 
   describe "#build_universe" do
-    let(:source_one) { double('one', uri: 'https://api.berkshelf.com') }
+    let(:source_one) { double('one', uri: 'https://supermarket.getchef.com') }
     let(:source_two) { double('two', uri: 'https://api.chef.org') }
     let(:sources) { [ source_one, source_two ] }
 

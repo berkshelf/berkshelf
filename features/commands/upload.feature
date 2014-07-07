@@ -407,7 +407,7 @@ Feature: berks upload
       """
     And the cookbook "fake" has the file "Berksfile" with:
       """
-      source 'https://api.berkshelf.com'
+      source 'https://supermarket.getchef.com'
       metadata
       """
     And the cookbook "fake" has the file "Berksfile.lock" with:
