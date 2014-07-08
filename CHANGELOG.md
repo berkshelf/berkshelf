@@ -1,3 +1,7 @@
+# 2.0.18
+
+* Fix issue with connecting to an HTTPS enabled community site
+
 # 2.0.17
 
 * Fix constraint on Hashie
