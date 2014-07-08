@@ -451,7 +451,7 @@ module Berkshelf
       "default Berkshelf API server, add the following code to the top of " \
       "your Berksfile:" \
       "\n\n" \
-      "    source 'https://api.berkshelf.com'"
+      "    source 'https://supermarket.getchef.com'"
     end
   end
 
