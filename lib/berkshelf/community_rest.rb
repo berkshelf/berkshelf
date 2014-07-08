@@ -2,6 +2,8 @@ require 'open-uri'
 require 'retryable'
 require 'addressable/uri'
 
+require_relative 'core_ext/openuri'
+
 module Berkshelf
   class CommunityREST < Faraday::Connection
     class << self
@@ -80,6 +82,8 @@ module Berkshelf
 
       builder = Faraday::Builder.new do |b|
         b.response :parse_json
+        b.response :follow_redirects
+
         b.request :retry,
           max: @retries,
           interval: @retry_interval,
