@@ -13,7 +13,7 @@ Or create a new cookbook
 
 And specify your dependencies in a Berksfile in your cookbook's root
 
-    source "https://api.berkshelf.com"
+    source "https://supermarket.getchef.com"
 
     metadata
 
@@ -164,7 +164,7 @@ Cookbooks will automatically be uploaded to the Chef Server you have configured 
 
 Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berksfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
 
-    source "https://api.berkshelf.com"
+    source "https://supermarket.getchef.com"
 
     metadata
 
@@ -221,7 +221,7 @@ Options passed to a source can contain a location or a group(s).
 By default the location of a cookbook is assumed to come from one of the api sources that you have configured. For example
 
     source "https://berks-api.vialstudios.com"
-    source "https://api.berkshelf.com"
+    source "https://supermarket.getchef.com"
 
 If a cookbook which satisfies all demands is found in `berks-api.vialstudios.com` then it will be retrieved and used in resolution. If it is not, then any subsequent defined sources will be used. If no sources can satisfy the demand a no solution error will be returned.
 
