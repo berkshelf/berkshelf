@@ -64,6 +64,14 @@ describe Berkshelf::CommunityREST do
   let(:api_uri) { Berkshelf::CommunityREST::V1_API }
   subject { Berkshelf::CommunityREST.new(api_uri) }
 
+  describe '#initialize' do
+    context 'Faraday handlers' do
+      it 'includes follow_redirects to prevent 301 from community, stopping some cookbooks installing' do
+        expect(subject.builder.handlers).to include(Ridley::Middleware::FollowRedirects)
+      end
+    end
+  end
+
   describe '#download' do
     let(:archive) { double('archive', path: '/foo/bar', unlink: true) }
 
