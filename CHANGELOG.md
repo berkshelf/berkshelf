@@ -9,7 +9,6 @@
   * Handle the case where a remote source had been removed but still existed in the lockfile
   * Follow redirects (HTTP -> HTTPS) in all requests
 
-
 # 3.1.3
 
 * Enhancements
