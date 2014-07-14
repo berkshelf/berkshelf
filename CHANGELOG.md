@@ -1,5 +1,15 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 3.1.4
+
+* Improvements
+  * Update the default vagrant box from the generators to Ubuntu 14.04 (formerly 12.04 EOL)
+
+* Bug fixes
+  * Handle the case where a remote source had been removed but still existed in the lockfile
+  * Follow redirects (HTTP -> HTTPS) in all requests
+
+
 # 3.1.3
 
 * Enhancements
