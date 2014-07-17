@@ -10,7 +10,6 @@ module Berkshelf
     # @param [String, Berkshelf::SourceURI] uri
     def initialize(uri)
       @uri        = SourceURI.parse(uri)
-      @api_client = APIClient.new(uri, ssl: {verify: Berkshelf::Config.instance.ssl.verify})
       @universe   = nil
     end
 
@@ -99,6 +98,12 @@ module Berkshelf
     private
 
       # @return [Berkshelf::APIClient]
-      attr_reader :api_client
+      def api_client
+        @api_client ||= APIClient.new(
+          uri,
+          open_timeout: Berkshelf::Config.instance.api.open_timeout.to_i,
+          timeout: Berkshelf::Config.instance.api.timeout.to_i,
+          ssl: {verify: Berkshelf::Config.instance.ssl.verify})
+      end
   end
 end

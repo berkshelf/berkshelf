@@ -6,6 +6,20 @@ Feature: Reading a Berkshelf configuration file
       | config.vm.box = "chef/ubuntu-14.04" |
       | config.vm.box_url = "https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box" |
 
+  Scenario: Using a Berkshelf configuration file that overrides the berkshelf-api-client timeout values
+    Given I have a Berkshelf config file containing:
+    """
+    {
+      "api": {
+      "open_timeout": "4",
+      "timeout": "31"
+      }
+    }
+    """
+    When I successfully run `berks search berkshelf-cookbook-fixture`
+    Then the output should contain:
+      | berkshelf-cookbook-fixture (1.0.0) |
+
   Scenario: Using a Berkshelf configuration file that disables the vagrant-omnibus plugin
     Given I have a Berkshelf config file containing:
     """
