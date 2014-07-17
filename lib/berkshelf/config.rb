@@ -75,6 +75,12 @@ module Berkshelf
       end
     end
 
+    attribute 'api.open_timeout',
+      type: String,
+      default: '3'
+    attribute 'api.timeout',
+      type: String,
+      default: '30'
     attribute 'chef.chef_server_url',
       type: String,
       default: Berkshelf.chef_config.chef_server_url
