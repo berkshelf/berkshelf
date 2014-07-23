@@ -2,6 +2,16 @@ module Berkshelf
   class CookbookGenerator < BaseGenerator
     require_relative 'config'
 
+    LICENSE_MAP = {
+      "apachev2" => "Apache 2.0",
+      "gplv2"    => "GNU Public License 2.0",
+      "gplv3"    => "GNU Public License 3.0",
+      "mit"      => "MIT",
+      "reserved" => "All rights reserved",
+    }.freeze
+
+    (LICENSES = LICENSE_MAP.keys).freeze
+
     argument :name,
       type: :string,
       required: true
@@ -83,14 +93,8 @@ module Berkshelf
       end
 
       def license_name
-        case options[:license]
-        when 'apachev2'; 'Apache 2.0'
-        when 'gplv2'; 'GNU Public License 2.0'
-        when 'gplv3'; 'GNU Public License 3.0'
-        when 'mit'; 'MIT'
-        when 'reserved'; 'All rights reserved'
-        else
-          raise Berkshelf::LicenseNotFound.new(options[:license])
+        LICENSE_MAP.fetch(options[:license]) do |license|
+          raise Berkshelf::LicenseNotFound.new(license)
         end
       end
 
