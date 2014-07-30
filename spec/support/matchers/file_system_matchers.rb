@@ -107,7 +107,7 @@ module Berkshelf
           end
         end
 
-        def negative_failure_message
+        def failure_message_when_negated
           if @failure.is_a?(Array) && @failure[0] == :not
             "Structure had #{@failure}, but it shouldn't have"
           else

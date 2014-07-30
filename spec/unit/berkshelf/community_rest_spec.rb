@@ -9,16 +9,16 @@ describe Berkshelf::CommunityREST do
       let(:gzip_reader) { double('gzip_reader') }
 
       before do
-        File.stub(:open).with(target, 'rb').and_return(file)
-        Zlib::GzipReader.stub(:new).with(file).and_return(gzip_reader)
-        Archive::Tar::Minitar.stub(:unpack).with(gzip_reader, destination)
+        allow(File).to receive(:open).with(target, 'rb').and_return(file)
+        allow(Zlib::GzipReader).to receive(:new).with(file).and_return(gzip_reader)
+        allow(Archive::Tar::Minitar).to receive(:unpack).with(gzip_reader, destination)
       end
 
       it 'unpacks the tar' do
-        File.should_receive(:open).with(target, 'rb')
-        ::IO.should_receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
-        Zlib::GzipReader.should_receive(:new).with(file)
-        Archive::Tar::Minitar.should_receive(:unpack).with(gzip_reader, destination)
+        expect(File).to receive(:open).with(target, 'rb')
+        expect(::IO).to receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
+        expect(Zlib::GzipReader).to receive(:new).with(file)
+        expect(Archive::Tar::Minitar).to receive(:unpack).with(gzip_reader, destination)
 
         expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
       end
@@ -76,8 +76,8 @@ describe Berkshelf::CommunityREST do
     let(:archive) { double('archive', path: '/foo/bar', unlink: true) }
 
     before do
-      subject.stub(:stream).with(any_args()).and_return(archive)
-      Berkshelf::CommunityREST.stub(:unpack)
+      allow(subject).to receive(:stream).with(any_args()).and_return(archive)
+      allow(Berkshelf::CommunityREST).to receive(:unpack)
     end
 
     it 'unpacks the archive' do
@@ -87,8 +87,8 @@ describe Berkshelf::CommunityREST do
         headers: { 'Content-Type' => 'application/json' },
       )
 
-      Berkshelf::CommunityREST.should_receive(:unpack).with('/foo/bar').once.and_return('/foo/nginx')
-      archive.should_receive(:unlink).once
+      expect(Berkshelf::CommunityREST).to receive(:unpack).with('/foo/bar').once.and_return('/foo/nginx')
+      expect(archive).to receive(:unlink).once
 
       subject.download('bacon', '1.0.0')
     end
@@ -215,6 +215,6 @@ describe Berkshelf::CommunityREST do
   end
 
   describe '#stream' do
-    pending
+    skip
   end
 end

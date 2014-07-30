@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Berkshelf::Lockfile do
   before do
-    subject.stub(:filepath).and_return(fixture) if defined?(fixture)
+    allow(subject).to receive(:filepath).and_return(fixture) if defined?(fixture)
     subject.parse
   end
 

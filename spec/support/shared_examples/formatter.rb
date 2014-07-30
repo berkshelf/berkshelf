@@ -1,3 +1,4 @@
+if defined?(RSpec) && RSpec.respond_to?(:configure)
 module Berkshelf
   shared_examples 'a formatter object' do
     BaseFormatter.instance_methods(false).each do |name|
@@ -8,4 +9,5 @@ module Berkshelf
       end
     end
   end
+end
 end

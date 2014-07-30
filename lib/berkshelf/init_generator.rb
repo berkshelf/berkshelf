@@ -75,7 +75,7 @@ module Berkshelf
       unless options[:skip_git]
         template 'gitignore.erb', target.join('.gitignore')
 
-        unless File.exists?(target.join('.git'))
+        unless File.exist?(target.join('.git'))
           inside target do
             git 'init'
           end
@@ -134,7 +134,7 @@ module Berkshelf
       # @return [nil]
       def validate_cookbook
         path = File.expand_path(File.join(target, 'metadata.rb'))
-        unless File.exists?(path)
+        unless File.exist?(path)
           raise Berkshelf::NotACookbook.new(path)
         end
       end

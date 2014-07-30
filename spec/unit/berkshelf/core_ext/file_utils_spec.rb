@@ -7,9 +7,9 @@ describe FileUtils do
     let(:options) { double('options') }
 
     it 'replaces mv with cp_r and rm_rf' do
-      subject.stub(:windows?) { true }
-      FileUtils.should_receive(:cp_r).with(src, dest, options)
-      FileUtils.should_receive(:rm_rf).with(src)
+      allow(subject).to receive(:windows?) { true }
+      expect(FileUtils).to receive(:cp_r).with(src, dest, options)
+      expect(FileUtils).to receive(:rm_rf).with(src)
 
       FileUtils.mv(src, dest, options)
     end

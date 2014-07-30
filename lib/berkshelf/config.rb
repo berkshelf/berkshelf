@@ -15,7 +15,7 @@ module Berkshelf
 
       # @return [String]
       def path
-        path = File.exists?(local_location) ? local_location : store_location
+        path = File.exist?(local_location) ? local_location : store_location
         File.expand_path(path)
       end
 
@@ -32,7 +32,7 @@ module Berkshelf
       # @return [String, nil]
       #   the contents of the file
       def file
-        File.read(path) if File.exists?(path)
+        File.read(path) if File.exist?(path)
       end
 
       # Instantiate and return or just return the currently instantiated Berkshelf
