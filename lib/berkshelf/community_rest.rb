@@ -48,7 +48,7 @@ module Berkshelf
         end
     end
 
-    V1_API = 'https://cookbooks.opscode.com/api/v1'.freeze
+    V1_API = 'https://supermarket.getchef.com'.freeze
 
     # @return [String]
     attr_reader :api_uri
