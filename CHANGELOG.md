@@ -1,6 +1,6 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
-# master
+# 3.1.5
 
 * Bug Fixes
   * Supermarket endpoint is now an alias for Opscode endpoint
