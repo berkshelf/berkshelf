@@ -49,7 +49,7 @@ module Berkshelf
       end
 
       case remote_cookbook.location_type
-      when :opscode
+      when :opscode, :supermarket
         CommunityREST.new(remote_cookbook.location_path).download(name, version)
       when :chef_server
         # @todo Dynamically get credentials for remote_cookbook.location_path
