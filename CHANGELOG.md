@@ -1,11 +1,17 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# master
+
+* Bug Fixes
+  * Supermarket endpoint is now an alias for Opscode endpoint
+  * Set proper default value for supermarket api endpoint
+
 # 3.1.4
 
 * Improvements
   * Update the default vagrant box from the generators to Ubuntu 14.04 (formerly 12.04 EOL)
 
-* Bug fixes
+* Bug Fixes
   * Handle the case where a remote source had been removed but still existed in the lockfile
   * Follow redirects (HTTP -> HTTPS) in all requests
 
@@ -14,7 +20,7 @@
 * Enhancements
   * Updated out of date dependencies
 
-* Bug fixes
+* Bug Fixes
   * Skip loading of cached cookbooks that do not have a value for metadata
   * SSL Verify option will be respected when communicating to an API server
   * Fixed issue where some commands were unexpectedly crashing instead of informing the user that Git is not installed
