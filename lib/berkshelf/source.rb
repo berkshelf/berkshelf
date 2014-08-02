@@ -11,6 +11,7 @@ module Berkshelf
     def initialize(uri)
       @uri        = SourceURI.parse(uri)
       @universe   = nil
+      @api_client = new_api_client(uri)
     end
 
     # Forcefully obtain the universe from the API endpoint and assign it to {#universe}. This
@@ -97,13 +98,18 @@ module Berkshelf
 
     private
 
+      attr_reader :api_client
+
       # @return [Berkshelf::APIClient]
-      def api_client
-        @api_client ||= APIClient.new(
-          uri,
-          open_timeout: Berkshelf::Config.instance.api.open_timeout.to_i,
-          timeout: Berkshelf::Config.instance.api.timeout.to_i,
-          ssl: {verify: Berkshelf::Config.instance.ssl.verify})
+      def new_api_client(uri)
+        APIClient.new(uri,
+                      ssl: {verify: Berkshelf::Config.instance.ssl.verify},
+                      timeout: api_timeout,
+                      open_timeout: [(api_timeout / 10), 3].max)
+      end
+
+      def api_timeout
+        Berkshelf::Config.instance.api.timeout.to_i
       end
   end
 end
