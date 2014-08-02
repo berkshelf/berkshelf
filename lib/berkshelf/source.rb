@@ -10,6 +10,7 @@ module Berkshelf
     def initialize(source)
       @source = source
       @universe   = nil
+      @api_client = new_api_client(uri)
     end
 
     def api_client
@@ -17,16 +18,16 @@ module Berkshelf
                         if source == :chef_server
                           APIClient.chef_server(
                             ssl: {verify: Berkshelf::Config.instance.ssl.verify},
-                            open_timeout: Berkshelf::Config.instance.api.open_timeout.to_i,
-                            timeout: Berkshelf::Config.instance.api.timeout.to_i,
+                            timeout: api_timeout,
+                            open_timeout: [(api_timeout / 10), 3].max,
                             client_name: Berkshelf::Config.instance.chef.node_name,
                             server_url: Berkshelf::Config.instance.chef.chef_server_url,
                             client_key: Berkshelf::Config.instance.chef.client_key,
                           )
                         else
                           APIClient.new(uri,
-                                        open_timeout: Berkshelf::Config.instance.api.open_timeout.to_i,
-                                        timeout: Berkshelf::Config.instance.api.timeout.to_i,
+                                        timeout: api_timeout,
+                                        open_timeout: [(api_timeout / 10), 3].max,
                                         ssl: {verify: Berkshelf::Config.instance.ssl.verify})
                         end
                       end
@@ -122,5 +123,12 @@ module Berkshelf
       uri == other.uri
     end
 
+    private
+
+    attr_reader :api_client
+
+    def api_timeout
+      Berkshelf::Config.instance.api.timeout.to_i
+    end
   end
 end

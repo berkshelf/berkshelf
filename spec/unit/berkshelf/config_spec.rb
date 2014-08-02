@@ -15,6 +15,12 @@ describe Berkshelf::Config do
     it 'should be a Berkshelf::Config' do
       expect(Berkshelf::Config.instance).to be_an_instance_of(Berkshelf::Config)
     end
+
+    context 'attributes' do
+      it 'should have a default API timeout' do
+        expect(Berkshelf::Config.instance.api.timeout).to eq('30')
+      end
+    end
   end
 
   describe '::path' do

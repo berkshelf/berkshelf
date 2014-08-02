@@ -75,9 +75,6 @@ module Berkshelf
       end
     end
 
-    attribute 'api.open_timeout',
-      type: String,
-      default: '3'
     attribute 'api.timeout',
       type: String,
       default: '30'
