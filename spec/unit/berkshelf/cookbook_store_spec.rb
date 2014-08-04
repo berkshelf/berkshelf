@@ -98,12 +98,12 @@ describe Berkshelf::CookbookStore do
     end
 
     it 'contains a CachedCookbook for every cookbook in the storage path' do
-      expect(subject.cookbooks).to have(2).items
+      expect(subject.cookbooks.size).to eq(2)
     end
 
     context 'given a value for the filter parameter' do
       it 'returns only the CachedCookbooks whose name match the filter' do
-        expect(subject.cookbooks('mysql')).to have(1).item
+        expect(subject.cookbooks('mysql').size).to eq(1)
       end
     end
 
