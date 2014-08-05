@@ -2,6 +2,10 @@
 
 Berkshelf is now included as part of the [Chef-DK](http://getchef.com/downloads/chef-dk). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
 
+Ensure that the Chef-DK is added to *the front* of your path
+
+    $ PATH=$HOME/.chefdk/gem/ruby/2.1.0/bin:/opt/chefdk/bin:$PATH
+
 Generate a Berksfile in a pre-exisitng cookbook
 
     $ cd my-cookbook
