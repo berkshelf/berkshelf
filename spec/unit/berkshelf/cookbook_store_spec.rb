@@ -42,17 +42,17 @@ describe Berkshelf::CookbookStore do
     let(:cached_one) { double('cached-one', name: name, version: Semverse::Version.new(version)) }
     let(:cached_two) { double('cached-two', name: 'mysql', version: Semverse::Version.new('1.2.6')) }
 
-    before { subject.stub(:cookbooks).and_return([cached_one, cached_two]) }
+    before { allow(subject).to receive(:cookbooks).and_return([cached_one, cached_two]) }
 
     it 'gets and returns the the CachedCookbook best matching the name and constraint' do
-      subject.should_receive(:cookbook).with(name, version).and_return(cached_one)
+      expect(subject).to receive(:cookbook).with(name, version).and_return(cached_one)
       result = subject.satisfy(name, constraint)
 
       expect(result).to eq(cached_one)
     end
 
     context 'when there are no cookbooks in the cookbook store' do
-      before { subject.stub(:cookbooks).and_return([]) }
+      before { allow(subject).to receive(:cookbooks).and_return([]) }
 
       it 'returns nil' do
         result = subject.satisfy(name, constraint)
@@ -64,7 +64,7 @@ describe Berkshelf::CookbookStore do
       let(:version) { Semverse::Version.new('1.0.0') }
       let(:constraint) { Semverse::Constraint.new('= 0.1.0') }
 
-      before { subject.stub(:cookbooks).and_return([ double('badcache', name: 'none', version: version) ]) }
+      before { allow(subject).to receive(:cookbooks).and_return([ double('badcache', name: 'none', version: version) ]) }
 
       it 'returns nil if there is no matching cookbook for the name and constraint' do
         result = subject.satisfy(name, constraint)

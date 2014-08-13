@@ -1,5 +1,7 @@
 Given /^the gem "(.*)" is not installed$/ do |gem_name|
-  Gem::Specification.stub(:find_by_name).with(gem_name).and_raise(Gem::LoadError)
+  allow(Gem::Specification).to receive(:find_by_name)
+    .with(gem_name)
+    .and_raise(Gem::LoadError)
 end
 
 Then /^the output should contain a warning to suggest supporting the option "(.*?)" by installing "(.*?)"$/ do |option, gem_name|

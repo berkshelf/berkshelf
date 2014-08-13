@@ -27,7 +27,7 @@ module Berkshelf
 
     # @see BaseLoation#installed?
     def installed?
-      revision && install_path.exist?
+      !!(revision && install_path.exist?)
     end
 
     # Install this git cookbook into the cookbook store. This method leverages
@@ -71,7 +71,7 @@ module Berkshelf
       FileUtils.cp_r(scratch_path, install_path)
 
       # Remove the git history
-      FileUtils.rm_rf(File.join(install_path, '.git')) 
+      FileUtils.rm_rf(File.join(install_path, '.git'))
 
       install_path.chmod(0777 & ~File.umask)
     ensure

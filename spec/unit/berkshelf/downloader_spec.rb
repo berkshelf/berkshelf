@@ -5,7 +5,7 @@ describe Berkshelf::Downloader do
   subject { described_class.new(berksfile) }
 
   describe "#download" do
-    pending
+    skip
   end
 
   describe "#try_download" do

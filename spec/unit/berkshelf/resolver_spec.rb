@@ -22,7 +22,7 @@ describe Berkshelf::Resolver do
     end
 
     it 'raises a DuplicateDemand exception if a demand of the same name is added' do
-      subject.should_receive(:has_demand?).with(demand).and_return(true)
+      expect(subject).to receive(:has_demand?).with(demand).and_return(true)
 
       expect {
         subject.add_demand(demand)
@@ -50,11 +50,11 @@ describe Berkshelf::Resolver do
     before { subject.add_demand(demand) }
 
     it 'returns true if the demand exists' do
-      expect(subject.has_demand?(demand.name)).to be_true
+      expect(subject.has_demand?(demand.name)).to be(true)
     end
 
     it 'returns false if the demand does not exist' do
-      expect(subject.has_demand?('non-existent')).to be_false
+      expect(subject.has_demand?('non-existent')).to be(false)
     end
   end
 

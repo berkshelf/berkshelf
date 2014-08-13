@@ -12,7 +12,7 @@ describe Berkshelf::Mixin::DSLEval do
       subject { klass.clean_room }
 
       it "returns an anonymous class inheriting from DSLEval::CleanRoom" do
-        expect(subject.superclass).to eql(described_class::CleanRoom)
+        expect(subject.superclass).to eq(described_class::CleanRoom)
       end
     end
 
@@ -21,7 +21,7 @@ describe Berkshelf::Mixin::DSLEval do
 
       it "adds a method to the exposed methods" do
         klass.expose_method(:something)
-        expect(subject.exposed_methods).to have(1).item
+        expect(subject.exposed_methods.size).to eq(1)
       end
     end
 

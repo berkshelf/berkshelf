@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Berkshelf::Config do
   describe '::file' do
     context 'when the file does not exist' do
-      before { File.stub(:exists?).and_return(false) }
+      before { allow(File).to receive(:exists?).and_return(false) }
 
       it 'is nil' do
         expect(Berkshelf::Config.file).to be_nil
@@ -23,7 +23,7 @@ describe Berkshelf::Config do
     end
 
     before do
-      File.stub(:exists?).and_return(false)
+      allow(File).to receive(:exists?).and_return(false)
     end
 
     after do
@@ -32,8 +32,8 @@ describe Berkshelf::Config do
 
     context "when ENV['BERKSHELF_CONFIG'] is used" do
       before do
-        ENV.stub(:[]).with('BERKSHELF_CONFIG').and_return('/tmp/config.json')
-        File.stub(:exists?).with('/tmp/config.json').and_return(true)
+        allow(ENV).to receive(:[]).with('BERKSHELF_CONFIG').and_return('/tmp/config.json')
+        allow(File).to receive(:exists?).with('/tmp/config.json').and_return(true)
       end
 
       it "points to a location within it" do

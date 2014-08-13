@@ -23,7 +23,7 @@ describe Berkshelf::Lockfile do
     let(:parser) { double('parser', run: true) }
 
     before do
-      Berkshelf::Lockfile::LockfileParser.stub(:new).and_return(parser)
+      allow(Berkshelf::Lockfile::LockfileParser).to receive(:new).and_return(parser)
     end
 
     it 'creates a new parser object' do
@@ -33,23 +33,23 @@ describe Berkshelf::Lockfile do
     end
 
     it 'returns true (always)' do
-      expect(subject.parse).to be_true
+      expect(subject.parse).to be(true)
     end
   end
 
   describe '#present?' do
     it 'returns true when the file exists' do
-      expect(subject.present?).to be_true
+      expect(subject.present?).to be(true)
     end
 
     it 'returns false when the file does not exist' do
-      File.stub(:exists?).and_return(false)
-      expect(subject.present?).to be_false
+      allow(File).to receive(:exists?).and_return(false)
+      expect(subject.present?).to be(false)
     end
 
     it 'returns false when the file is empty' do
-      File.stub(:read).and_return('')
-      expect(subject.present?).to be_false
+      allow(File).to receive(:read).and_return('')
+      expect(subject.present?).to be(false)
     end
   end
 
@@ -66,10 +66,10 @@ describe Berkshelf::Lockfile do
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
-      subject.stub(:find).with(apt).and_return(apt)
-      subject.graph.stub(:find).with(apt).and_return(apt)
+      allow(subject).to receive(:find).with(apt).and_return(apt)
+      allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
-      expect(subject.trusted?).to be_true
+      expect(subject.trusted?).to be(true)
     end
 
     it 'returns true when the lockfile is trusted with transitive dependencies' do
@@ -85,11 +85,11 @@ describe Berkshelf::Lockfile do
       bacon = double(name: 'bacon', version: '1.0.0', dependencies: {})
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
-      subject.stub(:find).with(apt).and_return(apt)
-      subject.graph.stub(:find).with('bacon').and_return(bacon)
-      subject.graph.stub(:find).with(apt).and_return(apt)
+      allow(subject).to receive(:find).with(apt).and_return(apt)
+      allow(subject.graph).to receive(:find).with('bacon').and_return(bacon)
+      allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
-      expect(subject.trusted?).to be_true
+      expect(subject.trusted?).to be(true)
     end
 
     it 'returns true when the lockfile is trusted with cyclic transitive dependencies' do
@@ -111,11 +111,11 @@ describe Berkshelf::Lockfile do
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
-      subject.stub(:find).with(apt).and_return(apt)
-      subject.graph.stub(:find).with('bacon').and_return(bacon)
-      subject.graph.stub(:find).with(apt).and_return(apt)
+      allow(subject).to receive(:find).with(apt).and_return(apt)
+      allow(subject.graph).to receive(:find).with('bacon').and_return(bacon)
+      allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
-      expect(subject.trusted?).to be_true
+      expect(subject.trusted?).to be(true)
     end
 
     it 'returns false when the lockfile is not trusted because of transitive dependencies' do
@@ -130,10 +130,10 @@ describe Berkshelf::Lockfile do
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
-      subject.stub(:find).with(apt).and_return(apt)
-      subject.graph.stub(:find).with(apt).and_return(apt)
+      allow(subject).to receive(:find).with(apt).and_return(apt)
+      allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
-      expect(subject.trusted?).to be_false
+      expect(subject.trusted?).to be(false)
     end
 
     it 'returns false if the dependency is not in the lockfile' do
@@ -141,17 +141,17 @@ describe Berkshelf::Lockfile do
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
 
-      expect(subject.trusted?).to be_false
+      expect(subject.trusted?).to be(false)
     end
 
     it 'returns false if the dependency is not in the graph' do
       apt = double('apt', name: 'apt', version_constraint: nil)
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
-      subject.stub(:find).with(apt).and_return(true)
-      subject.graph.stub(:find).with(apt).and_return(nil)
+      allow(subject).to receive(:find).with(apt).and_return(true)
+      allow(subject.graph).to receive(:find).with(apt).and_return(nil)
 
-      expect(subject.trusted?).to be_false
+      expect(subject.trusted?).to be(false)
     end
 
     it 'returns false if the constraint is not satisfied' do
@@ -166,10 +166,10 @@ describe Berkshelf::Lockfile do
       )
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
-      subject.stub(:find).with(apt).and_return(apt)
-      subject.graph.stub(:find).with(apt).and_return(apt)
+      allow(subject).to receive(:find).with(apt).and_return(apt)
+      allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
-      expect(subject.trusted?).to be_false
+      expect(subject.trusted?).to be(false)
     end
 
     it 'returns false if the locations are different' do
@@ -183,13 +183,13 @@ describe Berkshelf::Lockfile do
         cached_cookbook: cookbook,
       )
       apt_master = apt.dup
-      apt_master.stub(location: 'github')
+      allow(apt_master).to receive_messages(location: 'github')
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
-      subject.stub(:find).with(apt).and_return(apt_master)
-      subject.graph.stub(:find).with(apt).and_return(apt)
+      allow(subject).to receive(:find).with(apt).and_return(apt_master)
+      allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
-      expect(subject.trusted?).to be_false
+      expect(subject.trusted?).to be(false)
     end
   end
 
@@ -197,12 +197,12 @@ describe Berkshelf::Lockfile do
     let(:connection) { double('connection') }
 
     before do
-      Berkshelf.stub(:ridley_connection).and_yield(connection)
+      allow(Berkshelf).to receive(:ridley_connection).and_yield(connection)
     end
 
     context 'when the Chef environment does not exist' do
       it 'raises an exception' do
-        connection.stub(:environment).and_return(double(find: nil))
+        allow(connection).to receive(:environment).and_return(double(find: nil))
         expect {
           subject.apply('production')
         }.to raise_error(Berkshelf::EnvironmentNotFound)
@@ -212,10 +212,10 @@ describe Berkshelf::Lockfile do
     it 'locks the environment cookbook versions' do
       apt = double(name: 'apt', locked_version: '1.0.0')
       jenkins = double(name: 'jenkins', locked_version: '1.4.5')
-      subject.graph.stub(:locks).and_return('apt' => apt, 'jenkins' => jenkins)
+      allow(subject.graph).to receive(:locks).and_return('apt' => apt, 'jenkins' => jenkins)
 
       environment = double('environment', :cookbook_versions= => nil, save: true)
-      connection.stub(:environment).and_return(double(find: environment))
+      allow(connection).to receive(:environment).and_return(double(find: environment))
 
       expect(environment).to receive(:cookbook_versions=).with(
         'apt' => '= 1.0.0',

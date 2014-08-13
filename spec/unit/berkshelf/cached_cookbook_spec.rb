@@ -88,27 +88,27 @@ describe Berkshelf::CachedCookbook do
   describe '#pretty_hash' do
     shared_examples 'a pretty_hash cookbook attribute' do |attribute, key|
       it "is not present when the `#{attribute}` attribute is nil" do
-        subject.stub(attribute.to_sym).and_return(nil)
+        allow(subject).to receive(attribute.to_sym).and_return(nil)
         expect(subject.pretty_hash).to_not have_key((key || attribute).to_sym)
       end
 
       it "is not present when the `#{attribute}` attribute is an empty string" do
-        subject.stub(attribute.to_sym).and_return('')
+        allow(subject).to receive(attribute.to_sym).and_return('')
         expect(subject.pretty_hash).to_not have_key((key || attribute).to_sym)
       end
 
       it "is not present when the `#{attribute}` attribute is an empty array" do
-        subject.stub(attribute.to_sym).and_return([])
+        allow(subject).to receive(attribute.to_sym).and_return([])
         expect(subject.pretty_hash).to_not have_key((key || attribute).to_sym)
       end
 
       it "is not present when the `#{attribute}` attribute is an empty hash" do
-        subject.stub(attribute.to_sym).and_return([])
+        allow(subject).to receive(attribute.to_sym).and_return([])
         expect(subject.pretty_hash).to_not have_key((key || attribute).to_sym)
       end
 
       it "is present when the `#{attribute}` attribute has a Hash value" do
-        subject.stub(attribute.to_sym).and_return(foo: 'bar')
+        allow(subject).to receive(attribute.to_sym).and_return(foo: 'bar')
         expect(subject.pretty_hash).to have_key((key || attribute).to_sym)
       end
     end

@@ -7,7 +7,7 @@ module Berkshelf
     let(:cookbooks) { ['mysql'] }
 
     before do
-      Berksfile.stub(:from_options).and_return(berksfile)
+      allow(Berksfile).to receive(:from_options).and_return(berksfile)
     end
 
     describe '#upload' do

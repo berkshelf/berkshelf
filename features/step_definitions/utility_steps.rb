@@ -1,5 +1,5 @@
-Given /^pending\s+"([^\"]+)"$/ do |msg|
-  pending
+Given /^skip\s+"([^\"]+)"$/ do |msg|
+  skip
 end
 
 Then /the output from \`(.+)\` should be the same as \`(.+)\`/ do |actual, expected|
