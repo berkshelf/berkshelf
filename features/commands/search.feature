@@ -11,6 +11,6 @@ Feature: berks search
     * the output should contain:
       """
       berkshelf-api (1.0.0)
-      berkshelf-api-server (2.0.0)
+      berkshelf-api-server (2.1.0)
       berkshelf-cookbook-fixture (1.0.0)
       """
