@@ -5,7 +5,7 @@ module Berkshelf
     describe '#to_png' do
       context 'when graphviz is not installed' do
         before do
-          Berkshelf.stub(:which)
+          allow(Berkshelf).to receive(:which)
             .with('dot')
             .and_return(nil)
         end
@@ -18,7 +18,7 @@ module Berkshelf
       context 'when the graphviz command fails', :graphviz do
         before do
           response = double(success?: false, stderr: 'Something happened!')
-          subject.stub(:shell_out).and_return(response)
+          allow(subject).to receive(:shell_out).and_return(response)
         end
 
         it 'raises a GraphvizCommandFailed exception' do

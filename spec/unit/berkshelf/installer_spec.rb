@@ -10,11 +10,11 @@ describe Berkshelf::Installer do
     let(:source_two) { double('two', uri: 'https://api.chef.org') }
     let(:sources) { [ source_one, source_two ] }
 
-    before { berksfile.stub(sources: sources) }
+    before { allow(berksfile).to receive_messages(sources: sources) }
 
     it "sends the message #universe on each source" do
-      source_one.should_receive(:build_universe)
-      source_two.should_receive(:build_universe)
+      expect(source_one).to receive(:build_universe)
+      expect(source_two).to receive(:build_universe)
 
       subject.build_universe
     end
@@ -22,15 +22,15 @@ describe Berkshelf::Installer do
 
   describe "#run" do
     context 'when a lockfile is not present' do
-      pending
+      skip
     end
 
     context 'when a value for :except is given' do
-      pending
+      skip
     end
 
     context 'when a value for :only is given' do
-      pending
+      skip
     end
   end
 end

@@ -9,11 +9,11 @@ RSpec::Matchers.define :be_relative_path do
     end
   end
 
-  failure_message_for_should do |given|
+  failure_message do |given|
     "Expected '#{given}' to be a relative path but got an absolute path."
   end
 
-  failure_message_for_should_not do |given|
+  failure_message_when_negated do |given|
     "Expected '#{given}' to not be a relative path but got an absolute path."
   end
 end

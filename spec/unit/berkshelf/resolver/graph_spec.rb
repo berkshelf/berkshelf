@@ -14,12 +14,12 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
 
     it "adds each dependency to the graph" do
       subject.populate(sources)
-      expect(subject.artifacts).to have(3).items
+      expect(subject.artifacts.size).to eq(3)
     end
 
     it "adds the dependencies of each dependency to the graph" do
       subject.populate(sources)
-      expect(subject.artifact("ruby", "1.0.0").dependencies).to have(1).item
+      expect(subject.artifact("ruby", "1.0.0").dependencies.size).to eq(1)
     end
   end
 
@@ -38,7 +38,7 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
     end
 
     it "contains the entire universe of dependencies" do
-      expect(subject.universe(sources)).to have(2).items
+      expect(subject.universe(sources).size).to eq(2)
     end
   end
 end

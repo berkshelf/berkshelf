@@ -53,12 +53,12 @@ describe Berkshelf::Berksfile do
     let(:default_options) { { group: [] } }
 
     it 'sends the add_dependency message with the name, constraint, and options to the instance of the includer' do
-      subject.should_receive(:add_dependency).with(name, constraint, default_options)
+      expect(subject).to receive(:add_dependency).with(name, constraint, default_options)
       subject.cookbook(name, constraint, default_options)
     end
 
     it 'merges the default options into specified options' do
-      subject.should_receive(:add_dependency)do |arg_name, arg_constraint, arg_options|
+      expect(subject).to receive(:add_dependency)do |arg_name, arg_constraint, arg_options|
         expect(arg_name).to eq(name)
         expect(arg_constraint).to eq(constraint)
         expect(arg_options[:path]).to match(%r{/Users/reset})
@@ -69,20 +69,20 @@ describe Berkshelf::Berksfile do
     end
 
     it 'converts a single specified group option into an array of groups' do
-      subject.should_receive(:add_dependency).with(name, constraint, group: [:production])
+      expect(subject).to receive(:add_dependency).with(name, constraint, group: [:production])
       subject.cookbook(name, constraint, group: :production)
     end
 
     context 'when no constraint specified' do
       it 'sends the add_dependency message with a nil value for constraint' do
-        subject.should_receive(:add_dependency).with(name, nil, default_options)
+        expect(subject).to receive(:add_dependency).with(name, nil, default_options)
         subject.cookbook(name, default_options)
       end
     end
 
     context 'when no options specified' do
       it 'sends the add_dependency message with an empty Hash for the value of options' do
-        subject.should_receive(:add_dependency).with(name, constraint, default_options)
+        expect(subject).to receive(:add_dependency).with(name, constraint, default_options)
         subject.cookbook(name, constraint)
       end
     end
@@ -93,7 +93,7 @@ describe Berkshelf::Berksfile do
     let(:group) { 'production' }
 
     it 'sends the add_dependency message with an array of groups determined by the parameter to the group block' do
-      subject.should_receive(:add_dependency).with(name, nil, group: [group])
+      expect(subject).to receive(:add_dependency).with(name, nil, group: [group])
 
       subject.group(group) do
         subject.cookbook(name)
@@ -108,7 +108,7 @@ describe Berkshelf::Berksfile do
     before { Dir.chdir(path) }
 
     it 'sends the add_dependency message with an explicit version constraint and the path to the cookbook' do
-      subject.should_receive(:add_dependency).with('example_cookbook', nil, path: path.to_s, metadata: true)
+      expect(subject).to receive(:add_dependency).with('example_cookbook', nil, path: path.to_s, metadata: true)
       subject.metadata
     end
   end
@@ -199,7 +199,7 @@ describe Berkshelf::Berksfile do
       subject.add_dependency(dependency_one.name)
       subject.add_dependency(dependency_two.name)
 
-      expect(subject.dependencies).to have(2).items
+      expect(subject.dependencies.size).to eq(2)
       expect(subject).to have_dependency(dependency_one.name)
       expect(subject).to have_dependency(dependency_two.name)
     end
@@ -214,7 +214,7 @@ describe Berkshelf::Berksfile do
     it 'retrieves the locked (cached) cookbook for each dependency' do
       subject.add_dependency('bacon', nil)
       subject.add_dependency('ham', nil)
-      subject.stub(:retrive_locked)
+      allow(subject).to receive(:retrive_locked)
 
       expect(subject).to receive(:retrieve_locked).twice
       subject.cookbooks
@@ -223,21 +223,21 @@ describe Berkshelf::Berksfile do
 
   describe '#groups' do
     before do
-      subject.stub(:dependencies) { [dependency_one, dependency_two] }
-      dependency_one.stub(:groups) { [:nautilus, :skarner] }
-      dependency_two.stub(:groups) { [:nautilus, :riven] }
+      allow(subject).to receive(:dependencies) { [dependency_one, dependency_two] }
+      allow(dependency_one).to receive(:groups) { [:nautilus, :skarner] }
+      allow(dependency_two).to receive(:groups) { [:nautilus, :riven] }
     end
 
     it 'returns a hash containing keys for every group a dependency is a member of' do
-      expect(subject.groups.keys).to have(3).items
+      expect(subject.groups.keys.size).to eq(3)
       expect(subject.groups).to have_key(:nautilus)
       expect(subject.groups).to have_key(:skarner)
       expect(subject.groups).to have_key(:riven)
     end
 
     it 'returns an Array of Berkshelf::Dependencys who are members of the group for value' do
-      expect(subject.groups[:nautilus]).to have(2).items
-      expect(subject.groups[:riven]).to have(1).item
+      expect(subject.groups[:nautilus].size).to eq(2)
+      expect(subject.groups[:riven].size).to eq(1)
     end
   end
 
@@ -253,7 +253,7 @@ describe Berkshelf::Berksfile do
     let(:dependency) { subject.dependencies.first }
 
     it 'adds new dependency to the list of dependencies' do
-      expect(subject.dependencies).to have(1).dependency
+      expect(subject.dependencies.size).to eq(1)
     end
 
     it "is a Berkshelf::Dependency" do
@@ -310,7 +310,7 @@ describe Berkshelf::Berksfile do
     let(:cached) { double('cached') }
 
     before do
-      subject.stub(:lockfile).and_return(lockfile)
+      allow(subject).to receive(:lockfile).and_return(lockfile)
     end
 
     it 'delegates to the lockfile' do
@@ -323,11 +323,11 @@ describe Berkshelf::Berksfile do
     let(:uploader) { double(Berkshelf::Uploader, run: nil) }
 
     before do
-      subject.stub(:validate_lockfile_present!)
-      subject.stub(:validate_lockfile_trusted!)
-      subject.stub(:validate_dependencies_installed!)
+      allow(subject).to receive(:validate_lockfile_present!)
+      allow(subject).to receive(:validate_lockfile_trusted!)
+      allow(subject).to receive(:validate_dependencies_installed!)
 
-      Berkshelf::Uploader.stub(:new).and_return(uploader)
+      allow(Berkshelf::Uploader).to receive(:new).and_return(uploader)
     end
 
     it 'validates the lockfile is present' do
