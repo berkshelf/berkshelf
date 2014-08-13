@@ -6,6 +6,7 @@ end
 
 Spork.prefork do
   require 'rspec'
+  require 'cleanroom/rspec'
   require 'webmock/rspec'
   require 'berkshelf/api/rspec' unless windows?
 

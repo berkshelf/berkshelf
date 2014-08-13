@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'buff-config',          '~> 1.0'
   s.add_dependency 'buff-extensions',      '~> 1.0'
   s.add_dependency 'buff-shell_out',       '~> 0.1'
+  s.add_dependency 'cleanroom',            '~> 1.0'
   s.add_dependency 'faraday',              '~> 0.9.0'
   s.add_dependency 'minitar',              '~> 0.5.4'
   s.add_dependency 'retryable',            '~> 1.3.3'

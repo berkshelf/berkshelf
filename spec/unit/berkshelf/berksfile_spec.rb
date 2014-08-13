@@ -86,6 +86,10 @@ describe Berkshelf::Berksfile do
         subject.cookbook(name, constraint)
       end
     end
+
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:cookbook)
+    end
   end
 
   describe '#group' do
@@ -99,6 +103,10 @@ describe Berkshelf::Berksfile do
         subject.cookbook(name)
       end
     end
+
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:group)
+    end
   end
 
   describe '#metadata' do
@@ -111,10 +119,18 @@ describe Berkshelf::Berksfile do
       expect(subject).to receive(:add_dependency).with('example_cookbook', nil, path: path.to_s, metadata: true)
       subject.metadata
     end
+
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:metadata)
+    end
   end
 
   describe "#source" do
     let(:new_source) { "http://berks.riotgames.com" }
+
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:source)
+    end
 
     it "adds a source to the sources" do
       subject.source(new_source)
@@ -179,11 +195,25 @@ describe Berkshelf::Berksfile do
     it "raises a Berkshelf::Deprecated error" do
       expect { subject.site }.to raise_error(Berkshelf::DeprecatedError)
     end
+
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:site)
+    end
   end
 
   describe "#chef_api" do
     it "raises a Berkshelf::Deprecated error" do
       expect { subject.chef_api }.to raise_error(Berkshelf::DeprecatedError)
+    end
+
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:chef_api)
+    end
+  end
+
+  describe '#extension' do
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:extension)
     end
   end
 

@@ -20,7 +20,7 @@ module Berkshelf
         raise BerksfileNotFound.new(file) unless File.exist?(file)
 
         begin
-          new(file, options).dsl_eval_file(file)
+          new(file, options).evaluate_file(file)
         rescue => ex
           raise BerksfileReadError.new(ex)
         end
@@ -30,16 +30,8 @@ module Berkshelf
     DEFAULT_API_URL = "https://supermarket.getchef.com".freeze
 
     include Mixin::Logging
-    include Mixin::DSLEval
+    include Cleanroom
     extend Forwardable
-
-    expose_method :source
-    expose_method :site     # @todo remove in Berkshelf 4.0
-    expose_method :chef_api # @todo remove in Berkshelf 4.0
-    expose_method :extension
-    expose_method :metadata
-    expose_method :cookbook
-    expose_method :group
 
     # @return [String]
     #   The path on disk to the file representing this instance of Berksfile
@@ -93,6 +85,7 @@ module Berkshelf
       raise LoadError, "Could not load an extension by the name `#{name}'. " \
         "Please make sure it is installed."
     end
+    expose :extension
 
     # Add a cookbook dependency to the Berksfile to be retrieved and have its dependencies recursively retrieved
     # and resolved.
@@ -144,12 +137,14 @@ module Berkshelf
 
       add_dependency(name, constraint, options)
     end
+    expose :cookbook
 
     def group(*args)
       @active_group = args
       yield
       @active_group = nil
     end
+    expose :group
 
     # Use a Cookbook metadata file to determine additional cookbook dependencies to retrieve. All
     # dependencies found in the metadata will use the default locations set in the Berksfile (if any are set)
@@ -166,6 +161,7 @@ module Berkshelf
 
       add_dependency(metadata.name, nil, path: path, metadata: true)
     end
+    expose :metadata
 
     # Add a Berkshelf API source to use when building the index of known cookbooks. The indexes will be
     # searched in the order they are added. If a cookbook is found in the first source then a cookbook
@@ -184,6 +180,7 @@ module Berkshelf
     def source(api_url)
       @sources[api_url] = Source.new(api_url)
     end
+    expose :source
 
     # @return [Array<Source>]
     def sources
@@ -217,6 +214,7 @@ module Berkshelf
         " replaced by the source location. Please remove your site location and try again. For more information " +
         " visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
+    expose :site
 
     # @todo remove in Berkshelf 4.0
     #
@@ -226,6 +224,7 @@ module Berkshelf
         " been replaced by the source location. Please remove your site location and try again. For more " +
         " information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
     end
+    expose :chef_api
 
     # Add a dependency of the given name and constraint to the array of dependencies.
     #
