@@ -1,4 +1,5 @@
 require 'buff/extensions'
+require 'cleanroom'
 require 'digest/md5'
 require 'forwardable'
 require 'json'
