@@ -61,7 +61,8 @@ module Berkshelf
 
       nodes.each do |node|
         adjacencies(node).each do |edge|
-          out << %|  "#{node}" -> "#{edge[0]}" [ fontsize = 10, label = "#{edge[1]}" ]\n|
+          version = edge[1] == ">= 0.0.0" ? "" : edge[1]
+          out << %|  "#{node}" -> "#{edge[0]}" [ fontsize = 10, label = " #{version}" ]\n|
         end
       end
 
