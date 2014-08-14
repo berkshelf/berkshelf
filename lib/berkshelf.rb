@@ -1,4 +1,5 @@
 require 'buff/extensions'
+require 'cleanroom'
 require 'digest/md5'
 require 'forwardable'
 require 'json'
@@ -21,7 +22,6 @@ module Berkshelf
   require_relative 'berkshelf/errors'
 
   module Mixin
-    autoload :DSLEval, 'berkshelf/mixin/dsl_eval'
     autoload :Git,     'berkshelf/mixin/git'
     autoload :Logging, 'berkshelf/mixin/logging'
   end
