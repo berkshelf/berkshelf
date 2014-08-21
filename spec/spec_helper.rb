@@ -8,7 +8,6 @@ Spork.prefork do
   require 'rspec'
   require 'cleanroom/rspec'
   require 'webmock/rspec'
-  require 'berkshelf'
   require 'berkshelf/api/rspec' unless windows?
 
   Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
@@ -28,9 +27,6 @@ Spork.prefork do
     config.mock_with :rspec
     config.filter_run focus: true
     config.filter_run_excluding not_supported_on_windows: windows?
-    if !Berkshelf.which 'dot'
-       config.filter_run_excluding :requires_dot => true
-    end
     config.run_all_when_everything_filtered = true
 
     config.before(:each) do

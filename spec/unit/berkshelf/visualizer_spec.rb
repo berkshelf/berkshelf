@@ -27,11 +27,14 @@ module Berkshelf
         end
       end
 
-      context 'when graphviz is installed', :requires_dot => true do
-        it 'builds a png' do
+      context 'when the graphviz command succeeds' do
+        it 'builds a png from a Lockfile' do
           outfile = tmp_path.join('test-graph.png').to_s
           lockfile = Lockfile.from_file fixtures_path.join('lockfiles/default.lock').to_s
+
           Visualizer.from_lockfile(lockfile).to_png(outfile)
+
+          expect(File.exists? outfile).to be true
         end
       end
     end
