@@ -62,7 +62,7 @@ module Berkshelf
       nodes.each do |node|
         adjacencies(node).each do |edge|
           edge.each do |name, version|
-            if version == Semverse::DEFAULT_CONSTRAINT then
+            if version == Semverse::DEFAULT_CONSTRAINT
               label = ""
             else
               label = " #{version}"

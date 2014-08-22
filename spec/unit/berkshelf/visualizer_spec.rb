@@ -30,11 +30,11 @@ module Berkshelf
       context 'when the graphviz command succeeds' do
         it 'builds a png from a Lockfile' do
           outfile = tmp_path.join('test-graph.png').to_s
-          lockfile = Lockfile.from_file fixtures_path.join('lockfiles/default.lock').to_s
+          lockfile = Lockfile.from_file(fixtures_path.join('lockfiles/default.lock').to_s)
 
           Visualizer.from_lockfile(lockfile).to_png(outfile)
 
-          expect(File.exists? outfile).to be true
+          expect(File.exists?(outfile)).to be true
         end
       end
     end
