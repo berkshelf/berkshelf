@@ -134,7 +134,7 @@ module Berkshelf
     def install
       if options[:path]
         # TODO: Remove in Berkshelf 4.0
-        Berkshelf.formatter.deprecation "`berks install --path [PATH}` has been replaced by `berks vendor`."
+        Berkshelf.formatter.deprecation "`berks install --path [PATH]` has been replaced by `berks vendor`."
         Berkshelf.formatter.deprecation "Re-run your command as `berks vendor [PATH]` or see `berks help vendor`."
         exit(1)
       end
