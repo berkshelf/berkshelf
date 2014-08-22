@@ -1,3 +1,4 @@
+require 'rspec'
 require 'spec_helper'
 
 module Berkshelf
@@ -23,6 +24,17 @@ module Berkshelf
 
         it 'raises a GraphvizCommandFailed exception' do
           expect { subject.to_png }.to raise_error(GraphvizCommandFailed)
+        end
+      end
+
+      context 'when the graphviz command succeeds' do
+        it 'builds a png from a Lockfile' do
+          outfile = tmp_path.join('test-graph.png').to_s
+          lockfile = Lockfile.from_file(fixtures_path.join('lockfiles/default.lock').to_s)
+
+          Visualizer.from_lockfile(lockfile).to_png(outfile)
+
+          expect(File.exists?(outfile)).to be true
         end
       end
     end

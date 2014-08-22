@@ -11,7 +11,7 @@ module Berkshelf
             instance.node(item.name)
 
             item.dependencies.each do |name, version|
-              instance.edge(item.name, name)
+              instance.edge(item.name, name, version)
             end
           end
         end
@@ -37,11 +37,11 @@ module Berkshelf
       nodes.each(&block)
     end
 
-    def edge(a, b)
+    def edge(a, b, version)
       node(a)
       node(b)
 
-      @nodes[a].add(b)
+      @nodes[a].add(b => version)
     end
 
     def adjacencies(object)
@@ -61,7 +61,14 @@ module Berkshelf
 
       nodes.each do |node|
         adjacencies(node).each do |edge|
-          out << %|  "#{node}" -> "#{edge}" [ fontsize = 10 ]\n|
+          edge.each do |name, version|
+            if version == Semverse::DEFAULT_CONSTRAINT
+              label = ""
+            else
+              label = " #{version}"
+            end
+            out << %|  "#{node}" -> "#{name}" [ fontsize = 10, label = "#{label}" ]\n|
+          end
         end
       end
 
