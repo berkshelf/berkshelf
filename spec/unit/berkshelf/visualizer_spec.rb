@@ -27,7 +27,7 @@ module Berkshelf
         end
       end
 
-      context 'when the graphviz command succeeds' do
+      context 'when the graphviz command succeeds', :graphviz do
         it 'builds a png from a Lockfile' do
           outfile = tmp_path.join('test-graph.png').to_s
           lockfile = Lockfile.from_file(fixtures_path.join('lockfiles/default.lock').to_s)
