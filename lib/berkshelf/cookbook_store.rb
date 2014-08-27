@@ -121,7 +121,7 @@ module Berkshelf
         msg << "of a name attribute as a bug.\n\n"
         msg << "You can remove each cookbook in #{skipped_cookbooks} from the Berkshelf shelf "
         msg << "by using the `berks shelf uninstall` command:\n\n"
-        msg << "    $ berkshelf shelf uninstall <name>"
+        msg << "    $ berks shelf uninstall <name>"
         Berkshelf.log.warn msg
       end
 
