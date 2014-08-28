@@ -92,7 +92,7 @@ module Berkshelf
         raise GraphvizNotInstalled.new
       end
 
-      command = "dot -T png #{tempfile.path} -o #{outfile}"
+      command = "dot -T png #{tempfile.path} -o '#{outfile}'"
       response = shell_out(command)
 
       unless response.success?
