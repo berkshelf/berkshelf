@@ -17,6 +17,10 @@ module Berkshelf
       type: :boolean,
       default: true
 
+    class_option :rubocop,
+      type: :boolean,
+      default: false
+
     class_option :chefignore,
       type: :boolean,
       default: true
@@ -67,6 +71,10 @@ module Berkshelf
 
       template 'Berksfile.erb', target.join('Berksfile')
       template 'Thorfile.erb', target.join('Thorfile')
+
+      if options[:rubocop]
+        copy_file 'rubocop.yml', target.join('.rubocop.yml')
+      end
 
       if options[:chefignore]
         copy_file 'chefignore', target.join(Ridley::Chef::Chefignore::FILENAME)
