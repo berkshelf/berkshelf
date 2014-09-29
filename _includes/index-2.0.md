@@ -417,9 +417,9 @@ Groups can also be defined inline as an option:
 
     cookbook 'riot_base', group: 'solo'
 
-To exclude the groups when installing or updating just add the `--without` flag.
+To exclude the groups when installing updating, or uploading just add the `-except` flag.
 
-    $ berks install --without solo
+    $ berks install --except solo
 
 ## Generating a New Cookbook
 
