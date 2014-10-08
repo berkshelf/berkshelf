@@ -9,6 +9,9 @@ module Berkshelf
           allow(Berkshelf).to receive(:which)
             .with('dot')
             .and_return(nil)
+          allow(Berkshelf).to receive(:which)
+            .with('dot.exe')
+            .and_return(nil)
         end
 
         it 'raises a GraphvizNotInstalled exception' do
