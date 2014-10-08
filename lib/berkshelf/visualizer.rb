@@ -88,7 +88,7 @@ module Berkshelf
       tempfile.write(to_dot)
       tempfile.rewind
 
-      unless Berkshelf.which('dot')
+      unless Berkshelf.which('dot') || Berkshelf.which('dot.exe')
         raise GraphvizNotInstalled.new
       end
 
