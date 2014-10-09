@@ -18,6 +18,7 @@ module Berkshelf
         else
           raise Berkshelf::UnknownCompressionType.new(target)
         end
+        FileUtils.rm_rf Dir.glob("#{destination}/**/PaxHeader")
         destination
       end
 
