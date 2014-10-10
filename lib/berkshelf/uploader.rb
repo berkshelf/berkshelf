@@ -100,7 +100,7 @@ module Berkshelf
           cookbooks[dependency] ||= lockfile.retrieve(dependency)
         end
 
-        cookbooks.values.sort
+        cookbooks.values
       end
 
       # Validate that the given cookbook does not have "bad" files. Currently
