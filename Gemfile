@@ -8,6 +8,7 @@ group :guard do
   gem 'guard-cucumber'
   gem 'guard-rspec'
   gem 'guard-spork'
+  gem 'rspec',         '<3'
 
   require 'rbconfig'
 
