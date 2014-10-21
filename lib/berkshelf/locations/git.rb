@@ -10,6 +10,7 @@ module Berkshelf
     attr_reader :ref
     attr_reader :revision
     attr_reader :rel
+    attr_reader :keep_history
 
     def initialize(dependency, options = {})
       super
@@ -20,6 +21,7 @@ module Berkshelf
       @ref      = options[:ref]
       @revision = options[:revision]
       @rel      = options[:rel]
+      @keep_history = options[:keep_history]
 
       # The revision to parse
       @rev_parse = options[:ref] || options[:branch] || options[:tag] || 'master'
@@ -70,8 +72,8 @@ module Berkshelf
       FileUtils.rm_rf(install_path) if install_path.exist?
       FileUtils.cp_r(scratch_path, install_path)
 
-      # Remove the git history
-      FileUtils.rm_rf(File.join(install_path, '.git'))
+      # Remove the git history to save disk space
+      FileUtils.rm_rf(File.join(install_path, '.git')) unless keep_history
 
       install_path.chmod(0777 & ~File.umask)
     ensure
@@ -94,7 +96,8 @@ module Berkshelf
       other.branch == branch &&
       other.tag == tag &&
       other.shortref == shortref &&
-      other.rel == rel
+      other.rel == rel &&
+      other.keep_history == keep_history
     end
 
     def to_s
@@ -114,6 +117,7 @@ module Berkshelf
       out << "    branch: #{branch}\n" if branch
       out << "    tag: #{tag}\n"       if tag
       out << "    rel: #{rel}\n"       if rel
+      out << "    keep_history: #{keep_history}\n" if keep_history
       out
     end
 
