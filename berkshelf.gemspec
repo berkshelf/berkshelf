@@ -43,8 +43,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve',                '~> 1.1'
   s.add_dependency 'thor',                 '~> 0.19'
   s.add_dependency 'octokit',              '~> 3.0'
-  s.add_dependency 'celluloid',            '~> 0.16.0.pre'
-  s.add_dependency 'celluloid-io',         '~> 0.16.0.pre'
+  s.add_dependency 'celluloid',            '~> 0.16.0'
+  s.add_dependency 'celluloid-io',         '~> 0.16.1'
 
   s.add_development_dependency 'aruba',         '~> 0.6'
   s.add_development_dependency 'chef-zero',     '~> 1.5.0'
