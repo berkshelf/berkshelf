@@ -94,8 +94,12 @@ Feature: Vendoring cookbooks to a directory
       cookbook 'fake'
       """
     And a directory named "cukebooks"
-    When I run `berks vendor cukebooks`
-    And the exit status should be "VendorError"
+    And a directory named "cukebooks/fake/ponies"
+    And a directory named "cukebooks/existing_cookbook"
+    When I successfully run `berks vendor cukebooks`
+    And the directory "cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
+    And a directory named "cukebooks/fake/ponies" should not exist
+    And a directory named "cukebooks/existing_cookbook" should not exist
 
   Scenario: vendoring into a nested directory
     Given I have a Berksfile pointing at the local Berkshelf API with:

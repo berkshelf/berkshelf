@@ -565,8 +565,8 @@ module Berkshelf
       outdir
     end
 
-    # Install the Berksfile or Berksfile.lock and then copy the cached cookbooks into
-    # directories within the given destination matching their name.
+    # Install the Berksfile or Berksfile.lock and then sync the cached cookbooks
+    # into directories within the given destination matching their name.
     #
     # @param [String] destination
     #   filepath to vendor cookbooks to
@@ -574,16 +574,6 @@ module Berkshelf
     # @return [String, nil]
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination)
-      destination = File.expand_path(destination)
-
-      if Dir.exist?(destination)
-        raise VendorError, "destination already exists #{destination}. Delete it and try again or use a " +
-          "different filepath."
-      end
-
-      # Ensure the parent directory exists, in case a nested path was given
-      FileUtils.mkdir_p(File.expand_path(File.join(destination, '..')))
-
       scratch          = Berkshelf.mktmpdir
       chefignore       = nil
       cached_cookbooks = install
@@ -592,12 +582,12 @@ module Berkshelf
 
       cached_cookbooks.each do |cookbook|
         Berkshelf.formatter.vendor(cookbook, destination)
-        cookbook_destination = File.join(scratch, cookbook.cookbook_name, '/')
+        cookbook_destination = File.join(scratch, cookbook.cookbook_name)
         FileUtils.mkdir_p(cookbook_destination)
 
         # Dir.glob does not support backslash as a File separator
         src   = cookbook.path.to_s.gsub('\\', '/')
-        files = Dir.glob(File.join(src, '*'))
+        files = FileSyncer.glob(File.join(src, '*'))
 
         chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
         chefignore.apply!(files) if chefignore
@@ -606,27 +596,26 @@ module Berkshelf
           cookbook.compile_metadata(cookbook_destination)
         end
 
-        # Don't vendor the raw metadata (metadata.rb). The raw metadata is unecessary for the
-        # client, and this is required until compiled metadata (metadata.json) takes precedence over
-        # raw metadata in the Chef-Client.
-        #
-        # We can change back to including the raw metadata in the future after this has been fixed or
-        # just remove these comments. There is no circumstance that I can currently think of where
-        # raw metadata should ever be read by the client.
-        #
-        # - Jamie
-        #
-        # See the following tickets for more information:
-        #   * https://tickets.opscode.com/browse/CHEF-4811
-        #   * https://tickets.opscode.com/browse/CHEF-4810
-        files.reject! { |file| File.basename(file) == "metadata.rb" }
-
         FileUtils.cp_r(files, cookbook_destination)
       end
 
-      FileUtils.cp(lockfile.filepath, File.join(scratch, Lockfile::DEFAULT_FILENAME))
+      # Don't vendor the raw metadata (metadata.rb). The raw metadata is
+      # unecessary for the client, and this is required until compiled metadata
+      # (metadata.json) takes precedence over raw metadata in the Chef-Client.
+      #
+      # We can change back to including the raw metadata in the future after
+      # this has been fixed or just remove these comments. There is no
+      # circumstance that I can currently think of where raw metadata should
+      # ever be read by the client.
+      #
+      # - Jamie
+      #
+      # See the following tickets for more information:
+      #
+      #   * https://tickets.opscode.com/browse/CHEF-4811
+      #   * https://tickets.opscode.com/browse/CHEF-4810
+      FileSyncer.sync(scratch, destination, exclude: ["**/*/metadata.rb"])
 
-      FileUtils.mv(scratch, destination)
       destination
     end
 
