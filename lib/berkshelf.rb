@@ -26,6 +26,7 @@ module Berkshelf
     autoload :Logging, 'berkshelf/mixin/logging'
   end
 
+  autoload :FileSyncer, 'berkshelf/file_syncer'
   autoload :Shell,      'berkshelf/shell'
   autoload :Uploader,   'berkshelf/uploader'
   autoload :Visualizer, 'berkshelf/visualizer'
