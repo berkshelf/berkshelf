@@ -59,7 +59,12 @@ module Berkshelf
         raise NotACookbook.new(path)
       end
 
-      cookbook = CachedCookbook.from_path(path)
+      begin
+        cookbook = CachedCookbook.from_path(path)
+      rescue Ridley::Errors::RidleyError => e
+        raise InternalError, "The following error occurred while reading the " \
+          "cookbook `#{dependency.name}':\n#{e.class}: #{e.message}"
+      end
 
       unless @dependency.version_constraint.satisfies?(cookbook.version)
         raise CookbookValidationFailure.new(dependency, cookbook)
