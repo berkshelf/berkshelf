@@ -31,7 +31,7 @@ describe Berkshelf::InitGenerator do
           contains 'recipe[some_cookbook::default]'
           contains ' config.omnibus.chef_version = :latest'
           contains %(config.vm.box = 'chef/ubuntu-14.04')
-          contains %(config.vm.box_url = 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box')
+          contains %(config.vm.box_url = '#https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box')
         end
         file 'chefignore'
       }
@@ -204,7 +204,7 @@ describe Berkshelf::InitGenerator do
     it "generates a Vagrantfile with the 'config.omnibus.chef_version' value set" do
       expect(target).to have_structure {
         file 'Vagrantfile' do
-          contains " config.omnibus.chef_version = \"11.4.4\""
+          contains " config.omnibus.chef_version = '11.4.4'"
         end
       }
     end
