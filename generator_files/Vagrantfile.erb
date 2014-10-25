@@ -14,15 +14,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = '<%= "#{cookbook_name.gsub('_','-')}-berkshelf" %>'
 
   # Set the version of chef to install using the vagrant-omnibus plugin
-<% if berkshelf_config.vagrant.omnibus.enabled -%>
-<% if berkshelf_config.vagrant.omnibus.version == 'latest' -%>
-  config.omnibus.chef_version = :latest
-<% else %>
-  config.omnibus.chef_version = '<%= berkshelf_config.vagrant.omnibus.version %>'
-<% end -%>
-<% else %>
-  #config.omnibus.chef_version = :latest
-<% end -%>
+  # NOTE: You will need to install the vagrant-omnibus plugin:
+  #
+  #   $ vagrant plugin install vagrant-omnibus
+  #
+  if Vagrant.has_plugin?
+    config.omnibus.chef_version = '<%= berkshelf_config.vagrant.omnibus.version %>'
+  end
 
   # Every Vagrant virtual environment requires a box to build off of.
   # If this value is a shorthand to a box in Vagrant Cloud then
