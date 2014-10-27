@@ -35,5 +35,9 @@ describe Berkshelf::Downloader do
       expect(rest).to receive(:download).with(name, version)
       subject.try_download(source, name, version)
     end
+
+    it "supports the 'file_store' location type" do
+      skip
+    end
   end
 end
