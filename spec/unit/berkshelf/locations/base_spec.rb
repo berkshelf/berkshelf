@@ -55,6 +55,15 @@ module Berkshelf
           allow(CachedCookbook).to receive(:from_path).and_return(cookbook)
         end
 
+        it 'raises an error if the metadata does not have a name attribute' do
+          allow(CachedCookbook).to receive(:from_path)
+            .and_raise(ArgumentError)
+
+          expect {
+            subject.validate_cached!(cookbook)
+          }.to raise_error(InternalError)
+        end
+
         it 'raises an error if the constraint does not satisfy' do
           allow(constraint).to receive(:satisfies?).with('0.1.0').and_return(false)
           expect {
