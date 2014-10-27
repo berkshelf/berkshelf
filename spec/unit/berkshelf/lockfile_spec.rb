@@ -4,6 +4,20 @@ describe Berkshelf::Lockfile do
   let(:filepath) { fixtures_path.join('lockfiles/default.lock').to_s }
   subject { Berkshelf::Lockfile.new(filepath: filepath) }
 
+  describe '.from_berksfile' do
+    let(:berksfile) do
+      double('Berksfile',
+        filepath: '/path/to/Bacon',
+      )
+    end
+
+    subject { described_class.from_berksfile(berksfile) }
+
+    it 'uses the basename of the Berksfile' do
+      expect(subject.filepath).to eq("/path/to/Bacon.lock")
+    end
+  end
+
   describe '.initialize' do
     subject { described_class.new(filepath: filepath) }
 

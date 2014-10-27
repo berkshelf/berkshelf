@@ -16,7 +16,10 @@ module Berkshelf
       # @param [Berkshelf::Berksfile] berksfile
       #   the Berksfile associated with the Lockfile
       def from_berksfile(berksfile)
-        filepath = File.join(File.dirname(File.expand_path(berksfile.filepath)), Lockfile::DEFAULT_FILENAME)
+        parent = File.expand_path(File.dirname(berksfile.filepath))
+        lockfile_name = "#{File.basename(berksfile.filepath)}.lock"
+
+        filepath = File.join(parent, lockfile_name)
         new(berksfile: berksfile, filepath: filepath)
       end
     end
