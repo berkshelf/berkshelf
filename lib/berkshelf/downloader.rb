@@ -133,6 +133,10 @@ module Berkshelf
         end.first
 
         (unpack_dir + cookbook_directory).to_s
+      when :file_store
+        tmp_dir = Dir.mktmpdir
+        FileUtils.cp_r(remote_cookbook.location_path, tmp_dir)
+        File.join(tmp_dir, name)
       else
         raise RuntimeError, "unknown location type #{remote_cookbook.location_type}"
       end
