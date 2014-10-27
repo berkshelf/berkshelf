@@ -100,9 +100,11 @@ module Berkshelf
           cookbooks[dependency] ||= lockfile.retrieve(dependency)
         end
 
-        # When using Chef-Guard the cookbooks need to be uploaded according
-        # to the resolved dependency order. If not using Chef-Guard they can
-        # be sorted and uploaded in alphabetical order instead.
+        # This is a temporary change and will be removed in a future release. We should
+        # add the ability to define a custom uploader which would allow the authors of Chef-Guard
+        # to define their upload strategy instead of using Ridley.
+        #
+        # See https://github.com/berkshelf/berkshelf/pull/1316 for details.
         if Berkshelf.chef_config.knife[:chef_guard] == true
           cookbooks.values
         else
