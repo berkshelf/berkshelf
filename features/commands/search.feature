@@ -10,7 +10,7 @@ Feature: berks search
     * I successfully run `berks search berkshelf-`
     * the output should contain:
       """
-      berkshelf-api (1.0.0)
+      berkshelf-api (1.2.2)
       berkshelf-api-server (2.1.0)
       berkshelf-cookbook-fixture (1.0.0)
       """

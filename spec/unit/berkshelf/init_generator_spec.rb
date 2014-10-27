@@ -25,13 +25,12 @@ describe Berkshelf::InitGenerator do
         file '.gitignore'
         file 'Berksfile'
         file 'Gemfile' do
-          contains "gem 'berkshelf'"
+          contains %(gem 'berkshelf')
         end
         file 'Vagrantfile' do
-          contains 'recipe[some_cookbook::default]'
-          contains ' config.omnibus.chef_version = :latest'
+          contains %(recipe[some_cookbook::default])
+          contains %(config.omnibus.chef_version = 'latest')
           contains %(config.vm.box = 'chef/ubuntu-14.04')
-          contains %(config.vm.box_url = 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box')
         end
         file 'chefignore'
       }
@@ -175,26 +174,8 @@ describe Berkshelf::InitGenerator do
     end
   end
 
-  context "given the 'vagrant.omnibus.enabled' option set to false" do
-    before do
-      Berkshelf::Config.instance.vagrant.omnibus.enabled = false
-      capture(:stdout) {
-        Berkshelf::InitGenerator.new([target]).invoke_all
-      }
-    end
-
-    it "generates a Vagrantfile without the 'config.omnibus.chef_version' value set" do
-      expect(target).to have_structure {
-        file 'Vagrantfile' do
-          contains "#config.omnibus.chef_version"
-        end
-      }
-    end
-  end
-
   context "given the 'vagrant.omnibus.version' option set" do
     before do
-      Berkshelf::Config.instance.vagrant.omnibus.enabled = true
       Berkshelf::Config.instance.vagrant.omnibus.version = "11.4.4"
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target]).invoke_all
@@ -204,7 +185,7 @@ describe Berkshelf::InitGenerator do
     it "generates a Vagrantfile with the 'config.omnibus.chef_version' value set" do
       expect(target).to have_structure {
         file 'Vagrantfile' do
-          contains " config.omnibus.chef_version = \"11.4.4\""
+          contains "config.omnibus.chef_version = '11.4.4'"
         end
       }
     end
@@ -212,7 +193,6 @@ describe Berkshelf::InitGenerator do
 
   context "given the 'vagrant.omnibus.version' option set to 'latest'" do
     before do
-      Berkshelf::Config.instance.vagrant.omnibus.enabled = true
       Berkshelf::Config.instance.vagrant.omnibus.version = "latest"
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target]).invoke_all
@@ -222,7 +202,7 @@ describe Berkshelf::InitGenerator do
     it "generates a Vagrantfile with the 'config.omnibus.chef_version' value set to :latest" do
       expect(target).to have_structure {
         file 'Vagrantfile' do
-          contains " config.omnibus.chef_version = :latest"
+          contains " config.omnibus.chef_version = 'latest'"
         end
       }
     end

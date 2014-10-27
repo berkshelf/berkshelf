@@ -60,7 +60,14 @@ module Berkshelf
     # @param [Hash] options
     #   @see {Buff::Config::JSON}
     def initialize(path = self.class.path, options = {})
-      super(path, options)
+      super(path, options).tap do
+        # Deprecation
+        if !self.vagrant.omnibus.enabled.nil?
+          Berkshelf.ui.warn "`vagrant.omnibus.enabled' is deprecated and " \
+            "will be removed in a future release. Please remove the " \
+            "`enabled' attribute from your Berkshelf config."
+        end
+      end
     end
 
     attribute 'chef.chef_server_url',
@@ -107,9 +114,11 @@ module Berkshelf
     attribute 'vagrant.vm.provision',
       type: String,
       default: 'chef_solo'
+    # @todo Deprecated, remove. There's a really weird tri-state here where
+    # nil is used to represent an unset value, just FYI
     attribute 'vagrant.omnibus.enabled',
       type: Buff::Boolean,
-      default: true
+      default: nil
     attribute 'vagrant.omnibus.version',
       type: String,
       default: 'latest'
