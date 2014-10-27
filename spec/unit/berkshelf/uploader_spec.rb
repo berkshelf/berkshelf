@@ -85,13 +85,16 @@ module Berkshelf
           cookbook_copyright: 'user',
           cookbook_email: 'user@example.com',
           cookbook_license: 'apachev2',
+          knife: {
+            chef_guard: false
+          }
         )
       end
 
       let(:berkshelf_config) do
         double(Config,
           ssl:  double(verify: true),
-          chef: chef_config,
+          chef: chef_config
         )
       end
 
