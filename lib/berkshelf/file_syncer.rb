@@ -87,8 +87,10 @@ module Berkshelf
         when :file
           FileUtils.cp(source_file, "#{destination}/#{relative_path}")
         else
-          raise RuntimeError,
-            "Unknown file type: `#{File.ftype(source_file)}' at `#{source_file}'!"
+          type = File.ftype(source_file)
+          raise RuntimeError, "Unknown file type: `#{type}' at " \
+            "`#{source_file}'. Failed to sync `#{source_file}' to " \
+            "`#{destination}/#{relative_path}'!"
         end
       end
 
@@ -115,19 +117,18 @@ module Berkshelf
     end
 
     private
-
-    #
-    # The relative path of the given +path+ to the +parent+.
-    #
-    # @param [String] path
-    #   the path to get relative with
-    # @param [String] parent
-    #   the parent where the path is contained (hopefully)
-    #
-    # @return [String]
-    #
-    def relative_path_for(path, parent)
-      Pathname.new(path).relative_path_from(Pathname.new(parent)).to_s
-    end
+      #
+      # The relative path of the given +path+ to the +parent+.
+      #
+      # @param [String] path
+      #   the path to get relative with
+      # @param [String] parent
+      #   the parent where the path is contained (hopefully)
+      #
+      # @return [String]
+      #
+      def relative_path_for(path, parent)
+        Pathname.new(path).relative_path_from(Pathname.new(parent)).to_s
+      end
   end
 end
