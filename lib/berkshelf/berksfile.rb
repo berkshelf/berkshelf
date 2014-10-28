@@ -619,6 +619,18 @@ module Berkshelf
       destination
     end
 
+    # Perform a validation with `Validator#validate` on each cached cookbook associated
+    # with the Lockfile of this Berksfile.
+    #
+    # This function will return true or raise the first errors encountered.
+    def verify
+      validate_lockfile_present!
+      validate_lockfile_trusted!
+      Berkshelf.formatter.msg "Verifying (#{lockfile.cached.length}) cookbook(s)..."
+      Validator.validate(lockfile.cached)
+      true
+    end
+
     # Visualize the current Berksfile as a "graph" using DOT.
     #
     # @param [String] outfile

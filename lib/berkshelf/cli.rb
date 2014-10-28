@@ -389,6 +389,16 @@ module Berkshelf
 
     method_option :berksfile,
       type: :string,
+      default: nil
+    desc "verify", "Perform a quick validation on the contents of your resolved cookbooks"
+    def verify
+      berksfile = Berksfile.from_options(options)
+      berksfile.verify
+      Berkshelf.formatter.msg "Verified."
+    end
+
+    method_option :berksfile,
+      type: :string,
       default: nil,
       desc: 'Path to a Berksfile to operate off of.',
       aliases: '-b',

@@ -39,7 +39,7 @@ module Berkshelf
     #   the Berksfile for this Lockfile
     attr_reader :berksfile
 
-    # @return [Hash]
+    # @return [Lockfile::Graph]
     #   the dependency graph
     attr_reader :graph
 
@@ -216,6 +216,11 @@ module Berkshelf
       end
     end
 
+    # @return [Array<CachedCookbook>]
+    def cached
+      graph.locks.values.collect { |dependency| dependency.cached_cookbook }
+    end
+
     # The list of dependencies constrained in this lockfile.
     #
     # @return [Array<Berkshelf::Dependency>]
@@ -258,6 +263,10 @@ module Berkshelf
     # @return [Dependency]
     def add(dependency)
       @dependencies[Dependency.name(dependency)] = dependency
+    end
+
+    def locks
+      graph.locks
     end
 
     # Retrieve information about a given cookbook that is in this lockfile.
