@@ -104,10 +104,6 @@ module Berkshelf
       type: String,
       default: 'chef/ubuntu-14.04',
       required: true
-    attribute 'vagrant.vm.box_url',
-      type: String,
-      default: 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box',
-      required: true
     attribute 'vagrant.vm.forward_port',
       type: Hash,
       default: Hash.new
