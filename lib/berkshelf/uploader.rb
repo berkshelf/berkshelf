@@ -31,7 +31,7 @@ module Berkshelf
                   end
 
       # Perform all validations first to prevent partially uploaded cookbooks
-      cookbooks.each { |cookbook| validate_files!(cookbook) }
+      Validator.validate_files(cookbooks)
 
       upload(cookbooks)
       cookbooks
@@ -110,22 +110,6 @@ module Berkshelf
         else
           cookbooks.values.sort
         end
-      end
-
-      # Validate that the given cookbook does not have "bad" files. Currently
-      # this means including spaces in filenames (such as recipes)
-      #
-      # @param [CachedCookbook] cookbook
-      #  the Cookbook to validate
-      def validate_files!(cookbook)
-        path = cookbook.path.to_s
-
-        files = Dir.glob(File.join(path, '**', '*.rb')).select do |f|
-          parent = Pathname.new(path).dirname.to_s
-          f.gsub(parent, '') =~ /[[:space:]]/
-        end
-
-        raise InvalidCookbookFiles.new(cookbook, files) unless files.empty?
       end
   end
 end

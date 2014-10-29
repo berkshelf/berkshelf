@@ -220,6 +220,7 @@ require_relative 'berkshelf/logger'
 require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/source'
 require_relative 'berkshelf/source_uri'
+require_relative 'berkshelf/validator'
 
 Ridley.logger          = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
