@@ -1,5 +1,26 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 3.2.0
+
+* Improvements
+  * Add version information to edges of generated visualization graph
+  * Bump to latest full release of Celluloid
+  * Updated some errors to include more information about what went wrong / how to make it better
+  * Lockfiles will be named after the name of the Berksfile, not always Berksfile.lock
+  * Vendoring will now sync files between two directories instead of deleting the target and it's contents
+  * Add support for downloading from Berkshelf-API file_store location
+  * Add `berks verify` command to validate Ruby syntax, ERB templates, and file names of cookbooks
+
+* Bug Fixes
+  * Fixed a number of typos and documentation errors
+  * Fix running `berks viz` when pwd has spaces in it
+  * Fix checking for graphviz on Windows
+  * Remove PaxHeader files before uploading
+  * BERKSHELF_PATH will always be fully expanded regardless of how it is configured
+
+* Deprecations
+  * vagrant.omnibus.enabled configuration option is now deprecated
+
 # 3.1.5
 
 * Bug Fixes
