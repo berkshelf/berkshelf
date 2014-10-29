@@ -67,6 +67,11 @@ module Berkshelf
             "will be removed in a future release. Please remove the " \
             "`enabled' attribute from your Berkshelf config."
         end
+        if !self.vagrant.vm.box_url.nil?
+          Berkshelf.ui.warn "`vagrant.vm.box_url' is deprecated and " \
+            "will be removed in a future release. Please remove the " \
+            "`box_url' attribute from your Berkshelf config."
+        end
       end
     end
 
@@ -104,10 +109,10 @@ module Berkshelf
       type: String,
       default: 'chef/ubuntu-14.04',
       required: true
+    # @todo Deprecated, remove?
     attribute 'vagrant.vm.box_url',
       type: String,
-      default: 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box',
-      required: true
+      default: nil
     attribute 'vagrant.vm.forward_port',
       type: Hash,
       default: Hash.new

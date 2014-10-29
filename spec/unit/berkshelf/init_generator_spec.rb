@@ -208,6 +208,23 @@ describe Berkshelf::InitGenerator do
     end
   end
 
+  context "given the 'vagrant.vm.box_url' option set" do
+    before do
+      Berkshelf::Config.instance.vagrant.vm.box_url = "https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box"
+      capture(:stdout) {
+        Berkshelf::InitGenerator.new([target]).invoke_all
+      }
+    end
+
+    it "generates a Vagrantfile with the 'config.vm.box_url' value set" do
+      expect(target).to have_structure {
+        file 'Vagrantfile' do
+          contains "config.vm.box_url = 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box'"
+        end
+      }
+    end
+  end
+
   context 'with the chef_minitest option true' do
     before(:each) do
         allow(Berkshelf::Resolver).to receive(:resolve) { resolver }
