@@ -27,12 +27,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.box_url doesn't need to be specified.
   config.vm.box = '<%= berkshelf_config.vagrant.vm.box %>'
 
+<% unless berkshelf_config.vagrant.vm.box_url.nil? -%>
   # The url from where the 'config.vm.box' box will be fetched if it
   # is not a Vagrant Cloud box and if it doesn't already exist on the
   # user's system.
-<% if berkshelf_config.vagrant.vm.box.include? '/' -%>
-  # config.vm.box_url = '<%= berkshelf_config.vagrant.vm.box_url %>'
-<% else %>
   config.vm.box_url = '<%= berkshelf_config.vagrant.vm.box_url %>'
 <% end -%>
 

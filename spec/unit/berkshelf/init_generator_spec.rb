@@ -208,9 +208,9 @@ describe Berkshelf::InitGenerator do
     end
   end
 
-  context "given the 'vagrant.vm.box' option does not use a Vagrant Cloud shorthand name" do
+  context "given the 'vagrant.vm.box_url' option set" do
     before do
-      Berkshelf::Config.instance.vagrant.vm.box = "vagrant-box-berkshelf"
+      Berkshelf::Config.instance.vagrant.vm.box_url = "https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box"
       capture(:stdout) {
         Berkshelf::InitGenerator.new([target]).invoke_all
       }
@@ -219,7 +219,7 @@ describe Berkshelf::InitGenerator do
     it "generates a Vagrantfile with the 'config.vm.box_url' value set" do
       expect(target).to have_structure {
         file 'Vagrantfile' do
-          contains "  config.vm.box_url = 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box'"
+          contains "config.vm.box_url = 'https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box'"
         end
       }
     end
