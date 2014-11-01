@@ -49,6 +49,8 @@ module Berkshelf
     #   Group(s) to include which will cause any dependencies marked as a member of the
     #   group to be installed and all others to be ignored
     def initialize(path, options = {})
+      Berkshelf.config.extensions.each(&method(:extension))
+
       @filepath         = File.expand_path(path)
       @dependencies     = Hash.new
       @sources          = Hash.new

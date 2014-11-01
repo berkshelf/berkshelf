@@ -75,6 +75,10 @@ module Berkshelf
       end
     end
 
+    attribute 'extensions',
+      type: Array,
+      default: [],
+      required: false
     attribute 'chef.chef_server_url',
       type: String,
       default: Berkshelf.chef_config.chef_server_url
