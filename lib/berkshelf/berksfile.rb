@@ -587,7 +587,10 @@ module Berkshelf
 
           # Dir.glob does not support backslash as a File separator
           src   = cookbook.path.to_s.gsub('\\', '/')
-          files = FileSyncer.glob(File.join(src, '*'))
+          # List all files and empty directories recursively
+          files = FileSyncer.glob(File.join(src, '**/*')).reject do |dir|
+            File.directory?(dir) and Dir.entries(dir) != [".", ".."]
+          end
 
           chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
           chefignore.apply!(files) if chefignore
