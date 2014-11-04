@@ -15,7 +15,10 @@ module Berkshelf
       @berksfile = berksfile
     end
 
-    # Download the given Berkshelf::Dependency.
+    # Download the given Berkshelf::Dependency. If the optional block is given,
+    # the temporary path to the cookbook is yielded and automatically deleted
+    # when the block returns. If no block is given, it is the responsibility of
+    # the caller to remove the tmpdir.
     #
     # @param [String] name
     # @param [String] version
@@ -25,12 +28,18 @@ module Berkshelf
     # @raise [CookbookNotFound]
     #
     # @return [String]
-    def download(*args)
+    def download(*args, &block)
       options = args.last.is_a?(Hash) ? args.pop : Hash.new
       dependency, version = args
 
       sources.each do |source|
         if result = try_download(source, dependency, version)
+          if block_given?
+            value = yield result
+            FileUtils.rm_rf(result)
+            return value
+          end
+
           return result
         end
       end

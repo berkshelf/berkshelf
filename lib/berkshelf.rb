@@ -8,7 +8,6 @@ require 'ridley'
 require 'semverse'
 require 'solve'
 require 'thor'
-require 'tmpdir'
 require 'uri'
 require 'celluloid'
 
@@ -103,20 +102,6 @@ module Berkshelf
       unless File.writable?(berkshelf_path)
         raise InsufficientPrivledges.new(berkshelf_path)
       end
-    end
-
-    # @return [String]
-    def tmp_dir
-      File.join(berkshelf_path, 'tmp')
-    end
-
-    # Creates a temporary directory within the Berkshelf path
-    #
-    # @return [String]
-    #   path to the created temporary directory
-    def mktmpdir
-      FileUtils.mkdir_p(tmp_dir)
-      Dir.mktmpdir(nil, tmp_dir)
     end
 
     # @return [Berkshelf::CookbookStore]

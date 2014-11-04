@@ -78,6 +78,7 @@ describe Berkshelf::CommunityREST do
     before do
       allow(subject).to receive(:stream).with(any_args()).and_return(archive)
       allow(Berkshelf::CommunityREST).to receive(:unpack)
+        .and_return('/some/path')
     end
 
     it 'unpacks the archive' do
@@ -87,7 +88,10 @@ describe Berkshelf::CommunityREST do
         headers: { 'Content-Type' => 'application/json' },
       )
 
-      expect(Berkshelf::CommunityREST).to receive(:unpack).with('/foo/bar').once.and_return('/foo/nginx')
+      expect(Berkshelf::CommunityREST).to receive(:unpack)
+        .with('/foo/bar', String)
+        .and_return('/foo/nginx')
+        .once
       expect(archive).to receive(:unlink).once
 
       subject.download('bacon', '1.0.0')
