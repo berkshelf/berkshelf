@@ -102,8 +102,9 @@ module Berkshelf
 
             Berkshelf.formatter.install(source, cookbook)
 
-            stash = downloader.download(name, version)
-            CookbookStore.import(name, version, stash)
+            downloader.download(name, version) do |stash|
+              CookbookStore.import(name, version, stash)
+            end
           end
         end
       end

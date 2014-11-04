@@ -10,7 +10,7 @@ module Berkshelf
       #   file path to extract the contents of the target to
       #
       # @return [String]
-      def unpack(target, destination = Dir.mktmpdir)
+      def unpack(target, destination)
         if is_gzip_file(target)
           Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
         elsif is_tar_file(target)
@@ -18,6 +18,7 @@ module Berkshelf
         else
           raise Berkshelf::UnknownCompressionType.new(target)
         end
+
         FileUtils.rm_rf Dir.glob("#{destination}/**/PaxHeader")
         destination
       end
@@ -100,7 +101,8 @@ module Berkshelf
     #   cookbook filepath, or nil if archive does not contain a cookbook
     def download(name, version)
       archive   = stream(find(name, version)[:file])
-      extracted = self.class.unpack(archive.path)
+      scratch = Dir.mktmpdir
+      extracted = self.class.unpack(archive.path, scratch)
 
       if File.cookbook?(extracted)
         extracted

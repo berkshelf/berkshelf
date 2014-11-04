@@ -574,47 +574,48 @@ module Berkshelf
     # @return [String, nil]
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination)
-      scratch          = Berkshelf.mktmpdir
-      chefignore       = nil
-      cached_cookbooks = install
+      Dir.mktmpdir do |scratch|
+        chefignore       = nil
+        cached_cookbooks = install
 
-      return nil if cached_cookbooks.empty?
+        return nil if cached_cookbooks.empty?
 
-      cached_cookbooks.each do |cookbook|
-        Berkshelf.formatter.vendor(cookbook, destination)
-        cookbook_destination = File.join(scratch, cookbook.cookbook_name)
-        FileUtils.mkdir_p(cookbook_destination)
+        cached_cookbooks.each do |cookbook|
+          Berkshelf.formatter.vendor(cookbook, destination)
+          cookbook_destination = File.join(scratch, cookbook.cookbook_name)
+          FileUtils.mkdir_p(cookbook_destination)
 
-        # Dir.glob does not support backslash as a File separator
-        src   = cookbook.path.to_s.gsub('\\', '/')
-        files = FileSyncer.glob(File.join(src, '*'))
+          # Dir.glob does not support backslash as a File separator
+          src   = cookbook.path.to_s.gsub('\\', '/')
+          files = FileSyncer.glob(File.join(src, '*'))
 
-        chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
-        chefignore.apply!(files) if chefignore
+          chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
+          chefignore.apply!(files) if chefignore
 
-        unless cookbook.compiled_metadata?
-          cookbook.compile_metadata(cookbook_destination)
+          unless cookbook.compiled_metadata?
+            cookbook.compile_metadata(cookbook_destination)
+          end
+
+          FileUtils.cp_r(files, cookbook_destination)
         end
 
-        FileUtils.cp_r(files, cookbook_destination)
+        # Don't vendor the raw metadata (metadata.rb). The raw metadata is
+        # unecessary for the client, and this is required until compiled metadata
+        # (metadata.json) takes precedence over raw metadata in the Chef-Client.
+        #
+        # We can change back to including the raw metadata in the future after
+        # this has been fixed or just remove these comments. There is no
+        # circumstance that I can currently think of where raw metadata should
+        # ever be read by the client.
+        #
+        # - Jamie
+        #
+        # See the following tickets for more information:
+        #
+        #   * https://tickets.opscode.com/browse/CHEF-4811
+        #   * https://tickets.opscode.com/browse/CHEF-4810
+        FileSyncer.sync(scratch, destination, exclude: ["**/*/metadata.rb"])
       end
-
-      # Don't vendor the raw metadata (metadata.rb). The raw metadata is
-      # unecessary for the client, and this is required until compiled metadata
-      # (metadata.json) takes precedence over raw metadata in the Chef-Client.
-      #
-      # We can change back to including the raw metadata in the future after
-      # this has been fixed or just remove these comments. There is no
-      # circumstance that I can currently think of where raw metadata should
-      # ever be read by the client.
-      #
-      # - Jamie
-      #
-      # See the following tickets for more information:
-      #
-      #   * https://tickets.opscode.com/browse/CHEF-4811
-      #   * https://tickets.opscode.com/browse/CHEF-4810
-      FileSyncer.sync(scratch, destination, exclude: ["**/*/metadata.rb"])
 
       destination
     end
