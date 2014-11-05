@@ -109,23 +109,3 @@ Feature: Vendoring cookbooks to a directory
     When I successfully run `berks vendor path/to/cukebooks`
     Then the directory "path/to/cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
 
-  Scenario: vendoring with a chefignore file and an excluded file in a sub directory
-    Given a cookbook named "chefignore_subdirectories"
-    And I cd to "chefignore_subdirectories"
-    And I have a Berksfile pointing at the local Berkshelf API with:
-      """
-      metadata
-      """
-    And I write to "chefignore" with:
-      """
-      *~
-      """
-    And an empty file named "test0"
-    And an empty file named "test1~"
-    And an empty file named "subdir/test2~"
-    When I successfully run `berks vendor vendor`
-    And I cd to "vendor/chefignore_subdirectories"
-    And a file named "test0" should exist
-    And a file named "test1~" should not exist
-    And a file named "subdir/test2~" should not exist
-
