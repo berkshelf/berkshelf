@@ -180,6 +180,19 @@ module Berkshelf
           expect("#{destination}/.file_g").to be_a_file
         end
 
+        it 'does not copy files and folder matching a pattern with a wildcard' do
+          described_class.sync(source, destination, exclude: '**/file_e')
+
+          expect("#{destination}/file_a").to be_a_file
+          expect("#{destination}/file_b").to be_a_file
+          expect("#{destination}/file_c").to be_a_file
+          expect("#{destination}/folder/file_d").to be_a_file
+          expect("#{destination}/folder/file_e").to_not be_a_file
+          expect("#{destination}/.dot_folder").to be_a_directory
+          expect("#{destination}/.dot_folder/file_f").to be_a_file
+          expect("#{destination}/.file_g").to be_a_file
+        end
+
         it 'removes existing files and folders in destination' do
           FileUtils.mkdir_p("#{destination}/existing_folder")
           FileUtils.touch("#{destination}/existing_file")

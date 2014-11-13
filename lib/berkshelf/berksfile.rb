@@ -614,7 +614,7 @@ module Berkshelf
         #
         #   * https://tickets.opscode.com/browse/CHEF-4811
         #   * https://tickets.opscode.com/browse/CHEF-4810
-        FileSyncer.sync(scratch, destination, exclude: ["**/*/metadata.rb"])
+        FileSyncer.sync(scratch, destination, exclude: ['**/metadata.rb'])
       end
 
       destination
