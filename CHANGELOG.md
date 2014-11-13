@@ -1,5 +1,11 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 3.2.1
+
+* Bug Fixes
+  * Fix issue with copying raw metadata when vendoring / packaging.
+  * Berkshelf should cleanup any temporary directories it creates. There is still work to be done in any of Berkshelf's dependencies.
+
 # 3.2.0
 
 * Improvements
