@@ -99,6 +99,22 @@ module Berkshelf
           expect("#{destination}/existing_file").to_not be_a_file
           expect("#{destination}/.existing_file").to_not be_a_file
         end
+
+        it 'skips existing readonly files' do
+
+          FileUtils.chmod("ugo=r", File.join(source, 'file_a'))
+          FileUtils.chmod("ugo=r", File.join(source, 'folder', 'file_d'))
+          FileUtils.chmod("ugo=r", File.join(source, '.dot_folder', 'file_f'))
+          FileUtils.chmod("ugo=r", File.join(source, '.file_g'))
+
+          described_class.sync(source, destination)
+          described_class.sync(source, destination)  # Simulates vendoring onto an existing directory
+
+          expect("#{destination}/file_a").to be_a_file
+          expect("#{destination}/folder/file_d").to be_a_file
+          expect("#{destination}/.dot_folder/file_f").to be_a_file
+          expect("#{destination}/.file_g").to be_a_file
+        end
       end
 
       context 'with deeply nested paths and symlinks' do
