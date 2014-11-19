@@ -81,6 +81,7 @@ module Berkshelf
         when :link
           target = File.readlink(source_file)
 
+          destination = File.expand_path(destination)
           Dir.chdir(destination) do
             FileUtils.ln_sf(target, "#{destination}/#{relative_path}")
           end

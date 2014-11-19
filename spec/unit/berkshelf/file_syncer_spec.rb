@@ -164,6 +164,16 @@ module Berkshelf
 
           expect("#{destination}/root").to be_a_symlink_to('/foo/bar')
         end
+
+        it 'copies relative and absolute symlinks when destination is a relative path' do
+          described_class.sync(source, "#{destination.gsub(Dir.pwd, '.')}")
+
+          expect("#{destination}/links/index.html").to be_a_symlink_to("./home.html")
+          expect("#{destination}/links/default.html").to be_a_symlink_to("./home.html")
+          expect("#{destination}/links/apt").to be_a_symlink_to("../source/bin/apt")
+          expect("#{destination}/root").to be_a_symlink_to('/foo/bar')
+        end
+
       end
 
       context 'when :exclude is given' do
