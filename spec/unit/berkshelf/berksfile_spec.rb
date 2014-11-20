@@ -382,4 +382,22 @@ describe Berkshelf::Berksfile do
       subject.upload
     end
   end
+
+  describe '#vendor' do
+    let(:cached_cookbook) { double(Berkshelf::CachedCookbook, cookbook_name: 'my_cookbook', path: '/my_cookbook/path', compiled_metadata?: true) }
+    let(:installer)       { double(Berkshelf::Installer, run: [cached_cookbook]) }
+
+    let(:destination) { '/a/destination/path' }
+    let(:excludes)    { { :exclude => ['**/metadata.rb'] + Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING } }
+
+    before do
+      allow(Berkshelf::Installer).to receive(:new).and_return(installer)
+    end
+
+    it 'invokes FileSyncer with correct arguments' do
+      expect(Berkshelf::FileSyncer).to receive(:sync).with(/tmp/, destination, excludes)
+
+      subject.vendor(destination)
+    end
+  end
 end

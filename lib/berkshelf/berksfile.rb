@@ -29,6 +29,10 @@ module Berkshelf
 
     DEFAULT_API_URL = "https://supermarket.getchef.com".freeze
 
+    # Don't vendor VCS files.
+    # Reference GNU tar --exclude-vcs: https://www.gnu.org/software/tar/manual/html_section/tar_49.html
+    EXCLUDED_VCS_FILES_WHEN_VENDORING = ['.arch-ids', '{arch}', '.bzr', '.bzrignore', '.bzrtags', 'CVS', '.cvsignore', '_darcs', '.git', '.hg', '.hgignore', '.hgrags', 'RCS', 'SCCS', '.svn']
+
     include Mixin::Logging
     include Cleanroom
     extend Forwardable
@@ -614,7 +618,7 @@ module Berkshelf
         #
         #   * https://tickets.opscode.com/browse/CHEF-4811
         #   * https://tickets.opscode.com/browse/CHEF-4810
-        FileSyncer.sync(scratch, destination, exclude: ['**/metadata.rb'])
+        FileSyncer.sync(scratch, destination, exclude: ['**/metadata.rb'] + EXCLUDED_VCS_FILES_WHEN_VENDORING)
       end
 
       destination
