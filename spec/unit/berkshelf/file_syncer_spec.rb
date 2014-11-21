@@ -56,6 +56,45 @@ module Berkshelf
         FileUtils.touch(File.join(source, '.dot_folder', 'file_f'))
 
         FileUtils.touch(File.join(source, '.file_g'))
+
+        # VCS files: Arch
+        FileUtils.mkdir_p(File.join(source, '.arch-ids'))
+        FileUtils.mkdir_p(File.join(source, '{arch}'))
+
+        # VCS files: Bazaar
+        FileUtils.touch(File.join(source, '.bzr'))
+        FileUtils.touch(File.join(source, '.bzrignore'))
+        FileUtils.touch(File.join(source, '.bzrtags'))
+
+        # VCS files: CVS
+        FileUtils.mkdir_p(File.join(source, 'CVS'))
+        FileUtils.touch(File.join(source, '.cvsignore'))
+
+        # VCS files: Darcs
+        FileUtils.touch(File.join(source, '_darcs'))
+
+        # VCS files: git
+        FileUtils.mkdir_p(File.join(source, '.git', 'objects', '08'))
+        FileUtils.touch(File.join(source, '.git', 'HEAD'))
+        git_readonly_file = File.join(source, '.git', 'objects', '08', '01ddba0b1237b2e0e602cf5fdb6544561950cb')
+        FileUtils.touch(File.join(git_readonly_file))
+        FileUtils.chmod("ugo=r", git_readonly_file)
+        FileUtils.touch(File.join(source, '.gitignore'))
+
+        # VCS files: Mercurial
+        FileUtils.touch(File.join(source, '.hg'))
+        FileUtils.touch(File.join(source, '.hgignore'))
+        FileUtils.touch(File.join(source, '.hgrags'))
+
+        # VCS files: RCS
+        FileUtils.mkdir_p(File.join(source, 'RCS'))
+
+        # VCS files: SCCS
+        FileUtils.mkdir_p(File.join(source, 'SCCS'))
+
+        # VCS files: Subversion
+        FileUtils.mkdir_p(File.join(source, '.svn'))
+
         source
       end
 
@@ -98,6 +137,46 @@ module Berkshelf
           expect("#{destination}/.existing_folder").to_not be_a_directory
           expect("#{destination}/existing_file").to_not be_a_file
           expect("#{destination}/.existing_file").to_not be_a_file
+        end
+
+        it 'skips excluded VCS files' do
+          described_class.sync(source, destination, exclude: Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING)
+
+          # VCS files: Arch
+          expect("#{destination}/.arch-ids").to_not be_a_directory
+          expect("#{destination}/{arch}").to_not be_a_directory
+
+          # VCS files: Bazaar
+          expect("#{destination}/.bzr").to_not be_a_file
+          expect("#{destination}/.bzrignore").to_not be_a_file
+          expect("#{destination}/.bzrtags").to_not be_a_file
+
+          # VCS files: CVS
+          expect("#{destination}/CVS").to_not be_a_directory
+          expect("#{destination}/.cvsignore").to_not be_a_file
+
+          # VCS files: Darcs
+          expect("#{destination}/_darcs").to_not be_a_file
+
+          # VCS files: git
+          expect("#{destination}/.git/objects/08/01ddba0b1237b2e0e602cf5fdb6544561950cb").to_not be_a_file
+          expect("#{destination}/.git/HEAD").to_not be_a_file
+          expect("#{destination}/.git").to_not be_a_directory
+
+          # VCS files: Mercurial
+          expect("#{destination}/.hg").to_not be_a_file
+          expect("#{destination}/.hgignore").to_not be_a_file
+          expect("#{destination}/.hgrags").to_not be_a_file
+
+          # VCS files: RCS
+          expect("#{destination}/RCS").to_not be_a_directory
+
+          # VCS files: SCCS
+          expect("#{destination}/SCCS").to_not be_a_directory
+
+          # VCS files: Subversion
+          expect("#{destination}/.svn").to_not be_a_directory
+
         end
       end
 
@@ -164,6 +243,16 @@ module Berkshelf
 
           expect("#{destination}/root").to be_a_symlink_to('/foo/bar')
         end
+
+        it 'copies relative and absolute symlinks when destination is a relative path' do
+          described_class.sync(source, "#{destination.gsub(Dir.pwd, '.')}")
+
+          expect("#{destination}/links/index.html").to be_a_symlink_to("./home.html")
+          expect("#{destination}/links/default.html").to be_a_symlink_to("./home.html")
+          expect("#{destination}/links/apt").to be_a_symlink_to("../source/bin/apt")
+          expect("#{destination}/root").to be_a_symlink_to('/foo/bar')
+        end
+
       end
 
       context 'when :exclude is given' do
