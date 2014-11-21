@@ -86,7 +86,7 @@ module Berkshelf
             FileUtils.ln_sf(target, "#{destination}/#{relative_path}")
           end
         when :file
-          FileUtils.cp(source_file, "#{destination}/#{relative_path}") if ! File.exists?("#{destination}/#{relative_path}") || File.writable?("#{destination}/#{relative_path}")
+          FileUtils.cp(source_file, "#{destination}/#{relative_path}")
         else
           type = File.ftype(source_file)
           raise RuntimeError, "Unknown file type: `#{type}' at " \
