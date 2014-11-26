@@ -603,7 +603,8 @@ module Berkshelf
           FileUtils.cp_r(files, cookbook_destination)
         end
 
-        # Don't vendor the raw metadata (metadata.rb). The raw metadata is
+        # 1. Don't vendor the raw metadata (metadata.rb). 
+        # The raw metadata is
         # unecessary for the client, and this is required until compiled metadata
         # (metadata.json) takes precedence over raw metadata in the Chef-Client.
         #
@@ -618,7 +619,15 @@ module Berkshelf
         #
         #   * https://tickets.opscode.com/browse/CHEF-4811
         #   * https://tickets.opscode.com/browse/CHEF-4810
-        FileSyncer.sync(scratch, destination, exclude: ['**/metadata.rb'] + EXCLUDED_VCS_FILES_WHEN_VENDORING)
+        # 
+        # 2. Don't vendor .git directory
+        # .git directory content is unecessary for the client, and reported to cause 
+        # vagrant-berkshelf error.
+        #
+        #  See the following tickets for more information:
+        #
+        #  * https://github.com/berkshelf/vagrant-berkshelf/issues/237
+        FileSyncer.sync(scratch, destination, exclude: ['**/metadata.rb', '.git'] + EXCLUDED_VCS_FILES_WHEN_VENDORING)
       end
 
       destination
