@@ -4,6 +4,11 @@ def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
+# OSX
+def darwin?
+  !!(RUBY_PLATFORM =~ /darwin/)
+end
+
 Spork.prefork do
   require 'rspec'
   require 'cleanroom/rspec'

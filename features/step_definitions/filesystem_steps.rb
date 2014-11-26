@@ -269,3 +269,11 @@ Then(/^the directory "(.*?)" should contain version "(.*?)" of the "(.*?)" cookb
   expect(cookbook.version).to eq(version)
   expect(cookbook.cookbook_name).to eq(name)
 end
+
+Given(/^the cookbook store cookbook "(.*?)" "(.*?)" is vendored$/) do |name, version|
+  cookbook_path = File.join(cookbook_store.storage_path, "#{name}-#{version}")
+  cookbook = Berkshelf::CachedCookbook.from_path(cookbook_path)
+  cookbook.compile_metadata()
+  metadata_file = File.join(cookbook_path, "metadata.rb")
+  File.unlink(metadata_file) if File.file?(metadata_file)
+end
