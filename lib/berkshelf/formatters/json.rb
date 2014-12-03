@@ -89,7 +89,7 @@ module Berkshelf
     #
     # @param [Hash] hash
     #   the list of outdated cookbooks in the format
-    #   { 'cookbook' => { 'supermarket.getchef.com' => #<Cookbook> } }
+    #   { 'cookbook' => { 'supermarket.chef.io' => #<Cookbook> } }
     def outdated(hash)
       hash.each do |name, info|
         info['remote'].each do |remote_source, remote_version|

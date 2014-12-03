@@ -71,7 +71,7 @@ describe Berkshelf::CookbookGenerator do
           contains "description      'Installs/Configures sparkle_motion'"
         end
         file 'Berksfile' do
-          contains 'source "https://supermarket.getchef.com"'
+          contains 'source "https://supermarket.chef.io"'
           contains 'metadata'
         end
         file 'Gemfile'

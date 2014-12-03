@@ -57,7 +57,7 @@ module Berkshelf
     #
     # @param [Hash] hash
     #   the list of outdated cookbooks in the format
-    #   { 'cookbook' => { 'supermarket.getchef.com' => #<Cookbook> } }
+    #   { 'cookbook' => { 'supermarket.chef.io' => #<Cookbook> } }
     def outdated(hash)
       if hash.empty?
         Berkshelf.ui.info('All cookbooks up to date!')

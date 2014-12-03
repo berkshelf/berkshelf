@@ -2,7 +2,7 @@ Feature: Evaluating a Berksfile
   Scenario: Containing pure Ruby
     Given I write to "Berksfile" with:
       """
-      source 'https://supermarket.getchef.com'
+      source 'https://supermarket.chef.io'
 
       if ENV['BACON']
         puts "If you don't got bacon..."
