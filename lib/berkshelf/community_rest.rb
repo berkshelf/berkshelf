@@ -50,7 +50,7 @@ module Berkshelf
         end
     end
 
-    V1_API = 'https://supermarket.getchef.com'.freeze
+    V1_API = 'https://supermarket.chef.io'.freeze
 
     # @return [String]
     attr_reader :api_uri

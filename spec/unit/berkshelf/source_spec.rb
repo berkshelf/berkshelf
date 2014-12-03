@@ -29,7 +29,7 @@ module Berkshelf
       end
 
       it 'returns true when the scheme is different' do
-        instance = described_class.new('http://supermarket.getchef.com')
+        instance = described_class.new('http://supermarket.chef.io')
         expect(instance).to be_default
       end
 

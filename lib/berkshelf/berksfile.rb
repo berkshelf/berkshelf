@@ -27,7 +27,7 @@ module Berkshelf
       end
     end
 
-    DEFAULT_API_URL = "https://supermarket.getchef.com".freeze
+    DEFAULT_API_URL = "https://supermarket.chef.io".freeze
 
     include Mixin::Logging
     include Cleanroom
@@ -168,7 +168,7 @@ module Berkshelf
     # in a second source would not be used.
     #
     # @example
-    #   source "https://supermarket.getchef.com"
+    #   source "https://supermarket.chef.io"
     #   source "https://berks-api.riotgames.com"
     #
     # @param [String] api_url
@@ -204,7 +204,7 @@ module Berkshelf
       if args.first == :opscode
         Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
           "Site (site :opscode). Site locations have been replaced by the source location. Change this to: " +
-          "'source \"https://supermarket.getchef.com\"' to remove this warning. For more information visit " +
+          "'source \"https://supermarket.chef.io\"' to remove this warning. For more information visit " +
           "https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
         source(DEFAULT_API_URL)
         return
@@ -444,7 +444,7 @@ module Berkshelf
     #     "nginx" => {
     #       "local" => #<Version 1.8.0>,
     #       "remote" => {
-    #         #<Source uri: "https://supermarket.getchef.com"> #=> #<Version 2.6.2>
+    #         #<Source uri: "https://supermarket.chef.io"> #=> #<Version 2.6.2>
     #       }
     #     }
     #   }

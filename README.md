@@ -9,7 +9,7 @@ Manage a Cookbook or an Application's Cookbook dependencies
 
 ## Installation
 
-Berkshelf is now included as part of the [Chef-DK](http://getchef.com/downloads/chef-dk). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
+Berkshelf is now included as part of the [Chef-DK](http://chef.io/downloads/chef-dk). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
 
 > note: You may need to uninstall the Berkshelf gem especially if you are using a Ruby version manager you may need to uninstall all Berkshelf gems from each Ruby installation.
 
