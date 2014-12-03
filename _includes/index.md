@@ -1,6 +1,6 @@
 ## Getting Started
 
-Berkshelf is now included as part of the [Chef-DK](http://getchef.com/downloads/chef-dk). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
+Berkshelf is now included as part of the [Chef-DK](http://chef.io/downloads/chef-dk). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
 
 Ensure that the Chef-DK is added to *the front* of your path
 
@@ -17,7 +17,7 @@ Or create a new cookbook
 
 And specify your dependencies in a Berksfile in your cookbook's root
 
-    source "https://supermarket.getchef.com"
+    source "https://supermarket.chef.io"
 
     metadata
 
@@ -168,7 +168,7 @@ Cookbooks will automatically be uploaded to the Chef Server you have configured 
 
 Dependencies are managed via the file `Berksfile`. The Berksfile is like Bundler's Gemfile. Entries in the Berksfile are known as sources. It contains a list of sources identifying what Cookbooks to retrieve and where to get them.
 
-    source "https://supermarket.getchef.com"
+    source "https://supermarket.chef.io"
 
     metadata
 
@@ -225,7 +225,7 @@ Options passed to a source can contain a location or a group(s).
 By default the location of a cookbook is assumed to come from one of the api sources that you have configured. For example
 
     source "https://berks-api.vialstudios.com"
-    source "https://supermarket.getchef.com"
+    source "https://supermarket.chef.io"
 
 If a cookbook which satisfies all demands is found in `berks-api.vialstudios.com` then it will be retrieved and used in resolution. If it is not, then any subsequent defined sources will be used. If no sources can satisfy the demand a no solution error will be returned.
 
