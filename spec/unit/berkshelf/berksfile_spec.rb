@@ -396,9 +396,14 @@ describe Berkshelf::Berksfile do
     end
 
     it 'invokes FileSyncer with correct arguments' do
-      expect(Berkshelf::FileSyncer).to receive(:sync).with(/tmp/, destination, excludes)
+      expect(Berkshelf::FileSyncer).to receive(:sync).with(/vendor/, destination, excludes)
 
       subject.vendor(destination)
+    end
+
+    it 'excludes the top-level metadata.rb file' do
+      expect(excludes[:exclude].any? { |exclude| File.fnmatch?(exclude, 'my_cookbook/recipes/metadata.rb', File::FNM_DOTMATCH) }).to be(false)
+      expect(excludes[:exclude].any? { |exclude| File.fnmatch?(exclude, 'my_cookbook/metadata.rb', File::FNM_DOTMATCH) }).to be(true)
     end
   end
 end

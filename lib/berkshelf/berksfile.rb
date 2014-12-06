@@ -578,7 +578,7 @@ module Berkshelf
     # @return [String, nil]
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination)
-      Dir.mktmpdir do |scratch|
+      Dir.mktmpdir('vendor') do |scratch|
         chefignore       = nil
         cached_cookbooks = install
         raw_metadata_files = []
