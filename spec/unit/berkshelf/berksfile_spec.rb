@@ -384,11 +384,12 @@ describe Berkshelf::Berksfile do
   end
 
   describe '#vendor' do
-    let(:cached_cookbook) { double(Berkshelf::CachedCookbook, cookbook_name: 'my_cookbook', path: '/my_cookbook/path', compiled_metadata?: true) }
-    let(:installer)       { double(Berkshelf::Installer, run: [cached_cookbook]) }
+    let(:cached_cookbook)    { double(Berkshelf::CachedCookbook, cookbook_name: 'my_cookbook', path: '/my_cookbook/path', compiled_metadata?: true) }
+    let(:installer)          { double(Berkshelf::Installer, run: [cached_cookbook]) }
+    let(:raw_metadata_files) { [File::join(cached_cookbook.cookbook_name, 'metadata.rb')] }
 
     let(:destination) { '/a/destination/path' }
-    let(:excludes)    { { :exclude => ['**/metadata.rb'] + Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING } }
+    let(:excludes)    { { :exclude => raw_metadata_files + Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING } }
 
     before do
       allow(Berkshelf::Installer).to receive(:new).and_return(installer)
