@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   #   $ vagrant plugin install vagrant-omnibus
   #
-  if Vagrant.has_plugin?
+  if Vagrant.has_plugin?("vagrant-omnibus")
     config.omnibus.chef_version = '<%= berkshelf_config.vagrant.omnibus.version %>'
   end
 
