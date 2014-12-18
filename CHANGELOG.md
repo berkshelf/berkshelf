@@ -1,5 +1,15 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 3.2.2
+
+* Enhancements
+  * Use chef.io hostname in urls instead of getchef
+
+* Bug Fixes
+  * Fix syntax issue in generated Vagrantfile
+  * Only exclude the top level metadata.rb file when vendoring cookbooks rather than all files named metadata.rb
+  * Relative paths can now be passed to berks vendor
+
 # 3.2.1
 
 * Bug Fixes
