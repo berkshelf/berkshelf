@@ -15,6 +15,7 @@ module Berkshelf
   class InternalError < BerkshelfError; set_status_code(99); end
   class ArgumentError < InternalError; end
   class AbstractFunction < InternalError; end
+  class ConfigurationError < InternalError; end
 
   class BerksfileNotFound < BerkshelfError
     set_status_code(100)
