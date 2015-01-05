@@ -29,6 +29,8 @@ module Berkshelf
     def to_s
       "No Berksfile or Berksfile.lock found at '#{@filepath}'!"
     end
+
+    alias_method :message, :to_s
   end
 
   class CookbookNotFound < BerkshelfError
@@ -47,6 +49,8 @@ module Berkshelf
         "Cookbook '#{@name}' not found #{@location}!"
       end
     end
+
+    alias_method :message, :to_s
   end
 
   class DuplicateDependencyDefined < BerkshelfError
@@ -62,6 +66,8 @@ module Berkshelf
       out << "different groups."
       out
     end
+
+    alias_method :message, :to_s
   end
 
   class NoSolutionError < BerkshelfError
@@ -79,6 +85,8 @@ module Berkshelf
       @original_exception.to_s +
       "Unable to find a solution for demands: #{demands.join(', ')}"
     end
+
+    alias_method :message, :to_s
   end
 
   class CookbookSyntaxError < BerkshelfError; set_status_code(107); end
@@ -109,6 +117,8 @@ module Berkshelf
         "  #{@error_message}",
       ].join("\n")
     end
+
+    alias_method :message, :to_s
   end
 
   class MismatchedCookbookName < BerkshelfError
@@ -137,6 +147,8 @@ module Berkshelf
       out << "is often a cause of confusion for dependency solving."
       out
     end
+
+    alias_method :message, :to_s
   end
 
   class InvalidConfiguration < BerkshelfError
@@ -156,6 +168,8 @@ module Berkshelf
 
       out.strip
     end
+
+    alias_method :message, :to_s
   end
 
   class InsufficientPrivledges < BerkshelfError
@@ -170,6 +184,8 @@ module Berkshelf
       "path to the current user, chmod the permissions to include the " \
       "user, or choose a different path."
     end
+
+    alias_method :message, :to_s
   end
 
   class DependencyNotFound < BerkshelfError
@@ -198,6 +214,8 @@ module Berkshelf
         out
       end
     end
+
+    alias_method :message, :to_s
   end
 
   class CommunitySiteError < BerkshelfError
@@ -212,6 +230,8 @@ module Berkshelf
       "An unexpected error occurred retrieving #{@message} from the cookbook " \
       "site at '#{@api_uri}'."
     end
+
+    alias_method :message, :to_s
   end
 
   class CookbookValidationFailure < BerkshelfError
@@ -229,6 +249,8 @@ module Berkshelf
     def to_s
       "The cookbook downloaded for #{@dependency} did not satisfy the constraint."
     end
+
+    alias_method :message, :to_s
   end
 
   class UploadFailure < BerkshelfError; end
@@ -245,6 +267,8 @@ module Berkshelf
       "already exists and is frozen on the Chef Server. Use the --force " \
       "option to override."
     end
+
+    alias_method :message, :to_s
   end
 
   class OutdatedDependency < BerkshelfError
@@ -268,6 +292,8 @@ module Berkshelf
       "Try running `berks update #{@dependency.name}`, which will try to find '#{@dependency.name}' matching " +
         "'#{@dependency.version_constraint}'."
     end
+
+    alias_method :message, :to_s
   end
 
   class EnvironmentNotFound < BerkshelfError
@@ -280,6 +306,8 @@ module Berkshelf
     def to_s
       "The environment '#{@environment_name}' does not exist"
     end
+
+    alias_method :message, :to_s
   end
 
   class ChefConnectionError < BerkshelfError
@@ -300,6 +328,8 @@ module Berkshelf
     def to_s
       "The file at '#{@destination}' is not a known compression type"
     end
+
+    alias_method :message, :to_s
   end
 
   # Raised when a cookbook or its recipes contain a space or invalid
@@ -326,6 +356,8 @@ module Berkshelf
         "Please note, spaces are not a valid character in filenames",
       ].join("\n")
     end
+
+    alias_method :message, :to_s
   end
 
   class LicenseNotFound < BerkshelfError
@@ -341,6 +373,8 @@ module Berkshelf
       "Unknown license: '#{license}'\n" +
       "Available licenses: #{CookbookGenerator::LICENSES.join(', ')}"
     end
+
+    alias_method :message, :to_s
   end
 
   # Raised when a cookbook or its recipes contain a space or invalid
@@ -360,6 +394,8 @@ module Berkshelf
     def to_s
       "No #{@type.capitalize} config file found at: '#{@path}'!"
     end
+
+    alias_method :message, :to_s
   end
 
   class LockfileParserError < BerkshelfError
@@ -377,6 +413,8 @@ module Berkshelf
       "Error reading the Berkshelf lockfile:\n\n" \
       "  #{@original.class}: #{@original.message}"
     end
+
+    alias_method :message, :to_s
   end
 
   class InvalidSourceURI < BerkshelfError
@@ -392,6 +430,8 @@ module Berkshelf
       msg << " #{@reason}." unless @reason.nil?
       msg
     end
+
+    alias_method :message, :to_s
   end
 
   class DuplicateDemand < BerkshelfError; set_status_code(138); end
@@ -416,6 +456,8 @@ module Berkshelf
       "The resource at '#{@path}' does not appear to be a valid cookbook. " \
       "Does it have a metadata.rb?"
     end
+
+    alias_method :message, :to_s
   end
 
   class PackageError < BerkshelfError; set_status_code(143); end
@@ -440,6 +482,8 @@ module Berkshelf
       "The cookbook '#{@name} (#{@version})' is not installed. Please run " \
       "`berks install` to download and install the missing dependency."
     end
+
+    alias_method :message, :to_s
   end
 
   class NoAPISourcesDefined < BerkshelfError
@@ -478,6 +522,8 @@ module Berkshelf
       "The Graphviz command `#{@command}` failed to execute properly. Here " \
       "is the standard error from the command:\n\n#{@output}"
     end
+
+    alias_method :message, :to_s
   end
 
   class MissingLockfileCookbookVersion < CookbookNotFound
