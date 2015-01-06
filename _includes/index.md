@@ -36,7 +36,7 @@ If at anytime you are stuck or if you're just curious about what Berkshelf can d
 
 You can get more detailed information about a command, or a sub command, but asking it for help
 
-    $ berks install help
+    $ berks help install
 
     Usage:
       berks install
