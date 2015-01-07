@@ -161,7 +161,7 @@ module Berkshelf
     def metadata(options = {})
       path = options[:path] || File.dirname(filepath)
       metadata = nil
-      ['metadata.json', 'metadata.rb'].each do |metadata_file|
+      ['metadata.rb', 'metadata.json'].each do |metadata_file|
         metadata_path = File.expand_path(File.join(path, metadata_file))
         if File.file?(metadata_path)
           if metadata_path.end_with?('.json')
