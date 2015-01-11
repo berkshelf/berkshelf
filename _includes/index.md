@@ -84,7 +84,7 @@ A single archive containing all of your required cookbooks can be created with t
     $ berks package
     Cookbook(s) packaged to /Users/reset/code/berkshelf-api/cookbook/cookbooks-1397512169.tar.gz
 
-This archive an be given directly to Chef-Solo or extracted and uploaded to a Chef Server.
+This archive can be given directly to Chef-Solo or extracted and uploaded to a Chef Server.
 
 ### Vendoring Cookbooks
 
