@@ -182,7 +182,7 @@ module Berkshelf
       local = Tempfile.new('community-rest-stream')
       local.binmode
 
-      retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
+      Retryable.retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
         open(target, 'rb', open_uri_options) do |remote|
           local.write(remote.read)
         end
