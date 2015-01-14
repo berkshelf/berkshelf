@@ -1,5 +1,10 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 3.2.3
+
+* Bug Fixes
+  * Specifying the --skip-syntax-check flag to upload will once again cause validations to be skipped
+
 # 3.2.2
 
 * Enhancements
