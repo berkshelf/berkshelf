@@ -8,13 +8,14 @@ module Berkshelf
     def initialize(berksfile, *args)
       @berksfile = berksfile
       @lockfile  = berksfile.lockfile
+      opts       = args.last.respond_to?(:to_hash) ? args.pop.to_hash.symbolize_keys : {}
 
       @options = {
         force:          false,
         freeze:         true,
         halt_on_frozen: false,
         validate:       true,
-      }.merge(args.last.is_a?(Hash) ? args.pop : {})
+      }.merge(opts)
 
       @names = Array(args).flatten
     end
