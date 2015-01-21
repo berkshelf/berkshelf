@@ -6,7 +6,7 @@ Ensure that the Chef-DK is added to *the front* of your path
 
     $ PATH=$HOME/.chefdk/gem/ruby/2.1.0/bin:/opt/chefdk/bin:$PATH
 
-Generate a Berksfile in a pre-exisitng cookbook
+Generate a Berksfile in a pre-existing cookbook
 
     $ cd my-cookbook
     $ berks init .
@@ -269,7 +269,7 @@ An optional `rel` key can be specified if your repository contains many cookbook
 
     cookbook "rightscale", git: "https://github.com/rightscale/rightscale_cookbooks.git", rel: "cookbooks/rightscale"
 
-This will fetch the cookbook `rightscale` from the speficied Git location from under the `cookbooks` sub-directory.
+This will fetch the cookbook `rightscale` from the specified Git location from under the `cookbooks` sub-directory.
 
 ##### GitHub Location
 
