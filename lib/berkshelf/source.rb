@@ -53,7 +53,7 @@ module Berkshelf
       universe
         .select { |cookbook| cookbook.name =~ Regexp.new(name) }
         .group_by(&:name)
-        .collect { |name, versions| versions.max_by(&:version) }
+        .collect { |name, versions| versions.max_by { |v| Semverse::Version.new(v.version) } }
     end
 
     # Determine if this source is a "default" source, as defined in the
