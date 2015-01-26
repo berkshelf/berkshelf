@@ -38,5 +38,21 @@ module Berkshelf
         expect(instance).to_not be_default
       end
     end
+
+    describe "#search" do
+      let (:cookbooks) {[ 
+        APIClient::RemoteCookbook.new("cb1","1.0.8"),
+        APIClient::RemoteCookbook.new("cb1","1.0.22")
+      ]}
+
+      before do
+        allow_any_instance_of(APIClient::Connection).to receive(:universe).and_return(cookbooks)
+      end
+
+      it "returns the latest version" do
+        instance = described_class.new(Berksfile::DEFAULT_API_URL)
+        expect(instance.search("cb1")).to eq [cookbooks[1]]
+      end
+    end
   end
 end
