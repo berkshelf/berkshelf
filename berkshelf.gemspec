@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'buff-shell_out',       '~> 0.1'
   s.add_dependency 'cleanroom',            '~> 1.0'
   s.add_dependency 'faraday',              '~> 0.9.0'
-  s.add_dependency 'httpclient',           '~> 2.5.3'
+  s.add_dependency 'httpclient',           '~> 2.6.0'
   s.add_dependency 'minitar',              '~> 0.5.4'
   s.add_dependency 'retryable',            '~> 2.0'
   s.add_dependency 'ridley',               '~> 4.0'
