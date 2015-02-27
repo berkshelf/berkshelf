@@ -31,5 +31,5 @@ group :guard do
 end
 
 group :test do
-  gem "berkshelf-api", github: "berkshelf/berkshelf-api"
+  gem "berkshelf-api", git: "https://github.com/berkshelf/berkshelf-api.git"
 end
