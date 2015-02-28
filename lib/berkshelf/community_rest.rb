@@ -69,7 +69,7 @@ module Berkshelf
     # @option options [Float] :retry_interval (0.5)
     #   how often we should pause between retries
     def initialize(uri = V1_API, options = {})
-      options         = options.reverse_merge(retries: 5, retry_interval: 0.5)
+      options         = options.reverse_merge(retries: 5, retry_interval: 0.5, ssl: { verify: Berkshelf::Config.instance.ssl.verify })
       @api_uri        = uri
       @retries        = options.delete(:retries)
       @retry_interval = options.delete(:retry_interval)
@@ -199,6 +199,7 @@ module Berkshelf
         options = {}
         options.merge!(headers)
         options.merge!(open_uri_proxy_options)
+		options.merge!({ ssl_verify_mode: (Berkshelf::Config.instance.ssl.verify.nil? || Berkshelf::Config.instance.ssl.verify) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE) })
       end
 
       def open_uri_proxy_options
