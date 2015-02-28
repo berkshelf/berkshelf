@@ -199,7 +199,7 @@ module Berkshelf
         options = {}
         options.merge!(headers)
         options.merge!(open_uri_proxy_options)
-		options.merge!({ ssl_verify_mode: (Berkshelf::Config.instance.ssl.verify.nil? || Berkshelf::Config.instance.ssl.verify) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE) })
+		options.merge!({ ssl_verify_mode: (Berkshelf::Config.instance.ssl.verify.nil? || Berkshelf::Config.instance.ssl.verify) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE })
       end
 
       def open_uri_proxy_options
