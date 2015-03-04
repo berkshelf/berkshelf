@@ -75,7 +75,7 @@ module Berkshelf
         Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
         Ridley.open(credentials) { |r| r.cookbook.download(name, version) }
       when :github
-        require 'octokit' unless defined?(Octokit)
+        Thread.exclusive { require 'octokit' unless defined?(Octokit) }
 
         tmp_dir      = Dir.mktmpdir
         archive_path = File.join(tmp_dir, "#{name}-#{version}.tar.gz")
@@ -119,7 +119,7 @@ module Berkshelf
 
         File.join(unpack_dir, cookbook_directory)
       when :uri
-        require 'open-uri' unless defined?(OpenURI)
+        Thread.exclusive { require 'open-uri' unless defined?(OpenURI) }
 
         tmp_dir      = Dir.mktmpdir
         archive_path = Pathname.new(tmp_dir) + "#{name}-#{version}.tar.gz"
