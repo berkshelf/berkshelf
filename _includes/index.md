@@ -62,7 +62,7 @@ The Berkshelf is a location on your local disk which contains the cookbooks you 
 
 Berkshelf stores every version of a cookbook that you have ever installed. This is the same pattern found with RubyGems where once you have resolved and installed a gem, you will have that gem and it's dependencies until you delete it.
 
-This central location is not the typical pattern of cookbook storage that you may be used to with Chef. The traditional pattern is to place all of your cookbooks in a directory called `cookbooks` or `site-cookbooks` within your [Chef Repository](http://wiki.opscode.com/display/chef/Chef+Repository). We do have all of our cookbooks in one central place, it's just not the Chef Repository and they're stored within directories named using the convention `{name}-{version}`.
+This central location is not the typical pattern of cookbook storage that you may be used to with Chef. The traditional pattern is to place all of your cookbooks in a directory called `cookbooks` or `site-cookbooks` within your [Chef Repository](https://docs.chef.io/chef_repo.html). We do have all of our cookbooks in one central place, it's just not the Chef Repository and they're stored within directories named using the convention `{name}-{version}`.
 
 Given you have the cookbooks installed:
 
