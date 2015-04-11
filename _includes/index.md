@@ -1,6 +1,6 @@
 ## Getting Started
 
-Berkshelf is now included as part of the [Chef-DK](http://chef.io/downloads/chef-dk). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
+Berkshelf is now included as part of the [Chef-DK](https://downloads.chef.io/chef-dk/). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
 
 Ensure that the Chef-DK is added to *the front* of your path
 
