@@ -255,13 +255,13 @@ Given the previous example, the cookbook found at branch `foodcritic` of the ops
 
 An optional `tag` key is an alias for `branch` and can be used interchangeably.
 
-   cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", tag: "3.0.2"
+    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", tag: "3.0.2"
 
 Given the previous example, the cookbook found at tag `3.0.2` of the  opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
 An optional `ref` key can be specified for the exact SHA-1 commit ID to use and exact revision of the desired cookbook.
 
-   cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "eef7e65806e7ff3bdbe148e27c447ef4a8bc3881"
+    cookbook "mysql", git: "https://github.com/opscode-cookbooks/mysql.git", ref: "eef7e65806e7ff3bdbe148e27c447ef4a8bc3881"
 
 Given the previous example, the cookbook found at commit id `eef7e65806e7ff3bdbe148e27c447ef4a8bc3881` of the  opscode-cookbooks/mysql Github project will be cloned to The Berkshelf.
 
