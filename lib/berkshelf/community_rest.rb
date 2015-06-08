@@ -16,7 +16,7 @@ module Berkshelf
         elsif is_tar_file(target)
           Archive::Tar::Minitar.unpack(target, destination)
         else
-          raise Berkshelf::UnknownCompressionType.new(target)
+          raise Berkshelf::UnknownCompressionType.new(target, destination)
         end
 
         FileUtils.rm_rf Dir.glob("#{destination}/**/PaxHeader")
