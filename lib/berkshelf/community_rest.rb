@@ -83,7 +83,7 @@ module Berkshelf
           interval: @retry_interval,
           exceptions: [Faraday::Error::TimeoutError]
 
-        b.adapter :net_http
+        b.adapter :httpclient
       end
 
       super(api_uri, options)
