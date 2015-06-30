@@ -1,5 +1,11 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 3.3.0
+
+* Enhancements
+  * Use [httpclient](https://github.com/nahi/httpclient) in place of Ruby stdlib NetHTTP for http communication
+  * Clarify decompression error messages
+
 # 3.2.4
 
 * Bug Fixes
