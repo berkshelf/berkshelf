@@ -41,9 +41,10 @@ module Berkshelf
       type: :boolean,
       default: false
 
-    class_option :no_bundler,
+    class_option :bundler,
       type: :boolean,
-      default: false
+      default: true,
+      desc: 'Generate a Gemfile and other Bundler specific support'
 
     class_option :license,
       type: :string,

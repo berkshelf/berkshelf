@@ -45,10 +45,10 @@ module Berkshelf
       default: false,
       desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
 
-    class_option :no_bundler,
+    class_option :bundler,
       type: :boolean,
-      default: false,
-      desc: 'Skips generation of a Gemfile and other Bundler specific support'
+      default: true,
+      desc: 'Generate a Gemfile and other Bundler specific support'
 
     class_option :cookbook_name,
       type: :string
@@ -92,7 +92,7 @@ module Berkshelf
         create_file target.join('VERSION'), '0.1.0'
       end
 
-      unless options[:no_bundler]
+      if options[:bundler]
         template 'Gemfile.erb', target.join('Gemfile')
       end
 
