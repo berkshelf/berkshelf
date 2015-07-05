@@ -21,10 +21,10 @@ module Berkshelf
       type: :boolean,
       default: true
 
-    class_option :skip_vagrant,
+    class_option :vagrant,
       type: :boolean,
-      default: false,
-      desc: 'Skips adding a Vagrantfile and adding supporting gems to the Gemfile'
+      default: true,
+      desc: 'Adds a Vagrantfile and adding supporting gems to the Gemfile'
 
     class_option :skip_git,
       type: :boolean,
@@ -102,7 +102,7 @@ module Berkshelf
         end
       end
 
-      unless options[:skip_vagrant]
+      if options[:vagrant]
         template 'Vagrantfile.erb', target.join('Vagrantfile')
       end
     end

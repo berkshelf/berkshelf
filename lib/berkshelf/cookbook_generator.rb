@@ -16,9 +16,10 @@ module Berkshelf
       type: :string,
       required: true
 
-    class_option :skip_vagrant,
+    class_option :vagrant,
       type: :boolean,
-      default: false
+      default: true,
+      desc: 'Adds a Vagrantfile and adding supporting gems to the Gemfile'
 
     class_option :skip_git,
       type: :boolean,

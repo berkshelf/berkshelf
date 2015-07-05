@@ -163,7 +163,7 @@ describe Berkshelf::InitGenerator do
   context 'when skipping vagrant' do
     before(:each) do
       capture(:stdout) {
-        Berkshelf::InitGenerator.new([target], skip_vagrant: true).invoke_all
+        Berkshelf::InitGenerator.new([target], vagrant: false).invoke_all
       }
     end
 
