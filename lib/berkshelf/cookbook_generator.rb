@@ -34,7 +34,7 @@ module Berkshelf
     class_option :foodcritic,
       type: :boolean,
       default: false,
-      desc: 'Creates a Thorfile with Foodcritic support to lint test your cookbook'
+      desc: 'Adds a Thorfile with Foodcritic support to lint test your cookbook'
 
     class_option :chef_minitest,
       type: :boolean,
@@ -44,12 +44,12 @@ module Berkshelf
     class_option :scmversion,
       type: :boolean,
       default: false,
-      desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
+      desc: 'Adds a Thorfile with SCMVersion support to manage versions for continuous integration'
 
     class_option :bundler,
       type: :boolean,
       default: true,
-      desc: 'Generate a Gemfile and other Bundler specific support'
+      desc: 'Adds a Gemfile and other Bundler specific support'
 
     class_option :license,
       type: :string,
