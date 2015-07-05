@@ -26,10 +26,10 @@ module Berkshelf
       default: true,
       desc: 'Adds a .gitignore and runs git init in the cookbook directory'
 
-    class_option :skip_test_kitchen,
+    class_option :test_kitchen,
       type: :boolean,
-      default: false,
-      desc: 'Skip adding a testing environment to your cookbook'
+      default: true,
+      desc: 'Adds a testing environment to your cookbook'
 
     class_option :foodcritic,
       type: :boolean,

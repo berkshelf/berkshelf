@@ -54,10 +54,10 @@ module Berkshelf
       type: :string
 
     if defined?(Kitchen::Generator::Init)
-      class_option :skip_test_kitchen,
+      class_option :test_kitchen,
         type: :boolean,
-        default: false,
-        desc: 'Skip adding a testing environment to your cookbook'
+        default: true,
+        desc: 'Adds a testing environment to your cookbook'
     end
 
     def generate
@@ -97,7 +97,7 @@ module Berkshelf
       end
 
       if defined?(Kitchen::Generator::Init)
-        unless options[:skip_test_kitchen]
+        if options[:test_kitchen]
           Kitchen::Generator::Init.new([], {}, destination_root: target).invoke_all
         end
       end
