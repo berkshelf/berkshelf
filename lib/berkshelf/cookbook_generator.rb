@@ -43,7 +43,8 @@ module Berkshelf
 
     class_option :scmversion,
       type: :boolean,
-      default: false
+      default: false,
+      desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
 
     class_option :bundler,
       type: :boolean,
