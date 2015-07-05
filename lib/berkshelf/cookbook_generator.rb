@@ -38,7 +38,8 @@ module Berkshelf
 
     class_option :chef_minitest,
       type: :boolean,
-      default: false
+      default: false,
+      desc: 'Adds chef minitest'
 
     class_option :scmversion,
       type: :boolean,
