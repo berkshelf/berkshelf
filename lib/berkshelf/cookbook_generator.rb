@@ -53,7 +53,9 @@ module Berkshelf
 
     class_option :license,
       type: :string,
-      default: Berkshelf.config.cookbook.license
+      default: Berkshelf.config.cookbook.license,
+      desc: 'License of the cookbook',
+      enum: LICENSES
 
     class_option :maintainer,
       type: :string,
