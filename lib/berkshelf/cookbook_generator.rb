@@ -64,7 +64,8 @@ module Berkshelf
 
     class_option :maintainer_email,
       type: :string,
-      default: Berkshelf.config.cookbook.email
+      default: Berkshelf.config.cookbook.email,
+      desc: 'Email of cookbook maintainer'
 
     def generate
       case options[:pattern]
