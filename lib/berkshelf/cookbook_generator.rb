@@ -33,7 +33,8 @@ module Berkshelf
 
     class_option :foodcritic,
       type: :boolean,
-      default: false
+      default: false,
+      desc: 'Creates a Thorfile with Foodcritic support to lint test your cookbook'
 
     class_option :chef_minitest,
       type: :boolean,
