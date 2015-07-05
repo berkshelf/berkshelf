@@ -26,10 +26,10 @@ module Berkshelf
       default: true,
       desc: 'Adds a Vagrantfile and adding supporting gems to the Gemfile'
 
-    class_option :skip_git,
+    class_option :git,
       type: :boolean,
-      default: false,
-      desc: 'Skips adding a .gitignore and running git init in the cookbook directory'
+      default: true,
+      desc: 'Adds a .gitignore and runs git init in the cookbook directory'
 
     class_option :foodcritic,
       type: :boolean,
@@ -72,7 +72,7 @@ module Berkshelf
         copy_file 'chefignore', target.join(Ridley::Chef::Chefignore::FILENAME)
       end
 
-      unless options[:skip_git]
+      if options[:git]
         template 'gitignore.erb', target.join('.gitignore')
 
         unless File.exists?(target.join('.git'))

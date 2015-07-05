@@ -21,9 +21,10 @@ module Berkshelf
       default: true,
       desc: 'Adds a Vagrantfile and adding supporting gems to the Gemfile'
 
-    class_option :skip_git,
+    class_option :git,
       type: :boolean,
-      default: false
+      default: true,
+      desc: 'Adds a .gitignore and runs git init in the cookbook directory'
 
     class_option :skip_test_kitchen,
       type: :boolean,

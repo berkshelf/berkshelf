@@ -149,7 +149,7 @@ describe Berkshelf::InitGenerator do
 
   context 'when skipping git' do
     before(:each) do
-      generator = Berkshelf::InitGenerator.new([target], skip_git: true)
+      generator = Berkshelf::InitGenerator.new([target], git: false)
       capture(:stdout) { generator.invoke_all }
     end
 
