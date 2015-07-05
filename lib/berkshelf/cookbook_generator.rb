@@ -59,7 +59,8 @@ module Berkshelf
 
     class_option :maintainer,
       type: :string,
-      default: Berkshelf.config.cookbook.copyright
+      default: Berkshelf.config.cookbook.copyright,
+      desc: 'Cookbook maintainer'
 
     class_option :maintainer_email,
       type: :string,
