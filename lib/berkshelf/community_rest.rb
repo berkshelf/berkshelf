@@ -76,7 +76,6 @@ module Berkshelf
 
       options[:builder] ||= Faraday::RackBuilder.new do |b|
         b.response :parse_json
-        b.response :gzip
         b.response :follow_redirects
         b.request :retry,
           max: @retries,
