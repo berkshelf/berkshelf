@@ -203,6 +203,9 @@ module Berkshelf
     # @raise [EnvironmentFileNotFound]
     #   if you are uploading environment from local file and that file doesn't
     #   exist
+    # @raise [EnvironmentFileForWrongEnvironment]
+    #   if you try to upload from a local file containing a name that doesn't
+    #   match your environment parameter
     def apply(name, options = {})
       Berkshelf.ridley_connection(options) do |connection|
         if options[:from_file]
