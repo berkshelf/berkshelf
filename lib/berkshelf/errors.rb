@@ -310,6 +310,19 @@ module Berkshelf
     alias_method :message, :to_s
   end
 
+  class EnvironmentFileNotFound < BerkshelfError
+    #Status code was 137 in v2, but that's taken now by InvalidSourceURI
+    set_status_code(150)
+
+    def initialize(environment_path)
+      @environment_path = environment_path
+    end
+
+    def to_s
+      "Local environment file #{@environment_path} not found."
+    end
+  end
+
   class ChefConnectionError < BerkshelfError
     set_status_code(130)
 

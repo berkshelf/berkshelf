@@ -200,9 +200,21 @@ module Berkshelf
     # @raise [ChefConnectionError]
     #   if you are locking cookbooks with an invalid or not-specified client
     #   configuration
+    # @raise [EnvironmentFileNotFound]
+    #   if you are uploading environment from local file and that file doesn't
+    #   exist
     def apply(name, options = {})
       Berkshelf.ridley_connection(options) do |connection|
-        environment = connection.environment.find(name)
+        if options[:from_file]
+          environment_path = options[:from_file]
+          begin
+            environment = connection.environment.from_file(environment_path)
+          rescue Errno::ENOENT # Just rescue missing files
+            raise EnvironmentFileNotFound.new(environment_path)
+          end
+        else
+          environment = connection.environment.find(environment_name)
+        end
 
         raise EnvironmentNotFound.new(name) if environment.nil?
 
