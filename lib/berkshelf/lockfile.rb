@@ -209,11 +209,18 @@ module Berkshelf
           environment_path = options[:from_file]
           begin
             environment = connection.environment.from_file(environment_path)
-          rescue Errno::ENOENT # Just rescue missing files
+          rescue Errno::ENOENT # Just rescue missing file exceptions
             raise EnvironmentFileNotFound.new(environment_path)
           end
+          if environment.name && environment.name != ""
+            if environment.name != name
+              raise EnvironmentFileForWrongEnvironment.new(environment.name, name)
+            end
+          else
+            environment.name = name
+          end
         else
-          environment = connection.environment.find(environment_name)
+          environment = connection.environment.find(name)
         end
 
         raise EnvironmentNotFound.new(name) if environment.nil?

@@ -323,6 +323,19 @@ module Berkshelf
     end
   end
 
+  class EnvironmentFileForWrongEnvironment < BerkshelfError
+    set_status_code(151)
+
+    def initialize(file_environment_name, expected_name)
+      @file_environment_name = file_environment_name
+      @expected_name = expected_name
+    end
+
+    def to_s
+      "Local environment file is for '#{@file_environment_name}' environment - expected '#{@expected_name}'."
+    end
+  end
+
   class ChefConnectionError < BerkshelfError
     set_status_code(130)
 

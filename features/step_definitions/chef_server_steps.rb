@@ -58,3 +58,10 @@ Then(/^the version locks in the "(.*?)" environment should be:$/) do |name, lock
     expect(list[cookbook]).to eq(version)
   end
 end
+
+Then(/^in the "([^"]*)" environment, I should have these override attributes:$/) do |name, attributes|
+  chef_environment_attributes = chef_environment_override_attributes(name)
+  attributes.raw.each do |attribute, value|
+    expect(chef_environment_attributes[attribute]).to eq(value)
+  end
+end
