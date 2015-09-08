@@ -292,6 +292,46 @@ describe Berkshelf::Lockfile do
       expect(subject).to_not have_dependency('apache2')
     end
   end
+
+  describe '#reduce!' do
+    before(:each) do
+      allow(Berkshelf::Dependency).to receive(:name) do |dependency|
+        dependency.is_a?(String) ? dependency : dependency.name
+      end
+    end
+
+    it 'does not remove locks unnecessarily' do
+      cookbook = double('jenkins-2.0.4', dependencies: {
+        'apt' => '~> 2.0',
+        'runit' => '~> 1.5',
+        # Assuming a newer version of Jenkins in cache that doesn't
+        # have the yum dependency anymore:
+        # 'yum' => '~> 3.0'
+        # The lock on yum should not be released because both runit
+        # and yum-epel still have a dependency on yum.
+      })
+      dependencies = [
+        double('apt',
+          name: 'apt',
+          version_constraint: Semverse::Constraint.new('~> 2.0'),
+          cached_cookbook: nil,
+        ),
+        double('jenkins',
+          name: 'jenkins',
+          version_constraint: Semverse::Constraint.new('~> 2.0'),
+          cached_cookbook: cookbook,
+        ),
+      ]
+      berksfile = double('berksfile',
+        dependencies: dependencies,
+        'has_dependency?' => true,
+      )
+      subject.instance_variable_set(:@berksfile, berksfile)
+
+      expect(subject).to_not receive(:unlock)
+      subject.reduce!
+    end
+  end
 end
 
 describe Berkshelf::Lockfile::Graph do
