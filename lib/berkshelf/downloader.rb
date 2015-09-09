@@ -66,9 +66,7 @@ module Berkshelf
           server_url: remote_cookbook.location_path,
           client_name: Berkshelf::Config.instance.chef.node_name,
           client_key: Berkshelf::Config.instance.chef.client_key,
-          ssl: {
-            verify: Berkshelf::Config.instance.ssl.verify
-          }
+          ssl: Berkshelf::Config.instance.ssl
         }
         # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
         # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
