@@ -408,7 +408,10 @@ module Berkshelf
             # dependency leaking.
             unless cookbook.dependencies.has_key?(name)
               Berkshelf.log.debug "        Not found!"
-              unlock(name, true)
+              # This approach resulted in unwanted upgrades on random
+              # cookbooks. We need to implement a proper algorithm to
+              # only remove dependencies that don't exist anymore.
+              #unlock(name, true)
             end
           end
         end
