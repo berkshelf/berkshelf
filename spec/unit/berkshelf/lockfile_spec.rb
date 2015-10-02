@@ -292,6 +292,27 @@ describe Berkshelf::Lockfile do
       expect(subject).to_not have_dependency('apache2')
     end
   end
+
+  describe '#reduce!' do
+    let(:berksfile_path) { fixtures_path.join('berksfiles/default').to_s }
+    let(:berksfile) { Berkshelf::Berksfile.from_file(berksfile_path) }
+    subject { Berkshelf::Lockfile.new(filepath: filepath, berksfile: berksfile) }
+
+    before(:each) do
+      cs = fixtures_path.join('cookbook-store')
+      allow(Berkshelf::CookbookStore.instance).to receive(:storage_path).and_return(cs)
+    end
+
+    it 'uses the cookbook version specified in the lockfile' do
+      subject.reduce!
+      expect(subject.berksfile.dependencies[1].cached_cookbook.version).to eq('2.0.3')
+    end
+
+    it 'does not remove locks unnecessarily' do
+      expect(subject).to_not receive(:unlock)
+      subject.reduce!
+    end
+  end
 end
 
 describe Berkshelf::Lockfile::Graph do

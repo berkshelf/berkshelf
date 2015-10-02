@@ -396,6 +396,10 @@ module Berkshelf
           raise OutdatedDependency.new(graphed, dependency)
         end
 
+        # Locking dependency version to the graphed version if
+        # constraints are satisfied by it.
+        dependency.locked_version = graphed.version
+
         if cookbook = dependency.cached_cookbook
           Berkshelf.log.debug "    Cached cookbook exists"
           Berkshelf.log.debug "    Checking dependencies on the cached cookbook"
