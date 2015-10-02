@@ -402,18 +402,21 @@ module Berkshelf
 
         if cookbook = dependency.cached_cookbook
           Berkshelf.log.debug "    Cached cookbook exists"
-          Berkshelf.log.debug "    Checking dependencies on the cached cookbook"
+          Berkshelf.log.debug "    Updating cookbook dependencies if required"
+          graphed.set_dependencies(cookbook.dependencies)
+        end
+      end
 
-          graphed.dependencies.each do |name, constraint|
-            Berkshelf.log.debug "      Checking #{name} (#{constraint})"
-
-            # Unless the cookbook still depends on this key, we want to queue it
-            # for unlocking. This is the magic that prevents transitive
-            # dependency leaking.
-            unless cookbook.dependencies.has_key?(name)
-              Berkshelf.log.debug "        Not found!"
-              unlock(name, true)
-            end
+      # Iteratively remove orphan dependencies
+      orphans = true
+      while orphans do
+        orphans = false
+        graph.each do |cookbook|
+          name = cookbook.name
+          unless dependency?(name) or graph.dependency?(name)
+            Berkshelf.log.debug "#{cookbook} identified as orphan; removing it"
+            unlock(name)
+            orphans = true
           end
         end
       end
@@ -813,6 +816,10 @@ module Berkshelf
             #   the version constraint to use
             def add_dependency(name, constraint)
               @dependencies[name.to_s] = constraint.to_s
+            end
+
+            def set_dependencies(dependencies)
+              @dependencies = dependencies.to_hash
             end
 
             # @private
