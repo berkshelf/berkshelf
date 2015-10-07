@@ -1,5 +1,9 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 4.0.1
+
+* Update `berkshelf-api-client` constraint to `~> 2.0`
+
 # 4.0.0
 
 * Drop support for Ruby 1.9
