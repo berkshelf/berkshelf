@@ -39,3 +39,39 @@ Feature: berks apply
       Lockfile not found! Run `berks install` to create the lockfile.
       """
     And the exit status should be "LockfileNotFound"
+
+  Scenario: Uploading attributes from a file along with the version locking
+    Given the Chef Server has an environment named "my_env"
+    And I have a Berksfile.lock set up to apply
+    And a file named "my_env.json" with:
+    """
+    {
+      "name": "my_env",
+      "json_class": "Chef::Environment",
+      "chef_type": "environment",
+      "override_attributes": {
+        "my_attribute": "my_value"
+      }
+    }
+    """
+    When I successfully run `berks apply my_env --from_file=my_env.json`
+    Then in the "my_env" environment, I should have these override attributes:
+      | my_attribute | my_value |
+
+  Scenario: Uploading attributes from a file that doesn't match the environment
+    Given the Chef Server has an environment named "my_env"
+    And I have a Berksfile.lock set up to apply
+    And a file named "my_env.json" with:
+    """
+    {
+      "name": "some_other_env",
+      "json_class": "Chef::Environment",
+      "chef_type": "environment"
+    }
+    """
+    When I run `berks apply my_env --from_file=my_env.json`
+    Then the output should contain:
+      """
+      Local environment file is for 'some_other_env' environment - expected 'my_env'.
+      """
+    And the exit status should be "EnvironmentFileForWrongEnvironment"

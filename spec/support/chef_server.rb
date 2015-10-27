@@ -76,10 +76,18 @@ module Berkshelf::RSpec
       load_data(:environments, name, hash)
     end
 
-    def chef_environment_locks(name)
-      JSON.parse(chef_server.data_store.get(['environments', name]))['cookbook_versions']
+    def chef_environment_json_data(name)
+      JSON.parse(chef_server.data_store.get(['environments', name]))
     rescue ChefZero::DataStore::DataNotFoundError
       {}
+    end
+
+    def chef_environment_locks(name)
+      chef_environment_json_data(name)['cookbook_versions'] || {}
+    end
+
+    def chef_environment_override_attributes(name)
+      chef_environment_json_data(name)['override_attributes'] || {}
     end
 
     def chef_node(name, hash = {})
