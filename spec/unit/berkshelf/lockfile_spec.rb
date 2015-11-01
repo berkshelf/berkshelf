@@ -296,21 +296,37 @@ describe Berkshelf::Lockfile do
   describe '#reduce!' do
     let(:berksfile_path) { fixtures_path.join('berksfiles/default').to_s }
     let(:berksfile) { Berkshelf::Berksfile.from_file(berksfile_path) }
-    subject { Berkshelf::Lockfile.new(filepath: filepath, berksfile: berksfile) }
 
-    before(:each) do
-      cs = fixtures_path.join('cookbook-store')
-      allow(Berkshelf::CookbookStore.instance).to receive(:storage_path).and_return(cs)
+    describe 'with some orphan dependencies' do
+      let(:orphans_lock) { fixtures_path.join('lockfiles/orphans.lock').to_s }
+      subject { Berkshelf::Lockfile.new(filepath: orphans_lock, berksfile: berksfile) }
+
+      it 'removes orphan dependencies' do
+        graph = subject.graph.instance_variable_get(:@graph)
+        expect(graph).to receive(:delete).with('yum-epel').and_call_original
+        expect(graph).to receive(:delete).with('zum-foo').and_call_original
+        expect(graph).to receive(:delete).with('yum').and_call_original
+        subject.reduce!
+      end
     end
 
-    it 'uses the cookbook version specified in the lockfile' do
-      subject.reduce!
-      expect(subject.berksfile.dependencies[1].cached_cookbook.version).to eq('2.0.3')
-    end
+    describe 'minimizes updates' do
+      subject { Berkshelf::Lockfile.new(filepath: filepath, berksfile: berksfile) }
 
-    it 'does not remove locks unnecessarily' do
-      expect(subject).to_not receive(:unlock)
-      subject.reduce!
+      before(:each) do
+        cs = fixtures_path.join('cookbook-store')
+        allow(Berkshelf::CookbookStore.instance).to receive(:storage_path).and_return(cs)
+      end
+
+      it 'uses the cookbook version specified in the lockfile' do
+        subject.reduce!
+        expect(subject.berksfile.dependencies[1].cached_cookbook.version).to eq('2.0.3')
+      end
+
+      it 'does not remove locks unnecessarily' do
+        expect(subject).to_not receive(:unlock)
+        subject.reduce!
+      end
     end
   end
 end
