@@ -6,7 +6,11 @@ class Thor
       end
 
       def fetch(key, default = nil)
-        super(convert_key(key), default)
+        if default
+          super(convert_key(key), default)
+        else
+          super(convert_key(key))
+        end
       end
     end
   end
