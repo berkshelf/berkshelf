@@ -133,19 +133,19 @@ Feature: berks install
   Scenario: installing a demand from a path location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using example_cookbook (0.5.0) from source at ../../fixtures/cookbooks/example_cookbook-0.5.0
+      Using example_cookbook (0.5.0) from source at ../../spec/fixtures/cookbooks/example_cookbook-0.5.0
       """
 
   Scenario: installing a demand from a path location with a conflicting constraint
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'example_cookbook', '~> 1.0.0', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', '~> 1.0.0', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I run `berks install`
     Then the output should contain:
@@ -158,13 +158,13 @@ Feature: berks install
       | example_cookbook | 0.5.0 | missing_cookbook >= 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using example_cookbook (0.5.0) from source at ../../fixtures/cookbooks/example_cookbook-0.5.0
+      Using example_cookbook (0.5.0) from source at ../../spec/fixtures/cookbooks/example_cookbook-0.5.0
       """
 
   Scenario: installing a demand from a path location locks the graph to that version
@@ -172,7 +172,7 @@ Feature: berks install
       | other_cookbook   | 1.0.0 | example_cookbook ~> 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       cookbook 'other_cookbook'
       """
     And the Berkshelf API server's cache is up to date
@@ -185,12 +185,12 @@ Feature: berks install
   Scenario: installing a Berksfile from a remote directory that contains a path location
     Given I have a Berksfile at "subdirectory" pointing at the local Berkshelf API with:
       """
-      cookbook 'example_cookbook', path: '../../../fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     When I successfully run `berks install -b subdirectory/Berksfile`
     Then the output should contain:
       """
-      Using example_cookbook (0.5.0) from source at ../../../fixtures/cookbooks/example_cookbook-0.5.0
+      Using example_cookbook (0.5.0) from source at ../../../spec/fixtures/cookbooks/example_cookbook-0.5.0
       """
 
   Scenario: installing a demand from a Git location

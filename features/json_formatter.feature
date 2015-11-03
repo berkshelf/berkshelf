@@ -93,13 +93,13 @@ Feature: --format json
   Scenario: JSON output when running the upload command
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'example_cookbook', path: '../../fixtures/cookbooks/example_cookbook-0.5.0'
+      cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
     And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         example_cookbook
-          path: ../../fixtures/cookbooks/example_cookbook-0.5.0
+          path: ../../spec/fixtures/cookbooks/example_cookbook-0.5.0
 
       GRAPH
         example_cookbook (0.5.0)
