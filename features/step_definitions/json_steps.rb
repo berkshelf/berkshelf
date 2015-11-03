@@ -17,7 +17,7 @@ end
 Then /^the output should contain JSON:$/ do |data|
   parsed = ERB.new(data).result
   target = JSON.pretty_generate(JSON.parse(parsed).sort_by_key)
-  actual = JSON.pretty_generate(JSON.parse(all_output).sort_by_key)
+  actual = JSON.pretty_generate(JSON.parse(all_commands.map { |c| c.output }.join("\n")).sort_by_key)
 
   expect(actual).to eq(target)
 end

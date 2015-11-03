@@ -8,5 +8,5 @@ Given /^I do not have a Chef config$/ do
   Berkshelf.chef_config.save
 
   ENV['BERKSHELF_CHEF_CONFIG'] = path
-  set_env 'BERKSHELF_CHEF_CONFIG', path
+  set_environment_variable 'BERKSHELF_CHEF_CONFIG', path
 end

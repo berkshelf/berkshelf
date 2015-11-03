@@ -8,7 +8,7 @@ Given /^I already have a Berkshelf config file$/ do
   Berkshelf.config = config
 
   ENV['BERKSHELF_CONFIG'] = path
-  set_env 'BERKSHELF_CONFIG', path
+  set_environment_variable 'BERKSHELF_CONFIG', path
 end
 
 Given /^I have a Berkshelf config file containing:$/ do |contents|
