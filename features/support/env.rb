@@ -31,8 +31,8 @@ Spork.prefork do
     ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s
     ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path.to_s
 
-    Aruba::InProcess.main_class = Berkshelf::Cli::Runner
-    Aruba.process               = Aruba::InProcess
+    aruba.config.command_launcher = :in_process
+    aruba.config.main_class = Berkshelf::Cli::Runner
     @dirs                       = ["spec/tmp/aruba"] # set aruba's temporary directory
 
     stub_kitchen!
@@ -61,7 +61,7 @@ Spork.prefork do
   end
 
   Before('@spawn') do
-    Aruba.process = Aruba::SpawnProcess
+    aruba.config.command_launcher = :spawn
 
     set_environment_variable('BERKSHELF_PATH', berkshelf_path.to_s)
     set_environment_variable('BERKSHELF_CONFIG', Berkshelf.config.path.to_s)
