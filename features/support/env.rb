@@ -56,7 +56,7 @@ Spork.prefork do
     Berkshelf::RSpec::ChefServer.start(port: CHEF_SERVER_PORT)
     Berkshelf::API::RSpec::Server.start(port: BERKS_API_PORT, endpoints: endpoints) unless windows?
 
-    @aruba_io_wait_seconds = Cucumber::JRUBY ? 7 : 5
+    aruba.config.io_wait_timeout = Cucumber::JRUBY ? 7 : 5
     @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15
   end
 
@@ -69,7 +69,7 @@ Spork.prefork do
   end
 
   Before('@slow_process') do
-    @aruba_io_wait_seconds = Cucumber::JRUBY ? 70 : 30
+    aruba.config.io_wait_timeout = Cucumber::JRUBY ? 70 : 30
     @aruba_timeout_seconds = Cucumber::JRUBY ? 140 : 60
   end
 end
