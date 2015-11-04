@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'aruba',         '~> 0.6'
   s.add_development_dependency 'chef-zero',     '~> 4.0'
-  s.add_development_dependency 'fuubar',        '~> 1.1'
+  s.add_development_dependency 'fuubar',        '~> 2.0'
   s.add_development_dependency 'rake',          '~> 0.9'
   s.add_development_dependency 'rspec',         '~> 3.0'
   s.add_development_dependency 'spork',         '~> 0.9'
