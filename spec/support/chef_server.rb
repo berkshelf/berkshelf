@@ -62,8 +62,8 @@ module Berkshelf::RSpec
     end
 
     def chef_cookbooks
-      chef_server.data_store.list(['cookbooks']).inject({}) do |hash, name|
-        hash[name] = chef_server.data_store.list(['cookbooks', name])
+      chef_server.data_store.list(['organizations', 'chef', 'cookbooks']).inject({}) do |hash, name|
+        hash[name] = chef_server.data_store.list(['organizations', 'chef', 'cookbooks', name])
         hash
       end
     end
@@ -77,7 +77,7 @@ module Berkshelf::RSpec
     end
 
     def chef_environment_locks(name)
-      JSON.parse(chef_server.data_store.get(['environments', name]))['cookbook_versions']
+      JSON.parse(chef_server.data_store.get(['organizations', 'chef', 'environments', name]))['cookbook_versions']
     rescue ChefZero::DataStore::DataNotFoundError
       {}
     end

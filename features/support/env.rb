@@ -31,8 +31,8 @@ Spork.prefork do
     ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s
     ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path.to_s
 
-    Aruba::InProcess.main_class = Berkshelf::Cli::Runner
-    Aruba.process               = Aruba::InProcess
+    aruba.config.command_launcher = :in_process
+    aruba.config.main_class = Berkshelf::Cli::Runner
     @dirs                       = ["spec/tmp/aruba"] # set aruba's temporary directory
 
     stub_kitchen!
@@ -56,20 +56,20 @@ Spork.prefork do
     Berkshelf::RSpec::ChefServer.start(port: CHEF_SERVER_PORT)
     Berkshelf::API::RSpec::Server.start(port: BERKS_API_PORT, endpoints: endpoints) unless windows?
 
-    @aruba_io_wait_seconds = Cucumber::JRUBY ? 7 : 5
+    aruba.config.io_wait_timeout = Cucumber::JRUBY ? 7 : 5
     @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15
   end
 
   Before('@spawn') do
-    Aruba.process = Aruba::SpawnProcess
+    aruba.config.command_launcher = :spawn
 
-    set_env('BERKSHELF_PATH', berkshelf_path.to_s)
-    set_env('BERKSHELF_CONFIG', Berkshelf.config.path.to_s)
-    set_env('BERKSHELF_CHEF_CONFIG', chef_config_path.to_s)
+    set_environment_variable('BERKSHELF_PATH', berkshelf_path.to_s)
+    set_environment_variable('BERKSHELF_CONFIG', Berkshelf.config.path.to_s)
+    set_environment_variable('BERKSHELF_CHEF_CONFIG', chef_config_path.to_s)
   end
 
   Before('@slow_process') do
-    @aruba_io_wait_seconds = Cucumber::JRUBY ? 70 : 30
+    aruba.config.io_wait_timeout = Cucumber::JRUBY ? 70 : 30
     @aruba_timeout_seconds = Cucumber::JRUBY ? 140 : 60
   end
 end
