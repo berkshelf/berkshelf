@@ -1,0 +1,4 @@
+source 'https://supermarket.chef.io'
+cookbook 'apt', '~> 2.0'
+cookbook 'jenkins', '~> 2.0'
+cookbook 'jenkins-config', path: '../cookbook-path/jenkins-config'
