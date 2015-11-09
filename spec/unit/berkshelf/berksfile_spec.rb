@@ -238,7 +238,7 @@ describe Berkshelf::Berksfile do
   describe '#cookbooks' do
     it 'raises an exception if a cookbook is not installed' do
       subject.add_dependency('bacon', nil)
-      expect { subject.cookbooks }.to raise_error
+      expect { subject.cookbooks }.to raise_error(Berkshelf::DependencyNotFound)
     end
 
     it 'retrieves the locked (cached) cookbook for each dependency' do
