@@ -545,7 +545,6 @@ module Berkshelf
     end
 
     def to_s
-      super + " " \
       "Could not find environment file #{@environment_file}"
     end
   end
