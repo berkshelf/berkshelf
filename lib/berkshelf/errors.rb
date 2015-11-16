@@ -537,6 +537,19 @@ module Berkshelf
     end
   end
 
+  class EnvironmentFileNotFound < EnvironmentNotFound
+    set_status_code(150)
+
+    def intialize(environment_file)
+      @environment_file = environment_file
+    end
+
+    def to_s
+      super + " " \
+      "Could not find environment file #{@environment_file}"
+    end
+  end
+
 
   # Git errors
   # ------------------------------

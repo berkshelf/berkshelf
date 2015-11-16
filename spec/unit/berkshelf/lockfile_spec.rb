@@ -223,20 +223,35 @@ describe Berkshelf::Lockfile do
       end
     end
 
-    it 'locks the environment cookbook versions' do
-      apt = double(name: 'apt', locked_version: '1.0.0')
-      jenkins = double(name: 'jenkins', locked_version: '1.4.5')
-      allow(subject.graph).to receive(:locks).and_return('apt' => apt, 'jenkins' => jenkins)
+    context 'apply to environment' do
+      let(:environment) { double('environment', :cookbook_versions= => nil, save: true) }
 
-      environment = double('environment', :cookbook_versions= => nil, save: true)
-      allow(connection).to receive(:environment).and_return(double(find: environment))
+      before do
+        apt = double(name: 'apt', locked_version: '1.0.0')
+        jenkins = double(name: 'jenkins', locked_version: '1.4.5')
+        allow(subject.graph).to receive(:locks).and_return('apt' => apt, 'jenkins' => jenkins)
+        allow(connection).to receive(:environment).and_return(double(find: environment))
+      end
 
-      expect(environment).to receive(:cookbook_versions=).with(
-        'apt' => '= 1.0.0',
-        'jenkins' => '= 1.4.5',
-      )
+      it 'locks the environment cookbook versions' do
+        expect(environment).to receive(:cookbook_versions=).with(
+          'apt' => '= 1.0.0',
+          'jenkins' => '= 1.4.5',
+        )
 
-      subject.apply('production')
+        subject.apply('production')
+      end
+
+      it 'call update_environment_file when envfile option is set' do
+        locks = {
+          'apt' => '= 1.0.0',
+          'jenkins' => '= 1.4.5'
+        }
+
+        expect(subject).to receive(:update_environment_file).with('/working/path', locks)
+
+        subject.apply('production', envfile: '/working/path')
+      end
     end
   end
 
@@ -270,6 +285,35 @@ describe Berkshelf::Lockfile do
     it 'adds the dependency to the lockfile' do
       subject.add('apache2')
       expect(subject).to have_dependency('apache2')
+    end
+  end
+
+  describe '#update_environment_file' do
+    it 'raises an exception when environment file does not exist' do
+      allow(File).to receive(:exists?).and_return(false)
+      expect {
+        subject.update_environment_file('/broken/path', nil)
+      }.to raise_error(Berkshelf::EnvironmentFileNotFound)
+    end
+
+    it 'updates the environment file with cookbook versions' do
+      file = instance_spy('File')
+      locks = {
+        'apt' => '1.0.0',
+        'jenkins' => '1.4.5'
+      }
+
+      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:read).and_return("{}")
+      allow(File).to receive(:open).and_yield(file)
+
+      subject.update_environment_file('/working/path.json', locks)
+
+      expect(file).to have_received(:puts) do |arg|
+        expect(JSON.parse(arg)).to eq({
+          'cookbook_versions' => locks
+        })
+      end
     end
   end
 
