@@ -1,6 +1,5 @@
 module Berkshelf
   class Resolver
-    Solve.engine = :gecode
 
     require_relative 'resolver/graph'
 
@@ -25,6 +24,7 @@ module Berkshelf
       @demands   = Array.new
 
       Array(demands).each { |demand| add_demand(demand) }
+      compute_solver_engine(berksfile)
     end
 
     # Add the given dependency to the collection of demands
@@ -103,6 +103,31 @@ module Berkshelf
     #   the demand or the name of the demand to check for
     def has_demand?(demand)
       !get_demand(demand).nil?
+    end
+
+    # Look at berksfile's solvers, and ask Solve#engine= for the right one,
+    # swallowing any exceptions if it's preferred but not required
+    #
+    # @param [Berksfile] berksfile
+    def compute_solver_engine(berksfile)
+      if berksfile.required_solver
+        begin
+          Solve.engine = berksfile.required_solver
+        rescue Solve::Errors::InvalidEngine => e
+          raise ArgumentError, e.message
+        end
+      elsif berksfile.preferred_solver
+        begin
+          Solve.engine = berksfile.preferred_solver
+        rescue
+          # We should log this, but Berkshelf.log.warn and Berkshelf.formatter.warn
+          # both seem inappropriate here.
+          # "  Preferred solver ':#{berksfile.preferred_solver}' unavailable"
+        end
+      end
+      # We should log this, but Berkshelf.log.info and Berkshelf.formatter.msg
+      # both seem inappropriate here.
+      # "  Selected dependency solver engine ':#{Solve.engine}'"
     end
   end
 end

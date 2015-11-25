@@ -9,6 +9,7 @@ describe Berkshelf::Berksfile do
         cookbook 'mysql'
         cookbook 'nginx', '< 0.101.2'
         cookbook 'ssh_known_hosts2', :git => 'https://github.com/erikh/chef-ssh_known_hosts2.git'
+        solver :foo, :required
         EOF
       end
       let(:berksfile) { tmp_path.join('Berksfile') }
@@ -404,6 +405,31 @@ describe Berkshelf::Berksfile do
     it 'excludes the top-level metadata.rb file' do
       expect(excludes[:exclude].any? { |exclude| File.fnmatch?(exclude, 'my_cookbook/recipes/metadata.rb', File::FNM_DOTMATCH) }).to be(false)
       expect(excludes[:exclude].any? { |exclude| File.fnmatch?(exclude, 'my_cookbook/metadata.rb', File::FNM_DOTMATCH) }).to be(true)
+    end
+  end
+
+  describe '#solver' do
+
+    let(:solver_precedence) { :please_dont_exist }
+
+    it "defaults to nil required solver and :gecode preferred solver" do
+      expect(subject.preferred_solver).to equal(:gecode)
+      expect(subject.required_solver).to equal(nil)
+    end
+
+    it "adds preferred and required solvers" do
+      subject.solver(:a, :preferred)
+      subject.solver(:b, :required)
+      expect(subject.preferred_solver).to equal(:a)
+      expect(subject.required_solver).to equal(:b)
+    end
+
+    it "raises an exception with a bad precedence" do
+      expect { subject.solver(:foo, :bar) }.to raise_error(/Invalid solver precedence ':bar'/)
+    end
+
+    it "is a DSL method" do
+      expect(subject).to have_exposed_method(:solver)
     end
   end
 end

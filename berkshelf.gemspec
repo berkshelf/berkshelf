@@ -42,7 +42,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'retryable',            '~> 2.0'
   s.add_dependency 'ridley',               '~> 4.3'
   s.add_dependency 'solve',                '~> 2.0'
-  s.add_dependency 'dep_selector',         '~> 1.0'
   s.add_dependency 'thor',                 '~> 0.19'
   s.add_dependency 'octokit',              '~> 4.0'
   s.add_dependency 'celluloid',            '= 0.16.0'
@@ -50,6 +49,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'aruba',         '~> 0.6'
   s.add_development_dependency 'chef-zero',     '~> 4.0'
+  s.add_development_dependency 'dep_selector',  '~> 1.0'
   s.add_development_dependency 'fuubar',        '~> 2.0'
   s.add_development_dependency 'rake',          '~> 10.1'
   s.add_development_dependency 'rspec',         '~> 3.0'

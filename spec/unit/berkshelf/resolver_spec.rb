@@ -4,6 +4,11 @@ describe Berkshelf::Resolver do
   let(:berksfile) { double('berksfile') }
   let(:demand) { Berkshelf::Dependency.new(berksfile, "mysql", constraint: "= 1.2.4") }
 
+  before(:each) do
+    allow(berksfile).to receive(:required_solver).and_return(nil)
+    allow(berksfile).to receive(:preferred_solver).and_return(nil)
+  end
+
   describe "ClassMethods" do
     describe "::initialize" do
       it 'adds the specified dependencies to the dependencies hash' do
@@ -58,5 +63,27 @@ describe Berkshelf::Resolver do
     end
   end
 
-  describe "#resolve"
+  describe "#resolve" do
+    describe 'given a missing required solver' do
+      before do
+        allow(berksfile).to receive(:required_solver).and_return(:xyzzy)
+        allow(berksfile).to receive(:preferred_solver).and_return(nil)
+      end
+
+      it 'should raise an exception about missing required resolver :xyzzy' do
+        expect { subject.compute_solver_engine(berksfile) }.to raise_error(/Engine `xyzzy` is not supported/)
+      end
+    end
+
+    describe 'given a missing preferred solver' do
+      before do
+        allow(berksfile).to receive(:required_solver).and_return(nil)
+        allow(berksfile).to receive(:preferred_solver).and_return(:xyzzy)
+      end
+
+      it 'should not raise an exception about missing preferred resolver :xyzzy' do
+        expect { subject.compute_solver_engine(berksfile) }.not_to raise_error
+      end
+    end
+  end
 end
