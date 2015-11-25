@@ -541,3 +541,100 @@ Feature: berks install
       """
       Using bacon (0.2.0)
       """
+
+  Scenario: when asking for the :ruby solver engine without precedence, no error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :ruby
+    """
+  When I successfully run `berks install`
+  Then the output should contain:
+    """
+    Resolving cookbook dependencies...
+    """
+
+  Scenario: when asking for the :gecode solver engine without precedence, no error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :gecode
+    """
+  When I successfully run `berks install`
+  Then the output should contain:
+    """
+    Resolving cookbook dependencies...
+    """
+
+  Scenario: when asking for an unknown solver engine without precedence, no error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :unknown
+    """
+  When I successfully run `berks install`
+  Then the output should contain:
+    """
+    Resolving cookbook dependencies...
+    """
+
+  Scenario: when preferring the :gecode solver engine, no error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :gecode, :preferred
+    """
+  When I successfully run `berks install`
+  Then the output should contain:
+    """
+    Resolving cookbook dependencies...
+    """
+
+  Scenario: when preferring an unknown solver engine, no error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :unknown, :preferred
+    """
+  When I successfully run `berks install`
+  Then the output should contain:
+    """
+    Resolving cookbook dependencies...
+    """
+
+  Scenario: when requiring an unknown solver engine, an error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :unknown, :required
+    """
+  When I run `berks install`
+  Then the output should contain:
+    """
+    Engine `unknown` is not supported.
+    """
+    And the exit status should be "ArgumentError"
+
+  Scenario: when requiring the :ruby solver engine, no error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :ruby, :required
+    """
+  When I successfully run `berks install`
+  Then the output should contain:
+    """
+    Resolving cookbook dependencies...
+    """
+
+  Scenario: when requiring the :gecode solver engine, no error is raised
+  Given I have a Berksfile pointing at the local Berkshelf API with:
+    """
+    cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
+    solver :gecode, :required
+    """
+  When I successfully run `berks install`
+  Then the output should contain:
+    """
+    Resolving cookbook dependencies...
+    """

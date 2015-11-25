@@ -41,6 +41,14 @@ module Berkshelf
     #   The path on disk to the file representing this instance of Berksfile
     attr_reader :filepath
 
+    # @return [Symbol]
+    #   The solver engine required by this instance of Berksfile
+    attr_reader :required_solver
+
+    # @return [Symbol]
+    #   The solver engine preferred by this instance of Berksfile
+    attr_reader :preferred_solver
+
     # Create a new Berksfile object.
     #
     # @param [String] path
@@ -56,6 +64,10 @@ module Berkshelf
       @filepath         = File.expand_path(path)
       @dependencies     = Hash.new
       @sources          = Hash.new
+
+      # defaults for what solvers to use
+      @required_solver  = nil
+      @preferred_solver = :gecode
 
       if options[:except] && options[:only]
         raise ArgumentError, 'Cannot specify both :except and :only!'
@@ -185,6 +197,41 @@ module Berkshelf
       @sources[api_url] = Source.new(api_url)
     end
     expose :source
+
+    # Configure a specific engine for the 'solve' gem to use when computing dependencies. You may
+    # optionally specify how strong a requirement this is. If omitted, the default precedence is
+    # :preferred.
+    #
+    # If :required is specified and cannot be loaded, Resolver#resolve will raise an ArgumentError.
+    # If :preferred is specified and cannot be loaded, Resolver#resolve silently catch any errors and
+    # use whatever default method the 'solve' gem provides (as of 2.0.1, solve defaults to :ruby).
+    #
+    # @example
+    #   solver :gecode
+    #   solver :gecode, :preferred
+    #   solver :gecode, :required
+    #   solver :ruby
+    #   solver :ruby, :preferred
+    #   solver :ruby, :required
+    #
+    # @param [Symbol] name
+    #   name of engine for solver gem to use for depsolving
+    #
+    # @param [Symbol] precedence
+    #   how strong a requirement using this solver is
+    #   valid values are :required, :preferred
+    #
+    # @raise [ArgumentError]
+    def solver(name, precedence = :preferred)
+      if name && precedence == :required
+        @required_solver = name
+      elsif name && precedence == :preferred
+        @preferred_solver = name
+      else
+        raise ArgumentError, "Invalid solver precedence ':#{precedence}'"
+      end
+    end
+    expose :solver
 
     # @return [Array<Source>]
     def sources
