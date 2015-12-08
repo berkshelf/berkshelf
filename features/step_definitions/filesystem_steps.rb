@@ -93,9 +93,7 @@ Then /^I should have a new cookbook skeleton "(.*?)"$/ do |name|
     file "Berksfile" do
       contains "metadata"
     end
-    file "Gemfile" do
-      contains "gem 'berkshelf'"
-    end
+    file "Gemfile"
     file "metadata.rb"
     file "README.md"
     file "Vagrantfile" do

@@ -24,9 +24,7 @@ describe Berkshelf::InitGenerator do
       expect(target).to have_structure {
         file '.gitignore'
         file 'Berksfile'
-        file 'Gemfile' do
-          contains %(gem 'berkshelf')
-        end
+        file 'Gemfile'
         file 'Vagrantfile' do
           contains %(recipe[some_cookbook::default])
           contains %(config.omnibus.chef_version = 'latest')
@@ -57,7 +55,7 @@ describe Berkshelf::InitGenerator do
       FileUtils.rm(File.join(target, 'metadata.rb'))
       expect {
         Berkshelf::InitGenerator.new([target]).invoke_all
-        }.to raise_error(Berkshelf::NotACookbook)
+      }.to raise_error(Berkshelf::NotACookbook)
     end
   end
 
