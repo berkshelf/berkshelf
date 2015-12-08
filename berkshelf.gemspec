@@ -57,4 +57,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'test-kitchen',  '~> 1.2'
   s.add_development_dependency 'webmock',       '~> 1.11'
   s.add_development_dependency 'yard',          '~> 0.8'
+  s.add_development_dependency 'http',          '~> 0.9.8'
 end
