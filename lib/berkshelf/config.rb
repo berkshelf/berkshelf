@@ -107,7 +107,7 @@ module Berkshelf
       default: false
     attribute 'vagrant.vm.box',
       type: String,
-      default: 'chef/ubuntu-14.04',
+      default: 'bento/ubuntu-14.04',
       required: true
     # @todo Deprecated, remove?
     attribute 'vagrant.vm.box_url',
