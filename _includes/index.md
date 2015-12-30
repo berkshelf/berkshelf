@@ -1,8 +1,8 @@
 ## Getting Started
 
-Berkshelf is now included as part of the [Chef-DK](https://downloads.chef.io/chef-dk/). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
+Berkshelf is now included as part of the [ChefDK](https://downloads.chef.io/chef-dk/). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
 
-Ensure that the Chef-DK is added to *the front* of your path
+Ensure that the ChefDK is added to *the front* of your path
 
     $ PATH=$HOME/.chefdk/gem/ruby/2.1.0/bin:/opt/chefdk/bin:$PATH
 
@@ -96,7 +96,9 @@ This will output all of the cookbooks to `pwd/berks-cookbooks`
 
 ## Configuring Berkshelf
 
-Berkshelf will run with a default configuration unless you explicitly generate one. By default, Berkshelf uses the values found in your Knife configuration (if you have one).
+Berkshelf will run with a default configuration unless you explicitly generate
+one. By default, Berkshelf uses the values found in your
+[Chef configuration](https://docs.chef.io/config_rb.html) (if you have one).
 
 You can override this default behavior by create a configuration file and placing it at `~/.berkshelf/config.json`
 
@@ -118,6 +120,11 @@ You can override this default behavior by create a configuration file and placin
 * `github` - an array of hashes containing Github credentials to authenticate against downloading cached Github cookbooks.
 
 > The configuration values are notated in 'dotted path' format. These translate to a nested JSON structure.
+
+### Proxy settings
+
+Berkshelf will use proxy settings from a Chef configuration file and will use
+the `http_proxy` and `https_proxy` environment variables if they are set.
 
 ## Vagrant with Berkshelf
 
