@@ -123,8 +123,7 @@ You can override this default behavior by create a configuration file and placin
 
 ### Proxy settings
 
-Berkshelf will use proxy settings from a Chef configuration file and will use
-the `http_proxy` and `https_proxy` environment variables if they are set.
+Berkshelf will use proxy settings from a Chef configuration file and will use the `http_proxy` and `https_proxy` environment variables if they are set.  See the [Chef documentation](https://docs.chef.io/proxies.html) for more information.
 
 ## Vagrant with Berkshelf
 
