@@ -135,5 +135,10 @@ module Berkshelf
       type: Array,
       default: [],
       required: false
+    attribute 'github.transport',
+      # git, ssh, or https
+      type: String,
+      default: 'git',
+      required: false
   end
 end
