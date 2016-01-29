@@ -139,10 +139,10 @@ module Berkshelf
       type: Array,
       default: [],
       required: false
-    attribute 'github.transport',
+    attribute 'github.protocol',
       # git, ssh, or https
-      type: String,
-      default: 'git',
+      type: Symbol,
+      default: :git,
       required: false
   end
 end
