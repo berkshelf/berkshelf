@@ -1,5 +1,20 @@
 > This is a high level digest of changes. For the complete CHANGELOG diff two tags in the project's [commit history](https://github.com/berkshelf/berkshelf/commits/master).
 
+# 4.1.0
+
+* Enhancements
+  * Have berks install bump only required cookbooks
+  * Upgrade to solve 2.0 and use Gecode as the engine
+  * Add a new `solver` Berksfile DSL option
+  * remove berkshelf gem entry in generated Gemfile
+  * Run Chef proxy tests on Travis
+  * Updating Test Kitchen to 1.5.0 and running bundle update
+
+* Bug Fixes
+  * Use Net::HTTP.new instead of Net::HTTP.start to ensure environmental proxy settings are picked up
+  * Remove new cucumber and aruba warnings
+  * Pin aruba to 0.10.2
+
 # 4.0.1
 
 * Update `berkshelf-api-client` constraint to `~> 2.0`
