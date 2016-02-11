@@ -1,5 +1,13 @@
 # Change Log
 
+## [4.1.1](https://github.com/berkshelf/berkshelf/tree/4.1.1) (2016-02-11)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.1.0...4.1.1)
+
+**Merged pull requests:**
+
+- Update solve to 2.0.2 [\#1509](https://github.com/berkshelf/berkshelf/pull/1509) ([danielsdeleo](https://github.com/danielsdeleo))
+- Use github\_changelog\_generator [\#1507](https://github.com/berkshelf/berkshelf/pull/1507) ([jkeiser](https://github.com/jkeiser))
+
 ## [v4.1.0](https://github.com/berkshelf/berkshelf/tree/v4.1.0) (2016-02-04)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.0.1...v4.1.0)
 
