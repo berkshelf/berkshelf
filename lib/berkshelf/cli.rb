@@ -208,6 +208,10 @@ module Berkshelf
       berksfile.upload(names, options.symbolize_keys)
     end
 
+    method_option :envfile,
+      type: :string,
+      desc: 'Path to a JSON environment file to update.',
+      aliases: '-f'
     method_option :lockfile,
       type: :string,
       default: Berkshelf::Lockfile::DEFAULT_FILENAME,
