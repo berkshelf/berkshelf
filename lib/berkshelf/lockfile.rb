@@ -194,6 +194,8 @@ module Berkshelf
     #
     # @option options [Hash] :ssl_verify (true)
     #   Disable/Enable SSL verification during uploads
+    # @option options [String] :envfile
+    #   Environment file to update
     #
     # @raise [EnvironmentNotFound]
     #   if the target environment was not found on the remote Chef Server
@@ -201,18 +203,22 @@ module Berkshelf
     #   if you are locking cookbooks with an invalid or not-specified client
     #   configuration
     def apply(name, options = {})
-      Berkshelf.ridley_connection(options) do |connection|
-        environment = connection.environment.find(name)
+      locks = graph.locks.inject({}) do |hash, (name, dependency)|
+         hash[name] = "= #{dependency.locked_version.to_s}"
+         hash
+      end
 
-        raise EnvironmentNotFound.new(name) if environment.nil?
+      if options[:envfile]
+        update_environment_file(options[:envfile], locks) if options[:envfile]
+      else
+        Berkshelf.ridley_connection(options) do |connection|
+          environment = connection.environment.find(name)
 
-        locks = graph.locks.inject({}) do |hash, (name, dependency)|
-          hash[name] = "= #{dependency.locked_version.to_s}"
-          hash
+          raise EnvironmentNotFound.new(name) if environment.nil?
+
+          environment.cookbook_versions = locks
+          environment.save unless options[:envfile]
         end
-
-        environment.cookbook_versions = locks
-        environment.save
       end
     end
 
@@ -295,6 +301,32 @@ module Berkshelf
       end
 
       locked.cached_cookbook
+    end
+
+    # Update local environment file
+    #
+    # @param [String] environment_file
+    #   path to the envfile to update
+    #
+    # @param [Hash] locks
+    #   A hash of cookbooks and versions to update the environment with
+    #
+    # @raise [EnvironmentFileNotFound]
+    #   If environment file doesn't exist
+    def update_environment_file(environment_file, locks)
+      unless File.exists?(environment_file)
+        raise EnvironmentFileNotFound.new(environment_file)
+      end
+
+      json_environment = JSON.parse(File.read(environment_file))
+
+      json_environment['cookbook_versions'] = locks
+
+      json = JSON.pretty_generate(json_environment)
+
+      File.open(environment_file, 'w'){ |f| f.puts(json) }
+
+      Berkshelf.log.info "Updated environment file #{environment_file}"
     end
 
     # Replace the list of dependencies.
