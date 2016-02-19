@@ -69,3 +69,4 @@ Please see [Plugins page](https://github.com/berkshelf/berkshelf/blob/master/PLU
 Thank you to all of our [Contributors](https://github.com/berkshelf/berkshelf/graphs/contributors), testers, and users.
 
 If you'd like to contribute, please see our [contribution guidelines](https://github.com/berkshelf/berkshelf/blob/master/CONTRIBUTING.md) first.
+
