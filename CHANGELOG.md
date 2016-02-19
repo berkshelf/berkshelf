@@ -1,8 +1,12 @@
 # Change Log
 
+## [4.2.1](https://github.com/berkshelf/berkshelf/tree/4.2.1) (2016-02-19)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.0...4.2.1)
+**Merged pull requests:**
+* updating httpclient version dep to ~> 2.7
+
 ## [4.2.0](https://github.com/berkshelf/berkshelf/tree/4.2.0) (2016-02-18)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.1.1...4.2.0)
-
 **Closed issues:**
 
 - Allow one to "berks apply" to a json environment file [\#875](https://github.com/berkshelf/berkshelf/issues/875)
