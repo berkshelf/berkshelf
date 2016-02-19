@@ -1,7 +1,19 @@
 # Change Log
 
-## [4.1.1](https://github.com/berkshelf/berkshelf/tree/4.1.1) (2016-02-11)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.1.0...4.1.1)
+## [4.2.0](https://github.com/berkshelf/berkshelf/tree/4.2.0) (2016-02-18)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.1.1...4.2.0)
+
+**Closed issues:**
+
+- Allow one to "berks apply" to a json environment file [\#875](https://github.com/berkshelf/berkshelf/issues/875)
+
+**Merged pull requests:**
+
+- Update the chef-config pin to 12.7.2 [\#1516](https://github.com/berkshelf/berkshelf/pull/1516) ([jaym](https://github.com/jaym))
+- Apply locks to local json environment file [\#1512](https://github.com/berkshelf/berkshelf/pull/1512) ([louis-gounot](https://github.com/louis-gounot))
+
+## [v4.1.1](https://github.com/berkshelf/berkshelf/tree/v4.1.1) (2016-02-11)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.1.0...v4.1.1)
 
 **Merged pull requests:**
 
