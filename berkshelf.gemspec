@@ -58,5 +58,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'webmock',       '~> 1.11'
   s.add_development_dependency 'yard',          '~> 0.8'
   s.add_development_dependency 'http',          '~> 0.9.8'
-  s.add_development_dependency 'github_changelog_generator'
+  s.add_development_dependency 'github_changelog_generator', '!= 1.10.2', '!= 1.10.3', '!= 1.10.4', '!= 1.10.5', '!= 1.11.0'
 end
