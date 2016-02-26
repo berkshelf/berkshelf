@@ -1,10 +1,18 @@
 # Change Log
 
-## [4.2.2](https://github.com/berkshelf/berkshelf/tree/4.2.2) (2016-02-26)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.1...4.2.2)
+## [4.2.3](https://github.com/berkshelf/berkshelf/tree/4.2.3) (2016-02-26)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.2...4.2.3)
 
 **Merged pull requests:**
 
+- Relax dependencies to accept minor version bumps [\#1523](https://github.com/berkshelf/berkshelf/pull/1523) ([jkeiser](https://github.com/jkeiser))
+
+## [v4.2.2](https://github.com/berkshelf/berkshelf/tree/v4.2.2) (2016-02-26)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.1...v4.2.2)
+
+**Merged pull requests:**
+
+- Bump version to 4.2.2 [\#1522](https://github.com/berkshelf/berkshelf/pull/1522) ([jkeiser](https://github.com/jkeiser))
 - Pin github\_changelog\_generator [\#1521](https://github.com/berkshelf/berkshelf/pull/1521) ([jkeiser](https://github.com/jkeiser))
 
 ## [v4.2.1](https://github.com/berkshelf/berkshelf/tree/v4.2.1) (2016-02-19)
