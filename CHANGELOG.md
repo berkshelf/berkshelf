@@ -1,14 +1,25 @@
 # Change Log
 
-## [4.2.1](https://github.com/berkshelf/berkshelf/tree/4.2.1) (2016-02-19)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.0...4.2.1)
-**Merged pull requests:**
-* updating httpclient version dep to ~> 2.7
+## [4.2.2](https://github.com/berkshelf/berkshelf/tree/4.2.2) (2016-02-26)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.1...4.2.2)
 
-## [4.2.0](https://github.com/berkshelf/berkshelf/tree/4.2.0) (2016-02-18)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.1.1...4.2.0)
+**Merged pull requests:**
+
+- Pin github\_changelog\_generator [\#1521](https://github.com/berkshelf/berkshelf/pull/1521) ([jkeiser](https://github.com/jkeiser))
+
+## [v4.2.1](https://github.com/berkshelf/berkshelf/tree/v4.2.1) (2016-02-19)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.0...v4.2.1)
+
+**Merged pull requests:**
+
+- updating httpclient version dep to ~\> 2.7.0 [\#1518](https://github.com/berkshelf/berkshelf/pull/1518) ([someara](https://github.com/someara))
+
+## [v4.2.0](https://github.com/berkshelf/berkshelf/tree/v4.2.0) (2016-02-19)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.1.1...v4.2.0)
+
 **Closed issues:**
 
+- Allow using a test cookbook from a subpath of another cookbook [\#1505](https://github.com/berkshelf/berkshelf/issues/1505)
 - Allow one to "berks apply" to a json environment file [\#875](https://github.com/berkshelf/berkshelf/issues/875)
 
 **Merged pull requests:**
