@@ -75,6 +75,9 @@ module Berkshelf
       end
     end
 
+    attribute 'api.timeout',
+      type: String,
+      default: '30'
     attribute 'chef.chef_server_url',
       type: String,
       default: Berkshelf.chef_config.chef_server_url
