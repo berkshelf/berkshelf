@@ -1,4 +1,5 @@
 require 'buff/config/json'
+require 'openssl'
 
 module Berkshelf
   class Config < Buff::Config::JSON
@@ -45,6 +46,7 @@ module Berkshelf
         else
           new
         end
+        coerce_ssl
       end
 
       # Reload the currently instantiated Berkshelf configuration
@@ -53,6 +55,17 @@ module Berkshelf
       def reload
         @instance = nil
         self.instance
+      end
+    
+      # force proper X509 types from any configuration strings
+      #
+      # @return [Config]
+      def coerce_ssl
+        ssl = @instance.ssl
+        ssl[:ca_cert] = OpenSSL::X509::Certificate.new(File.read(ssl[:ca_cert])) if ssl[:ca_cert] && ssl[:ca_cert].is_a?(String)
+        ssl[:client_cert] = OpenSSL::X509::Certificate.new(File.read(ssl[:client_cert])) if ssl[:client_cert] && ssl[:client_cert].is_a?(String)
+        ssl[:client_key] = OpenSSL::PKey::RSA.new(File.read(ssl[:client_key])) if ssl[:client_key] && ssl[:client_key].is_a?(String)
+        @instance
       end
     end
 
@@ -131,6 +144,26 @@ module Berkshelf
       type: Buff::Boolean,
       default: true,
       required: true
+    attribute 'ssl.cert_store',
+      type: Buff::Boolean,
+      default: false,
+      required: false
+    attribute 'ssl.ca_file',
+      type: String,
+      default: nil,
+      required: false
+    attribute 'ssl.ca_path',
+      type: String,
+      default: nil,
+      required: false
+    attribute 'ssl.client_cert',
+      type: String,
+      default: nil,
+      required: false
+    attribute 'ssl.client_key',
+      type: String,
+      default: nil,
+      required: false
     attribute 'github',
       type: Array,
       default: [],
