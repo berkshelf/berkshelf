@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.8.0'
 
   s.add_dependency 'addressable',          '~> 2.3', '>= 2.3.4'
-  s.add_dependency 'berkshelf-api-client', '~> 2.0'
+  s.add_dependency 'berkshelf-api-client', '~> 2.0', '>= 2.0.2'
   s.add_dependency 'buff-config',          '~> 1.0'
   s.add_dependency 'buff-extensions',      '~> 1.0'
   s.add_dependency 'buff-shell_out',       '~> 0.1'
@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'httpclient',           '~> 2.7'
   s.add_dependency 'minitar',              '~> 0.5', '>= 0.5.4'
   s.add_dependency 'retryable',            '~> 2.0'
-  s.add_dependency 'ridley',               '~> 4.4', '>= 4.4.3'
+  s.add_dependency 'ridley',               '~> 4.5'
   s.add_dependency 'solve',                '~> 2.0'
   s.add_dependency 'thor',                 '~> 0.19'
   s.add_dependency 'octokit',              '~> 4.0'
