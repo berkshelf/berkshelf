@@ -28,7 +28,7 @@ notifications:
 branches:
   only:
     - master
-bundler_args: --without guard --jobs 7
+bundler_args: --without guard changelog --jobs 7
 before_install:
   - gem update --system
   - gem install bundler

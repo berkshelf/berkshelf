@@ -487,11 +487,7 @@ Feature: berks install
       cookbook "doesntexist", git: "git://github.com/asdjhfkljashflkjashfakljsf"
       """
     When I run `berks install`
-    Then the output should contain:
-      """
-      Repository not found.
-      """
-      And the exit status should be "GitError"
+    Then the exit status should be "GitError"
 
   Scenario: transitive dependencies in metadata
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:

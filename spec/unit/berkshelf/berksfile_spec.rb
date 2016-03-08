@@ -163,7 +163,7 @@ describe Berkshelf::Berksfile do
       let(:invalid_uri) { ".....$1233...." }
 
       it "raises an InvalidSourceURI" do
-        expect { subject.source(invalid_uri) }.to raise_error(Berkshelf::InvalidSourceURI)
+        expect { subject.source(invalid_uri).uri }.to raise_error(Berkshelf::InvalidSourceURI)
       end
     end
   end

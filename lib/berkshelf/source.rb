@@ -89,7 +89,7 @@ module Berkshelf
     # @return [true, false]
     #   true if this a default source, false otherwise
     def default?
-      @default_ ||= @uri.host == URI.parse(Berksfile::DEFAULT_API_URL).host
+      @default_ ||= uri.host == URI.parse(Berksfile::DEFAULT_API_URL).host
     end
 
     # @param [String] name
