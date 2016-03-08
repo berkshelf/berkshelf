@@ -19,7 +19,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (4.2.3)
+    berkshelf (4.3.0)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
       buff-config (~> 1.0)
@@ -160,6 +160,7 @@ GEM
     grape-msgpack (0.1.2)
       grape (>= 0.6.0)
       msgpack (~> 0.5.6)
+    growl (1.0.3)
     guard (1.8.3)
       formatador (>= 0.2.4)
       listen (~> 1.3)
@@ -259,7 +260,6 @@ GEM
       ffi (>= 0.5.0)
     rb-kqueue (0.2.4)
       ffi (>= 0.5.0)
-    rb-notifu (0.0.4)
     reel (0.6.0)
       celluloid (>= 0.15.1)
       celluloid-io (>= 0.15.0)
@@ -343,7 +343,6 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    wdm (0.1.1)
     webmock (1.24.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -353,8 +352,6 @@ GEM
     websocket-extensions (0.1.2)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32console (1.3.2)
-    win32console (1.3.2-x86-mingw32)
     wmi-lite (1.0.0)
     yard (0.8.7.6)
 
@@ -378,13 +375,11 @@ DEPENDENCIES
   guard-spork
   http (~> 0.9, >= 0.9.8)
   rake (~> 10.1)
-  rb-notifu (>= 0.0.4)
+  rb-fsevent
   rspec (~> 3.0)
   spork (~> 0.9)
   test-kitchen (~> 1.2)
-  wdm
   webmock (~> 1.11)
-  win32console
   yard (~> 0.8)
 
 BUNDLED WITH
