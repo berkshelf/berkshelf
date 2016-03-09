@@ -1,18 +1,28 @@
 # Change Log
 
-## [4.2.3](https://github.com/berkshelf/berkshelf/tree/4.2.3) (2016-02-26)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.2...4.2.3)
+## [v4.3.0](https://github.com/berkshelf/berkshelf/tree/v4.3.0) (2016-03-09)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.3...v4.3.0)
+
+**Merged pull requests:**
+
+- update ridley in Gemfile.lock [\#1530](https://github.com/berkshelf/berkshelf/pull/1530) ([mwrock](https://github.com/mwrock))
+- fix busted tests [\#1529](https://github.com/berkshelf/berkshelf/pull/1529) ([thommay](https://github.com/thommay))
+- Support downloading universe from chef servers [\#1527](https://github.com/berkshelf/berkshelf/pull/1527) ([thommay](https://github.com/thommay))
+- Unpin changelog generator to get rid of version conflicts [\#1525](https://github.com/berkshelf/berkshelf/pull/1525) ([jkeiser](https://github.com/jkeiser))
+
+## [v4.2.3](https://github.com/berkshelf/berkshelf/tree/v4.2.3) (2016-02-26)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.2...v4.2.3)
 
 **Merged pull requests:**
 
 - Relax dependencies to accept minor version bumps [\#1523](https://github.com/berkshelf/berkshelf/pull/1523) ([jkeiser](https://github.com/jkeiser))
+- Bump version to 4.2.2 [\#1522](https://github.com/berkshelf/berkshelf/pull/1522) ([jkeiser](https://github.com/jkeiser))
 
 ## [v4.2.2](https://github.com/berkshelf/berkshelf/tree/v4.2.2) (2016-02-26)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.1...v4.2.2)
 
 **Merged pull requests:**
 
-- Bump version to 4.2.2 [\#1522](https://github.com/berkshelf/berkshelf/pull/1522) ([jkeiser](https://github.com/jkeiser))
 - Pin github\_changelog\_generator [\#1521](https://github.com/berkshelf/berkshelf/pull/1521) ([jkeiser](https://github.com/jkeiser))
 
 ## [v4.2.1](https://github.com/berkshelf/berkshelf/tree/v4.2.1) (2016-02-19)
@@ -60,6 +70,10 @@
 - Pin aruba to 0.10.2 [\#1484](https://github.com/berkshelf/berkshelf/pull/1484) ([smith](https://github.com/smith))
 - Use Net::HTTP.new instead of Net::HTTP.start [\#1467](https://github.com/berkshelf/berkshelf/pull/1467) ([jkeiser](https://github.com/jkeiser))
 
+**Merged pull requests:**
+
+- When doing 'berks install' Lock cookbooks' version according to the lockfile [\#1460](https://github.com/berkshelf/berkshelf/pull/1460) ([FlorentFlament](https://github.com/FlorentFlament))
+
 ## [v4.0.1](https://github.com/berkshelf/berkshelf/tree/v4.0.1) (2015-10-07)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.0.0...v4.0.1)
 
@@ -87,7 +101,6 @@
 
 **Merged pull requests:**
 
-- When doing 'berks install' Lock cookbooks' version according to the lockfile [\#1460](https://github.com/berkshelf/berkshelf/pull/1460) ([FlorentFlament](https://github.com/FlorentFlament))
 - Removes the gzip middleware from Faraday builder. [\#1444](https://github.com/berkshelf/berkshelf/pull/1444) ([johnbellone](https://github.com/johnbellone))
 
 ## [v3.3.0](https://github.com/berkshelf/berkshelf/tree/v3.3.0) (2015-06-30)
@@ -1023,6 +1036,7 @@
 - Support -h and --help flags on subcommands [\#806](https://github.com/berkshelf/berkshelf/pull/806) ([sethvargo](https://github.com/sethvargo))
 - Enable use of vagrant-omnibus plugin in generated vagrant files [\#799](https://github.com/berkshelf/berkshelf/pull/799) ([pghalliday](https://github.com/pghalliday))
 - Fixed bash-completion directory path [\#797](https://github.com/berkshelf/berkshelf/pull/797) ([chrisyunker](https://github.com/chrisyunker))
+- Missing backtick on incompatible version error [\#782](https://github.com/berkshelf/berkshelf/pull/782) ([fromonesrc](https://github.com/fromonesrc))
 - Use HTTPS by default for community API [\#775](https://github.com/berkshelf/berkshelf/pull/775) ([coderanger](https://github.com/coderanger))
 - Fix issue where location is nil for cookbook that is in the cache [\#772](https://github.com/berkshelf/berkshelf/pull/772) ([b-dean](https://github.com/b-dean))
 
@@ -1044,7 +1058,6 @@
 
 - relax constraint on ridley to ~\> 1.5 [\#786](https://github.com/berkshelf/berkshelf/pull/786) ([reset](https://github.com/reset))
 - bump required solve version \>= 0.8.0 [\#783](https://github.com/berkshelf/berkshelf/pull/783) ([reset](https://github.com/reset))
-- Missing backtick on incompatible version error [\#782](https://github.com/berkshelf/berkshelf/pull/782) ([fromonesrc](https://github.com/fromonesrc))
 - From bug https://github.com/RiotGames/berkshelf/issues/758 [\#778](https://github.com/berkshelf/berkshelf/pull/778) ([riotcku](https://github.com/riotcku))
 - clean hard tabs [\#771](https://github.com/berkshelf/berkshelf/pull/771) ([j4y](https://github.com/j4y))
 - When Cucumber can’t find a matching Step Definition [\#768](https://github.com/berkshelf/berkshelf/pull/768) ([sethvargo](https://github.com/sethvargo))
@@ -1227,6 +1240,7 @@
 
 **Fixed bugs:**
 
+- metadata.rb constraints are not respected [\#494](https://github.com/berkshelf/berkshelf/issues/494)
 - cached relative path of git repo broken in 2.0.1 [\#629](https://github.com/berkshelf/berkshelf/pull/629) ([bhouse](https://github.com/bhouse))
 
 **Closed issues:**
@@ -1259,7 +1273,6 @@
 
 **Fixed bugs:**
 
-- metadata.rb constraints are not respected [\#494](https://github.com/berkshelf/berkshelf/issues/494)
 - Unknown license error when running `berks cookbook` [\#624](https://github.com/berkshelf/berkshelf/pull/624) ([dougireton](https://github.com/dougireton))
 
 **Closed issues:**
@@ -1695,7 +1708,6 @@
 - Bash completion for cookbooks [\#337](https://github.com/berkshelf/berkshelf/pull/337) ([sethvargo](https://github.com/sethvargo))
 - Like bundler, berks should default do berks install [\#336](https://github.com/berkshelf/berkshelf/pull/336) ([sethvargo](https://github.com/sethvargo))
 - Add Cane [\#333](https://github.com/berkshelf/berkshelf/pull/333) ([justincampbell](https://github.com/justincampbell))
-- Loading berkshelf sets locale to C [\#270](https://github.com/berkshelf/berkshelf/pull/270) ([sciurus](https://github.com/sciurus))
 
 ## [v1.1.6](https://github.com/berkshelf/berkshelf/tree/v1.1.6) (2013-02-07)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.1.5...v1.1.6)
@@ -1707,14 +1719,6 @@
 
 ## [v1.1.5](https://github.com/berkshelf/berkshelf/tree/v1.1.5) (2013-02-07)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.1.4...v1.1.5)
-
-**Implemented enhancements:**
-
-- Berkshelf gem should not depend on Vagrant gem [\#288](https://github.com/berkshelf/berkshelf/pull/288) ([charlesjohnson](https://github.com/charlesjohnson))
-
-**Merged pull requests:**
-
-- JSON \(in\)sanity [\#339](https://github.com/berkshelf/berkshelf/pull/339) ([reset](https://github.com/reset))
 
 ## [v1.1.4](https://github.com/berkshelf/berkshelf/tree/v1.1.4) (2013-02-06)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.1.3...v1.1.4)
@@ -1825,19 +1829,9 @@
 - fix our failing tests [\#282](https://github.com/berkshelf/berkshelf/pull/282) ([reset](https://github.com/reset))
 - Add more files and patterns to chefignore. [\#281](https://github.com/berkshelf/berkshelf/pull/281) ([sethvargo](https://github.com/sethvargo))
 - Add 'test/\*' to chefignore generator file. [\#279](https://github.com/berkshelf/berkshelf/pull/279) ([fnichol](https://github.com/fnichol))
-- Add IRC notifications for Travis CI [\#277](https://github.com/berkshelf/berkshelf/pull/277) ([justincampbell](https://github.com/justincampbell))
-- bump ridley version and use improvements in uploader [\#276](https://github.com/berkshelf/berkshelf/pull/276) ([reset](https://github.com/reset))
-- Allow wider range of repository URIs \(\#257\) [\#265](https://github.com/berkshelf/berkshelf/pull/265) ([aflatter](https://github.com/aflatter))
-- Create CONTRIBUTING.md [\#262](https://github.com/berkshelf/berkshelf/pull/262) ([dwradcliffe](https://github.com/dwradcliffe))
 
 ## [v1.1.0](https://github.com/berkshelf/berkshelf/tree/v1.1.0) (2012-12-06)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.1.0.rc1...v1.1.0)
-
-**Merged pull requests:**
-
-- lock the ohai version in install\_command.feature to prevent future test failures [\#260](https://github.com/berkshelf/berkshelf/pull/260) ([sethvargo](https://github.com/sethvargo))
-- Honor chefignore when vendorizing cookbooks [\#256](https://github.com/berkshelf/berkshelf/pull/256) ([sethvargo](https://github.com/sethvargo))
-- Create `berks open` [\#254](https://github.com/berkshelf/berkshelf/pull/254) ([sethvargo](https://github.com/sethvargo))
 
 ## [v1.1.0.rc1](https://github.com/berkshelf/berkshelf/tree/v1.1.0.rc1) (2012-11-30)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.0.4...v1.1.0.rc1)
@@ -1863,22 +1857,6 @@
 - berks upload should allow the uploading of one cookbook [\#191](https://github.com/berkshelf/berkshelf/issues/191)
 - cookbook update command [\#190](https://github.com/berkshelf/berkshelf/issues/190)
 
-**Merged pull requests:**
-
-- More verbose outdated [\#255](https://github.com/berkshelf/berkshelf/pull/255) ([reset](https://github.com/reset))
-- Add berks outdated command [\#252](https://github.com/berkshelf/berkshelf/pull/252) ([sethvargo](https://github.com/sethvargo))
-- Raise a Berkshelf::CookbookNotFound error when trying to update a cookbook that is not in any of the sources [\#251](https://github.com/berkshelf/berkshelf/pull/251) ([sethvargo](https://github.com/sethvargo))
-- "cookbook" argument is no longer optional for show command [\#246](https://github.com/berkshelf/berkshelf/pull/246) ([reset](https://github.com/reset))
-- use File.open instead of File.write [\#245](https://github.com/berkshelf/berkshelf/pull/245) ([reset](https://github.com/reset))
-- better errors in Vagrant plugin [\#244](https://github.com/berkshelf/berkshelf/pull/244) ([reset](https://github.com/reset))
-- Better list and show output [\#241](https://github.com/berkshelf/berkshelf/pull/241) ([sethvargo](https://github.com/sethvargo))
-- Allow the same cookbook in different groups [\#240](https://github.com/berkshelf/berkshelf/pull/240) ([sethvargo](https://github.com/sethvargo))
-- Allow updating of a single cookbook [\#239](https://github.com/berkshelf/berkshelf/pull/239) ([sethvargo](https://github.com/sethvargo))
-- Fix \#232 by merging with Thor options [\#238](https://github.com/berkshelf/berkshelf/pull/238) ([sethvargo](https://github.com/sethvargo))
-- Add rvmrc [\#237](https://github.com/berkshelf/berkshelf/pull/237) ([sethvargo](https://github.com/sethvargo))
-- Allow uploading one \(or more\) cookbooks [\#234](https://github.com/berkshelf/berkshelf/pull/234) ([sethvargo](https://github.com/sethvargo))
-- `berks show` to look at a cookbook's location [\#219](https://github.com/berkshelf/berkshelf/pull/219) ([sethvargo](https://github.com/sethvargo))
-
 ## [v1.0.4](https://github.com/berkshelf/berkshelf/tree/v1.0.4) (2012-11-16)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.0.3...v1.0.4)
 
@@ -1894,18 +1872,6 @@
 **Closed issues:**
 
 - Git Not Found on Windows with msysgit [\#215](https://github.com/berkshelf/berkshelf/issues/215)
-
-**Merged pull requests:**
-
-- Refactor 213 [\#224](https://github.com/berkshelf/berkshelf/pull/224) ([reset](https://github.com/reset))
-- Fix syntax on group example [\#223](https://github.com/berkshelf/berkshelf/pull/223) ([coderanger](https://github.com/coderanger))
-- Adds travis testing to docs [\#218](https://github.com/berkshelf/berkshelf/pull/218) ([miketheman](https://github.com/miketheman))
-- Adds documentation for GitHub location [\#217](https://github.com/berkshelf/berkshelf/pull/217) ([miketheman](https://github.com/miketheman))
-- add detection for git.cmd on the PATH, factor out detection to keep code... [\#216](https://github.com/berkshelf/berkshelf/pull/216) ([tknerr](https://github.com/tknerr))
-- Simplifying override of mv to always do cp\_r and rm\_rf [\#214](https://github.com/berkshelf/berkshelf/pull/214) ([temujin9](https://github.com/temujin9))
-- Make git clones happen into a stable subfolder, and don't reclone if it exists [\#213](https://github.com/berkshelf/berkshelf/pull/213) ([temujin9](https://github.com/temujin9))
-- Further cleanup on options\[:ssl\_verify\] and Berkshelf::Config.instance.ssl.verify [\#212](https://github.com/berkshelf/berkshelf/pull/212) ([temujin9](https://github.com/temujin9))
-- Adding :rel to :git resource, for repositories where cookbook is not in the repo root [\#211](https://github.com/berkshelf/berkshelf/pull/211) ([temujin9](https://github.com/temujin9))
 
 ## [v1.0.0](https://github.com/berkshelf/berkshelf/tree/v1.0.0) (2012-11-12)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.0.0.rc3...v1.0.0)
@@ -1924,12 +1890,6 @@
 
 - Vendoring fails on Windows [\#209](https://github.com/berkshelf/berkshelf/issues/209)
 
-**Merged pull requests:**
-
-- Using FileUtils.mv rather than File.rename fixes RiotGames/berkshelf\#209 [\#210](https://github.com/berkshelf/berkshelf/pull/210) ([tknerr](https://github.com/tknerr))
-- Github location \(Issue \#64\) [\#206](https://github.com/berkshelf/berkshelf/pull/206) ([capoferro](https://github.com/capoferro))
-- Check if options are supported \(Issue \#170\) [\#204](https://github.com/berkshelf/berkshelf/pull/204) ([capoferro](https://github.com/capoferro))
-
 ## [v1.0.0.rc3](https://github.com/berkshelf/berkshelf/tree/v1.0.0.rc3) (2012-11-12)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.0.0.rc2...v1.0.0.rc3)
 
@@ -1938,18 +1898,6 @@
 - vagrant up issue if cookbook\_path is set by user and not an Array [\#194](https://github.com/berkshelf/berkshelf/issues/194)
 - Vagrant Active Support issue ?  [\#193](https://github.com/berkshelf/berkshelf/issues/193)
 
-**Merged pull requests:**
-
-- organization is now automatically inferred by server\_url in Ridley [\#205](https://github.com/berkshelf/berkshelf/pull/205) ([reset](https://github.com/reset))
-- coerce value for vagrant.cookbooks\_path to an array if it is not one [\#203](https://github.com/berkshelf/berkshelf/pull/203) ([reset](https://github.com/reset))
-- `berks upload` should read the knife.rb, if present [\#202](https://github.com/berkshelf/berkshelf/pull/202) ([sethvargo](https://github.com/sethvargo))
-- Specifying -c or --config during `berks upload` does nothing... [\#201](https://github.com/berkshelf/berkshelf/pull/201) ([sethvargo](https://github.com/sethvargo))
-- Allow config file to set ssl.verify usefully [\#200](https://github.com/berkshelf/berkshelf/pull/200) ([temujin9](https://github.com/temujin9))
-- Allowing Berkshelf::Config.path override [\#199](https://github.com/berkshelf/berkshelf/pull/199) ([temujin9](https://github.com/temujin9))
-- Disable default bridged networking [\#198](https://github.com/berkshelf/berkshelf/pull/198) ([someara](https://github.com/someara))
-- Default cookbook version [\#197](https://github.com/berkshelf/berkshelf/pull/197) ([someara](https://github.com/someara))
-- adding .rbenv-version to gitignore [\#196](https://github.com/berkshelf/berkshelf/pull/196) ([someara](https://github.com/someara))
-
 ## [v1.0.0.rc2](https://github.com/berkshelf/berkshelf/tree/v1.0.0.rc2) (2012-11-07)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v1.0.0.rc1...v1.0.0.rc2)
 
@@ -1957,21 +1905,12 @@
 
 - How do I wrap Berkshelf CLI ? [\#184](https://github.com/berkshelf/berkshelf/issues/184)
 
-**Merged pull requests:**
-
-- ChefAPI Download bug [\#195](https://github.com/berkshelf/berkshelf/pull/195) ([reset](https://github.com/reset))
-- Code cleanup [\#192](https://github.com/berkshelf/berkshelf/pull/192) ([justincampbell](https://github.com/justincampbell))
-
 ## [v1.0.0.rc1](https://github.com/berkshelf/berkshelf/tree/v1.0.0.rc1) (2012-11-01)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.6.0.beta4...v1.0.0.rc1)
 
 **Closed issues:**
 
 - Can you release 0.6.0-beta4, which has Windows bug fixes I need? [\#188](https://github.com/berkshelf/berkshelf/issues/188)
-
-**Merged pull requests:**
-
-- add Cli\#configure function for interactively configuring Berkshelf [\#187](https://github.com/berkshelf/berkshelf/pull/187) ([reset](https://github.com/reset))
 
 ## [v0.6.0.beta4](https://github.com/berkshelf/berkshelf/tree/v0.6.0.beta4) (2012-11-01)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.6.0.beta3...v0.6.0.beta4)
@@ -1986,14 +1925,6 @@
 - Access knife config in Berkshelf Thor task [\#185](https://github.com/berkshelf/berkshelf/issues/185)
 - Unable to run berks install [\#177](https://github.com/berkshelf/berkshelf/issues/177)
 - Detect when Cookbookfile has been changed and automatically update [\#46](https://github.com/berkshelf/berkshelf/issues/46)
-
-**Merged pull requests:**
-
-- simplify configuration generation, validation, and defaults [\#186](https://github.com/berkshelf/berkshelf/pull/186) ([reset](https://github.com/reset))
-- Dir.glob does not support backslash as a File separator, even on Windows... [\#183](https://github.com/berkshelf/berkshelf/pull/183) ([jdutton](https://github.com/jdutton))
-- Fix regression \(infinite recursion on Windows\) in 4ad97d4 [\#182](https://github.com/berkshelf/berkshelf/pull/182) ([jdutton](https://github.com/jdutton))
-- Organize gemdeps [\#180](https://github.com/berkshelf/berkshelf/pull/180) ([reset](https://github.com/reset))
-- fixes issue 158 - init command accepts and uses the generator flags [\#179](https://github.com/berkshelf/berkshelf/pull/179) ([reset](https://github.com/reset))
 
 ## [v0.6.0.beta3](https://github.com/berkshelf/berkshelf/tree/v0.6.0.beta3) (2012-10-29)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.6.0.beta2...v0.6.0.beta3)
@@ -2017,26 +1948,6 @@
 - Berkshelf only recursively pulling in dependencies defined in metadata.rb? [\#154](https://github.com/berkshelf/berkshelf/issues/154)
 - Git and Vagrant should be the default during cookbook creation [\#152](https://github.com/berkshelf/berkshelf/issues/152)
 
-**Merged pull requests:**
-
-- refactor 140pr to use re-defined FileUtils.mv to fix windows support [\#178](https://github.com/berkshelf/berkshelf/pull/178) ([reset](https://github.com/reset))
-- fix issue where FileUtils.mv fails on some Windows machines [\#176](https://github.com/berkshelf/berkshelf/pull/176) ([tknerr](https://github.com/tknerr))
-- Fix :git access on Windows [\#175](https://github.com/berkshelf/berkshelf/pull/175) ([jdutton](https://github.com/jdutton))
-- Touch metadata.rb before berk init [\#174](https://github.com/berkshelf/berkshelf/pull/174) ([justincampbell](https://github.com/justincampbell))
-- Fix git and vagrant flags [\#173](https://github.com/berkshelf/berkshelf/pull/173) ([justincampbell](https://github.com/justincampbell))
-- Make Git and Vagrant the defaults [\#172](https://github.com/berkshelf/berkshelf/pull/172) ([justincampbell](https://github.com/justincampbell))
-- Use Travis CI [\#171](https://github.com/berkshelf/berkshelf/pull/171) ([justincampbell](https://github.com/justincampbell))
-- Add additional options to the Berkshelf config [\#169](https://github.com/berkshelf/berkshelf/pull/169) ([justincampbell](https://github.com/justincampbell))
-- Remove Vagrant auto-require hook [\#168](https://github.com/berkshelf/berkshelf/pull/168) ([justincampbell](https://github.com/justincampbell))
-- Add support for a Berkshelf config file [\#162](https://github.com/berkshelf/berkshelf/pull/162) ([justincampbell](https://github.com/justincampbell))
-- Ignore all \*.pem files [\#160](https://github.com/berkshelf/berkshelf/pull/160) ([justincampbell](https://github.com/justincampbell))
-- Before download errors, output source and location [\#159](https://github.com/berkshelf/berkshelf/pull/159) ([justincampbell](https://github.com/justincampbell))
-- Use :rubygems symbol in generated Gemfile [\#157](https://github.com/berkshelf/berkshelf/pull/157) ([justincampbell](https://github.com/justincampbell))
-- Refactoring Downloader [\#156](https://github.com/berkshelf/berkshelf/pull/156) ([justincampbell](https://github.com/justincampbell))
-- Failing specs [\#155](https://github.com/berkshelf/berkshelf/pull/155) ([justincampbell](https://github.com/justincampbell))
-- Allow customization of generated Vagrantfile [\#153](https://github.com/berkshelf/berkshelf/pull/153) ([justincampbell](https://github.com/justincampbell))
-- Require chef before everything else, sort requires [\#149](https://github.com/berkshelf/berkshelf/pull/149) ([justincampbell](https://github.com/justincampbell))
-
 ## [v0.6.0.beta2](https://github.com/berkshelf/berkshelf/tree/v0.6.0.beta2) (2012-09-28)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.5.1...v0.6.0.beta2)
 
@@ -2052,17 +1963,8 @@
 - Cookbook 'application\_ruby' not found in any of the default locations [\#141](https://github.com/berkshelf/berkshelf/issues/141)
 - Relax Chef version constraint to support Chef 10.14.x [\#139](https://github.com/berkshelf/berkshelf/issues/139)
 
-**Merged pull requests:**
-
-- Multi vm [\#143](https://github.com/berkshelf/berkshelf/pull/143) ([reset](https://github.com/reset))
-- Copy Cookbook Dir Contents Instead of Cookbook Dir Itself [\#142](https://github.com/berkshelf/berkshelf/pull/142) ([RoboticCheese](https://github.com/RoboticCheese))
-
 ## [v0.6.0.beta1](https://github.com/berkshelf/berkshelf/tree/v0.6.0.beta1) (2012-09-25)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.5.0...v0.6.0.beta1)
-
-**Merged pull requests:**
-
-- use the latest version of Solve [\#136](https://github.com/berkshelf/berkshelf/pull/136) ([reset](https://github.com/reset))
 
 ## [v0.5.0](https://github.com/berkshelf/berkshelf/tree/v0.5.0) (2012-09-24)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.5.0.rc4...v0.5.0)
@@ -2072,12 +1974,6 @@
 
 ## [v0.5.0.rc3](https://github.com/berkshelf/berkshelf/tree/v0.5.0.rc3) (2012-09-21)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.5.0.rc2...v0.5.0.rc3)
-
-**Merged pull requests:**
-
-- add ability to disable SSL verification in uploads [\#135](https://github.com/berkshelf/berkshelf/pull/135) ([reset](https://github.com/reset))
-- fix uploads when using chef\_client provisioner [\#134](https://github.com/berkshelf/berkshelf/pull/134) ([reset](https://github.com/reset))
-- Pages 5 [\#133](https://github.com/berkshelf/berkshelf/pull/133) ([reset](https://github.com/reset))
 
 ## [v0.5.0.rc2](https://github.com/berkshelf/berkshelf/tree/v0.5.0.rc2) (2012-09-20)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.5.0.rc1...v0.5.0.rc2)
@@ -2094,20 +1990,6 @@
 - PROPOSAL: allow symlink option for :path cookbooks [\#96](https://github.com/berkshelf/berkshelf/issues/96)
 - berks install --shims /tmp/cookbooks should detect new files [\#66](https://github.com/berkshelf/berkshelf/issues/66)
 
-**Merged pull requests:**
-
-- Ui class [\#132](https://github.com/berkshelf/berkshelf/pull/132) ([reset](https://github.com/reset))
-- use the Berkshelf.ui output Vagrant info [\#131](https://github.com/berkshelf/berkshelf/pull/131) ([reset](https://github.com/reset))
-- make sources and locations serializable into hash/json [\#129](https://github.com/berkshelf/berkshelf/pull/129) ([reset](https://github.com/reset))
-- ensure the cookbook retreived by a location matches the name of the source [\#128](https://github.com/berkshelf/berkshelf/pull/128) ([reset](https://github.com/reset))
-- Use ridley [\#127](https://github.com/berkshelf/berkshelf/pull/127) ([reset](https://github.com/reset))
-- Vplugin bugfix [\#126](https://github.com/berkshelf/berkshelf/pull/126) ([reset](https://github.com/reset))
-- vagrant destroy will clean up the plugin's shelf [\#125](https://github.com/berkshelf/berkshelf/pull/125) ([reset](https://github.com/reset))
-- Only except [\#124](https://github.com/berkshelf/berkshelf/pull/124) ([reset](https://github.com/reset))
-- Vendor install [\#121](https://github.com/berkshelf/berkshelf/pull/121) ([reset](https://github.com/reset))
-- remove 'shims' feature [\#120](https://github.com/berkshelf/berkshelf/pull/120) ([reset](https://github.com/reset))
-- Vagrant plugin [\#119](https://github.com/berkshelf/berkshelf/pull/119) ([reset](https://github.com/reset))
-
 ## [v0.4.0](https://github.com/berkshelf/berkshelf/tree/v0.4.0) (2012-09-11)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.4.0.rc4...v0.4.0)
 
@@ -2120,27 +2002,12 @@
 - the --git option should populate w/ regexes to ignore temporary editor files [\#111](https://github.com/berkshelf/berkshelf/issues/111)
 - knife plugin [\#82](https://github.com/berkshelf/berkshelf/issues/82)
 
-**Merged pull requests:**
-
-- remove Berkshelf::DSL and put it's functionality directly in Berksfile [\#118](https://github.com/berkshelf/berkshelf/pull/118) ([reset](https://github.com/reset))
-- if default locations are specified then a downloader will only use those [\#117](https://github.com/berkshelf/berkshelf/pull/117) ([reset](https://github.com/reset))
-- treat 'recommends' in cookbook data as dependencies [\#116](https://github.com/berkshelf/berkshelf/pull/116) ([reset](https://github.com/reset))
-- add ability to define default locations for a Berksfile [\#115](https://github.com/berkshelf/berkshelf/pull/115) ([reset](https://github.com/reset))
-- Refactors for default locations feature [\#114](https://github.com/berkshelf/berkshelf/pull/114) ([reset](https://github.com/reset))
-- BERKSHELF-112 ignore temporary editor files [\#112](https://github.com/berkshelf/berkshelf/pull/112) ([bryanwb](https://github.com/bryanwb))
-- A couple cleanups [\#110](https://github.com/berkshelf/berkshelf/pull/110) ([matschaffer](https://github.com/matschaffer))
-
 ## [v0.4.0.rc4](https://github.com/berkshelf/berkshelf/tree/v0.4.0.rc4) (2012-08-21)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.4.0.rc3...v0.4.0.rc4)
 
 **Closed issues:**
 
 - valid uri not passing validation [\#106](https://github.com/berkshelf/berkshelf/issues/106)
-
-**Merged pull requests:**
-
-- Bump thor for compatibility with test-kitchen [\#109](https://github.com/berkshelf/berkshelf/pull/109) ([matschaffer](https://github.com/matschaffer))
-- Formatters [\#108](https://github.com/berkshelf/berkshelf/pull/108) ([ivey](https://github.com/ivey))
 
 ## [v0.4.0.rc3](https://github.com/berkshelf/berkshelf/tree/v0.4.0.rc3) (2012-08-20)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.4.0.rc2...v0.4.0.rc3)
@@ -2155,29 +2022,12 @@
 - Softlink in cookbook breaks berks install --shims [\#99](https://github.com/berkshelf/berkshelf/issues/99)
 - Need override mechanism individual cookbooks in Berksfile [\#63](https://github.com/berkshelf/berkshelf/issues/63)
 
-**Merged pull requests:**
-
-- Git SSH uri's without organization will now be valid [\#107](https://github.com/berkshelf/berkshelf/pull/107) ([reset](https://github.com/reset))
-- Don't checksum the file if it's a broken symlink. [\#102](https://github.com/berkshelf/berkshelf/pull/102) ([capoferro](https://github.com/capoferro))
-- Capture errors that occur during berksfile eval to prevent being inadver... [\#101](https://github.com/berkshelf/berkshelf/pull/101) ([capoferro](https://github.com/capoferro))
-- move generator files out of ruby load path [\#100](https://github.com/berkshelf/berkshelf/pull/100) ([reset](https://github.com/reset))
-- Skip broken symlinks encountered in hardlink traversal. [\#91](https://github.com/berkshelf/berkshelf/pull/91) ([capoferro](https://github.com/capoferro))
-
 ## [v0.4.0.rc2](https://github.com/berkshelf/berkshelf/tree/v0.4.0.rc2) (2012-07-27)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.4.0.rc1...v0.4.0.rc2)
 
 **Implemented enhancements:**
 
 - Add local chef server source [\#65](https://github.com/berkshelf/berkshelf/issues/65)
-
-**Merged pull requests:**
-
-- Trivial changes due to spec update. Also pemfile ignore. [\#97](https://github.com/berkshelf/berkshelf/pull/97) ([capoferro](https://github.com/capoferro))
-- Thor::SCMVersion support in generators [\#95](https://github.com/berkshelf/berkshelf/pull/95) ([ivey](https://github.com/ivey))
-- -93 [\#94](https://github.com/berkshelf/berkshelf/pull/94) ([lastobelus](https://github.com/lastobelus))
-- Update cookbook versions in lockfile\_spec [\#92](https://github.com/berkshelf/berkshelf/pull/92) ([capoferro](https://github.com/capoferro))
-- Cookbook command [\#90](https://github.com/berkshelf/berkshelf/pull/90) ([reset](https://github.com/reset))
-- Invalid cross-device link during berks install --shims [\#81](https://github.com/berkshelf/berkshelf/pull/81) ([promisedlandt](https://github.com/promisedlandt))
 
 ## [v0.4.0.rc1](https://github.com/berkshelf/berkshelf/tree/v0.4.0.rc1) (2012-07-13)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.7...v0.4.0.rc1)
@@ -2186,36 +2036,14 @@
 
 - Should allow shims directory to be in subdir of a cookbook using metadata [\#78](https://github.com/berkshelf/berkshelf/issues/78)
 
-**Merged pull requests:**
-
-- Chef API location [\#87](https://github.com/berkshelf/berkshelf/pull/87) ([reset](https://github.com/reset))
-- Site location refactors [\#86](https://github.com/berkshelf/berkshelf/pull/86) ([reset](https://github.com/reset))
-- add validation for options in Berksfile [\#84](https://github.com/berkshelf/berkshelf/pull/84) ([reset](https://github.com/reset))
-- Replace DepSelector with Solve [\#83](https://github.com/berkshelf/berkshelf/pull/83) ([reset](https://github.com/reset))
-- Handle shims dir that's a child of the current dir - closes \#78 [\#80](https://github.com/berkshelf/berkshelf/pull/80) ([ivey](https://github.com/ivey))
-- Test fixes [\#79](https://github.com/berkshelf/berkshelf/pull/79) ([ivey](https://github.com/ivey))
-- Use knife rb [\#68](https://github.com/berkshelf/berkshelf/pull/68) ([erikh](https://github.com/erikh))
-
 ## [v0.3.7](https://github.com/berkshelf/berkshelf/tree/v0.3.7) (2012-07-04)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.6...v0.3.7)
-
-**Merged pull requests:**
-
-- fix issue when caching git sources with an aliased ref [\#77](https://github.com/berkshelf/berkshelf/pull/77) ([reset](https://github.com/reset))
 
 ## [v0.3.6](https://github.com/berkshelf/berkshelf/tree/v0.3.6) (2012-07-04)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.5...v0.3.6)
 
-**Merged pull requests:**
-
-- fix bug with satisfying git sources that have not been downloaded [\#76](https://github.com/berkshelf/berkshelf/pull/76) ([reset](https://github.com/reset))
-
 ## [v0.3.5](https://github.com/berkshelf/berkshelf/tree/v0.3.5) (2012-07-03)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.4...v0.3.5)
-
-**Merged pull requests:**
-
-- raise a more helpful error if git execution fails [\#75](https://github.com/berkshelf/berkshelf/pull/75) ([reset](https://github.com/reset))
 
 ## [v0.3.4](https://github.com/berkshelf/berkshelf/tree/v0.3.4) (2012-07-03)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.3...v0.3.4)
@@ -2225,49 +2053,20 @@
 - Warn if a :git entry points to a local path instead of a URL [\#70](https://github.com/berkshelf/berkshelf/issues/70)
 - Berkshelf should not always require knife.rb [\#62](https://github.com/berkshelf/berkshelf/issues/62)
 
-**Merged pull requests:**
-
-- Validate downloaded sources [\#74](https://github.com/berkshelf/berkshelf/pull/74) ([reset](https://github.com/reset))
-- shims will be rewritten if write\_shims is called [\#73](https://github.com/berkshelf/berkshelf/pull/73) ([reset](https://github.com/reset))
-- Validate Git location sources [\#72](https://github.com/berkshelf/berkshelf/pull/72) ([reset](https://github.com/reset))
-- Don't download sources that have already been downloaded [\#71](https://github.com/berkshelf/berkshelf/pull/71) ([reset](https://github.com/reset))
-- No require config file [\#69](https://github.com/berkshelf/berkshelf/pull/69) ([erikh](https://github.com/erikh))
-- Config file from environment [\#67](https://github.com/berkshelf/berkshelf/pull/67) ([erikh](https://github.com/erikh))
-
 ## [v0.3.3](https://github.com/berkshelf/berkshelf/tree/v0.3.3) (2012-06-27)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.2...v0.3.3)
-
-**Merged pull requests:**
-
-- fix infinite loop bug when writing shims of a path location [\#61](https://github.com/berkshelf/berkshelf/pull/61) ([reset](https://github.com/reset))
 
 ## [v0.3.2](https://github.com/berkshelf/berkshelf/tree/v0.3.2) (2012-06-26)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.1...v0.3.2)
 
-**Merged pull requests:**
-
-- fix bug where app wouldn't exit if no remote solution was found [\#60](https://github.com/berkshelf/berkshelf/pull/60) ([reset](https://github.com/reset))
-
 ## [v0.3.1](https://github.com/berkshelf/berkshelf/tree/v0.3.1) (2012-06-26)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.3.0...v0.3.1)
-
-**Merged pull requests:**
-
-- Berksfile resolve [\#59](https://github.com/berkshelf/berkshelf/pull/59) ([jhowarth](https://github.com/jhowarth))
 
 ## [v0.3.0](https://github.com/berkshelf/berkshelf/tree/v0.3.0) (2012-06-25)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.2.0...v0.3.0)
 
-**Merged pull requests:**
-
-- Thor CLI instead of Knife [\#58](https://github.com/berkshelf/berkshelf/pull/58) ([reset](https://github.com/reset))
-
 ## [v0.2.0](https://github.com/berkshelf/berkshelf/tree/v0.2.0) (2012-06-24)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.5...v0.2.0)
-
-**Merged pull requests:**
-
-- added install command --shims flag [\#57](https://github.com/berkshelf/berkshelf/pull/57) ([reset](https://github.com/reset))
 
 ## [v0.1.5](https://github.com/berkshelf/berkshelf/tree/v0.1.5) (2012-06-23)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.4...v0.1.5)
@@ -2275,19 +2074,11 @@
 ## [v0.1.4](https://github.com/berkshelf/berkshelf/tree/v0.1.4) (2012-06-23)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.3...v0.1.4)
 
-**Merged pull requests:**
-
-- add includable Thor tasks for Berkshelf [\#56](https://github.com/berkshelf/berkshelf/pull/56) ([reset](https://github.com/reset))
-
 ## [v0.1.3](https://github.com/berkshelf/berkshelf/tree/v0.1.3) (2012-06-23)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.2...v0.1.3)
 
 ## [v0.1.2](https://github.com/berkshelf/berkshelf/tree/v0.1.2) (2012-06-22)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.1...v0.1.2)
-
-**Merged pull requests:**
-
-- Fix uploader bug [\#55](https://github.com/berkshelf/berkshelf/pull/55) ([reset](https://github.com/reset))
 
 ## [v0.1.1](https://github.com/berkshelf/berkshelf/tree/v0.1.1) (2012-06-21)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.0...v0.1.1)
@@ -2302,49 +2093,6 @@
 **Fixed bugs:**
 
 - 404 Not found when installing a cookbook by path and a lockfile exists [\#14](https://github.com/berkshelf/berkshelf/issues/14)
-
-**Merged pull requests:**
-
-- Rename to Berkshelf [\#54](https://github.com/berkshelf/berkshelf/pull/54) ([reset](https://github.com/reset))
-- remove "clean" knife command and supporting functionality [\#53](https://github.com/berkshelf/berkshelf/pull/53) ([reset](https://github.com/reset))
-- add yarddoc gem and guard-yarddoc [\#50](https://github.com/berkshelf/berkshelf/pull/50) ([reset](https://github.com/reset))
-- Add upload command [\#47](https://github.com/berkshelf/berkshelf/pull/47) ([reset](https://github.com/reset))
-- lock required ruby version to \>= 1.9.1 [\#45](https://github.com/berkshelf/berkshelf/pull/45) ([reset](https://github.com/reset))
-- Add CookbookStore and CachedCookbook classes [\#44](https://github.com/berkshelf/berkshelf/pull/44) ([reset](https://github.com/reset))
-- refactor Downloader::Result and ResultSet into a more generalized TXResult [\#43](https://github.com/berkshelf/berkshelf/pull/43) ([reset](https://github.com/reset))
-- Large refactor to turn KCD into a Library with a CLI wrapper [\#42](https://github.com/berkshelf/berkshelf/pull/42) ([reset](https://github.com/reset))
-- Improved error handling and messages [\#40](https://github.com/berkshelf/berkshelf/pull/40) ([reset](https://github.com/reset))
-- Revert "ENV\["TMPDIR"\] is really important for people who don't want to u... [\#39](https://github.com/berkshelf/berkshelf/pull/39) ([erikh](https://github.com/erikh))
-- Init command [\#38](https://github.com/berkshelf/berkshelf/pull/38) ([reset](https://github.com/reset))
-- ENV\["TMPDIR"\] is really important for people who don't want to use "/tmp... [\#34](https://github.com/berkshelf/berkshelf/pull/34) ([erikh](https://github.com/erikh))
-- Fix typo in Readme [\#33](https://github.com/berkshelf/berkshelf/pull/33) ([erikh](https://github.com/erikh))
-- Update [\#32](https://github.com/berkshelf/berkshelf/pull/32) ([capoferro](https://github.com/capoferro))
-- Clean [\#31](https://github.com/berkshelf/berkshelf/pull/31) ([capoferro](https://github.com/capoferro))
-- Remove use of File.write, which was added in 1.9.3. [\#30](https://github.com/berkshelf/berkshelf/pull/30) ([jhowarth](https://github.com/jhowarth))
-- Add dependency computation test. [\#29](https://github.com/berkshelf/berkshelf/pull/29) ([jhowarth](https://github.com/jhowarth))
-- Remove dependency reader [\#28](https://github.com/berkshelf/berkshelf/pull/28) ([jhowarth](https://github.com/jhowarth))
-- Use Chef::Cookbook::Metadata for handling metadata.rb files. [\#27](https://github.com/berkshelf/berkshelf/pull/27) ([jhowarth](https://github.com/jhowarth))
-- VCR with dynamic cassette generation [\#25](https://github.com/berkshelf/berkshelf/pull/25) ([capoferro](https://github.com/capoferro))
-- fix gitignore and clear shelf when installing multiple times in a single... [\#23](https://github.com/berkshelf/berkshelf/pull/23) ([erikh](https://github.com/erikh))
-- Alias itall [\#22](https://github.com/berkshelf/berkshelf/pull/22) ([reset](https://github.com/reset))
-- Lock tests [\#21](https://github.com/berkshelf/berkshelf/pull/21) ([erikh](https://github.com/erikh))
-- Refactors [\#20](https://github.com/berkshelf/berkshelf/pull/20) ([erikh](https://github.com/erikh))
-- not everyone who runs the tests has access to riot github :\) [\#19](https://github.com/berkshelf/berkshelf/pull/19) ([erikh](https://github.com/erikh))
-- Groups [\#18](https://github.com/berkshelf/berkshelf/pull/18) ([ivey](https://github.com/ivey))
-- Friendly errors [\#17](https://github.com/berkshelf/berkshelf/pull/17) ([capoferro](https://github.com/capoferro))
-- Lockfile support [\#13](https://github.com/berkshelf/berkshelf/pull/13) ([erikh](https://github.com/erikh))
-- Git ref [\#12](https://github.com/berkshelf/berkshelf/pull/12) ([erikh](https://github.com/erikh))
-- Knife plugin [\#11](https://github.com/berkshelf/berkshelf/pull/11) ([erikh](https://github.com/erikh))
-- Git support [\#10](https://github.com/berkshelf/berkshelf/pull/10) ([erikh](https://github.com/erikh))
-- Path [\#9](https://github.com/berkshelf/berkshelf/pull/9) ([capoferro](https://github.com/capoferro))
-- Cookbookfile \> Cheffile to avoid unintentional conflicts with librarian-chef [\#8](https://github.com/berkshelf/berkshelf/pull/8) ([capoferro](https://github.com/capoferro))
-- Cookbook refactors [\#7](https://github.com/berkshelf/berkshelf/pull/7) ([erikh](https://github.com/erikh))
-- test cleanup: [\#6](https://github.com/berkshelf/berkshelf/pull/6) ([erikh](https://github.com/erikh))
-- Fat commit, see comments: [\#5](https://github.com/berkshelf/berkshelf/pull/5) ([erikh](https://github.com/erikh))
-- Executable [\#4](https://github.com/berkshelf/berkshelf/pull/4) ([capoferro](https://github.com/capoferro))
-- Rdoc readme [\#3](https://github.com/berkshelf/berkshelf/pull/3) ([erikh](https://github.com/erikh))
-- Rake checks [\#2](https://github.com/berkshelf/berkshelf/pull/2) ([erikh](https://github.com/erikh))
-- gemfile and building gem properly. Version is in lib/remy/version.rb [\#1](https://github.com/berkshelf/berkshelf/pull/1) ([erikh](https://github.com/erikh))
 
 
 
