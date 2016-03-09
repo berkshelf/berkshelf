@@ -30,6 +30,10 @@ group :guard do
   end
 end
 
+group :changelog do
+  gem 'github_changelog_generator', "1.11.3"
+end
+
 group :test do
   gem "berkshelf-api", git: "https://github.com/berkshelf/berkshelf-api.git"
 end
