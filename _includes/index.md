@@ -231,9 +231,10 @@ Options passed to a source can contain a location or a group(s).
 By default the location of a cookbook is assumed to come from one of the api sources that you have configured. For example
 
     source "https://berks-api.vialstudios.com"
+    source :chef_server
     source "https://supermarket.chef.io"
 
-If a cookbook which satisfies all demands is found in `berks-api.vialstudios.com` then it will be retrieved and used in resolution. If it is not, then any subsequent defined sources will be used. If no sources can satisfy the demand a no solution error will be returned.
+If a cookbook which satisfies all demands is found in `berks-api.vialstudios.com` then it will be retrieved and used in resolution. If it is not, then any subsequent defined sources will be used. If no sources can satisfy the demand a no solution error will be returned. If a source is configured with the location `:chef_server`, then Berkshelf will use the configured Chef Server as an API source. This requires Chef Server 12.4.0 or newer, or Hosted Chef.
 
 Explicit locations can be used to override the cookbooks found at these sources
 
