@@ -30,7 +30,9 @@ branches:
     - master
 bundler_args: --without guard changelog --jobs 7
 before_install:
-  - gem update --system
+  # RubyGems 2.6.2 and bundler 1.11.2 have an incompatibility that occurs when
+  # using some gem APIs. See: https://github.com/bundler/bundler/issues/4368
+  - gem update --system 2.6.1
   - gem install bundler
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
