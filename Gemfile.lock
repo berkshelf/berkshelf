@@ -19,7 +19,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (4.3.0)
+    berkshelf (4.3.1)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
       buff-config (~> 1.0)
