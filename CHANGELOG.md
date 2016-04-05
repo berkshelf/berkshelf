@@ -1,5 +1,23 @@
 # Change Log
 
+## [4.3.2](https://github.com/berkshelf/berkshelf/tree/4.3.2) (2016-04-05)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.1...4.3.2)
+
+**Closed issues:**
+
+- chef\_server source does not work as documented. [\#1540](https://github.com/berkshelf/berkshelf/issues/1540)
+
+## [v4.3.1](https://github.com/berkshelf/berkshelf/tree/v4.3.1) (2016-03-23)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.0...v4.3.1)
+
+**Implemented enhancements:**
+
+- Authenticated universe endpoint in new Chef Server 12.4 [\#1511](https://github.com/berkshelf/berkshelf/issues/1511)
+
+**Merged pull requests:**
+
+- Update all dependencies [\#1535](https://github.com/berkshelf/berkshelf/pull/1535) ([danielsdeleo](https://github.com/danielsdeleo))
+
 ## [v4.3.0](https://github.com/berkshelf/berkshelf/tree/v4.3.0) (2016-03-09)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.2.3...v4.3.0)
 
