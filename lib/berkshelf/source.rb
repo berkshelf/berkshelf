@@ -4,15 +4,9 @@ module Berkshelf
   class Source
     include Comparable
 
-    # @return [Berkshelf::SourceURI]
-    attr_accessor :uri
-
-    # @return [Berkshelf::APIClient]
-    attr_accessor :api_client
-
     attr_accessor :source
 
-    # @param [String, Berkshelf::SourceURI] uri
+    # @param [String, Berkshelf::SourceURI] source
     def initialize(source)
       @source = source
       @universe   = nil
