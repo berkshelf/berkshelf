@@ -102,9 +102,9 @@ module Berkshelf
         end
 
         # We use Net::HTTP.new and then get here, because Net::HTTP.get does not support proxy settings.
-        http = Net::HTTP.new(url.host,
-                             use_ssl: url.scheme == "https",
-                             verify_mode: (options[:ssl_verify].nil? || options[:ssl_verify]) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE)
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = url.scheme == "https"
+        http.verify_mode = (options[:ssl_verify].nil? || options[:ssl_verify]) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
         resp = http.get(url.request_uri)
         return nil unless resp.is_a?(Net::HTTPSuccess)
         open(archive_path, "wb") { |file| file.write(resp.body) }
