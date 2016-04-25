@@ -668,7 +668,13 @@ module Berkshelf
         #
         #   * https://tickets.opscode.com/browse/CHEF-4811
         #   * https://tickets.opscode.com/browse/CHEF-4810
-        FileSyncer.sync(scratch, destination, exclude: raw_metadata_files + EXCLUDED_VCS_FILES_WHEN_VENDORING)
+        exclude = raw_metadata_files.concat(EXCLUDED_VCS_FILES_WHEN_VENDORING)
+        sources = FileSyncer.glob(File.join(scratch, '*'))
+
+        sources.each do |src|
+          cookbook_name = File.basename(src)
+          FileSyncer.sync(src, File::join(destination, cookbook_name), exclude: exclude)
+        end
       end
 
       destination

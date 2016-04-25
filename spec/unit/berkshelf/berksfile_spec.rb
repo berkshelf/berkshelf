@@ -397,7 +397,7 @@ describe Berkshelf::Berksfile do
     end
 
     it 'invokes FileSyncer with correct arguments' do
-      expect(Berkshelf::FileSyncer).to receive(:sync).with(/vendor/, destination, excludes)
+      expect(Berkshelf::FileSyncer).to receive(:sync).with(/vendor/, File.join(destination, 'my_cookbook'), excludes)
 
       subject.vendor(destination)
     end
