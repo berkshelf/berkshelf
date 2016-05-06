@@ -1,4 +1,10 @@
 GIT
+  remote: git://github.com/chef/mixlib-archive.git
+  revision: 3472934c7f5c204d6febb6187ff83dff70d6f2a0
+  specs:
+    mixlib-archive (0.1.0)
+
+GIT
   remote: https://github.com/berkshelf/berkshelf-api.git
   revision: 32ee12fd59c50c9cdaaf7b5f661cfbdf134affed
   specs:
@@ -378,6 +384,7 @@ DEPENDENCIES
   guard-rspec
   guard-spork
   http (~> 0.9, >= 0.9.8)
+  mixlib-archive!
   rake (~> 10.1)
   rb-fsevent
   rspec (~> 3.0)

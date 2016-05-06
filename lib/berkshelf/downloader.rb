@@ -1,6 +1,5 @@
 require 'net/http'
-require 'zlib'
-require 'archive/tar/minitar'
+require 'mixlib/archive'
 
 module Berkshelf
   class Downloader
@@ -109,8 +108,7 @@ module Berkshelf
         return nil unless resp.is_a?(Net::HTTPSuccess)
         open(archive_path, "wb") { |file| file.write(resp.body) }
 
-        tgz = Zlib::GzipReader.new(File.open(archive_path, "rb"))
-        Archive::Tar::Minitar.unpack(tgz, unpack_dir)
+        Mixlib::Archive.new(archive_path).extract(unpack_dir)
 
         # we need to figure out where the cookbook is located in the archive. This is because the directory name
         # pattern is not cosistant between private and public github repositories
@@ -131,10 +129,7 @@ module Berkshelf
           archive_path.open('wb') { |local_file| local_file.write remote_file.read }
         end
 
-        archive_path.open('rb') do |file|
-          tgz = Zlib::GzipReader.new(file)
-          Archive::Tar::Minitar.unpack(tgz, unpack_dir.to_s)
-        end
+        Mixlib::Archive.new(archive_path).extract(unpack_dir)
 
         # The top level directory is inconsistant. So we unpack it and
         # use the only directory created in the unpack_dir.
