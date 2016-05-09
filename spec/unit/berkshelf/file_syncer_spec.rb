@@ -180,7 +180,7 @@ module Berkshelf
         end
       end
 
-      context 'with deeply nested paths and symlinks' do
+      context 'with deeply nested paths and symlinks', :not_supported_on_windows do
         let(:source) do
           source = File.join(tmp_path, 'source')
           FileUtils.mkdir_p(source)

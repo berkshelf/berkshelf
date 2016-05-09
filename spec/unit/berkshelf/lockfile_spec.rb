@@ -5,16 +5,17 @@ describe Berkshelf::Lockfile do
   subject { Berkshelf::Lockfile.new(filepath: filepath) }
 
   describe '.from_berksfile' do
+    let(:lock_path) { File.absolute_path('/path/to/Bacon') }
     let(:berksfile) do
       double('Berksfile',
-        filepath: '/path/to/Bacon',
+        filepath: lock_path,
       )
     end
 
     subject { described_class.from_berksfile(berksfile) }
 
     it 'uses the basename of the Berksfile' do
-      expect(subject.filepath).to eq("/path/to/Bacon.lock")
+      expect(subject.filepath).to eq("#{lock_path}.lock")
     end
   end
 
