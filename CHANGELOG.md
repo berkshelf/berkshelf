@@ -1,5 +1,14 @@
 # Change Log
 
+## [4.3.3](https://github.com/berkshelf/berkshelf/tree/4.3.3) (2016-05-09)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.2...4.3.3)
+
+**Merged pull requests:**
+
+- Fixing some specs that fail on Windows [\#1554](https://github.com/berkshelf/berkshelf/pull/1554) ([tyler-ball](https://github.com/tyler-ball))
+- fix up @reset's review comments from \#1527 [\#1543](https://github.com/berkshelf/berkshelf/pull/1543) ([thommay](https://github.com/thommay))
+- Correct usage of Net::HTTP.new [\#1532](https://github.com/berkshelf/berkshelf/pull/1532) ([xeron](https://github.com/xeron))
+
 ## [4.3.2](https://github.com/berkshelf/berkshelf/tree/4.3.2) (2016-04-05)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.1...4.3.2)
 
