@@ -13,7 +13,7 @@ module Berkshelf
       # @raise [String]
       #   the +$stdout+ from the command
       def git(command, error = true)
-        unless Berkshelf.which('git') || Berkshelf.which('git.exe')
+        unless Berkshelf.which('git') || Berkshelf.which('git.exe') || Berkshelf.which('git.bat')
           raise GitNotInstalled.new
         end
 
