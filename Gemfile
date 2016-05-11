@@ -30,6 +30,9 @@ group :guard do
   end
 end
 
+# until a gem release!
+gem "mixlib-archive", github: "chef/mixlib-archive"
+
 group :changelog do
   gem 'github_changelog_generator', "1.11.3"
 end

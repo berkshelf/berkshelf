@@ -7,18 +7,18 @@ describe Berkshelf::CommunityREST do
       let(:destination) { '/destination/bar' }
       let(:file) { double('file') }
       let(:gzip_reader) { double('gzip_reader') }
+      let(:archive) { double('mixlib_archive') }
 
       before do
         allow(File).to receive(:open).with(target, 'rb').and_return(file)
-        allow(Zlib::GzipReader).to receive(:new).with(file).and_return(gzip_reader)
-        allow(Archive::Tar::Minitar).to receive(:unpack).with(gzip_reader, destination)
+        allow(archive).to receive(:extract).with(destination)
+        allow(Mixlib::Archive).to receive(:new).with(target).and_return(archive)
       end
 
       it 'unpacks the tar' do
-        expect(File).to receive(:open).with(target, 'rb')
         expect(::IO).to receive(:binread).with(target, 2).and_return([0x1F, 0x8B].pack("C*"))
-        expect(Zlib::GzipReader).to receive(:new).with(file)
-        expect(Archive::Tar::Minitar).to receive(:unpack).with(gzip_reader, destination)
+        expect(Mixlib::Archive).to receive(:new).with(target).and_return(archive)
+        expect(archive).to receive(:extract).with(destination)
 
         expect(Berkshelf::CommunityREST.unpack(target, destination)).to eq(destination)
       end

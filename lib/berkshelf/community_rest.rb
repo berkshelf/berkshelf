@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'retryable'
+require 'mixlib/archive'
 
 module Berkshelf
   class CommunityREST < Faraday::Connection
@@ -11,15 +12,12 @@ module Berkshelf
       #
       # @return [String]
       def unpack(target, destination)
-        if is_gzip_file(target)
-          Archive::Tar::Minitar.unpack(Zlib::GzipReader.new(File.open(target, 'rb')), destination)
-        elsif is_tar_file(target)
-          Archive::Tar::Minitar.unpack(target, destination)
+        if is_gzip_file(target) || is_tar_file(target)
+          Mixlib::Archive.new(target).extract(destination)
         else
           raise Berkshelf::UnknownCompressionType.new(target, destination)
         end
 
-        FileUtils.rm_rf Dir.glob("#{destination}/**/PaxHeader")
         destination
       end
 
