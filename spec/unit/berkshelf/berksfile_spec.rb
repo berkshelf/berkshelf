@@ -424,6 +424,20 @@ describe Berkshelf::Berksfile do
       expect(subject.required_solver).to equal(:b)
     end
 
+    context 'when the default_solver is set in the berks config file' do
+      let(:berkshelf_config) do
+        double(RbConfig, default_resolver: "override")
+      end
+
+      before do
+        allow(Berkshelf).to receive(:config).and_return(berkshelf_config)
+      end
+
+      it "sets the preferred solver from berks config file" do
+        expect(subject.preferred_solver).to equal(:override)
+      end
+    end
+
     it "raises an exception with a bad precedence" do
       expect { subject.solver(:foo, :bar) }.to raise_error(/Invalid solver precedence ':bar'/)
     end

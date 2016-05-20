@@ -67,7 +67,7 @@ module Berkshelf
 
       # defaults for what solvers to use
       @required_solver  = nil
-      @preferred_solver = :gecode
+      @preferred_solver = Berkshelf.config.default_resolver.to_sym
 
       if options[:except] && options[:only]
         raise ArgumentError, 'Cannot specify both :except and :only!'
