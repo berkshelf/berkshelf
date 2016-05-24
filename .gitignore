@@ -25,5 +25,5 @@ rerun.txt
 .kitchen
 vendor/ruby
 .ruby-version
-bin
+bin/*
 !bin/berks
