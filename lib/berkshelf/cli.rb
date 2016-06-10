@@ -428,6 +428,10 @@ module Berkshelf
 
     desc 'cookbook NAME [PATH]', 'Create a skeleton for a new cookbook'
     def cookbook(name, path = nil)
+      Berkshelf.ui.warn <<EOF
+This command is being deprecated in favor of `chef generate cookbook` and will soon return an error.
+Please use `chef generate cookbook` instead of this command.
+EOF
       path = File.join(Dir.pwd, name) if path.nil?
       Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
       Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
