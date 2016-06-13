@@ -25,7 +25,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (4.3.3)
+    berkshelf (4.3.4)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
       buff-config (~> 1.0)
@@ -86,7 +86,8 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.8.1)
+    chef-config (12.11.18)
+      fuzzyurl (~> 0.8.0)
       mixlib-config (~> 2.0)
       mixlib-shellout (~> 2.0)
     chef-zero (4.5.0)
@@ -138,6 +139,7 @@ GEM
     fuubar (2.0.0)
       rspec (~> 3.0)
       ruby-progressbar (~> 1.4)
+    fuzzyurl (0.8.0)
     gherkin (3.2.0)
     github_api (0.13.1)
       addressable (~> 2.4.0)
@@ -186,9 +188,8 @@ GEM
       guard (~> 1.1)
       spork (>= 0.8.4)
     hashdiff (0.3.0)
-    hashie (3.4.3)
-    hitimes (1.2.3)
-    hitimes (1.2.3-x86-mingw32)
+    hashie (3.4.4)
+    hitimes (1.2.4)
     http (0.9.9)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -198,7 +199,7 @@ GEM
       domain_name (~> 0.5)
     http-form_data (1.0.1)
     http_parser.rb (0.6.0)
-    httpclient (2.7.1)
+    httpclient (2.7.2)
     i18n (0.7.0)
     ice_nine (0.11.2)
     iniparse (1.4.2)
@@ -213,11 +214,8 @@ GEM
     method_source (0.8.2)
     minitar (0.5.4)
     minitest (5.8.4)
-    mixlib-authentication (1.4.0)
+    mixlib-authentication (1.4.1)
       mixlib-log
-      rspec-core (~> 3.2)
-      rspec-expectations (~> 3.2)
-      rspec-mocks (~> 3.2)
     mixlib-config (2.2.1)
     mixlib-install (1.0.3)
       artifactory (>= 2.3.0)
@@ -229,7 +227,7 @@ GEM
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.1.0)
-    molinillo (0.4.4)
+    molinillo (0.4.5)
     msgpack (0.5.12)
     msgpack (0.5.12-x86-mingw32)
     multi_json (1.11.2)
@@ -278,7 +276,7 @@ GEM
       http_parser.rb (>= 0.6.0)
       websocket-driver (>= 0.5.1)
     retryable (2.0.3)
-    ridley (4.5.0)
+    ridley (4.5.1)
       addressable
       buff-config (~> 1.0)
       buff-extensions (~> 1.0)
@@ -394,4 +392,4 @@ DEPENDENCIES
   yard (~> 0.8)
 
 BUNDLED WITH
-   1.11.2
+   1.12.5
