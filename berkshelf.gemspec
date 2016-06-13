@@ -46,6 +46,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'octokit',              '~> 4.0'
   s.add_dependency 'celluloid',            '= 0.16.0'
   s.add_dependency 'celluloid-io',         '~> 0.16.1'
+  s.add_dependency 'mixlib-archive',       '~> 0.1'
 
   s.add_development_dependency 'aruba',         '~> 0.10.0' # Lock this here to avoid problems with public API changes
   s.add_development_dependency 'chef-zero',     '~> 4.0'
