@@ -59,5 +59,6 @@ Once you are ready to release Berkshelf, perform the following:
 1. Update `CHANGELOG.md` with a new header indicating the version to be released
 1. Examine the diff ([example](https://github.com/berkshelf/berkshelf/compare/v4.0.1...master)) between master and the previous version.  Add all merged Pull Requests to the `CHANGELOG.md`
 1. Update `version.rb` to the desired release version
+1. Run `bundle update berkshelf`
 1. Create a PR and review the `version.rb` changes and `CHANGELOG.md` changes
 1. Once the PR is merged to master, run `rake release` on the master branch
