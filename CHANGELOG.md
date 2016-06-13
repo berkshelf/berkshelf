@@ -1,5 +1,17 @@
 # Change Log
 
+## [v4.3.5](https://github.com/berkshelf/berkshelf/tree/v4.3.5) (2016-06-13)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.4...v4.3.5)
+
+**Closed issues:**
+
+- mixlib-archive dependency [\#1571](https://github.com/berkshelf/berkshelf/issues/1571)
+
+**Merged pull requests:**
+
+- We released with a dependency on a github source [\#1572](https://github.com/berkshelf/berkshelf/pull/1572) ([tyler-ball](https://github.com/tyler-ball))
+- Update docs to use `chef generate cookbook` instead of `berks init` or `berks cookbook`. [\#1568](https://github.com/berkshelf/berkshelf/pull/1568) ([tylercloke](https://github.com/tylercloke))
+
 ## [4.3.4](https://github.com/berkshelf/berkshelf/tree/4.3.4)(2016-06-13)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.3...4.3.4)
 
