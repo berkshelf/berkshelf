@@ -6,14 +6,13 @@ Ensure that the ChefDK is added to *the front* of your path
 
     $ PATH=$HOME/.chefdk/gem/ruby/2.1.0/bin:/opt/chefdk/bin:$PATH
 
-Generate a Berksfile in a pre-existing cookbook
+Generate a Berksfile in a pre-existing cookbook. In the directory that contains your cookbook folder, run
 
-    $ cd my-cookbook
-    $ berks init .
+    $ chef generate cookbook my-cookbook
 
 Or create a new cookbook
 
-    $ berks cookbook myapp
+    $ chef generate cookbook myapp
 
 And specify your dependencies in a Berksfile in your cookbook's root
 
