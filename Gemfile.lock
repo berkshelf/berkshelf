@@ -1,10 +1,4 @@
 GIT
-  remote: git://github.com/chef/mixlib-archive.git
-  revision: 3472934c7f5c204d6febb6187ff83dff70d6f2a0
-  specs:
-    mixlib-archive (0.1.0)
-
-GIT
   remote: https://github.com/berkshelf/berkshelf-api.git
   revision: 32ee12fd59c50c9cdaaf7b5f661cfbdf134affed
   specs:
@@ -25,7 +19,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (4.3.4)
+    berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (~> 2.0, >= 2.0.2)
       buff-config (~> 1.0)
@@ -37,6 +31,7 @@ PATH
       faraday (~> 0.9)
       httpclient (~> 2.7)
       minitar (~> 0.5, >= 0.5.4)
+      mixlib-archive (~> 0.1)
       octokit (~> 4.0)
       retryable (~> 2.0)
       ridley (~> 4.5)
@@ -190,6 +185,7 @@ GEM
     hashdiff (0.3.0)
     hashie (3.4.4)
     hitimes (1.2.4)
+    hitimes (1.2.4-x86-mingw32)
     http (0.9.9)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -214,6 +210,7 @@ GEM
     method_source (0.8.2)
     minitar (0.5.4)
     minitest (5.8.4)
+    mixlib-archive (0.1.0)
     mixlib-authentication (1.4.1)
       mixlib-log
     mixlib-config (2.2.1)
@@ -382,7 +379,6 @@ DEPENDENCIES
   guard-rspec
   guard-spork
   http (~> 0.9, >= 0.9.8)
-  mixlib-archive!
   rake (~> 10.1)
   rb-fsevent
   rspec (~> 3.0)
