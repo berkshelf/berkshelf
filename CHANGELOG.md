@@ -1,5 +1,15 @@
 # Change Log
 
+## [4.3.4](https://github.com/berkshelf/berkshelf/tree/4.3.4)(2016-06-13)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.3...4.3.4)
+
+**Merged pull requests:**
+
+- Use rubygem's tar implementation [\#1553](https://github.com/berkshelf/berkshelf/pull/1553)
+- Fixing some specs that fail on Windows [\#1554](https://github.com/berkshelf/berkshelf/pull/1554)
+- Deprecate `berks cookbook` in favor of `chef generate cookbook` [\#1565](https://github.com/berkshelf/berkshelf/pull/1565)
+- Deprecate `berks init` in favor of `chef generate cookbook` [\#1567](https://github.com/berkshelf/berkshelf/pull/1567)
+
 ## [4.3.3](https://github.com/berkshelf/berkshelf/tree/4.3.3) (2016-05-09)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.2...4.3.3)
 
