@@ -199,6 +199,7 @@ describe Berkshelf::Lockfile do
       )
       apt_master = apt.dup
       allow(apt_master).to receive_messages(location: 'github')
+      allow(apt_master).to receive_messages(cached_cookbook: cookbook)
       berksfile = double('berksfile', dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt_master)
