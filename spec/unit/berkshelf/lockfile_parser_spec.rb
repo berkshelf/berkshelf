@@ -28,6 +28,11 @@ describe Berkshelf::Lockfile do
       expect(subject.find('jenkins').version_constraint.to_s).to eq('>= 0.0.0')
       expect(subject.find('runit').version_constraint.to_s).to eq('>= 0.0.0')
       expect(subject.find('yum').version_constraint.to_s).to eq('>= 0.0.0')
+
+      expect(subject.find('apt').locked_version.to_s).to eq('2.3.6')
+      expect(subject.find('jenkins').locked_version.to_s).to eq('2.0.3')
+      expect(subject.find('runit').locked_version.to_s).to eq('1.5.8')
+      expect(subject.find('yum').locked_version.to_s).to eq('3.0.6')
     end
 
     it 'sets the graph' do
@@ -88,6 +93,9 @@ describe Berkshelf::Lockfile do
 
       expect(subject.find('apt').version_constraint.to_s).to eq('~> 2.0')
       expect(subject.find('jenkins').version_constraint.to_s).to eq('~> 2.0')
+
+      expect(subject.find('apt').locked_version.to_s).to eq('2.3.6')
+      expect(subject.find('jenkins').locked_version.to_s).to eq('2.0.3')
     end
 
     it 'sets the graph' do

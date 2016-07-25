@@ -113,7 +113,7 @@ module Berkshelf
           return false
         end
 
-        if cookbook = dependency.cached_cookbook
+        if cookbook = locked.cached_cookbook
           Berkshelf.log.debug "  Detected there is a cached cookbook"
 
           unless (cookbook.dependencies.keys - graphed.dependencies.keys).empty?
@@ -587,6 +587,9 @@ module Berkshelf
           end
 
           @parsed_dependencies.each do |name, options|
+            graph_item = @lockfile.graph.find(name)
+            options[:locked_version] = graph_item.version if graph_item
+
             dependency = Dependency.new(@berksfile, name, options)
             @lockfile.add(dependency)
           end
@@ -667,7 +670,7 @@ module Berkshelf
             # We need to make a copy of the dependency, or else we could be
             # modifying an existing object that other processes depend on!
             dependency = dependency.dup
-            dependency.locked_version = item.version
+            dependency.locked_version = item.version unless dependency.locked_version 
 
             hash[item.name] = dependency
             hash
