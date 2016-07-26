@@ -4,15 +4,14 @@ addons:
       - chef
       - git
       - graphviz
-      - libarchive12
       - libarchive-dev
       - libgecode-dev
     sources:
-      - chef-stable-precise
+      - chef-stable-trusty
 cache:
   - apt
   - bundler
-dist: precise
+dist: trusty
 env:
   global: USE_SYSTEM_GECODE=1
 language: ruby
@@ -30,9 +29,7 @@ branches:
     - master
 bundler_args: --without guard changelog --jobs 7
 before_install:
-  # RubyGems 2.6.2 and bundler 1.11.2 have an incompatibility that occurs when
-  # using some gem APIs. See: https://github.com/bundler/bundler/issues/4368
-  - gem update --system 2.6.1
+  - gem update --system
   - gem install bundler
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
@@ -40,10 +37,10 @@ before_script:
   - git config --global user.name "Berkshelf"
 matrix:
   include:
-    - rvm: 2.0.0
     - rvm: 2.1
     - rvm: 2.2
-    - rvm: 2.2
+    - rvm: 2.3
+    - rvm: 2.3
       before_install:
         # Failures in the berkshelf-api gemspec were happening with bundler 1.8
         - gem install bundler --version=1.10.6
