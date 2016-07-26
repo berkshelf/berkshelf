@@ -59,4 +59,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'webmock',       '~> 1.11'
   s.add_development_dependency 'yard',          '~> 0.8'
   s.add_development_dependency 'http',          '~> 0.9', '>= 0.9.8'
+  s.add_development_dependency 'activesupport', '~> 4.0'  # pinning for ruby 2.1.x
 end
