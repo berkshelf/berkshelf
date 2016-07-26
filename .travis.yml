@@ -12,8 +12,8 @@ cache:
   - apt
   - bundler
 dist: trusty
-env:
-  global: USE_SYSTEM_GECODE=1
+#env:
+#  global: USE_SYSTEM_GECODE=1
 language: ruby
 notifications:
   irc:
