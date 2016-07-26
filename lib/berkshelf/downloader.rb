@@ -138,6 +138,40 @@ module Berkshelf
         end.first
 
         (unpack_dir + cookbook_directory).to_s
+      when :gitlab
+        #Thread.exclusive { require 'octokit' unless defined?(Octokit) }
+
+        tmp_dir      = Dir.mktmpdir
+        archive_path = Pathname.new(tmp_dir) + "#{name}-#{version}.tar.gz"
+        unpack_dir   = Pathname.new(tmp_dir) + "#{name}-#{version}"
+
+        # Find the correct gitlab connection options for this specific cookbook.
+        cookbook_uri = URI.parse(remote_cookbook.location_path)
+        if cookbook_uri.host
+          options = Berkshelf::Config.instance.gitlab.detect { |opts| opts["web_endpoint"] == "#{cookbook_uri.scheme}://#{cookbook_uri.host}" }
+          raise ConfigurationError.new "Missing github endpoint configuration for #{cookbook_uri.scheme}://#{cookbook_uri.host}" if options == nil
+        end
+
+        connection ||= Faraday.new(url: options[:web_endpoint]) do |faraday|
+          faraday.headers[:accept] = 'application/x-tar'
+          faraday.response :logger, @logger unless @logger.nil?
+          faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
+        end
+
+        resp = connection.get(cookbook_uri.request_uri + '&private_token=' + options[:private_token])
+        return nil unless resp.status == 200
+        open(archive_path, "wb") { |file| file.write(resp.body) }
+
+        tgz = Zlib::GzipReader.new(File.open(archive_path, "rb"))
+        Archive::Tar::Minitar.unpack(tgz, unpack_dir)
+
+        # The top level directory is inconsistant. So we unpack it and
+        # use the only directory created in the unpack_dir.
+        cookbook_directory = unpack_dir.entries.select do |filename|
+          (! filename.to_s.start_with?('.')) && (unpack_dir + filename).cookbook?
+        end.first
+
+        (unpack_dir + cookbook_directory).to_s
       when :file_store
         tmp_dir = Dir.mktmpdir
         FileUtils.cp_r(remote_cookbook.location_path, tmp_dir)

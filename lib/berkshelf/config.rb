@@ -135,5 +135,9 @@ module Berkshelf
       type: Array,
       default: [],
       required: false
+    attribute 'gitlab',
+      type: Array,
+      default: [],
+      required: false
   end
 end
