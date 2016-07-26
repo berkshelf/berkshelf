@@ -31,6 +31,7 @@ bundler_args: --without guard changelog --jobs 7
 before_install:
   - gem update --system
   - gem install bundler
+  - free
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
   - git config --global user.email "ci@berkshelf.com"
