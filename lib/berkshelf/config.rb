@@ -142,7 +142,7 @@ module Berkshelf
     attribute 'github.protocol',
       # :git, :ssh, or :https
       type: Symbol,
-      default: :git,
+      default: :https,
       required: false
   end
 end
