@@ -5,7 +5,7 @@ addons:
       - git
       - graphviz
       - libarchive-dev
-      - libgecode-dev
+#      - libgecode-dev
     sources:
       - chef-stable-trusty
 cache:
@@ -43,7 +43,7 @@ matrix:
     - rvm: 2.2.5
     - rvm: 2.3.1
     - rvm: ruby-head
-    - rvm: 2.3.1
+    - rvm: 2.2.5
       before_install:
         # Failures in the berkshelf-api gemspec were happening with bundler 1.8
         - gem install bundler --version=1.10.6
@@ -60,4 +60,7 @@ matrix:
         - cd proxy_tests && chef-client -z -o proxy_tests::render && cd ..
         - rvmsudo -E bundle exec bash $PROXY_TESTS_DIR/run_tests.sh berkshelf \* \* /tmp/out.txt
       after_script: cat /tmp/out.txt
+  allow_failures:
+    - rvm: 2.3.1
+    - rvm: ruby-head
 script: bundle exec thor spec:ci
