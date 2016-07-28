@@ -8,7 +8,7 @@ describe Berkshelf::Validator do
       allow(Dir).to receive(:glob).and_return(['/there are/spaces/in this/recipes/default.rb'])
       expect {
         subject.validate_files(cookbook)
-      }.to raise_error
+      }.to raise_error(Berkshelf::InvalidCookbookFiles)
     end
 
     it 'does not raise an error when the cookbook is valid' do

@@ -44,20 +44,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'solve',                '~> 2.0'
   s.add_dependency 'thor',                 '~> 0.19'
   s.add_dependency 'octokit',              '~> 4.0'
-  s.add_dependency 'celluloid',            '= 0.16.0'
-  s.add_dependency 'celluloid-io',         '~> 0.16.1'
   s.add_dependency 'mixlib-archive',       '~> 0.1'
-
-  s.add_development_dependency 'aruba',         '~> 0.10.0' # Lock this here to avoid problems with public API changes
-  s.add_development_dependency 'chef-zero',     '~> 4.0'
-  s.add_development_dependency 'dep_selector',  '~> 1.0'
-  s.add_development_dependency 'fuubar',        '~> 2.0'
-  s.add_development_dependency 'rake',          '~> 10.1'
-  s.add_development_dependency 'rspec',         '~> 3.0'
-  s.add_development_dependency 'spork',         '~> 0.9'
-  s.add_development_dependency 'test-kitchen',  '~> 1.2'
-  s.add_development_dependency 'webmock',       '~> 1.11'
-  s.add_development_dependency 'yard',          '~> 0.8'
-  s.add_development_dependency 'http',          '~> 0.9', '>= 0.9.8'
-  s.add_development_dependency 'activesupport', '~> 4.0'  # pinning for ruby 2.1.x
 end

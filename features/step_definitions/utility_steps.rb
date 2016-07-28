@@ -3,7 +3,9 @@ Given /^skip\s+"([^\"]+)"$/ do |msg|
 end
 
 Then /the output from \`(.+)\` should be the same as \`(.+)\`/ do |actual, expected|
-  run_simple(actual)
-  run_simple(expected)
-  expect(output_from(actual)).to eq(output_from(expected))
+  run(actual)
+  actual_output = last_command_started.stdout
+  run(expected)
+  expected_output = last_command_started.stdout
+  expect(actual_output).to eql(expected_output)
 end
