@@ -8,6 +8,8 @@ module Berkshelf
         options[:git] = "git@#{HOST}:#{options.delete(:github)}.git"
       when :https
         options[:git] = "https://#{HOST}/#{options.delete(:github)}.git"
+      when :git
+        options[:git] = "git://#{HOST}/#{options.delete(:github)}.git"
       else
         # if some bizarre value is provided, treat it as :https
         options[:git] = "https://#{HOST}/#{options.delete(:github)}.git"
