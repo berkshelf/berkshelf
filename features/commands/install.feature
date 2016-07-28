@@ -234,9 +234,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 1.0.0 | 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
       Fetching cookbook index from http://0.0.0.0:26210...
-      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
+      Using berkshelf-cookbook-fixture (1.0.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
       """
 
   Scenario: installing a Berksfile that contains a Git location
@@ -307,9 +307,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       Fetching cookbook index from http://0.0.0.0:26210...
-      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
   Scenario: installing a Berksfile that contains a GitHub location
@@ -322,9 +322,9 @@ Feature: berks install
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       Fetching cookbook index from http://0.0.0.0:26210...
-      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
   Scenario: running install when current project is a cookbook and the 'metadata' is specified

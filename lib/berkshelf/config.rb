@@ -139,7 +139,7 @@ module Berkshelf
       type: Array,
       default: [],
       required: false
-    attribute 'github.protocol',
+    attribute 'github_protocol',
       # :git, :ssh, or :https
       type: Symbol,
       default: :https,
