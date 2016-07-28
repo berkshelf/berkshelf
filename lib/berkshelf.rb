@@ -17,6 +17,8 @@ require_relative 'berkshelf/core_ext'
 require_relative 'berkshelf/thor_ext'
 
 module Berkshelf
+  Encoding.default_external = Encoding::UTF_8
+
   require_relative 'berkshelf/version'
   require_relative 'berkshelf/errors'
 
