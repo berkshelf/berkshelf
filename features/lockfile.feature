@@ -230,7 +230,7 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          git: https://github.com/RiotGames/berkshelf-cookbook-fixture.git
           revision: 919afa0c402089df23ebdf36637f12271b8a96b4
           ref: 919afa0
 
@@ -248,7 +248,7 @@ Feature: Creating and reading the Berkshelf lockfile
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: git://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          git: https://github.com/RiotGames/berkshelf-cookbook-fixture.git
           revision: 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a
           branch: rel
           rel: cookbooks/berkshelf-cookbook-fixture
