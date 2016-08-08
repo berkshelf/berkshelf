@@ -31,7 +31,6 @@ branches:
 before_install:
   - gem update --system
   - gem install bundler
-  - free
 install:  travis_wait bundle install --without guard changelog --jobs 7 --retry=3
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
