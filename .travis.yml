@@ -31,7 +31,6 @@ branches:
 before_install:
   - gem update --system
   - gem install bundler
-  - free
 install:  travis_wait bundle install --without guard changelog --jobs 7 --retry=3
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
@@ -39,7 +38,6 @@ before_script:
   - git config --global user.name "Berkshelf"
 matrix:
   include:
-    - rvm: 2.1.10
     - rvm: 2.2.5
     - rvm: 2.3.1
     - rvm: ruby-head
@@ -60,7 +58,4 @@ matrix:
         - cd proxy_tests && chef-client -z -o proxy_tests::render && cd ..
         - rvmsudo -E bundle exec bash $PROXY_TESTS_DIR/run_tests.sh berkshelf \* \* /tmp/out.txt
       after_script: cat /tmp/out.txt
-  allow_failures:
-    - rvm: 2.3.1
-    - rvm: ruby-head
 script: bundle exec thor spec:ci
