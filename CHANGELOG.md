@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.0](https://github.com/berkshelf/berkshelf/tree/5.0.0) (2016-08-08)
+## [5.0.0](https://github.com/berkshelf/berkshelf/tree/5.0.0) (2016-08-09)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.5...5.0.0)
 
 **Merged pull requests:**
@@ -8,13 +8,9 @@
 - Add Ruby 2.3 and Ruby 2.4 support - drop Ruby 2.1 support and older [\#1591](https://github.com/berkshelf/berkshelf/pull/1591) ([lamont-granquist](https://github.com/lamont-granquist))
 - bump berkshelf-api and associated deps [\#1589](https://github.com/berkshelf/berkshelf/pull/1589) ([lamont-granquist](https://github.com/lamont-granquist))
 - force encoding to UTF-8 [\#1588](https://github.com/berkshelf/berkshelf/pull/1588) ([lamont-granquist](https://github.com/lamont-granquist))
-- updates deps [\#1587](https://github.com/berkshelf/berkshelf/pull/1587) ([lamont-granquist](https://github.com/lamont-granquist))
 - Bump dep-selector-libgecode to 1.3.1 [\#1586](https://github.com/berkshelf/berkshelf/pull/1586) ([stevendanna](https://github.com/stevendanna))
 - allow user to change git url handler [\#1585](https://github.com/berkshelf/berkshelf/pull/1585) ([lamont-granquist](https://github.com/lamont-granquist))
-- can't install the libgecode-dev package [\#1584](https://github.com/berkshelf/berkshelf/pull/1584) ([lamont-granquist](https://github.com/lamont-granquist))
-- bump Gemfile.lock deps [\#1583](https://github.com/berkshelf/berkshelf/pull/1583) ([lamont-granquist](https://github.com/lamont-granquist))
 - fix specs for bento box [\#1582](https://github.com/berkshelf/berkshelf/pull/1582) ([lamont-granquist](https://github.com/lamont-granquist))
-- not using system gecode for now [\#1581](https://github.com/berkshelf/berkshelf/pull/1581) ([lamont-granquist](https://github.com/lamont-granquist))
 - Fixes \#1473 where Lockfile\#trusted? would compare dependencies of oth… [\#1580](https://github.com/berkshelf/berkshelf/pull/1580) ([bbaugher](https://github.com/bbaugher))
 - Require Ruby 2.1+ [\#1575](https://github.com/berkshelf/berkshelf/pull/1575) ([tas50](https://github.com/tas50))
 - Add introductory docs for newcomers. [\#1520](https://github.com/berkshelf/berkshelf/pull/1520) ([jzohrab](https://github.com/jzohrab))
