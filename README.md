@@ -25,7 +25,9 @@ gem 'berkshelf'
 
 Or run it as a standalone:
 
-    $ gem install berkshelf
+```shell
+$ gem install berkshelf
+```
 
 ## Usage
 
@@ -33,11 +35,7 @@ See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
 
 ## Supported Platforms
 
-Berkshelf is tested on Ruby 1.9.3, 2.0, and 2.1.
-
-Ruby 1.9 mode is required on all interpreters.
-
-Ruby 1.9.1 and 1.9.2 are not officially supported. If you encounter problems, please upgrade to Ruby 2.0 or 1.9.3.
+Berkshelf is tested and supported on Ruby 2.2 and 2.3.
 
 ## Configuration
 
