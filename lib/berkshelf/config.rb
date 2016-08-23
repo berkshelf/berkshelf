@@ -107,8 +107,7 @@ module Berkshelf
       default: false
     attribute 'vagrant.vm.box',
       type: String,
-      default: 'bento/ubuntu-14.04',
-      required: true
+      default: 'bento/ubuntu-14.04'
     # @todo Deprecated, remove?
     attribute 'vagrant.vm.box_url',
       type: String,
@@ -129,8 +128,7 @@ module Berkshelf
       default: 'latest'
     attribute 'ssl.verify',
       type: Buff::Boolean,
-      default: true,
-      required: true
+      default: true
     attribute 'github',
       type: Array,
       default: [],
