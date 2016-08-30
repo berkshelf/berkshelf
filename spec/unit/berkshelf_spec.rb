@@ -27,6 +27,33 @@ module Berkshelf
     end
   end
 
+  describe '.berkshelf_path' do
+    before { Berkshelf.instance_variable_set(:@berkshelf_path, nil) }
+
+    context 'with default path' do
+      before do
+        @berkshelf_path = ENV['BERKSHELF_PATH']
+        ENV['BERKSHELF_PATH'] = nil
+      end
+
+      after do
+        ENV['BERKSHELF_PATH'] = @berkshelf_path
+      end
+
+      it 'is ~/.berkshelf' do
+        expect(Berkshelf.berkshelf_path).to eq File.expand_path('~/.berkshelf')
+        expect(Berkshelf.instance_variable_get(:@berkshelf_path)).to eq File.expand_path('~/.berkshelf')
+      end
+    end
+
+    context 'with ENV["BERKSHELF_PATH"]' do
+      it 'is ENV["BERKSHELF_PATH"]' do
+        expect(Berkshelf.berkshelf_path).to eq File.expand_path(ENV['BERKSHELF_PATH'])
+        expect(Berkshelf.instance_variable_get(:@berkshelf_path)).to eq File.expand_path(ENV['BERKSHELF_PATH'])
+      end
+    end
+  end
+
   describe '::log' do
     it 'returns Berkshelf::Logger' do
       expect(Berkshelf.log).to be_a(Berkshelf::Logger)
