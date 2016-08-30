@@ -10,7 +10,6 @@ module Berkshelf
     def initialize(source)
       @source = source
       @universe   = nil
-      @api_client = new_api_client(uri)
     end
 
     def api_client
@@ -124,8 +123,6 @@ module Berkshelf
     end
 
     private
-
-    attr_reader :api_client
 
     def api_timeout
       Berkshelf::Config.instance.api.timeout.to_i
