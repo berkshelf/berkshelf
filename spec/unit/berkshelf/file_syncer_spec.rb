@@ -117,13 +117,35 @@ module Berkshelf
       context 'when the directory exists' do
         before { FileUtils.mkdir_p(destination) }
 
-        it 'deletes existing files and folders' do
+        it 'does not delete existing files and folders' do
           FileUtils.mkdir_p("#{destination}/existing_folder")
           FileUtils.mkdir_p("#{destination}/.existing_folder")
           FileUtils.touch("#{destination}/existing_file")
           FileUtils.touch("#{destination}/.existing_file")
 
           described_class.sync(source, destination)
+
+          expect("#{destination}/file_a").to be_a_file
+          expect("#{destination}/file_b").to be_a_file
+          expect("#{destination}/file_c").to be_a_file
+          expect("#{destination}/folder/file_d").to be_a_file
+          expect("#{destination}/folder/file_e").to be_a_file
+          expect("#{destination}/.dot_folder/file_f").to be_a_file
+          expect("#{destination}/.file_g").to be_a_file
+
+          expect("#{destination}/existing_folder").to be_a_directory
+          expect("#{destination}/.existing_folder").to be_a_directory
+          expect("#{destination}/existing_file").to be_a_file
+          expect("#{destination}/.existing_file").to be_a_file
+        end
+
+        it 'optionally deletes existing files and folders' do
+          FileUtils.mkdir_p("#{destination}/existing_folder")
+          FileUtils.mkdir_p("#{destination}/.existing_folder")
+          FileUtils.touch("#{destination}/existing_file")
+          FileUtils.touch("#{destination}/.existing_file")
+
+          described_class.sync(source, destination, delete: true)
 
           expect("#{destination}/file_a").to be_a_file
           expect("#{destination}/file_b").to be_a_file
@@ -288,7 +310,7 @@ module Berkshelf
           FileUtils.mkdir_p("#{destination}/.dot_folder")
           FileUtils.touch("#{destination}/.dot_folder/file_f")
 
-          described_class.sync(source, destination, exclude: '.dot_folder')
+          described_class.sync(source, destination, delete: true, exclude: '.dot_folder')
 
           expect("#{destination}/file_a").to be_a_file
           expect("#{destination}/file_b").to be_a_file

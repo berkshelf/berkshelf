@@ -28,7 +28,7 @@ Feature: Vendoring cookbooks to a directory
       metadata
       """
     When I successfully run `berks vendor cukebooks`
-    And the directory "cukebooks/fake" should contain version "0.0.0" of the "fake" cookbook
+    Then the directory "cukebooks/fake" should contain version "0.0.0" of the "fake" cookbook
 
   Scenario: vendoring a cookbook with transitive dependencies
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -86,7 +86,7 @@ Feature: Vendoring cookbooks to a directory
       cookbook 'fake'
       """
     When I successfully run `berks vendor`
-    And the directory "berks-cookbooks/fake" should contain version "1.0.0" of the "fake" cookbook
+    Then the directory "berks-cookbooks/fake" should contain version "1.0.0" of the "fake" cookbook
 
   Scenario: vendoring to a directory that already exists
     Given I have a Berksfile pointing at the local Berkshelf API with:
@@ -96,8 +96,8 @@ Feature: Vendoring cookbooks to a directory
     And a directory named "cukebooks"
     And a directory named "cukebooks/fake/ponies"
     And a directory named "cukebooks/existing_cookbook"
-    When I successfully run `berks vendor cukebooks`
-    And the directory "cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
+    When I successfully run `berks vendor --delete cukebooks`
+    Then the directory "cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
     And a directory named "cukebooks/fake/ponies" should not exist
     And a directory named "cukebooks/existing_cookbook" should not exist
 

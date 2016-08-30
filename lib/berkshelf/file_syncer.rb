@@ -95,23 +95,25 @@ module Berkshelf
         end
       end
 
-      # Remove any files in the destination that are not in the source files
-      destination_files = glob("#{destination}/**/*")
+      if options[:delete]
+        # Remove any files in the destination that are not in the source files
+        destination_files = glob("#{destination}/**/*")
 
-      # Calculate the relative paths of files so we can compare to the
-      # source.
-      relative_source_files = source_files.map do |file|
-        relative_path_for(file, source)
-      end
-      relative_destination_files = destination_files.map do |file|
-        relative_path_for(file, destination)
-      end
+        # Calculate the relative paths of files so we can compare to the
+        # source.
+        relative_source_files = source_files.map do |file|
+          relative_path_for(file, source)
+        end
+        relative_destination_files = destination_files.map do |file|
+          relative_path_for(file, destination)
+        end
 
-      # Remove any extra files that are present in the destination, but are
-      # not in the source list
-      extra_files = relative_destination_files - relative_source_files
-      extra_files.each do |file|
-        FileUtils.rm_rf(File.join(destination, file))
+        # Remove any extra files that are present in the destination, but are
+        # not in the source list
+        extra_files = relative_destination_files - relative_source_files
+        extra_files.each do |file|
+          FileUtils.rm_rf(File.join(destination, file))
+        end
       end
 
       true

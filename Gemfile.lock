@@ -190,6 +190,7 @@ GEM
     hashdiff (0.3.0)
     hashie (3.4.4)
     hitimes (1.2.4)
+    hitimes (1.2.4-x86-mingw32)
     http (2.0.3)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
