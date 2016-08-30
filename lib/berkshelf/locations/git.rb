@@ -66,9 +66,9 @@ module Berkshelf
       # Validate the scratched path is a valid cookbook
       validate_cached!(scratch_path)
 
-      # If we got this far, we should copy
+      # If we got this far, we should atomically move
       FileUtils.rm_rf(install_path) if install_path.exist?
-      FileUtils.cp_r(scratch_path, install_path)
+      FileUtils.mv(scratch_path, install_path)
 
       # Remove the git history
       FileUtils.rm_rf(File.join(install_path, '.git'))
