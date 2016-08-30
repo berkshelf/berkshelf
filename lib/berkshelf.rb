@@ -69,8 +69,7 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      path = @berkshelf_path || ENV['BERKSHELF_PATH'] || '~/.berkshelf'
-      File.expand_path(path)
+      @berkshelf_path ||= File.expand_path(ENV['BERKSHELF_PATH'] || '~/.berkshelf')
     end
 
     # The Berkshelf configuration.

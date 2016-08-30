@@ -26,7 +26,9 @@ Spork.prefork do
   end
 
   Before do
+
     # Legacy ENV variables until we can move over to all InProcess
+    Berkshelf.instance_variable_set(:@berkshelf_path, nil)
     ENV['BERKSHELF_PATH'] = berkshelf_path.to_s
     ENV['BERKSHELF_CONFIG'] = Berkshelf.config.path.to_s
     ENV['BERKSHELF_CHEF_CONFIG'] = chef_config_path.to_s
@@ -63,6 +65,7 @@ Spork.prefork do
   Before('@spawn') do
     aruba.config.command_launcher = :spawn
 
+    Berkshelf.instance_variable_set(:@berkshelf_path, nil)
     set_environment_variable('BERKSHELF_PATH', berkshelf_path.to_s)
     set_environment_variable('BERKSHELF_CONFIG', Berkshelf.config.path.to_s)
     set_environment_variable('BERKSHELF_CHEF_CONFIG', chef_config_path.to_s)
