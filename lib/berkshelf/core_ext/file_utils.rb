@@ -8,6 +8,7 @@ module FileUtils
     # @see {FileUtils::mv}
     # @see {safe_mv}
     def mv(src, dest, options = {})
+      options.delete(:force) if options.has_key?(:force)
       FileUtils.cp_r(src, dest, options)
       FileUtils.rm_rf(src)
     end
