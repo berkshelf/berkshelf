@@ -1,10 +1,12 @@
 # Change Log
 
-## [5.0.0](https://github.com/berkshelf/berkshelf/tree/5.0.0) (2016-08-09)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.5...5.0.0)
+## [v5.0.0](https://github.com/berkshelf/berkshelf/tree/v5.0.0) (2016-08-30)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.5...v5.0.0)
 
 **Merged pull requests:**
 
+- Atomically move git located cookbook to cache [\#1598](https://github.com/berkshelf/berkshelf/pull/1598) ([kamaradclimber](https://github.com/kamaradclimber))
+- Faild `berks install` with ENV\['BERKSHELF\_PATH'\] [\#1595](https://github.com/berkshelf/berkshelf/pull/1595) ([hirocaster](https://github.com/hirocaster))
 - Add Ruby 2.3 and Ruby 2.4 support - drop Ruby 2.1 support and older [\#1591](https://github.com/berkshelf/berkshelf/pull/1591) ([lamont-granquist](https://github.com/lamont-granquist))
 - bump berkshelf-api and associated deps [\#1589](https://github.com/berkshelf/berkshelf/pull/1589) ([lamont-granquist](https://github.com/lamont-granquist))
 - force encoding to UTF-8 [\#1588](https://github.com/berkshelf/berkshelf/pull/1588) ([lamont-granquist](https://github.com/lamont-granquist))
