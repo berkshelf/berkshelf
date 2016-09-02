@@ -9,7 +9,7 @@ module Berkshelf
       # @param (see Berksfile#initialize)
       def from_options(options = {})
         options[:berksfile] ||= File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
-        from_file(options[:berksfile], options.slice(:except, :only))
+        from_file(options[:berksfile], options.slice(:except, :only, :delete))
       end
 
       # @param [#to_s] file
@@ -64,6 +64,7 @@ module Berkshelf
       @filepath         = File.expand_path(path)
       @dependencies     = Hash.new
       @sources          = Hash.new
+      @delete           = options[:delete]
 
       # defaults for what solvers to use
       @required_solver  = nil
@@ -668,7 +669,7 @@ module Berkshelf
         #
         #   * https://tickets.opscode.com/browse/CHEF-4811
         #   * https://tickets.opscode.com/browse/CHEF-4810
-        FileSyncer.sync(scratch, destination, exclude: raw_metadata_files + EXCLUDED_VCS_FILES_WHEN_VENDORING)
+        FileSyncer.sync(scratch, destination, exclude: raw_metadata_files + EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: @delete)
       end
 
       destination

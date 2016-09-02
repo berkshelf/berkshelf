@@ -379,6 +379,10 @@ EOF
       type: :array,
       desc: 'Exclude cookbooks that are in these groups.',
       aliases: '-e'
+    method_option :delete,
+      type: :boolean,
+      desc: "Clean the target directory before vendoring",
+      default: false
     method_option :only,
       type: :array,
       desc: 'Only cookbooks that are in these groups.',
