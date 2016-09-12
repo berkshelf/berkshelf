@@ -16,30 +16,6 @@ GIT
       semverse (>= 1.0, < 3.0)
       varia_model (~> 0.4)
 
-GIT
-  remote: https://github.com/berkshelf/ridley
-  revision: 3ae23f2775abc1ddcdb3fc3fe15a760863dc2dc1
-  branch: jk/buff-update
-  specs:
-    ridley (5.0.0)
-      addressable
-      buff-config (~> 2.0)
-      buff-extensions (~> 2.0)
-      buff-ignore (~> 1.2)
-      buff-shell_out (~> 1.0)
-      celluloid (~> 0.16.0)
-      celluloid-io (~> 0.16.1)
-      chef-config (>= 12.5.0)
-      erubis
-      faraday (~> 0.9.0)
-      hashie (>= 2.0.2, < 4.0.0)
-      httpclient (~> 2.7)
-      json (>= 1.7.7)
-      mixlib-authentication (>= 1.3.0)
-      retryable (~> 2.0)
-      semverse (~> 2.0)
-      varia_model (~> 0.6)
-
 PATH
   remote: .
   specs:
@@ -301,6 +277,24 @@ GEM
       http_parser.rb (>= 0.6.0)
       websocket-driver (>= 0.5.1)
     retryable (2.0.4)
+    ridley (5.1.0)
+      addressable
+      buff-config (~> 2.0)
+      buff-extensions (~> 2.0)
+      buff-ignore (~> 1.2)
+      buff-shell_out (~> 1.0)
+      celluloid (~> 0.16.0)
+      celluloid-io (~> 0.16.1)
+      chef-config (>= 12.5.0)
+      erubis
+      faraday (~> 0.9.0)
+      hashie (>= 2.0.2, < 4.0.0)
+      httpclient (~> 2.7)
+      json (>= 1.7.7)
+      mixlib-authentication (>= 1.3.0)
+      retryable (~> 2.0)
+      semverse (~> 2.0)
+      varia_model (~> 0.6)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -391,7 +385,6 @@ DEPENDENCIES
   http (>= 0.9.8)
   rake (>= 10.1)
   rb-fsevent
-  ridley!
   rspec (>= 3.0)
   spork (>= 0.9)
   test-kitchen (>= 1.2)
