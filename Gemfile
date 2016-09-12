@@ -52,5 +52,6 @@ group :changelog do
 end
 
 group :test do
+  gem "ridley", git: "https://github.com/berkshelf/ridley", branch: "jk/buff-update"
   gem "berkshelf-api", git: "https://github.com/berkshelf/berkshelf-api.git"
 end
