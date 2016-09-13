@@ -59,7 +59,9 @@ Feature: berks shelf uninstall
       | fake | 1.2.0 |
       | fake | 2.0.0 |
 
-  @spawn
+      # FIXME: there seems to be a bug in aruba on windows related to
+      # interactive stuff that i fully don't understand
+  @spawn @not-windows
   Scenario: With contingencies
     Given the cookbook store contains a cookbook "fake" "1.0.0" with dependencies:
       | ekaf | 2.3.4 |

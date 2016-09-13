@@ -204,7 +204,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       """
 
@@ -235,7 +235,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (1.0.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
       """
 
@@ -263,7 +263,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
@@ -278,7 +278,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
@@ -293,7 +293,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
@@ -308,7 +308,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
@@ -323,7 +323,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
@@ -476,7 +476,7 @@ Feature: berks install
     Then the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
-      Fetching cookbook index from http://0.0.0.0:26210...
+      Fetching cookbook index from http://127.0.0.1:26210...
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
       """
 

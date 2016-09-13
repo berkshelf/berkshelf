@@ -1,0 +1,30 @@
+version: "master-{build}"
+
+os: Windows Server 2012 R2
+platform:
+  - x64
+
+clone_depth: 1
+skip_tags: true
+skip_branch_with_pr: true
+branches:
+  only:
+    - master
+
+cache:
+  - vendor/bundle
+
+install:
+  - ps: iex (irm https://omnitruck.chef.io/install.ps1); Install-Project -Project chefdk -channel current
+  - bundle config --local path vendor/bundle
+  - SET CI=true
+  - SET BUNDLE_WITHOUT=guard:changelog:style
+
+build_script:
+  - ps: c:\opscode\chefdk\bin\chef.bat shell-init powershell | iex
+  - bundle install || bundle install || bundle install
+
+test_script:
+  - SET SPEC_OPTS=--format progress
+  - c:\opscode\chefdk\bin\chef.bat exec bundle exec rake spec
+  - c:\opscode\chefdk\bin\chef.bat exec bundle exec cucumber --tags ~@not-windows

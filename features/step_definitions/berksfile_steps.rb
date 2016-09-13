@@ -31,7 +31,7 @@ Given /^I have a Berksfile at "(.+)" pointing at the local Berkshelf API with:$/
     Given a directory named "#{path}"
     And a file named "#{path}/Berksfile" with:
       """
-      source 'http://0.0.0.0:#{BERKS_API_PORT}'
+      source 'http://127.0.0.1:#{BERKS_API_PORT}'
 
       #{content}
       """
