@@ -58,6 +58,11 @@ module Berkshelf
         [exclude, "#{exclude}/*"]
       end.flatten
 
+      # let glob expand the source directory in case it is an abbreviated windows
+      # user directory: C:/Users/MATTWR~1/AppData/Local/Temp
+      # so that it matches the parent of source_files
+      source = glob(source).first
+      
       source_files = glob(File.join(source, '**/*'))
       source_files = source_files.reject do |source_file|
         basename = relative_path_for(source_file, source)
