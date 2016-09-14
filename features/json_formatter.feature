@@ -18,7 +18,7 @@ Feature: --format json
       {
         "cookbooks": [
           {
-            "api_source": "http://0.0.0.0:26210/",
+            "api_source": "http://127.0.0.1:26210/",
             "location_path": "http://localhost:26310/",
             "version": "1.0.0",
             "name": "berkshelf"
@@ -27,7 +27,7 @@ Feature: --format json
         "errors": [],
         "messages": [
           "Resolving cookbook dependencies...",
-          "Fetching cookbook index from http://0.0.0.0:26210..."
+          "Fetching cookbook index from http://127.0.0.1:26210..."
         ],
         "warnings": []
       }
@@ -53,7 +53,7 @@ Feature: --format json
         "errors": [],
         "messages": [
           "Resolving cookbook dependencies...",
-          "Fetching cookbook index from http://0.0.0.0:26210..."
+          "Fetching cookbook index from http://127.0.0.1:26210..."
         ],
         "warnings": []
       }
@@ -149,7 +149,7 @@ Feature: --format json
           {
             "local": "0.1.0",
             "remote": {
-              "http://0.0.0.0:26210/": "0.2.9"
+              "http://127.0.0.1:26210/": "0.2.9"
             },
             "name": "seth"
           }

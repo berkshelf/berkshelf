@@ -2,7 +2,7 @@ require 'rspec'
 require 'spec_helper'
 
 module Berkshelf
-  describe Visualizer do
+  describe Visualizer, :not_supported_on_windows do
     describe '#to_png' do
       context 'when graphviz is not installed' do
         before do
