@@ -184,7 +184,7 @@ module Berkshelf
     method_option :force,
       type: :boolean,
       default: false,
-      desc: 'Upload all cookbook(s) even if a frozen one exists on the Chef Server.'
+      desc: 'Upload all cookbooks even if a frozen one exists on the Chef Server.'
     method_option :ssl_verify,
       type: :boolean,
       default: nil,
