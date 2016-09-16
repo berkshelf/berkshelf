@@ -11,8 +11,9 @@ branches:
   only:
     - master
 
-cache:
-  - vendor/bundle
+# caching vendor/bundle appears to break horribly in the face of gems checked out of git
+# cache:
+#   - vendor/bundle
 
 install:
   - ps: iex (irm https://omnitruck.chef.io/install.ps1); Install-Project -Project chefdk -channel current
