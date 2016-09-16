@@ -225,6 +225,26 @@ The final parameter is an options hash
 
 Options passed to a source can contain a location or a group(s).
 
+### Solver keyword
+
+The `solver` keyword controls what dependency resolver Berkshelf should use,
+from any that are supported by [berkshelf/solve](https://github.com/berkshelf/solve#selecting-a-resolver)
+ -- namely, `:ruby` (solve gem default) or `:gecode` (chef default). It accepts
+ an optional parameter specifying how to behave if the resolver isn't found.
+
+Use the ruby solver; don't error if it isn't available:
+
+    solver :ruby # defaults to :preferred
+
+Use the gecode solver; raise an error if it isn't available:
+
+    solver :gecode, :required
+
+Be warned that changing to a non-default dependency solver may introduce subtle
+bugs caused by Chef Server and local Berkshelf using different dependency
+solvers. This could lead to slightly different dependencies being selected
+depending on where the dependency constraints are being resolved.
+
 #### Locations
 
 By default the location of a cookbook is assumed to come from one of the api sources that you have configured. For example
