@@ -31,7 +31,7 @@ branches:
 before_install:
   - gem update --system
   - gem install bundler
-install:  travis_wait bundle install --without guard changelog --jobs 7 --retry=3
+install:  bundle install --without guard changelog
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
   - git config --global user.email "ci@berkshelf.com"
@@ -43,8 +43,6 @@ matrix:
     - rvm: ruby-head
     - rvm: 2.2.5
       before_install:
-        # Failures in the berkshelf-api gemspec were happening with bundler 1.8
-        - gem install bundler --version=1.10.6
         # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
         - sudo apt-get update
         - sudo apt-get -y install squid3
