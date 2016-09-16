@@ -17,12 +17,17 @@ module Berkshelf
                         if source == :chef_server
                           APIClient.chef_server(
                             ssl: {verify: Berkshelf::Config.instance.ssl.verify},
+                            timeout: api_timeout,
+                            open_timeout: [(api_timeout / 10), 3].max,
                             client_name: Berkshelf::Config.instance.chef.node_name,
                             server_url: Berkshelf::Config.instance.chef.chef_server_url,
                             client_key: Berkshelf::Config.instance.chef.client_key,
                           )
                         else
-                          APIClient.new(uri, ssl: {verify: Berkshelf::Config.instance.ssl.verify})
+                          APIClient.new(uri,
+                                        timeout: api_timeout,
+                                        open_timeout: [(api_timeout / 10), 3].max,
+                                        ssl: {verify: Berkshelf::Config.instance.ssl.verify})
                         end
                       end
     end
@@ -117,5 +122,10 @@ module Berkshelf
       uri == other.uri
     end
 
+    private
+
+    def api_timeout
+      Berkshelf::Config.instance.api.timeout.to_i
+    end
   end
 end
