@@ -1,5 +1,20 @@
 # Change Log
 
+## [5.1.0](https://github.com/berkshelf/berkshelf/tree/5.1.0) (2016-09-16)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.0.0...5.1.0)
+
+**Merged pull requests:**
+
+- Disable caching of bundler since it's broken [\#1612](https://github.com/berkshelf/berkshelf/pull/1612) ([thommay](https://github.com/thommay))
+- Update cli.rb [\#1611](https://github.com/berkshelf/berkshelf/pull/1611) ([martinmosegaard](https://github.com/martinmosegaard))
+- fix cucumber tests [\#1609](https://github.com/berkshelf/berkshelf/pull/1609) ([mwrock](https://github.com/mwrock))
+- Enable appveyor [\#1606](https://github.com/berkshelf/berkshelf/pull/1606) ([thommay](https://github.com/thommay))
+- fix syncing windows user directories on ruby 2.3 [\#1605](https://github.com/berkshelf/berkshelf/pull/1605) ([mwrock](https://github.com/mwrock))
+- Update buff-shell\_out to 1.0 [\#1604](https://github.com/berkshelf/berkshelf/pull/1604) ([jkeiser](https://github.com/jkeiser))
+- Only fall back to cp/rm if we have to [\#1602](https://github.com/berkshelf/berkshelf/pull/1602) ([thommay](https://github.com/thommay))
+- Expose configuration for API timeouts [\#1601](https://github.com/berkshelf/berkshelf/pull/1601) ([thommay](https://github.com/thommay))
+- Only optionally remove the contents of the target [\#1599](https://github.com/berkshelf/berkshelf/pull/1599) ([thommay](https://github.com/thommay))
+
 ## [v5.0.0](https://github.com/berkshelf/berkshelf/tree/v5.0.0) (2016-08-30)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v4.3.5...v5.0.0)
 
