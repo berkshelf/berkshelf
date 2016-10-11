@@ -222,7 +222,7 @@ module Berkshelf
     set_status_code(123)
 
     def initialize(uri, message)
-      @uri     = uri
+      @api_uri = uri
       @message = message
     end
 
