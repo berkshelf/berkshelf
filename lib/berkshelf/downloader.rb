@@ -1,5 +1,6 @@
 require 'net/http'
 require 'mixlib/archive'
+require 'berkshelf/ssl_policies'
 
 module Berkshelf
   class Downloader
@@ -12,6 +13,10 @@ module Berkshelf
     # @param [Berkshelf::Berksfile] berksfile
     def initialize(berksfile)
       @berksfile = berksfile
+    end
+
+    def ssl_policy
+      @ssl_policy ||= SSLPolicy.new
     end
 
     # Download the given Berkshelf::Dependency. If the optional block is given,
@@ -61,13 +66,14 @@ module Berkshelf
         CommunityREST.new(remote_cookbook.location_path).download(name, version)
       when :chef_server
         # @todo Dynamically get credentials for remote_cookbook.location_path
+        ssl_options = {verify: Berkshelf::Config.instance.ssl.verify}
+        ssl_options[:trusted_certs_dir] = ssl_policy.store if ssl_policy.store
+
         credentials = {
           server_url: remote_cookbook.location_path,
           client_name: Berkshelf::Config.instance.chef.node_name,
           client_key: Berkshelf::Config.instance.chef.client_key,
-          ssl: {
-            verify: Berkshelf::Config.instance.ssl.verify
-          }
+          ssl: ssl_options
         }
         # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
         # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
