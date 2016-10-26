@@ -16,6 +16,9 @@ module Berkshelf
     end
 
     let(:graph) { double(Lockfile::Graph, locks: {}) }
+    let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, 'trusted_certs') }
+    let(:self_signed_crt) { OpenSSL::X509::Certificate.new(IO.read("#{self_signed_crt_path}/example.crt")) }
+    let(:cert_store) { OpenSSL::X509::Store.new.add_cert(self_signed_crt) }
 
     subject { Uploader.new(berksfile) }
 
@@ -56,6 +59,7 @@ module Berkshelf
           cookbook_copyright: 'user',
           cookbook_email: 'user@example.com',
           cookbook_license: 'apachev2',
+          trusted_certs_dir: self_signed_crt_path,
           knife: {
             chef_guard: false
           }
@@ -123,7 +127,8 @@ module Berkshelf
             client_name: chef_config.node_name,
             client_key:  chef_config.client_key,
             ssl: {
-              verify: berkshelf_config.ssl.verify
+              verify: berkshelf_config.ssl.verify,
+              cert_store: cert_store
             }
           )
           subject.run

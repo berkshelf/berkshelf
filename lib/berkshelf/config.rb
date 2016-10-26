@@ -102,6 +102,9 @@ module Berkshelf
     attribute 'cookbook.license',
       type: String,
       default: Berkshelf.chef_config.cookbook_license
+    attribute 'trusted_certs_dir',
+      type: String,
+      default: Berkshelf.chef_config.trusted_certs_dir
     attribute 'allowed_licenses',
       type: Array,
       default: Array.new
