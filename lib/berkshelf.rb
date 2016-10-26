@@ -125,14 +125,16 @@ module Berkshelf
     # @raise [Berkshelf::ChefConnectionError]
     def ridley_connection(options = {}, &block)
       ridley_options               = options.slice(:ssl)
+      ssl_options = {
+        verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify],
+      }
+
+      ssl_options[:cert_store] = ssl_policy.store if ssl_policy.store
 
       ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
       ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
       ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
-      ridley_options[:ssl]         = {
-        verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify],
-        cert_store: ssl_policy.store
-      }
+      ridley_options[:ssl] = ssl_options
 
       unless ridley_options[:server_url].present?
         raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'

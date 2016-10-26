@@ -45,6 +45,7 @@ module Berkshelf
 
     describe '#run' do
       let(:options) { Hash.new }
+      let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, 'trusted_certs') }
 
       let(:chef_config) do
         double(Ridley::Chef::Config,
@@ -56,7 +57,7 @@ module Berkshelf
           cookbook_copyright: 'user',
           cookbook_email: 'user@example.com',
           cookbook_license: 'apachev2',
-          trusted_certs_dir: '/foo/bar',
+          trusted_certs_dir: self_signed_crt_path,
           knife: {
             chef_guard: false
           }
@@ -127,7 +128,7 @@ module Berkshelf
               ssl: {
                 verify: berkshelf_config.ssl.verify
               }
-                              )
+            )
           end
           subject.run
         end

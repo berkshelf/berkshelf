@@ -4,6 +4,8 @@ def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
+BERKS_SPEC_DATA = File.expand_path("../data", __FILE__)
+
 Spork.prefork do
   require 'rspec'
   require 'cleanroom/rspec'
