@@ -118,6 +118,10 @@ module Berkshelf
       @formatter ||= HumanFormatter.new
     end
 
+    def ssl_policy
+      @ssl_policy ||= SSLPolicy.new
+    end
+
     # @raise [Berkshelf::ChefConnectionError]
     def ridley_connection(options = {}, &block)
       ridley_options               = options.slice(:ssl)
@@ -125,7 +129,10 @@ module Berkshelf
       ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
       ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
       ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
-      ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
+      ridley_options[:ssl]         = {
+        verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify],
+        cert_store: ssl_policy.store
+      }
 
       unless ridley_options[:server_url].present?
         raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
@@ -207,6 +214,7 @@ require_relative 'berkshelf/resolver'
 require_relative 'berkshelf/source'
 require_relative 'berkshelf/source_uri'
 require_relative 'berkshelf/validator'
+require_relative 'berkshelf/ssl_policies'
 
 Ridley.logger          = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
