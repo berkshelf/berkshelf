@@ -41,21 +41,24 @@ matrix:
     - rvm: 2.2.5
     - rvm: 2.3.1
     - rvm: ruby-head
-    - rvm: 2.2.5
-      before_install:
-        # Failures in the berkshelf-api gemspec were happening with bundler 1.8
-        - gem install bundler --version=1.10.6
-        # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
-        - sudo apt-get update
-        - sudo apt-get -y install squid3
-      sudo: required
-      env:
-        - PROXY_TESTS_DIR=/tmp/proxy_tests
-        - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
-        - rvmsudo_secure_path=1
-      script:
-        - git clone https://github.com/chef/proxy_tests.git
-        - cd proxy_tests && chef-client -z -o proxy_tests::render && cd ..
-        - rvmsudo -E bundle exec bash $PROXY_TESTS_DIR/run_tests.sh berkshelf \* \* /tmp/out.txt
-      after_script: cat /tmp/out.txt
+#    - rvm: 2.2.5
+#      before_install:
+#        # Failures in the berkshelf-api gemspec were happening with bundler 1.8
+#        - gem install bundler --version=1.10.6
+#        # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
+#        - sudo apt-get update
+#        - sudo apt-get -y install squid3
+#      sudo: required
+#      env:
+#        - PROXY_TESTS_DIR=/tmp/proxy_tests
+#        - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
+#        - rvmsudo_secure_path=1
+#      script:
+#        - git clone https://github.com/chef/proxy_tests.git
+#        - cd proxy_tests && chef-client -z -o proxy_tests::render && cd ..
+#        - rvmsudo -E bundle exec bash $PROXY_TESTS_DIR/run_tests.sh berkshelf \* \* /tmp/out.txt
+#      after_script: cat /tmp/out.txt
+  allow_failures:
+    - rvm: ruby-head
+
 script: bundle exec thor spec:ci
