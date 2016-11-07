@@ -1,10 +1,20 @@
 # Change Log
 
-## [5.1.0](https://github.com/berkshelf/berkshelf/tree/5.1.0) (2016-09-16)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.0.0...5.1.0)
+## [5.2.0](https://github.com/berkshelf/berkshelf/tree/5.2.0) (2016-11-07)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.1.0...5.2.0)
 
 **Merged pull requests:**
 
+- pin berkshelf-api, bump deps, remove failing matrix tests [\#1623](https://github.com/berkshelf/berkshelf/pull/1623) ([lamont-granquist](https://github.com/lamont-granquist))
+- Community site error message missing URL [\#1621](https://github.com/berkshelf/berkshelf/pull/1621) ([tkling](https://github.com/tkling))
+- Pass all ssl/X509 parameters to configuration [\#1600](https://github.com/berkshelf/berkshelf/pull/1600) ([thommay](https://github.com/thommay))
+
+## [v5.1.0](https://github.com/berkshelf/berkshelf/tree/v5.1.0) (2016-09-16)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.0.0...v5.1.0)
+
+**Merged pull requests:**
+
+- Update version to 5.1.0 [\#1615](https://github.com/berkshelf/berkshelf/pull/1615) ([jkeiser](https://github.com/jkeiser))
 - Disable caching of bundler since it's broken [\#1612](https://github.com/berkshelf/berkshelf/pull/1612) ([thommay](https://github.com/thommay))
 - Update cli.rb [\#1611](https://github.com/berkshelf/berkshelf/pull/1611) ([martinmosegaard](https://github.com/martinmosegaard))
 - fix cucumber tests [\#1609](https://github.com/berkshelf/berkshelf/pull/1609) ([mwrock](https://github.com/mwrock))
