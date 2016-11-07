@@ -52,5 +52,5 @@ group :changelog do
 end
 
 group :test do
-  gem "berkshelf-api", github: "berkshelf/berkshelf-api", ref: "9fb3d95779c4ff72b0074072105caaf70b978bf0"
+  gem "berkshelf-api", git: "https://github.com/berkshelf/berkshelf-api.git", ref: "9fb3d95779c4ff72b0074072105caaf70b978bf0"
 end
