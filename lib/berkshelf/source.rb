@@ -7,9 +7,19 @@ module Berkshelf
     attr_accessor :source
 
     # @param [String, Berkshelf::SourceURI] source
-    def initialize(source)
+    def initialize(source, args=[])
       @source = source
       @universe   = nil
+      @filter = Hash.new
+      if args.count > 0 and args.first.is_a?( Hash )
+        args.first.each do |k,v|
+          begin
+            @filter[k] = Regexp.new( v )
+          rescue
+            Berkself.ui.warn "Invalid source #{k} regex '#{v}'"
+          end
+        end
+      end
     end
 
     def api_client
@@ -46,7 +56,14 @@ module Berkshelf
     #
     # @return [Array<APIClient::RemoteCookbook>]
     def build_universe
-      @universe = api_client.universe
+      cookbooks = api_client.universe
+      if @filter[:include]
+        cookbooks.select! { |rc| rc.name =~ @filter[:include] }
+      end
+      if @filter[:exclude]
+        cookbooks.reject! { |rc| rc.name =~ @filter[:exclude] }
+      end
+      @universe = cookbooks
     rescue => ex
       @universe = Array.new
       raise ex
