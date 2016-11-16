@@ -36,9 +36,13 @@ Bundler will install all gems and their dependencies required for testing and de
 
 ### Running unit (RSpec) and acceptance (Cucumber) tests
 
-We use Chef Zero - an in-memory Chef Server for running tests. It is automatically managed by the Specs and Cukes. Simply run:
+We use Chef Zero - an in-memory Chef Server for running tests. It is automatically managed by the Specs and Cukes. Run:
 
     $ bundle exec guard start
+
+or
+   
+    $ bundle exec thor spec:ci
 
 See [here](https://github.com/tdegrunt/vagrant-chef-server-bootstrap) for a
 quick way to get a testing chef server up.
