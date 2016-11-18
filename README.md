@@ -31,7 +31,7 @@ $ gem install berkshelf
 
 ## Usage
 
-See [berkshelf.com](http://berkshelf.com) for up-to-date usage instructions.
+See [docs.chef.io](https://docs.chef.io/berkshelf.html) for up-to-date usage instructions.
 
 ## Supported Platforms
 
