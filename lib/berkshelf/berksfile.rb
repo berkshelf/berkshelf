@@ -172,10 +172,20 @@ module Berkshelf
     # @option options [String] :path
     #   path to the metadata file
     def metadata(options = {})
-      path          = options[:path] || File.dirname(filepath)
-      metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
-      metadata      = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
-
+      path = options[:path] || File.dirname(filepath)
+      metadata = nil
+      ['metadata.rb', 'metadata.json'].each do |metadata_file|
+        metadata_path = File.expand_path(File.join(path, metadata_file))
+        if File.file?(metadata_path)
+          if metadata_path.end_with?('.json')
+            json = JSON.load(IO.read(metadata_path))
+            metadata = Ridley::Chef::Cookbook::Metadata.from_hash(json)
+          else
+            metadata = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
+          end
+        end
+        break unless metadata.nil?
+      end
       add_dependency(metadata.name, nil, path: path, metadata: true)
     end
     expose :metadata
@@ -303,10 +313,6 @@ module Berkshelf
         if !(@dependencies[name].groups & groups).empty?
           raise DuplicateDependencyDefined.new(name)
         end
-      end
-
-      if options[:path]
-        metadata_file = File.join(options[:path], 'metadata.rb')
       end
 
       options[:constraint] = constraint

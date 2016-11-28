@@ -34,6 +34,8 @@ and run:
 
 Bundler will install all gems and their dependencies required for testing and developing.
 
+For RSpec tests of validator to pass, install [graphviz](http://www.graphviz.org).
+
 ### Running unit (RSpec) and acceptance (Cucumber) tests
 
 We use Chef Zero - an in-memory Chef Server for running tests. It is automatically managed by the Specs and Cukes. Run:
