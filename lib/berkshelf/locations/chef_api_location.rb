@@ -1,9 +1,65 @@
+require 'thread'
+
 module Berkshelf
   class ChefAPILocation
     class << self
+
+      # A cache of ridley connections
+      #
+      # Each ridley connection object increases the number of active threads in the current process by a
+      # rather large amount (dozens) simply by instantiating it (Ridley.new).  The threads can be freed by
+      # calling terminate on the Ridley connection object, but since this class (ChefAPILocation) provides
+      # public methods that return Ridley::CookbookResource objects that were retrieved from the Ridley
+      # connection, and terminating the connection causes the CookbookResource objects to get errors when
+      # you try to use them, we can't safely call terminate on the connection except during garbage collection.
+      # However, there is no guarantee as to when garbage collection will happen. So, we reuse existing connections
+      # rather than making a new one each time to keep the thread count under control.  This is especially noticeable
+      # on windows systems, on which processes tend to freak out if you have a "mere" 1000 threads or so.
+      # (see http://stackoverflow.com/questions/481900/whats-the-maximum-number-of-threads-in-windows-server-2003).
+      @@ridley_conn_cache = {}
+
+      # Used to ensure thread safety around access to the connection cache.
+      @@mutex = Mutex.new
+
+      # This method is only intended for use within ChefAPILocation!
+      def get_ridley_connection(cache_key)
+        @@mutex.synchronize do
+          if @@ridley_conn_cache[cache_key]
+            @@ridley_conn_cache[cache_key][:count] = @@ridley_conn_cache[cache_key][:count] + 1
+          else
+            @@ridley_conn_cache[cache_key] = {
+                :conn =>
+                    Ridley.new(
+                        server_url: cache_key[0],
+                        client_name: cache_key[1],
+                        client_key: cache_key[2],
+                        ssl: {
+                            verify: cache_key[3]
+                        }
+                    ),
+                :count => 1
+            }
+          end
+        end
+
+        @@ridley_conn_cache[cache_key][:conn]
+      end
+
       # @return [Proc]
-      def finalizer
-        proc { conn.terminate if defined?(conn) && conn.alive? }
+      def finalizer(key)
+        proc do
+          @@mutex.synchronize do
+            if @@ridley_conn_cache[key]
+              if @@ridley_conn_cache[key][:count] > 1
+                @@ridley_conn_cache[key][:count] = @@ridley_conn_cache[key][:count] - 1
+              else
+                @@ridley_conn_cache[key][:conn].terminate! if @@ridley_conn_cache[key][:conn].alive?
+                @@ridley_conn_cache[key][:conn] = nil
+                @@ridley_conn_cache[key] = nil
+              end
+            end
+          end
+        end
       end
 
       # @param [String] node_name
@@ -128,18 +184,12 @@ module Berkshelf
         @uri        = options[:chef_api]
       end
 
-      @conn = Ridley.new(
-        server_url: uri,
-        client_name: node_name,
-        client_key: client_key,
-        ssl: {
-          verify: options[:verify_ssl]
-        }
-      )
+      cache_key = [uri, node_name, client_key, options[:verify_ssl]]
+      @conn = self.class.get_ridley_connection(cache_key)
 
       # Why do we use a class function for defining our finalizer?
       # http://www.mikeperham.com/2010/02/24/the-trouble-with-ruby-finalizers/
-      ObjectSpace.define_finalizer(self, self.class.finalizer)
+      ObjectSpace.define_finalizer(self, self.class.finalizer(cache_key))
     rescue Ridley::Errors::ClientKeyFileNotFoundOrInvalid => ex
       raise ClientKeyFileNotFound, ex
     end
