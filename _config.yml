@@ -1,2 +1,4 @@
 pygments: true
 auto: true
+gems:
+  - jekyll-redirect-from
