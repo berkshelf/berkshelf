@@ -19,6 +19,7 @@ module Berkshelf
     let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, 'trusted_certs') }
     let(:self_signed_crt) { OpenSSL::X509::Certificate.new(IO.read("#{self_signed_crt_path}/example.crt")) }
     let(:cert_store) { OpenSSL::X509::Store.new.add_cert(self_signed_crt) }
+    let(:ssl_policy) { double(SSLPolicy, store: cert_store) }
 
     subject { Uploader.new(berksfile) }
 
@@ -85,6 +86,7 @@ module Berkshelf
 
       before do
         allow(Berkshelf).to receive(:config).and_return(berkshelf_config)
+        allow(Berkshelf).to receive(:ssl_policy).and_return(ssl_policy)
       end
 
       context 'when there is no value for :chef_server_url' do
