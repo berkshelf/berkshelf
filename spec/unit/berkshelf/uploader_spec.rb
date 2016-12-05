@@ -137,6 +137,23 @@ module Berkshelf
         end
       end
 
+      context 'when ssl_verify: false is passed as an option' do
+        subject { Uploader.new(berksfile, ssl_verify: false) }
+
+        it 'uses the passed option' do
+          expect(Ridley).to receive(:open).with(
+            server_url:  chef_config.chef_server_url,
+            client_name: chef_config.node_name,
+            client_key:  chef_config.client_key,
+            ssl: {
+              verify: berkshelf_config.ssl.verify,
+              cert_store: cert_store
+            }
+          )
+          subject.run
+        end
+      end
+
       context 'when a Chef Server url is passed as an option' do
         subject { Uploader.new(berksfile, server_url: 'http://custom') }
 
