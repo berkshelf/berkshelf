@@ -16,6 +16,10 @@ module Berkshelf
     end
 
     let(:graph) { double(Lockfile::Graph, locks: {}) }
+    let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, 'trusted_certs') }
+    let(:self_signed_crt) { OpenSSL::X509::Certificate.new(IO.read("#{self_signed_crt_path}/example.crt")) }
+    let(:cert_store) { OpenSSL::X509::Store.new.add_cert(self_signed_crt) }
+    let(:ssl_policy) { double(SSLPolicy, store: cert_store) }
 
     subject { Uploader.new(berksfile) }
 
@@ -56,6 +60,7 @@ module Berkshelf
           cookbook_copyright: 'user',
           cookbook_email: 'user@example.com',
           cookbook_license: 'apachev2',
+          trusted_certs_dir: self_signed_crt_path,
           knife: {
             chef_guard: false
           }
@@ -81,6 +86,7 @@ module Berkshelf
 
       before do
         allow(Berkshelf).to receive(:config).and_return(berkshelf_config)
+        allow(Berkshelf).to receive(:ssl_policy).and_return(ssl_policy)
       end
 
       context 'when there is no value for :chef_server_url' do
@@ -123,7 +129,25 @@ module Berkshelf
             client_name: chef_config.node_name,
             client_key:  chef_config.client_key,
             ssl: {
-              verify: berkshelf_config.ssl.verify
+              verify: berkshelf_config.ssl.verify,
+              cert_store: cert_store
+            }
+          )
+          subject.run
+        end
+      end
+
+      context 'when ssl_verify: false is passed as an option' do
+        subject { Uploader.new(berksfile, ssl_verify: false) }
+
+        it 'uses the passed option' do
+          expect(Ridley).to receive(:open).with(
+            server_url:  chef_config.chef_server_url,
+            client_name: chef_config.node_name,
+            client_key:  chef_config.client_key,
+            ssl: {
+              verify: berkshelf_config.ssl.verify,
+              cert_store: cert_store
             }
           )
           subject.run
