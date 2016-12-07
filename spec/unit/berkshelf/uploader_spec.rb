@@ -146,7 +146,7 @@ module Berkshelf
             client_name: chef_config.node_name,
             client_key:  chef_config.client_key,
             ssl: {
-              verify: berkshelf_config.ssl.verify,
+              verify: false,
               cert_store: cert_store
             }
           )
