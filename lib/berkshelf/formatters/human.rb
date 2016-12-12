@@ -60,12 +60,12 @@ module Berkshelf
     #   { 'cookbook' => { 'supermarket.chef.io' => #<Cookbook> } }
     def outdated(hash)
       if hash.empty?
-        Berkshelf.ui.info('All cookbooks up to date!')
+        Berkshelf.ui.info("All cookbooks up to date!")
       else
-        Berkshelf.ui.info('The following cookbooks have newer versions:')
+        Berkshelf.ui.info("The following cookbooks have newer versions:")
 
         hash.each do |name, info|
-          info['remote'].each do |remote_source, remote_version|
+          info["remote"].each do |remote_source, remote_version|
             out = "  * #{name} (#{info['local']} => #{remote_version})"
 
             unless remote_source.default?

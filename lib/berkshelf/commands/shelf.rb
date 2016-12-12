@@ -1,7 +1,7 @@
 module Berkshelf
   # All tasks that operate on the Berkshelf shelf.
   class Shelf < Thor
-    desc 'list', 'List all cookbooks and their versions'
+    desc "list", "List all cookbooks and their versions"
     def list
       cookbooks = store.cookbooks.inject({}) do |hash, cookbook|
         (hash[cookbook.cookbook_name] ||= []).push(cookbook.version)
@@ -9,17 +9,17 @@ module Berkshelf
       end
 
       if cookbooks.empty?
-        Berkshelf.formatter.msg 'There are no cookbooks in the Berkshelf shelf'
+        Berkshelf.formatter.msg "There are no cookbooks in the Berkshelf shelf"
       else
-        Berkshelf.formatter.msg 'Cookbooks in the Berkshelf shelf:'
+        Berkshelf.formatter.msg "Cookbooks in the Berkshelf shelf:"
         cookbooks.sort.each do |cookbook, versions|
           Berkshelf.formatter.msg("  * #{cookbook} (#{versions.sort.join(', ')})")
         end
       end
     end
 
-    method_option :version, aliases: '-v', type: :string, desc: 'Version to show'
-    desc 'show', 'Display information about a cookbook in the Berkshelf shelf'
+    method_option :version, aliases: "-v", type: :string, desc: "Version to show"
+    desc "show", "Display information about a cookbook in the Berkshelf shelf"
     def show(name)
       cookbooks = find(name, options[:version])
 
@@ -35,9 +35,9 @@ module Berkshelf
       end
     end
 
-    method_option :version, aliases: '-v', type: :string,  desc: 'Version to remove'
-    method_option :force,   aliases: '-f', type: :boolean, desc: 'Force removal, even if other cookbooks are contingent', default: false
-    desc 'uninstall', 'Remove a cookbook from the Berkshelf shelf'
+    method_option :version, aliases: "-v", type: :string,  desc: "Version to remove"
+    method_option :force,   aliases: "-f", type: :boolean, desc: "Force removal, even if other cookbooks are contingent", default: false
+    desc "uninstall", "Remove a cookbook from the Berkshelf shelf"
     def uninstall(name)
       cookbooks = find(name, options[:version])
       cookbooks.each { |c| uninstall_cookbook(c, options[:force]) }
@@ -68,13 +68,13 @@ module Berkshelf
       #   array!
       def find(name, version = nil)
         cookbooks = if version
-          [store.cookbook(name, version)].compact
-        else
-          store.cookbooks(name).sort
-        end
+                      [store.cookbook(name, version)].compact
+                    else
+                      store.cookbooks(name).sort
+                    end
 
         if cookbooks.empty?
-          raise CookbookNotFound.new(name, version, 'in the Berkshelf shelf')
+          raise CookbookNotFound.new(name, version, "in the Berkshelf shelf")
         end
 
         cookbooks
@@ -95,10 +95,10 @@ module Berkshelf
       #   if contingencies exist
       def uninstall_cookbook(cookbook, force = false)
         unless options[:force] || (contingent = contingencies(cookbook)).empty?
-          contingent = contingent.map { |c| "#{c.cookbook_name} (#{c.version})" }.join(', ')
+          contingent = contingent.map { |c| "#{c.cookbook_name} (#{c.version})" }.join(", ")
           confirm = Berkshelf.ui.ask("[#{contingent}] depend on #{cookbook.cookbook_name}.\n\nAre you sure you want to continue? (y/N)")
 
-          exit unless confirm.to_s.upcase[0] == 'Y'
+          exit unless confirm.to_s.upcase[0] == "Y"
         end
 
         FileUtils.rm_rf(cookbook.path)
@@ -120,7 +120,7 @@ module Berkshelf
   end
 
   class Cli < Thor
-    desc 'shelf SUBCOMMAND', 'Interact with the cookbook store'
-    subcommand 'shelf', Berkshelf::Shelf
+    desc "shelf SUBCOMMAND", "Interact with the cookbook store"
+    subcommand "shelf", Berkshelf::Shelf
   end
 end

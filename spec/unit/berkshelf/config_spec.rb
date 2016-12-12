@@ -1,30 +1,30 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Berkshelf::Config do
-  describe '::file' do
-    context 'when the file does not exist' do
+  describe "::file" do
+    context "when the file does not exist" do
       before { allow(File).to receive(:exists?).and_return(false) }
 
-      it 'is nil' do
+      it "is nil" do
         expect(Berkshelf::Config.file).to be_nil
       end
     end
   end
 
-  describe '::instance' do
-    it 'should be a Berkshelf::Config' do
+  describe "::instance" do
+    it "should be a Berkshelf::Config" do
       expect(Berkshelf::Config.instance).to be_an_instance_of(Berkshelf::Config)
     end
 
-    context 'attributes' do
-      it 'should have a default API timeout' do
-        expect(Berkshelf::Config.instance.api.timeout).to eq('30')
+    context "attributes" do
+      it "should have a default API timeout" do
+        expect(Berkshelf::Config.instance.api.timeout).to eq("30")
       end
     end
   end
 
-  describe '::path' do
-    it 'is a string' do
+  describe "::path" do
+    it "is a string" do
       expect(Berkshelf::Config.path).to be_a(String)
     end
 
@@ -38,8 +38,8 @@ describe Berkshelf::Config do
 
     context "when ENV['BERKSHELF_CONFIG'] is used" do
       before do
-        allow(ENV).to receive(:[]).with('BERKSHELF_CONFIG').and_return('/tmp/config.json')
-        allow(File).to receive(:exists?).with('/tmp/config.json').and_return(true)
+        allow(ENV).to receive(:[]).with("BERKSHELF_CONFIG").and_return("/tmp/config.json")
+        allow(File).to receive(:exists?).with("/tmp/config.json").and_return(true)
       end
 
       it "points to a location within it" do

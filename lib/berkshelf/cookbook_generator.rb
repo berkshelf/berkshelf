@@ -1,6 +1,6 @@
 module Berkshelf
   class CookbookGenerator < BaseGenerator
-    require_relative 'config'
+    require_relative "config"
 
     LICENSE_MAP = {
       "apachev2" => "Apache 2.0",
@@ -27,7 +27,7 @@ module Berkshelf
     class_option :skip_test_kitchen,
       type: :boolean,
       default: false,
-      desc: 'Skip adding a testing environment to your cookbook'
+      desc: "Skip adding a testing environment to your cookbook"
 
     class_option :foodcritic,
       type: :boolean,
@@ -78,56 +78,56 @@ module Berkshelf
         template "default_recipe.erb", target.join("recipes/default.rb")
       end
 
-      template 'metadata.rb.erb', target.join('metadata.rb')
-      template license_file, target.join('LICENSE')
-      template 'README.md.erb', target.join('README.md')
-      template 'CHANGELOG.md.erb', target.join('CHANGELOG.md')
+      template "metadata.rb.erb", target.join("metadata.rb")
+      template license_file, target.join("LICENSE")
+      template "README.md.erb", target.join("README.md")
+      template "CHANGELOG.md.erb", target.join("CHANGELOG.md")
 
       Berkshelf::InitGenerator.new([target], options.merge(default_options)).invoke_all
     end
 
     private
 
-      def commented(content)
-        content.split("\n").collect { |s| s == "" ? "#" : "# #{s}"}.join("\n")
-      end
+    def commented(content)
+      content.split("\n").collect { |s| s == "" ? "#" : "# #{s}" }.join("\n")
+    end
 
-      def license_name
-        LICENSE_MAP.fetch(options[:license]) do |license|
-          raise Berkshelf::LicenseNotFound.new(license)
-        end
+    def license_name
+      LICENSE_MAP.fetch(options[:license]) do |license|
+        raise Berkshelf::LicenseNotFound.new(license)
       end
+    end
 
-      def license
-        ERB.new(File.read(File.join(self.class.source_root, license_file))).result(binding)
-      end
+    def license
+      ERB.new(File.read(File.join(self.class.source_root, license_file))).result(binding)
+    end
 
-      def license_file
-        case options[:license]
-        when 'apachev2'; 'licenses/apachev2.erb'
-        when 'gplv2'; 'licenses/gplv2.erb'
-        when 'gplv3'; 'licenses/gplv3.erb'
-        when 'mit'; 'licenses/mit.erb'
-        when 'reserved'; 'licenses/reserved.erb'
-        else
-          raise Berkshelf::LicenseNotFound.new(options[:license])
-        end
+    def license_file
+      case options[:license]
+      when "apachev2" then "licenses/apachev2.erb"
+      when "gplv2" then "licenses/gplv2.erb"
+      when "gplv3" then "licenses/gplv3.erb"
+      when "mit" then "licenses/mit.erb"
+      when "reserved" then "licenses/reserved.erb"
+      else
+        raise Berkshelf::LicenseNotFound.new(options[:license])
       end
+    end
 
-      def copyright_year
-        Time.now.year
-      end
+    def copyright_year
+      Time.now.year
+    end
 
-      def maintainer
-        options[:maintainer]
-      end
+    def maintainer
+      options[:maintainer]
+    end
 
-      def maintainer_email
-        options[:maintainer_email]
-      end
+    def maintainer_email
+      options[:maintainer_email]
+    end
 
-      def default_options
-        { metadata_entry: true, chefignore: true, cookbook_name: name }
-      end
+    def default_options
+      { metadata_entry: true, chefignore: true, cookbook_name: name }
+    end
   end
 end

@@ -1,4 +1,4 @@
-require 'fileutils'
+require "fileutils"
 
 module Berkshelf
   class CookbookStore
@@ -7,7 +7,7 @@ module Berkshelf
       #
       # @return [String]
       def default_path
-        File.join(Berkshelf.berkshelf_path, 'cookbooks')
+        File.join(Berkshelf.berkshelf_path, "cookbooks")
       end
 
       # @return [Berkshelf::CookbookStore]
@@ -48,7 +48,7 @@ module Berkshelf
 
     # Destroy the contents of the initialized storage path.
     def clean!
-      FileUtils.rm_rf(Dir.glob(File.join(storage_path, '*')))
+      FileUtils.rm_rf(Dir.glob(File.join(storage_path, "*")))
     end
 
     # Import a cookbook found on the local filesystem into this instance of the cookbook store.
@@ -162,7 +162,7 @@ module Berkshelf
       graph = Solve::Graph.new
       cookbooks(name).each { |cookbook| graph.artifact(name, cookbook.version) }
 
-      name, version = Solve.it!(graph, [[name, constraint]], ENV['DEBUG_RESOLVER'] ? { ui: Berkshelf.ui } : {}).first
+      name, version = Solve.it!(graph, [[name, constraint]], ENV["DEBUG_RESOLVER"] ? { ui: Berkshelf.ui } : {}).first
 
       cookbook(name, version)
     rescue Solve::Errors::NoSolutionError

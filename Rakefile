@@ -35,9 +35,16 @@ begin
 rescue LoadError
 end
 
-task default: [:spec, :features]
+require "chefstyle"
+require "rubocop/rake_task"
+RuboCop::RakeTask.new(:style) do |task|
+  task.options += ["--display-cop-names", "--no-color"]
+end
+
+task default: [:spec, :features, :style]
 task :ci do
   ENV["CI"] = "true"
   Rake::Task[:spec].invoke
   Rake::Task[:features].invoke
+  Rake::Task[:style].invoke
 end

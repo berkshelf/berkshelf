@@ -1,5 +1,5 @@
-require 'rspec/expectations'
-require 'pathname'
+require "rspec/expectations"
+require "pathname"
 
 RSpec::Matchers.define :be_relative_path do
   match do |given|

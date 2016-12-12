@@ -31,17 +31,17 @@ module Berkshelf
         # Load the correct location from the given options.
         #
         # @return [Class, nil]
-        def klass_from_options(options)
-          options.each do |key, _|
-            id = key.to_s.capitalize
+      def klass_from_options(options)
+        options.each do |key, _|
+          id = key.to_s.capitalize
 
-            begin
-              return Berkshelf.const_get("#{id}Location")
-            rescue NameError; end
-          end
-
-          nil
+          begin
+            return Berkshelf.const_get("#{id}Location")
+          rescue NameError; end
         end
+
+        nil
+      end
     end
   end
 end

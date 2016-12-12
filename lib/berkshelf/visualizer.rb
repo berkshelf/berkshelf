@@ -1,6 +1,6 @@
-require 'buff/shell_out'
-require 'set'
-require 'tempfile'
+require "buff/shell_out"
+require "set"
+require "tempfile"
 
 module Berkshelf
   class Visualizer
@@ -56,7 +56,7 @@ module Berkshelf
       out = %|digraph Solve__Graph {\n|
 
       nodes.each do |node|
-        out << %|  "#{node}" [ fontsize = 10, label = "#{node}" ]\n|
+        out << %{  "#{node}" [ fontsize = 10, label = "#{node}" ]\n}
       end
 
       nodes.each do |node|
@@ -67,7 +67,7 @@ module Berkshelf
             else
               label = " #{version}"
             end
-            out << %|  "#{node}" -> "#{name}" [ fontsize = 10, label = "#{label}" ]\n|
+            out << %{  "#{node}" -> "#{name}" [ fontsize = 10, label = "#{label}" ]\n}
           end
         end
       end
@@ -83,16 +83,16 @@ module Berkshelf
     #
     # @return [String]
     #   the path where the file was written
-    def to_png(outfile = 'graph.png')
-      tempfile = Tempfile.new('dotdotfile')
+    def to_png(outfile = "graph.png")
+      tempfile = Tempfile.new("dotdotfile")
       tempfile.write(to_dot)
       tempfile.rewind
 
-      unless Berkshelf.which('dot') || Berkshelf.which('dot.exe')
+      unless Berkshelf.which("dot") || Berkshelf.which("dot.exe")
         raise GraphvizNotInstalled.new
       end
 
-      command = %|dot -T png #{tempfile.path} -o "#{outfile}"|
+      command = %{dot -T png #{tempfile.path} -o "#{outfile}"}
       response = shell_out(command)
 
       unless response.success?

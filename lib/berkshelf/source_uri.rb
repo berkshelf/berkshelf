@@ -1,4 +1,4 @@
-require 'addressable/uri'
+require "addressable/uri"
 
 module Berkshelf
   class SourceURI < Addressable::URI
@@ -22,7 +22,7 @@ module Berkshelf
       end
     end
 
-    VALID_SCHEMES = [ "http", "https" ].freeze
+    VALID_SCHEMES = %w{http https}.freeze
 
     # @raise [Berkshelf::InvalidSourceURI]
     def validate

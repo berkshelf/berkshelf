@@ -1,5 +1,5 @@
 begin
-  require 'kitchen/cli'
+  require "kitchen/cli"
 rescue LoadError; end
 
 module Berkshelf
@@ -8,6 +8,6 @@ module Berkshelf
   end
 
   class Cli < Thor
-    register(Berkshelf::TestCommand, 'test', 'test [COMMAND]', 'Testing tasks for your cookbook', hide: true)
+    register(Berkshelf::TestCommand, "test", "test [COMMAND]", "Testing tasks for your cookbook", hide: true)
   end
 end if defined?(Kitchen::CLI)

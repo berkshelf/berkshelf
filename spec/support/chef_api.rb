@@ -58,13 +58,13 @@ module Berkshelf
           "files/default",
           "attributes",
           "providers",
-          "resources"
+          "resources",
         ]
         files = [
           "recipes/default.rb",
           "templates/default/template.erb",
           "files/default/file.h",
-          "attributes/default.rb"
+          "attributes/default.rb",
         ]
 
         directories.each do |directory|
@@ -82,7 +82,6 @@ module Berkshelf
           a << "" # ensure newline
         end.join("\n")
 
-
         if options[:dependencies]
           options[:dependencies].each do |name, constraint|
             metadata << "depends '#{name}', '#{constraint}'\n"
@@ -95,7 +94,7 @@ module Berkshelf
           end
         end
 
-        File.open(cookbook_path.join("metadata.rb"), 'w+') do |f|
+        File.open(cookbook_path.join("metadata.rb"), "w+") do |f|
           f.write metadata
         end
 
@@ -120,14 +119,14 @@ module Berkshelf
 
       private
 
-        def ridley
-          @ridley ||= Ridley.new(
-            server_url: Berkshelf::RSpec::ChefServer.server_url,
-            client_name: Berkshelf.chef_config[:node_name],
-            client_key: Berkshelf.chef_config[:client_key],
-            ssl: { verify: false }
-          )
-        end
+      def ridley
+        @ridley ||= Ridley.new(
+          server_url: Berkshelf::RSpec::ChefServer.server_url,
+          client_name: Berkshelf.chef_config[:node_name],
+          client_key: Berkshelf.chef_config[:client_key],
+          ssl: { verify: false }
+        )
+      end
     end
   end
 end

@@ -1,9 +1,9 @@
-require 'berkshelf'
-require_relative 'config'
-require_relative 'init_generator'
-require_relative 'cookbook_generator'
-require_relative 'commands/shelf'
-require_relative 'commands/test_command'
+require "berkshelf"
+require_relative "config"
+require_relative "init_generator"
+require_relative "cookbook_generator"
+require_relative "commands/shelf"
+require_relative "commands/test_command"
 
 module Berkshelf
   class Cli < Thor
@@ -28,11 +28,11 @@ module Berkshelf
           @kernel.exit(0)
         rescue Berkshelf::BerkshelfError => e
           Berkshelf.ui.error e
-          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
           @kernel.exit(e.status_code)
         rescue Ridley::Errors::RidleyError => e
           Berkshelf.ui.error "#{e.class} #{e}"
-          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV['BERKSHELF_DEBUG']
+          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
           @kernel.exit(47)
         end
       end
@@ -44,13 +44,13 @@ module Berkshelf
           command = given_args.first
 
           if self.subcommands.include?(command)
-            super(meth, [command, 'help'].compact, nil, config)
+            super(meth, [command, "help"].compact, nil, config)
           else
-            super(meth, ['help', command].compact, nil, config)
+            super(meth, ["help", command].compact, nil, config)
           end
         else
           super
-          Berkshelf.formatter.cleanup_hook unless config[:current_command].name == 'help'
+          Berkshelf.formatter.cleanup_hook unless config[:current_command].name == "help"
         end
       end
     end
@@ -79,58 +79,58 @@ module Berkshelf
       @options = options.dup # unfreeze frozen options Hash from Thor
     end
 
-    namespace 'berkshelf'
+    namespace "berkshelf"
 
-    map 'in'   => :install
-    map 'up'   => :upload
-    map 'ud'   => :update
-    map 'ls'   => :list
-    map 'book' => :cookbook
-    map ['ver', '-v', '--version'] => :version
+    map "in"   => :install
+    map "up"   => :upload
+    map "ud"   => :update
+    map "ls"   => :list
+    map "book" => :cookbook
+    map ["ver", "-v", "--version"] => :version
 
     default_task :install
 
     class_option :config,
       type: :string,
-      desc: 'Path to Berkshelf configuration to use.',
-      aliases: '-c',
-      banner: 'PATH'
+      desc: "Path to Berkshelf configuration to use.",
+      aliases: "-c",
+      banner: "PATH"
     class_option :format,
       type: :string,
-      default: 'human',
-      desc: 'Output format to use.',
-      aliases: '-F',
-      banner: 'FORMAT'
+      default: "human",
+      desc: "Output format to use.",
+      aliases: "-F",
+      banner: "FORMAT"
     class_option :quiet,
       type: :boolean,
-      desc: 'Silence all informational output.',
-      aliases: '-q',
+      desc: "Silence all informational output.",
+      aliases: "-q",
       default: false
     class_option :debug,
       type: :boolean,
-      desc: 'Output debug information',
-      aliases: '-d',
+      desc: "Output debug information",
+      aliases: "-d",
       default: false
 
     method_option :except,
       type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
     method_option :only,
       type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :path,
       type: :string,
-      aliases: '-p',
+      aliases: "-p",
       hide: true
-    desc 'install', 'Install the cookbooks specified in the Berksfile'
+    desc "install", "Install the cookbooks specified in the Berksfile"
     def install
       if options[:path]
         # TODO: Remove in Berkshelf 4.0
@@ -146,18 +146,18 @@ module Berkshelf
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :except,
       type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
     method_option :only,
       type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    desc 'update [COOKBOOKS]', 'Update the cookbooks (and dependencies) specified in the Berksfile'
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    desc "update [COOKBOOKS]", "Update the cookbooks (and dependencies) specified in the Berksfile"
     def update(*cookbook_names)
       berksfile = Berksfile.from_options(options)
       berksfile.update(*cookbook_names)
@@ -166,39 +166,39 @@ module Berkshelf
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :except,
       type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
     method_option :only,
       type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
     method_option :no_freeze,
       type: :boolean,
       default: false,
-      desc: 'Do not freeze uploaded cookbook(s).'
+      desc: "Do not freeze uploaded cookbook(s)."
     method_option :force,
       type: :boolean,
       default: false,
-      desc: 'Upload all cookbooks even if a frozen one exists on the Chef Server.'
+      desc: "Upload all cookbooks even if a frozen one exists on the Chef Server."
     method_option :ssl_verify,
       type: :boolean,
       default: nil,
-      desc: 'Disable/Enable SSL verification when uploading cookbooks.'
+      desc: "Disable/Enable SSL verification when uploading cookbooks."
     method_option :skip_syntax_check,
       type: :boolean,
       default: false,
-      desc: 'Skip Ruby syntax check when uploading cookbooks.',
-      aliases: '-s'
+      desc: "Skip Ruby syntax check when uploading cookbooks.",
+      aliases: "-s"
     method_option :halt_on_frozen,
       type: :boolean,
       default: false,
-      desc: 'Exit with a non zero exit code if the Chef Server already has the version of the cookbook(s).'
-    desc 'upload [COOKBOOKS]', 'Upload the cookbook specified in the Berksfile to the Chef Server'
+      desc: "Exit with a non zero exit code if the Chef Server already has the version of the cookbook(s)."
+    desc "upload [COOKBOOKS]", "Upload the cookbook specified in the Berksfile to the Chef Server"
     def upload(*names)
       berksfile = Berksfile.from_options(options)
 
@@ -210,19 +210,19 @@ module Berkshelf
 
     method_option :envfile,
       type: :string,
-      desc: 'Path to a JSON environment file to update.',
-      aliases: '-f'
+      desc: "Path to a JSON environment file to update.",
+      aliases: "-f"
     method_option :lockfile,
       type: :string,
       default: Berkshelf::Lockfile::DEFAULT_FILENAME,
-      desc: 'Path to a Berksfile.lock to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile.lock to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :ssl_verify,
       type: :boolean,
       default: nil,
-      desc: 'Disable/Enable SSL verification when locking cookbooks.'
-    desc 'apply ENVIRONMENT', 'Apply version locks from Berksfile.lock to a Chef environment'
+      desc: "Disable/Enable SSL verification when locking cookbooks."
+    desc "apply ENVIRONMENT", "Apply version locks from Berksfile.lock to a Chef environment"
     def apply(environment_name)
       unless File.exist?(options[:lockfile])
         raise LockfileNotFound, "No lockfile found at #{options[:lockfile]}"
@@ -237,18 +237,18 @@ module Berkshelf
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :except,
       type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
     method_option :only,
       type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    desc 'outdated [COOKBOOKS]', 'List dependencies that have new versions available that satisfy their constraints'
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    desc "outdated [COOKBOOKS]", "List dependencies that have new versions available that satisfy their constraints"
     def outdated(*names)
       berksfile = Berksfile.from_options(options)
       outdated  = berksfile.outdated(*names)
@@ -258,45 +258,45 @@ module Berkshelf
     method_option :source,
       type: :string,
       default: Berksfile::DEFAULT_API_URL,
-      desc: 'URL to search for sources',
-      banner: 'URL'
-    desc 'search NAME', 'Search the remote source for cookbooks matching the partial name'
+      desc: "URL to search for sources",
+      banner: "URL"
+    desc "search NAME", "Search the remote source for cookbooks matching the partial name"
     def search(name)
       source = Source.new(options[:source])
       cookbooks = source.search(name)
       Berkshelf.formatter.search(cookbooks)
     end
 
-    desc 'init [PATH]', 'Initialize Berkshelf in the given directory'
-    def init(path = '.')
+    desc "init [PATH]", "Initialize Berkshelf in the given directory"
+    def init(path = ".")
       Berkshelf.formatter.deprecation <<EOF
 This command is being deprecated in favor of `chef generate cookbook` and will soon return an error.
 Please use `chef generate cookbook` instead of this command.
 EOF
-      Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
-      Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
+      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
+      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
 
       Berkshelf::InitGenerator.new([path], options).invoke_all
 
-      Berkshelf.formatter.msg 'Successfully initialized'
+      Berkshelf.formatter.msg "Successfully initialized"
     end
-    tasks['init'].options = Berkshelf::InitGenerator.class_options
+    tasks["init"].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :except,
       type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
     method_option :only,
       type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
-    desc 'list', 'List cookbooks and their dependencies specified by your Berksfile'
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
+    desc "list", "List cookbooks and their dependencies specified by your Berksfile"
     def list
       berksfile = Berksfile.from_options(options)
       Berkshelf.formatter.list(berksfile.list)
@@ -331,10 +331,10 @@ EOF
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
-    desc 'contingent COOKBOOK', 'List all cookbooks that depend on the given cookbook in your Berksfile'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
+    desc "contingent COOKBOOK", "List all cookbooks that depend on the given cookbook in your Berksfile"
     def contingent(name)
       berksfile    = Berksfile.from_options(options)
       dependencies = berksfile.cookbooks.select do |cookbook|
@@ -352,9 +352,9 @@ EOF
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :except,
       type: :array,
       desc: "Exclude cookbooks that are in these groups.",
@@ -377,22 +377,22 @@ EOF
 
     method_option :except,
       type: :array,
-      desc: 'Exclude cookbooks that are in these groups.',
-      aliases: '-e'
+      desc: "Exclude cookbooks that are in these groups.",
+      aliases: "-e"
     method_option :delete,
       type: :boolean,
       desc: "Clean the target directory before vendoring",
       default: false
     method_option :only,
       type: :array,
-      desc: 'Only cookbooks that are in these groups.',
-      aliases: '-o'
+      desc: "Only cookbooks that are in these groups.",
+      aliases: "-o"
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     desc "vendor [PATH]", "Vendor the cookbooks specified by the Berksfile into a directory"
     def vendor(path = File.join(Dir.pwd, "berks-cookbooks"))
       berksfile = Berkshelf::Berksfile.from_options(options)
@@ -412,15 +412,15 @@ EOF
     method_option :berksfile,
       type: :string,
       default: nil,
-      desc: 'Path to a Berksfile to operate off of.',
-      aliases: '-b',
-      banner: 'PATH'
+      desc: "Path to a Berksfile to operate off of.",
+      aliases: "-b",
+      banner: "PATH"
     method_option :outfile,
       type: :string,
-      default: 'graph.png',
-      desc: 'The name of the output file',
-      aliases: '-o',
-      banner: 'NAME'
+      default: "graph.png",
+      desc: "The name of the output file",
+      aliases: "-o",
+      banner: "NAME"
     desc "viz", "Visualize the dependency graph"
     def viz
       berksfile = Berksfile.from_options(options)
@@ -429,24 +429,24 @@ EOF
       Berkshelf.ui.info(path)
     end
 
-    desc 'version', 'Display version'
+    desc "version", "Display version"
     def version
       Berkshelf.formatter.version
     end
 
-    desc 'cookbook NAME [PATH]', 'Create a skeleton for a new cookbook'
+    desc "cookbook NAME [PATH]", "Create a skeleton for a new cookbook"
     def cookbook(name, path = nil)
       Berkshelf.formatter.deprecation <<EOF
 This command is being deprecated in favor of `chef generate cookbook` and will soon return an error.
 Please use `chef generate cookbook` instead of this command.
 EOF
       path = File.join(Dir.pwd, name) if path.nil?
-      Berkshelf.formatter.deprecation '--git is now the default' if options[:git]
-      Berkshelf.formatter.deprecation '--vagrant is now the default' if options[:vagrant]
+      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
+      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
 
       Berkshelf::CookbookGenerator.new([path, name], options).invoke_all
     end
-    tasks['cookbook'].options = Berkshelf::CookbookGenerator.class_options
+    tasks["cookbook"].options = Berkshelf::CookbookGenerator.class_options
 
     private
 
@@ -455,10 +455,10 @@ EOF
       #
       # @param [Array<CachedCookbook>] cookbooks
       #
-      def print_list(cookbooks)
-        Array(cookbooks).sort.each do |cookbook|
-          Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
-        end
+    def print_list(cookbooks)
+      Array(cookbooks).sort.each do |cookbook|
+        Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"
       end
+    end
   end
 end
