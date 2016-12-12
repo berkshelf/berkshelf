@@ -1,7 +1,7 @@
 module Berkshelf
   class Resolver
 
-    require_relative 'resolver/graph'
+    require_relative "resolver/graph"
 
     extend Forwardable
 
@@ -75,7 +75,7 @@ module Berkshelf
       graph.populate_store
       graph.populate(berksfile.sources)
 
-      Solve.it!(graph, demand_array, ENV['DEBUG_RESOLVER'] ? { ui: Berkshelf.ui } : {}).collect do |name, version|
+      Solve.it!(graph, demand_array, ENV["DEBUG_RESOLVER"] ? { ui: Berkshelf.ui } : {}).collect do |name, version|
         dependency = get_demand(name) || Dependency.new(berksfile, name)
         dependency.locked_version = version
 

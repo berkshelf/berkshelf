@@ -1,8 +1,8 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Berkshelf::Berksfile do
   describe "ClassMethods" do
-    describe '::from_file' do
+    describe "::from_file" do
       let(:content) do
         <<-EOF.strip
         cookbook 'ntp', '<= 1.0.0'
@@ -12,13 +12,13 @@ describe Berkshelf::Berksfile do
         solver :foo, :required
         EOF
       end
-      let(:berksfile) { tmp_path.join('Berksfile') }
+      let(:berksfile) { tmp_path.join("Berksfile") }
 
-      before { File.open(berksfile, 'w+') { |f| f.write(content) } }
+      before { File.open(berksfile, "w+") { |f| f.write(content) } }
       subject(:from_file) { described_class.from_file(berksfile) }
 
       it "reads the content of the Berksfile and binds them to a new instance" do
-        %w(ntp mysql nginx ssh_known_hosts2).each do |name|
+        %w{ntp mysql nginx ssh_known_hosts2}.each do |name|
           expect(subject).to have_dependency(name)
         end
       end
@@ -27,62 +27,62 @@ describe Berkshelf::Berksfile do
         expect(subject).to be_a(described_class)
       end
 
-      context 'when Berksfile does not exist at given path' do
-        let(:bad_path) { tmp_path.join('thisdoesnotexist') }
+      context "when Berksfile does not exist at given path" do
+        let(:bad_path) { tmp_path.join("thisdoesnotexist") }
 
-        it 'raises BerksfileNotFound' do
-          expect {
+        it "raises BerksfileNotFound" do
+          expect do
             Berkshelf::Berksfile.from_file(bad_path)
-          }.to raise_error(Berkshelf::BerksfileNotFound)
+          end.to raise_error(Berkshelf::BerksfileNotFound)
         end
       end
     end
   end
 
-  let(:dependency_one) { double('dependency_one', name: 'nginx') }
-  let(:dependency_two) { double('dependency_two', name: 'mysql') }
+  let(:dependency_one) { double("dependency_one", name: "nginx") }
+  let(:dependency_two) { double("dependency_two", name: "mysql") }
 
   subject do
-    berksfile_path = tmp_path.join('Berksfile').to_s
+    berksfile_path = tmp_path.join("Berksfile").to_s
     FileUtils.touch(berksfile_path)
     Berkshelf::Berksfile.new(berksfile_path)
   end
 
-  describe '#cookbook' do
-    let(:name) { 'artifact' }
-    let(:constraint) { double('constraint') }
+  describe "#cookbook" do
+    let(:name) { "artifact" }
+    let(:constraint) { double("constraint") }
     let(:default_options) { { group: [] } }
 
-    it 'sends the add_dependency message with the name, constraint, and options to the instance of the includer' do
+    it "sends the add_dependency message with the name, constraint, and options to the instance of the includer" do
       expect(subject).to receive(:add_dependency).with(name, constraint, default_options)
       subject.cookbook(name, constraint, default_options)
     end
 
-    it 'merges the default options into specified options' do
-      expect(subject).to receive(:add_dependency)do |arg_name, arg_constraint, arg_options|
+    it "merges the default options into specified options" do
+      expect(subject).to receive(:add_dependency) do |arg_name, arg_constraint, arg_options|
         expect(arg_name).to eq(name)
         expect(arg_constraint).to eq(constraint)
         expect(arg_options[:path]).to match(%r{/Users/reset})
         expect(arg_options[:group]).to eq([])
       end
 
-      subject.cookbook(name, constraint, path: '/Users/reset')
+      subject.cookbook(name, constraint, path: "/Users/reset")
     end
 
-    it 'converts a single specified group option into an array of groups' do
+    it "converts a single specified group option into an array of groups" do
       expect(subject).to receive(:add_dependency).with(name, constraint, group: [:production])
       subject.cookbook(name, constraint, group: :production)
     end
 
-    context 'when no constraint specified' do
-      it 'sends the add_dependency message with a nil value for constraint' do
+    context "when no constraint specified" do
+      it "sends the add_dependency message with a nil value for constraint" do
         expect(subject).to receive(:add_dependency).with(name, nil, default_options)
         subject.cookbook(name, default_options)
       end
     end
 
-    context 'when no options specified' do
-      it 'sends the add_dependency message with an empty Hash for the value of options' do
+    context "when no options specified" do
+      it "sends the add_dependency message with an empty Hash for the value of options" do
         expect(subject).to receive(:add_dependency).with(name, constraint, default_options)
         subject.cookbook(name, constraint)
       end
@@ -93,11 +93,11 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#group' do
-    let(:name) { 'artifact' }
-    let(:group) { 'production' }
+  describe "#group" do
+    let(:name) { "artifact" }
+    let(:group) { "production" }
 
-    it 'sends the add_dependency message with an array of groups determined by the parameter to the group block' do
+    it "sends the add_dependency message with an array of groups determined by the parameter to the group block" do
       expect(subject).to receive(:add_dependency).with(name, nil, group: [group])
 
       subject.group(group) do
@@ -110,14 +110,14 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#metadata' do
-    let(:path) { fixtures_path.join('cookbooks/example_cookbook') }
-    subject { Berkshelf::Berksfile.new(path.join('Berksfile')) }
+  describe "#metadata" do
+    let(:path) { fixtures_path.join("cookbooks/example_cookbook") }
+    subject { Berkshelf::Berksfile.new(path.join("Berksfile")) }
 
     before { Dir.chdir(path) }
 
-    it 'sends the add_dependency message with an explicit version constraint and the path to the cookbook' do
-      expect(subject).to receive(:add_dependency).with('example_cookbook', nil, path: path.to_s, metadata: true)
+    it "sends the add_dependency message with an explicit version constraint and the path to the cookbook" do
+      expect(subject).to receive(:add_dependency).with("example_cookbook", nil, path: path.to_s, metadata: true)
       subject.metadata
     end
 
@@ -171,9 +171,9 @@ describe Berkshelf::Berksfile do
   describe "#sources" do
     context "when there are no sources" do
       it "raises an exception" do
-        expect {
+        expect do
           subject.sources
-        }.to raise_error(Berkshelf::NoAPISourcesDefined)
+        end.to raise_error(Berkshelf::NoAPISourcesDefined)
       end
     end
 
@@ -212,21 +212,21 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#extension' do
+  describe "#extension" do
     it "is a DSL method" do
       expect(subject).to have_exposed_method(:extension)
     end
   end
 
-  describe '#dependencies' do
+  describe "#dependencies" do
     let(:groups) do
       [
         :nautilus,
-        :skarner
+        :skarner,
       ]
     end
 
-    it 'returns all Berkshelf::Dependencys added to the instance of Berksfile' do
+    it "returns all Berkshelf::Dependencys added to the instance of Berksfile" do
       subject.add_dependency(dependency_one.name)
       subject.add_dependency(dependency_two.name)
 
@@ -236,15 +236,15 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#cookbooks' do
-    it 'raises an exception if a cookbook is not installed' do
-      subject.add_dependency('bacon', nil)
+  describe "#cookbooks" do
+    it "raises an exception if a cookbook is not installed" do
+      subject.add_dependency("bacon", nil)
       expect { subject.cookbooks }.to raise_error(Berkshelf::DependencyNotFound)
     end
 
-    it 'retrieves the locked (cached) cookbook for each dependency' do
-      subject.add_dependency('bacon', nil)
-      subject.add_dependency('ham', nil)
+    it "retrieves the locked (cached) cookbook for each dependency" do
+      subject.add_dependency("bacon", nil)
+      subject.add_dependency("ham", nil)
       allow(subject).to receive(:retrive_locked)
 
       expect(subject).to receive(:retrieve_locked).twice
@@ -252,29 +252,29 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#groups' do
+  describe "#groups" do
     before do
       allow(subject).to receive(:dependencies) { [dependency_one, dependency_two] }
       allow(dependency_one).to receive(:groups) { [:nautilus, :skarner] }
       allow(dependency_two).to receive(:groups) { [:nautilus, :riven] }
     end
 
-    it 'returns a hash containing keys for every group a dependency is a member of' do
+    it "returns a hash containing keys for every group a dependency is a member of" do
       expect(subject.groups.keys.size).to eq(3)
       expect(subject.groups).to have_key(:nautilus)
       expect(subject.groups).to have_key(:skarner)
       expect(subject.groups).to have_key(:riven)
     end
 
-    it 'returns an Array of Berkshelf::Dependencys who are members of the group for value' do
+    it "returns an Array of Berkshelf::Dependencys who are members of the group for value" do
       expect(subject.groups[:nautilus].size).to eq(2)
       expect(subject.groups[:riven].size).to eq(1)
     end
   end
 
-  describe '#add_dependency' do
-    let(:name) { 'cookbook_one' }
-    let(:constraint) { '= 1.2.0' }
+  describe "#add_dependency" do
+    let(:name) { "cookbook_one" }
+    let(:constraint) { "= 1.2.0" }
     let(:options) { Hash.new }
 
     before(:each) do
@@ -283,7 +283,7 @@ describe Berkshelf::Berksfile do
 
     let(:dependency) { subject.dependencies.first }
 
-    it 'adds new dependency to the list of dependencies' do
+    it "adds new dependency to the list of dependencies" do
       expect(subject.dependencies.size).to eq(1)
     end
 
@@ -299,10 +299,10 @@ describe Berkshelf::Berksfile do
       expect(dependency.version_constraint.to_s).to eq(constraint)
     end
 
-    it 'raises DuplicateDependencyDefined if multiple dependencies of the same name are found' do
-      expect {
+    it "raises DuplicateDependencyDefined if multiple dependencies of the same name are found" do
+      expect do
         subject.add_dependency(name)
-      }.to raise_error(Berkshelf::DuplicateDependencyDefined)
+      end.to raise_error(Berkshelf::DuplicateDependencyDefined)
     end
 
     it "has a nil location if no location options are provided" do
@@ -326,7 +326,7 @@ describe Berkshelf::Berksfile do
     end
 
     context "when given the :path option" do
-      let(:options) { { path: fixtures_path.join('cookbooks', 'example_cookbook') } }
+      let(:options) { { path: fixtures_path.join("cookbooks", "example_cookbook") } }
 
       it "has a PathLocation location" do
         expect(dependency.location).to be_a(Berkshelf::PathLocation)
@@ -334,23 +334,23 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#retrieve_locked' do
-    let(:lockfile) { double('lockfile') }
-    let(:dependency) { double('dependency', name: 'bacon') }
-    let(:locked) { double('locked', cached_cookbook: cached, locked_version: '1.0.0') }
-    let(:cached) { double('cached') }
+  describe "#retrieve_locked" do
+    let(:lockfile) { double("lockfile") }
+    let(:dependency) { double("dependency", name: "bacon") }
+    let(:locked) { double("locked", cached_cookbook: cached, locked_version: "1.0.0") }
+    let(:cached) { double("cached") }
 
     before do
       allow(subject).to receive(:lockfile).and_return(lockfile)
     end
 
-    it 'delegates to the lockfile' do
+    it "delegates to the lockfile" do
       expect(lockfile).to receive(:retrieve).with(dependency)
       subject.retrieve_locked(dependency)
     end
   end
 
-  describe '#upload' do
+  describe "#upload" do
     let(:uploader) { double(Berkshelf::Uploader, run: nil) }
 
     before do
@@ -361,22 +361,22 @@ describe Berkshelf::Berksfile do
       allow(Berkshelf::Uploader).to receive(:new).and_return(uploader)
     end
 
-    it 'validates the lockfile is present' do
+    it "validates the lockfile is present" do
       expect(subject).to receive(:validate_lockfile_present!).once
       subject.upload
     end
 
-    it 'validates the lockfile is trusted' do
+    it "validates the lockfile is trusted" do
       expect(subject).to receive(:validate_lockfile_trusted!).once
       subject.upload
     end
 
-    it 'validates the dependencies are installed' do
+    it "validates the dependencies are installed" do
       expect(subject).to receive(:validate_dependencies_installed!).once
       subject.upload
     end
 
-    it 'creates a new Uploader' do
+    it "creates a new Uploader" do
       expect(Berkshelf::Uploader).to receive(:new).with(subject)
       expect(uploader).to receive(:run)
 
@@ -384,31 +384,31 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe '#vendor' do
-    let(:cached_cookbook)    { double(Berkshelf::CachedCookbook, cookbook_name: 'my_cookbook', path: '/my_cookbook/path', compiled_metadata?: true) }
+  describe "#vendor" do
+    let(:cached_cookbook)    { double(Berkshelf::CachedCookbook, cookbook_name: "my_cookbook", path: "/my_cookbook/path", compiled_metadata?: true) }
     let(:installer)          { double(Berkshelf::Installer, run: [cached_cookbook]) }
-    let(:raw_metadata_files) { [File::join(cached_cookbook.cookbook_name, 'metadata.rb')] }
+    let(:raw_metadata_files) { [File.join(cached_cookbook.cookbook_name, "metadata.rb")] }
 
-    let(:destination) { '/a/destination/path' }
-    let(:options)    { { :exclude => raw_metadata_files + Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: nil } }
+    let(:destination) { "/a/destination/path" }
+    let(:options) { { :exclude => raw_metadata_files + Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: nil } }
 
     before do
       allow(Berkshelf::Installer).to receive(:new).and_return(installer)
     end
 
-    it 'invokes FileSyncer with correct arguments' do
+    it "invokes FileSyncer with correct arguments" do
       expect(Berkshelf::FileSyncer).to receive(:sync).with(/vendor/, destination, options)
 
       subject.vendor(destination)
     end
 
-    it 'excludes the top-level metadata.rb file' do
-      expect(options[:exclude].any? { |exclude| File.fnmatch?(exclude, 'my_cookbook/recipes/metadata.rb', File::FNM_DOTMATCH) }).to be(false)
-      expect(options[:exclude].any? { |exclude| File.fnmatch?(exclude, 'my_cookbook/metadata.rb', File::FNM_DOTMATCH) }).to be(true)
+    it "excludes the top-level metadata.rb file" do
+      expect(options[:exclude].any? { |exclude| File.fnmatch?(exclude, "my_cookbook/recipes/metadata.rb", File::FNM_DOTMATCH) }).to be(false)
+      expect(options[:exclude].any? { |exclude| File.fnmatch?(exclude, "my_cookbook/metadata.rb", File::FNM_DOTMATCH) }).to be(true)
     end
   end
 
-  describe '#solver' do
+  describe "#solver" do
 
     let(:solver_precedence) { :please_dont_exist }
 

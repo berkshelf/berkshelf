@@ -1,6 +1,6 @@
 module Berkshelf
   class GithubLocation < GitLocation
-    HOST = 'github.com'
+    HOST = "github.com"
     def initialize(dependency, options = {})
       protocol = Berkshelf::Config.instance.github_protocol || :https
       case protocol

@@ -1,11 +1,11 @@
-require 'fileutils'
+require "fileutils"
 
 module Berkshelf
   module FileSyncer
     extend self
 
     # Files to be ignored during a directory globbing
-    IGNORED_FILES = %w(. ..).freeze
+    IGNORED_FILES = %w{. ..}.freeze
 
     #
     # Glob across the given pattern, accounting for dotfiles, removing Ruby's
@@ -62,8 +62,8 @@ module Berkshelf
       # user directory: C:/Users/MATTWR~1/AppData/Local/Temp
       # so that it matches the parent of source_files
       source = glob(source).first
-      
-      source_files = glob(File.join(source, '**/*'))
+
+      source_files = glob(File.join(source, "**/*"))
       source_files = source_files.reject do |source_file|
         basename = relative_path_for(source_file, source)
         excludes.any? { |exclude| File.fnmatch?(exclude, basename, File::FNM_DOTMATCH) }
@@ -94,7 +94,7 @@ module Berkshelf
           FileUtils.cp(source_file, "#{destination}/#{relative_path}")
         else
           type = File.ftype(source_file)
-          raise RuntimeError, "Unknown file type: `#{type}' at " \
+          raise "Unknown file type: `#{type}' at " \
             "`#{source_file}'. Failed to sync `#{source_file}' to " \
             "`#{destination}/#{relative_path}'!"
         end
@@ -125,6 +125,7 @@ module Berkshelf
     end
 
     private
+
       #
       # The relative path of the given +path+ to the +parent+.
       #
@@ -135,8 +136,8 @@ module Berkshelf
       #
       # @return [String]
       #
-      def relative_path_for(path, parent)
-        Pathname.new(path).relative_path_from(Pathname.new(parent)).to_s
-      end
+    def relative_path_for(path, parent)
+      Pathname.new(path).relative_path_from(Pathname.new(parent)).to_s
+    end
   end
 end

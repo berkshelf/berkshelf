@@ -1,17 +1,17 @@
-require 'buff/config/json'
-require 'openssl'
+require "buff/config/json"
+require "openssl"
 
 module Berkshelf
   class Config < Buff::Config::JSON
     class << self
       # @return [String]
       def store_location
-        File.join(Berkshelf.berkshelf_path, 'config.json')
+        File.join(Berkshelf.berkshelf_path, "config.json")
       end
 
       # @return [String]
       def local_location
-        ENV['BERKSHELF_CONFIG'] || File.join('.', '.berkshelf', 'config.json')
+        ENV["BERKSHELF_CONFIG"] || File.join(".", ".berkshelf", "config.json")
       end
 
       # @return [String]
@@ -42,10 +42,10 @@ module Berkshelf
       # @return [Config]
       def instance
         @instance ||= if file
-          from_json file
-        else
-          new
-        end
+                        from_json file
+                      else
+                        new
+                      end
         coerce_ssl
       end
 
@@ -56,7 +56,7 @@ module Berkshelf
         @instance = nil
         self.instance
       end
-    
+
       # force proper X509 types from any configuration strings
       #
       # @return [Config]
@@ -88,94 +88,94 @@ module Berkshelf
       end
     end
 
-    attribute 'api.timeout',
+    attribute "api.timeout",
       type: String,
-      default: '30'
-    attribute 'chef.chef_server_url',
+      default: "30"
+    attribute "chef.chef_server_url",
       type: String,
       default: Berkshelf.chef_config.chef_server_url
-    attribute 'chef.validation_client_name',
+    attribute "chef.validation_client_name",
       type: String,
       default: Berkshelf.chef_config.validation_client_name
-    attribute 'chef.validation_key_path',
+    attribute "chef.validation_key_path",
       type: String,
       default: Berkshelf.chef_config.validation_key
-    attribute 'chef.client_key',
+    attribute "chef.client_key",
       type: String,
       default: Berkshelf.chef_config.client_key
-    attribute 'chef.node_name',
+    attribute "chef.node_name",
       type: String,
       default: Berkshelf.chef_config.node_name
-    attribute 'cookbook.copyright',
+    attribute "cookbook.copyright",
       type: String,
       default: Berkshelf.chef_config.cookbook_copyright
-    attribute 'cookbook.email',
+    attribute "cookbook.email",
       type: String,
       default: Berkshelf.chef_config.cookbook_email
-    attribute 'cookbook.license',
+    attribute "cookbook.license",
       type: String,
       default: Berkshelf.chef_config.cookbook_license
-    attribute 'allowed_licenses',
+    attribute "allowed_licenses",
       type: Array,
       default: Array.new
-    attribute 'raise_license_exception',
+    attribute "raise_license_exception",
       type: Buff::Boolean,
       default: false
-    attribute 'vagrant.vm.box',
+    attribute "vagrant.vm.box",
       type: String,
-      default: 'bento/ubuntu-14.04',
+      default: "bento/ubuntu-14.04",
       required: true
     # @todo Deprecated, remove?
-    attribute 'vagrant.vm.box_url',
+    attribute "vagrant.vm.box_url",
       type: String,
       default: nil
-    attribute 'vagrant.vm.forward_port',
+    attribute "vagrant.vm.forward_port",
       type: Hash,
       default: Hash.new
-    attribute 'vagrant.vm.provision',
+    attribute "vagrant.vm.provision",
       type: String,
-      default: 'chef_solo'
+      default: "chef_solo"
     # @todo Deprecated, remove. There's a really weird tri-state here where
     # nil is used to represent an unset value, just FYI
-    attribute 'vagrant.omnibus.enabled',
+    attribute "vagrant.omnibus.enabled",
       type: Buff::Boolean,
       default: nil
-    attribute 'vagrant.omnibus.version',
+    attribute "vagrant.omnibus.version",
       type: String,
-      default: 'latest'
-    attribute 'ssl.verify',
+      default: "latest"
+    attribute "ssl.verify",
       type: Buff::Boolean,
       default: true,
       required: true
-    attribute 'ssl.cert_store',
+    attribute "ssl.cert_store",
       type: Buff::Boolean,
       default: false,
       required: false
-    attribute 'ssl.ca_file',
+    attribute "ssl.ca_file",
       type: String,
       default: nil,
       required: false
-    attribute 'ssl.ca_path',
+    attribute "ssl.ca_path",
       type: String,
       default: nil,
       required: false
-    attribute 'ssl.client_cert',
+    attribute "ssl.client_cert",
       type: String,
       default: nil,
       required: false
-    attribute 'ssl.client_key',
+    attribute "ssl.client_key",
       type: String,
       default: nil,
       required: false
-    attribute 'github',
+    attribute "github",
       type: Array,
       default: [],
       required: false
-    attribute 'gitlab',
+    attribute "gitlab",
       type: Array,
       default: [],
       required: false
-    attribute 'github_protocol',
+    attribute "github_protocol",
       # :git, :ssh, or :https
       type: Symbol,
       default: :https,

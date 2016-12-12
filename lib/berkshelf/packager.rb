@@ -1,5 +1,5 @@
-require 'archive/tar/minitar'
-require 'zlib'
+require "archive/tar/minitar"
+require "zlib"
 
 module Berkshelf
   # A class for archiving and compressing directory containing one or more cookbooks.
@@ -65,9 +65,9 @@ module Berkshelf
     private
 
       # @return [String]
-      attr_reader :out_dir
+    attr_reader :out_dir
 
       # @return [String]
-      attr_reader :filename
+    attr_reader :filename
   end
 end

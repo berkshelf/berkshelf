@@ -1,4 +1,4 @@
-require 'buff/shell_out'
+require "buff/shell_out"
 
 module Berkshelf
   module Mixin
@@ -13,11 +13,11 @@ module Berkshelf
       # @raise [String]
       #   the +$stdout+ from the command
       def git(command, error = true)
-        unless Berkshelf.which('git') || Berkshelf.which('git.exe') || Berkshelf.which('git.bat')
+        unless Berkshelf.which("git") || Berkshelf.which("git.exe") || Berkshelf.which("git.bat")
           raise GitNotInstalled.new
         end
 
-        response = Buff::ShellOut.shell_out(%|git #{command}|)
+        response = Buff::ShellOut.shell_out(%{git #{command}})
 
         if error && !response.success?
           raise GitCommandError.new(command, cache_path, response.stderr)

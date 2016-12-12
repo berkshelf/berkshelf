@@ -1,85 +1,85 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Berkshelf::Lockfile do
-  let(:filepath) { fixtures_path.join('lockfiles/default.lock').to_s }
+  let(:filepath) { fixtures_path.join("lockfiles/default.lock").to_s }
   subject { Berkshelf::Lockfile.new(filepath: filepath) }
 
-  describe '.from_berksfile' do
-    let(:lock_path) { File.absolute_path('/path/to/Bacon') }
+  describe ".from_berksfile" do
+    let(:lock_path) { File.absolute_path("/path/to/Bacon") }
     let(:berksfile) do
-      double('Berksfile',
-        filepath: lock_path,
+      double("Berksfile",
+        filepath: lock_path
       )
     end
 
     subject { described_class.from_berksfile(berksfile) }
 
-    it 'uses the basename of the Berksfile' do
+    it "uses the basename of the Berksfile" do
       expect(subject.filepath).to eq("#{lock_path}.lock")
     end
   end
 
-  describe '.initialize' do
+  describe ".initialize" do
     subject { described_class.new(filepath: filepath) }
 
-    it 'sets the instance variables' do
+    it "sets the instance variables" do
       expect(subject.filepath).to eq(filepath)
       expect(subject.dependencies).to be_a(Array)
       expect(subject.graph).to be_a(Berkshelf::Lockfile::Graph)
     end
 
-    it 'has the correct dependencies' do
-      expect(subject).to have_dependency('apt')
-      expect(subject).to have_dependency('jenkins')
+    it "has the correct dependencies" do
+      expect(subject).to have_dependency("apt")
+      expect(subject).to have_dependency("jenkins")
     end
   end
 
-  describe '#parse' do
-    let(:parser) { double('parser', run: true) }
+  describe "#parse" do
+    let(:parser) { double("parser", run: true) }
 
     before do
       allow(Berkshelf::Lockfile::LockfileParser).to receive(:new).and_return(parser)
     end
 
-    it 'creates a new parser object' do
+    it "creates a new parser object" do
       expect(Berkshelf::Lockfile::LockfileParser).to receive(:new).with(subject)
       expect(parser).to receive(:run)
       subject.parse
     end
 
-    it 'returns true (always)' do
+    it "returns true (always)" do
       expect(subject.parse).to be(true)
     end
   end
 
-  describe '#present?' do
-    it 'returns true when the file exists' do
+  describe "#present?" do
+    it "returns true when the file exists" do
       expect(subject.present?).to be(true)
     end
 
-    it 'returns false when the file does not exist' do
+    it "returns false when the file does not exist" do
       allow(File).to receive(:exists?).and_return(false)
       expect(subject.present?).to be(false)
     end
 
-    it 'returns false when the file is empty' do
-      allow(File).to receive(:read).and_return('')
+    it "returns false when the file is empty" do
+      allow(File).to receive(:read).and_return("")
       expect(subject.present?).to be(false)
     end
   end
 
-  describe '#trusted?' do
-    it 'returns true when the lockfile is trusted' do
-      cookbook = double('apt-1.0.0', dependencies: {})
-      apt = double('apt',
-        name: 'apt',
-        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
-        version: '1.0.0',
-        location: 'api',
+  describe "#trusted?" do
+    it "returns true when the lockfile is trusted" do
+      cookbook = double("apt-1.0.0", dependencies: {})
+      apt = double("apt",
+        name: "apt",
+        version_constraint: Semverse::Constraint.new(">= 0.0.0"),
+        version: "1.0.0",
+        location: "api",
         dependencies: {},
-        cached_cookbook: cookbook,
+        cached_cookbook: cookbook
       )
-      berksfile = double('berksfile', dependencies: [apt])
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
       allow(subject.graph).to receive(:find).with(apt).and_return(apt)
@@ -87,63 +87,63 @@ describe Berkshelf::Lockfile do
       expect(subject.trusted?).to be(true)
     end
 
-    it 'returns true when the lockfile is trusted with transitive dependencies' do
-      cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0' })
-      apt = double('apt',
-        name: 'apt',
-        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
-        version: '1.0.0',
-        location: 'api',
-        dependencies: { 'bacon' => '1.0.0' },
-        cached_cookbook: cookbook,
+    it "returns true when the lockfile is trusted with transitive dependencies" do
+      cookbook = double("apt-1.0.0", dependencies: { "bacon" => "1.0.0" })
+      apt = double("apt",
+        name: "apt",
+        version_constraint: Semverse::Constraint.new(">= 0.0.0"),
+        version: "1.0.0",
+        location: "api",
+        dependencies: { "bacon" => "1.0.0" },
+        cached_cookbook: cookbook
       )
-      bacon = double(name: 'bacon', version: '1.0.0', dependencies: {})
-      berksfile = double('berksfile', dependencies: [apt])
+      bacon = double(name: "bacon", version: "1.0.0", dependencies: {})
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
-      allow(subject.graph).to receive(:find).with('bacon').and_return(bacon)
+      allow(subject.graph).to receive(:find).with("bacon").and_return(bacon)
       allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
       expect(subject.trusted?).to be(true)
     end
 
-    it 'returns true when the lockfile is trusted with cyclic transitive dependencies' do
-      cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0' })
-      apt = double('apt',
-        name: 'apt',
-        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
-        version: '1.0.0',
-        location: 'api',
-        dependencies: { 'bacon' => '1.0.0' },
-        cached_cookbook: cookbook,
+    it "returns true when the lockfile is trusted with cyclic transitive dependencies" do
+      cookbook = double("apt-1.0.0", dependencies: { "bacon" => "1.0.0" })
+      apt = double("apt",
+        name: "apt",
+        version_constraint: Semverse::Constraint.new(">= 0.0.0"),
+        version: "1.0.0",
+        location: "api",
+        dependencies: { "bacon" => "1.0.0" },
+        cached_cookbook: cookbook
       )
-      bacon = double('bacon',
-        name: 'bacon',
-        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
-        version: '1.0.0',
-        location: 'api',
-        dependencies: { 'apt' => '1.0.0' }
+      bacon = double("bacon",
+        name: "bacon",
+        version_constraint: Semverse::Constraint.new(">= 0.0.0"),
+        version: "1.0.0",
+        location: "api",
+        dependencies: { "apt" => "1.0.0" }
       )
-      berksfile = double('berksfile', dependencies: [apt])
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
-      allow(subject.graph).to receive(:find).with('bacon').and_return(bacon)
+      allow(subject.graph).to receive(:find).with("bacon").and_return(bacon)
       allow(subject.graph).to receive(:find).with(apt).and_return(apt)
 
       expect(subject.trusted?).to be(true)
     end
 
-    it 'returns false when the lockfile is not trusted because of transitive dependencies' do
-      cookbook = double('apt-1.0.0', dependencies: { 'bacon' => '1.0.0', 'flip' => '2.0.0' })
-      apt = double('apt',
-        name: 'apt',
-        version_constraint: Semverse::Constraint.new('>= 0.0.0'),
-        version: '1.0.0',
-        location: 'api',
-        dependencies: { 'bacon' => '1.0.0' },
-        cached_cookbook: cookbook,
+    it "returns false when the lockfile is not trusted because of transitive dependencies" do
+      cookbook = double("apt-1.0.0", dependencies: { "bacon" => "1.0.0", "flip" => "2.0.0" })
+      apt = double("apt",
+        name: "apt",
+        version_constraint: Semverse::Constraint.new(">= 0.0.0"),
+        version: "1.0.0",
+        location: "api",
+        dependencies: { "bacon" => "1.0.0" },
+        cached_cookbook: cookbook
       )
-      berksfile = double('berksfile', dependencies: [apt])
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
       allow(subject.graph).to receive(:find).with(apt).and_return(apt)
@@ -151,17 +151,17 @@ describe Berkshelf::Lockfile do
       expect(subject.trusted?).to be(false)
     end
 
-    it 'returns false if the dependency is not in the lockfile' do
-      apt = double('apt', name: 'apt', version_constraint: nil)
-      berksfile = double('berksfile', dependencies: [apt])
+    it "returns false if the dependency is not in the lockfile" do
+      apt = double("apt", name: "apt", version_constraint: nil)
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
 
       expect(subject.trusted?).to be(false)
     end
 
-    it 'returns false if the dependency is not in the graph' do
-      apt = double('apt', name: 'apt', version_constraint: nil)
-      berksfile = double('berksfile', dependencies: [apt])
+    it "returns false if the dependency is not in the graph" do
+      apt = double("apt", name: "apt", version_constraint: nil)
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(true)
       allow(subject.graph).to receive(:find).with(apt).and_return(nil)
@@ -169,17 +169,17 @@ describe Berkshelf::Lockfile do
       expect(subject.trusted?).to be(false)
     end
 
-    it 'returns false if the constraint is not satisfied' do
-      cookbook = double('apt-1.0.0', dependencies: {})
-      apt = double('apt',
-        name: 'apt',
-        version_constraint: Semverse::Constraint.new('< 1.0.0'),
-        version: '1.0.0',
-        location: 'api',
+    it "returns false if the constraint is not satisfied" do
+      cookbook = double("apt-1.0.0", dependencies: {})
+      apt = double("apt",
+        name: "apt",
+        version_constraint: Semverse::Constraint.new("< 1.0.0"),
+        version: "1.0.0",
+        location: "api",
         dependencies: {},
-        cached_cookbook: cookbook,
+        cached_cookbook: cookbook
       )
-      berksfile = double('berksfile', dependencies: [apt])
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
       allow(subject.graph).to receive(:find).with(apt).and_return(apt)
@@ -187,20 +187,20 @@ describe Berkshelf::Lockfile do
       expect(subject.trusted?).to be(false)
     end
 
-    it 'returns false if the locations are different' do
-      cookbook = double('apt-1.0.0', dependencies: {})
-      apt = double('apt',
-        name: 'apt',
-        version_constraint: Semverse::Constraint.new('< 1.0.0'),
-        version: '1.0.0',
-        location: 'api',
+    it "returns false if the locations are different" do
+      cookbook = double("apt-1.0.0", dependencies: {})
+      apt = double("apt",
+        name: "apt",
+        version_constraint: Semverse::Constraint.new("< 1.0.0"),
+        version: "1.0.0",
+        location: "api",
         dependencies: {},
-        cached_cookbook: cookbook,
+        cached_cookbook: cookbook
       )
       apt_master = apt.dup
-      allow(apt_master).to receive_messages(location: 'github')
+      allow(apt_master).to receive_messages(location: "github")
       allow(apt_master).to receive_messages(cached_cookbook: cookbook)
-      berksfile = double('berksfile', dependencies: [apt])
+      berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt_master)
       allow(subject.graph).to receive(:find).with(apt).and_return(apt)
@@ -209,169 +209,169 @@ describe Berkshelf::Lockfile do
     end
   end
 
-  describe '#apply' do
+  describe "#apply" do
     before do
-        apt = double(name: 'apt', locked_version: '1.0.0')
-        jenkins = double(name: 'jenkins', locked_version: '1.4.5')
-        allow(subject.graph).to receive(:locks).and_return('apt' => apt, 'jenkins' => jenkins)
+      apt = double(name: "apt", locked_version: "1.0.0")
+      jenkins = double(name: "jenkins", locked_version: "1.4.5")
+      allow(subject.graph).to receive(:locks).and_return("apt" => apt, "jenkins" => jenkins)
     end
 
-    describe 'when :envfile option is not used' do
-      let(:connection) { double('connection') }
+    describe "when :envfile option is not used" do
+      let(:connection) { double("connection") }
 
       before do
         allow(Berkshelf).to receive(:ridley_connection).and_yield(connection)
       end
 
-      context 'when the Chef environment does not exist' do
-        it 'raises an exception' do
+      context "when the Chef environment does not exist" do
+        it "raises an exception" do
           allow(connection).to receive(:environment).and_return(double(find: nil))
-          expect {
-            subject.apply('production')
-          }.to raise_error(Berkshelf::EnvironmentNotFound)
+          expect do
+            subject.apply("production")
+          end.to raise_error(Berkshelf::EnvironmentNotFound)
         end
       end
 
-      it 'locks the environment cookbook versions on chef server' do
-        environment = double('environment', :cookbook_versions= => nil, save: true)
+      it "locks the environment cookbook versions on chef server" do
+        environment = double("environment", :cookbook_versions= => nil, save: true)
         allow(connection).to receive(:environment).and_return(double(find: environment))
 
         expect(environment).to receive(:cookbook_versions=).with(
-          'apt' => '= 1.0.0',
-          'jenkins' => '= 1.4.5',
+          "apt" => "= 1.0.0",
+          "jenkins" => "= 1.4.5"
         )
 
-        subject.apply('production')
+        subject.apply("production")
       end
     end
-    
-    describe 'when :envfile option is used' do
-      it 'locks the environment cookbook version into envfile' do
-        locks = { 
-          'apt' => '= 1.0.0', 
-          'jenkins' => '= 1.4.5' 
-        } 
 
-        expect(subject).to receive(:update_environment_file).with('/working/path', locks) 
- 
-	subject.apply('production', envfile: '/working/path') 
+    describe "when :envfile option is used" do
+      it "locks the environment cookbook version into envfile" do
+        locks = {
+          "apt" => "= 1.0.0",
+          "jenkins" => "= 1.4.5",
+        }
+
+        expect(subject).to receive(:update_environment_file).with("/working/path", locks)
+
+        subject.apply("production", envfile: "/working/path")
       end
     end
   end
 
-  describe '#dependencies' do
-    it 'returns an array' do
+  describe "#dependencies" do
+    it "returns an array" do
       expect(subject.dependencies).to be_a(Array)
     end
   end
 
-  describe '#find' do
-    it 'returns a matching cookbook' do
-      expect(subject.find('apt').name).to eq('apt')
+  describe "#find" do
+    it "returns a matching cookbook" do
+      expect(subject.find("apt").name).to eq("apt")
     end
 
-    it 'returns nil for a missing cookbook' do
-      expect(subject.find('foo')).to be_nil
-    end
-  end
-
-  describe '#has_dependency?' do
-    it 'returns true if a matching cookbook is found' do
-      expect(subject).to have_dependency('apt')
-    end
-
-    it 'returns false if no matching cookbook is found' do
-      expect(subject).to_not have_dependency('foo')
+    it "returns nil for a missing cookbook" do
+      expect(subject.find("foo")).to be_nil
     end
   end
 
-  describe '#add' do
-    it 'adds the dependency to the lockfile' do
-      subject.add('apache2')
-      expect(subject).to have_dependency('apache2')
+  describe "#has_dependency?" do
+    it "returns true if a matching cookbook is found" do
+      expect(subject).to have_dependency("apt")
+    end
+
+    it "returns false if no matching cookbook is found" do
+      expect(subject).to_not have_dependency("foo")
     end
   end
 
-  describe '#update_environment_file' do  
-    it 'raises an exception when environment file does not exist' do  
-      allow(File).to receive(:exists?).and_return(false)  
-      expect {  
-        subject.update_environment_file('/broken/path', nil)  
-      }.to raise_error(Berkshelf::EnvironmentFileNotFound)  
-    end  
-  
-    it 'updates the environment file with cookbook versions' do  
-      file = instance_spy('File')  
-      locks = {  
-        'apt' => '1.0.0',  
-        'jenkins' => '1.4.5'  
-      }  
-  
-      allow(File).to receive(:exists?).and_return(true)  
-      allow(File).to receive(:read).and_return("{}")  
-      allow(File).to receive(:open).and_yield(file)  
-  
-      subject.update_environment_file('/working/path.json', locks)  
-  
-      expect(file).to have_received(:puts) do |arg|  
-        expect(JSON.parse(arg)).to eq({  
-          'cookbook_versions' => locks  
-        })  
-      end  
-    end  
-  end  
+  describe "#add" do
+    it "adds the dependency to the lockfile" do
+      subject.add("apache2")
+      expect(subject).to have_dependency("apache2")
+    end
+  end
 
-  describe '#update' do
-    it 'resets the dependencies' do
+  describe "#update_environment_file" do
+    it "raises an exception when environment file does not exist" do
+      allow(File).to receive(:exists?).and_return(false)
+      expect do
+        subject.update_environment_file("/broken/path", nil)
+      end.to raise_error(Berkshelf::EnvironmentFileNotFound)
+    end
+
+    it "updates the environment file with cookbook versions" do
+      file = instance_spy("File")
+      locks = {
+        "apt" => "1.0.0",
+        "jenkins" => "1.4.5",
+      }
+
+      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:read).and_return("{}")
+      allow(File).to receive(:open).and_yield(file)
+
+      subject.update_environment_file("/working/path.json", locks)
+
+      expect(file).to have_received(:puts) do |arg|
+        expect(JSON.parse(arg)).to eq({
+          "cookbook_versions" => locks,
+        })
+      end
+    end
+  end
+
+  describe "#update" do
+    it "resets the dependencies" do
       subject.update([])
       expect(subject.dependencies).to be_empty
     end
 
-    it 'appends each of the dependencies' do
-      subject.update(['apache2'])
-      expect(subject).to have_dependency('apache2')
+    it "appends each of the dependencies" do
+      subject.update(["apache2"])
+      expect(subject).to have_dependency("apache2")
     end
   end
 
-  describe '#unlock' do
-    it 'removes the dependency from the graph' do
-      subject.add('apache2')
-      subject.unlock('apache2')
-      expect(subject).to_not have_dependency('apache2')
+  describe "#unlock" do
+    it "removes the dependency from the graph" do
+      subject.add("apache2")
+      subject.unlock("apache2")
+      expect(subject).to_not have_dependency("apache2")
     end
   end
 
-  describe '#reduce!' do
-    let(:berksfile_path) { fixtures_path.join('berksfiles/default').to_s }
+  describe "#reduce!" do
+    let(:berksfile_path) { fixtures_path.join("berksfiles/default").to_s }
     let(:berksfile) { Berkshelf::Berksfile.from_file(berksfile_path) }
 
-    describe 'with some orphan dependencies' do
-      let(:orphans_lock) { fixtures_path.join('lockfiles/orphans.lock').to_s }
+    describe "with some orphan dependencies" do
+      let(:orphans_lock) { fixtures_path.join("lockfiles/orphans.lock").to_s }
       subject { Berkshelf::Lockfile.new(filepath: orphans_lock, berksfile: berksfile) }
 
-      it 'removes orphan dependencies' do
+      it "removes orphan dependencies" do
         graph = subject.graph.instance_variable_get(:@graph)
-        expect(graph).to receive(:delete).with('yum-epel').and_call_original
-        expect(graph).to receive(:delete).with('zum-foo').and_call_original
-        expect(graph).to receive(:delete).with('yum').and_call_original
+        expect(graph).to receive(:delete).with("yum-epel").and_call_original
+        expect(graph).to receive(:delete).with("zum-foo").and_call_original
+        expect(graph).to receive(:delete).with("yum").and_call_original
         subject.reduce!
       end
     end
 
-    describe 'minimizes updates' do
+    describe "minimizes updates" do
       subject { Berkshelf::Lockfile.new(filepath: filepath, berksfile: berksfile) }
 
       before(:each) do
-        cs = fixtures_path.join('cookbook-store')
+        cs = fixtures_path.join("cookbook-store")
         allow(Berkshelf::CookbookStore.instance).to receive(:storage_path).and_return(cs)
       end
 
-      it 'uses the cookbook version specified in the lockfile' do
+      it "uses the cookbook version specified in the lockfile" do
         subject.reduce!
-        expect(subject.berksfile.dependencies[1].cached_cookbook.version).to eq('2.0.3')
+        expect(subject.berksfile.dependencies[1].cached_cookbook.version).to eq("2.0.3")
       end
 
-      it 'does not remove locks unnecessarily' do
+      it "does not remove locks unnecessarily" do
         expect(subject).to_not receive(:unlock)
         subject.reduce!
       end
@@ -380,16 +380,16 @@ describe Berkshelf::Lockfile do
 end
 
 describe Berkshelf::Lockfile::Graph do
-  let(:filepath) { fixtures_path.join('lockfiles/empty.lock').to_s }
+  let(:filepath) { fixtures_path.join("lockfiles/empty.lock").to_s }
   let(:lockfile) { Berkshelf::Lockfile.new(filepath: filepath) }
   subject { described_class.new(lockfile) }
 
-  describe '#update' do
-    it 'uses cookbook_name as GraphItem name' do
-      cookbook = double('test',
-        name: 'test-0.0.1',
-        version: '0.0.1',
-        cookbook_name: 'test',
+  describe "#update" do
+    it "uses cookbook_name as GraphItem name" do
+      cookbook = double("test",
+        name: "test-0.0.1",
+        version: "0.0.1",
+        cookbook_name: "test",
         dependencies: {}
       )
       subject.update([cookbook])

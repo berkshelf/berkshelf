@@ -49,8 +49,8 @@ module Berkshelf
 
     def ==(other)
       other.is_a?(PathLocation) &&
-      other.metadata? == metadata? &&
-      other.relative_path == relative_path
+        other.metadata? == metadata? &&
+        other.relative_path == relative_path
     end
 
     def to_lock

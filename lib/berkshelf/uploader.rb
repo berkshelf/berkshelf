@@ -44,32 +44,32 @@ module Berkshelf
       # wrapping.
       #
       # @param [Array<String>] cookbooks
-      def upload(cookbooks)
-        Berkshelf.log.info "Starting upload"
+    def upload(cookbooks)
+      Berkshelf.log.info "Starting upload"
 
-        Berkshelf.ridley_connection(options) do |connection|
-          cookbooks.each do |cookbook|
-            Berkshelf.log.debug "  Uploading #{cookbook}"
+      Berkshelf.ridley_connection(options) do |connection|
+        cookbooks.each do |cookbook|
+          Berkshelf.log.debug "  Uploading #{cookbook}"
 
-            begin
-              connection.cookbook.upload(cookbook.path,
-                name:     cookbook.cookbook_name,
-                force:    options[:force],
-                freeze:   options[:freeze],
-                validate: options[:validate],
-              )
+          begin
+            connection.cookbook.upload(cookbook.path,
+              name:     cookbook.cookbook_name,
+              force:    options[:force],
+              freeze:   options[:freeze],
+              validate: options[:validate]
+            )
 
-              Berkshelf.formatter.uploaded(cookbook, connection)
-            rescue Ridley::Errors::FrozenCookbook
-              if options[:halt_on_frozen]
-                raise FrozenCookbook.new(cookbook)
-              end
-
-              Berkshelf.formatter.skipping(cookbook, connection)
+            Berkshelf.formatter.uploaded(cookbook, connection)
+          rescue Ridley::Errors::FrozenCookbook
+            if options[:halt_on_frozen]
+              raise FrozenCookbook.new(cookbook)
             end
+
+            Berkshelf.formatter.skipping(cookbook, connection)
           end
         end
       end
+    end
 
       # Filter cookbooks based off the list of dependencies in the Berksfile.
       #
@@ -80,37 +80,37 @@ module Berkshelf
       #
       # @return [Array<CachedCookbook>]
       #
-      def filtered_cookbooks
-        # Create a copy of the dependencies. We need to make a copy, or else
-        # we would be adding dependencies directly to the Berksfile object, and
-        # that would be a bad idea...
-        dependencies = berksfile.dependencies.map(&:name)
+    def filtered_cookbooks
+      # Create a copy of the dependencies. We need to make a copy, or else
+      # we would be adding dependencies directly to the Berksfile object, and
+      # that would be a bad idea...
+      dependencies = berksfile.dependencies.map(&:name)
 
-        checked   = {}
-        cookbooks = {}
+      checked   = {}
+      cookbooks = {}
 
-        dependencies.each do |dependency|
-          next if checked[dependency]
+      dependencies.each do |dependency|
+        next if checked[dependency]
 
-          lockfile.graph.find(dependency).dependencies.each do |name, _|
-            cookbooks[name] ||= lockfile.retrieve(name)
-            dependencies << name
-          end
-
-          checked[dependency] = true
-          cookbooks[dependency] ||= lockfile.retrieve(dependency)
+        lockfile.graph.find(dependency).dependencies.each do |name, _|
+          cookbooks[name] ||= lockfile.retrieve(name)
+          dependencies << name
         end
 
-        # This is a temporary change and will be removed in a future release. We should
-        # add the ability to define a custom uploader which would allow the authors of Chef-Guard
-        # to define their upload strategy instead of using Ridley.
-        #
-        # See https://github.com/berkshelf/berkshelf/pull/1316 for details.
-        if Berkshelf.chef_config.knife[:chef_guard] == true
-          cookbooks.values
-        else
-          cookbooks.values.sort
-        end
+        checked[dependency] = true
+        cookbooks[dependency] ||= lockfile.retrieve(dependency)
       end
+
+      # This is a temporary change and will be removed in a future release. We should
+      # add the ability to define a custom uploader which would allow the authors of Chef-Guard
+      # to define their upload strategy instead of using Ridley.
+      #
+      # See https://github.com/berkshelf/berkshelf/pull/1316 for details.
+      if Berkshelf.chef_config.knife[:chef_guard] == true
+        cookbooks.values
+      else
+        cookbooks.values.sort
+      end
+    end
   end
 end

@@ -1,49 +1,49 @@
-require 'buff/extensions'
-require 'cleanroom'
-require 'digest/md5'
-require 'forwardable'
-require 'json'
-require 'pathname'
-require 'ridley'
-require 'semverse'
-require 'solve'
-require 'thor'
-require 'uri'
-require 'celluloid'
+require "buff/extensions"
+require "cleanroom"
+require "digest/md5"
+require "forwardable"
+require "json"
+require "pathname"
+require "ridley"
+require "semverse"
+require "solve"
+require "thor"
+require "uri"
+require "celluloid"
 
 JSON.create_id = nil
 
-require_relative 'berkshelf/core_ext'
-require_relative 'berkshelf/thor_ext'
+require_relative "berkshelf/core_ext"
+require_relative "berkshelf/thor_ext"
 
 module Berkshelf
   Encoding.default_external = Encoding::UTF_8
 
-  require_relative 'berkshelf/version'
-  require_relative 'berkshelf/errors'
+  require_relative "berkshelf/version"
+  require_relative "berkshelf/errors"
 
   module Mixin
-    autoload :Git,     'berkshelf/mixin/git'
-    autoload :Logging, 'berkshelf/mixin/logging'
+    autoload :Git,     "berkshelf/mixin/git"
+    autoload :Logging, "berkshelf/mixin/logging"
   end
 
-  autoload :FileSyncer, 'berkshelf/file_syncer'
-  autoload :Shell,      'berkshelf/shell'
-  autoload :Uploader,   'berkshelf/uploader'
-  autoload :Visualizer, 'berkshelf/visualizer'
+  autoload :FileSyncer, "berkshelf/file_syncer"
+  autoload :Shell,      "berkshelf/shell"
+  autoload :Uploader,   "berkshelf/uploader"
+  autoload :Visualizer, "berkshelf/visualizer"
 
-  autoload :BaseFormatter,  'berkshelf/formatters/base'
-  autoload :HumanFormatter, 'berkshelf/formatters/human'
-  autoload :JsonFormatter,  'berkshelf/formatters/json'
-  autoload :NullFormatter,  'berkshelf/formatters/null'
+  autoload :BaseFormatter,  "berkshelf/formatters/base"
+  autoload :HumanFormatter, "berkshelf/formatters/human"
+  autoload :JsonFormatter,  "berkshelf/formatters/json"
+  autoload :NullFormatter,  "berkshelf/formatters/null"
 
-  autoload :Location,       'berkshelf/location'
-  autoload :BaseLocation,   'berkshelf/locations/base'
-  autoload :GitLocation,    'berkshelf/locations/git'
-  autoload :GithubLocation, 'berkshelf/locations/github'
-  autoload :PathLocation,   'berkshelf/locations/path'
+  autoload :Location,       "berkshelf/location"
+  autoload :BaseLocation,   "berkshelf/locations/base"
+  autoload :GitLocation,    "berkshelf/locations/git"
+  autoload :GithubLocation, "berkshelf/locations/github"
+  autoload :PathLocation,   "berkshelf/locations/path"
 
-  DEFAULT_FILENAME = 'Berksfile'.freeze
+  DEFAULT_FILENAME = "Berksfile".freeze
 
   class << self
     include Mixin::Logging
@@ -53,7 +53,7 @@ module Berkshelf
 
     # @return [Pathname]
     def root
-      @root ||= Pathname.new(File.expand_path('../', File.dirname(__FILE__)))
+      @root ||= Pathname.new(File.expand_path("../", File.dirname(__FILE__)))
     end
 
     # @return [Berkshelf::Shell]
@@ -69,7 +69,7 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      @berkshelf_path ||= File.expand_path(ENV['BERKSHELF_PATH'] || '~/.berkshelf')
+      @berkshelf_path ||= File.expand_path(ENV["BERKSHELF_PATH"] || "~/.berkshelf")
     end
 
     # The Berkshelf configuration.
@@ -88,7 +88,7 @@ module Berkshelf
     #
     # @return [Ridley::Chef::Config]
     def chef_config
-      @chef_config ||= Ridley::Chef::Config.new(ENV['BERKSHELF_CHEF_CONFIG'])
+      @chef_config ||= Ridley::Chef::Config.new(ENV["BERKSHELF_CHEF_CONFIG"])
     end
 
     # @param [Ridley::Chef::Config]
@@ -125,18 +125,18 @@ module Berkshelf
       ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
       ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
       ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
-      ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify]}
+      ridley_options[:ssl]         = { verify: (options[:ssl_verify].nil?) ? Berkshelf.config.ssl.verify : options[:ssl_verify] }
 
       unless ridley_options[:server_url].present?
-        raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.server_url'
+        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.server_url"
       end
 
       unless ridley_options[:client_name].present?
-        raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.node_name'
+        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
       end
 
       unless ridley_options[:client_key].present?
-        raise ChefConnectionError, 'Missing required attribute in your Berkshelf configuration: chef.client_key'
+        raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 
       # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
@@ -168,8 +168,8 @@ module Berkshelf
     def which(executable)
       if File.file?(executable) && File.executable?(executable)
         executable
-      elsif ENV['PATH']
-        path = ENV['PATH'].split(File::PATH_SEPARATOR).find do |p|
+      elsif ENV["PATH"]
+        path = ENV["PATH"].split(File::PATH_SEPARATOR).find do |p|
           File.executable?(File.join(p, executable))
         end
         path && File.expand_path(executable, path)
@@ -178,35 +178,35 @@ module Berkshelf
 
     private
 
-      def null_stream
-        @null ||= begin
-          strm = STDOUT.clone
-          strm.reopen(RbConfig::CONFIG['host_os'] =~ /mswin|mingw/ ? 'NUL:' : '/dev/null')
-          strm.sync = true
-          strm
-        end
+    def null_stream
+      @null ||= begin
+        strm = STDOUT.clone
+        strm.reopen(RbConfig::CONFIG["host_os"] =~ /mswin|mingw/ ? "NUL:" : "/dev/null")
+        strm.sync = true
+        strm
       end
+    end
   end
 end
 
-require_relative 'berkshelf/lockfile'
-require_relative 'berkshelf/base_generator'
-require_relative 'berkshelf/berksfile'
-require_relative 'berkshelf/cached_cookbook'
-require_relative 'berkshelf/cli'
-require_relative 'berkshelf/community_rest'
-require_relative 'berkshelf/cookbook_generator'
-require_relative 'berkshelf/cookbook_store'
-require_relative 'berkshelf/config'
-require_relative 'berkshelf/dependency'
-require_relative 'berkshelf/downloader'
-require_relative 'berkshelf/init_generator'
-require_relative 'berkshelf/installer'
-require_relative 'berkshelf/logger'
-require_relative 'berkshelf/resolver'
-require_relative 'berkshelf/source'
-require_relative 'berkshelf/source_uri'
-require_relative 'berkshelf/validator'
+require_relative "berkshelf/lockfile"
+require_relative "berkshelf/base_generator"
+require_relative "berkshelf/berksfile"
+require_relative "berkshelf/cached_cookbook"
+require_relative "berkshelf/cli"
+require_relative "berkshelf/community_rest"
+require_relative "berkshelf/cookbook_generator"
+require_relative "berkshelf/cookbook_store"
+require_relative "berkshelf/config"
+require_relative "berkshelf/dependency"
+require_relative "berkshelf/downloader"
+require_relative "berkshelf/init_generator"
+require_relative "berkshelf/installer"
+require_relative "berkshelf/logger"
+require_relative "berkshelf/resolver"
+require_relative "berkshelf/source"
+require_relative "berkshelf/source_uri"
+require_relative "berkshelf/validator"
 
 Ridley.logger          = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
