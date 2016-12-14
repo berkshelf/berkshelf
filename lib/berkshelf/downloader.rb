@@ -67,7 +67,7 @@ module Berkshelf
       when :chef_server
         # @todo Dynamically get credentials for remote_cookbook.location_path
         ssl_options = {verify: Berkshelf::Config.instance.ssl.verify}
-        ssl_options[:trusted_certs_dir] = ssl_policy.store if ssl_policy.store
+        ssl_options[:cert_store] = ssl_policy.store if ssl_policy.store
 
         credentials = {
           server_url: remote_cookbook.location_path,
