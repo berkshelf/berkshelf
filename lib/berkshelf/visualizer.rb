@@ -76,6 +76,11 @@ module Berkshelf
       out
     end
 
+    def to_dot_file(outfile = 'graph.dot')
+      File.open(outfile, 'w') { |f| f.write(to_dot) }
+      File.expand_path(outfile)
+    end
+
     # Save the graph visually as a PNG.
     #
     # @param [String] outfile

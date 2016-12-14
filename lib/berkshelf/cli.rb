@@ -421,10 +421,16 @@ EOF
       desc: 'The name of the output file',
       aliases: '-o',
       banner: 'NAME'
+    method_option :outfile_format,
+      type: :string,
+      default: 'png',
+      desc: 'The format of the output file, either png or dot.',
+      aliases: '-f',
+      banner: 'FORMAT'
     desc "viz", "Visualize the dependency graph"
     def viz
       berksfile = Berksfile.from_options(options)
-      path = berksfile.viz(options[:outfile])
+      path = berksfile.viz(options[:outfile], options[:outfile_format])
 
       Berkshelf.ui.info(path)
     end
