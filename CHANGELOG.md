@@ -1,7 +1,15 @@
 # Change Log
 
-## [5.2.0](https://github.com/berkshelf/berkshelf/tree/5.2.0) (2016-11-07)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.1.0...5.2.0)
+## [5.3.0](https://github.com/berkshelf/berkshelf/tree/5.3.0) (2016-12-15)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.2.0...5.3.0)
+
+**Merged pull requests:**
+
+- Add SSLPolicy class that will use chefdk trusted certs path [\#1640](https://github.com/berkshelf/berkshelf/pull/1640) ([afiune](https://github.com/afiune))
+- Add alternative way to run tests [\#1626](https://github.com/berkshelf/berkshelf/pull/1626) ([gliptak](https://github.com/gliptak))
+
+## [v5.2.0](https://github.com/berkshelf/berkshelf/tree/v5.2.0) (2016-11-07)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.1.0...v5.2.0)
 
 **Merged pull requests:**
 
