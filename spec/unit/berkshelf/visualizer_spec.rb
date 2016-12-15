@@ -31,6 +31,15 @@ module Berkshelf
       end
 
       context 'when the graphviz command succeeds', :graphviz do
+        it 'builds a dot from a Lockfile' do
+          outfile = tmp_path.join('test-graph.dot').to_s
+          lockfile = Lockfile.from_file(fixtures_path.join('lockfiles/default.lock').to_s)
+
+          Visualizer.from_lockfile(lockfile).to_dot_file(outfile)
+
+          expect(File.exists?(outfile)).to be true
+        end
+
         it 'builds a png from a Lockfile' do
           outfile = tmp_path.join('test-graph.png').to_s
           lockfile = Lockfile.from_file(fixtures_path.join('lockfiles/default.lock').to_s)

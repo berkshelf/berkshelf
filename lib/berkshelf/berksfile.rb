@@ -694,12 +694,21 @@ module Berkshelf
     #
     # @return [String] path
     #   the path where the image was written
-    def viz(outfile = nil)
+    def viz(outfile = nil, format = 'png')
       outfile = File.join(Dir.pwd, outfile || 'graph.png')
 
       validate_lockfile_present!
       validate_lockfile_trusted!
-      Visualizer.from_lockfile(lockfile).to_png(outfile)
+      vizualiser = Visualizer.from_lockfile(lockfile)
+
+      case format
+      when 'dot'
+        vizualiser.to_dot_file(outfile)
+      when 'png'
+        vizualiser.to_png(outfile)
+      else
+        raise ConfigurationError, "Vizualiser format #{format} not recognised."
+      end
     end
 
     # Get the lockfile corresponding to this Berksfile. This is necessary because
