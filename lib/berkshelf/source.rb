@@ -1,4 +1,6 @@
 require 'berkshelf/api-client'
+require 'berkshelf/ssl_policies'
+require 'openssl'
 
 module Berkshelf
   class Source
@@ -12,11 +14,18 @@ module Berkshelf
       @universe   = nil
     end
 
+    def ssl_policy
+      @ssl_policy ||= SSLPolicy.new
+    end
+
     def api_client
       @api_client ||= begin
+                        ssl_options = {verify: Berkshelf::Config.instance.ssl.verify}
+                        ssl_options[:cert_store] = ssl_policy.store if ssl_policy.store
+
                         if source == :chef_server
                           APIClient.chef_server(
-                            ssl: Berkshelf::Config.instance.ssl,
+                            ssl: ssl_options,
                             timeout: api_timeout,
                             open_timeout: [(api_timeout / 10), 3].max,
                             client_name: Berkshelf::Config.instance.chef.node_name,
