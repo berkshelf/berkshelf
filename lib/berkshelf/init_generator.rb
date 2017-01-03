@@ -21,43 +21,44 @@ module Berkshelf
       type: :boolean,
       default: true
 
-    class_option :skip_vagrant,
+    class_option :vagrant,
       type: :boolean,
-      default: false,
-      desc: 'Skips adding a Vagrantfile and adding supporting gems to the Gemfile'
+      default: true,
+      desc: 'Adds a Vagrantfile and supporting gems to the Gemfile'
 
-    class_option :skip_git,
+    class_option :git,
       type: :boolean,
-      default: false,
-      desc: 'Skips adding a .gitignore and running git init in the cookbook directory'
+      default: true,
+      desc: 'Adds a .gitignore and runs git init in the cookbook directory'
 
     class_option :foodcritic,
       type: :boolean,
       default: false,
-      desc: 'Creates a Thorfile with Foodcritic support to lint test your cookbook'
+      desc: 'Adds a Thorfile with Foodcritic support to lint test your cookbook'
 
     class_option :chef_minitest,
       type: :boolean,
-      default: false
+      default: false,
+      desc: 'Adds chef minitest'
 
     class_option :scmversion,
       type: :boolean,
       default: false,
-      desc: 'Creates a Thorfile with SCMVersion support to manage versions for continuous integration'
+      desc: 'Adds a Thorfile with SCMVersion support to manage versions for continuous integration'
 
-    class_option :no_bundler,
+    class_option :bundler,
       type: :boolean,
-      default: false,
-      desc: 'Skips generation of a Gemfile and other Bundler specific support'
+      default: true,
+      desc: 'Adds a Gemfile and other Bundler specific support'
 
     class_option :cookbook_name,
       type: :string
 
     if defined?(Kitchen::Generator::Init)
-      class_option :skip_test_kitchen,
+      class_option :test_kitchen,
         type: :boolean,
-        default: false,
-        desc: 'Skip adding a testing environment to your cookbook'
+        default: true,
+        desc: 'Adds a testing environment to your cookbook'
     end
 
     def generate
@@ -72,7 +73,7 @@ module Berkshelf
         copy_file 'chefignore', target.join(Ridley::Chef::Chefignore::FILENAME)
       end
 
-      unless options[:skip_git]
+      if options[:git]
         template 'gitignore.erb', target.join('.gitignore')
 
         unless File.exists?(target.join('.git'))
@@ -92,17 +93,17 @@ module Berkshelf
         create_file target.join('VERSION'), '0.1.0'
       end
 
-      unless options[:no_bundler]
+      if options[:bundler]
         template 'Gemfile.erb', target.join('Gemfile')
       end
 
       if defined?(Kitchen::Generator::Init)
-        unless options[:skip_test_kitchen]
+        if options[:test_kitchen]
           Kitchen::Generator::Init.new([], {}, destination_root: target).invoke_all
         end
       end
 
-      unless options[:skip_vagrant]
+      if options[:vagrant]
         template 'Vagrantfile.erb', target.join('Vagrantfile')
       end
     end

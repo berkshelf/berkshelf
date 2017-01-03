@@ -113,10 +113,10 @@ describe Berkshelf::InitGenerator do
     end
   end
 
-  context 'with the bundler option true' do
+  context 'with the bundler option false' do
     before(:each) do
       capture(:stdout) {
-        Berkshelf::InitGenerator.new([target], no_bundler: true).invoke_all
+        Berkshelf::InitGenerator.new([target], bundler: false).invoke_all
       }
     end
 
@@ -147,7 +147,7 @@ describe Berkshelf::InitGenerator do
 
   context 'when skipping git' do
     before(:each) do
-      generator = Berkshelf::InitGenerator.new([target], skip_git: true)
+      generator = Berkshelf::InitGenerator.new([target], git: false)
       capture(:stdout) { generator.invoke_all }
     end
 
@@ -161,7 +161,7 @@ describe Berkshelf::InitGenerator do
   context 'when skipping vagrant' do
     before(:each) do
       capture(:stdout) {
-        Berkshelf::InitGenerator.new([target], skip_vagrant: true).invoke_all
+        Berkshelf::InitGenerator.new([target], vagrant: false).invoke_all
       }
     end
 

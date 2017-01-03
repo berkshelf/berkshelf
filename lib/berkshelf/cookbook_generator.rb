@@ -16,46 +16,56 @@ module Berkshelf
       type: :string,
       required: true
 
-    class_option :skip_vagrant,
+    class_option :vagrant,
       type: :boolean,
-      default: false
+      default: true,
+      desc: 'Adds a Vagrantfile and supporting gems to the Gemfile'
 
-    class_option :skip_git,
+    class_option :git,
       type: :boolean,
-      default: false
+      default: true,
+      desc: 'Adds a .gitignore and runs git init in the cookbook directory'
 
-    class_option :skip_test_kitchen,
+    class_option :test_kitchen,
       type: :boolean,
-      default: false,
-      desc: 'Skip adding a testing environment to your cookbook'
+      default: true,
+      desc: 'Adds a testing environment to your cookbook'
 
     class_option :foodcritic,
       type: :boolean,
-      default: false
+      default: false,
+      desc: 'Adds a Thorfile with Foodcritic support to lint test your cookbook'
 
     class_option :chef_minitest,
       type: :boolean,
-      default: false
+      default: false,
+      desc: 'Adds chef minitest'
 
     class_option :scmversion,
       type: :boolean,
-      default: false
+      default: false,
+      desc: 'Adds a Thorfile with SCMVersion support to manage versions for continuous integration'
 
-    class_option :no_bundler,
+    class_option :bundler,
       type: :boolean,
-      default: false
+      default: true,
+      desc: 'Adds a Gemfile and other Bundler specific support'
 
     class_option :license,
       type: :string,
-      default: Berkshelf.config.cookbook.license
+      default: Berkshelf.config.cookbook.license,
+      desc: 'Cookbook license',
+      enum: LICENSES
 
     class_option :maintainer,
       type: :string,
-      default: Berkshelf.config.cookbook.copyright
+      default: Berkshelf.config.cookbook.copyright,
+      desc: 'Cookbook maintainer'
 
     class_option :maintainer_email,
       type: :string,
-      default: Berkshelf.config.cookbook.email
+      default: Berkshelf.config.cookbook.email,
+      desc: 'Email of cookbook maintainer'
 
     def generate
       case options[:pattern]
