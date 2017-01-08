@@ -118,6 +118,9 @@ module Berkshelf
     attribute 'cookbook.license',
       type: String,
       default: Berkshelf.chef_config.cookbook_license
+    attribute 'default_resolver',
+      type: String,
+      default: 'gecode'
     attribute 'allowed_licenses',
       type: Array,
       default: Array.new
