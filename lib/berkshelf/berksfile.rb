@@ -650,21 +650,6 @@ module Berkshelf
           FileUtils.cp_r(files, cookbook_destination)
         end
 
-        # Don't vendor the raw metadata (metadata.rb). The raw metadata is
-        # unecessary for the client, and this is required until compiled metadata
-        # (metadata.json) takes precedence over raw metadata in the Chef-Client.
-        #
-        # We can change back to including the raw metadata in the future after
-        # this has been fixed or just remove these comments. There is no
-        # circumstance that I can currently think of where raw metadata should
-        # ever be read by the client.
-        #
-        # - Jamie
-        #
-        # See the following tickets for more information:
-        #
-        #   * https://tickets.opscode.com/browse/CHEF-4811
-        #   * https://tickets.opscode.com/browse/CHEF-4810
         FileSyncer.sync(scratch, destination, exclude: EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: @delete)
       end
 
