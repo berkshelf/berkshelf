@@ -6,7 +6,8 @@ module Berkshelf
 
     subject do
       described_class.new(dependency, git: 'https://repo.com', branch: 'ham',
-        tag: 'v1.2.3', ref: 'abc123', revision: 'defjkl123456', rel: 'hi')
+        tag: 'v1.2.3', ref: 'abc123', revision: 'defjkl123456', rel: 'hi',
+        keep_history: false)
     end
 
     describe '.initialize' do
@@ -43,6 +44,12 @@ module Berkshelf
         instance = described_class.new(dependency,
           git: 'https://repo.com', rel: 'internal/path')
         expect(instance.rel).to eq('internal/path')
+      end
+
+      it 'sets the keep_history' do
+        instance = described_class.new(dependency,
+          git: 'https://repo.com', keep_history: true)
+        expect(instance.keep_history).to eq(true)
       end
 
       context 'rev_parse' do
