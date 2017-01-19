@@ -30,6 +30,10 @@ group :guard do
   end
 end
 
+group :build do
+  gem 'rake',          '>= 10.1'
+end
+
 group :development do
   # these all deliberately float because berkshelf has a Gemfile.lock that
   # equality pins them.  temporarily pin as necessary for API breaks.
@@ -37,7 +41,6 @@ group :development do
   gem 'chef-zero',     '>= 4.0'
   gem 'dep_selector',  '>= 1.0'
   gem 'fuubar',        '>= 2.0'
-  gem 'rake',          '>= 10.1'
   gem 'rspec',         '>= 3.0'
   gem 'spork',         '>= 0.9'
   gem 'test-kitchen',  '>= 1.2'
