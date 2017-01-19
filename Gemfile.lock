@@ -34,7 +34,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (5.3.0)
+    berkshelf (5.4.0)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (>= 2.0.2, < 4.0)
       buff-config (~> 2.0)
@@ -225,7 +225,7 @@ GEM
     mixlib-log (1.7.1)
     mixlib-shellout (2.2.7)
     mixlib-versioning (1.1.0)
-    molinillo (0.5.4)
+    molinillo (0.5.5)
     msgpack (1.0.2)
     multi_json (1.12.1)
     multi_test (0.1.2)

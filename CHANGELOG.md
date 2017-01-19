@@ -1,7 +1,15 @@
 # Change Log
 
-## [5.3.0](https://github.com/berkshelf/berkshelf/tree/5.3.0) (2016-12-15)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.2.0...5.3.0)
+## [5.4.0](https://github.com/berkshelf/berkshelf/tree/5.4.0) (2017-01-19)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.3.0...5.4.0)
+
+**Merged pull requests:**
+
+- vendor the metadata.rb file [\#1652](https://github.com/berkshelf/berkshelf/pull/1652) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add a format option to berkz viz that outputs a dotfile [\#1646](https://github.com/berkshelf/berkshelf/pull/1646) ([borntyping](https://github.com/borntyping))
+
+## [v5.3.0](https://github.com/berkshelf/berkshelf/tree/v5.3.0) (2016-12-15)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.2.0...v5.3.0)
 
 **Merged pull requests:**
 
@@ -302,7 +310,7 @@
 - Fix typo in show cmd description [\#1187](https://github.com/berkshelf/berkshelf/pull/1187) ([dougireton](https://github.com/dougireton))
 - Do not care about ordered output during installation [\#1186](https://github.com/berkshelf/berkshelf/pull/1186) ([sethvargo](https://github.com/sethvargo))
 - Update README.md.erb [\#1183](https://github.com/berkshelf/berkshelf/pull/1183) ([mjuszczak](https://github.com/mjuszczak))
-- Fix Berkshelf::Graph\#update [\#1182](https://github.com/berkshelf/berkshelf/pull/1182) ([mjcdiggity](https://github.com/mjcdiggity))
+- Fix Berkshelf::Graph\#update [\#1182](https://github.com/berkshelf/berkshelf/pull/1182) ([carkmorwin](https://github.com/carkmorwin))
 - Update to buff-config ~\> 0.4 [\#1180](https://github.com/berkshelf/berkshelf/pull/1180) ([sethvargo](https://github.com/sethvargo))
 - Fix infinite lock check [\#1178](https://github.com/berkshelf/berkshelf/pull/1178) ([mi-wood](https://github.com/mi-wood))
 - Create a subclass of the shell instead of a module [\#1177](https://github.com/berkshelf/berkshelf/pull/1177) ([sethvargo](https://github.com/sethvargo))
@@ -359,7 +367,7 @@
 **Merged pull requests:**
 
 - `berks vendor` "cannot be trusted!" error [\#1124](https://github.com/berkshelf/berkshelf/pull/1124) ([JeanMertz](https://github.com/JeanMertz))
-- Fix community cookbook download error  [\#1123](https://github.com/berkshelf/berkshelf/pull/1123) ([mjcdiggity](https://github.com/mjcdiggity))
+- Fix community cookbook download error  [\#1123](https://github.com/berkshelf/berkshelf/pull/1123) ([carkmorwin](https://github.com/carkmorwin))
 - Remove gecode install instructions from README [\#1122](https://github.com/berkshelf/berkshelf/pull/1122) ([danielsdeleo](https://github.com/danielsdeleo))
 
 ## [v3.0.0.rc1](https://github.com/berkshelf/berkshelf/tree/v3.0.0.rc1) (2014-04-09)
@@ -1318,6 +1326,8 @@
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.0...v0.1.1)
 
 ## [v0.1.0](https://github.com/berkshelf/berkshelf/tree/v0.1.0) (2012-06-21)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/25612cf3601733a37727f1f490e69fdf48963d36...v0.1.0)
+
 **Merged pull requests:**
 
 - Rename to Berkshelf [\#54](https://github.com/berkshelf/berkshelf/pull/54) ([reset](https://github.com/reset))
