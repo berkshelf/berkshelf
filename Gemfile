@@ -2,6 +2,10 @@ source 'https://rubygems.org'
 
 gemspec
 
+group :changelog do
+  gem "github_changelog_generator", git: "https://github.com/tduffield/github-changelog-generator", branch: "adjust-tag-section-mapping"
+end
+
 group :guard do
   gem 'coolline'
   gem 'guard'
@@ -48,10 +52,6 @@ group :development do
   gem 'yard',          '>= 0.8'
   gem 'http',          '>= 0.9.8'
   gem 'activesupport', '~> 4.0'  # pinning for ruby 2.1.x
-end
-
-group :changelog do
-  gem 'github_changelog_generator', "1.11.3"
 end
 
 group :test do
