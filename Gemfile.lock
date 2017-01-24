@@ -34,7 +34,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (5.4.0)
+    berkshelf (5.5.0)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (>= 2.0.2, < 4.0)
       buff-config (~> 2.0)
@@ -378,4 +378,4 @@ DEPENDENCIES
   yard (>= 0.8)
 
 BUNDLED WITH
-   1.13.7
+   1.14.2
