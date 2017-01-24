@@ -629,6 +629,8 @@ module Berkshelf
       Dir.mktmpdir('vendor') do |scratch|
         chefignore       = nil
         cached_cookbooks = install
+        raw_metadata_files = []
+
         return nil if cached_cookbooks.empty?
 
         cached_cookbooks.each do |cookbook|
@@ -646,6 +648,8 @@ module Berkshelf
           unless cookbook.compiled_metadata?
             cookbook.compile_metadata(cookbook_destination)
           end
+
+          raw_metadata_files << File::join(cookbook.cookbook_name, 'metadata.rb')
 
           FileUtils.cp_r(files, cookbook_destination)
         end
@@ -665,7 +669,7 @@ module Berkshelf
         #
         #   * https://tickets.opscode.com/browse/CHEF-4811
         #   * https://tickets.opscode.com/browse/CHEF-4810
-        FileSyncer.sync(scratch, destination, exclude: EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: @delete)
+        FileSyncer.sync(scratch, destination, exclude: raw_metadata_files + EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: @delete)
       end
 
       destination
