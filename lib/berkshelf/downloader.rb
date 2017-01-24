@@ -124,7 +124,7 @@ module Berkshelf
 
         File.join(unpack_dir, cookbook_directory)
       when :uri
-        Thread.exclusive { require 'open-uri' unless defined?(OpenURI) }
+        require 'open-uri'
 
         tmp_dir      = Dir.mktmpdir
         archive_path = Pathname.new(tmp_dir) + "#{name}-#{version}.tar.gz"
@@ -145,8 +145,6 @@ module Berkshelf
 
         (unpack_dir + cookbook_directory).to_s
       when :gitlab
-        #Thread.exclusive { require 'octokit' unless defined?(Octokit) }
-
         tmp_dir      = Dir.mktmpdir
         archive_path = Pathname.new(tmp_dir) + "#{name}-#{version}.tar.gz"
         unpack_dir   = Pathname.new(tmp_dir) + "#{name}-#{version}"
