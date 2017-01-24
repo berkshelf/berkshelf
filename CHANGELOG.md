@@ -1,10 +1,20 @@
 # Change Log
 
-## [5.4.0](https://github.com/berkshelf/berkshelf/tree/5.4.0) (2017-01-19)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.3.0...5.4.0)
+## [v5.5.0](https://github.com/berkshelf/berkshelf/tree/v5.5.0) (2017-01-24)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.4.0...v5.5.0)
 
 **Merged pull requests:**
 
+- remove Thread.exclusive [\#1661](https://github.com/berkshelf/berkshelf/pull/1661) ([lamont-granquist](https://github.com/lamont-granquist))
+- Revert vendoring metadata.rb file [\#1660](https://github.com/berkshelf/berkshelf/pull/1660) ([lamont-granquist](https://github.com/lamont-granquist))
+- bundle update [\#1659](https://github.com/berkshelf/berkshelf/pull/1659) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v5.4.0](https://github.com/berkshelf/berkshelf/tree/v5.4.0) (2017-01-19)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.3.0...v5.4.0)
+
+**Merged pull requests:**
+
+- Prepare for 5.4.0 [\#1658](https://github.com/berkshelf/berkshelf/pull/1658) ([thommay](https://github.com/thommay))
 - vendor the metadata.rb file [\#1652](https://github.com/berkshelf/berkshelf/pull/1652) ([lamont-granquist](https://github.com/lamont-granquist))
 - Add a format option to berkz viz that outputs a dotfile [\#1646](https://github.com/berkshelf/berkshelf/pull/1646) ([borntyping](https://github.com/borntyping))
 
