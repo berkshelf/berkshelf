@@ -31,7 +31,7 @@ module Berkshelf
 
     # Don't vendor VCS files.
     # Reference GNU tar --exclude-vcs: https://www.gnu.org/software/tar/manual/html_section/tar_49.html
-    EXCLUDED_VCS_FILES_WHEN_VENDORING = ['.arch-ids', '{arch}', '.bzr', '.bzrignore', '.bzrtags', 'CVS', '.cvsignore', '_darcs', '.git', '.hg', '.hgignore', '.hgrags', 'RCS', 'SCCS', '.svn', '**/.git'].freeze
+    EXCLUDED_VCS_FILES_WHEN_VENDORING = ['.arch-ids', '{arch}', '.bzr', '.bzrignore', '.bzrtags', 'CVS', '.cvsignore', '_darcs', '**/.git', '.hg', '.hgignore', '.hgrags', 'RCS', 'SCCS', '**/.svn'].freeze
 
     include Mixin::Logging
     include Cleanroom
