@@ -1,11 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Berkshelf
   describe Uploader do
     let(:berksfile) do
       double(Berksfile,
         lockfile: lockfile,
-        dependencies: [],
+        dependencies: []
       )
     end
 
@@ -16,53 +16,53 @@ module Berkshelf
     end
 
     let(:graph) { double(Lockfile::Graph, locks: {}) }
-    let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, 'trusted_certs') }
+    let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, "trusted_certs") }
     let(:self_signed_crt) { OpenSSL::X509::Certificate.new(IO.read("#{self_signed_crt_path}/example.crt")) }
     let(:cert_store) { OpenSSL::X509::Store.new.add_cert(self_signed_crt) }
     let(:ssl_policy) { double(SSLPolicy, store: cert_store) }
 
     subject { Uploader.new(berksfile) }
 
-    describe '#initialize' do
-      it 'saves the berksfile' do
+    describe "#initialize" do
+      it "saves the berksfile" do
         instance = Uploader.new(berksfile)
         expect(instance.berksfile).to be(berksfile)
       end
 
-      it 'saves the lockfile' do
+      it "saves the lockfile" do
         instance = Uploader.new(berksfile)
         expect(instance.lockfile).to be(lockfile)
       end
 
-      it 'saves the options' do
+      it "saves the options" do
         instance = Uploader.new(berksfile, force: true, validate: false)
         options = instance.options
         expect(options[:force]).to be(true)
         expect(options[:validate]).to be(false)
       end
 
-      it 'saves the names' do
-        instance = Uploader.new(berksfile, 'cookbook_1', 'cookbook_2')
-        expect(instance.names).to eq(['cookbook_1', 'cookbook_2'])
+      it "saves the names" do
+        instance = Uploader.new(berksfile, "cookbook_1", "cookbook_2")
+        expect(instance.names).to eq(%w{cookbook_1 cookbook_2})
       end
     end
 
-    describe '#run' do
+    describe "#run" do
       let(:options) { Hash.new }
 
       let(:chef_config) do
         double(Ridley::Chef::Config,
-          node_name: 'fake-client',
-          client_key: 'client-key',
-          chef_server_url: 'http://configured-chef-server/',
-          validation_client_name: 'validator',
-          validation_key: 'validator.pem',
-          cookbook_copyright: 'user',
-          cookbook_email: 'user@example.com',
-          cookbook_license: 'apachev2',
+          node_name: "fake-client",
+          client_key: "client-key",
+          chef_server_url: "http://configured-chef-server/",
+          validation_client_name: "validator",
+          validation_key: "validator.pem",
+          cookbook_copyright: "user",
+          cookbook_email: "user@example.com",
+          cookbook_license: "apachev2",
           trusted_certs_dir: self_signed_crt_path,
           knife: {
-            chef_guard: false
+            chef_guard: false,
           }
         )
       end
@@ -76,11 +76,11 @@ module Berkshelf
 
       let(:default_ridley_options) do
         {
-          client_name: 'fake-client',
-          client_key: 'client-key',
+          client_name: "fake-client",
+          client_key: "client-key",
           ssl: {
-            verify: true
-          }
+            verify: true,
+          },
         }
       end
 
@@ -89,97 +89,97 @@ module Berkshelf
         allow(Berkshelf).to receive(:ssl_policy).and_return(ssl_policy)
       end
 
-      context 'when there is no value for :chef_server_url' do
+      context "when there is no value for :chef_server_url" do
         before { allow(chef_config).to receive_messages(chef_server_url: nil) }
-        let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.server_url' }
+        let(:message) { "Missing required attribute in your Berkshelf configuration: chef.server_url" }
 
-        it 'raises an error' do
+        it "raises an error" do
           expect { subject.run }.to raise_error(Berkshelf::ChefConnectionError, message)
         end
       end
 
-      context 'when there is no value for :client_name' do
+      context "when there is no value for :client_name" do
         before { allow(chef_config).to receive_messages(node_name: nil) }
-        let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.node_name' }
+        let(:message) { "Missing required attribute in your Berkshelf configuration: chef.node_name" }
 
-        it 'raises an error' do
+        it "raises an error" do
           expect { subject.run }.to raise_error(Berkshelf::ChefConnectionError, message)
         end
       end
 
-      context 'when there is no value for :client_key' do
+      context "when there is no value for :client_key" do
         before { allow(chef_config).to receive_messages(client_key: nil) }
-        let(:message) { 'Missing required attribute in your Berkshelf configuration: chef.client_key' }
+        let(:message) { "Missing required attribute in your Berkshelf configuration: chef.client_key" }
 
-        it 'raises an error' do
-          expect {
+        it "raises an error" do
+          expect do
             subject.run
-          }.to raise_error(Berkshelf::ChefConnectionError, message)
+          end.to raise_error(Berkshelf::ChefConnectionError, message)
         end
       end
 
-      context 'when no options are given' do
+      context "when no options are given" do
         let(:ridley_options) do
-          { server_url: 'http://configured-chef-server/' }.merge(default_ridley_options)
+          { server_url: "http://configured-chef-server/" }.merge(default_ridley_options)
         end
 
-        it 'uses the Berkshelf::Config options' do
+        it "uses the Berkshelf::Config options" do
           expect(Ridley).to receive(:open).with(
             server_url:  chef_config.chef_server_url,
             client_name: chef_config.node_name,
             client_key:  chef_config.client_key,
             ssl: {
               verify: berkshelf_config.ssl.verify,
-              cert_store: cert_store
+              cert_store: cert_store,
             }
           )
           subject.run
         end
       end
 
-      context 'when ssl_verify: false is passed as an option' do
+      context "when ssl_verify: false is passed as an option" do
         subject { Uploader.new(berksfile, ssl_verify: false) }
 
-        it 'uses the passed option' do
+        it "uses the passed option" do
           expect(Ridley).to receive(:open).with(
             server_url:  chef_config.chef_server_url,
             client_name: chef_config.node_name,
             client_key:  chef_config.client_key,
             ssl: {
               verify: false,
-              cert_store: cert_store
+              cert_store: cert_store,
             }
           )
           subject.run
         end
       end
 
-      context 'when a Chef Server url is passed as an option' do
-        subject { Uploader.new(berksfile, server_url: 'http://custom') }
+      context "when a Chef Server url is passed as an option" do
+        subject { Uploader.new(berksfile, server_url: "http://custom") }
 
-        it 'uses the passed in :server_url' do
+        it "uses the passed in :server_url" do
           expect(Ridley).to receive(:open)
-            .with(include(server_url: 'http://custom'))
+            .with(include(server_url: "http://custom"))
           subject.run
         end
       end
 
-      context 'when a client name is passed as an option' do
-        subject { Uploader.new(berksfile, client_name: 'custom') }
+      context "when a client name is passed as an option" do
+        subject { Uploader.new(berksfile, client_name: "custom") }
 
-        it 'uses the passed in :client_name' do
+        it "uses the passed in :client_name" do
           expect(Ridley).to receive(:open)
-            .with(include(client_name: 'custom'))
+            .with(include(client_name: "custom"))
           subject.run
         end
       end
 
-      context 'when a client key is passed as an option' do
-        subject { Uploader.new(berksfile, client_key: 'custom') }
+      context "when a client key is passed as an option" do
+        subject { Uploader.new(berksfile, client_key: "custom") }
 
-        it 'uses the passed in :client_key' do
+        it "uses the passed in :client_key" do
           expect(Ridley).to receive(:open)
-            .with(include(client_key: 'custom'))
+            .with(include(client_key: "custom"))
           subject.run
         end
       end

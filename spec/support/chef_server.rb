@@ -1,5 +1,5 @@
-require 'chef_zero/server'
-require 'json'
+require "chef_zero/server"
+require "json"
 
 module Berkshelf::RSpec
   module ChefServer
@@ -58,18 +58,18 @@ module Berkshelf::RSpec
     end
 
     def chef_cookbook(name, hash = {})
-      chef_server.load_data({ 'cookbooks' => { name => hash }})
+      chef_server.load_data({ "cookbooks" => { name => hash } })
     end
 
     def chef_cookbooks
-      chef_server.data_store.list(['organizations', 'chef', 'cookbooks']).inject({}) do |hash, name|
-        hash[name] = chef_server.data_store.list(['organizations', 'chef', 'cookbooks', name])
+      chef_server.data_store.list(%w{organizations chef cookbooks}).inject({}) do |hash, name|
+        hash[name] = chef_server.data_store.list(["organizations", "chef", "cookbooks", name])
         hash
       end
     end
 
     def chef_data_bag(name, hash = {})
-      chef_server.load_data({ 'data' => { name => hash }})
+      chef_server.load_data({ "data" => { name => hash } })
     end
 
     def chef_environment(name, hash = {})
@@ -77,7 +77,7 @@ module Berkshelf::RSpec
     end
 
     def chef_environment_locks(name)
-      JSON.parse(chef_server.data_store.get(['organizations', 'chef', 'environments', name]))['cookbook_versions']
+      JSON.parse(chef_server.data_store.get(["organizations", "chef", "environments", name]))["cookbook_versions"]
     rescue ChefZero::DataStore::DataNotFoundError
       {}
     end
@@ -92,8 +92,8 @@ module Berkshelf::RSpec
 
     private
 
-      def load_data(key, name, hash)
-        chef_server.load_data({ key.to_s => { name => JSON.generate(hash) }})
-      end
+    def load_data(key, name, hash)
+      chef_server.load_data({ key.to_s => { name => JSON.generate(hash) } })
+    end
   end
 end

@@ -18,12 +18,12 @@ module Berkshelf
       private
 
         # @return [Hash<String, CachedCookbook>]
-        def loaded_cookbooks
-          @loaded_cookbooks ||= {}
-        end
+      def loaded_cookbooks
+        @loaded_cookbooks ||= {}
+      end
     end
 
-    DIRNAME_REGEXP = /^(.+)-(.+)$/.freeze
+    DIRNAME_REGEXP = /^(.+)-(.+)$/
 
     extend Forwardable
     def_delegator :metadata, :description
@@ -75,8 +75,8 @@ module Berkshelf
 
     private
 
-      def pretty_map(hash, padding)
-        hash.map { |k,v| "#{k} (#{v})" }.join("\n" + ' '*padding)
-      end
+    def pretty_map(hash, padding)
+      hash.map { |k, v| "#{k} (#{v})" }.join("\n" + " " * padding)
+    end
   end
 end

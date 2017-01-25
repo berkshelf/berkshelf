@@ -31,7 +31,7 @@ module Berkshelf
 
     # Don't vendor VCS files.
     # Reference GNU tar --exclude-vcs: https://www.gnu.org/software/tar/manual/html_section/tar_49.html
-    EXCLUDED_VCS_FILES_WHEN_VENDORING = ['.arch-ids', '{arch}', '.bzr', '.bzrignore', '.bzrtags', 'CVS', '.cvsignore', '_darcs', '.git', '.hg', '.hgignore', '.hgrags', 'RCS', 'SCCS', '.svn', '**/.git'].freeze
+    EXCLUDED_VCS_FILES_WHEN_VENDORING = [".arch-ids", "{arch}", ".bzr", ".bzrignore", ".bzrtags", "CVS", ".cvsignore", "_darcs", ".git", ".hg", ".hgignore", ".hgrags", "RCS", "SCCS", ".svn", "**/.git"].freeze
 
     include Mixin::Logging
     include Cleanroom
@@ -71,7 +71,7 @@ module Berkshelf
       @preferred_solver = :gecode
 
       if options[:except] && options[:only]
-        raise ArgumentError, 'Cannot specify both :except and :only!'
+        raise ArgumentError, "Cannot specify both :except and :only!"
       elsif options[:except]
         except = Array(options[:except]).collect(&:to_sym)
         @filter = ->(dependency) { (except & dependency.groups).empty? }
@@ -173,7 +173,7 @@ module Berkshelf
     #   path to the metadata file
     def metadata(options = {})
       path          = options[:path] || File.dirname(filepath)
-      metadata_path = File.expand_path(File.join(path, 'metadata.rb'))
+      metadata_path = File.expand_path(File.join(path, "metadata.rb"))
       metadata      = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
 
       add_dependency(metadata.name, nil, path: path, metadata: true)
@@ -306,7 +306,7 @@ module Berkshelf
       end
 
       if options[:path]
-        metadata_file = File.join(options[:path], 'metadata.rb')
+        metadata_file = File.join(options[:path], "metadata.rb")
       end
 
       options[:constraint] = constraint
@@ -512,15 +512,15 @@ module Berkshelf
 
           latest = cookbooks.select do |cookbook|
             dependency.version_constraint.satisfies?(cookbook.version) &&
-            Semverse::Version.coerce(cookbook.version) > dependency.locked_version
+              Semverse::Version.coerce(cookbook.version) > dependency.locked_version
           end.sort_by { |cookbook| cookbook.version }.last
 
           unless latest.nil?
             hash[name] ||= {
-              'local' => dependency.locked_version,
-              'remote' => {
-                source => Semverse::Version.coerce(latest.version)
-              }
+              "local" => dependency.locked_version,
+              "remote" => {
+                source => Semverse::Version.coerce(latest.version),
+              },
             }
           end
         end
@@ -609,7 +609,7 @@ module Berkshelf
       packager.validate!
 
       outdir = Dir.mktmpdir do |temp_dir|
-        Berkshelf.ui.mute { vendor(File.join(temp_dir, 'cookbooks')) }
+        Berkshelf.ui.mute { vendor(File.join(temp_dir, "cookbooks")) }
         packager.run(temp_dir)
       end
 
@@ -626,7 +626,7 @@ module Berkshelf
     # @return [String, nil]
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination)
-      Dir.mktmpdir('vendor') do |scratch|
+      Dir.mktmpdir("vendor") do |scratch|
         chefignore       = nil
         cached_cookbooks = install
         raw_metadata_files = []
@@ -639,8 +639,8 @@ module Berkshelf
           FileUtils.mkdir_p(cookbook_destination)
 
           # Dir.glob does not support backslash as a File separator
-          src   = cookbook.path.to_s.gsub('\\', '/')
-          files = FileSyncer.glob(File.join(src, '*'))
+          src   = cookbook.path.to_s.tr('\\', "/")
+          files = FileSyncer.glob(File.join(src, "*"))
 
           chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
           chefignore.apply!(files) if chefignore
@@ -649,7 +649,7 @@ module Berkshelf
             cookbook.compile_metadata(cookbook_destination)
           end
 
-          raw_metadata_files << File::join(cookbook.cookbook_name, 'metadata.rb')
+          raw_metadata_files << File.join(cookbook.cookbook_name, "metadata.rb")
 
           FileUtils.cp_r(files, cookbook_destination)
         end
@@ -694,17 +694,17 @@ module Berkshelf
     #
     # @return [String] path
     #   the path where the image was written
-    def viz(outfile = nil, format = 'png')
-      outfile = File.join(Dir.pwd, outfile || 'graph.png')
+    def viz(outfile = nil, format = "png")
+      outfile = File.join(Dir.pwd, outfile || "graph.png")
 
       validate_lockfile_present!
       validate_lockfile_trusted!
       vizualiser = Visualizer.from_lockfile(lockfile)
 
       case format
-      when 'dot'
+      when "dot"
         vizualiser.to_dot_file(outfile)
-      when 'png'
+      when "png"
         vizualiser.to_png(outfile)
       else
         raise ConfigurationError, "Vizualiser format #{format} not recognised."
@@ -730,10 +730,10 @@ module Berkshelf
       #   if the lockfile does not exist on disk
       #
       # @return [true]
-      def validate_lockfile_present!
-        raise LockfileNotFound unless lockfile.present?
-        true
-      end
+    def validate_lockfile_present!
+      raise LockfileNotFound unless lockfile.present?
+      true
+    end
 
       # Ensure that all dependencies defined in the Berksfile exist in this
       # lockfile.
@@ -743,10 +743,10 @@ module Berkshelf
       #   exist (or are not satisifed by) the lockfile
       #
       # @return [true]
-      def validate_lockfile_trusted!
-        raise LockfileOutOfSync unless lockfile.trusted?
-        true
-      end
+    def validate_lockfile_trusted!
+      raise LockfileOutOfSync unless lockfile.trusted?
+      true
+    end
 
       # Ensure that all dependencies in the lockfile are installed on this
       # system. You should validate that the lockfile can be trusted before
@@ -757,15 +757,15 @@ module Berkshelf
       #   this system
       #
       # @return [true]
-      def validate_dependencies_installed!
-        lockfile.graph.locks.each do |_, dependency|
-          unless dependency.installed?
-            raise DependencyNotInstalled.new(dependency)
-          end
+    def validate_dependencies_installed!
+      lockfile.graph.locks.each do |_, dependency|
+        unless dependency.installed?
+          raise DependencyNotInstalled.new(dependency)
         end
-
-        true
       end
+
+      true
+    end
 
       # Determine if any cookbooks were specified that aren't in our shelf.
       #
@@ -774,12 +774,12 @@ module Berkshelf
       #
       # @raise [DependencyNotFound]
       #   if a cookbook name is given that does not exist
-      def validate_cookbook_names!(names)
-        missing = names - lockfile.graph.locks.keys
+    def validate_cookbook_names!(names)
+      missing = names - lockfile.graph.locks.keys
 
-        unless missing.empty?
-          raise DependencyNotFound.new(missing)
-        end
+      unless missing.empty?
+        raise DependencyNotFound.new(missing)
       end
+    end
   end
 end

@@ -9,27 +9,27 @@ Given /^the Chef Server has cookbooks:$/ do |cookbooks|
     metadata = []
     metadata << "name '#{name}'"
     metadata << "version '#{version}'"
-    dependencies.to_s.split(',').map { |d| d.split(' ', 2) }.each do |(name, constraint)|
+    dependencies.to_s.split(",").map { |d| d.split(" ", 2) }.each do |(name, constraint)|
       metadata << "depends '#{name}', '#{constraint}'"
     end
 
-    chef_cookbook(name, { 'metadata.rb' => metadata.join("\n") })
+    chef_cookbook(name, { "metadata.rb" => metadata.join("\n") })
   end
 end
 
 Given /^the Chef Server has frozen cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
-    chef_cookbook(name, { 'metadata.rb' => "version '#{version}'", frozen: true })
+    chef_cookbook(name, { "metadata.rb" => "version '#{version}'", frozen: true })
   end
 end
 
 Given(/^the Chef Server has an environment named "(.*?)"$/) do |name|
-  chef_environment(name, { 'description' => 'This is an environment' })
+  chef_environment(name, { "description" => "This is an environment" })
 end
 
 Given(/^the Chef Server does not have an environment named "(.*?)"$/) do |name|
-  if chef_server.data_store.exists?(['organizations', 'chef', 'environments', name])
-    chef_server.data_store.delete(['organizations', 'chef', 'environments', name])
+  if chef_server.data_store.exists?(["organizations", "chef", "environments", name])
+    chef_server.data_store.delete(["organizations", "chef", "environments", name])
   end
 end
 

@@ -1,4 +1,4 @@
-require 'aruba/api'
+require "aruba/api"
 
 World(Aruba::Api)
 World(Berkshelf::RSpec::ChefAPI)
@@ -22,12 +22,12 @@ end
 Given /^the cookbook store has the git cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha|
     folder   = "#{name}-#{sha}"
-    metadata = File.join(folder, 'metadata.rb')
+    metadata = File.join(folder, "metadata.rb")
 
     create_directory(folder)
     write_file(metadata, [
       "name '#{name}'",
-      "version '#{version}'"
+      "version '#{version}'",
     ].join("\n"))
   end
 end
@@ -133,7 +133,6 @@ Then /^I should have a new cookbook skeleton "(.*?)" with Chef-Minitest support$
   }
 end
 
-
 Then /^I should have a new cookbook skeleton "(.*?)" with Foodcritic support$/ do |name|
   steps %Q{ Then I should have a new cookbook skeleton "#{name}" }
 
@@ -215,15 +214,15 @@ Then(/^I should have a new cookbook skeleton "(.*?)" with no Test Kitchen suppor
 end
 
 Then /^the cookbook "(.*?)" should have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, true)
+  check_file_presence(files.raw.map { |file_row| ::File.join(name, file_row[0]) }, true)
 end
 
 Then /^the cookbook "(.*?)" should not have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, false)
+  check_file_presence(files.raw.map { |file_row| ::File.join(name, file_row[0]) }, false)
 end
 
 Then /^the git cookbook "(.*?)" should not have the following directories:$/ do |name, directories|
-  check_directory_presence(directories.raw.map{|directory_row| ::File.join(cookbook_store.storage_path.to_path, name, directory_row[0])}, false)
+  check_directory_presence(directories.raw.map { |directory_row| ::File.join(cookbook_store.storage_path.to_path, name, directory_row[0]) }, false)
 end
 
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|
@@ -238,19 +237,21 @@ end
 Then /^the resulting "(.+)" Vagrantfile should contain:$/ do |cookbook_name, content|
   expect(Pathname.new(current_dir).join(cookbook_name)).to have_structure {
     file "Vagrantfile" do
-      content.respond_to?(:raw) ?
-        content.raw.flatten.each { |string| contains string } :
+      if content.respond_to?(:raw)
+        content.raw.flatten.each { |string| contains string }
+      else
         contains(content)
+      end
     end
   }
 end
 
 Then /^the directory "(.*?)" should have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, true)
+  check_file_presence(files.raw.map { |file_row| ::File.join(name, file_row[0]) }, true)
 end
 
 Then /^the directory "(.*?)" should not have the following files:$/ do |name, files|
-  check_file_presence(files.raw.map{|file_row| ::File.join(name, file_row[0])}, false)
+  check_file_presence(files.raw.map { |file_row| ::File.join(name, file_row[0]) }, false)
 end
 
 Then /^the file "(.*?)" in the directory "(.*?)" should not contain:$/ do |file_name, directory_name, content|

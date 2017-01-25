@@ -1,10 +1,10 @@
 module Berkshelf
   module RSpec
     module Git
-      require 'buff/shell_out'
+      require "buff/shell_out"
       include Buff::ShellOut
 
-      require_relative 'path_helpers'
+      require_relative "path_helpers"
       include Berkshelf::RSpec::PathHelpers
 
       def git_origin_for(repo, options = {})
@@ -12,8 +12,8 @@ module Berkshelf
       end
 
       def generate_fake_git_remote(uri, options = {})
-        name = uri.split('/').last || 'rspec_cookbook'
-        name = name.gsub('.git', '')
+        name = uri.split("/").last || "rspec_cookbook"
+        name = name.gsub(".git", "")
         path = remotes.join(name)
 
         capture(:stdout) do
@@ -86,16 +86,16 @@ module Berkshelf
         # The path to store the local git clones.
         #
         # @return [Pathname]
-        def clones
-          ensure_and_return(tmp_path.join('clones'))
-        end
+      def clones
+        ensure_and_return(tmp_path.join("clones"))
+      end
 
         # The path to store the git remotes.
         #
         # @return [Pathname]
-        def remotes
-          ensure_and_return(tmp_path.join('remotes'))
-        end
+      def remotes
+        ensure_and_return(tmp_path.join("remotes"))
+      end
 
         # Generate a cookbook by the given name.
         #
@@ -103,15 +103,15 @@ module Berkshelf
         #   the name of the cookbook to create
         # @param [Hash] options
         #   the list ooptions to pass to the generator
-        def generate_git_cookbook(name, options = {})
-          options = {
-            skip_vagrant: true,
-            skip_test_kitchen: true,
-            force: true,
-          }.merge(options)
+      def generate_git_cookbook(name, options = {})
+        options = {
+          skip_vagrant: true,
+          skip_test_kitchen: true,
+          force: true,
+        }.merge(options)
 
-          Berkshelf::Cli.new.invoke(:cookbook, [name.to_s], options)
-        end
+        Berkshelf::Cli.new.invoke(:cookbook, [name.to_s], options)
+      end
 
         # Make sure the given path exists and return the path
         #
@@ -119,10 +119,10 @@ module Berkshelf
         #   the path to create and return
         #
         # @return [Pathname]
-        def ensure_and_return(path)
-          FileUtils.mkdir(path) unless File.exist?(path)
-          return Pathname.new(path).expand_path
-        end
+      def ensure_and_return(path)
+        FileUtils.mkdir(path) unless File.exist?(path)
+        return Pathname.new(path).expand_path
+      end
     end
   end
 end

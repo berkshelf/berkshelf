@@ -1,4 +1,4 @@
-require 'openssl'
+require "openssl"
 
 module Berkshelf
   class SSLPolicy
@@ -18,13 +18,13 @@ module Berkshelf
     def add_trusted_cert(cert)
       @store.add_cert(cert)
     rescue OpenSSL::X509::StoreError => e
-      raise e unless e.message == 'cert already in hash table'
+      raise e unless e.message == "cert already in hash table"
     end
 
     def trusted_certs_dir
       config_dir = Berkshelf.config.chef.trusted_certs_dir.to_s
       if config_dir.empty? || !::File.exist?(config_dir)
-        File.join(ENV['HOME'], '.chef', 'trusted_certs')
+        File.join(ENV["HOME"], ".chef", "trusted_certs")
       else
         config_dir
       end

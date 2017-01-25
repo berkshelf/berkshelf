@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Berkshelf::SourceURI do
   describe "ClassMethods" do

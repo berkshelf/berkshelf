@@ -61,7 +61,7 @@ module Berkshelf
     end
 
     def to_s
-      out  = "Your Berksfile contains multiple entries named "
+      out = "Your Berksfile contains multiple entries named "
       out << "'#{@name}'. Please remove duplicate dependencies, or put them in "
       out << "different groups."
       out
@@ -83,7 +83,7 @@ module Berkshelf
 
     def to_s
       @original_exception.to_s +
-      "Unable to find a solution for demands: #{demands.join(', ')}"
+        "Unable to find a solution for demands: #{demands.join(', ')}"
     end
 
     alias_method :message, :to_s
@@ -285,11 +285,11 @@ module Berkshelf
 
     def to_s
       "Berkshelf could not find compatible versions for cookbook '#{@dependency.name}':\n" +
-      "  In Berksfile:\n" +
-      "    #{@dependency.name} (#{@dependency.version_constraint})\n\n" +
-      "  In Berksfile.lock:\n" +
-      "    #{@locked.name} (#{@locked.version})\n\n" +
-      "Try running `berks update #{@dependency.name}`, which will try to find '#{@dependency.name}' matching " +
+        "  In Berksfile:\n" +
+        "    #{@dependency.name} (#{@dependency.version_constraint})\n\n" +
+        "  In Berksfile.lock:\n" +
+        "    #{@locked.name} (#{@locked.version})\n\n" +
+        "Try running `berks update #{@dependency.name}`, which will try to find '#{@dependency.name}' matching " +
         "'#{@dependency.version_constraint}'."
     end
 
@@ -314,7 +314,7 @@ module Berkshelf
     set_status_code(130)
 
     def to_s
-      'There was an error connecting to the Chef Server'
+      "There was an error connecting to the Chef Server"
     end
   end
 
@@ -372,7 +372,7 @@ module Berkshelf
 
     def to_s
       "Unknown license: '#{license}'\n" +
-      "Available licenses: #{CookbookGenerator::LICENSES.join(', ')}"
+        "Available licenses: #{CookbookGenerator::LICENSES.join(', ')}"
     end
 
     alias_method :message, :to_s
@@ -440,7 +440,7 @@ module Berkshelf
     set_status_code(140)
 
     def to_s
-      'Lockfile not found! Run `berks install` to create the lockfile.'
+      "Lockfile not found! Run `berks install` to create the lockfile."
     end
   end
 
@@ -467,7 +467,7 @@ module Berkshelf
     set_status_code(144)
 
     def to_s
-      'The lockfile is out of sync! Run `berks install` to sync the lockfile.'
+      "The lockfile is out of sync! Run `berks install` to sync the lockfile."
     end
   end
 
@@ -544,7 +544,7 @@ module Berkshelf
     def intialize(environment_file)
       @environment_file = environment_file
     end
-  
+
     def to_s
       "Could not find environment file #{@environment_file}"
     end
@@ -556,11 +556,11 @@ module Berkshelf
 
   class GitNotInstalled < GitError
     def initialize
-      super 'You need to install Git before you can download ' \
-        'cookbooks from git repositories. For more information, please ' \
-        'see the Git docs: http://git-scm.org. If you have git installed, ' \
-        'please make sure it is in your $PATH and accessible by the user ' \
-        'running this command.'
+      super "You need to install Git before you can download " \
+        "cookbooks from git repositories. For more information, please " \
+        "see the Git docs: http://git-scm.org. If you have git installed, " \
+        "please make sure it is in your $PATH and accessible by the user " \
+        "running this command."
     end
   end
 

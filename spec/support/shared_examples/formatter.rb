@@ -1,4 +1,4 @@
-require 'rspec'
+require "rspec"
 
 RSpec.shared_examples "a formatter object" do
   Berkshelf::BaseFormatter.instance_methods(false).each do |name|

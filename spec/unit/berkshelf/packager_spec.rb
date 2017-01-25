@@ -1,10 +1,10 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Berkshelf::Packager do
   let(:target) { tmp_path.join("cookbooks.tar.gz").to_s }
   subject { described_class.new(target) }
 
-  it 'has the correct out_file' do
+  it "has the correct out_file" do
     expect(subject.out_file).to eq(target)
   end
 
