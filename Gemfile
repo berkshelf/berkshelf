@@ -51,6 +51,7 @@ group :development do
   gem "yard",          ">= 0.8"
   gem "http",          ">= 0.9.8"
   gem "activesupport", "~> 4.0" # pinning for ruby 2.1.x
+  gem "chefstyle"
 end
 
 group :test do
