@@ -194,8 +194,9 @@ module Berkshelf
     # @raise [InvalidSourceURI]
     #
     # @return [Array<Source>]
-    def source(api_url)
-      @sources[api_url] = Source.new(api_url)
+    def source(*args)
+      api_url = args.shift
+      @sources[api_url] = Source.new(api_url, args)
     end
     expose :source
 
