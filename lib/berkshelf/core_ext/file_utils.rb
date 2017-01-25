@@ -1,4 +1,4 @@
-require 'fileutils'
+require "fileutils"
 
 module FileUtils
   class << self

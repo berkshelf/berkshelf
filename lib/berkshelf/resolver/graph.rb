@@ -50,7 +50,7 @@ module Berkshelf
       # @return [Array<Berkshelf::RemoteCookbook>]
       def universe(sources)
         cookbooks = []
-        Array(sources).each { |source| cookbooks = cookbooks | source.universe }
+        Array(sources).each { |source| cookbooks |= source.universe }
         cookbooks
       end
     end

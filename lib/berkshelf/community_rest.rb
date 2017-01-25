@@ -1,6 +1,6 @@
-require 'open-uri'
-require 'retryable'
-require 'mixlib/archive'
+require "open-uri"
+require "retryable"
+require "mixlib/archive"
 
 module Berkshelf
   class CommunityREST < Faraday::Connection
@@ -25,30 +25,30 @@ module Berkshelf
       #
       # @return [String]
       def uri_escape_version(version)
-        version.to_s.gsub('.', '_')
+        version.to_s.tr(".", "_")
       end
 
       # @param [String] uri
       #
       # @return [String]
       def version_from_uri(uri)
-        File.basename(uri.to_s).gsub('_', '.')
+        File.basename(uri.to_s).tr("_", ".")
       end
 
       private
 
-        def is_gzip_file(path)
-          # You cannot write "\x1F\x8B" because the default encoding of
-          # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
-          IO.binread(path, 2) == [0x1F, 0x8B].pack("C*")
-        end
+      def is_gzip_file(path)
+        # You cannot write "\x1F\x8B" because the default encoding of
+        # ruby >= 1.9.3 is UTF-8 and 8B is an invalid in UTF-8.
+        IO.binread(path, 2) == [0x1F, 0x8B].pack("C*")
+      end
 
-        def is_tar_file(path)
-          IO.binread(path, 8, 257).to_s == "ustar\x0000"
-        end
+      def is_tar_file(path)
+        IO.binread(path, 8, 257).to_s == "ustar\x0000"
+      end
     end
 
-    V1_API = 'https://supermarket.chef.io'.freeze
+    V1_API = "https://supermarket.chef.io".freeze
 
     # @return [String]
     attr_reader :api_uri
@@ -97,14 +97,14 @@ module Berkshelf
     # @return [String, nil]
     #   cookbook filepath, or nil if archive does not contain a cookbook
     def download(name, version)
-      archive   = stream(find(name, version)[:file])
+      archive = stream(find(name, version)[:file])
       scratch = Dir.mktmpdir
       extracted = self.class.unpack(archive.path, scratch)
 
       if File.cookbook?(extracted)
         extracted
       else
-        Dir.glob(File.join(extracted, '*')).find do |dir|
+        Dir.glob(File.join(extracted, "*")).find do |dir|
           File.cookbook?(dir)
         end
       end
@@ -133,7 +133,7 @@ module Berkshelf
 
       case response.status
       when (200..299)
-        self.class.version_from_uri response.body['latest_version']
+        self.class.version_from_uri response.body["latest_version"]
       when 404
         raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
       else
@@ -149,7 +149,7 @@ module Berkshelf
 
       case response.status
       when (200..299)
-        response.body['versions'].collect do |version_uri|
+        response.body["versions"].collect do |version_uri|
           self.class.version_from_uri(version_uri)
         end
       when 404
@@ -176,11 +176,11 @@ module Berkshelf
     #
     # @return [Tempfile]
     def stream(target)
-      local = Tempfile.new('community-rest-stream')
+      local = Tempfile.new("community-rest-stream")
       local.binmode
 
       Retryable.retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
-        open(target, 'rb', open_uri_options) do |remote|
+        open(target, "rb", open_uri_options) do |remote|
           local.write(remote.read)
         end
       end
@@ -192,27 +192,27 @@ module Berkshelf
 
     private
 
-      def open_uri_options
-        options = {}
-        options.merge!(headers)
-        options.merge!(open_uri_proxy_options)
-		    options.merge!(ssl_verify_mode: ssl_verify_mode)
-      end
+    def open_uri_options
+      options = {}
+      options.merge!(headers)
+      options.merge!(open_uri_proxy_options)
+      options.merge!(ssl_verify_mode: ssl_verify_mode)
+    end
 
-      def open_uri_proxy_options
-        if proxy && proxy[:user] && proxy[:password]
-          {proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ]}
-        else
-          {}
-        end
+    def open_uri_proxy_options
+      if proxy && proxy[:user] && proxy[:password]
+        { proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ] }
+      else
+        {}
       end
+    end
 
-      def ssl_verify_mode
-        if Berkshelf::Config.instance.ssl.verify.nil? || Berkshelf::Config.instance.ssl.verify
-          OpenSSL::SSL::VERIFY_PEER
-        else
-          OpenSSL::SSL::VERIFY_NONE
-        end
+    def ssl_verify_mode
+      if Berkshelf::Config.instance.ssl.verify.nil? || Berkshelf::Config.instance.ssl.verify
+        OpenSSL::SSL::VERIFY_PEER
+      else
+        OpenSSL::SSL::VERIFY_NONE
       end
+    end
   end
 end

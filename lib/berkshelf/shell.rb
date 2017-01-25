@@ -1,4 +1,4 @@
-require 'thor'
+require "thor"
 
 module Berkshelf
   # Subclass the current shell (which is different based on the OS)

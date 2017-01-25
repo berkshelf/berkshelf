@@ -1,11 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Berkshelf
   describe Downloader do
     let(:berksfile) do
       double(Berksfile,
         lockfile: lockfile,
-        dependencies: [],
+        dependencies: []
       )
     end
 
@@ -16,7 +16,7 @@ module Berkshelf
     end
 
     let(:graph) { double(Lockfile::Graph, locks: {}) }
-    let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, 'trusted_certs') }
+    let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, "trusted_certs") }
     let(:self_signed_crt) { OpenSSL::X509::Certificate.new(IO.read("#{self_signed_crt_path}/example.crt")) }
     let(:cert_store) { OpenSSL::X509::Store.new.add_cert(self_signed_crt) }
     let(:ssl_policy) { double(SSLPolicy, store: cert_store) }
@@ -28,9 +28,9 @@ module Berkshelf
     end
 
     describe "#try_download" do
-      let(:remote_cookbook) { double('remote-cookbook') }
+      let(:remote_cookbook) { double("remote-cookbook") }
       let(:source) do
-        source = double('source')
+        source = double("source")
         allow(source).to receive(:cookbook) { remote_cookbook }
         source
       end
@@ -40,7 +40,7 @@ module Berkshelf
       it "supports the 'opscode' location type" do
         allow(remote_cookbook).to receive(:location_type) { :opscode }
         allow(remote_cookbook).to receive(:location_path) { "http://api.opscode.com" }
-        rest = double('community-rest')
+        rest = double("community-rest")
         expect(CommunityREST).to receive(:new).with("http://api.opscode.com") { rest }
         expect(rest).to receive(:download).with(name, version)
         subject.try_download(source, name, version)
@@ -49,32 +49,32 @@ module Berkshelf
       it "supports the 'supermarket' location type" do
         allow(remote_cookbook).to receive(:location_type) { :supermarket }
         allow(remote_cookbook).to receive(:location_path) { "http://api.supermarket.com" }
-        rest = double('community-rest')
+        rest = double("community-rest")
         expect(CommunityREST).to receive(:new).with("http://api.supermarket.com") { rest }
         expect(rest).to receive(:download).with(name, version)
         subject.try_download(source, name, version)
       end
 
-      describe 'chef_server location type' do
-        let(:chef_server_url) { 'http://configured-chef-server/' }
+      describe "chef_server location type" do
+        let(:chef_server_url) { "http://configured-chef-server/" }
         let(:ridley_client) do
           double(Ridley::Client,
-            cookbook: double('cookbook', download: "fake")
+            cookbook: double("cookbook", download: "fake")
           )
         end
         let(:chef_config) do
           double(Ridley::Chef::Config,
-            node_name: 'fake-client',
-            client_key: 'client-key',
+            node_name: "fake-client",
+            client_key: "client-key",
             chef_server_url: chef_server_url,
-            validation_client_name: 'validator',
-            validation_key: 'validator.pem',
-            cookbook_copyright: 'user',
-            cookbook_email: 'user@example.com',
-            cookbook_license: 'apachev2',
+            validation_client_name: "validator",
+            validation_key: "validator.pem",
+            cookbook_copyright: "user",
+            cookbook_email: "user@example.com",
+            cookbook_license: "apachev2",
             trusted_certs_dir: self_signed_crt_path,
             knife: {
-              chef_guard: false
+              chef_guard: false,
             }
           )
         end
@@ -100,8 +100,8 @@ module Berkshelf
             client_key: chef_config.client_key,
             ssl: {
               verify: berkshelf_config.ssl.verify,
-              cert_store: cert_store
-            }
+              cert_store: cert_store,
+            },
           }
           expect(Ridley).to receive(:open).with(credentials) { ridley_client }
           subject.try_download(source, name, version)

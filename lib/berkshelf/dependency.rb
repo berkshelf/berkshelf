@@ -122,23 +122,24 @@ module Berkshelf
     def cached_cookbook
       return @cached_cookbook if @cached_cookbook
 
-      @cached_cookbook = if location
-        cookbook = location.cached_cookbook
+      @cached_cookbook =
+        if location
+          cookbook = location.cached_cookbook
 
-        # If we have a cached cookbook, tighten our constraints
-        if cookbook
-          self.locked_version     = cookbook.version
-          self.version_constraint = cookbook.version
-        end
+          # If we have a cached cookbook, tighten our constraints
+          if cookbook
+            self.locked_version     = cookbook.version
+            self.version_constraint = cookbook.version
+          end
 
-        cookbook
-      else
-        if locked_version
-          CookbookStore.instance.cookbook(name, locked_version)
+          cookbook
         else
-          CookbookStore.instance.satisfy(name, version_constraint)
+          if locked_version
+            CookbookStore.instance.cookbook(name, locked_version)
+          else
+            CookbookStore.instance.satisfy(name, version_constraint)
+          end
         end
-      end
 
       @cached_cookbook
     end
@@ -175,20 +176,21 @@ module Berkshelf
     end
 
     def inspect
-      '#<Berkshelf::Dependency: ' << [
+      "#<Berkshelf::Dependency: " << [
         "#{name} (#{version_constraint})",
         "locked_version: #{locked_version.inspect}",
         "groups: #{groups}",
-        "location: #{location || 'default'}>"
-      ].join(', ')
+        "location: #{location || 'default'}>",
+      ].join(", ")
     end
 
     def to_lock
-      out = if location || version_constraint.to_s == '>= 0.0.0'
-        "  #{name}\n"
-      else
-        "  #{name} (#{version_constraint})\n"
-      end
+      out =
+        if location || version_constraint.to_s == ">= 0.0.0"
+          "  #{name}\n"
+        else
+          "  #{name} (#{version_constraint})\n"
+        end
 
       out << location.to_lock if location
       out

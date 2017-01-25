@@ -1,6 +1,6 @@
-require 'berkshelf/api-client'
-require 'berkshelf/ssl_policies'
-require 'openssl'
+require "berkshelf/api-client"
+require "berkshelf/ssl_policies"
+require "openssl"
 
 module Berkshelf
   class Source
@@ -11,7 +11,7 @@ module Berkshelf
     # @param [String, Berkshelf::SourceURI] source
     def initialize(source)
       @source = source
-      @universe   = nil
+      @universe = nil
     end
 
     def ssl_policy
@@ -20,7 +20,7 @@ module Berkshelf
 
     def api_client
       @api_client ||= begin
-                        ssl_options = {verify: Berkshelf::Config.instance.ssl.verify}
+                        ssl_options = { verify: Berkshelf::Config.instance.ssl.verify }
                         ssl_options[:cert_store] = ssl_policy.store if ssl_policy.store
 
                         if source == :chef_server
@@ -30,7 +30,7 @@ module Berkshelf
                             open_timeout: [(api_timeout / 10), 3].max,
                             client_name: Berkshelf::Config.instance.chef.node_name,
                             server_url: Berkshelf::Config.instance.chef.chef_server_url,
-                            client_key: Berkshelf::Config.instance.chef.client_key,
+                            client_key: Berkshelf::Config.instance.chef.client_key
                           )
                         else
                           APIClient.new(uri,

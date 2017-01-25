@@ -1,9 +1,9 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe FileUtils do
-  describe '#mv' do
-    let(:src) { 'src' }
-    let(:dest) { 'dest' }
+  describe "#mv" do
+    let(:src) { "src" }
+    let(:dest) { "dest" }
     let(:options) { {} }
 
     it "uses mv by default" do
@@ -11,8 +11,7 @@ describe FileUtils do
       FileUtils.mv(src, dest, options)
     end
 
-
-    it 'replaces mv with cp_r and rm_rf' do
+    it "replaces mv with cp_r and rm_rf" do
       expect(FileUtils).to receive(:cp_r).with(src, dest, options)
       expect(FileUtils).to receive(:rm_rf).with(src)
 

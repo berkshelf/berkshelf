@@ -92,11 +92,11 @@ module Berkshelf
     #   { 'cookbook' => { 'supermarket.chef.io' => #<Cookbook> } }
     def outdated(hash)
       hash.each do |name, info|
-        info['remote'].each do |remote_source, remote_version|
+        info["remote"].each do |remote_source, remote_version|
           source = remote_source.uri.to_s
 
           cookbooks[name] ||= {}
-          cookbooks[name][:local] = info['local'].to_s
+          cookbooks[name][:local] = info["local"].to_s
           cookbooks[name][:remote] ||= {}
           cookbooks[name][:remote][source] = remote_version.to_s
         end

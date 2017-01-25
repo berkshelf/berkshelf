@@ -1,10 +1,10 @@
-require 'thor/group'
+require "thor/group"
 
 module Berkshelf
   class BaseGenerator < Thor::Group
     class << self
       def source_root
-        Berkshelf.root.join('generator_files')
+        Berkshelf.root.join("generator_files")
       end
     end
 
@@ -12,12 +12,11 @@ module Berkshelf
     # this generator.
     #
     # @return [Array<String>]
-    PATTERNS = [
-      "environment",
-      "application",
-      "library",
-      "wrapper"
-    ].freeze
+    PATTERNS = %w{
+environment
+application
+library
+wrapper}.freeze
 
     shell = Berkshelf.ui
 
@@ -36,8 +35,8 @@ module Berkshelf
 
     private
 
-      def target
-        @target ||= Pathname.new(File.expand_path(path))
-      end
+    def target
+      @target ||= Pathname.new(File.expand_path(path))
+    end
   end
 end

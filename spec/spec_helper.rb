@@ -1,4 +1,4 @@
-require 'spork'
+require "spork"
 
 def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
@@ -7,12 +7,12 @@ end
 BERKS_SPEC_DATA = File.expand_path("../data", __FILE__)
 
 Spork.prefork do
-  require 'rspec'
-  require 'cleanroom/rspec'
-  require 'webmock/rspec'
-  require 'berkshelf/api/rspec' unless windows?
+  require "rspec"
+  require "cleanroom/rspec"
+  require "webmock/rspec"
+  require "berkshelf/api/rspec" unless windows?
 
-  Dir['spec/support/**/*.rb'].each { |f| require File.expand_path(f) }
+  Dir["spec/support/**/*.rb"].each { |f| require File.expand_path(f) }
 
   RSpec.configure do |config|
     config.include Berkshelf::RSpec::FileSystemMatchers
@@ -44,7 +44,7 @@ Spork.prefork do
     end
 
     config.before(:all) do
-      ENV['BERKSHELF_PATH'] = berkshelf_path.to_s
+      ENV["BERKSHELF_PATH"] = berkshelf_path.to_s
     end
 
     config.before(:each) do
@@ -71,7 +71,7 @@ Spork.prefork do
 end
 
 Spork.each_run do
-  require 'berkshelf'
+  require "berkshelf"
 
   module Berkshelf
     class GitLocation
@@ -80,7 +80,7 @@ Spork.each_run do
       alias :real_clone :clone
       def clone
         fake_remote = generate_fake_git_remote(uri, tags: @branch ? [@branch] : [])
-        tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/,'-'))
+        tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/, "-"))
         @uri = "file://#{fake_remote}"
         real_clone
       end

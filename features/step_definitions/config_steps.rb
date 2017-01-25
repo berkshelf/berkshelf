@@ -1,21 +1,21 @@
-require 'tempfile'
+require "tempfile"
 
 Given /^I already have a Berkshelf config file$/ do
-  path   = Tempfile.new('berkshelf').path
+  path   = Tempfile.new("berkshelf").path
   config = Berkshelf::Config.new(path)
   config.save
 
   Berkshelf.config = config
 
-  ENV['BERKSHELF_CONFIG'] = path
-  set_environment_variable 'BERKSHELF_CONFIG', path
+  ENV["BERKSHELF_CONFIG"] = path
+  set_environment_variable "BERKSHELF_CONFIG", path
 end
 
 Given /^I have a Berkshelf config file containing:$/ do |contents|
   path = Berkshelf.config.path
   FileUtils.mkdir_p(Pathname.new(path).dirname.to_s)
 
-  File.open(path, 'w+') { |f| f.write(contents) }
+  File.open(path, "w+") { |f| f.write(contents) }
 
   Berkshelf.config = Berkshelf::Config.from_file(path)
 end
