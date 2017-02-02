@@ -28,6 +28,7 @@ begin
   GitHubChangelogGenerator::RakeTask.new :changelog do |config|
     config.future_release = Berkshelf::VERSION
     config.issues = false
+    config.max_issues = 0
     config.enhancement_labels = "enhancement,Enhancement,New Feature,Feature".split(",")
     config.bug_labels = "bug,Bug,Improvement".split(",")
     config.exclude_labels = "duplicate,question,invalid,wontfix,no_changelog,Exclude From Changelog,Question,Upstream Bug,Discussion".split(",")

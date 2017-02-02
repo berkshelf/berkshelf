@@ -1,5 +1,13 @@
 # Change Log
 
+## [5.6.0](https://github.com/berkshelf/berkshelf/tree/5.6.0) (2017-02-02)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.5.0...5.6.0)
+
+**Merged pull requests:**
+
+- Bump Mixlib-Archive to 0.4 [\#1666](https://github.com/berkshelf/berkshelf/pull/1666) ([thommay](https://github.com/thommay))
+- chefstyle fixes [\#1662](https://github.com/berkshelf/berkshelf/pull/1662) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v5.5.0](https://github.com/berkshelf/berkshelf/tree/v5.5.0) (2017-01-24)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.4.0...v5.5.0)
 
