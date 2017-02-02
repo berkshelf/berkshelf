@@ -44,5 +44,5 @@ Gem::Specification.new do |s|
   s.add_dependency "solve",                "> 2.0", "< 4.0"
   s.add_dependency "thor",                 "~> 0.19", "< 0.19.2"
   s.add_dependency "octokit",              "~> 4.0"
-  s.add_dependency "mixlib-archive",       "~> 0.1"
+  s.add_dependency "mixlib-archive",       "~> 0.4"
 end

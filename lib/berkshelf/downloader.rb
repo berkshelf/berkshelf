@@ -166,8 +166,7 @@ module Berkshelf
         return nil unless resp.status == 200
         open(archive_path, "wb") { |file| file.write(resp.body) }
 
-        tgz = Zlib::GzipReader.new(File.open(archive_path, "rb"))
-        Archive::Tar::Minitar.unpack(tgz, unpack_dir)
+        Mixlib::Archive.new(archive_path).extract(unpack_dir)
 
         # The top level directory is inconsistant. So we unpack it and
         # use the only directory created in the unpack_dir.
