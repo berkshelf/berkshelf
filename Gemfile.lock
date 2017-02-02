@@ -44,7 +44,7 @@ PATH
       faraday (~> 0.9)
       httpclient (~> 2.7)
       minitar (~> 0.5, >= 0.5.4)
-      mixlib-archive (~> 0.1)
+      mixlib-archive (~> 0.4)
       octokit (~> 4.0)
       retryable (~> 2.0)
       ridley (~> 5.0)
@@ -213,7 +213,7 @@ GEM
     method_source (0.8.2)
     minitar (0.5.4)
     minitest (5.10.1)
-    mixlib-archive (0.3.0)
+    mixlib-archive (0.4.1)
       mixlib-log
     mixlib-authentication (1.4.1)
       mixlib-log
