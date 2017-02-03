@@ -17,20 +17,6 @@ GIT
       semverse (>= 1.0, < 3.0)
       varia_model (~> 0.4)
 
-GIT
-  remote: https://github.com/tduffield/github-changelog-generator
-  revision: c6245b58b91b863464ca88e02aa752a0658b5f30
-  branch: adjust-tag-section-mapping
-  specs:
-    github_changelog_generator (1.14.2)
-      activesupport
-      faraday-http-cache
-      multi_json
-      octokit (~> 4.6)
-      rainbow (>= 2.1)
-      rake (>= 10.0)
-      retriable (>= 1.4)
-
 PATH
   remote: .
   specs:
@@ -151,6 +137,14 @@ GEM
       ruby-progressbar (~> 1.4)
     fuzzyurl (0.9.0)
     gherkin (4.0.0)
+    github_changelog_generator (1.14.3)
+      activesupport
+      faraday-http-cache
+      multi_json
+      octokit (~> 4.6)
+      rainbow (>= 2.1)
+      rake (>= 10.0)
+      retriable (~> 2.1)
     grape (0.19.1)
       activesupport
       builder
@@ -191,7 +185,7 @@ GEM
     hashdiff (0.3.2)
     hashie (3.5.1)
     hitimes (1.2.4)
-    http (2.1.0)
+    http (2.2.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 1.0.1)
@@ -267,7 +261,7 @@ GEM
       http (>= 0.6.0.pre)
       http_parser.rb (>= 0.6.0)
       websocket-driver (>= 0.5.1)
-    retriable (3.0.0)
+    retriable (2.1.0)
     retryable (2.0.4)
     ridley (5.1.0)
       addressable
@@ -362,7 +356,7 @@ DEPENDENCIES
   coolline
   dep_selector (>= 1.0)
   fuubar (>= 2.0)
-  github_changelog_generator!
+  github_changelog_generator
   growl
   guard
   guard-cucumber

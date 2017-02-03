@@ -1,7 +1,14 @@
 # Change Log
 
-## [5.6.0](https://github.com/berkshelf/berkshelf/tree/5.6.0) (2017-02-02)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.5.0...5.6.0)
+## [v5.6.1](https://github.com/berkshelf/berkshelf/tree/v5.6.1) (2017-02-03)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.0...v5.6.1)
+
+**Merged pull requests:**
+
+- Address hashie warning spam [\#1668](https://github.com/berkshelf/berkshelf/pull/1668) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v5.6.0](https://github.com/berkshelf/berkshelf/tree/v5.6.0) (2017-02-02)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.5.0...v5.6.0)
 
 **Merged pull requests:**
 
@@ -1344,8 +1351,6 @@
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v0.1.0...v0.1.1)
 
 ## [v0.1.0](https://github.com/berkshelf/berkshelf/tree/v0.1.0) (2012-06-21)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/25612cf3601733a37727f1f490e69fdf48963d36...v0.1.0)
-
 **Merged pull requests:**
 
 - Rename to Berkshelf [\#54](https://github.com/berkshelf/berkshelf/pull/54) ([reset](https://github.com/reset))
