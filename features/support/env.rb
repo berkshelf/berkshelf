@@ -5,6 +5,16 @@ def windows?
 end
 
 Spork.prefork do
+  # XXX: work around logger spam from hashie
+  # https://github.com/intridea/hashie/issues/394
+  require "hashie"
+  begin
+    require "hashie/logger"
+    Hashie.logger = Logger.new(nil)
+  rescue LoadError
+    nil
+  end
+
   require "aruba/cucumber"
   require "aruba/in_process"
   require "aruba/spawn_process"
