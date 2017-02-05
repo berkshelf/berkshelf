@@ -1,8 +1,12 @@
 # XXX: work around logger spam from hashie
 # https://github.com/intridea/hashie/issues/394
-require "hashie"
-require "hashie/logger"
-Hashie.logger = Logger.new(nil)
+begin
+  require "hashie"
+  require "hashie/logger"
+  Hashie.logger = Logger.new(nil)
+rescue LoadError
+  # intentionally left blank
+end
 
 require "buff/extensions"
 require "cleanroom"
