@@ -180,7 +180,7 @@ module Berkshelf
       local.binmode
 
       Retryable.retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
-        open(target, "rb", open_uri_options) do |remote|
+        open(target, "rb", open_uri_options(target)) do |remote|
           local.write(remote.read)
         end
       end
@@ -192,11 +192,12 @@ module Berkshelf
 
     private
 
-    def open_uri_options
+    def open_uri_options(target)
       options = {}
       options.merge!(headers)
       options.merge!(open_uri_proxy_options)
       options.merge!(ssl_verify_mode: ssl_verify_mode)
+      options.merge!(proxy: URI.parse(target).find_proxy())
     end
 
     def open_uri_proxy_options
