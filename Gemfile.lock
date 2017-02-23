@@ -20,7 +20,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (5.6.2)
+    berkshelf (5.6.3)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (>= 2.0.2, < 4.0)
       buff-config (~> 2.0)
@@ -80,7 +80,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.18.31)
+    chef-config (12.19.33)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -178,7 +178,7 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hashdiff (0.3.2)
-    hashie (3.5.1)
+    hashie (3.5.4)
     hitimes (1.2.4)
     http (2.2.0)
       addressable (~> 2.3)
@@ -202,7 +202,7 @@ GEM
       ruby_dep (~> 1.2)
     lumberjack (1.0.11)
     method_source (0.8.2)
-    minitar (0.5.4)
+    minitar (0.6.1)
     minitest (5.10.1)
     mixlib-archive (0.4.1)
       mixlib-log
@@ -217,7 +217,7 @@ GEM
     mixlib-log (1.7.1)
     mixlib-shellout (2.2.7)
     mixlib-versioning (1.1.0)
-    molinillo (0.5.5)
+    molinillo (0.5.6)
     msgpack (1.0.3)
     multi_json (1.12.1)
     multi_test (0.1.2)

@@ -1,5 +1,20 @@
 # Change Log
 
+## [5.6.3](https://github.com/berkshelf/berkshelf/tree/5.6.3) (2017-02-23)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.2...5.6.3)
+
+**Merged pull requests:**
+
+- Specify appropriate proxies based on URI [\#1679](https://github.com/berkshelf/berkshelf/pull/1679) ([tduffield](https://github.com/tduffield))
+- Remove spork [\#1672](https://github.com/berkshelf/berkshelf/pull/1672) ([biinari](https://github.com/biinari))
+
+## [v5.6.2](https://github.com/berkshelf/berkshelf/tree/v5.6.2) (2017-02-05)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.1...v5.6.2)
+
+**Merged pull requests:**
+
+- fix for including hashie versions before the logger appeared [\#1675](https://github.com/berkshelf/berkshelf/pull/1675) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v5.6.1](https://github.com/berkshelf/berkshelf/tree/v5.6.1) (2017-02-03)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.0...v5.6.1)
 
