@@ -195,16 +195,19 @@ module Berkshelf
     def open_uri_options(target)
       options = {}
       options.merge!(headers)
-      options.merge!(open_uri_proxy_options)
+      options.merge!(open_uri_proxy_options(target))
       options.merge!(ssl_verify_mode: ssl_verify_mode)
-      options.merge!(proxy: URI.parse(target).find_proxy())
     end
 
-    def open_uri_proxy_options
+    def open_uri_proxy_options(target)
+      proxy_uri = URI.parse(target).find_proxy()
+      return {} if proxy_uri.nil?
+
+      proxy = Faraday::ProxyOptions.from(proxy_uri)
       if proxy && proxy[:user] && proxy[:password]
         { proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ] }
       else
-        {}
+        { proxy: proxy[:uri] }
       end
     end
 
