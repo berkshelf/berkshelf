@@ -1,10 +1,18 @@
 # Change Log
 
-## [5.6.3](https://github.com/berkshelf/berkshelf/tree/5.6.3) (2017-02-23)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.2...5.6.3)
+## [5.6.4](https://github.com/berkshelf/berkshelf/tree/5.6.4) (2017-03-14)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.3...5.6.4)
 
 **Merged pull requests:**
 
+- Add Support for Auth Proxy [\#1684](https://github.com/berkshelf/berkshelf/pull/1684) ([tduffield](https://github.com/tduffield))
+
+## [v5.6.3](https://github.com/berkshelf/berkshelf/tree/v5.6.3) (2017-02-23)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.2...v5.6.3)
+
+**Merged pull requests:**
+
+- Release 5.6.3 [\#1681](https://github.com/berkshelf/berkshelf/pull/1681) ([tduffield](https://github.com/tduffield))
 - Specify appropriate proxies based on URI [\#1679](https://github.com/berkshelf/berkshelf/pull/1679) ([tduffield](https://github.com/tduffield))
 - Remove spork [\#1672](https://github.com/berkshelf/berkshelf/pull/1672) ([biinari](https://github.com/biinari))
 
