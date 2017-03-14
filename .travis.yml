@@ -50,7 +50,8 @@ matrix:
         - gem install bundler --version=1.10.6
         # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
         - sudo apt-get update
-        - sudo apt-get -y install squid3
+        - sudo apt-get -y install squid3 apache2-utils
+        - sudo htpasswd -b -c /etc/squid3/passwords proxy proxy
       sudo: required
       env:
         - PROXY_TESTS_DIR=/tmp/proxy_tests
