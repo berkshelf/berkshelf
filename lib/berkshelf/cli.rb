@@ -327,7 +327,30 @@ module Berkshelf
     method_option :berksfile,
       type: :string,
       default: Berkshelf::DEFAULT_FILENAME,
-      desc: "Path to a Berksfile to operate off of.",
+      desc: 'Path to a Berksfile to operate off of.',
+      aliases: '-b',
+      banner: 'PATH'
+    desc "path [COOKBOOK]", "Display system path to the cookbook"
+    def path(name)
+      berksfile = Berksfile.from_file(options[:berksfile])
+
+      # I realize this loads a bunch of shit we may not need, but I want this
+      # to work, and the example of show below does NOT work
+      sources = Berkshelf.ui.mute { berksfile.resolve(berksfile.sources)[:solution] }.sort
+      cookbooks = sources.select { |cookbook| cookbook.cookbook_name == name }
+
+      if cookbooks.empty?
+        Berkshelf.formatter.msg "There are no cookbooks called '#{name}' defined in this Berksfile"
+      else
+        cookbook = Array(cookbooks).first
+        Berkshelf.formatter.msg "#{cookbook.path}"
+      end
+    end
+
+    method_option :berksfile,
+      type: :string,
+      default: Berkshelf::DEFAULT_FILENAME,
+      desc: 'Path to a Berksfile to operate off of.',
       aliases: "-b",
       banner: "PATH"
     desc "show [COOKBOOK]", "Display name, author, copyright, and dependency information about a cookbook"
