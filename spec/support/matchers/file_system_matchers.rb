@@ -41,6 +41,12 @@ module Berkshelf
             end
           end
         end
+
+        def self.method_missing(method_name, *args, &block)
+          if ::File.respond_to?(method_name)
+            ::File.send(method_name, *args, &block)
+          end
+        end
       end
 
       class DirectoryMatcher
