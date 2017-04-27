@@ -2,6 +2,8 @@ require "spec_helper"
 
 describe Berkshelf::SSLPolicy do
   let(:self_signed_crt_path) { File.join(BERKS_SPEC_DATA, "trusted_certs") }
+  let(:self_signed_crt_path_windows_backslashes) { "C:/users/vagrant\\.chef\\trusted_certs" }
+  let(:self_signed_crt_path_windows_forwardslashes) { "C:/users/vagrant/.chef/trusted_certs" }
 
   let(:chef_config) do
     double(Ridley::Chef::Config,
@@ -61,12 +63,25 @@ describe Berkshelf::SSLPolicy do
         end
       end
 
-      context "config is seti but does not exist" do
+      context "config is set but does not exist" do
         before { allow(chef_config).to receive_messages(trusted_certs_dir: "/fake") }
 
         it "defaults to ~/.chef/trusted_certs" do
           expect(subject.trusted_certs_dir).to eq(
             File.join(ENV["HOME"], ".chef", "trusted_certs")
+          )
+        end
+      end
+
+      context 'config has Windows backslashes in trusted_certs_dir path' do
+        before do
+          allow(chef_config).to receive_messages(trusted_certs_dir: self_signed_crt_path_windows_backslashes)
+          allow(File).to receive(:exist?).with(self_signed_crt_path_windows_forwardslashes).and_return(true)
+        end
+
+        it 'replaces the backslashes in trusted_certs_dir from Berkshelf config with forwardslashes' do
+          expect(subject.trusted_certs_dir).to eq(
+            self_signed_crt_path_windows_forwardslashes
           )
         end
       end
