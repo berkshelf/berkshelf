@@ -45,6 +45,7 @@ group :development do
   gem "dep_selector",  ">= 1.0"
   gem "fuubar",        ">= 2.0"
   gem "rspec",         ">= 3.0"
+  gem "rspec-its",     ">= 1.2"
   gem "test-kitchen",  ">= 1.2"
   gem "webmock",       ">= 1.11"
   gem "yard",          ">= 0.8"

@@ -7,6 +7,7 @@ BERKS_SPEC_DATA = File.expand_path("../data", __FILE__)
 require "rspec"
 require "cleanroom/rspec"
 require "webmock/rspec"
+require "rspec/its"
 require "berkshelf/api/rspec" unless windows?
 
 Dir["spec/support/**/*.rb"].each { |f| require File.expand_path(f) }
