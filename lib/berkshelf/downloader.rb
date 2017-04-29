@@ -63,7 +63,12 @@ module Berkshelf
 
       case remote_cookbook.location_type
       when :opscode, :supermarket
-        CommunityREST.new(remote_cookbook.location_path).download(name, version)
+        options = {}
+        if source.type == :artifactory
+          api_key = source.options[:api_key] || ENV['ARTIFACTORY_API_KEY']
+          options[:headers] = {'X-JFrog-Art-Api' => api_key}
+        end
+        CommunityREST.new(remote_cookbook.location_path, options).download(name, version)
       when :chef_server
         # @todo Dynamically get credentials for remote_cookbook.location_path
         ssl_options = { verify: Berkshelf::Config.instance.ssl.verify }
