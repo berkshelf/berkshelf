@@ -6,11 +6,36 @@ module Berkshelf
   class Source
     include Comparable
 
-    attr_accessor :source
+    attr_accessor :type
+    attr_accessor :uri_string
+    attr_accessor :options
 
     # @param [String, Berkshelf::SourceURI] source
-    def initialize(source)
-      @source = source
+    def initialize(source, **options)
+      @options = {timeout: api_timeout, open_timeout: [(api_timeout / 10), 3].max, ssl: {}}
+      @options.update(options)
+      case source
+      when String
+        # source "https://supermarket.chef.io/"
+        @type = :supermarket
+        @uri_string = source
+      when :chef_server
+        # source :chef_server
+        @type = :chef_server
+        @uri_string = options[:url] || Berkshelf::Config.instance.chef.chef_server_url
+        @options[:client_name] ||= Berkshelf::Config.instance.chef.node_name
+        @options[:client_key] ||= Berkshelf::Config.instance.chef.client_key
+      when Hash
+        # source type: uri, option: value, option: value
+        source = source.dup
+        @type, @uri_string = source.shift
+        @options.update(source)
+      end
+      # Set some default SSL options.
+      Berkshelf::Config.instance.ssl.each do |key, value|
+        @options[:ssl][key.to_sym] = value unless @options[:ssl].include?(key.to_sym)
+      end
+      @options[:ssl][:cert_store] = ssl_policy.store if ssl_policy.store
       @universe = nil
     end
 
@@ -19,35 +44,21 @@ module Berkshelf
     end
 
     def api_client
-      @api_client ||= begin
-                        ssl_options = { verify: Berkshelf::Config.instance.ssl.verify }
-                        ssl_options[:cert_store] = ssl_policy.store if ssl_policy.store
-
-                        if source == :chef_server
-                          APIClient.chef_server(
-                            ssl: ssl_options,
-                            timeout: api_timeout,
-                            open_timeout: [(api_timeout / 10), 3].max,
-                            client_name: Berkshelf::Config.instance.chef.node_name,
-                            server_url: Berkshelf::Config.instance.chef.chef_server_url,
-                            client_key: Berkshelf::Config.instance.chef.client_key
-                          )
-                        else
-                          APIClient.new(uri,
-                            timeout: api_timeout,
-                            open_timeout: [(api_timeout / 10), 3].max,
-                            ssl: Berkshelf::Config.instance.ssl
-                                       )
-                        end
-                      end
+       @api_client ||= case type
+                       when :chef_server
+                         APIClient.chef_server(server_url: uri.to_s, **options)
+                       when :artifactory
+                         # Don't accidentally mutate the options.
+                         client_options = options.dup
+                         api_key = client_options.delete(:api_key) || ENV['ARTIFACTORY_API_KEY']
+                         APIClient.new(uri, headers: {'X-Jfrog-Art-Api' => api_key}, **client_options)
+                       else
+                         APIClient.new(uri, **options)
+                       end
     end
 
     def uri
-      @uri ||= if source == :chef_server
-                 SourceURI.parse(Berkshelf::Config.instance.chef.chef_server_url)
-               else
-                 SourceURI.parse(source)
-               end
+      @uri ||= SourceURI.parse(uri_string)
     end
 
     # Forcefully obtain the universe from the API endpoint and assign it to {#universe}. This
@@ -116,20 +127,24 @@ module Berkshelf
     end
 
     def to_s
-      "#{uri}"
+      if type == :supermarket
+        "#{uri}"
+      else
+        "#{type}: #{uri}"
+      end
     end
 
     def inspect
-      "#<#{self.class.name} uri: #{@uri.to_s.inspect}>"
+      "#<#{self.class.name} #{type}: #{uri.to_s.inspect}, #{options.map {|k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
     end
 
     def hash
-      @uri.host.hash
+      [type, uri_string, options].hash
     end
 
     def ==(other)
       return false unless other.is_a?(self.class)
-      uri == other.uri
+      type == other.type && uri == other.uri
     end
 
     private

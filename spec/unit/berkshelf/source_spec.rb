@@ -2,9 +2,146 @@ require "spec_helper"
 
 module Berkshelf
   describe Source do
-    describe "#universe"
-    describe "#cookbook"
-    describe "#versions"
+    let(:arguments) { [] }
+    let(:config) { Config.new }
+    subject(:instance) { described_class.new(*arguments) }
+    before do
+      allow(Berkshelf::Config).to receive(:instance).and_return(config)
+    end
+
+    describe "#type" do
+      subject { instance.type }
+
+      context "with a string argument" do
+        let(:arguments) { ['https://example.com'] }
+        it { is_expected.to eq :supermarket }
+      end
+
+      context "with a string argument and options" do
+        let(:arguments) { ['https://example.com', {key: 'value'}] }
+        it { is_expected.to eq :supermarket }
+      end
+
+      context "with a symbol argument" do
+        let(:arguments) { [:chef_server] }
+        it { is_expected.to eq :chef_server }
+      end
+
+      context "with a symbol argument and options" do
+        let(:arguments) { [:chef_server, {key: 'value'}] }
+        it { is_expected.to eq :chef_server }
+      end
+
+      context "with a hash argument" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}] }
+        it { is_expected.to eq :artifactory }
+      end
+
+      context "with a hash argument and connected options" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual', key: 'value'}] }
+        it { is_expected.to eq :artifactory }
+      end
+
+      context "with a hash argument and disconnected options" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}, {key: 'value'}] }
+        it { is_expected.to eq :artifactory }
+      end
+    end
+
+    describe "#uri" do
+      subject { instance.uri.to_s }
+
+      context "with a string argument" do
+        let(:arguments) { ['https://example.com'] }
+        it { is_expected.to eq 'https://example.com' }
+      end
+
+      context "with a string argument and options" do
+        let(:arguments) { ['https://example.com', {key: 'value'}] }
+        it { is_expected.to eq 'https://example.com' }
+      end
+
+      context "with a symbol argument" do
+        let(:arguments) { [:chef_server] }
+        before { config.chef.chef_server_url = 'https://chefserver/' }
+        it { is_expected.to eq 'https://chefserver/' }
+      end
+
+      context "with a symbol argument and options" do
+        let(:arguments) { [:chef_server, {key: 'value'}] }
+        before { config.chef.chef_server_url = 'https://chefserver/' }
+        it { is_expected.to eq 'https://chefserver/' }
+      end
+
+      context "with a hash argument" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}] }
+        it { is_expected.to eq 'https://example.com/api/chef/chef-virtual' }
+      end
+
+      context "with a hash argument and connected options" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual', key: 'value'}] }
+        it { is_expected.to eq 'https://example.com/api/chef/chef-virtual' }
+      end
+
+      context "with a hash argument and disconnected options" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}, {key: 'value'}] }
+        it { is_expected.to eq 'https://example.com/api/chef/chef-virtual' }
+      end
+
+      context "with an invalid URI" do
+        let(:arguments) { ['ftp://example.com'] }
+        it { expect { subject }.to raise_error InvalidSourceURI }
+      end
+    end
+
+    describe "#options" do
+      subject { instance.options }
+
+      context "with a string argument" do
+        let(:arguments) { ['https://example.com'] }
+
+        it { is_expected.to be_a(Hash) }
+        # Check all baseline values.
+        its([:timeout]) { is_expected.to eq 30 }
+        its([:open_timeout]) { is_expected.to eq 3 }
+        its([:ssl, :verify]) { is_expected.to be true }
+        its([:ssl, :ca_file]) { is_expected.to be_nil }
+        its([:ssl, :ca_path]) { is_expected.to be_nil }
+        its([:ssl, :client_cert]) { is_expected.to be_nil }
+        its([:ssl, :client_key]) { is_expected.to be_nil }
+        its([:ssl, :cert_store]) { is_expected.to be_a(OpenSSL::X509::Store) }
+      end
+
+      context "with a string argument and options" do
+        let(:arguments) { ['https://example.com', {key: 'value'}] }
+        its([:key]) { is_expected.to eq 'value' }
+      end
+
+      context "with a symbol argument" do
+        let(:arguments) { [:chef_server] }
+        it { is_expected.to be_a(Hash) }
+      end
+
+      context "with a symbol argument and options" do
+        let(:arguments) { [:chef_server, {key: 'value'}] }
+        its([:key]) { is_expected.to eq 'value' }
+      end
+
+      context "with a hash argument" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}] }
+        it { is_expected.to be_a(Hash) }
+      end
+
+      context "with a hash argument and connected options" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual', key: 'value'}] }
+        its([:key]) { is_expected.to eq 'value' }
+      end
+
+      context "with a hash argument and disconnected options" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}, {key: 'value'}] }
+        its([:key]) { is_expected.to eq 'value' }
+      end
+    end
 
     describe "#==" do
       it "is the same if the uri matches" do
