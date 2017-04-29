@@ -38,21 +38,47 @@ module Berkshelf
       let(:version) { "1.0.0" }
 
       it "supports the 'opscode' location type" do
+        allow(source).to receive(:type) { :supermarket }
         allow(remote_cookbook).to receive(:location_type) { :opscode }
         allow(remote_cookbook).to receive(:location_path) { "http://api.opscode.com" }
         rest = double("community-rest")
-        expect(CommunityREST).to receive(:new).with("http://api.opscode.com") { rest }
+        expect(CommunityREST).to receive(:new).with("http://api.opscode.com", {}) { rest }
         expect(rest).to receive(:download).with(name, version)
         subject.try_download(source, name, version)
       end
 
       it "supports the 'supermarket' location type" do
+        allow(source).to receive(:type) { :supermarket }
         allow(remote_cookbook).to receive(:location_type) { :supermarket }
         allow(remote_cookbook).to receive(:location_path) { "http://api.supermarket.com" }
         rest = double("community-rest")
-        expect(CommunityREST).to receive(:new).with("http://api.supermarket.com") { rest }
+        expect(CommunityREST).to receive(:new).with("http://api.supermarket.com", {}) { rest }
         expect(rest).to receive(:download).with(name, version)
         subject.try_download(source, name, version)
+      end
+
+      context "with an artifactory source" do
+        it "supports the 'opscode' location type" do
+          allow(source).to receive(:type) { :artifactory }
+          allow(source).to receive(:options) { {api_key: 'secret'} }
+          allow(remote_cookbook).to receive(:location_type) { :opscode }
+          allow(remote_cookbook).to receive(:location_path) { "http://artifactory/" }
+          rest = double("community-rest")
+          expect(CommunityREST).to receive(:new).with("http://artifactory/", {headers: {'X-Jfrog-Art-Api' => 'secret'}}) { rest }
+          expect(rest).to receive(:download).with(name, version)
+          subject.try_download(source, name, version)
+        end
+
+        it "supports the 'supermarket' location type" do
+          allow(source).to receive(:type) { :artifactory }
+          allow(source).to receive(:options) { {api_key: 'secret'} }
+          allow(remote_cookbook).to receive(:location_type) { :supermarket }
+          allow(remote_cookbook).to receive(:location_path) { "http://artifactory/" }
+          rest = double("community-rest")
+          expect(CommunityREST).to receive(:new).with("http://artifactory/", {headers: {'X-Jfrog-Art-Api' => 'secret'}}) { rest }
+          expect(rest).to receive(:download).with(name, version)
+          subject.try_download(source, name, version)
+        end
       end
 
       describe "chef_server location type" do
@@ -91,6 +117,7 @@ module Berkshelf
           allow(subject).to receive(:ssl_policy).and_return(ssl_policy)
           allow(remote_cookbook).to receive(:location_type) { :chef_server }
           allow(remote_cookbook).to receive(:location_path) { chef_server_url }
+          allow(source).to receive(:options) { {read_timeout: 30, open_timeout: 3, ssl: {verify: true, cert_store: cert_store}} }
         end
 
         it "uses the berkshelf config and provides a custom cert_store" do
