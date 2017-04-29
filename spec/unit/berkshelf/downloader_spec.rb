@@ -133,6 +133,44 @@ module Berkshelf
           expect(Ridley).to receive(:open).with(credentials) { ridley_client }
           subject.try_download(source, name, version)
         end
+
+        context "with a source option for client_name" do
+          before do
+            allow(source).to receive(:options) { {client_name: "other-client", read_timeout: 30, open_timeout: 3, ssl: {verify: true, cert_store: cert_store}} }
+          end
+          it "uses the override" do
+            credentials = {
+              server_url: chef_server_url,
+              client_name: "other-client",
+              client_key: chef_config.client_key,
+              ssl: {
+                verify: berkshelf_config.ssl.verify,
+                cert_store: cert_store,
+              },
+            }
+            expect(Ridley).to receive(:open).with(credentials) { ridley_client }
+            subject.try_download(source, name, version)
+          end
+        end
+
+        context "with a source option for client_key" do
+          before do
+            allow(source).to receive(:options) { {client_key: "other-key", read_timeout: 30, open_timeout: 3, ssl: {verify: true, cert_store: cert_store}} }
+          end
+          it "uses the override" do
+            credentials = {
+              server_url: chef_server_url,
+              client_name: chef_config.node_name,
+              client_key: "other-key",
+              ssl: {
+                verify: berkshelf_config.ssl.verify,
+                cert_store: cert_store,
+              },
+            }
+            expect(Ridley).to receive(:open).with(credentials) { ridley_client }
+            subject.try_download(source, name, version)
+          end
+        end
       end
 
       it "supports the 'file_store' location type" do
