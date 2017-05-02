@@ -115,6 +115,11 @@ module Berkshelf
     def find(name, version)
       response = get("cookbooks/#{name}/versions/#{self.class.uri_escape_version(version)}")
 
+      # Artifactory responds with a 200 and blank body for unknown cookbooks.
+      if response.status == 200 && response.body.to_s == ''
+        response.env.status = 404
+      end
+
       case response.status
       when (200..299)
         response.body
@@ -130,6 +135,11 @@ module Berkshelf
     # @return [String]
     def latest_version(name)
       response = get("cookbooks/#{name}")
+
+      # Artifactory responds with a 200 and blank body for unknown cookbooks.
+      if response.status == 200 && response.body.to_s == ''
+        response.env.status = 404
+      end
 
       case response.status
       when (200..299)
