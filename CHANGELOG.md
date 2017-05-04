@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.6.5](https://github.com/berkshelf/berkshelf/tree/5.6.4) (2017-05-04)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.4...5.6.5)
+
+**Merged pull requests:**
+
+- Handle Windows backslashes in trusted_certs path [\#1689](https://github.com/berkshelf/berkshelf/pull/1689) ([jeremymv2](https://github.com/jeremymv2))
+
 ## [5.6.4](https://github.com/berkshelf/berkshelf/tree/5.6.4) (2017-03-14)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.3...5.6.4)
 

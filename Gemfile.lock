@@ -20,7 +20,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (5.6.4)
+    berkshelf (5.6.5)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (>= 2.0.2, < 4.0)
       buff-config (~> 2.0)
@@ -46,7 +46,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.5.0)
+    addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
     archive (0.0.6)
       ffi (~> 1.9.3)
@@ -80,7 +80,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (12.19.33)
+    chef-config (13.0.118)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -178,7 +178,7 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hashdiff (0.3.2)
-    hashie (3.5.4)
+    hashie (3.5.5)
     hitimes (1.2.4)
     http (2.2.0)
       addressable (~> 2.3)
@@ -237,7 +237,7 @@ GEM
     notiffany (0.1.1)
       nenv (~> 0.1)
       shellany (~> 0.0)
-    octokit (4.6.2)
+    octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     pry (0.10.4)
       coderay (~> 1.1.0)
