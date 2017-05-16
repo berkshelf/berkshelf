@@ -23,13 +23,19 @@ module Berkshelf
         # source :chef_server
         @type = :chef_server
         @uri_string = options[:url] || Berkshelf::Config.instance.chef.chef_server_url
-        @options[:client_name] ||= Berkshelf::Config.instance.chef.node_name
-        @options[:client_key] ||= Berkshelf::Config.instance.chef.client_key
       when Hash
         # source type: uri, option: value, option: value
         source = source.dup
         @type, @uri_string = source.shift
         @options.update(source)
+      end
+      # Default options for some source types.
+      case @type
+      when :chef_server
+        @options[:client_name] ||= Berkshelf::Config.instance.chef.node_name
+        @options[:client_key] ||= Berkshelf::Config.instance.chef.client_key
+      when :artifactory
+        @options[:api_key] ||= Berkshelf::Config.instance.chef.artifactory_api_key || ENV['ARTIFACTORY_API_KEY']
       end
       # Set some default SSL options.
       Berkshelf::Config.instance.ssl.each do |key, value|
@@ -50,7 +56,7 @@ module Berkshelf
                        when :artifactory
                          # Don't accidentally mutate the options.
                          client_options = options.dup
-                         api_key = client_options.delete(:api_key) || ENV['ARTIFACTORY_API_KEY']
+                         api_key = client_options.delete(:api_key)
                          APIClient.new(uri, headers: {'X-Jfrog-Art-Api' => api_key}, **client_options)
                        else
                          APIClient.new(uri, **options)
