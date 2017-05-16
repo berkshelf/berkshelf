@@ -63,17 +63,19 @@ module Berkshelf
 
       case remote_cookbook.location_type
       when :opscode, :supermarket
-        CommunityREST.new(remote_cookbook.location_path).download(name, version)
+        options = {}
+        if source.type == :artifactory
+          api_key = source.options[:api_key] || ENV['ARTIFACTORY_API_KEY']
+          options[:headers] = {'X-Jfrog-Art-Api' => api_key}
+        end
+        CommunityREST.new(remote_cookbook.location_path, options).download(name, version)
       when :chef_server
         # @todo Dynamically get credentials for remote_cookbook.location_path
-        ssl_options = { verify: Berkshelf::Config.instance.ssl.verify }
-        ssl_options[:cert_store] = ssl_policy.store if ssl_policy.store
-
         credentials = {
           server_url: remote_cookbook.location_path,
-          client_name: Berkshelf::Config.instance.chef.node_name,
-          client_key: Berkshelf::Config.instance.chef.client_key,
-          ssl: ssl_options,
+          client_name: source.options[:client_name] || Berkshelf::Config.instance.chef.node_name,
+          client_key: source.options[:client_key] || Berkshelf::Config.instance.chef.client_key,
+          ssl: source.options[:ssl],
         }
         # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
         # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99

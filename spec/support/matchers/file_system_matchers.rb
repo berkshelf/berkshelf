@@ -23,11 +23,12 @@ module Berkshelf
         end
 
         def matches?(root)
-          unless root.join(@name).exist?
+          path = Pathname.glob(root.join(@name)).first
+          unless path.exist?
             throw :failure, root.join(@name)
           end
 
-          contents = File.read(root.join(@name))
+          contents = File.read(path)
 
           @contents.each do |string|
             unless contents.include?(string)

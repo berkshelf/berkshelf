@@ -191,11 +191,15 @@ module Berkshelf
     # @param [String] api_url
     #   url for the api to add
     #
+    # @param [Hash] options
+    #   extra source options
+    #
     # @raise [InvalidSourceURI]
     #
     # @return [Array<Source>]
-    def source(api_url)
-      @sources[api_url] = Source.new(api_url)
+    def source(api_url, **options)
+      source = Source.new(api_url, **options)
+      @sources[source.uri.to_s] = source
     end
     expose :source
 

@@ -44,7 +44,7 @@ Then /^the cookbook store should have the cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version|
     expect(cookbook_store.storage_path).to have_structure {
       directory "#{name}-#{version}" do
-        file "metadata.rb" do
+        file "metadata.{rb,json}" do
           contains version
         end
       end
@@ -56,7 +56,7 @@ Then /^the cookbook store should have the git cookbooks:$/ do |cookbooks|
   cookbooks.raw.each do |name, version, sha1|
     expect(cookbook_store.storage_path).to have_structure {
       directory "#{name}-#{sha1}" do
-        file "metadata.rb" do
+        file "metadata.{rb,json}" do
           contains version
         end
       end
