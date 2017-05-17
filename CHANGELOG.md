@@ -1,5 +1,10 @@
 # Change Log
 
+## [6.0.1](https://github.com/berkshelf/berkshelf/tree/6.0.1) (2017-05-17)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.0.0...6.0.1)
+
+- Relax ruby dependency to 2.3.1
+
 ## [6.0.0](https://github.com/berkshelf/berkshelf/tree/6.0.0) (2017-05-17)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.5...6.0.0)
 
