@@ -141,6 +141,12 @@ module Berkshelf
         let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}, {key: 'value'}] }
         its([:key]) { is_expected.to eq 'value' }
       end
+
+      context "with an artifactory source and the API key in the Chef config" do
+        let(:arguments) { [{artifactory: 'https://example.com/api/chef/chef-virtual'}] }
+        before { config.chef.artifactory_api_key = 'secret' }
+        its([:api_key]) { is_expected.to eq 'secret' }
+      end
     end
 
     describe "#==" do
