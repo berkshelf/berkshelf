@@ -116,7 +116,7 @@ module Berkshelf
       response = get("cookbooks/#{name}/versions/#{self.class.uri_escape_version(version)}")
 
       # Artifactory responds with a 200 and blank body for unknown cookbooks.
-      if response.status == 200 && response.body.to_s == ''
+      if response.status == 200 && response.body.to_s == ""
         response.env.status = 404
       end
 
@@ -137,7 +137,7 @@ module Berkshelf
       response = get("cookbooks/#{name}")
 
       # Artifactory responds with a 200 and blank body for unknown cookbooks.
-      if response.status == 200 && response.body.to_s == ''
+      if response.status == 200 && response.body.to_s == ""
         response.env.status = 404
       end
 

@@ -25,20 +25,24 @@ module Berkshelf
             shell_out "git add ."
             shell_out "git commit -am \"A commit.\""
 
-            options[:tags].each do |tag|
-              shell_out "echo \"#{tag}\" > content_file"
-              shell_out "git add content_file"
-              shell_out "git commit -am \"#{tag} content\""
-              shell_out "git tag \"#{tag}\""
-            end if options[:tags]
+            if options[:tags]
+              options[:tags].each do |tag|
+                shell_out "echo \"#{tag}\" > content_file"
+                shell_out "git add content_file"
+                shell_out "git commit -am \"#{tag} content\""
+                shell_out "git tag \"#{tag}\""
+              end
+            end
 
-            options[:branches].each do |branch|
-              shell_out "git checkout -b #{branch} master"
-              shell_out "echo \"#{branch}\" > content_file"
-              shell_out "git add content_file"
-              shell_out "git commit -am \"#{branch} content\""
-              shell_out "git checkout master"
-            end if options[:branches]
+            if options[:branches]
+              options[:branches].each do |branch|
+                shell_out "git checkout -b #{branch} master"
+                shell_out "echo \"#{branch}\" > content_file"
+                shell_out "git add content_file"
+                shell_out "git commit -am \"#{branch} content\""
+                shell_out "git checkout master"
+              end
+            end
           end
         end
 

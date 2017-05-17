@@ -22,7 +22,7 @@ module Berkshelf
     end
 
     def trusted_certs_dir
-      config_dir = Berkshelf.config.chef.trusted_certs_dir.to_s.tr('\\', '/')
+      config_dir = Berkshelf.config.chef.trusted_certs_dir.to_s.tr('\\', "/")
       if config_dir.empty? || !::File.exist?(config_dir)
         File.join(ENV["HOME"], ".chef", "trusted_certs")
       else

@@ -12,7 +12,7 @@ module Berkshelf
 
     # @param [String, Berkshelf::SourceURI] source
     def initialize(source, **options)
-      @options = {timeout: api_timeout, open_timeout: [(api_timeout / 10), 3].max, ssl: {}}
+      @options = { timeout: api_timeout, open_timeout: [(api_timeout / 10), 3].max, ssl: {} }
       @options.update(options)
       case source
       when String
@@ -35,7 +35,7 @@ module Berkshelf
         @options[:client_name] ||= Berkshelf::Config.instance.chef.node_name
         @options[:client_key] ||= Berkshelf::Config.instance.chef.client_key
       when :artifactory
-        @options[:api_key] ||= Berkshelf::Config.instance.chef.artifactory_api_key || ENV['ARTIFACTORY_API_KEY']
+        @options[:api_key] ||= Berkshelf::Config.instance.chef.artifactory_api_key || ENV["ARTIFACTORY_API_KEY"]
       end
       # Set some default SSL options.
       Berkshelf::Config.instance.ssl.each do |key, value|
@@ -50,17 +50,17 @@ module Berkshelf
     end
 
     def api_client
-       @api_client ||= case type
-                       when :chef_server
-                         APIClient.chef_server(server_url: uri.to_s, **options)
-                       when :artifactory
-                         # Don't accidentally mutate the options.
-                         client_options = options.dup
-                         api_key = client_options.delete(:api_key)
-                         APIClient.new(uri, headers: {'X-Jfrog-Art-Api' => api_key}, **client_options)
-                       else
-                         APIClient.new(uri, **options)
-                       end
+      @api_client ||= case type
+                      when :chef_server
+                        APIClient.chef_server(server_url: uri.to_s, **options)
+                      when :artifactory
+                        # Don't accidentally mutate the options.
+                        client_options = options.dup
+                        api_key = client_options.delete(:api_key)
+                        APIClient.new(uri, headers: { "X-Jfrog-Art-Api" => api_key }, **client_options)
+                      else
+                        APIClient.new(uri, **options)
+                      end
     end
 
     def uri
@@ -141,7 +141,7 @@ module Berkshelf
     end
 
     def inspect
-      "#<#{self.class.name} #{type}: #{uri.to_s.inspect}, #{options.map {|k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
+      "#<#{self.class.name} #{type}: #{uri.to_s.inspect}, #{options.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
     end
 
     def hash

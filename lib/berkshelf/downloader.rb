@@ -65,7 +65,7 @@ module Berkshelf
       when :opscode, :supermarket
         options = {}
         if source.type == :artifactory
-          options[:headers] = {'X-Jfrog-Art-Api' => source.options[:api_key]}
+          options[:headers] = { "X-Jfrog-Art-Api" => source.options[:api_key] }
         end
         CommunityREST.new(remote_cookbook.location_path, options).download(name, version)
       when :chef_server

@@ -22,7 +22,7 @@ group :guard do
       gem "terminal-notifier-guard", "~> 1.5.3", require: false
     end rescue Errno::ENOENT
   end
-  install_if -> {RbConfig::CONFIG["target_os"] =~ /linux/i } do
+  install_if -> { RbConfig::CONFIG["target_os"] =~ /linux/i } do
     gem "libnotify",  "~> 0.8.0", require: false
     gem "rb-inotify", require: false
   end
