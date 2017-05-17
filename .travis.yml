@@ -38,13 +38,13 @@ before_script:
   - git config --global user.name "Berkshelf"
 matrix:
   include:
-    - rvm: 2.2.5
-    - rvm: 2.3.1
+    - rvm: 2.3.3
+    - rvm: 2.4.1
     - rvm: ruby-head
-    - rvm: 2.3.1
+    - rvm: 2.4.1
       before_install:
         rm Gemfile.lock
-    - rvm: 2.2.5
+    - rvm: 2.4.1
       before_install:
         # Failures in the berkshelf-api gemspec were happening with bundler 1.8
         - gem install bundler --version=1.10.6
