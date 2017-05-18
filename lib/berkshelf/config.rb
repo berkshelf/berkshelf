@@ -110,6 +110,9 @@ module Berkshelf
     attribute "chef.trusted_certs_dir",
       type: String,
       default: Berkshelf.chef_config.trusted_certs_dir
+    attribute "chef.artifactory_api_key",
+      type: String,
+      default: Berkshelf.chef_config.artifactory_api_key
     attribute "cookbook.copyright",
       type: String,
       default: Berkshelf.chef_config.cookbook_copyright

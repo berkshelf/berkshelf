@@ -12,6 +12,7 @@ describe Berkshelf::SSLPolicy do
       chef_server_url: "http://configured-chef-server/",
       validation_client_name: "validator",
       validation_key: "validator.pem",
+      artifactory_api_key: "secret",
       cookbook_copyright: "user",
       cookbook_email: "user@example.com",
       cookbook_license: "apachev2",
