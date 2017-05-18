@@ -39,7 +39,7 @@ Given /^I have a Berksfile at "(.+)" pointing at the local Berkshelf API with:$/
 end
 
 Given /I have a Berksfile pointing at an( authenticated)? Artifactory server with:/ do |authenticated, content|
-  if ENV['TEST_BERKSHELF_ARTIFACTORY']
+  if ENV["TEST_BERKSHELF_ARTIFACTORY"]
     steps %Q{
       Given a file named "Berksfile" with:
         """

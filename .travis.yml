@@ -43,7 +43,13 @@ matrix:
     - rvm: ruby-head
     - rvm: 2.4.1
       before_install:
-        rm Gemfile.lock
+        - gem update --system
+        - gem install bundler
+        - rm Gemfile.lock
+    - rvm: 2.3.3
+      env:
+        CHEFSTYLE: 1
+      script: bundle exec rake style
     - rvm: 2.4.1
       before_install:
         # Failures in the berkshelf-api gemspec were happening with bundler 1.8
