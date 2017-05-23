@@ -14,7 +14,7 @@ module Berkshelf
 
     def universe
       Dir.entries(cookbooks_path).sort.each_with_object([]) do |entry, cookbooks|
-        next if entry[0] == '.' # Skip hidden folders.
+        next if entry[0] == "." # Skip hidden folders.
         entry_path = "#{cookbooks_path}/#{entry}"
         next unless File.directory?(entry_path) # Skip non-dirs.
         cookbook = begin
@@ -25,9 +25,9 @@ module Berkshelf
         cookbooks << Berkshelf::APIClient::RemoteCookbook.new(
           cookbook.cookbook_name,
           cookbook.version,
-          location_type: 'file_store',
+          location_type: "file_store",
           location_path: entry_path,
-          dependencies: cookbook.metadata.dependencies,
+          dependencies: cookbook.metadata.dependencies
         )
       end
     end
