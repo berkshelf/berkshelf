@@ -19,7 +19,9 @@ module Berkshelf
     def install(source, cookbook)
       message = "Installing #{cookbook.name} (#{cookbook.version})"
 
-      unless source.default?
+      if source.type == :chef_repo
+        message << " from #{cookbook.location_path}"
+      elsif !source.default?
         message << " from #{source}"
         message << " ([#{cookbook.location_type}] #{cookbook.location_path})"
       end
