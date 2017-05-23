@@ -1,4 +1,4 @@
-require "open-uri"
+require "berkshelf/streaming_file_adapter"
 require "retryable"
 require "mixlib/archive"
 
@@ -80,7 +80,7 @@ module Berkshelf
           interval: @retry_interval,
           exceptions: [Faraday::Error::TimeoutError]
 
-        b.adapter :httpclient
+        b.use Berkshelf::StreamingFileAdapter
       end
 
       super(api_uri, options)
@@ -189,44 +189,13 @@ module Berkshelf
       local = Tempfile.new("community-rest-stream")
       local.binmode
 
-      Retryable.retryable(tries: retries, on: OpenURI::HTTPError, sleep: retry_interval) do
-        open(target, "rb", open_uri_options(target)) do |remote|
-          local.write(remote.read)
-        end
+      Retryable.retryable(tries: retries, on: Faraday::Error::ConnectionFailed, sleep: retry_interval) do
+        get(target, nil, streaming_file: local)
       end
 
       local
     ensure
       local.close(false) unless local.nil?
-    end
-
-    private
-
-    def open_uri_options(target)
-      options = {}
-      options.merge!(headers)
-      options.merge!(open_uri_proxy_options(target))
-      options.merge!(ssl_verify_mode: ssl_verify_mode)
-    end
-
-    def open_uri_proxy_options(target)
-      proxy_uri = URI.parse(target).find_proxy()
-      return {} if proxy_uri.nil?
-
-      proxy = Faraday::ProxyOptions.from(proxy_uri)
-      if proxy && proxy[:user] && proxy[:password]
-        { proxy_http_basic_authentication: [ proxy[:uri], proxy[:user], proxy[:password] ] }
-      else
-        { proxy: proxy[:uri] }
-      end
-    end
-
-    def ssl_verify_mode
-      if Berkshelf::Config.instance.ssl.verify.nil? || Berkshelf::Config.instance.ssl.verify
-        OpenSSL::SSL::VERIFY_PEER
-      else
-        OpenSSL::SSL::VERIFY_NONE
-      end
     end
   end
 end
