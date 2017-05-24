@@ -262,7 +262,7 @@ module Berkshelf
       banner: "URL"
     desc "search NAME", "Search the remote source for cookbooks matching the partial name"
     def search(name)
-      source = Source.new(options[:source])
+      source = Source.new(nil, options[:source])
       cookbooks = source.search(name)
       Berkshelf.formatter.search(cookbooks)
     end

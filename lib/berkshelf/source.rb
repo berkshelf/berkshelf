@@ -41,7 +41,7 @@ module Berkshelf
       when :chef_repo
         @options[:path] = uri_string
         # If given a relative path, expand it against the Berksfile's folder.
-        @options[:path] = File.expand_path(@options[:path], File.dirname(berksfile.filepath))
+        @options[:path] = File.expand_path(@options[:path], File.dirname(berksfile ? berksfile.filepath : Dir.pwd))
         # Lie because this won't actually parse as a URI.
         @uri_string = "file://#{@options[:path]}"
       end
