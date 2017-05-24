@@ -454,6 +454,14 @@ EOF
     end
     tasks["cookbook"].options = Berkshelf::CookbookGenerator.class_options
 
+    def self.handle_no_command_error(command, has_namespace = $thor_runner) #:nodoc:
+      if Berkshelf.which("berks-#{command}")
+        Kernel.exec("berks-#{command}", *ARGV.drop(1))
+      else
+        super
+      end
+    end
+
     private
 
       # Print a list of the given cookbooks. This is used by various
