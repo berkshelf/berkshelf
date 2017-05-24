@@ -96,7 +96,7 @@ module Berkshelf
 
       context "with a chef_repo source" do
         let(:arguments) { [{ chef_repo: "." }] }
-        it { is_expected.to eq "file:///test" }
+        it { is_expected.to eq(windows? ? "file://C/test" : "file:///test") }
       end
     end
 
@@ -156,7 +156,7 @@ module Berkshelf
 
       context "with a chef_repo source" do
         let(:arguments) { [{ chef_repo: "." }] }
-        its([:path]) { is_expected.to eq "/test" }
+        its([:path]) { is_expected.to eq(windows? ? "C:/test" : "/test") }
       end
     end
 
