@@ -1,0 +1,11 @@
+LineLength:
+  Max: 200
+
+HashSyntax:
+  EnforcedStyle: ruby19
+
+SingleSpaceBeforeFirstArg:
+  Enabled: false
+
+TrailingComma:
+  Enabled: false
