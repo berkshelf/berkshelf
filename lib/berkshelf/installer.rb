@@ -134,7 +134,10 @@ module Berkshelf
         build_universe
       end
 
-      cookbooks = dependencies.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }.map(&:value)
+      futures = dependencies.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }
+      cookbooks = futures.map(&:value)
+      rejects = futures.select(&:rejected?)
+      raise rejects.first.reason unless rejects.empty?
 
       [dependencies, cookbooks]
     end
@@ -175,7 +178,10 @@ module Berkshelf
 
       Berkshelf.log.debug "  Starting resolution..."
 
-      cookbooks = resolver.resolve.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }.map(&:value)
+      futures = resolver.resolve.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }
+      cookbooks = futures.map(&:value)
+      rejects = futures.select(&:rejected?)
+      raise rejects.first.reason unless rejects.empty?
 
       [dependencies, cookbooks]
     end
