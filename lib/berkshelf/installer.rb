@@ -1,5 +1,6 @@
 require "berkshelf/api-client"
 require "concurrent/executors"
+require "concurrent/future"
 
 module Berkshelf
   class Installer
@@ -11,7 +12,7 @@ module Berkshelf
     def initialize(berksfile)
       @berksfile  = berksfile
       @lockfile   = berksfile.lockfile
-      @pool       = Concurrent::FixedThreadPool.new([Concurrent.processor_count - 1, 1].max)
+      @pool       = Concurrent::FixedThreadPool.new([Concurrent.processor_count - 1, 2].max)
       @worker     = Worker.new(berksfile)
     end
 
@@ -174,7 +175,7 @@ module Berkshelf
 
       Berkshelf.log.debug "  Starting resolution..."
 
-      cookbooks = resolver.resolve.sort.map { |dependency| worker.future.install(dependency) }.map(&:value)
+      cookbooks = resolver.resolve.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }.map(&:value)
 
       [dependencies, cookbooks]
     end
