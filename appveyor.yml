@@ -16,7 +16,7 @@ branches:
 #   - vendor/bundle
 
 install:
-  - ps: iex (irm https://omnitruck.chef.io/install.ps1); Install-Project -Project chefdk -channel current
+  - ps: iex (irm https://omnitruck.chef.io/install.ps1); Install-Project -Project chefdk -channel stable
   - bundle config --local path vendor/bundle
   - SET CI=true
   - SET BUNDLE_WITHOUT=guard:changelog:style

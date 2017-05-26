@@ -1,4 +1,6 @@
 require "berkshelf/api-client"
+require "concurrent/executors"
+require "concurrent/future"
 
 module Berkshelf
   class Installer
@@ -10,7 +12,8 @@ module Berkshelf
     def initialize(berksfile)
       @berksfile  = berksfile
       @lockfile   = berksfile.lockfile
-      @worker     = Worker.pool(size: [(Celluloid.cores.to_i - 1), 2].max, args: [berksfile])
+      @pool       = Concurrent::FixedThreadPool.new([Concurrent.processor_count - 1, 2].max)
+      @worker     = Worker.new(berksfile)
     end
 
     def build_universe
@@ -61,10 +64,9 @@ module Berkshelf
     private
 
     attr_reader :worker
+    attr_reader :pool
 
     class Worker
-      include Celluloid
-
       attr_reader :berksfile
       attr_reader :downloader
 
@@ -132,7 +134,10 @@ module Berkshelf
         build_universe
       end
 
-      cookbooks = dependencies.sort.map { |dependency| worker.future.install(dependency) }.map(&:value)
+      futures = dependencies.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }
+      cookbooks = futures.map(&:value)
+      rejects = futures.select(&:rejected?)
+      raise rejects.first.reason unless rejects.empty?
 
       [dependencies, cookbooks]
     end
@@ -173,7 +178,10 @@ module Berkshelf
 
       Berkshelf.log.debug "  Starting resolution..."
 
-      cookbooks = resolver.resolve.sort.map { |dependency| worker.future.install(dependency) }.map(&:value)
+      futures = resolver.resolve.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }
+      cookbooks = futures.map(&:value)
+      rejects = futures.select(&:rejected?)
+      raise rejects.first.reason unless rejects.empty?
 
       [dependencies, cookbooks]
     end
