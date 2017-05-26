@@ -1,4 +1,5 @@
 require "berkshelf/api-client"
+require "concurrent/executors"
 
 module Berkshelf
   class Installer
@@ -10,7 +11,8 @@ module Berkshelf
     def initialize(berksfile)
       @berksfile  = berksfile
       @lockfile   = berksfile.lockfile
-      @worker     = Worker.pool(size: [(Celluloid.cores.to_i - 1), 2].max, args: [berksfile])
+      @pool       = Concurrent::FixedThreadPool.new([Concurrent.processor_count - 1, 1].max)
+      @worker     = Worker.new(berksfile)
     end
 
     def build_universe
@@ -61,10 +63,9 @@ module Berkshelf
     private
 
     attr_reader :worker
+    attr_reader :pool
 
     class Worker
-      include Celluloid
-
       attr_reader :berksfile
       attr_reader :downloader
 
@@ -132,7 +133,7 @@ module Berkshelf
         build_universe
       end
 
-      cookbooks = dependencies.sort.map { |dependency| worker.future.install(dependency) }.map(&:value)
+      cookbooks = dependencies.sort.map { |dependency| Concurrent::Future.execute(executor: pool) { worker.install(dependency) } }.map(&:value)
 
       [dependencies, cookbooks]
     end

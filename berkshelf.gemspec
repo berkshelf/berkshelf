@@ -45,4 +45,5 @@ Gem::Specification.new do |s|
   s.add_dependency "thor",                 "~> 0.19", "< 0.19.2"
   s.add_dependency "octokit",              "~> 4.0"
   s.add_dependency "mixlib-archive",       "~> 0.4"
+  s.add_dependency "concurrent-ruby",      "~> 1.0"
 end
