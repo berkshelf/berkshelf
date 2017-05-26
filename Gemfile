@@ -6,33 +6,6 @@ group :changelog do
   gem "github_changelog_generator"
 end
 
-group :guard do
-  gem "coolline"
-  gem "guard"
-  gem "guard-cucumber"
-  gem "guard-rspec"
-
-  require "rbconfig"
-
-  install_if -> { RbConfig::CONFIG["target_os"] =~ /darwin/i } do
-    gem "growl", require: false
-    gem "rb-fsevent", require: false
-
-    install_if -> { `uname`.strip == "Darwin" && `sw_vers -productVersion`.strip >= "10.8" } do
-      gem "terminal-notifier-guard", "~> 1.5.3", require: false
-    end rescue Errno::ENOENT
-  end
-  install_if -> { RbConfig::CONFIG["target_os"] =~ /linux/i } do
-    gem "libnotify",  "~> 0.8.0", require: false
-    gem "rb-inotify", require: false
-  end
-  install_if -> { RbConfig::CONFIG["target_os"] =~ /mswin|mingw/i } do
-    gem "rb-notifu", ">= 0.0.4", require: false
-    gem "wdm", require: false
-    gem "win32console", require: false
-  end
-end
-
 group :build do
   gem "rake",          ">= 10.1"
 end
