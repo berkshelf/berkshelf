@@ -240,8 +240,8 @@ module Berkshelf
       end
 
       it "raises an error if the command fails" do
-        shell_out = double("shell_out", success?: false, stderr: nil)
-        allow(Buff::ShellOut).to receive(:shell_out).and_return(shell_out)
+        shell_out = double("shell_out", error?: true, stderr: nil)
+        allow(subject).to receive(:shell_out).and_return(shell_out)
         expect { subject.git("foo") }.to raise_error(GitCommandError)
       end
     end

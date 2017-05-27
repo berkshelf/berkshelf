@@ -1,8 +1,9 @@
-require "buff/shell_out"
+require 'berkshelf/shell_out'
 
 module Berkshelf
   module Mixin
     module Git
+      include Berkshelf::ShellOut
       # Perform a git command.
       #
       # @param [String] command
@@ -17,9 +18,9 @@ module Berkshelf
           raise GitNotInstalled.new
         end
 
-        response = Buff::ShellOut.shell_out(%{git #{command}})
+        response = shell_out(%{git #{command}})
 
-        if error && !response.success?
+        if response.error?
           raise GitCommandError.new(command, cache_path, response.stderr)
         end
 

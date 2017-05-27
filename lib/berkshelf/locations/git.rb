@@ -1,5 +1,3 @@
-require "buff/shell_out"
-
 module Berkshelf
   class GitLocation < BaseLocation
     include Mixin::Git
