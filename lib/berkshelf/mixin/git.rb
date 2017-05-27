@@ -1,4 +1,4 @@
-require 'berkshelf/shell_out'
+require "berkshelf/shell_out"
 
 module Berkshelf
   module Mixin
