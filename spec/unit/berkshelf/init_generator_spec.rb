@@ -6,7 +6,6 @@ describe Berkshelf::InitGenerator do
   let(:kitchen_generator) { double("kitchen-generator", invoke_all: nil) }
 
   before do
-    allow(Kitchen::Generator::Init).to receive(:new).with(any_args()).and_return(kitchen_generator)
     FileUtils.mkdir_p(target)
     File.open(File.join(target, "metadata.rb"), "w") do |f|
       f.write("name 'some_cookbook'")
