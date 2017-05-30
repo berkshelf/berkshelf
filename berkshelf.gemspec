@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.add_dependency "berkshelf-api-client", ">= 2.0.2", "< 4.0"
   s.add_dependency "buff-config",          "~> 2.0"
   s.add_dependency "buff-extensions",      "~> 2.0"
-  s.add_dependency "buff-shell_out",       "~> 1.0"
+  s.add_dependency "mixlib-shellout",      "~> 2.0"
   s.add_dependency "cleanroom",            "~> 1.0"
   s.add_dependency "faraday",              "~> 0.9"
   s.add_dependency "httpclient",           "~> 2.7"

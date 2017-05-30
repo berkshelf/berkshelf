@@ -21,7 +21,7 @@ module Berkshelf
 
       context "when the graphviz command fails", :graphviz do
         before do
-          response = double(success?: false, stderr: "Something happened!")
+          response = double(error?: true, stderr: "Something happened!")
           allow(subject).to receive(:shell_out).and_return(response)
         end
 

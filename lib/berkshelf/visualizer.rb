@@ -1,6 +1,6 @@
-require "buff/shell_out"
 require "set"
 require "tempfile"
+require "berkshelf/shell_out"
 
 module Berkshelf
   class Visualizer
@@ -18,7 +18,7 @@ module Berkshelf
       end
     end
 
-    include Buff::ShellOut
+    include Berkshelf::ShellOut
 
     def initialize
       @nodes = {}
@@ -100,7 +100,7 @@ module Berkshelf
       command = %{dot -T png #{tempfile.path} -o "#{outfile}"}
       response = shell_out(command)
 
-      unless response.success?
+      if response.error?
         raise GraphvizCommandFailed.new(command, response.stderr)
       end
 

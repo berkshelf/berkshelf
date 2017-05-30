@@ -1,9 +1,6 @@
 module Berkshelf
   module RSpec
     module Git
-      require "buff/shell_out"
-      include Buff::ShellOut
-
       require_relative "path_helpers"
       include Berkshelf::RSpec::PathHelpers
 
