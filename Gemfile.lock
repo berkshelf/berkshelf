@@ -20,7 +20,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (6.0.1)
+    berkshelf (6.1.0)
       addressable (~> 2.3, >= 2.3.4)
       berkshelf-api-client (>= 2.0.2, < 4.0)
       buff-config (~> 2.0)
@@ -80,7 +80,7 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    chef-config (13.0.118)
+    chef-config (13.1.31)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -170,7 +170,7 @@ GEM
     http-form_data (1.0.3)
     http_parser.rb (0.6.0)
     httpclient (2.8.3)
-    i18n (0.8.1)
+    i18n (0.8.4)
     ice_nine (0.11.2)
     json (2.1.0)
     libyajl2 (1.2.0)
@@ -192,7 +192,7 @@ GEM
     mustermann (1.0.0)
     mustermann-grape (1.0.0)
       mustermann (~> 1.0.0)
-    nio4r (2.0.0)
+    nio4r (2.1.0)
     octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
     parser (2.4.0.0)
