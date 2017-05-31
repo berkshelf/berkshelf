@@ -1,4 +1,5 @@
 require "berkshelf/api-client"
+require "berkshelf/chef_repo_universe"
 require "berkshelf/ssl_policies"
 require "openssl"
 
@@ -10,8 +11,9 @@ module Berkshelf
     attr_accessor :uri_string
     attr_accessor :options
 
+    # @param [Berkshelf::Berksfile] berksfile
     # @param [String, Berkshelf::SourceURI] source
-    def initialize(source, **options)
+    def initialize(berksfile, source, **options)
       @options = { timeout: api_timeout, open_timeout: [(api_timeout / 10), 3].max, ssl: {} }
       @options.update(options)
       case source
@@ -36,6 +38,12 @@ module Berkshelf
         @options[:client_key] ||= Berkshelf::Config.instance.chef.client_key
       when :artifactory
         @options[:api_key] ||= Berkshelf::Config.instance.chef.artifactory_api_key || ENV["ARTIFACTORY_API_KEY"]
+      when :chef_repo
+        @options[:path] = uri_string
+        # If given a relative path, expand it against the Berksfile's folder.
+        @options[:path] = File.expand_path(@options[:path], File.dirname(berksfile ? berksfile.filepath : Dir.pwd))
+        # Lie because this won't actually parse as a URI.
+        @uri_string = "file://#{@options[:path]}"
       end
       # Set some default SSL options.
       Berkshelf::Config.instance.ssl.each do |key, value|
@@ -58,6 +66,8 @@ module Berkshelf
                         client_options = options.dup
                         api_key = client_options.delete(:api_key)
                         APIClient.new(uri, headers: { "X-Jfrog-Art-Api" => api_key }, **client_options)
+                      when :chef_repo
+                        ChefRepoUniverse.new(uri_string, **options)
                       else
                         APIClient.new(uri, **options)
                       end
@@ -133,8 +143,11 @@ module Berkshelf
     end
 
     def to_s
-      if type == :supermarket
-        "#{uri}"
+      case type
+      when :supermarket
+        uri.to_s
+      when :chef_repo
+        options[:path]
       else
         "#{type}: #{uri}"
       end

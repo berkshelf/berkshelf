@@ -198,7 +198,7 @@ module Berkshelf
     #
     # @return [Array<Source>]
     def source(api_url, **options)
-      source = Source.new(api_url, **options)
+      source = Source.new(self, api_url, **options)
       @sources[source.uri.to_s] = source
     end
     expose :source

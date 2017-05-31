@@ -2,9 +2,10 @@ require "spec_helper"
 
 module Berkshelf
   describe Source do
+    let(:berksfile) { double("Berksfile", filepath: "/test/Berksfile") }
     let(:arguments) { [] }
     let(:config) { Config.new }
-    subject(:instance) { described_class.new(*arguments) }
+    subject(:instance) { described_class.new(berksfile, *arguments) }
     before do
       allow(Berkshelf::Config).to receive(:instance).and_return(config)
     end
@@ -92,6 +93,11 @@ module Berkshelf
         let(:arguments) { ["ftp://example.com"] }
         it { expect { subject }.to raise_error InvalidSourceURI }
       end
+
+      context "with a chef_repo source" do
+        let(:arguments) { [{ chef_repo: "." }] }
+        it { is_expected.to eq(windows? ? "file://C/test" : "file:///test") }
+      end
     end
 
     describe "#options" do
@@ -147,19 +153,24 @@ module Berkshelf
         before { config.chef.artifactory_api_key = "secret" }
         its([:api_key]) { is_expected.to eq "secret" }
       end
+
+      context "with a chef_repo source" do
+        let(:arguments) { [{ chef_repo: "." }] }
+        its([:path]) { is_expected.to eq(windows? ? "C:/test" : "/test") }
+      end
     end
 
     describe "#==" do
       it "is the same if the uri matches" do
-        first = described_class.new("http://localhost:8080")
-        other = described_class.new("http://localhost:8080")
+        first = described_class.new(berksfile, "http://localhost:8080")
+        other = described_class.new(berksfile, "http://localhost:8080")
 
         expect(first).to eq(other)
       end
 
       it "is not the same if the uri is different" do
-        first = described_class.new("http://localhost:8089")
-        other = described_class.new("http://localhost:8080")
+        first = described_class.new(berksfile, "http://localhost:8089")
+        other = described_class.new(berksfile, "http://localhost:8080")
 
         expect(first).to_not eq(other)
       end
@@ -167,17 +178,17 @@ module Berkshelf
 
     describe ".default?" do
       it "returns true when the source is the default" do
-        instance = described_class.new(Berksfile::DEFAULT_API_URL)
+        instance = described_class.new(berksfile, Berksfile::DEFAULT_API_URL)
         expect(instance).to be_default
       end
 
       it "returns true when the scheme is different" do
-        instance = described_class.new("http://supermarket.chef.io")
+        instance = described_class.new(berksfile, "http://supermarket.chef.io")
         expect(instance).to be_default
       end
 
       it "returns false when the source is not the default" do
-        instance = described_class.new("http://localhost:8080")
+        instance = described_class.new(berksfile, "http://localhost:8080")
         expect(instance).to_not be_default
       end
     end
@@ -194,7 +205,7 @@ module Berkshelf
       end
 
       it "returns the latest version" do
-        instance = described_class.new(Berksfile::DEFAULT_API_URL)
+        instance = described_class.new(berksfile, Berksfile::DEFAULT_API_URL)
         expect(instance.search("cb1")).to eq [cookbooks[1]]
       end
     end

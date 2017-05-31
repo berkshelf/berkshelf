@@ -1,10 +1,11 @@
 require "spec_helper"
 
 describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
+  let(:berksfile) { double("Berksfile", filepath: "/test/Berksfile") }
   subject { described_class.new }
 
   describe "#populate" do
-    let(:sources) { Berkshelf::Source.new("http://localhost:26210") }
+    let(:sources) { Berkshelf::Source.new(berksfile, "http://localhost:26210") }
 
     before do
       berks_dependency("ruby", "1.0.0", dependencies: { "elixir" => ">= 0.1.0" })
@@ -24,7 +25,7 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
   end
 
   describe "#universe" do
-    let(:sources) { Berkshelf::Source.new("http://localhost:26210") }
+    let(:sources) { Berkshelf::Source.new(berksfile, "http://localhost:26210") }
 
     before do
       berks_dependency("ruby", "1.0.0")

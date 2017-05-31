@@ -22,7 +22,7 @@ module Berkshelf
       end
     end
 
-    VALID_SCHEMES = %w{http https}.freeze
+    VALID_SCHEMES = %w{http https file}.freeze
 
     # @raise [Berkshelf::InvalidSourceURI]
     def validate

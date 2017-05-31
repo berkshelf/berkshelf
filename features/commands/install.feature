@@ -634,3 +634,24 @@ Feature: berks install
     """
     Resolving cookbook dependencies...
     """
+
+  Scenario: when using a chef_repo source
+    Given I use a fixture named "complex-cookbook-path"
+    And a file named "Berksfile" with:
+      """
+      source chef_repo: '.'
+
+      cookbook 'jenkins-config'
+      """
+    When I successfully run `berks install`
+    Then the output should contain:
+      """
+      Installing jenkins (2.0.1) from
+      """
+    And the output should contain:
+      """
+      Installing jenkins-config (0.1.0) from
+      """
+    And the cookbook store should have the cookbooks:
+      | jenkins        | 2.0.1 |
+      | jenkins-config | 0.1.0 |
