@@ -63,7 +63,7 @@ module Berkshelf
 
       case remote_cookbook.location_type
       when :opscode, :supermarket
-        options = {}
+        options = { ssl: source.options[:ssl] }
         if source.type == :artifactory
           options[:headers] = { "X-Jfrog-Art-Api" => source.options[:api_key] }
         end

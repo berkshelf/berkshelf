@@ -39,20 +39,22 @@ module Berkshelf
 
       it "supports the 'opscode' location type" do
         allow(source).to receive(:type) { :supermarket }
+        allow(source).to receive(:options) { { ssl: {} } }
         allow(remote_cookbook).to receive(:location_type) { :opscode }
         allow(remote_cookbook).to receive(:location_path) { "http://api.opscode.com" }
         rest = double("community-rest")
-        expect(CommunityREST).to receive(:new).with("http://api.opscode.com", {}) { rest }
+        expect(CommunityREST).to receive(:new).with("http://api.opscode.com", { ssl: {} }) { rest }
         expect(rest).to receive(:download).with(name, version)
         subject.try_download(source, name, version)
       end
 
       it "supports the 'supermarket' location type" do
         allow(source).to receive(:type) { :supermarket }
+        allow(source).to receive(:options) { { ssl: {} } }
         allow(remote_cookbook).to receive(:location_type) { :supermarket }
         allow(remote_cookbook).to receive(:location_path) { "http://api.supermarket.com" }
         rest = double("community-rest")
-        expect(CommunityREST).to receive(:new).with("http://api.supermarket.com", {}) { rest }
+        expect(CommunityREST).to receive(:new).with("http://api.supermarket.com", { ssl: {} }) { rest }
         expect(rest).to receive(:download).with(name, version)
         subject.try_download(source, name, version)
       end
@@ -60,22 +62,22 @@ module Berkshelf
       context "with an artifactory source" do
         it "supports the 'opscode' location type" do
           allow(source).to receive(:type) { :artifactory }
-          allow(source).to receive(:options) { { api_key: "secret" } }
+          allow(source).to receive(:options) { { api_key: "secret", ssl: {} } }
           allow(remote_cookbook).to receive(:location_type) { :opscode }
           allow(remote_cookbook).to receive(:location_path) { "http://artifactory/" }
           rest = double("community-rest")
-          expect(CommunityREST).to receive(:new).with("http://artifactory/", { headers: { "X-Jfrog-Art-Api" => "secret" } }) { rest }
+          expect(CommunityREST).to receive(:new).with("http://artifactory/", { ssl: {}, headers: { "X-Jfrog-Art-Api" => "secret" } }) { rest }
           expect(rest).to receive(:download).with(name, version)
           subject.try_download(source, name, version)
         end
 
         it "supports the 'supermarket' location type" do
           allow(source).to receive(:type) { :artifactory }
-          allow(source).to receive(:options) { { api_key: "secret" } }
+          allow(source).to receive(:options) { { api_key: "secret", ssl: {} } }
           allow(remote_cookbook).to receive(:location_type) { :supermarket }
           allow(remote_cookbook).to receive(:location_path) { "http://artifactory/" }
           rest = double("community-rest")
-          expect(CommunityREST).to receive(:new).with("http://artifactory/", { headers: { "X-Jfrog-Art-Api" => "secret" } }) { rest }
+          expect(CommunityREST).to receive(:new).with("http://artifactory/", { ssl: {}, headers: { "X-Jfrog-Art-Api" => "secret" } }) { rest }
           expect(rest).to receive(:download).with(name, version)
           subject.try_download(source, name, version)
         end
