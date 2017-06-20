@@ -122,7 +122,7 @@ module Berkshelf
         # @return [Pathname]
       def ensure_and_return(path)
         FileUtils.mkdir(path) unless File.exist?(path)
-        return Pathname.new(path).expand_path
+        Pathname.new(path).expand_path
       end
     end
   end

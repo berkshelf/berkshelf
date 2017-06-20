@@ -91,8 +91,8 @@ GEM
       mixlib-log (~> 1.3)
       rack (~> 2.0)
       uuidtools (~> 2.1)
-    chefstyle (0.5.0)
-      rubocop (= 0.47.1)
+    chefstyle (0.6.0)
+      rubocop (= 0.49.1)
     childprocess (0.5.9)
       ffi (~> 1.0, >= 1.0.11)
     cleanroom (1.0.0)
@@ -114,7 +114,7 @@ GEM
       gherkin (~> 4.0)
     cucumber-wire (0.0.1)
     dep-selector-libgecode (1.3.1)
-    dep_selector (1.0.4)
+    dep_selector (1.0.5)
       dep-selector-libgecode (~> 1.0)
       ffi (~> 1.9)
     descendants_tracker (0.0.4)
@@ -195,6 +195,7 @@ GEM
     nio4r (2.1.0)
     octokit (4.7.0)
       sawyer (~> 0.8.0, >= 0.5.3)
+    parallel (1.11.2)
     parser (2.4.0.0)
       ast (~> 2.2)
     powerpack (0.1.1)
@@ -247,7 +248,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.6.0)
     rspec-support (3.6.0)
-    rubocop (0.47.1)
+    rubocop (0.49.1)
+      parallel (~> 1.10)
       parser (>= 2.3.3.1, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
@@ -271,7 +273,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.4)
-    unicode-display_width (1.2.1)
+    unicode-display_width (1.3.0)
     uuidtools (2.1.5)
     varia_model (0.6.0)
       buff-extensions (~> 2.0)
@@ -311,4 +313,4 @@ DEPENDENCIES
   yard (>= 0.8)
 
 BUNDLED WITH
-   1.15.0
+   1.15.1

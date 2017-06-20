@@ -168,7 +168,7 @@ module Berkshelf
     end
 
     def <=>(other)
-      [self.name, self.version_constraint] <=> [other.name, other.version_constraint]
+      [name, version_constraint] <=> [other.name, other.version_constraint]
     end
 
     def to_s
