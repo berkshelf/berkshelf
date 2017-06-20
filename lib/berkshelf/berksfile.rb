@@ -448,7 +448,7 @@ module Berkshelf
       end
 
       # NOTE: We intentionally do NOT pass options to the installer
-      self.install
+      install
     end
 
     # Retrieve information about a given cookbook that is installed by this Berksfile.

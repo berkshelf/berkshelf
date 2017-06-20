@@ -28,8 +28,8 @@ module Berkshelf
     def validate
       super
 
-      unless VALID_SCHEMES.include?(self.scheme)
-        raise InvalidSourceURI.new(self, "invalid URI scheme '#{self.scheme}'. Valid schemes: #{VALID_SCHEMES}")
+      unless VALID_SCHEMES.include?(scheme)
+        raise InvalidSourceURI.new(self, "invalid URI scheme '#{scheme}'. Valid schemes: #{VALID_SCHEMES}")
       end
     rescue Addressable::URI::InvalidURIError => ex
       raise InvalidSourceURI.new(self, ex)

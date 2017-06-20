@@ -18,22 +18,20 @@ module Berkshelf
       end
 
       def execute!
-        begin
-          $stdin  = @stdin
-          $stdout = @stdout
-          $stderr = @stderr
+        $stdin  = @stdin
+        $stdout = @stdout
+        $stderr = @stderr
 
-          Berkshelf::Cli.start(@argv)
-          @kernel.exit(0)
-        rescue Berkshelf::BerkshelfError => e
-          Berkshelf.ui.error e
-          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
-          @kernel.exit(e.status_code)
-        rescue Ridley::Errors::RidleyError => e
-          Berkshelf.ui.error "#{e.class} #{e}"
-          Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
-          @kernel.exit(47)
-        end
+        Berkshelf::Cli.start(@argv)
+        @kernel.exit(0)
+      rescue Berkshelf::BerkshelfError => e
+        Berkshelf.ui.error e
+        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
+        @kernel.exit(e.status_code)
+      rescue Ridley::Errors::RidleyError => e
+        Berkshelf.ui.error "#{e.class} #{e}"
+        Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
+        @kernel.exit(47)
       end
     end
 
@@ -42,7 +40,7 @@ module Berkshelf
         if given_args.length > 1 && !(given_args & Thor::HELP_MAPPINGS).empty?
           command = given_args.first
 
-          if self.subcommands.include?(command)
+          if subcommands.include?(command)
             super(meth, [command, "help"].compact, nil, config)
           else
             super(meth, ["help", command].compact, nil, config)

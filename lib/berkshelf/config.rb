@@ -55,7 +55,7 @@ module Berkshelf
       # @return [Config]
       def reload
         @instance = nil
-        self.instance
+        instance
       end
 
       # force proper X509 types from any configuration strings
@@ -76,12 +76,12 @@ module Berkshelf
     def initialize(path = self.class.path, options = {})
       super(path, options).tap do
         # Deprecation
-        if !self.vagrant.omnibus.enabled.nil?
+        if !vagrant.omnibus.enabled.nil?
           Berkshelf.ui.warn "`vagrant.omnibus.enabled' is deprecated and " \
             "will be removed in a future release. Please remove the " \
             "`enabled' attribute from your Berkshelf config."
         end
-        if !self.vagrant.vm.box_url.nil?
+        if !vagrant.vm.box_url.nil?
           Berkshelf.ui.warn "`vagrant.vm.box_url' is deprecated and " \
             "will be removed in a future release. Please remove the " \
             "`box_url' attribute from your Berkshelf config."
