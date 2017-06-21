@@ -39,7 +39,7 @@ Berkshelf is intended to be used as a CLI tool.  It is not intended to be used a
 
 ## Supported Platforms
 
-Berkshelf is tested and supported on Ruby 2.2 and 2.3.
+Berkshelf is tested and supported on Ruby 2.3 and 2.4.
 
 ## Configuration
 
