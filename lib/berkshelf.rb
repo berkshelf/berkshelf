@@ -30,10 +30,10 @@ module Berkshelf
   Encoding.default_external = Encoding::UTF_8
 
   def self.fix_proxies
-    ENV['http_proxy'] = ENV['HTTP_PROXY'] if ENV['HTTP_PROXY'] && !ENV['http_proxy']
-    ENV['https_proxy'] = ENV['HTTPS_PROXY'] if ENV['HTTPS_PROXY'] && !ENV['https_proxy']
-    ENV['ftp_proxy'] = ENV['FTP_PROXY'] if ENV['FTP_PROXY'] && !ENV['ftp_proxy']
-    ENV['no_proxy'] = ENV['NO_PROXY'] if ENV['NO_PROXY'] && !ENV['no_proxy']
+    ENV["http_proxy"] = ENV["HTTP_PROXY"] if ENV["HTTP_PROXY"] && !ENV["http_proxy"]
+    ENV["https_proxy"] = ENV["HTTPS_PROXY"] if ENV["HTTPS_PROXY"] && !ENV["https_proxy"]
+    ENV["ftp_proxy"] = ENV["FTP_PROXY"] if ENV["FTP_PROXY"] && !ENV["ftp_proxy"]
+    ENV["no_proxy"] = ENV["NO_PROXY"] if ENV["NO_PROXY"] && !ENV["no_proxy"]
   end
 
   fix_proxies
