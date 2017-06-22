@@ -1,12 +1,44 @@
 # Change Log
 
-## [6.0.1](https://github.com/berkshelf/berkshelf/tree/6.0.1) (2017-05-17)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.0.0...6.0.1)
+## [v6.2.0](https://github.com/berkshelf/berkshelf/tree/v6.2.0) (2017-06-22)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.1.1...v6.2.0)
 
-- Relax ruby dependency to 2.3.1
+**Merged pull requests:**
 
-## [6.0.0](https://github.com/berkshelf/berkshelf/tree/6.0.0) (2017-05-17)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.5...6.0.0)
+- pull in berkshelf-api-client and bump deps [\#1707](https://github.com/berkshelf/berkshelf/pull/1707) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v6.1.1](https://github.com/berkshelf/berkshelf/tree/v6.1.1) (2017-06-20)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.1.0...v6.1.1)
+
+**Merged pull requests:**
+
+- bumping cookstyle deps and others [\#1708](https://github.com/berkshelf/berkshelf/pull/1708) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v6.1.0](https://github.com/berkshelf/berkshelf/tree/v6.1.0) (2017-05-31)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.0.1...v6.1.0)
+
+**Merged pull requests:**
+
+- Release 6.1.0 [\#1704](https://github.com/berkshelf/berkshelf/pull/1704) ([thommay](https://github.com/thommay))
+- remove TK dep and undocumented 'berks test' command [\#1702](https://github.com/berkshelf/berkshelf/pull/1702) ([lamont-granquist](https://github.com/lamont-granquist))
+- remove direct use of buff-shell\_out [\#1701](https://github.com/berkshelf/berkshelf/pull/1701) ([lamont-granquist](https://github.com/lamont-granquist))
+- guard seems to be a lot more trouble than its worth [\#1700](https://github.com/berkshelf/berkshelf/pull/1700) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump deps \(faraday+ridley\) [\#1699](https://github.com/berkshelf/berkshelf/pull/1699) ([lamont-granquist](https://github.com/lamont-granquist))
+- replace celluloid with concurrent-ruby futures [\#1698](https://github.com/berkshelf/berkshelf/pull/1698) ([lamont-granquist](https://github.com/lamont-granquist))
+- Switch off open-uri for community site downloads [\#1697](https://github.com/berkshelf/berkshelf/pull/1697) ([coderanger](https://github.com/coderanger))
+- Add chef\_repo source [\#1696](https://github.com/berkshelf/berkshelf/pull/1696) ([coderanger](https://github.com/coderanger))
+- Pass along an artifactory\_api\_key attribute from a Chef config [\#1693](https://github.com/berkshelf/berkshelf/pull/1693) ([RoboticCheese](https://github.com/RoboticCheese))
+- add chefstyle enforcement [\#1663](https://github.com/berkshelf/berkshelf/pull/1663) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v6.0.1](https://github.com/berkshelf/berkshelf/tree/v6.0.1) (2017-05-17)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.0.0...v6.0.1)
+
+**Merged pull requests:**
+
+- update travis rvm versions [\#1692](https://github.com/berkshelf/berkshelf/pull/1692) ([thommay](https://github.com/thommay))
+
+## [v6.0.0](https://github.com/berkshelf/berkshelf/tree/v6.0.0) (2017-05-17)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v5.6.5...v6.0.0)
 
 **Merged pull requests:**
 
