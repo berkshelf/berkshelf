@@ -40,6 +40,7 @@ module Berkshelf
     end
   end
 
+  # This is for simple HTTP
   class RidleyCompatSimple < Chef::ServerAPI
     use Chef::HTTP::Decompressor
     use Chef::HTTP::CookieManager
@@ -48,6 +49,7 @@ module Berkshelf
     include RidleyCompatAPI
   end
 
+  # This is for JSON-REST
   class RidleyCompatJSON < Chef::HTTP::SimpleJSON
     use Chef::HTTP::JSONInput
     use Chef::HTTP::JSONOutput
@@ -59,6 +61,8 @@ module Berkshelf
     include RidleyCompatAPI
   end
 
+  # RidleyCompat is the ServerAPI, but we inherit from Chef::HTTP::Simple and then include all our middlewares
+  # and then need to include our own CompatAPI.  The end result is a ridley-esque way of talking to a chef server.
   class RidleyCompat < Chef::HTTP::Simple
     use Chef::HTTP::JSONInput
     use Chef::HTTP::JSONOutput
