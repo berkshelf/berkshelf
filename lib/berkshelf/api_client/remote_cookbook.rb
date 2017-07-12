@@ -1,5 +1,5 @@
-require 'json'
-require 'chef/mash'
+require "json"
+require "chef/mash"
 
 module Berkshelf::APIClient
   # A representation of cookbook metadata indexed by a Berkshelf API Server. Returned
@@ -43,7 +43,7 @@ module Berkshelf::APIClient
     def to_hash
       {
         name: name,
-        version: version
+        version: version,
       }
     end
 

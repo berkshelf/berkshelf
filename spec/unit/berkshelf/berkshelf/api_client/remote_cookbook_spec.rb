@@ -1,10 +1,10 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Berkshelf::APIClient::RemoteCookbook do
   let(:name) { "ruby" }
   let(:version) { "1.2.3" }
-  let(:dependencies) { double('dependencies') }
-  let(:platforms) { double('platforms') }
+  let(:dependencies) { double("dependencies") }
+  let(:platforms) { double("platforms") }
   let(:location_type) { "chef_server" }
   let(:location_path) { "http://localhost:8080" }
 

@@ -1,7 +1,7 @@
-require 'berkshelf/ridley_compat'
+require "berkshelf/ridley_compat"
 
 module Berkshelf::APIClient
-  require_relative 'errors'
+  require_relative "errors"
 
   class ChefServerConnection
     attr_reader :client
@@ -16,9 +16,9 @@ module Berkshelf::APIClient
 
       [].tap do |cookbooks|
         response.each do |name, versions|
-          versions.each { |version, attributes|
+          versions.each do |version, attributes|
             attributes[:location_path] = @url
-            cookbooks << RemoteCookbook.new(name, version, attributes) }
+            cookbooks << RemoteCookbook.new(name, version, attributes) end
         end
       end
     rescue Ridley::Errors::HTTPNotFound

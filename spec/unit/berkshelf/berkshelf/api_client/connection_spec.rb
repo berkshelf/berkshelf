@@ -1,14 +1,14 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Berkshelf::APIClient::Connection do
   let(:instance) { described_class.new("http://supermarket.getchef.com") }
 
   describe "#universe" do
     before do
-      body_response = %Q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+      body_response = %q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
 
-       stub_request(:get, "http://supermarket.getchef.com/universe")
-         .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
+      stub_request(:get, "http://supermarket.getchef.com/universe")
+        .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
     end
 
     subject { instance.universe }
@@ -65,8 +65,8 @@ describe Berkshelf::APIClient::Connection do
     subject { instance.universe }
 
     it "follows 301 redirects correctly" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => 301, :headers => { 'Location' => "http://arglebargle.com/universe" })
-      body_response = %Q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => 301, :headers => { "Location" => "http://arglebargle.com/universe" })
+      body_response = %q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
       stub_request(:get, "http://arglebargle.com/universe")
         .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
       expect(subject.size).to eq(3)

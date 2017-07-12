@@ -1,7 +1,7 @@
-require 'chef/server_api'
-require 'chef/http/simple_json'
-require 'chef/http/simple'
-require 'berkshelf/api_client/errors'
+require "chef/server_api"
+require "chef/http/simple_json"
+require "chef/http/simple"
+require "berkshelf/api_client/errors"
 
 module Berkshelf
   module RidleyCompatAPI
