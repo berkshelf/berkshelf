@@ -45,5 +45,5 @@ Gem::Specification.new do |s|
   s.add_dependency "octokit",              "~> 4.0"
   s.add_dependency "mixlib-archive",       "~> 0.4"
   s.add_dependency "concurrent-ruby",      "~> 1.0"
-  s.add_dependency "chef",                 ">= 12.0"
+  s.add_dependency "chef",                 ">= 12.7.2"
 end
