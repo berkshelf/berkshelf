@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 2.0.0"
 
   s.add_dependency "addressable",          "~> 2.3", ">= 2.3.4"
-  s.add_dependency "berkshelf-api-client", ">= 4.0.0"
   s.add_dependency "buff-config",          "~> 2.0"
   s.add_dependency "buff-extensions",      "~> 2.0"
   s.add_dependency "mixlib-shellout",      "~> 2.0"
@@ -46,4 +45,5 @@ Gem::Specification.new do |s|
   s.add_dependency "octokit",              "~> 4.0"
   s.add_dependency "mixlib-archive",       "~> 0.4"
   s.add_dependency "concurrent-ruby",      "~> 1.0"
+  s.add_dependency "chef",                 ">= 12.7.2"
 end
