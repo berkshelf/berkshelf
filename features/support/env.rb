@@ -6,19 +6,22 @@ require "aruba/cucumber"
 require "aruba/in_process"
 require "aruba/spawn_process"
 require "cucumber/rspec/doubles"
-require "berkshelf/api/rspec" unless windows?
-require "berkshelf/api/cucumber" unless windows?
 
 Dir["spec/support/**/*.rb"].each { |f| require File.expand_path(f) }
 
 World(Berkshelf::RSpec::PathHelpers)
 
+# these tests used to start a chef-zero server on one port, and a berks-api server on another port
+# they now start a chef-zero server that supports the universe endpoint on one port.
+#
+# if there becomes a need to integration test talking to a supermarket/universe endpoint and then
+# talking to a separate chef-server, then these features could be split back up again, but the
+# Berkshelf::RSpec::ChefServer helper class would need to support managing multiple chef-zero servers.
 CHEF_SERVER_PORT = 26310
-BERKS_API_PORT   = 26210
+BERKS_API_PORT   = 26310
 
 at_exit do
   Berkshelf::RSpec::ChefServer.stop
-  Berkshelf::API::RSpec::Server.stop unless windows?
 end
 
 Before do
@@ -51,7 +54,6 @@ Before do
   ]
 
   Berkshelf::RSpec::ChefServer.start(port: CHEF_SERVER_PORT)
-  Berkshelf::API::RSpec::Server.start(port: BERKS_API_PORT, endpoints: endpoints) unless windows?
 
   aruba.config.io_wait_timeout = Cucumber::JRUBY ? 7 : 5
   @aruba_timeout_seconds = Cucumber::JRUBY ? 35 : 15

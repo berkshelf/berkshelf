@@ -8,7 +8,6 @@ require "rspec"
 require "cleanroom/rspec"
 require "webmock/rspec"
 require "rspec/its"
-require "berkshelf/api/rspec" unless windows?
 
 Dir["spec/support/**/*.rb"].each { |f| require File.expand_path(f) }
 
@@ -18,7 +17,6 @@ RSpec.configure do |config|
   config.include Berkshelf::RSpec::ChefServer
   config.include Berkshelf::RSpec::Git
   config.include Berkshelf::RSpec::PathHelpers
-  config.include Berkshelf::API::RSpec unless windows?
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
@@ -36,9 +34,8 @@ RSpec.configure do |config|
   end
 
   config.before(:suite) do
-    WebMock.disable_net_connect!(allow_localhost: true, net_http_connect_on_start: true)
+    WebMock.disable_net_connect!(allow_localhost: false, net_http_connect_on_start: true)
     Berkshelf::RSpec::ChefServer.start
-    Berkshelf::API::RSpec::Server.start unless windows?
   end
 
   config.before(:all) do
@@ -46,7 +43,6 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    Berkshelf::API::RSpec::Server.clear_cache unless windows?
     clean_tmp_path
     Berkshelf.initialize_filesystem
     Berkshelf::CookbookStore.instance.initialize_filesystem
