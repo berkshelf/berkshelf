@@ -8,7 +8,7 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
     let(:sources) { Berkshelf::Source.new(berksfile, "http://supermarket.getchef.com") }
 
     before do
-      body_response = %Q{{"ruby":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"elixir":">= 0.1.0"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+      body_response = %q{{"ruby":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"elixir":">= 0.1.0"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
       stub_request(:get, "http://supermarket.getchef.com/universe")
         .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
     end
@@ -28,7 +28,7 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
     let(:sources) { Berkshelf::Source.new(berksfile, "http://supermarket.getchef.com") }
 
     before do
-      body_response = %Q{{"ruby":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+      body_response = %q{{"ruby":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
       stub_request(:get, "http://supermarket.getchef.com/universe")
         .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
     end
