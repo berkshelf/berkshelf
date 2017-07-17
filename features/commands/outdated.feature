@@ -3,7 +3,6 @@ Feature: berks outdated
     Given the Chef Server has cookbooks:
       | bacon | 1.0.0 |
       | bacon | 1.1.0 |
-    And the Berkshelf API server's cache is up to date
     And the cookbook store has the cookbooks:
       | bacon | 1.1.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -29,7 +28,6 @@ Feature: berks outdated
     Given the Chef Server has cookbooks:
       | bacon | 1.0.0 |
       | bacon | 1.1.0 |
-    And the Berkshelf API server's cache is up to date
     And the cookbook store has the cookbooks:
       | bacon | 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
@@ -56,7 +54,6 @@ Feature: berks outdated
       | bacon | 1.1.0 |
       | bacon | 1.2.1 |
       | bacon | 1.5.8 |
-    And the Berkshelf API server's cache is up to date
     And the cookbook store has the cookbooks:
       | bacon | 1.0.0 |
     And I have a Berksfile pointing at the local Berkshelf API with:
