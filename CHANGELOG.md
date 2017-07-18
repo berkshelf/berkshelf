@@ -1,5 +1,14 @@
 # Change Log
 
+## [v6.2.1](https://github.com/berkshelf/berkshelf/tree/v6.2.1) (2017-07-18)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.2.0...v6.2.1)
+
+**Merged pull requests:**
+
+- remove berks-api dep [\#1712](https://github.com/berkshelf/berkshelf/pull/1712) ([lamont-granquist](https://github.com/lamont-granquist))
+- pull berkshelf-api-client gem into berkshelf [\#1711](https://github.com/berkshelf/berkshelf/pull/1711) ([lamont-granquist](https://github.com/lamont-granquist))
+- bump berkshelf-api-client dep to 4.0.1 [\#1710](https://github.com/berkshelf/berkshelf/pull/1710) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v6.2.0](https://github.com/berkshelf/berkshelf/tree/v6.2.0) (2017-06-22)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.1.1...v6.2.0)
 
@@ -325,7 +334,7 @@
 **Merged pull requests:**
 
 - Correct exclusion of metadata.rb [\#1339](https://github.com/berkshelf/berkshelf/pull/1339) ([rveznaver](https://github.com/rveznaver))
-- fix chefignore for files in sub directories [\#1335](https://github.com/berkshelf/berkshelf/pull/1335) ([triccardi-systran](https://github.com/triccardi-systran))
+- fix chefignore for files in sub directories [\#1335](https://github.com/berkshelf/berkshelf/pull/1335) ([thomas-riccardi](https://github.com/thomas-riccardi))
 - Do not leak tempdirs [\#1334](https://github.com/berkshelf/berkshelf/pull/1334) ([sethvargo](https://github.com/sethvargo))
 
 ## [v3.2.0](https://github.com/berkshelf/berkshelf/tree/v3.2.0) (2014-10-29)
