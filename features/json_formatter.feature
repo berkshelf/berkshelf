@@ -1,6 +1,5 @@
 Feature: --format json
   Background:
-    * the Berkshelf API server's cache is empty
     * the Chef Server is empty
     * the cookbook store is empty
 
@@ -11,15 +10,14 @@ Feature: --format json
       """
     And the Chef Server has cookbooks:
       | berkshelf | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install --format json`
     Then the output should contain JSON:
       """
       {
         "cookbooks": [
           {
-            "api_source": "http://127.0.0.1:26210",
-            "location_path": "http://localhost:26310/",
+            "api_source": "http://127.0.0.1:26310",
+            "location_path": "http://127.0.0.1:26310/cookbooks/berkshelf/1.0.0",
             "version": "1.0.0",
             "name": "berkshelf"
           }
@@ -27,7 +25,7 @@ Feature: --format json
         "errors": [],
         "messages": [
           "Resolving cookbook dependencies...",
-          "Fetching cookbook index from http://127.0.0.1:26210..."
+          "Fetching cookbook index from http://127.0.0.1:26310..."
         ],
         "warnings": []
       }
@@ -53,7 +51,7 @@ Feature: --format json
         "errors": [],
         "messages": [
           "Resolving cookbook dependencies...",
-          "Fetching cookbook index from http://127.0.0.1:26210..."
+          "Fetching cookbook index from http://127.0.0.1:26310..."
         ],
         "warnings": []
       }
@@ -128,7 +126,6 @@ Feature: --format json
       | seth | 0.1.0 |
       | seth | 0.2.9 |
       | seth | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'seth', '~> 0.1'
@@ -149,7 +146,7 @@ Feature: --format json
           {
             "local": "0.1.0",
             "remote": {
-              "http://127.0.0.1:26210": "0.2.9"
+              "http://127.0.0.1:26310": "0.2.9"
             },
             "name": "seth"
           }

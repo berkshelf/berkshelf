@@ -1,6 +1,5 @@
 Feature: berks contingent
   Background:
-    * the Berkshelf API server's cache is empty
     * the Chef Server is empty
     * the cookbook store is empty
 

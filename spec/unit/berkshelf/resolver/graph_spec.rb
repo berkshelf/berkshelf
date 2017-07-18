@@ -5,12 +5,12 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
   subject { described_class.new }
 
   describe "#populate" do
-    let(:sources) { Berkshelf::Source.new(berksfile, "http://localhost:26210") }
+    let(:sources) { Berkshelf::Source.new(berksfile, "http://supermarket.getchef.com") }
 
     before do
-      berks_dependency("ruby", "1.0.0", dependencies: { "elixir" => ">= 0.1.0" })
-      berks_dependency("ruby", "2.0.0")
-      berks_dependency("elixir", "1.0.0")
+      body_response = %q{{"ruby":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"elixir":">= 0.1.0"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+      stub_request(:get, "http://supermarket.getchef.com/universe")
+        .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
     end
 
     it "adds each dependency to the graph" do
@@ -25,11 +25,12 @@ describe Berkshelf::Resolver::Graph, :not_supported_on_windows do
   end
 
   describe "#universe" do
-    let(:sources) { Berkshelf::Source.new(berksfile, "http://localhost:26210") }
+    let(:sources) { Berkshelf::Source.new(berksfile, "http://supermarket.getchef.com") }
 
     before do
-      berks_dependency("ruby", "1.0.0")
-      berks_dependency("elixir", "1.0.0")
+      body_response = %q{{"ruby":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+      stub_request(:get, "http://supermarket.getchef.com/universe")
+        .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
     end
 
     it "returns an array of APIClient::RemoteCookbook" do

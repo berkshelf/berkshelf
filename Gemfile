@@ -22,10 +22,5 @@ group :development do
   gem "webmock",       ">= 1.11"
   gem "yard",          ">= 0.8"
   gem "http",          ">= 0.9.8"
-  gem "activesupport", "~> 4.0" # pinning for ruby 2.1.x
   gem "chefstyle"
-end
-
-group :test do
-  gem "berkshelf-api", git: "https://github.com/berkshelf/berkshelf-api.git", ref: "9fb3d95779c4ff72b0074072105caaf70b978bf0"
 end

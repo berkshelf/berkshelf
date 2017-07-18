@@ -1,6 +1,5 @@
 Feature: berks install
   Background:
-    * the Berkshelf API server's cache is empty
     * the Chef Server is empty
     * the cookbook store is empty
 
@@ -12,7 +11,6 @@ Feature: berks install
     And the Chef Server has cookbooks:
       | berkshelf | 1.0.0 |
       | berkshelf | 2.0.0 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -29,7 +27,6 @@ Feature: berks install
     And the Chef Server has cookbooks:
       | berkshelf | 1.0.0 |
       | berkshelf | 2.0.0 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -52,7 +49,6 @@ Feature: berks install
     And the Chef Server has cookbooks:
       | ruby   | 1.0.0 |
       | elixir | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain "Installing elixir (1.0.0)"
     And the output should contain "Installing ruby (1.0.0)"
@@ -71,7 +67,6 @@ Feature: berks install
       | hostsfile | = 1.0.1 |
     And the cookbook store has the cookbooks:
       | hostsfile | 1.0.1 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -135,7 +130,6 @@ Feature: berks install
       """
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -160,7 +154,6 @@ Feature: berks install
       """
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       """
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the output should contain:
       """
@@ -175,7 +168,6 @@ Feature: berks install
       cookbook 'example_cookbook', path: '../../spec/fixtures/cookbooks/example_cookbook-0.5.0'
       cookbook 'other_cookbook'
       """
-    And the Berkshelf API server's cache is up to date
     When I run `berks install`
     Then the output should contain:
       """
@@ -204,7 +196,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       """
 
@@ -235,7 +227,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (1.0.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at rel/cookbooks/berkshelf-cookbook-fixture)
       """
 
@@ -263,7 +255,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
@@ -278,7 +270,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
@@ -293,7 +285,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
@@ -308,7 +300,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
@@ -323,7 +315,7 @@ Feature: berks install
     And the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
@@ -357,7 +349,6 @@ Feature: berks install
       | bacon | 0.1.0 |
       | bacon | 0.2.0 |
       | bacon | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'bacon', '~> 0.1'
@@ -420,7 +411,6 @@ Feature: berks install
     Given the Chef Server has cookbooks:
       | foo | 0.3.0 |
       | foo | 0.2.0 |
-    And the Berkshelf API server's cache is up to date
     And I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'foo'
@@ -476,7 +466,7 @@ Feature: berks install
     Then the output should contain:
       """
       Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
-      Fetching cookbook index from http://127.0.0.1:26210...
+      Fetching cookbook index from http://127.0.0.1:26310...
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
       """
 
@@ -506,7 +496,6 @@ Feature: berks install
       | bacon | 0.1.0 |
       | bacon | 0.2.0 |
       | bacon | 1.0.0 |
-    And the Berkshelf API server's cache is up to date
     When I successfully run `berks install`
     Then the cookbook store should have the cookbooks:
       | bacon | 0.2.0 |
