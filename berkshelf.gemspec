@@ -30,7 +30,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = ">= 2.3.1"
   s.required_rubygems_version = ">= 2.0.0"
 
-  s.add_dependency "addressable",          "~> 2.3", ">= 2.3.4"
   s.add_dependency "buff-config",          "~> 2.0"
   s.add_dependency "buff-extensions",      "~> 2.0"
   s.add_dependency "mixlib-shellout",      "~> 2.0"
