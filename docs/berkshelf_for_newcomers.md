@@ -57,7 +57,6 @@ Berkshelf relies on cookbook versioning to work correctly.  A cookbook's version
 
 # Further reading
 
-* The project homepage, http://http://berkshelf.com/v2.0/
 * https://sethvargo.com/berkshelf-workflow/
 
 --
