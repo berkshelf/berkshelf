@@ -66,8 +66,6 @@ Please see [Plugins page](https://github.com/berkshelf/berkshelf/blob/master/PLU
 
 ## Authors
 
-[The Berkshelf Core Team](https://github.com/berkshelf/berkshelf/wiki/Core-Team)
-
 Thank you to all of our [Contributors](https://github.com/berkshelf/berkshelf/graphs/contributors), testers, and users.
 
 If you'd like to contribute, please see our [contribution guidelines](https://github.com/berkshelf/berkshelf/blob/master/CONTRIBUTING.md) first.

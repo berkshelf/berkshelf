@@ -47,8 +47,8 @@ The above is a trivial example.  If your cookbook has several dependencies, whic
 ## What's in the background
 
 * the cookbook's `metadata.rb` specifies the cookbook dependencies and required versions
-* the [Berksfile](http://berkshelf.com/v2.0/#the-berksfile) in your cookbook's root directory tells Berkshelf where to find cookbooks.  You can have multiple sources, or can pull individual cookbooks from specific locations, such as your own Supermarket, GitHub, or a file server.
-* `berks install` downloads cookbooks and their dependencies to the [Berkshelf](http://berkshelf.com/v2.0/#the-berkshelf), a place on your local disk.
+* the [Berksfile](https://docs.chef.io/berkshelf.html#the-berksfile) in your cookbook's root directory tells Berkshelf where to find cookbooks.  You can have multiple sources, or can pull individual cookbooks from specific locations, such as your own Supermarket, GitHub, or a file server.
+* `berks install` downloads cookbooks and their dependencies to the [Berkshelf](https://docs.chef.io/berkshelf.html#berkshelf-cli), a place on your local disk.
 * a Berksfile.lock is generated on `berks install` which specifies the exact cookbook versions that were used at that point
 
 ## Cookbook versioning
@@ -57,8 +57,7 @@ Berkshelf relies on cookbook versioning to work correctly.  A cookbook's version
 
 # Further reading
 
-* The project homepage, http://http://berkshelf.com/v2.0/
-* https://sethvargo.com/berkshelf-workflow/
+* https://docs.chef.io/berkshelf.html
 
 --
 
