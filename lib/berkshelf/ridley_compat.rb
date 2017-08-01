@@ -2,23 +2,27 @@ require "chef/server_api"
 require "chef/http/simple_json"
 require "chef/http/simple"
 require "berkshelf/api_client/errors"
+require "chef/config"
 
 module Berkshelf
   module RidleyCompatAPI
     def initialize(**opts)
       opts = opts.dup
       opts[:ssl] ||= {}
-      chef_opts = {
-        rest_timeout: opts[:timeout], # opts[:open_timeout] is ignored on purpose
-        headers: opts[:headers],
-        client_name: opts[:client_name],
-        signing_key_filename: opts[:client_key],
-        ssl_verify_mode: opts[:verify] ? :verify_none : :verify_peer,
-        ssl_ca_path: opts[:ssl][:ca_path],
-        ssl_ca_file: opts[:ssl][:ca_file],
-        ssl_client_cert: opts[:ssl][:client_cert],
-        ssl_client_key: opts[:ssl][:client_key],
-      }
+      chef_opts = {}
+      chef_opts[:rest_timeout]         = opts[:timeout] if opts[:timeout] # opts[:open_timeout] is ignored on purpose
+      chef_opts[:headers]              = opts[:headers] if opts[:headers]
+      chef_opts[:client_name]          = opts[:client_name] if opts[:client_name]
+      chef_opts[:signing_key_filename] = opts[:client_key] if opts[:client_key]
+      chef_opts[:verify_api_cert]      = opts[:ssl][:verify] || opts[:ssl][:verify].nil?
+      chef_opts[:ssl_verify_mode]      = chef_opts[:verify_api_cert] ? :verify_peer : :verify_none
+      chef_opts[:ssl_ca_path]          = opts[:ssl][:ca_path] if opts[:ssl][:ca_path]
+      chef_opts[:ssl_ca_file]          = opts[:ssl][:ca_file] if opts[:ssl][:ca_file]
+      chef_opts[:ssl_client_cert]      = opts[:ssl][:client_cert] if opts[:ssl][:client_cert]
+      chef_opts[:ssl_client_key]       = opts[:ssl][:client_key] if opts[:ssl][:client_key]
+      # chef/http/ssl_policies.rb reads only from Chef::Config and not from the opts in the constructor
+      Chef::Config[:verify_api_cert] = chef_opts[:verify_api_cert]
+      Chef::Config[:ssl_verify_mode] = chef_opts[:ssl_verify_mode]
       super(opts[:server_url].to_s, **chef_opts)
     end
 
