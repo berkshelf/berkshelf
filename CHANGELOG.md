@@ -1,5 +1,13 @@
 # Change Log
 
+## [v6.2.2](https://github.com/berkshelf/berkshelf/tree/v6.2.2) (2017-08-02)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.2.1...v6.2.2)
+
+**Merged pull requests:**
+
+- fix verify false and add tests [\#1720](https://github.com/berkshelf/berkshelf/pull/1720) ([lamont-granquist](https://github.com/lamont-granquist))
+- Docs update [\#1715](https://github.com/berkshelf/berkshelf/pull/1715) ([iennae](https://github.com/iennae))
+
 ## [v6.2.1](https://github.com/berkshelf/berkshelf/tree/v6.2.1) (2017-07-18)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.2.0...v6.2.1)
 
