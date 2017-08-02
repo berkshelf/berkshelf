@@ -119,7 +119,7 @@ GEM
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
-    faraday (0.12.1)
+    faraday (0.12.2)
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
       faraday (~> 0.8)
@@ -160,7 +160,7 @@ GEM
     json (2.1.0)
     libyajl2 (1.2.0)
     minitar (0.6.1)
-    minitest (5.10.2)
+    minitest (5.10.3)
     mixlib-archive (0.4.1)
       mixlib-log
     mixlib-authentication (1.4.1)
@@ -169,7 +169,7 @@ GEM
     mixlib-config (2.2.4)
     mixlib-log (1.7.1)
     mixlib-shellout (2.3.2)
-    molinillo (0.6.0)
+    molinillo (0.6.1)
     multi_json (1.12.1)
     multi_test (0.1.2)
     multipart-post (2.0.0)
@@ -199,7 +199,7 @@ GEM
       plist (~> 3.1)
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
-    parallel (1.11.2)
+    parallel (1.12.0)
     parser (2.4.0.0)
       ast (~> 2.2)
     plist (3.3.0)
@@ -268,10 +268,10 @@ GEM
       rspec-its
       specinfra (~> 2.68)
     sfl (2.3)
-    solve (3.1.0)
+    solve (3.1.1)
       molinillo (>= 0.5)
       semverse (>= 1.1, < 3.0)
-    specinfra (2.70.0)
+    specinfra (2.70.1)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
