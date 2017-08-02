@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    berkshelf (6.2.1)
+    berkshelf (6.2.2)
       buff-config (~> 2.0)
       buff-extensions (~> 2.0)
       chef (>= 12.7.2)
@@ -168,8 +168,8 @@ GEM
     mixlib-cli (1.7.0)
     mixlib-config (2.2.4)
     mixlib-log (1.7.1)
-    mixlib-shellout (2.2.7)
-    molinillo (0.5.7)
+    mixlib-shellout (2.3.2)
+    molinillo (0.6.0)
     multi_json (1.12.1)
     multi_test (0.1.2)
     multipart-post (2.0.0)
@@ -271,7 +271,7 @@ GEM
     solve (3.1.0)
       molinillo (>= 0.5)
       semverse (>= 1.1, < 3.0)
-    specinfra (2.69.0)
+    specinfra (2.70.0)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
@@ -318,4 +318,4 @@ DEPENDENCIES
   yard (>= 0.8)
 
 BUNDLED WITH
-   1.15.1
+   1.15.3
