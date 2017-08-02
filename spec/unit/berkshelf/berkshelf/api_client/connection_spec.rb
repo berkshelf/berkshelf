@@ -56,6 +56,63 @@ describe Berkshelf::APIClient::Connection do
     end
   end
 
+  describe "disabling ssl validation on requests" do
+    let(:instance) { described_class.new("https://supermarket.getchef.com", ssl: { verify: false }) }
+
+    before do
+      body_response = %q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+
+      stub_request(:get, "https://supermarket.getchef.com/universe")
+        .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
+    end
+
+    subject { instance.universe }
+
+    it "correctly disables SSL validation" do
+      expect_any_instance_of(Net::HTTP).to receive(:use_ssl=).with(true).and_call_original
+      expect_any_instance_of(Net::HTTP).to receive(:verify_mode=).with(OpenSSL::SSL::VERIFY_NONE).and_call_original
+      expect(subject).to be_a(Array)
+    end
+  end
+
+  describe "enabling ssl validation on requests" do
+    let(:instance) { described_class.new("https://supermarket.getchef.com", ssl: { verify: true }) }
+
+    before do
+      body_response = %q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+
+      stub_request(:get, "https://supermarket.getchef.com/universe")
+        .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
+    end
+
+    subject { instance.universe }
+
+    it "correctly disables SSL validation" do
+      expect_any_instance_of(Net::HTTP).to receive(:use_ssl=).with(true).and_call_original
+      expect_any_instance_of(Net::HTTP).to receive(:verify_mode=).with(OpenSSL::SSL::VERIFY_PEER).and_call_original
+      expect(subject).to be_a(Array)
+    end
+  end
+
+  describe "enabling ssl validation by default" do
+    let(:instance) { described_class.new("https://supermarket.getchef.com") }
+
+    before do
+      body_response = %q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+
+      stub_request(:get, "https://supermarket.getchef.com/universe")
+        .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
+    end
+
+    subject { instance.universe }
+
+    it "correctly disables SSL validation" do
+      expect_any_instance_of(Net::HTTP).to receive(:use_ssl=).with(true).and_call_original
+      expect_any_instance_of(Net::HTTP).to receive(:verify_mode=).with(OpenSSL::SSL::VERIFY_PEER).and_call_original
+      expect(subject).to be_a(Array)
+    end
+  end
+
   describe "non-200s" do
     before do
       Chef::Config[:http_retry_delay] = 0.001
