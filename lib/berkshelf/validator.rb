@@ -24,9 +24,12 @@ module Berkshelf
         Array(cookbooks).each do |cookbook|
           path = cookbook.path.to_s
 
-          files = Dir.glob(File.join(path, "**", "*.rb")).select do |f|
-            parent = Pathname.new(path).dirname.to_s
-            f.gsub(parent, "") =~ /[[:space:]]/
+          files = Dir.chdir(path) do
+            Dir.glob(File.join("**", "*.rb")).select do |f|
+              f = File.join(path, f)
+              parent = Pathname.new(path).dirname.to_s
+              f.gsub(parent, "") =~ /[[:space:]]/
+            end
           end
 
           raise InvalidCookbookFiles.new(cookbook, files) unless files.empty?
