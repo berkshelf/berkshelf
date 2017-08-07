@@ -48,7 +48,9 @@ module Berkshelf
 
     # Destroy the contents of the initialized storage path.
     def clean!
-      FileUtils.rm_rf(Dir.glob(File.join(storage_path, "*")))
+      Dir.chdir(storage_path) do
+        FileUtils.rm_rf(Dir.glob("*"))
+      end
     end
 
     # Import a cookbook found on the local filesystem into this instance of the cookbook store.
