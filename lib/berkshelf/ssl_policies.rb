@@ -31,9 +31,11 @@ module Berkshelf
     end
 
     def set_custom_certs
-      ::Dir.glob("#{trusted_certs_dir}/" "{*.crt,*.pem}").each do |cert|
-        cert = OpenSSL::X509::Certificate.new(IO.read(cert))
-        add_trusted_cert(cert)
+      Dir.chdir(trusted_certs_dir) do
+        ::Dir.glob("{*.crt,*.pem}").each do |cert|
+          cert = OpenSSL::X509::Certificate.new(IO.read(cert))
+          add_trusted_cert(cert)
+        end
       end
     end
   end
