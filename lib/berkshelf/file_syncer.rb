@@ -65,11 +65,6 @@ module Berkshelf
         [exclude, "#{exclude}/*"]
       end.flatten
 
-      # let glob expand the source directory in case it is an abbreviated windows
-      # user directory: C:/Users/MATTWR~1/AppData/Local/Temp
-      # so that it matches the parent of source_files
-      # source = glob(source).first
-
       source_files = Dir.chdir(source) do
         glob("**/*").reject do |source_file|
           excludes.any? { |exclude| File.fnmatch?(exclude, source_file, File::FNM_DOTMATCH) }
