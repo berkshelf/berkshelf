@@ -17,6 +17,13 @@ module Berkshelf
     # @return [Array<String>]
     #   the list of all files
     #
+    # @note
+    #   Globbing on windows is strange. Do not pass a path that contains
+    #   "symlinked" directories. Dir.glob will not see them. As an example,
+    #   'C:\Documents and Settings' is not a real directory and int recent
+    #   versions of windows points at 'C:\users'. Some users have their
+    #   temp directory still referring to 'C:\Documents and Settings'.
+    #
     def glob(pattern)
       Dir.glob(pattern, File::FNM_DOTMATCH).sort.reject do |file|
         basename = File.basename(file)
@@ -61,21 +68,20 @@ module Berkshelf
       # let glob expand the source directory in case it is an abbreviated windows
       # user directory: C:/Users/MATTWR~1/AppData/Local/Temp
       # so that it matches the parent of source_files
-      source = glob(source).first
+      # source = glob(source).first
 
-      source_files = glob(File.join(source, "**/*"))
-      source_files = source_files.reject do |source_file|
-        basename = relative_path_for(source_file, source)
-        excludes.any? { |exclude| File.fnmatch?(exclude, basename, File::FNM_DOTMATCH) }
+      source_files = Dir.chdir(source) do
+        glob("**/*").reject do |source_file|
+          excludes.any? { |exclude| File.fnmatch?(exclude, source_file, File::FNM_DOTMATCH) }
+        end
       end
 
       # Ensure the destination directory exists
       FileUtils.mkdir_p(destination) unless File.directory?(destination)
 
       # Copy over the filtered source files
-      source_files.each do |source_file|
-        relative_path = relative_path_for(source_file, source)
-
+      source_files.each do |relative_path|
+        source_file = File.join(source, relative_path)
         # Create the parent directory
         parent = File.join(destination, File.dirname(relative_path))
         FileUtils.mkdir_p(parent) unless File.directory?(parent)
@@ -102,42 +108,19 @@ module Berkshelf
 
       if options[:delete]
         # Remove any files in the destination that are not in the source files
-        destination_files = glob("#{destination}/**/*")
-
-        # Calculate the relative paths of files so we can compare to the
-        # source.
-        relative_source_files = source_files.map do |file|
-          relative_path_for(file, source)
-        end
-        relative_destination_files = destination_files.map do |file|
-          relative_path_for(file, destination)
+        destination_files = Dir.chdir(destination) do
+          glob("**/*")
         end
 
         # Remove any extra files that are present in the destination, but are
         # not in the source list
-        extra_files = relative_destination_files - relative_source_files
+        extra_files = destination_files - source_files
         extra_files.each do |file|
           FileUtils.rm_rf(File.join(destination, file))
         end
       end
 
       true
-    end
-
-    private
-
-      #
-      # The relative path of the given +path+ to the +parent+.
-      #
-      # @param [String] path
-      #   the path to get relative with
-      # @param [String] parent
-      #   the parent where the path is contained (hopefully)
-      #
-      # @return [String]
-      #
-    def relative_path_for(path, parent)
-      Pathname.new(path).relative_path_from(Pathname.new(parent)).to_s
     end
   end
 end
