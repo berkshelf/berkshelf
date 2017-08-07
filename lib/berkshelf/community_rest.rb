@@ -104,9 +104,12 @@ module Berkshelf
       if File.cookbook?(extracted)
         extracted
       else
-        Dir.glob(File.join(extracted, "*")).find do |dir|
-          File.cookbook?(dir)
+        dir = Dir.chdir(extracted) do
+          Dir.glob("*").find do |dir|
+            File.cookbook?(dir)
+          end
         end
+        File.join(extracted, dir) if dir
       end
     ensure
       archive.unlink unless archive.nil?

@@ -93,6 +93,7 @@ describe Berkshelf::CommunityREST do
         .and_return("/foo/nginx")
         .once
       expect(archive).to receive(:unlink).once
+      expect(Dir).to receive(:chdir).with("/foo/nginx")
 
       subject.download("bacon", "1.0.0")
     end
