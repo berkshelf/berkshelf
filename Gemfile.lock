@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    berkshelf (6.2.2)
+    berkshelf (6.3.0)
       buff-config (~> 2.0)
       buff-extensions (~> 2.0)
       chef (>= 12.7.2)
@@ -142,7 +142,7 @@ GEM
     hashdiff (0.3.4)
     hashie (3.5.6)
     highline (1.7.8)
-    hitimes (1.2.5)
+    hitimes (1.2.6)
     http (2.2.2)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -262,7 +262,7 @@ GEM
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
     semverse (2.0.0)
-    serverspec (2.39.1)
+    serverspec (2.39.2)
       multi_json
       rspec (~> 3.0)
       rspec-its

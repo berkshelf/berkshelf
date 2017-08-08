@@ -1,5 +1,14 @@
 # Change Log
 
+## [6.3.0](https://github.com/berkshelf/berkshelf/tree/6.3.0) (2017-08-08)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.2.2...6.3.0)
+
+**Merged pull requests:**
+
+- Remove stale comment [\#1724](https://github.com/berkshelf/berkshelf/pull/1724) ([jaym](https://github.com/jaym))
+- Fix up Dir.glob for windows [\#1722](https://github.com/berkshelf/berkshelf/pull/1722) ([jaym](https://github.com/jaym))
+- bump the gemfile.lock [\#1721](https://github.com/berkshelf/berkshelf/pull/1721) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v6.2.2](https://github.com/berkshelf/berkshelf/tree/v6.2.2) (2017-08-02)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.2.1...v6.2.2)
 
