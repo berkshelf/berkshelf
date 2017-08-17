@@ -26,6 +26,11 @@ module Berkshelf
       super(opts[:server_url].to_s, **chef_opts)
     end
 
+    # for compat with Ridley::Connection
+    def server_url
+      url
+    end
+
     def get(url)
       super(url)
     rescue Net::HTTPExceptions => e
@@ -42,10 +47,24 @@ module Berkshelf
     rescue Errno::EHOSTUNREACH, Errno::ECONNREFUSED => e
       raise Berkshelf::APIClient::ServiceUnavailable, e
     end
+
+    module ClassMethods
+      def new_client(**opts, &block)
+        client = new(**opts)
+        yield client
+        # ensure
+        # FIXME: does Chef::HTTP support close anywhere?  this will just leak open fds
+      end
+    end
+
+    def self.included(klass)
+      klass.extend ClassMethods
+    end
+
   end
 
   # This is for simple HTTP
-  class RidleyCompatSimple < Chef::ServerAPI
+  class RidleyCompatSimple < ::Chef::ServerAPI
     use Chef::HTTP::Decompressor
     use Chef::HTTP::CookieManager
     use Chef::HTTP::ValidateContentLength
@@ -54,7 +73,7 @@ module Berkshelf
   end
 
   # This is for JSON-REST
-  class RidleyCompatJSON < Chef::HTTP::SimpleJSON
+  class RidleyCompatJSON < ::Chef::HTTP::SimpleJSON
     use Chef::HTTP::JSONInput
     use Chef::HTTP::JSONOutput
     use Chef::HTTP::CookieManager
@@ -67,7 +86,7 @@ module Berkshelf
 
   # RidleyCompat is the ServerAPI, but we inherit from Chef::HTTP::Simple and then include all our middlewares
   # and then need to include our own CompatAPI.  The end result is a ridley-esque way of talking to a chef server.
-  class RidleyCompat < Chef::HTTP::Simple
+  class RidleyCompat < ::Chef::HTTP::Simple
     use Chef::HTTP::JSONInput
     use Chef::HTTP::JSONOutput
     use Chef::HTTP::CookieManager

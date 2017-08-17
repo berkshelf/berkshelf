@@ -1,4 +1,5 @@
 require "fileutils"
+require "chef/exceptions"
 
 module Berkshelf
   class CookbookStore
@@ -108,7 +109,7 @@ module Berkshelf
 
         begin
           CachedCookbook.from_store_path(path)
-        rescue Ridley::Errors::MissingNameAttribute
+        rescue Chef::Exceptions::MetadataNotValid
           # Skip cached cookbooks that do not have a name attribute.
           skipped_cookbooks << File.basename(path)
           next

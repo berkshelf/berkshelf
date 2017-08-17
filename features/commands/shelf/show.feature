@@ -17,10 +17,7 @@ Feature: berks shelf show
       Displaying all versions of 'fake' in the Berkshelf shelf:
               Name: fake
            Version: 1.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
       """
     And the output should not contain:
       """
@@ -37,10 +34,7 @@ Feature: berks shelf show
       Displaying 'fake' (1.0.0) in the Berkshelf shelf:
               Name: fake
            Version: 1.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
       """
     And the output should not contain:
       """
@@ -70,31 +64,19 @@ Feature: berks shelf show
       Displaying all versions of 'fake' in the Berkshelf shelf:
               Name: fake
            Version: 1.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
 
               Name: fake
            Version: 1.1.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
 
               Name: fake
            Version: 1.2.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
 
               Name: fake
            Version: 2.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
       """
 
   Scenario: With multiple cookbook versions installed and the --version flag
@@ -109,35 +91,23 @@ Feature: berks shelf show
       Displaying 'fake' (1.0.0) in the Berkshelf shelf:
               Name: fake
            Version: 1.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
       """
     And the output should not contain:
       """
               Name: fake
            Version: 1.1.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
       """
     And the output should not contain:
       """
               Name: fake
            Version: 1.2.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
       """
     And the output should not contain:
       """
               Name: fake
            Version: 2.0.0
-       Description: A fabulous new cookbook
-            Author: YOUR_COMPANY_NAME
-             Email: YOUR_EMAIL
-           License: none
+           License: All rights reserved
       """

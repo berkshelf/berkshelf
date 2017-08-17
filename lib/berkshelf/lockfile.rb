@@ -1,4 +1,5 @@
 require_relative "dependency"
+require "chef/environment"
 
 module Berkshelf
   class Lockfile
@@ -212,11 +213,14 @@ module Berkshelf
         update_environment_file(options[:envfile], locks) if options[:envfile]
       else
         Berkshelf.ridley_connection(options) do |connection|
-          environment = connection.environment.find(name)
+          environment =
+            begin
+              Chef::Environment.from_hash(connection.get("environments/#{name}"))
+            rescue Berkshelf::APIClient::ServiceNotFound
+              raise EnvironmentNotFound.new(name)
+            end
 
-          raise EnvironmentNotFound.new(name) if environment.nil?
-
-          environment.cookbook_versions = locks
+          environment.cookbook_versions locks
           environment.save unless options[:envfile]
         end
       end

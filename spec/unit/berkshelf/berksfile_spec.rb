@@ -385,12 +385,12 @@ describe Berkshelf::Berksfile do
   end
 
   describe "#vendor" do
-    let(:cached_cookbook)    { double(Berkshelf::CachedCookbook, cookbook_name: "my_cookbook", path: "/my_cookbook/path", compiled_metadata?: true) }
-    let(:installer)          { double(Berkshelf::Installer, run: [cached_cookbook]) }
+    let(:cached_cookbook)    { instance_double(Berkshelf::CachedCookbook, cookbook_name: "my_cookbook", path: "/my_cookbook/path", compile_metadata: true) }
+    let(:installer)          { instance_double(Berkshelf::Installer, run: [cached_cookbook]) }
     let(:raw_metadata_files) { [File.join(cached_cookbook.cookbook_name, "metadata.rb")] }
 
     let(:destination) { "/a/destination/path" }
-    let(:options) { { :exclude => raw_metadata_files + Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: nil } }
+    let(:options) { { :exclude => Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: nil } }
 
     before do
       allow(Berkshelf::Installer).to receive(:new).and_return(installer)
@@ -404,7 +404,6 @@ describe Berkshelf::Berksfile do
 
     it "excludes the top-level metadata.rb file" do
       expect(options[:exclude].any? { |exclude| File.fnmatch?(exclude, "my_cookbook/recipes/metadata.rb", File::FNM_DOTMATCH) }).to be(false)
-      expect(options[:exclude].any? { |exclude| File.fnmatch?(exclude, "my_cookbook/metadata.rb", File::FNM_DOTMATCH) }).to be(true)
     end
   end
 

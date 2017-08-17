@@ -67,7 +67,7 @@ describe Berkshelf::CommunityREST do
   describe "#initialize" do
     context "Faraday handlers" do
       it "includes follow_redirects to prevent 301 from community, stopping some cookbooks installing" do
-        expect(subject.builder.handlers).to include(Ridley::Middleware::FollowRedirects)
+        expect(subject.builder.handlers).to include(Berkshelf::Middleware::FollowRedirects)
       end
     end
   end

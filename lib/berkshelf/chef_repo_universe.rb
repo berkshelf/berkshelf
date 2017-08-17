@@ -1,5 +1,5 @@
 require "berkshelf/api_client/remote_cookbook"
-require "ridley/chef/cookbook"
+require "berkshelf/cached_cookbook"
 
 module Berkshelf
   # Shim to look like a Berkshelf::APIClient but for a chef repo folder.
@@ -18,7 +18,7 @@ module Berkshelf
         entry_path = "#{cookbooks_path}/#{entry}"
         next unless File.directory?(entry_path) # Skip non-dirs.
         cookbook = begin
-          Ridley::Chef::Cookbook.from_path(entry_path)
+          Berkshelf::CachedCookbook.from_path(entry_path)
         rescue IOError
           next # It wasn't a cookbook.
         end

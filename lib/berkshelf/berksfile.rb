@@ -173,8 +173,11 @@ module Berkshelf
     #   path to the metadata file
     def metadata(options = {})
       path          = options[:path] || File.dirname(filepath)
-      metadata_path = File.expand_path(File.join(path, "metadata.rb"))
-      metadata      = Ridley::Chef::Cookbook::Metadata.from_file(metadata_path)
+
+      loader = Chef::Cookbook::CookbookVersionLoader.new(path)
+      loader.load_cookbooks
+      cookbook_version = loader.cookbook_version
+      metadata = cookbook_version.metadata
 
       add_dependency(metadata.name, nil, path: path, metadata: true)
     end
@@ -646,14 +649,7 @@ module Berkshelf
           src   = cookbook.path.to_s.tr('\\', "/")
           files = FileSyncer.glob(File.join(src, "*"))
 
-          chefignore = Ridley::Chef::Chefignore.new(cookbook.path.to_s) rescue nil
-          chefignore.apply!(files) if chefignore
-
-          unless cookbook.compiled_metadata?
-            cookbook.compile_metadata(cookbook_destination)
-          end
-
-          raw_metadata_files << File.join(cookbook.cookbook_name, "metadata.rb")
+          cookbook.compile_metadata
 
           FileUtils.cp_r(files, cookbook_destination)
         end
@@ -673,7 +669,7 @@ module Berkshelf
         #
         #   * https://tickets.opscode.com/browse/CHEF-4811
         #   * https://tickets.opscode.com/browse/CHEF-4810
-        FileSyncer.sync(scratch, destination, exclude: raw_metadata_files + EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: @delete)
+        FileSyncer.sync(scratch, destination, exclude: EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: @delete)
       end
 
       destination

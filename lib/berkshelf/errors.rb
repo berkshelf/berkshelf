@@ -527,6 +527,9 @@ module Berkshelf
     alias_method :message, :to_s
   end
 
+  class CookbookSyntaxError < BerkshelfError; end
+  class RedirectLimitReached < BerkshelfError; end
+
   class MissingLockfileCookbookVersion < CookbookNotFound
     set_status_code(149)
 

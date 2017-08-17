@@ -1,3 +1,4 @@
+require "faraday"
 require "faraday/adapter/net_http"
 
 module Berkshelf

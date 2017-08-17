@@ -69,6 +69,8 @@ module Berkshelf
         end
         CommunityREST.new(remote_cookbook.location_path, options).download(name, version)
       when :chef_server
+        tmp_dir      = Dir.mktmpdir
+        unpack_dir   = Pathname.new(tmp_dir) + "#{name}-#{version}"
         # @todo Dynamically get credentials for remote_cookbook.location_path
         credentials = {
           server_url: remote_cookbook.location_path,
@@ -76,10 +78,19 @@ module Berkshelf
           client_key: source.options[:client_key] || Berkshelf::Config.instance.chef.client_key,
           ssl: source.options[:ssl],
         }
-        # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
-        # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
-        Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
-        Ridley.open(credentials) { |r| r.cookbook.download(name, version) }
+        RidleyCompat.new_client(credentials) do |conn|
+          cookbook = Chef::CookbookVersion.load(name, version)
+          manifest = cookbook.cookbook_manifest
+          manifest.by_parent_directory.each do |segment, files|
+            files.each do |segment_file|
+              dest = File.join(unpack_dir, segment_file["path"].gsub("/", File::SEPARATOR))
+              FileUtils.mkdir_p(File.dirname(dest))
+              tempfile = conn.streaming_request(segment_file["url"])
+              FileUtils.mv(tempfile.path, dest)
+            end
+          end
+        end
+        unpack_dir
       when :github
         require "octokit"
 

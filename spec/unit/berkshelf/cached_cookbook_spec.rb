@@ -76,10 +76,6 @@ describe Berkshelf::CachedCookbook do
       expect(subject.dependencies).to include(dependencies)
     end
 
-    it "contains recommendations from the cookbook metadata" do
-      expect(subject.dependencies).to include(recommendations)
-    end
-
     it "returns a hash" do
       expect(subject.dependencies).to be_a(Hash)
     end

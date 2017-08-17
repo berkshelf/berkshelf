@@ -19,10 +19,7 @@
         """
                 Name: fake
              Version: 1.0.0
-         Description: A fabulous new cookbook
-              Author: YOUR_COMPANY_NAME
-               Email: YOUR_EMAIL
-             License: none
+             License: All rights reserved
         """
 
     Scenario: When the parameter is a transitive dependency
@@ -50,10 +47,7 @@
         """
                 Name: dep
              Version: 1.0.0
-         Description: A fabulous new cookbook
-              Author: YOUR_COMPANY_NAME
-               Email: YOUR_EMAIL
-             License: none
+             License: All rights reserved
         """
 
     Scenario: When the cookbook is not in the Berksfile
@@ -97,3 +91,51 @@
         Cookbook 'fake' (1.0.0) not found in the cookbook store!
         """
       And the exit status should be "CookbookNotFound"
+
+Scenario: When the cookbook is a vendored cookbook
+      Given the cookbook store has the cookbooks:
+        | fake | 1.0.0 |
+      And I have a Berksfile pointing at the local Berkshelf API with:
+        """
+        cookbook 'fake', '1.0.0'
+        """
+      And I write to "Berksfile.lock" with:
+        """
+        DEPENDENCIES
+          fake (= 1.0.0)
+
+        GRAPH
+          fake (1.0.0)
+        """
+      And the cookbook store cookbook "fake" "1.0.0" is vendored without a metadata.rb
+      When I successfully run `berks info fake`
+      Then the output should contain:
+        """
+                Name: fake
+             Version: 1.0.0
+             License: All rights reserved
+        """
+
+Scenario: When the cookbook is a vendored cookbook
+      Given the cookbook store has the cookbooks:
+        | fake | 1.0.0 |
+      And I have a Berksfile pointing at the local Berkshelf API with:
+        """
+        cookbook 'fake', '1.0.0'
+        """
+      And I write to "Berksfile.lock" with:
+        """
+        DEPENDENCIES
+          fake (= 1.0.0)
+
+        GRAPH
+          fake (1.0.0)
+        """
+      And the cookbook store cookbook "fake" "1.0.0" is vendored with a metadata.rb
+      When I successfully run `berks info fake`
+      Then the output should contain:
+        """
+                Name: fake
+             Version: 1.0.0
+             License: All rights reserved
+        """

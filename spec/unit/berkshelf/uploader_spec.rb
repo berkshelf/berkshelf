@@ -51,7 +51,7 @@ module Berkshelf
       let(:options) { Hash.new }
 
       let(:chef_config) do
-        double(Ridley::Chef::Config,
+        double(Berkshelf::ChefConfigCompat,
           node_name: "fake-client",
           client_key: "client-key",
           chef_server_url: "http://configured-chef-server/",
@@ -125,7 +125,7 @@ module Berkshelf
         end
 
         it "uses the Berkshelf::Config options" do
-          expect(Ridley).to receive(:open).with(
+          expect(Berkshelf::RidleyCompat).to receive(:new_client).with(
             server_url:  chef_config.chef_server_url,
             client_name: chef_config.node_name,
             client_key:  chef_config.client_key,
@@ -142,7 +142,7 @@ module Berkshelf
         subject { Uploader.new(berksfile, ssl_verify: false) }
 
         it "uses the passed option" do
-          expect(Ridley).to receive(:open).with(
+          expect(Berkshelf::RidleyCompat).to receive(:new_client).with(
             server_url:  chef_config.chef_server_url,
             client_name: chef_config.node_name,
             client_key:  chef_config.client_key,
@@ -159,7 +159,7 @@ module Berkshelf
         subject { Uploader.new(berksfile, server_url: "http://custom") }
 
         it "uses the passed in :server_url" do
-          expect(Ridley).to receive(:open)
+          expect(Berkshelf::RidleyCompat).to receive(:new_client)
             .with(include(server_url: "http://custom"))
           subject.run
         end
@@ -169,7 +169,7 @@ module Berkshelf
         subject { Uploader.new(berksfile, client_name: "custom") }
 
         it "uses the passed in :client_name" do
-          expect(Ridley).to receive(:open)
+          expect(Berkshelf::RidleyCompat).to receive(:new_client)
             .with(include(client_name: "custom"))
           subject.run
         end
@@ -179,7 +179,7 @@ module Berkshelf
         subject { Uploader.new(berksfile, client_key: "custom") }
 
         it "uses the passed in :client_key" do
-          expect(Ridley).to receive(:open)
+          expect(Berkshelf::RidleyCompat).to receive(:new_client)
             .with(include(client_key: "custom"))
           subject.run
         end

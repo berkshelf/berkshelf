@@ -40,7 +40,7 @@ module Berkshelf
       #
       # @return [Bershelf::Chef::Config]
       def chef_config
-        Ridley::Chef::Config.from_file(chef_config_path)
+        Berkshelf::ChefConfigCompat.from_file(chef_config_path)
       end
 
       def clean_tmp_path

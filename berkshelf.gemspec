@@ -38,11 +38,11 @@ Gem::Specification.new do |s|
   s.add_dependency "httpclient",           "~> 2.7"
   s.add_dependency "minitar",              "~> 0.5", ">= 0.5.4"
   s.add_dependency "retryable",            "~> 2.0"
-  s.add_dependency "ridley",               "~> 5.0"
   s.add_dependency "solve",                "~> 4.0"
   s.add_dependency "thor",                 "~> 0.19", "< 0.19.2"
   s.add_dependency "octokit",              "~> 4.0"
   s.add_dependency "mixlib-archive",       "~> 0.4"
   s.add_dependency "concurrent-ruby",      "~> 1.0"
   s.add_dependency "chef",                 ">= 12.7.2"
+  s.add_dependency "chef-config"
 end
