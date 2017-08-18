@@ -66,7 +66,6 @@ module Berkshelf
           # another two lines that are necessary for chef < 13.2 support (affects 11.x/12.x as well)
           cookbook_version.metadata.maintainer "" if cookbook_version.metadata.maintainer.nil?
           cookbook_version.metadata.maintainer_email "" if cookbook_version.metadata.maintainer_email.nil?
-          #pp cookbook_version
 
           begin
             Chef::CookbookUploader.new(

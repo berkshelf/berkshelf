@@ -36,7 +36,7 @@ module Berkshelf
       def from_path(path)
         path = Pathname.new(path)
 
-        new(nil, path, nil)
+        new(path)
       end
 
       def checksum(filepath)
@@ -55,8 +55,7 @@ module Berkshelf
     attr_accessor :path
     attr_accessor :cookbook_version
 
-    # name and metadata are now ignored and should be removed
-    def initialize(name, path, metadata)
+    def initialize(path)
       loader = Chef::Cookbook::CookbookVersionLoader.new(path)
       loader.load_cookbooks
       @path = path
@@ -140,7 +139,6 @@ module Berkshelf
     def compile_metadata
       json_file = "#{path}/metadata.json"
       rb_file = "#{path}/metadata.rb"
-      puts "compiling #{rb_file} to #{json_file}"
       return if File.exist?(json_file)
       md = Chef::Cookbook::Metadata.new
       md.from_file(rb_file)

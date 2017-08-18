@@ -4,7 +4,7 @@ PATH
     berkshelf (6.3.0)
       buff-config (~> 2.0)
       buff-extensions (~> 2.0)
-      chef (>= 12.7.2)
+      chef (>= 12.19.33)
       chef-config
       cleanroom (~> 1.0)
       concurrent-ruby (~> 1.0)
