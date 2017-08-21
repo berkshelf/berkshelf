@@ -219,18 +219,15 @@ module Berkshelf
 end
 
 require_relative "berkshelf/lockfile"
-require_relative "berkshelf/base_generator"
 require_relative "berkshelf/berksfile"
 require_relative "berkshelf/cached_cookbook"
 require_relative "berkshelf/cli"
 require_relative "berkshelf/chef_config_compat"
 require_relative "berkshelf/community_rest"
-require_relative "berkshelf/cookbook_generator"
 require_relative "berkshelf/cookbook_store"
 require_relative "berkshelf/config"
 require_relative "berkshelf/dependency"
 require_relative "berkshelf/downloader"
-require_relative "berkshelf/init_generator"
 require_relative "berkshelf/installer"
 require_relative "berkshelf/logger"
 require_relative "berkshelf/resolver"

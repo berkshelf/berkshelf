@@ -75,17 +75,7 @@ module Berkshelf
     #   @see {Buff::Config::JSON}
     def initialize(path = self.class.path, options = {})
       super(path, options).tap do
-        # Deprecation
-        if !vagrant.omnibus.enabled.nil?
-          Berkshelf.ui.warn "`vagrant.omnibus.enabled' is deprecated and " \
-            "will be removed in a future release. Please remove the " \
-            "`enabled' attribute from your Berkshelf config."
-        end
-        if !vagrant.vm.box_url.nil?
-          Berkshelf.ui.warn "`vagrant.vm.box_url' is deprecated and " \
-            "will be removed in a future release. Please remove the " \
-            "`box_url' attribute from your Berkshelf config."
-        end
+        # if we need to add deprecation warnings in the future they can go here, right now we have none
       end
     end
 
@@ -132,21 +122,12 @@ module Berkshelf
       type: String,
       default: "bento/ubuntu-14.04",
       required: true
-    # @todo Deprecated, remove?
-    attribute "vagrant.vm.box_url",
-      type: String,
-      default: nil
     attribute "vagrant.vm.forward_port",
       type: Hash,
       default: Hash.new
     attribute "vagrant.vm.provision",
       type: String,
       default: "chef_solo"
-    # @todo Deprecated, remove. There's a really weird tri-state here where
-    # nil is used to represent an unset value, just FYI
-    attribute "vagrant.omnibus.enabled",
-      type: Buff::Boolean,
-      default: nil
     attribute "vagrant.omnibus.version",
       type: String,
       default: "latest"

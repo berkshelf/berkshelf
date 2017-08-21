@@ -256,35 +256,6 @@ module Berkshelf
       sources.find { |source| source.cookbook(name, version) }
     end
 
-    # @todo remove in Berkshelf 4.0
-    #
-    # @raise [DeprecatedError]
-    def site(*args)
-      if args.first == :opscode
-        Berkshelf.formatter.deprecation "Your Berksfile contains a site location pointing to the Opscode Community " +
-          "Site (site :opscode). Site locations have been replaced by the source location. Change this to: " +
-          "'source \"https://supermarket.chef.io\"' to remove this warning. For more information visit " +
-          "https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
-        source(DEFAULT_API_URL)
-        return
-      end
-
-      raise DeprecatedError.new "Your Berksfile contains a site location. Site locations have been " +
-        " replaced by the source location. Please remove your site location and try again. For more information " +
-        " visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
-    end
-    expose :site
-
-    # @todo remove in Berkshelf 4.0
-    #
-    # @raise [DeprecatedError]
-    def chef_api(*args)
-      raise DeprecatedError.new "Your Berksfile contains a chef_api location. Chef API locations have " +
-        " been replaced by the source location. Please remove your site location and try again. For more " +
-        " information visit https://github.com/berkshelf/berkshelf/wiki/deprecated-locations"
-    end
-    expose :chef_api
-
     # Add a dependency of the given name and constraint to the array of dependencies.
     #
     # @param [String] name

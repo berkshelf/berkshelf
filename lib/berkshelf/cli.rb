@@ -1,7 +1,5 @@
 require "berkshelf"
 require_relative "config"
-require_relative "init_generator"
-require_relative "cookbook_generator"
 require_relative "commands/shelf"
 
 module Berkshelf
@@ -129,13 +127,6 @@ module Berkshelf
       hide: true
     desc "install", "Install the cookbooks specified in the Berksfile"
     def install
-      if options[:path]
-        # TODO: Remove in Berkshelf 4.0
-        Berkshelf.formatter.deprecation "`berks install --path [PATH]` has been replaced by `berks vendor`."
-        Berkshelf.formatter.deprecation "Re-run your command as `berks vendor [PATH]` or see `berks help vendor`."
-        exit(1)
-      end
-
       berksfile = Berksfile.from_options(options)
       berksfile.install
     end
@@ -263,21 +254,6 @@ module Berkshelf
       cookbooks = source.search(name)
       Berkshelf.formatter.search(cookbooks)
     end
-
-    desc "init [PATH]", "Initialize Berkshelf in the given directory"
-    def init(path = ".")
-      Berkshelf.formatter.deprecation <<EOF
-This command is being deprecated in favor of `chef generate cookbook` and will soon return an error.
-Please use `chef generate cookbook` instead of this command.
-EOF
-      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
-      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
-
-      Berkshelf::InitGenerator.new([path], options).invoke_all
-
-      Berkshelf.formatter.msg "Successfully initialized"
-    end
-    tasks["init"].options = Berkshelf::InitGenerator.class_options
 
     method_option :berksfile,
       type: :string,
@@ -436,20 +412,6 @@ EOF
     def version
       Berkshelf.formatter.version
     end
-
-    desc "cookbook NAME [PATH]", "Create a skeleton for a new cookbook"
-    def cookbook(name, path = nil)
-      Berkshelf.formatter.deprecation <<EOF
-This command is being deprecated in favor of `chef generate cookbook` and will soon return an error.
-Please use `chef generate cookbook` instead of this command.
-EOF
-      path = File.join(Dir.pwd, name) if path.nil?
-      Berkshelf.formatter.deprecation "--git is now the default" if options[:git]
-      Berkshelf.formatter.deprecation "--vagrant is now the default" if options[:vagrant]
-
-      Berkshelf::CookbookGenerator.new([path, name], options).invoke_all
-    end
-    tasks["cookbook"].options = Berkshelf::CookbookGenerator.class_options
 
     private
 
