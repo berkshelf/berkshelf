@@ -1,5 +1,10 @@
+require "chef/cookbook/cookbook_version_loader"
+require "chef/cookbook/syntax_check"
+require "berkshelf/errors"
+require "chef/json_compat"
+
 module Berkshelf
-  class CachedCookbook < Ridley::Chef::Cookbook
+  class CachedCookbook
     class << self
       # @param [#to_s] path
       #   a path on disk to the location of a Cookbook downloaded by the Downloader
@@ -15,26 +20,70 @@ module Berkshelf
         loaded_cookbooks[path.to_s] ||= from_path(path)
       end
 
+      # Creates a new instance of Berkshelf::CachedCookbook from a path on disk containing
+      # a Cookbook.
+      #
+      # The name of the Cookbook is determined by the value of the name attribute set in
+      # the cookbooks' metadata. If the name attribute is not present the name of the loaded
+      # cookbook is determined by directory containing the cookbook.
+      #
+      # @param [#to_s] path
+      #   a path on disk to the location of a Cookbook
+      #
+      # @raise [IOError] if the path does not contain a metadata.rb or metadata.json file
+      #
+      # @return [Ridley::Chef::Cookbook]
+      def from_path(path)
+        path = Pathname.new(path)
+
+        new(path)
+      end
+
+      def checksum(filepath)
+        Chef::Digester.generate_md5_checksum_for_file(filepath)
+      end
+
       private
 
-        # @return [Hash<String, CachedCookbook>]
+      # @return [Hash<String, CachedCookbook>]
       def loaded_cookbooks
         @loaded_cookbooks ||= {}
       end
     end
 
+    attr_accessor :metadata
+    attr_accessor :path
+    attr_accessor :cookbook_version
+
+    def initialize(path)
+      loader = Chef::Cookbook::CookbookVersionLoader.new(path)
+      loader.load_cookbooks
+      @path = path
+      @cookbook_version = loader.cookbook_version
+      @cookbook_name = @cookbook_version.name
+      @metadata = @cookbook_version.metadata
+    end
+
+    def <=>(other)
+      [cookbook_name, version] <=> [other.cookbook_name, other.version]
+    end
+
     DIRNAME_REGEXP = /^(.+)-(.+)$/
 
     extend Forwardable
-    def_delegator :metadata, :description
-    def_delegator :metadata, :maintainer
-    def_delegator :metadata, :maintainer_email
-    def_delegator :metadata, :license
-    def_delegator :metadata, :platforms
+
+    def_delegator :@cookbook_version, :version
+    def_delegator :@metadata, :name, :cookbook_name
+    def_delegator :@metadata, :description
+    def_delegator :@metadata, :maintainer
+    def_delegator :@metadata, :maintainer_email
+    def_delegator :@metadata, :license
+    def_delegator :@metadata, :platforms
+    def_delegator :@metadata, :name
 
     # @return [Hash]
     def dependencies
-      metadata.recommendations.merge(metadata.dependencies)
+      metadata.dependencies
     end
 
     def pretty_print
@@ -70,6 +119,31 @@ module Berkshelf
         h[:license]       = license unless license.blank?
         h[:platforms]     = platforms.to_hash unless platforms.blank?
         h[:dependencies]  = dependencies.to_hash unless dependencies.blank?
+      end
+    end
+
+    def validate
+      raise IOError, "No Cookbook found at: #{path}" unless path.exist?
+
+      syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook_name, path)
+      unless syntax_checker.validate_ruby_files
+        raise Berkshelf::Errors::CookbookSyntaxError, "Invalid ruby files in cookbook: #{cookbook_name} (#{version})."
+      end
+      unless syntax_checker.validate_templates
+        raise Berkshelf::Errors::CookbookSyntaxError, "Invalid template files in cookbook: #{cookbook_name} (#{version})."
+      end
+
+      true
+    end
+
+    def compile_metadata
+      json_file = "#{path}/metadata.json"
+      rb_file = "#{path}/metadata.rb"
+      return if File.exist?(json_file)
+      md = Chef::Cookbook::Metadata.new
+      md.from_file(rb_file)
+      File.open(json_file, "w") do |f|
+        f.write(Chef::JSONCompat.to_json_pretty(md))
       end
     end
 

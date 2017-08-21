@@ -28,7 +28,7 @@ module Berkshelf
         Berkshelf.ui.error e
         Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
         @kernel.exit(e.status_code)
-      rescue Ridley::Errors::RidleyError => e
+      rescue => e
         Berkshelf.ui.error "#{e.class} #{e}"
         Berkshelf.ui.error "\t" + e.backtrace.join("\n\t") if ENV["BERKSHELF_DEBUG"]
         @kernel.exit(47)

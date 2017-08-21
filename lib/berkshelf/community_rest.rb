@@ -1,6 +1,9 @@
+require "faraday"
 require "berkshelf/streaming_file_adapter"
 require "retryable"
 require "mixlib/archive"
+require "berkshelf/middleware/parse_json"
+require "berkshelf/middleware/follow_redirects"
 
 module Berkshelf
   class CommunityREST < Faraday::Connection

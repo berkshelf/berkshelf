@@ -86,12 +86,10 @@ module Berkshelf
       describe "chef_server location type" do
         let(:chef_server_url) { "http://configured-chef-server/" }
         let(:ridley_client) do
-          double(Ridley::Client,
-            cookbook: double("cookbook", download: "fake")
-          )
+          instance_double(Berkshelf::RidleyCompat)
         end
         let(:chef_config) do
-          double(Ridley::Chef::Config,
+          double(Berkshelf::ChefConfigCompat,
             node_name: "fake-client",
             client_key: "client-key",
             chef_server_url: chef_server_url,
@@ -133,7 +131,7 @@ module Berkshelf
               cert_store: cert_store,
             },
           }
-          expect(Ridley).to receive(:open).with(credentials) { ridley_client }
+          expect(Berkshelf::RidleyCompat).to receive(:new_client).with(credentials) { ridley_client }
           subject.try_download(source, name, version)
         end
 
@@ -151,7 +149,7 @@ module Berkshelf
                 cert_store: cert_store,
               },
             }
-            expect(Ridley).to receive(:open).with(credentials) { ridley_client }
+            expect(Berkshelf::RidleyCompat).to receive(:new_client).with(credentials) { ridley_client }
             subject.try_download(source, name, version)
           end
         end
@@ -170,7 +168,7 @@ module Berkshelf
                 cert_store: cert_store,
               },
             }
-            expect(Ridley).to receive(:open).with(credentials) { ridley_client }
+            expect(Berkshelf::RidleyCompat).to receive(:new_client).with(credentials) { ridley_client }
             subject.try_download(source, name, version)
           end
         end

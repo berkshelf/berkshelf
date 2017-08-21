@@ -25,7 +25,7 @@ describe Berkshelf::Config do
     context "a Chef config to read defaults from" do
       let(:chef_config) do
         double(
-          Ridley::Chef::Config,
+          Berkshelf::ChefConfigCompat,
           chef_server_url: "https://chef.example.com",
           validation_client_name: "validator",
           validation_key: "validator.pem",

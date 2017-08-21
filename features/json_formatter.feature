@@ -110,7 +110,7 @@ Feature: --format json
           {
             "name": "example_cookbook",
             "version": "0.5.0",
-            "uploaded_to": "http://localhost:26310/"
+            "uploaded_to": "http://localhost:26310"
           }
         ],
         "errors": [],

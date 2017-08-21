@@ -225,7 +225,7 @@ describe Berkshelf::Lockfile do
 
       context "when the Chef environment does not exist" do
         it "raises an exception" do
-          allow(connection).to receive(:environment).and_return(double(find: nil))
+          allow(connection).to receive(:get).and_raise(Berkshelf::APIClient::ServiceNotFound)
           expect do
             subject.apply("production")
           end.to raise_error(Berkshelf::EnvironmentNotFound)
@@ -233,14 +233,17 @@ describe Berkshelf::Lockfile do
       end
 
       it "locks the environment cookbook versions on chef server" do
-        environment = double("environment", :cookbook_versions= => nil, save: true)
-        allow(connection).to receive(:environment).and_return(double(find: environment))
+        environment = instance_double(Chef::Environment)
+        env_hash = double(Hash)
+        expect(connection).to receive(:get).with("environments/production").and_return(env_hash)
+        expect(Chef::Environment).to receive(:from_hash).with(env_hash).and_return(environment)
 
-        expect(environment).to receive(:cookbook_versions=).with(
+        expect(environment).to receive(:cookbook_versions).with(
           "apt" => "= 1.0.0",
           "jenkins" => "= 1.4.5"
         )
 
+        expect(environment).to receive(:save)
         subject.apply("production")
       end
     end

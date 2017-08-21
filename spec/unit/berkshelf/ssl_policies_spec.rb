@@ -6,7 +6,7 @@ describe Berkshelf::SSLPolicy do
   let(:self_signed_crt_path_windows_forwardslashes) { "C:/users/vagrant/.chef/trusted_certs" }
 
   let(:chef_config) do
-    double(Ridley::Chef::Config,
+    double(Berkshelf::ChefConfigCompat,
       node_name: "fake-client",
       client_key: "client-key",
       chef_server_url: "http://configured-chef-server/",

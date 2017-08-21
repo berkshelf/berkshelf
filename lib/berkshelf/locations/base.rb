@@ -61,7 +61,7 @@ module Berkshelf
 
       begin
         cookbook = CachedCookbook.from_path(path)
-      rescue Ridley::Errors::RidleyError => e
+      rescue => e
         raise InternalError, "The following error occurred while reading the " \
           "cookbook `#{dependency.name}':\n#{e.class}: #{e.message}"
       end

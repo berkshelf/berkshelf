@@ -69,7 +69,7 @@ module Berkshelf
       template "Thorfile.erb", target.join("Thorfile")
 
       if options[:chefignore]
-        copy_file "chefignore", target.join(Ridley::Chef::Chefignore::FILENAME)
+        copy_file "chefignore", target.join("chefignore")
       end
 
       unless options[:skip_git]
@@ -118,12 +118,13 @@ module Berkshelf
       # @return [String]
       #   name of the cookbook
     def cookbook_name
-      @cookbook_name ||= begin
-        metadata = Ridley::Chef::Cookbook::Metadata.from_file(target.join("metadata.rb").to_s)
-        metadata.name.empty? ? File.basename(target) : metadata.name
-      rescue CookbookNotFound, IOError
-        File.basename(target)
-      end
+      @cookbook_name ||=
+        begin
+          metadata = Berkshelf::CachedCookbook.from_path(target.to_s).metadata
+          metadata.name.empty? ? File.basename(target) : metadata.name
+        rescue CookbookNotFound, IOError
+          File.basename(target)
+        end
     end
 
       # Assert the current working directory is a cookbook

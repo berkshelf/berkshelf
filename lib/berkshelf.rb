@@ -1,3 +1,4 @@
+
 # XXX: work around logger spam from hashie
 # https://github.com/intridea/hashie/issues/394
 begin
@@ -14,17 +15,16 @@ require "digest/md5"
 require "forwardable"
 require "json"
 require "pathname"
-require "ridley"
 require "semverse"
 require "solve"
 require "thor"
 require "uri"
-require "celluloid"
 
 JSON.create_id = nil
 
 require_relative "berkshelf/core_ext"
 require_relative "berkshelf/thor_ext"
+require "berkshelf/chef_config_compat"
 
 module Berkshelf
   Encoding.default_external = Encoding::UTF_8
@@ -105,9 +105,9 @@ module Berkshelf
 
     # The Chef configuration file.
     #
-    # @return [Ridley::Chef::Config]
+    # @return [Berkshelf::ChefConfigCompat]
     def chef_config
-      @chef_config ||= Ridley::Chef::Config.new(ENV["BERKSHELF_CHEF_CONFIG"])
+      @chef_config ||= Berkshelf::ChefConfigCompat.new(ENV["BERKSHELF_CHEF_CONFIG"])
     end
 
     # @param [Ridley::Chef::Config]
@@ -169,11 +169,10 @@ module Berkshelf
         raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 
-      # @todo  Something scary going on here - getting an instance of Kitchen::Logger from test-kitchen
-      # https://github.com/opscode/test-kitchen/blob/master/lib/kitchen.rb#L99
-      Celluloid.logger = nil unless ENV["DEBUG_CELLULOID"]
-      Ridley.open(ridley_options, &block)
-    rescue Ridley::Errors::RidleyError => ex
+      RidleyCompat.new_client(ridley_options, &block)
+    rescue ChefConnectionError, BerkshelfError
+      raise
+    rescue => ex
       log.exception(ex)
       raise ChefConnectionError, ex # todo implement
     end
@@ -224,6 +223,7 @@ require_relative "berkshelf/base_generator"
 require_relative "berkshelf/berksfile"
 require_relative "berkshelf/cached_cookbook"
 require_relative "berkshelf/cli"
+require_relative "berkshelf/chef_config_compat"
 require_relative "berkshelf/community_rest"
 require_relative "berkshelf/cookbook_generator"
 require_relative "berkshelf/cookbook_store"
@@ -239,6 +239,4 @@ require_relative "berkshelf/source_uri"
 require_relative "berkshelf/validator"
 require_relative "berkshelf/ssl_policies"
 
-Ridley.logger          = Berkshelf.logger
 Berkshelf.logger.level = Logger::WARN
-Celluloid.logger.level = Logger::ERROR

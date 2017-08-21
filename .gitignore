@@ -27,3 +27,4 @@ vendor/ruby
 .ruby-version
 bin
 !bin/berks
+Gemfile.local

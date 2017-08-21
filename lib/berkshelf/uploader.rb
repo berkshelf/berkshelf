@@ -1,3 +1,8 @@
+require "chef/cookbook/chefignore"
+require "chef/cookbook/cookbook_version_loader"
+require "chef/cookbook_uploader"
+require "chef/exceptions"
+
 module Berkshelf
   class Uploader
     attr_reader :berksfile
@@ -48,23 +53,32 @@ module Berkshelf
       Berkshelf.log.info "Starting upload"
 
       Berkshelf.ridley_connection(options) do |connection|
-        cookbooks.each do |cookbook|
+        # this is a hack to work around a bug in chef 13.0-13.2 protocol negotiation on POST requests, its only
+        # use is to force protocol negotiation via a GET request -- it doesn't matter if it 404s.  once we do not
+        # support those early 13.x versions this line can be safely deleted.
+        connection.get("users/#{Berkshelf.config.chef.node_name}") rescue nil
+
+        cookbooks.map do |cookbook|
+          cookbook_version = cookbook.cookbook_version
           Berkshelf.log.debug "  Uploading #{cookbook}"
+          cookbook_version.freeze_version if options[:freeze]
+
+          # another two lines that are necessary for chef < 13.2 support (affects 11.x/12.x as well)
+          cookbook_version.metadata.maintainer "" if cookbook_version.metadata.maintainer.nil?
+          cookbook_version.metadata.maintainer_email "" if cookbook_version.metadata.maintainer_email.nil?
 
           begin
-            connection.cookbook.upload(cookbook.path,
-              name:     cookbook.cookbook_name,
-              force:    options[:force],
-              freeze:   options[:freeze],
-              validate: options[:validate]
-            )
-
+            Chef::CookbookUploader.new(
+              [ cookbook_version ],
+              force: options[:force],
+              concurrency: 1, # sadly
+              rest: connection
+            ).upload_cookbooks
             Berkshelf.formatter.uploaded(cookbook, connection)
-          rescue Ridley::Errors::FrozenCookbook
+          rescue Chef::Exceptions::CookbookFrozen => e
             if options[:halt_on_frozen]
               raise FrozenCookbook.new(cookbook)
             end
-
             Berkshelf.formatter.skipping(cookbook, connection)
           end
         end
