@@ -121,7 +121,7 @@ module Berkshelf
       #
       # See https://github.com/berkshelf/berkshelf/pull/1316 for details.
       if Berkshelf.chef_config.knife[:chef_guard] == true
-        cookbooks.values
+        dependencies.reverse.map { |dependency| lockfile.retrieve(dependency) }.uniq
       else
         cookbooks.values.sort
       end
