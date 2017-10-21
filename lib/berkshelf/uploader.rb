@@ -85,15 +85,15 @@ module Berkshelf
       end
     end
 
-      # Filter cookbooks based off the list of dependencies in the Berksfile.
-      #
-      # This method is secretly recursive. It iterates over each dependency in
-      # the Berksfile (using {Berksfile#dependencies} to account for filters)
-      # and retrieves that cookbook, it's dependencies, and the recusive
-      # dependencies, but iteratively.
-      #
-      # @return [Array<CachedCookbook>]
-      #
+    # Filter cookbooks based off the list of dependencies in the Berksfile.
+    #
+    # This method is secretly recursive. It iterates over each dependency in
+    # the Berksfile (using {Berksfile#dependencies} to account for filters)
+    # and retrieves that cookbook, it's dependencies, and the recusive
+    # dependencies, but iteratively.
+    #
+    # @return [Array<CachedCookbook>]
+    #
     def filtered_cookbooks
       # Create a copy of the dependencies. We need to make a copy, or else
       # we would be adding dependencies directly to the Berksfile object, and
