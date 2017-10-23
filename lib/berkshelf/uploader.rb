@@ -85,6 +85,29 @@ module Berkshelf
       end
     end
 
+    # Lookup dependencies in a cookbook and iterate to return dependencies of dependencies.
+    #
+    # This method is recursive. It iterates over a cookbook's dependencies
+    # and their dependencies in order to return an array of cookbooks, starting
+    # with the cookbook passed and followed by it's dependencies.
+    #
+    # @return [Array<CachedCookbook>]
+    #
+    def lookup_dependencies(cookbook, dependencies = [], checked = {})
+      Berkshelf.log.debug "  Looking up dependencies for #{cookbook}"
+      lockfile.graph.find(cookbook).dependencies.each do |name, _|
+        next if checked[name]
+
+        dependencies << name
+
+        checked[name] = true
+
+        lookup_dependencies(name, dependencies, checked) unless lockfile.graph.find(name).dependencies.empty?
+      end
+
+      dependencies
+    end
+
     # Filter cookbooks based off the list of dependencies in the Berksfile.
     #
     # This method is secretly recursive. It iterates over each dependency in
@@ -100,31 +123,11 @@ module Berkshelf
       # that would be a bad idea...
       dependencies = berksfile.dependencies.map(&:name)
 
-      checked   = {}
-      cookbooks = {}
-
-      dependencies.each do |dependency|
-        next if checked[dependency]
-
-        lockfile.graph.find(dependency).dependencies.each do |name, _|
-          cookbooks[name] ||= lockfile.retrieve(name)
-          dependencies << name
-        end
-
-        checked[dependency] = true
-        cookbooks[dependency] ||= lockfile.retrieve(dependency)
+      cookbook_order = dependencies.each do |dependency|
+        lookup_dependencies(dependency, dependencies)
       end
 
-      # This is a temporary change and will be removed in a future release. We should
-      # add the ability to define a custom uploader which would allow the authors of Chef-Guard
-      # to define their upload strategy instead of using Ridley.
-      #
-      # See https://github.com/berkshelf/berkshelf/pull/1316 for details.
-      if Berkshelf.chef_config.knife[:chef_guard] == true
-        cookbooks.values
-      else
-        cookbooks.values.sort
-      end
+      cookbook_order.reverse.map { |dependency| lockfile.retrieve(dependency) }.uniq
     end
   end
 end
