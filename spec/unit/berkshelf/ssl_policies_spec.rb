@@ -16,10 +16,7 @@ describe Berkshelf::SSLPolicy do
       cookbook_copyright: "user",
       cookbook_email: "user@example.com",
       cookbook_license: "apachev2",
-      trusted_certs_dir: self_signed_crt_path,
-      knife: {
-        chef_guard: false,
-      }
+      trusted_certs_dir: self_signed_crt_path
     )
   end
 

@@ -61,10 +61,7 @@ module Berkshelf
           cookbook_copyright: "user",
           cookbook_email: "user@example.com",
           cookbook_license: "apachev2",
-          trusted_certs_dir: self_signed_crt_path,
-          knife: {
-            chef_guard: false,
-          }
+          trusted_certs_dir: self_signed_crt_path
         )
       end
 
@@ -182,6 +179,59 @@ module Berkshelf
           expect(Berkshelf::RidleyCompat).to receive(:new_client)
             .with(include(client_key: "custom"))
           subject.run
+        end
+      end
+    end
+
+    describe "#lookup_dependencies" do
+      before do
+        allow_any_instance_of(Berkshelf::Berksfile).to receive(:lockfile).and_return(lockfile)
+      end
+
+      let(:berksfile) { Berkshelf::Berksfile.from_file(fixtures_path.join("berksfiles/default")) }
+      let(:lockfile) { Berkshelf::Lockfile.from_file(fixtures_path.join("lockfiles/default.lock")) }
+
+      context "when given a cookbook that has no dependencies" do
+        subject { described_class.new(berksfile).send(:lookup_dependencies, "yum") }
+
+        it "returns empty array" do
+          expect(subject).to eq []
+        end
+      end
+
+      context "when given a cookbook that has dependencies" do
+        subject { described_class.new(berksfile).send(:lookup_dependencies, "yum-epel") }
+
+        it "returns array of cookbook's dependencies" do
+          expect(subject).to eq ["yum"]
+        end
+      end
+
+      context "when given a cookbook that has dependencies which have dependencies" do
+        subject { described_class.new(berksfile).send(:lookup_dependencies, "runit") }
+
+        it "returns array of cookbook's dependencies and their dependencies" do
+          expect(subject).to eq ["build-essential", "yum", "yum-epel"]
+        end
+      end
+    end
+
+    describe "#filtered_cookbooks" do
+      context "when iterating over a list of of cookbooks that have dependencies" do
+        before do
+          allow_any_instance_of(Berkshelf::Dependency).to receive(:berksfile).and_return(berksfile)
+          allow_any_instance_of(Berkshelf::Berksfile).to receive(:lockfile).and_return(lockfile)
+          allow(Berkshelf::CookbookStore).to receive(:instance).and_return(cookbook_store)
+        end
+
+        let(:berksfile) { Berkshelf::Berksfile.from_file(fixtures_path.join("berksfiles/default")) }
+        let(:lockfile) { Berkshelf::Lockfile.from_file(fixtures_path.join("lockfiles/default.lock")) }
+        let(:cookbook_store) { Berkshelf::CookbookStore.new(fixtures_path.join("cookbook-path-uploader")) }
+
+        subject { described_class.new(berksfile).send(:filtered_cookbooks) }
+
+        it "returns filtered list in correct order" do
+          expect(subject.map(&:name)).to eq ["yum", "yum-epel", "build-essential", "runit", "apt", "jenkins", "jenkins-config"]
         end
       end
     end
