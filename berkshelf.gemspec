@@ -34,8 +34,6 @@ Gem::Specification.new do |s|
   s.add_dependency "buff-extensions",      "~> 2.0"
   s.add_dependency "mixlib-shellout",      "~> 2.0"
   s.add_dependency "cleanroom",            "~> 1.0"
-  s.add_dependency "faraday",              "~> 0.9"
-  s.add_dependency "httpclient",           "~> 2.7"
   s.add_dependency "minitar",              "~> 0.5", ">= 0.5.4"
   s.add_dependency "retryable",            "~> 2.0"
   s.add_dependency "solve",                "~> 4.0"

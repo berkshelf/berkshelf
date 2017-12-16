@@ -64,14 +64,6 @@ describe Berkshelf::CommunityREST do
   let(:api_uri) { Berkshelf::CommunityREST::V1_API }
   subject { Berkshelf::CommunityREST.new(api_uri) }
 
-  describe "#initialize" do
-    context "Faraday handlers" do
-      it "includes follow_redirects to prevent 301 from community, stopping some cookbooks installing" do
-        expect(subject.builder.handlers).to include(Berkshelf::Middleware::FollowRedirects)
-      end
-    end
-  end
-
   describe "#download" do
     let(:archive) { double("archive", path: "/foo/bar", unlink: true) }
 
@@ -93,7 +85,6 @@ describe Berkshelf::CommunityREST do
         .and_return("/foo/nginx")
         .once
       expect(archive).to receive(:unlink).once
-      expect(Dir).to receive(:chdir).with("/foo/nginx")
 
       subject.download("bacon", "1.0.0")
     end
@@ -109,8 +100,8 @@ describe Berkshelf::CommunityREST do
 
       result = subject.find("bacon", "1.0.0")
 
-      expect(result.cookbook).to eq("/path/to/cookbook")
-      expect(result.version).to eq("1.0.0")
+      expect(result['cookbook']).to eq("/path/to/cookbook")
+      expect(result['version']).to eq("1.0.0")
     end
 
     it "raises a CookbookNotFound error on a 404 response for a non-existent cookbook" do
