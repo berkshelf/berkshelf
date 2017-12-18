@@ -100,8 +100,8 @@ describe Berkshelf::CommunityREST do
 
       result = subject.find("bacon", "1.0.0")
 
-      expect(result['cookbook']).to eq("/path/to/cookbook")
-      expect(result['version']).to eq("1.0.0")
+      expect(result["cookbook"]).to eq("/path/to/cookbook")
+      expect(result["version"]).to eq("1.0.0")
     end
 
     it "raises a CookbookNotFound error on a 404 response for a non-existent cookbook" do

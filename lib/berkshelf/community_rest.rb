@@ -89,7 +89,7 @@ module Berkshelf
     # @return [String, nil]
     #   cookbook filepath, or nil if archive does not contain a cookbook
     def download(name, version)
-      archive = stream(find(name, version)['file'])
+      archive = stream(find(name, version)["file"])
       scratch = Dir.mktmpdir
       extracted = self.class.unpack(archive.path, scratch)
 
