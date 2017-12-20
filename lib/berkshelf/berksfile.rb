@@ -9,8 +9,8 @@ module Berkshelf
       # @param (see Berksfile#initialize)
       def from_options(options = {})
         options[:berksfile] ||= File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
-        symbolized = Hash[options.map {|k, v| [k.to_sym, v] }]
-        from_file(options[:berksfile], symbolized.select { |k, | [:except, :only, :delete].include? k })
+        symbolized = Hash[options.map { |k, v| [k.to_sym, v] }]
+        from_file(options[:berksfile], symbolized.select { |k,| [:except, :only, :delete].include? k })
       end
 
       # @param [#to_s] file
