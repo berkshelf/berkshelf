@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef
-  revision: e33d435fffdd30167fed9b7b98e05d3e05988f91
+  revision: 8980bb3847c2bc9dd511bd8923066718b57217d2
   branch: master
   specs:
     chef (13.6.52)
@@ -50,7 +50,7 @@ PATH
       chef-config
       cleanroom (~> 1.0)
       concurrent-ruby (~> 1.0)
-      minitar (~> 0.5, >= 0.5.4)
+      minitar (>= 0.6)
       mixlib-archive (~> 0.4)
       mixlib-shellout (~> 2.0)
       octokit (~> 4.0)
@@ -298,4 +298,4 @@ DEPENDENCIES
   yard (>= 0.8)
 
 BUNDLED WITH
-   1.15.4
+   1.16.1.pre1
