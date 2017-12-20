@@ -1,12 +1,8 @@
-require "faraday"
-require "berkshelf/streaming_file_adapter"
 require "retryable"
 require "mixlib/archive"
-require "berkshelf/middleware/parse_json"
-require "berkshelf/middleware/follow_redirects"
 
 module Berkshelf
-  class CommunityREST < Faraday::Connection
+  class CommunityREST
     class << self
       # @param [String] target
       #   file path to the tar.gz archive on disk
@@ -61,6 +57,8 @@ module Berkshelf
     # @return [Float]
     #   time to wait between retries
     attr_reader :retry_interval
+    # @return [Berkshelf::RidleyCompat]
+    attr_reader :connection
 
     # @param [String] uri (CommunityREST::V1_API)
     #   location of community site to connect to
@@ -70,23 +68,14 @@ module Berkshelf
     # @option options [Float] :retry_interval (0.5)
     #   how often we should pause between retries
     def initialize(uri = V1_API, options = {})
+      options = options.dup
       options         = options.reverse_merge(retries: 5, retry_interval: 0.5, ssl: Berkshelf::Config.instance.ssl)
       @api_uri        = uri
+      options[:server_url] = uri
       @retries        = options.delete(:retries)
       @retry_interval = options.delete(:retry_interval)
 
-      options[:builder] ||= Faraday::RackBuilder.new do |b|
-        b.response :parse_json
-        b.response :follow_redirects
-        b.request :retry,
-          max: @retries,
-          interval: @retry_interval,
-          exceptions: [Faraday::Error::TimeoutError]
-
-        b.use Berkshelf::StreamingFileAdapter
-      end
-
-      super(api_uri, options)
+      @connection = Berkshelf::RidleyCompatJSON.new(options)
     end
 
     # Download and extract target cookbook archive to the local file system,
@@ -100,79 +89,69 @@ module Berkshelf
     # @return [String, nil]
     #   cookbook filepath, or nil if archive does not contain a cookbook
     def download(name, version)
-      archive = stream(find(name, version)[:file])
+      archive = stream(find(name, version)["file"])
       scratch = Dir.mktmpdir
       extracted = self.class.unpack(archive.path, scratch)
 
       if File.cookbook?(extracted)
         extracted
       else
-        dir = Dir.chdir(extracted) do
-          Dir.glob("*").find do |dir|
-            File.cookbook?(dir)
-          end
+        Dir.glob("#{extracted}/*").find do |dir|
+          File.cookbook?(dir)
         end
-        File.join(extracted, dir) if dir
       end
     ensure
       archive.unlink unless archive.nil?
     end
 
     def find(name, version)
-      response = get("cookbooks/#{name}/versions/#{self.class.uri_escape_version(version)}")
+      body = connection.get("cookbooks/#{name}/versions/#{self.class.uri_escape_version(version)}")
 
       # Artifactory responds with a 200 and blank body for unknown cookbooks.
-      if response.status == 200 && response.body.to_s == ""
-        response.env.status = 404
-      end
+      raise CookbookNotFound.new(name, nil, "at `#{api_uri}'") if body.nil?
 
-      case response.status
-      when (200..299)
-        response.body
-      when 404
-        raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
-      else
-        raise CommunitySiteError.new(api_uri, "'#{name}' (#{version})")
-      end
+      body
+    rescue CookbookNotFound
+      raise
+    rescue Berkshelf::APIClient::ServiceNotFound
+      raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
+    rescue => e
+      raise CommunitySiteError.new(api_uri, "'#{name}' (#{version})")
     end
 
     # Returns the latest version of the cookbook and its download link.
     #
     # @return [String]
     def latest_version(name)
-      response = get("cookbooks/#{name}")
+      body = connection.get("cookbooks/#{name}")
 
       # Artifactory responds with a 200 and blank body for unknown cookbooks.
-      if response.status == 200 && response.body.to_s == ""
-        response.env.status = 404
-      end
+      raise CookbookNotFound.new(name, nil, "at `#{api_uri}'") if body.nil?
 
-      case response.status
-      when (200..299)
-        self.class.version_from_uri response.body["latest_version"]
-      when 404
-        raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
-      else
-        raise CommunitySiteError.new(api_uri, "the latest version of '#{name}'")
-      end
+      self.class.version_from_uri body["latest_version"]
+    rescue Berkshelf::APIClient::ServiceNotFound
+      raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
+    rescue => e
+      raise CommunitySiteError.new(api_uri, "the latest version of '#{name}'")
     end
 
     # @param [String] name
     #
     # @return [Array]
     def versions(name)
-      response = get("cookbooks/#{name}")
+      body = connection.get("cookbooks/#{name}")
 
-      case response.status
-      when (200..299)
-        response.body["versions"].collect do |version_uri|
-          self.class.version_from_uri(version_uri)
-        end
-      when 404
-        raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
-      else
-        raise CommunitySiteError.new(api_uri, "versions of '#{name}'")
+      # Artifactory responds with a 200 and blank body for unknown cookbooks.
+      raise CookbookNotFound.new(name, nil, "at `#{api_uri}'") if body.nil?
+
+      body["versions"].collect do |version_uri|
+        self.class.version_from_uri(version_uri)
       end
+
+    rescue Berkshelf::APIClient::ServiceNotFound
+      raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
+    rescue => e
+      raise CommunitySiteError.new(api_uri, "versions of '#{name}'")
     end
 
     # @param [String] name
@@ -194,12 +173,9 @@ module Berkshelf
     def stream(target)
       local = Tempfile.new("community-rest-stream")
       local.binmode
-
-      Retryable.retryable(tries: retries, on: Faraday::Error::ConnectionFailed, sleep: retry_interval) do
-        get(target, nil, streaming_file: local)
+      Retryable.retryable(tries: retries, on: Berkshelf::APIClientError, sleep: retry_interval) do
+        connection.streaming_request(target, {}, local)
       end
-
-      local
     ensure
       local.close(false) unless local.nil?
     end

@@ -10,6 +10,9 @@ group :build do
   gem "rake",          ">= 10.1"
 end
 
+# temporarily until 13.7.x is released
+gem "chef", git: "https://github.com/chef/chef", branch: "master"
+
 group :development do
   # these all deliberately float because berkshelf has a Gemfile.lock that
   # equality pins them.  temporarily pin as necessary for API breaks.

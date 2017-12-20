@@ -51,11 +51,11 @@ class Spec < Thor
 
   no_tasks do
     def units_command
-      run("rspec --color --format progress spec/unit")
+      run("rspec --color spec/unit")
     end
 
     def acceptance_command
-      run("cucumber --color --format progress --tags ~@no_run --strict")
+      run("cucumber --color --tags ~@no_run --strict")
     end
   end
 end
