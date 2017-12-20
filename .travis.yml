@@ -64,7 +64,7 @@ matrix:
         - rvmsudo_secure_path=1
       script:
         - git clone https://github.com/chef/proxy_tests.git
-        - cd proxy_tests && chef-client -z -o proxy_tests::render && cd ..
+        - cd proxy_tests && bundle exec chef-client -z -o proxy_tests::render && cd ..
         - rvmsudo -E bundle exec bash $PROXY_TESTS_DIR/run_tests.sh berkshelf \* \* /tmp/out.txt
       after_script: cat /tmp/out.txt
   allow_failures:
