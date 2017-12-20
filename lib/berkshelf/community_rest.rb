@@ -171,7 +171,13 @@ module Berkshelf
     #
     # @return [Tempfile]
     def stream(target)
-      connection.streaming_request(target)
+      local = Tempfile.new("community-rest-stream")
+      local.binmode
+      Retryable.retryable(tries: retries, on: Berkshelf::APIClientError, sleep: retry_interval) do
+        connection.streaming_request(target, {}, local)
+      end
+    ensure
+      local.close(false) unless local.nil?
     end
   end
 end
