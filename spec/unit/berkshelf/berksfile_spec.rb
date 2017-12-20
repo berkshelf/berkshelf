@@ -192,26 +192,6 @@ describe Berkshelf::Berksfile do
     end
   end
 
-  describe "#site" do
-    it "raises a Berkshelf::Deprecated error" do
-      expect { subject.site }.to raise_error(Berkshelf::DeprecatedError)
-    end
-
-    it "is a DSL method" do
-      expect(subject).to have_exposed_method(:site)
-    end
-  end
-
-  describe "#chef_api" do
-    it "raises a Berkshelf::Deprecated error" do
-      expect { subject.chef_api }.to raise_error(Berkshelf::DeprecatedError)
-    end
-
-    it "is a DSL method" do
-      expect(subject).to have_exposed_method(:chef_api)
-    end
-  end
-
   describe "#extension" do
     it "is a DSL method" do
       expect(subject).to have_exposed_method(:extension)
