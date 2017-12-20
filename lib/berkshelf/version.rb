@@ -1,3 +1,3 @@
 module Berkshelf
-  VERSION = "6.3.0"
+  VERSION = "7.0.0.alpha.0"
 end
