@@ -78,6 +78,18 @@ module Berkshelf
         ssl[:client_key] = OpenSSL::PKey::RSA.new(File.read(ssl[:client_key])) if ssl[:client_key] && ssl[:client_key].is_a?(String)
         @instance
       end
+
+      def from_file(path)
+        new(path)
+      end
+
+      def from_json(json)
+        new.from_json(json)
+      end
+
+      def from_hash(hash)
+        new.from_hash(hash)
+      end
     end
 
     attr_accessor :path
