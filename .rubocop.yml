@@ -1,0 +1,8 @@
+Security/Eval:
+  Enabled: false
+Lint/AmbiguousRegexpLiteral:
+  Enabled: false
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+Performance/HashEachMethods:
+  Enabled: false

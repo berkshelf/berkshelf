@@ -72,7 +72,6 @@ module Berkshelf
     alias :real_clone :clone
     def clone
       fake_remote = generate_fake_git_remote(uri, tags: @branch ? [@branch] : [])
-      tmp_clone = File.join(self.class.tmpdir, uri.gsub(/[\/:]/, "-"))
       @uri = "file://#{fake_remote}"
       real_clone
     end

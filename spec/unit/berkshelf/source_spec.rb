@@ -194,7 +194,7 @@ module Berkshelf
     end
 
     describe "#search" do
-      let (:cookbooks) do
+      let(:cookbooks) do
         [
         APIClient::RemoteCookbook.new("cb1", "1.0.8"),
         APIClient::RemoteCookbook.new("cb1", "1.0.22"),

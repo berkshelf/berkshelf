@@ -68,7 +68,7 @@ module Berkshelf
     include Mixin::Logging
 
     attr_writer :berkshelf_path
-    attr_accessor :ui
+    attr_writer :ui
 
     # @return [Pathname]
     def root

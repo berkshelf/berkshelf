@@ -9,8 +9,8 @@ Given /^the Chef Server has cookbooks:$/ do |cookbooks|
     metadata = []
     metadata << "name '#{name}'"
     metadata << "version '#{version}'"
-    dependencies.to_s.split(",").map { |d| d.split(" ", 2) }.each do |(name, constraint)|
-      metadata << "depends '#{name}', '#{constraint}'"
+    dependencies.to_s.split(",").map { |d| d.split(" ", 2) }.each do |(dep_name, constraint)|
+      metadata << "depends '#{dep_name}', '#{constraint}'"
     end
 
     chef_cookbook(name, { "metadata.rb" => metadata.join("\n") })
