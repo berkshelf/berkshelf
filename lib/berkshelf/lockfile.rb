@@ -58,7 +58,7 @@ module Berkshelf
       @dependencies = {}
       @graph        = Graph.new(self)
 
-      parse if File.exists?(@filepath)
+      parse if File.exist?(@filepath)
     end
 
     # Parse the lockfile.
@@ -76,7 +76,7 @@ module Berkshelf
     # @return [Boolean]
     #   true if this lockfile exists on the disk, false otherwise
     def present?
-      File.exists?(filepath) && !File.read(filepath).strip.empty?
+      File.exist?(filepath) && !File.read(filepath).strip.empty?
     end
 
     # Determine if we can "trust" this lockfile. A lockfile is trustworthy if:
@@ -318,7 +318,7 @@ module Berkshelf
     # @raise [EnvironmentFileNotFound]
     #   If environment file doesn't exist
     def update_environment_file(environment_file, locks)
-      unless File.exists?(environment_file)
+      unless File.exist?(environment_file)
         raise EnvironmentFileNotFound.new(environment_file)
       end
 

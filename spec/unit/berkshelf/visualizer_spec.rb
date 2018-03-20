@@ -37,7 +37,7 @@ module Berkshelf
 
           Visualizer.from_lockfile(lockfile).to_dot_file(outfile)
 
-          expect(File.exists?(outfile)).to be true
+          expect(File.exist?(outfile)).to be true
         end
 
         it "builds a png from a Lockfile" do
@@ -46,7 +46,7 @@ module Berkshelf
 
           Visualizer.from_lockfile(lockfile).to_png(outfile)
 
-          expect(File.exists?(outfile)).to be true
+          expect(File.exist?(outfile)).to be true
         end
       end
     end

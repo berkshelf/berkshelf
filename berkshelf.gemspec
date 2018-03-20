@@ -43,5 +43,5 @@ Gem::Specification.new do |s|
   s.add_dependency "chef",                 ">= 13.6.52"
   s.add_dependency "chef-config"
   # this is required for Mixlib::Config#from_json
-  s.add_dependency "mixlib-config",        ">= 2.2.5"
+  s.add_dependency "mixlib-config", ">= 2.2.5"
 end
