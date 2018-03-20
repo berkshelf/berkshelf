@@ -104,7 +104,7 @@ module Berkshelf
       @klass.extend(BerksConfig)
 
       @path = File.expand_path(path)
-      @klass.from_file(path) if File.exist?(path)
+      @klass.from_file(@path) if File.exist?(@path)
       # yeah, if !File.exist?() you just get back an empty config object
     end
 

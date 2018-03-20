@@ -58,7 +58,7 @@ describe Berkshelf::Lockfile do
     end
 
     it "returns false when the file does not exist" do
-      allow(File).to receive(:exists?).and_return(false)
+      allow(File).to receive(:exist?).and_return(false)
       expect(subject.present?).to be(false)
     end
 
@@ -297,7 +297,7 @@ describe Berkshelf::Lockfile do
 
   describe "#update_environment_file" do
     it "raises an exception when environment file does not exist" do
-      allow(File).to receive(:exists?).and_return(false)
+      allow(File).to receive(:exist?).and_return(false)
       expect do
         subject.update_environment_file("/broken/path", nil)
       end.to raise_error(Berkshelf::EnvironmentFileNotFound)
@@ -310,7 +310,7 @@ describe Berkshelf::Lockfile do
         "jenkins" => "1.4.5",
       }
 
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
       allow(File).to receive(:read).and_return("{}")
       allow(File).to receive(:open).and_yield(file)
 
