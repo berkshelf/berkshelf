@@ -80,6 +80,8 @@ module Berkshelf
       end
     end
 
+    attr_accessor :path
+
     # @param [String] path
     def initialize(path = self.class.path)
       # this is a bit tricky, mixlib-config wants to extend a class and create effectively a global config object while
@@ -89,7 +91,7 @@ module Berkshelf
       @klass.extend(Mixlib::Config)
       @klass.extend(BerksConfig)
 
-      path = File.expand_path(path)
+      @path = File.expand_path(path)
       @klass.from_file(path) if File.exist?(path)
       # yeah, if !File.exist?() you just get back an empty config object
     end
@@ -101,6 +103,7 @@ module Berkshelf
     module BerksConfig
       def self.extended(base)
         base.class_exec do
+          config_strict_mode true
           config_context :api do
             default :timeout, "30"
           end
@@ -135,6 +138,7 @@ module Berkshelf
             default :cert_store, false
             default :ca_file, nil
             default :ca_path, nil
+            default :ca_cert, nil
             default :client_cert, nil
             default :client_key, nil
           end
