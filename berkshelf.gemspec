@@ -30,7 +30,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = ">= 2.3.1"
   s.required_rubygems_version = ">= 2.0.0"
 
-  s.add_dependency "buff-config",          "~> 2.0"
   s.add_dependency "buff-extensions",      "~> 2.0"
   s.add_dependency "mixlib-shellout",      "~> 2.0"
   s.add_dependency "cleanroom",            "~> 1.0"
@@ -43,4 +42,6 @@ Gem::Specification.new do |s|
   s.add_dependency "concurrent-ruby",      "~> 1.0"
   s.add_dependency "chef",                 ">= 13.6.52"
   s.add_dependency "chef-config"
+  # this is required for Mixlib::Config#from_json
+  s.add_dependency "mixlib-config",        ">= 2.2.5"
 end

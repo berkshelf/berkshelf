@@ -1,8 +1,18 @@
-require "buff/config/json"
+require "mixlib/config"
 require "openssl"
 
+# we need this method, but have to inject it into mixlib-config directly
+# to have it available from config contexts
+module Mixlib
+  module Config
+    def each(&block)
+      save(true).each(&block)
+    end
+  end
+end
+
 module Berkshelf
-  class Config < Buff::Config::JSON
+  class Config
     class << self
       # @return [String]
       def store_location
@@ -62,7 +72,7 @@ module Berkshelf
       #
       # @return [Config]
       def coerce_ssl
-        ssl = @instance.ssl
+        ssl = @instance[:ssl]
         ssl[:ca_cert] = OpenSSL::X509::Certificate.new(File.read(ssl[:ca_cert])) if ssl[:ca_cert] && ssl[:ca_cert].is_a?(String)
         ssl[:client_cert] = OpenSSL::X509::Certificate.new(File.read(ssl[:client_cert])) if ssl[:client_cert] && ssl[:client_cert].is_a?(String)
         ssl[:client_key] = OpenSSL::PKey::RSA.new(File.read(ssl[:client_key])) if ssl[:client_key] && ssl[:client_key].is_a?(String)
@@ -71,102 +81,69 @@ module Berkshelf
     end
 
     # @param [String] path
-    # @param [Hash] options
-    #   @see {Buff::Config::JSON}
-    def initialize(path = self.class.path, options = {})
-      super(path, options).tap do
-        # if we need to add deprecation warnings in the future they can go here, right now we have none
-      end
+    def initialize(path = self.class.path)
+      # this is a bit tricky, mixlib-config wants to extend a class and create effectively a global config object while
+      # what we want to do is use an instance, so we create an anonymous class and shove it into an instance variable.
+      # this is actually similar to what mixlib-config itself does to create config contexts.
+      @klass = Class.new
+      @klass.extend(Mixlib::Config)
+      @klass.extend(BerksConfig)
+
+      path = File.expand_path(path)
+      @klass.from_file(path) if File.exist?(path)
+      # yeah, if !File.exist?() you just get back an empty config object
     end
 
-    attribute "api.timeout",
-      type: String,
-      default: "30"
-    attribute "chef.chef_server_url",
-      type: String,
-      default: Berkshelf.chef_config.chef_server_url
-    attribute "chef.validation_client_name",
-      type: String,
-      default: Berkshelf.chef_config.validation_client_name
-    attribute "chef.validation_key_path",
-      type: String,
-      default: Berkshelf.chef_config.validation_key
-    attribute "chef.client_key",
-      type: String,
-      default: Berkshelf.chef_config.client_key
-    attribute "chef.node_name",
-      type: String,
-      default: Berkshelf.chef_config.node_name
-    attribute "chef.trusted_certs_dir",
-      type: String,
-      default: Berkshelf.chef_config.trusted_certs_dir
-    attribute "chef.artifactory_api_key",
-      type: String,
-      default: Berkshelf.chef_config.artifactory_api_key
-    attribute "cookbook.copyright",
-      type: String,
-      default: Berkshelf.chef_config.cookbook_copyright
-    attribute "cookbook.email",
-      type: String,
-      default: Berkshelf.chef_config.cookbook_email
-    attribute "cookbook.license",
-      type: String,
-      default: Berkshelf.chef_config.cookbook_license
-    attribute "allowed_licenses",
-      type: Array,
-      default: Array.new
-    attribute "raise_license_exception",
-      type: Buff::Boolean,
-      default: false
-    attribute "vagrant.vm.box",
-      type: String,
-      default: "bento/ubuntu-14.04",
-      required: true
-    attribute "vagrant.vm.forward_port",
-      type: Hash,
-      default: Hash.new
-    attribute "vagrant.vm.provision",
-      type: String,
-      default: "chef_solo"
-    attribute "vagrant.omnibus.version",
-      type: String,
-      default: "latest"
-    attribute "ssl.verify",
-      type: Buff::Boolean,
-      default: true,
-      required: true
-    attribute "ssl.cert_store",
-      type: Buff::Boolean,
-      default: false,
-      required: false
-    attribute "ssl.ca_file",
-      type: String,
-      default: nil,
-      required: false
-    attribute "ssl.ca_path",
-      type: String,
-      default: nil,
-      required: false
-    attribute "ssl.client_cert",
-      type: String,
-      default: nil,
-      required: false
-    attribute "ssl.client_key",
-      type: String,
-      default: nil,
-      required: false
-    attribute "github",
-      type: Array,
-      default: [],
-      required: false
-    attribute "gitlab",
-      type: Array,
-      default: [],
-      required: false
-    attribute "github_protocol",
-      # :git, :ssh, or :https
-      type: Symbol,
-      default: :https,
-      required: false
+    def method_missing(method, *args, &block)
+      @klass.send(method, *args, &block)
+    end
+
+    module BerksConfig
+      def self.extended(base)
+        base.class_exec do
+          config_context :api do
+            default :timeout, "30"
+          end
+          config_context :chef do
+            default :chef_server_url, Berkshelf.chef_config.chef_server_url
+            default :validation_client_name, Berkshelf.chef_config.validation_client_name
+            default :validation_key_path, Berkshelf.chef_config.validation_key
+            default :client_key, Berkshelf.chef_config.client_key
+            default :node_name, Berkshelf.chef_config.node_name
+            default :trusted_certs_dir, Berkshelf.chef_config.trusted_certs_dir
+            default :artifactory_api_key, Berkshelf.chef_config.artifactory_api_key
+          end
+          config_context :cookbook do
+            default :copyright, Berkshelf.chef_config.cookbook_copyright
+            default :email, Berkshelf.chef_config.cookbook_email
+            default :license, Berkshelf.chef_config.cookbook_license
+          end
+          default :allowed_licenses, Array.new
+          default :raise_license_exception, false
+          config_context :vagrant do
+            config_context :vm do
+              default :box, "bento/ubuntu-14.04"
+              default :forward_port, Hash.new
+              default :provision, "chef_solo"
+              config_context :omnibus do
+                default :version, "latest"
+              end
+            end
+          end
+          config_context :ssl do
+            default :verify, true
+            default :cert_store, false
+            default :ca_file, nil
+            default :ca_path, nil
+            default :client_cert, nil
+            default :client_key, nil
+          end
+          default :github, []
+          default :gitlab, []
+          # :git, :ssh, or :https
+          default :github_protocol, :https
+        end
+      end
+    end
   end
 end
