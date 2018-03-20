@@ -68,7 +68,7 @@ module Berkshelf
       destination = cookbook_path(name, version)
       FileUtils.mv(path, destination)
       cookbook(name, version)
-    rescue => ex
+    rescue
       FileUtils.rm_f(destination)
       raise
     end

@@ -42,16 +42,17 @@ Before do
   reload_configs
   Berkshelf::CachedCookbook.instance_variable_set(:@loaded_cookbooks, nil)
 
-  endpoints = [
-    {
-      type: "chef_server",
-      options: {
-        url: "http://localhost:#{CHEF_SERVER_PORT}",
-        client_name: "reset",
-        client_key: File.expand_path("spec/config/berkshelf.pem"),
-      },
-    },
-  ]
+  # This appears to be dead code
+  #endpoints = [
+  #  {
+  #    type: "chef_server",
+  #    options: {
+  #      url: "http://localhost:#{CHEF_SERVER_PORT}",
+  #      client_name: "reset",
+  #      client_key: File.expand_path("spec/config/berkshelf.pem"),
+  #    },
+  #  },
+  #]
 
   Berkshelf::RSpec::ChefServer.start(port: CHEF_SERVER_PORT)
 

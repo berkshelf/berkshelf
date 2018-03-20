@@ -15,7 +15,7 @@ module Berkshelf
   class Packager
     class << self
       def validate_destination(path)
-        path = path.to_s
+        path.to_s
       end
     end
 

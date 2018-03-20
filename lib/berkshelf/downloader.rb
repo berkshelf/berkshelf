@@ -33,11 +33,12 @@ module Berkshelf
     #
     # @return [String]
     def download(*args, &block)
-      options = args.last.is_a?(Hash) ? args.pop : Hash.new
+      # options are ignored
+      #options = args.last.is_a?(Hash) ? args.pop : Hash.new
       dependency, version = args
 
       sources.each do |source|
-        if result = try_download(source, dependency, version)
+        if ( result = try_download(source, dependency, version) )
           if block_given?
             value = yield result
             FileUtils.rm_rf(result)
@@ -57,7 +58,7 @@ module Berkshelf
     #
     # @return [String]
     def try_download(source, name, version)
-      unless remote_cookbook = source.cookbook(name, version)
+      unless ( remote_cookbook = source.cookbook(name, version) )
         return nil
       end
 

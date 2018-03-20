@@ -284,9 +284,10 @@ module Berkshelf
         end
       end
 
-      if options[:path]
-        metadata_file = File.join(options[:path], "metadata.rb")
-      end
+      # this appears to be dead code
+      #if options[:path]
+      #  metadata_file = File.join(options[:path], "metadata.rb")
+      #end
 
       options[:constraint] = constraint
 
@@ -606,9 +607,10 @@ module Berkshelf
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination)
       Dir.mktmpdir("vendor") do |scratch|
-        chefignore       = nil
+        # appears to be dead code
+        #chefignore       = nil
+        #raw_metadata_files = []
         cached_cookbooks = install
-        raw_metadata_files = []
 
         return nil if cached_cookbooks.empty?
 

@@ -115,7 +115,7 @@ module Berkshelf
       raise
     rescue Berkshelf::APIClient::ServiceNotFound
       raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
-    rescue => e
+    rescue
       raise CommunitySiteError.new(api_uri, "'#{name}' (#{version})")
     end
 
@@ -131,7 +131,7 @@ module Berkshelf
       self.class.version_from_uri body["latest_version"]
     rescue Berkshelf::APIClient::ServiceNotFound
       raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
-    rescue => e
+    rescue
       raise CommunitySiteError.new(api_uri, "the latest version of '#{name}'")
     end
 
@@ -150,7 +150,7 @@ module Berkshelf
 
     rescue Berkshelf::APIClient::ServiceNotFound
       raise CookbookNotFound.new(name, nil, "at `#{api_uri}'")
-    rescue => e
+    rescue
       raise CommunitySiteError.new(api_uri, "versions of '#{name}'")
     end
 

@@ -19,7 +19,7 @@ module Berkshelf
       #
       # @return [~BaseLocation, nil]
       def init(dependency, options = {})
-        if klass = klass_from_options(options)
+        if ( klass = klass_from_options(options) )
           klass.new(dependency, options)
         else
           nil
