@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/chef/chef
-  revision: 51c59ecb887e9122aa849d8153b9984df74b2b09
+  revision: 8e9ea543502781d4e0f71a9d577f639c256171b1
   branch: master
   specs:
-    chef (14.0.146)
+    chef (14.0.149)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.0.146)
+      chef-config (= 14.0.149)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -33,7 +33,7 @@ GIT
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef-config (14.0.146)
+    chef-config (14.0.149)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -44,7 +44,6 @@ PATH
   remote: .
   specs:
     berkshelf (7.0.0.alpha.0)
-      buff-extensions (~> 2.0)
       chef (>= 13.6.52)
       chef-config
       cleanroom (~> 1.0)
@@ -77,7 +76,6 @@ GEM
       thor (~> 0.19)
     ast (2.4.0)
     backports (3.11.1)
-    buff-extensions (2.0.0)
     builder (3.2.3)
     chef-zero (14.0.1)
       ffi-yajl (~> 2.2)

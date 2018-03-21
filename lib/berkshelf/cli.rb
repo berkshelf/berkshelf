@@ -192,8 +192,7 @@ module Berkshelf
 
       options[:freeze]    = !options[:no_freeze]
       options[:validate]  = false if options[:skip_syntax_check]
-
-      berksfile.upload(names, options.symbolize_keys)
+      berksfile.upload(names, options.each_with_object({}) { |(k, v), m| m[k.to_sym] = v })
     end
 
     method_option :envfile,
@@ -217,7 +216,7 @@ module Berkshelf
       end
 
       lockfile     = Lockfile.from_file(options[:lockfile])
-      lock_options = Hash[options].symbolize_keys
+      lock_options = Hash[options].each_with_object({}) { |(k, v), m| m[k.to_sym] = v }
 
       lockfile.apply(environment_name, lock_options)
     end

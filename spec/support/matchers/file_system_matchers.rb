@@ -59,9 +59,7 @@ module Berkshelf
         end
 
         def file(name, &block)
-          silence_warnings do
-            @tree[name] = FileMatcher.new(location(name), &block)
-          end
+          @tree[name] = FileMatcher.new(location(name), &block)
         end
 
         def no_file(name)

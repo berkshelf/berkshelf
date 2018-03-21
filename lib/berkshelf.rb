@@ -9,7 +9,6 @@ rescue LoadError
   # intentionally left blank
 end
 
-require "buff/extensions"
 require "cleanroom"
 require "digest/md5"
 require "forwardable"
@@ -151,21 +150,22 @@ module Berkshelf
                                  end
       ssl_options[:cert_store] = ssl_policy.store if ssl_policy.store
 
-      ridley_options               = options.slice(:ssl)
+      ridley_options = {}
+      ridley_options[:ssl]         = options[:ssl] if options.key?(:ssl)
       ridley_options[:server_url]  = options[:server_url] || Berkshelf.config.chef.chef_server_url
       ridley_options[:client_name] = options[:client_name] || Berkshelf.config.chef.node_name
       ridley_options[:client_key]  = options[:client_key] || Berkshelf.config.chef.client_key
       ridley_options[:ssl]         = ssl_options
 
-      unless ridley_options[:server_url].present?
+      if !ridley_options[:server_url] || ridley_options[:server_url] =~ /^\s*$/
         raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.server_url"
       end
 
-      unless ridley_options[:client_name].present?
+      if !ridley_options[:client_name] || ridley_options[:client_name] =~ /^\s*$/
         raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
       end
 
-      unless ridley_options[:client_key].present?
+      if !ridley_options[:client_key] || ridley_options[:client_key] =~ /^\s*$/
         raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 

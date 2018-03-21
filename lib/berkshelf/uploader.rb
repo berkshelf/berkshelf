@@ -13,7 +13,7 @@ module Berkshelf
     def initialize(berksfile, *args)
       @berksfile = berksfile
       @lockfile  = berksfile.lockfile
-      opts       = args.last.respond_to?(:to_hash) ? args.pop.to_hash.symbolize_keys : {}
+      opts       = args.last.respond_to?(:to_hash) ? args.pop.to_hash.each_with_object({}) { |(k, v), m| m[k.to_sym] = v } : {}
 
       @options = {
         force:          false,
