@@ -93,7 +93,7 @@ module Berkshelf
     # @return [Dependency]
     def [](demand)
       name = demand.respond_to?(:name) ? demand.name : demand.to_s
-      demands.find { |demand| demand.name == name }
+      demands.find { |d| d.name == name }
     end
     alias_method :get_demand, :[]
 

@@ -22,7 +22,7 @@ module Berkshelf
     # @return [String]
     attr_reader :name
     # @return [Array<String,Symbol>]
-    attr_reader :groups
+    attr_writer :groups
     # @return [Berkshelf::Location]
     attr_reader :location
     # @return [Semverse::Version]
@@ -149,15 +149,6 @@ module Berkshelf
     # @return [Boolean]
     def has_group?(group)
       groups.include?(group.to_sym)
-    end
-
-    # The location for this dependency, such as a remote Chef Server, the
-    # community API, :git, or a :path location. By default, this will be the
-    # community API.
-    #
-    # @return [Berkshelf::Location]
-    def location
-      @location
     end
 
     # The list of groups this dependency belongs to.

@@ -75,7 +75,7 @@ module Berkshelf
               rest: connection
             ).upload_cookbooks
             Berkshelf.formatter.uploaded(cookbook, connection)
-          rescue Chef::Exceptions::CookbookFrozen => e
+          rescue Chef::Exceptions::CookbookFrozen
             if options[:halt_on_frozen]
               raise FrozenCookbook.new(cookbook)
             end

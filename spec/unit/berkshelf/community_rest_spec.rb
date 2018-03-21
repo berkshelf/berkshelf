@@ -29,7 +29,7 @@ describe Berkshelf::CommunityREST do
         expect(Berkshelf::CommunityREST.uri_escape_version(nil)).to be_a(String)
       end
 
-      it 'converts a version to it\'s underscored version' do
+      it "converts a version to it's underscored version" do
         expect(Berkshelf::CommunityREST.uri_escape_version("1.1.2")).to eq("1_1_2")
       end
 

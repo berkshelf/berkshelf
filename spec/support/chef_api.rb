@@ -83,14 +83,14 @@ module Berkshelf
         end.join("\n")
 
         if options[:dependencies]
-          options[:dependencies].each do |name, constraint|
-            metadata << "depends '#{name}', '#{constraint}'\n"
+          options[:dependencies].each do |dep_name, constraint|
+            metadata << "depends '#{dep_name}', '#{constraint}'\n"
           end
         end
 
         if options[:recommendations]
-          options[:recommendations].each do |name, constraint|
-            metadata << "recommends '#{name}', '#{constraint}'\n"
+          options[:recommendations].each do |rec_name, constraint|
+            metadata << "recommends '#{rec_name}', '#{constraint}'\n"
           end
         end
 

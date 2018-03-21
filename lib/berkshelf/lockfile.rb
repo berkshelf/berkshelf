@@ -58,7 +58,7 @@ module Berkshelf
       @dependencies = {}
       @graph        = Graph.new(self)
 
-      parse if File.exists?(@filepath)
+      parse if File.exist?(@filepath)
     end
 
     # Parse the lockfile.
@@ -76,7 +76,7 @@ module Berkshelf
     # @return [Boolean]
     #   true if this lockfile exists on the disk, false otherwise
     def present?
-      File.exists?(filepath) && !File.read(filepath).strip.empty?
+      File.exist?(filepath) && !File.read(filepath).strip.empty?
     end
 
     # Determine if we can "trust" this lockfile. A lockfile is trustworthy if:
@@ -114,7 +114,7 @@ module Berkshelf
           return false
         end
 
-        if cookbook = locked.cached_cookbook
+        if ( cookbook = locked.cached_cookbook )
           Berkshelf.log.debug "  Detected there is a cached cookbook"
 
           unless (cookbook.dependencies.keys - graphed.dependencies.keys).empty?
@@ -204,8 +204,8 @@ module Berkshelf
     #   if you are locking cookbooks with an invalid or not-specified client
     #   configuration
     def apply(name, options = {})
-      locks = graph.locks.inject({}) do |hash, (name, dependency)|
-        hash[name] = "= #{dependency.locked_version}"
+      locks = graph.locks.inject({}) do |hash, (dep_name, dependency)|
+        hash[dep_name] = "= #{dependency.locked_version}"
         hash
       end
 
@@ -318,7 +318,7 @@ module Berkshelf
     # @raise [EnvironmentFileNotFound]
     #   If environment file doesn't exist
     def update_environment_file(environment_file, locks)
-      unless File.exists?(environment_file)
+      unless File.exist?(environment_file)
         raise EnvironmentFileNotFound.new(environment_file)
       end
 
@@ -435,7 +435,7 @@ module Berkshelf
         # constraints are satisfied by it.
         dependency.locked_version = graphed.version
 
-        if cookbook = dependency.cached_cookbook
+        if ( cookbook = dependency.cached_cookbook )
           Berkshelf.log.debug "    Cached cookbook exists"
           Berkshelf.log.debug "    Updating cookbook dependencies if required"
           graphed.set_dependencies(cookbook.dependencies)
@@ -803,8 +803,8 @@ module Berkshelf
           out << "  #{name} (#{item.version})\n"
 
           unless item.dependencies.empty?
-            item.dependencies.sort.each do |name, constraint|
-              out << "    #{name} (#{constraint})\n"
+            item.dependencies.sort.each do |dep_name, constraint|
+              out << "    #{dep_name} (#{constraint})\n"
             end
           end
         end
