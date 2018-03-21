@@ -82,7 +82,7 @@ describe Berkshelf::CachedCookbook do
   end
 
   describe "#pretty_hash" do
-    shared_examples "a pretty_hash cookbook attribute" do |attribute, key|
+    shared_examples "a pretty_hash string cookbook attribute" do |attribute, key|
       it "is not present when the `#{attribute}` attribute is nil" do
         allow(subject).to receive(attribute.to_sym).and_return(nil)
         expect(subject.pretty_hash).to_not have_key((key || attribute).to_sym)
@@ -92,9 +92,11 @@ describe Berkshelf::CachedCookbook do
         allow(subject).to receive(attribute.to_sym).and_return("")
         expect(subject.pretty_hash).to_not have_key((key || attribute).to_sym)
       end
+    end
 
-      it "is not present when the `#{attribute}` attribute is an empty array" do
-        allow(subject).to receive(attribute.to_sym).and_return([])
+    shared_examples "a pretty_hash hash cookbook attribute" do |attribute, key|
+      it "is not present when the `#{attribute}` attribute is nil" do
+        allow(subject).to receive(attribute.to_sym).and_return(nil)
         expect(subject.pretty_hash).to_not have_key((key || attribute).to_sym)
       end
 
@@ -109,13 +111,13 @@ describe Berkshelf::CachedCookbook do
       end
     end
 
-    it_behaves_like "a pretty_hash cookbook attribute", "cookbook_name", "name"
-    it_behaves_like "a pretty_hash cookbook attribute", "version"
-    it_behaves_like "a pretty_hash cookbook attribute", "description"
-    it_behaves_like "a pretty_hash cookbook attribute", "maintainer", "author"
-    it_behaves_like "a pretty_hash cookbook attribute", "maintainer_email", "email"
-    it_behaves_like "a pretty_hash cookbook attribute", "license"
-    it_behaves_like "a pretty_hash cookbook attribute", "platforms"
-    it_behaves_like "a pretty_hash cookbook attribute", "dependencies"
+    it_behaves_like "a pretty_hash string cookbook attribute", "cookbook_name", "name"
+    it_behaves_like "a pretty_hash string cookbook attribute", "version"
+    it_behaves_like "a pretty_hash string cookbook attribute", "description"
+    it_behaves_like "a pretty_hash string cookbook attribute", "maintainer", "author"
+    it_behaves_like "a pretty_hash string cookbook attribute", "maintainer_email", "email"
+    it_behaves_like "a pretty_hash string cookbook attribute", "license"
+    it_behaves_like "a pretty_hash hash cookbook attribute", "platforms"
+    it_behaves_like "a pretty_hash hash cookbook attribute", "dependencies"
   end
 end

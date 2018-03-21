@@ -23,7 +23,7 @@ module Berkshelf::RSpec
       def start(options = {})
         return @server if @server
 
-        options = options.reverse_merge(port: PORT)
+        options = { port: PORT }.merge(options)
         options[:generate_real_keys] = false
 
         @server = ChefZero::Server.new(options)

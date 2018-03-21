@@ -88,14 +88,14 @@ module Berkshelf
 
     def pretty_print
       [].tap do |a|
-        a.push "        Name: #{cookbook_name}" unless name.blank?
-        a.push "     Version: #{version}" unless version.blank?
-        a.push " Description: #{metadata.description}" unless metadata.description.blank?
-        a.push "      Author: #{metadata.maintainer}" unless metadata.maintainer.blank?
-        a.push "       Email: #{metadata.maintainer_email}" unless metadata.maintainer_email.blank?
-        a.push "     License: #{metadata.license}" unless metadata.license.blank?
-        a.push "   Platforms: #{pretty_map(metadata.platforms, 14)}" unless metadata.platforms.blank?
-        a.push "Dependencies: #{pretty_map(dependencies, 14)}" unless dependencies.blank?
+        a.push "        Name: #{cookbook_name}" if name && name =~ /\S/
+        a.push "     Version: #{version}" if version && version =~ /\S/
+        a.push " Description: #{metadata.description}" if metadata.description && metadata.description =~ /\S/
+        a.push "      Author: #{metadata.maintainer}" if metadata.maintainer && metadata.maintainer =~ /\S/
+        a.push "       Email: #{metadata.maintainer_email}" if metadata.maintainer_email && metadata.maintainer_email =~ /\S/
+        a.push "     License: #{metadata.license}" if metadata.license && metadata.license =~ /\S/
+        a.push "   Platforms: #{pretty_map(metadata.platforms, 14)}" if metadata.platforms && !metadata.platforms.empty?
+        a.push "Dependencies: #{pretty_map(dependencies, 14)}" if dependencies && !dependencies.empty?
       end.join("\n")
     end
 
@@ -111,14 +111,14 @@ module Berkshelf
     # @return [Hash]
     def pretty_hash
       {}.tap do |h|
-        h[:name]          = cookbook_name unless cookbook_name.blank?
-        h[:version]       = version unless version.blank?
-        h[:description]   = description unless description.blank?
-        h[:author]        = maintainer unless maintainer.blank?
-        h[:email]         = maintainer_email unless maintainer_email.blank?
-        h[:license]       = license unless license.blank?
-        h[:platforms]     = platforms.to_hash unless platforms.blank?
-        h[:dependencies]  = dependencies.to_hash unless dependencies.blank?
+        h[:name]          = cookbook_name if cookbook_name && cookbook_name =~ /\S/
+        h[:version]       = version if version && version =~ /\S/
+        h[:description]   = description if description && description =~ /\S/
+        h[:author]        = maintainer if maintainer && maintainer =~ /\S/
+        h[:email]         = maintainer_email if maintainer_email && maintainer_email =~ /\S/
+        h[:license]       = license if license && license =~ /\S/
+        h[:platforms]     = platforms.to_hash if platforms && !platforms.empty?
+        h[:dependencies]  = dependencies.to_hash if dependencies && !dependencies.empty?
       end
     end
 
