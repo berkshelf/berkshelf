@@ -1,10 +1,32 @@
 # Change Log
 
-## [6.3.0](https://github.com/berkshelf/berkshelf/tree/6.3.0) (2017-08-08)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.2.2...6.3.0)
+**Unreleased Changes**
+
+- remove buff-extensions [\#1747](https://github.com/berkshelf/berkshelf/pull/1747) ([lamont-granquist](https://github.com/lamont-granquist))
+- remove buff-config / varia\_model [\#1746](https://github.com/berkshelf/berkshelf/pull/1746) ([lamont-granquist](https://github.com/lamont-granquist))
+- ignore .svn recursively [\#1742](https://github.com/berkshelf/berkshelf/pull/1742) ([lamont-granquist](https://github.com/lamont-granquist))
+- minitar update for security fixes [\#1741](https://github.com/berkshelf/berkshelf/pull/1741) ([lamont-granquist](https://github.com/lamont-granquist))
+- remove direct use of faraday [\#1740](https://github.com/berkshelf/berkshelf/pull/1740) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update cookbook upload order [\#1735](https://github.com/berkshelf/berkshelf/pull/1735) ([shoekstra](https://github.com/shoekstra))
+- remove deprecated features [\#1729](https://github.com/berkshelf/berkshelf/pull/1729) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v6.3.2](https://github.com/berkshelf/berkshelf/tree/v6.3.2) (2018-04-04)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.1...v6.3.2)
+
+## [v6.3.1](https://github.com/berkshelf/berkshelf/tree/v6.3.1) (2017-08-22)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.0...v6.3.1)
 
 **Merged pull requests:**
 
+- Bump solve to 4.0 [\#1726](https://github.com/berkshelf/berkshelf/pull/1726) ([thommay](https://github.com/thommay))
+- Remove ridley as a dep of Berkshelf [\#1719](https://github.com/berkshelf/berkshelf/pull/1719) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v6.3.0](https://github.com/berkshelf/berkshelf/tree/v6.3.0) (2017-08-08)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.2.2...v6.3.0)
+
+**Merged pull requests:**
+
+- Prepare 6.3.0 Release [\#1725](https://github.com/berkshelf/berkshelf/pull/1725) ([jaym](https://github.com/jaym))
 - Remove stale comment [\#1724](https://github.com/berkshelf/berkshelf/pull/1724) ([jaym](https://github.com/jaym))
 - Fix up Dir.glob for windows [\#1722](https://github.com/berkshelf/berkshelf/pull/1722) ([jaym](https://github.com/jaym))
 - bump the gemfile.lock [\#1721](https://github.com/berkshelf/berkshelf/pull/1721) ([lamont-granquist](https://github.com/lamont-granquist))
