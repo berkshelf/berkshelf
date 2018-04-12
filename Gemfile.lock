@@ -181,7 +181,7 @@ GEM
     net-telnet (0.1.1)
     octokit (4.8.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.0.31)
+    ohai (14.0.29)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
