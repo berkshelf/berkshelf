@@ -1,9 +1,6 @@
 # Change Log
 
-## [v6.3.2](https://github.com/berkshelf/berkshelf/tree/v6.3.2) (2018-04-04)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.1...v6.3.2)
-
-**Merged pull requests:**
+**Unreleased Changes**
 
 - remove buff-extensions [\#1747](https://github.com/berkshelf/berkshelf/pull/1747) ([lamont-granquist](https://github.com/lamont-granquist))
 - remove buff-config / varia\_model [\#1746](https://github.com/berkshelf/berkshelf/pull/1746) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -12,6 +9,9 @@
 - remove direct use of faraday [\#1740](https://github.com/berkshelf/berkshelf/pull/1740) ([lamont-granquist](https://github.com/lamont-granquist))
 - Update cookbook upload order [\#1735](https://github.com/berkshelf/berkshelf/pull/1735) ([shoekstra](https://github.com/shoekstra))
 - remove deprecated features [\#1729](https://github.com/berkshelf/berkshelf/pull/1729) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v6.3.2](https://github.com/berkshelf/berkshelf/tree/v6.3.2) (2018-04-04)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.1...v6.3.2)
 
 ## [v6.3.1](https://github.com/berkshelf/berkshelf/tree/v6.3.1) (2017-08-22)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.0...v6.3.1)
