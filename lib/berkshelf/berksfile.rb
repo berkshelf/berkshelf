@@ -635,6 +635,10 @@ module Berkshelf
 
         cached_cookbooks.each do |cookbook|
           Berkshelf.formatter.vendor(cookbook, destination)
+
+          # compile the metadata early before we do the file list
+          cookbook.compile_metadata
+
           cookbook_destination = File.join(scratch, cookbook.cookbook_name)
           FileUtils.mkdir_p(cookbook_destination)
 
@@ -655,8 +659,6 @@ module Berkshelf
 
           # convert Pathname objects back to strings
           files.map! { |f| f.to_s }
-
-          cookbook.compile_metadata
 
           # copy each file to destination
           files.each do |rpath|
