@@ -1,5 +1,8 @@
 require_relative "packager"
 
+require 'chef/cookbook/chefignore'
+require 'chef/util/path_helper'
+
 module Berkshelf
   class Berksfile
     class << self
@@ -597,6 +600,25 @@ module Berkshelf
       outdir
     end
 
+    # backcompat with ridley lookup of chefignore
+    def find_chefignore(path)
+      filename = 'chefignore'
+
+      Pathname.new(path).ascend do |dir|
+        next unless dir.directory?
+
+        [
+          dir.join(filename),
+          dir.join('cookbooks', filename),
+          dir.join('.chef',     filename),
+        ].each do |possible|
+          return possible.expand_path.to_s if possible.exist?
+        end
+      end
+
+      nil
+    end
+
     # Install the Berksfile or Berksfile.lock and then sync the cached cookbooks
     # into directories within the given destination matching their name.
     #
@@ -607,9 +629,6 @@ module Berkshelf
     #   the expanded path cookbooks were vendored to or nil if nothing was vendored
     def vendor(destination)
       Dir.mktmpdir("vendor") do |scratch|
-        # appears to be dead code
-        #chefignore       = nil
-        #raw_metadata_files = []
         cached_cookbooks = install
 
         return nil if cached_cookbooks.empty?
@@ -621,11 +640,29 @@ module Berkshelf
 
           # Dir.glob does not support backslash as a File separator
           src   = cookbook.path.to_s.tr('\\', "/")
-          files = FileSyncer.glob(File.join(src, "*"))
+          files = FileSyncer.glob(File.join(src, "**/*"))
+
+          # strip directories
+          files.reject! { |file_path| File.directory?(file_path) }
+
+          # convert to relative Pathname objects for chefignore
+          files.map! { |file_path| Chef::Util::PathHelper.relative_path_from(cookbook.path.to_s, file_path) }
+
+          chefignore = Chef::Cookbook::Chefignore.new(find_chefignore(cookbook.path.to_s) || cookbook.path.to_s)
+
+          # apply chefignore
+          files.reject! { |file_path| chefignore.ignored?(file_path) }
+
+          # convert Pathname objects back to strings
+          files.map! { |f| f.to_s }
 
           cookbook.compile_metadata
 
-          FileUtils.cp_r(files, cookbook_destination)
+          # copy each file to destination
+          files.each do |rpath|
+            FileUtils.mkdir_p( File.join(cookbook_destination, File.dirname(rpath)) )
+            FileUtils.cp( File.join(cookbook.path.to_s, rpath), File.join(cookbook_destination, rpath) )
+          end
         end
 
         # Don't vendor the raw metadata (metadata.rb). The raw metadata is
