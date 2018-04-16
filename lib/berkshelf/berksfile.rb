@@ -1,7 +1,7 @@
 require_relative "packager"
 
-require 'chef/cookbook/chefignore'
-require 'chef/util/path_helper'
+require "chef/cookbook/chefignore"
+require "chef/util/path_helper"
 
 module Berkshelf
   class Berksfile
@@ -602,15 +602,15 @@ module Berkshelf
 
     # backcompat with ridley lookup of chefignore
     def find_chefignore(path)
-      filename = 'chefignore'
+      filename = "chefignore"
 
       Pathname.new(path).ascend do |dir|
         next unless dir.directory?
 
         [
           dir.join(filename),
-          dir.join('cookbooks', filename),
-          dir.join('.chef',     filename),
+          dir.join("cookbooks", filename),
+          dir.join(".chef",     filename),
         ].each do |possible|
           return possible.expand_path.to_s if possible.exist?
         end
