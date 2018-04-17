@@ -134,3 +134,19 @@ Feature: Vendoring cookbooks to a directory
     Then the directory "vendor/bacon" should contain version "1.0.0" of the "bacon" cookbook
     And a file named "vendor/bacon/foo.turd" should not exist
     And a file named "vendor/bacon/recipes/foo.turd" should not exist
+
+  Scenario: metadata.json / metadata.rb handling when vendoring a cookbook
+    Given a cookbook named "bacon"
+    And the cookbook "bacon" has the file "metadata.rb" with:
+      """
+      name 'bacon'
+      version '1.0.0'
+      """
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'bacon', path: './bacon'
+      """
+    When I successfully run `berks vendor vendor`
+    Then the directory "vendor/bacon" should contain version "1.0.0" of the "bacon" cookbook
+    And a file named "vendor/bacon/metadata.json" should exist
+    And a file named "vendor/bacon/metadata.rb" should exist

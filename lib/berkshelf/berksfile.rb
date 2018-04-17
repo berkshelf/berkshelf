@@ -1,7 +1,7 @@
 require_relative "packager"
 
-require 'chef/cookbook/chefignore'
-require 'chef/util/path_helper'
+require "chef/cookbook/chefignore"
+require "chef/util/path_helper"
 
 module Berkshelf
   class Berksfile
@@ -602,15 +602,15 @@ module Berkshelf
 
     # backcompat with ridley lookup of chefignore
     def find_chefignore(path)
-      filename = 'chefignore'
+      filename = "chefignore"
 
       Pathname.new(path).ascend do |dir|
         next unless dir.directory?
 
         [
           dir.join(filename),
-          dir.join('cookbooks', filename),
-          dir.join('.chef',     filename),
+          dir.join("cookbooks", filename),
+          dir.join(".chef",     filename),
         ].each do |possible|
           return possible.expand_path.to_s if possible.exist?
         end
@@ -635,6 +635,10 @@ module Berkshelf
 
         cached_cookbooks.each do |cookbook|
           Berkshelf.formatter.vendor(cookbook, destination)
+
+          # compile the metadata early before we do the file list
+          cookbook.compile_metadata
+
           cookbook_destination = File.join(scratch, cookbook.cookbook_name)
           FileUtils.mkdir_p(cookbook_destination)
 
@@ -655,8 +659,6 @@ module Berkshelf
 
           # convert Pathname objects back to strings
           files.map! { |f| f.to_s }
-
-          cookbook.compile_metadata
 
           # copy each file to destination
           files.each do |rpath|
