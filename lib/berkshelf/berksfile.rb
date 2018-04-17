@@ -638,6 +638,7 @@ module Berkshelf
 
           # compile the metadata early before we do the file list
           cookbook.compile_metadata
+          cookbook.reload
 
           cookbook_destination = File.join(scratch, cookbook.cookbook_name)
           FileUtils.mkdir_p(cookbook_destination)

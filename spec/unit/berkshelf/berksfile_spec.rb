@@ -365,7 +365,7 @@ describe Berkshelf::Berksfile do
   end
 
   describe "#vendor" do
-    let(:cached_cookbook)    { instance_double(Berkshelf::CachedCookbook, cookbook_name: "my_cookbook", path: "/my_cookbook/path", compile_metadata: true) }
+    let(:cached_cookbook)    { instance_double(Berkshelf::CachedCookbook, cookbook_name: "my_cookbook", path: "/my_cookbook/path", compile_metadata: true, reload: nil) }
     let(:installer)          { instance_double(Berkshelf::Installer, run: [cached_cookbook]) }
     let(:raw_metadata_files) { [File.join(cached_cookbook.cookbook_name, "metadata.rb")] }
 

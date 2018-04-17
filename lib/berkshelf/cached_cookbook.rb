@@ -51,17 +51,43 @@ module Berkshelf
       end
     end
 
-    attr_accessor :metadata
+    attr_writer :metadata
     attr_accessor :path
-    attr_accessor :cookbook_version
+    attr_writer :cookbook_version
 
     def initialize(path)
-      loader = Chef::Cookbook::CookbookVersionLoader.new(path)
-      loader.load_cookbooks
       @path = path
-      @cookbook_version = loader.cookbook_version
-      @cookbook_name = @cookbook_version.name
-      @metadata = @cookbook_version.metadata
+      # eagerly load to force throwing on bad metadata while constructing
+      cookbook_name
+      metadata
+    end
+
+    def loader
+      @loader ||=
+        begin
+          loader = Chef::Cookbook::CookbookVersionLoader.new(@path)
+          loader.load_cookbooks
+          loader
+        end
+    end
+
+    def cookbook_version
+      @cookbook_version ||= loader.cookbook_version
+    end
+
+    def cookbook_name
+      @cookbook_name ||= cookbook_version.name
+    end
+
+    def metadata
+      @metadata ||= cookbook_version.metadata
+    end
+
+    def reload
+      @metadata = nil
+      @cookbook_name = nil
+      @cookbook_version = nil
+      @loader = nil
     end
 
     def <=>(other)
@@ -72,14 +98,14 @@ module Berkshelf
 
     extend Forwardable
 
-    def_delegator :@cookbook_version, :version
-    def_delegator :@metadata, :name, :cookbook_name
-    def_delegator :@metadata, :description
-    def_delegator :@metadata, :maintainer
-    def_delegator :@metadata, :maintainer_email
-    def_delegator :@metadata, :license
-    def_delegator :@metadata, :platforms
-    def_delegator :@metadata, :name
+    def_delegator :cookbook_version, :version
+    def_delegator :metadata, :name, :cookbook_name
+    def_delegator :metadata, :description
+    def_delegator :metadata, :maintainer
+    def_delegator :metadata, :maintainer_email
+    def_delegator :metadata, :license
+    def_delegator :metadata, :platforms
+    def_delegator :metadata, :name
 
     # @return [Hash]
     def dependencies

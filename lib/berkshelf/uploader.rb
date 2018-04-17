@@ -59,6 +59,8 @@ module Berkshelf
         connection.get("users/#{Berkshelf.config.chef.node_name}") rescue nil
 
         cookbooks.map do |cookbook|
+          cookbook.compile_metadata
+          cookbook.reload
           cookbook_version = cookbook.cookbook_version
           Berkshelf.log.debug "  Uploading #{cookbook}"
           cookbook_version.freeze_version if options[:freeze]
