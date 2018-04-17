@@ -107,3 +107,30 @@ Feature: Vendoring cookbooks to a directory
     When I successfully run `berks vendor path/to/cukebooks`
     Then the directory "path/to/cukebooks/fake" should contain version "1.0.0" of the "fake" cookbook
 
+  Scenario: vendoring a cookbook with chefignores
+    Given a cookbook named "bacon"
+    And the cookbook "bacon" has the file "metadata.rb" with:
+      """
+      name 'bacon'
+      version '1.0.0'
+      """
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'bacon', path: './bacon'
+      """
+    And the cookbook "bacon" has the file "chefignore" with:
+      """
+      *.turd
+      """
+    And the cookbook "bacon" has the file "foo.turd" with:
+      """
+      poop
+      """
+    And the cookbook "bacon" has the file "recipes/foo.turd" with:
+      """
+      poop
+      """
+    When I successfully run `berks vendor vendor`
+    Then the directory "vendor/bacon" should contain version "1.0.0" of the "bacon" cookbook
+    And a file named "vendor/bacon/foo.turd" should not exist
+    And a file named "vendor/bacon/recipes/foo.turd" should not exist
