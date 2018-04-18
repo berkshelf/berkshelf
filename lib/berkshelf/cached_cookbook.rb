@@ -165,12 +165,13 @@ module Berkshelf
     def compile_metadata
       json_file = "#{path}/metadata.json"
       rb_file = "#{path}/metadata.rb"
-      return if File.exist?(json_file)
+      return nil if File.exist?(json_file)
       md = Chef::Cookbook::Metadata.new
       md.from_file(rb_file)
-      File.open(json_file, "w") do |f|
-        f.write(Chef::JSONCompat.to_json_pretty(md))
-      end
+      f = File.open(json_file, "w")
+      f.write(Chef::JSONCompat.to_json_pretty(md))
+      f.close
+      f.path
     end
 
     private
