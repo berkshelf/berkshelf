@@ -27,6 +27,79 @@ Feature: berks upload
       | fake | 1.0.0 |
       | ekaf | 2.0.0 |
 
+  Scenario: a cookbook without metadata.json
+    Given a cookbook named "fake"
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      """
+    And I write to "metadata.rb" with:
+      """
+      name 'bacon'
+      version '1.0.0'
+      """
+    When I successfully run `berks install`
+    And I successfully run `berks upload`
+    Then the Chef Server should have the cookbooks:
+      | bacon | 1.0.0 |
+    And a file named "metadata.json" should not exist
+
+  Scenario: a cookbook with metadata.json
+    Given a cookbook named "fake"
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      metadata
+      """
+    And I write to "metadata.rb" with:
+      """
+      name 'bacon'
+      version '1.0.0'
+      """
+    And I write to "metadata.json" with:
+      """
+      {
+        "name": "bacon",
+        "description": "",
+        "long_description": "",
+        "maintainer": "",
+        "maintainer_email": "",
+        "license": "All rights reserved",
+        "platforms": {
+
+        },
+        "dependencies": {
+
+        },
+        "providing": {
+
+        },
+        "attributes": {
+
+        },
+        "recipes": {
+
+        },
+        "version": "1.0.0",
+        "source_url": "",
+        "issues_url": "",
+        "privacy": false,
+        "chef_versions": [
+
+        ],
+        "ohai_versions": [
+
+        ],
+        "gems": [
+
+        ]
+      }
+      """
+    When I successfully run `berks install`
+    And I successfully run `berks upload`
+    Then the Chef Server should have the cookbooks:
+      | bacon | 1.0.0 |
+    And a file named "metadata.json" should exist
+
   Scenario: a cookbook with a path location
     Given a cookbook named "fake"
     And I have a Berksfile pointing at the local Berkshelf API with:
