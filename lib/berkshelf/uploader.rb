@@ -59,27 +59,38 @@ module Berkshelf
         connection.get("users/#{Berkshelf.config.chef.node_name}") rescue nil
 
         cookbooks.map do |cookbook|
-          cookbook_version = cookbook.cookbook_version
-          Berkshelf.log.debug "  Uploading #{cookbook}"
-          cookbook_version.freeze_version if options[:freeze]
-
-          # another two lines that are necessary for chef < 13.2 support (affects 11.x/12.x as well)
-          cookbook_version.metadata.maintainer "" if cookbook_version.metadata.maintainer.nil?
-          cookbook_version.metadata.maintainer_email "" if cookbook_version.metadata.maintainer_email.nil?
-
           begin
-            Chef::CookbookUploader.new(
-              [ cookbook_version ],
-              force: options[:force],
-              concurrency: 1, # sadly
-              rest: connection
-            ).upload_cookbooks
-            Berkshelf.formatter.uploaded(cookbook, connection)
-          rescue Chef::Exceptions::CookbookFrozen
-            if options[:halt_on_frozen]
-              raise FrozenCookbook.new(cookbook)
+            compiled_metadata = cookbook.compile_metadata
+            cookbook.reload if compiled_metadata
+            cookbook_version = cookbook.cookbook_version
+            Berkshelf.log.debug "  Uploading #{cookbook}"
+            cookbook_version.freeze_version if options[:freeze]
+
+            # another two lines that are necessary for chef < 13.2 support (affects 11.x/12.x as well)
+            cookbook_version.metadata.maintainer "" if cookbook_version.metadata.maintainer.nil?
+            cookbook_version.metadata.maintainer_email "" if cookbook_version.metadata.maintainer_email.nil?
+
+            begin
+              Chef::CookbookUploader.new(
+                [ cookbook_version ],
+                force: options[:force],
+                concurrency: 1, # sadly
+                rest: connection
+              ).upload_cookbooks
+              Berkshelf.formatter.uploaded(cookbook, connection)
+            rescue Chef::Exceptions::CookbookFrozen
+              if options[:halt_on_frozen]
+                raise FrozenCookbook.new(cookbook)
+              end
+              Berkshelf.formatter.skipping(cookbook, connection)
             end
-            Berkshelf.formatter.skipping(cookbook, connection)
+          ensure
+            if compiled_metadata
+              # this is necessary on windows to clean up the ruby object that was pointing at the file
+              # so that we can reliably delete it.  windows is terrible.
+              GC.start
+              File.unlink(compiled_metadata)
+            end
           end
         end
       end
