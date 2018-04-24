@@ -1,7 +1,15 @@
 # Change Log
 
-**Unreleased Changes**
+## [7.0.0](https://github.com/berkshelf/berkshelf/tree/7.0.0) (2018-04-24)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.2...7.0.0)
 
+**Merged pull requests:**
+
+- generate and upload metadata.json [\#1763](https://github.com/berkshelf/berkshelf/pull/1763) ([lamont-granquist](https://github.com/lamont-granquist))
+- ship compiled metadata in the vendored cookbook [\#1760](https://github.com/berkshelf/berkshelf/pull/1760) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix chefignores being ignored in berkshelf 7.0.0 [\#1758](https://github.com/berkshelf/berkshelf/pull/1758) ([lamont-granquist](https://github.com/lamont-granquist))
+- pin cucumber-expressions to working version [\#1757](https://github.com/berkshelf/berkshelf/pull/1757) ([lamont-granquist](https://github.com/lamont-granquist))
+- changelog update and bonus bump to Gemfile.lock [\#1756](https://github.com/berkshelf/berkshelf/pull/1756) ([lamont-granquist](https://github.com/lamont-granquist))
 - remove buff-extensions [\#1747](https://github.com/berkshelf/berkshelf/pull/1747) ([lamont-granquist](https://github.com/lamont-granquist))
 - remove buff-config / varia\_model [\#1746](https://github.com/berkshelf/berkshelf/pull/1746) ([lamont-granquist](https://github.com/lamont-granquist))
 - ignore .svn recursively [\#1742](https://github.com/berkshelf/berkshelf/pull/1742) ([lamont-granquist](https://github.com/lamont-granquist))
@@ -9,9 +17,6 @@
 - remove direct use of faraday [\#1740](https://github.com/berkshelf/berkshelf/pull/1740) ([lamont-granquist](https://github.com/lamont-granquist))
 - Update cookbook upload order [\#1735](https://github.com/berkshelf/berkshelf/pull/1735) ([shoekstra](https://github.com/shoekstra))
 - remove deprecated features [\#1729](https://github.com/berkshelf/berkshelf/pull/1729) ([lamont-granquist](https://github.com/lamont-granquist))
-
-## [v6.3.2](https://github.com/berkshelf/berkshelf/tree/v6.3.2) (2018-04-04)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.1...v6.3.2)
 
 ## [v6.3.1](https://github.com/berkshelf/berkshelf/tree/v6.3.1) (2017-08-22)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.0...v6.3.1)
