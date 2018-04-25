@@ -53,7 +53,7 @@ module Berkshelf
       def instance
         @instance ||=
           if file
-            from_json file
+            new path
           else
             new
           end
