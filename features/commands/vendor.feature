@@ -150,3 +150,5 @@ Feature: Vendoring cookbooks to a directory
     Then the directory "vendor/bacon" should contain version "1.0.0" of the "bacon" cookbook
     And a file named "vendor/bacon/metadata.json" should exist
     And a file named "vendor/bacon/metadata.rb" should exist
+    And a file named "bacon/metadata.rb" should exist
+    And a file named "bacon/metadata.json" should not exist

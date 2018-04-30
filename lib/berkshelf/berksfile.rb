@@ -636,10 +636,6 @@ module Berkshelf
         cached_cookbooks.each do |cookbook|
           Berkshelf.formatter.vendor(cookbook, destination)
 
-          # compile the metadata early before we do the file list
-          cookbook.compile_metadata
-          cookbook.reload
-
           cookbook_destination = File.join(scratch, cookbook.cookbook_name)
           FileUtils.mkdir_p(cookbook_destination)
 
@@ -666,6 +662,8 @@ module Berkshelf
             FileUtils.mkdir_p( File.join(cookbook_destination, File.dirname(rpath)) )
             FileUtils.cp( File.join(cookbook.path.to_s, rpath), File.join(cookbook_destination, rpath) )
           end
+
+          cookbook.compile_metadata(cookbook_destination)
         end
 
         # Don't vendor the raw metadata (metadata.rb). The raw metadata is

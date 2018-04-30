@@ -162,7 +162,7 @@ module Berkshelf
       true
     end
 
-    def compile_metadata
+    def compile_metadata(path = self.path)
       json_file = "#{path}/metadata.json"
       rb_file = "#{path}/metadata.rb"
       return nil if File.exist?(json_file)
