@@ -42,7 +42,7 @@ module Berkshelf
     def run(source)
       Dir.chdir(source.to_s) do |dir|
         tgz = Zlib::GzipWriter.new(File.open(out_file, "wb"))
-        Archive::Tar::Minitar.pack(".", tgz)
+        Archive::Tar::Minitar.pack(Dir.glob("*"), tgz)
       end
 
       out_file
