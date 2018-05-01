@@ -40,23 +40,12 @@ module Berkshelf
         @instance = nil
       end
 
-      # @return [String, nil]
-      #   the contents of the file
-      def file
-        File.read(path) if File.exist?(path)
-      end
-
       # Instantiate and return or just return the currently instantiated Berkshelf
       # configuration
       #
       # @return [Config]
       def instance
-        @instance ||=
-          if file
-            from_json file
-          else
-            new
-          end
+        @instance ||= new(path)
         coerce_ssl
       end
 
@@ -77,18 +66,6 @@ module Berkshelf
         ssl[:client_cert] = OpenSSL::X509::Certificate.new(File.read(ssl[:client_cert])) if ssl[:client_cert] && ssl[:client_cert].is_a?(String)
         ssl[:client_key] = OpenSSL::PKey::RSA.new(File.read(ssl[:client_key])) if ssl[:client_key] && ssl[:client_key].is_a?(String)
         @instance
-      end
-
-      def from_file(path)
-        new(path)
-      end
-
-      def from_json(json)
-        new.from_json(json)
-      end
-
-      def from_hash(hash)
-        new.from_hash(hash)
       end
     end
 
