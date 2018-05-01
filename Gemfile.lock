@@ -1,15 +1,16 @@
 GIT
   remote: https://github.com/chef/chef
-  revision: 5ef14cc77226fe16b734ec90aead1de5d49ca7fb
+  revision: 39ff59de987a11efa8d4c9f803c79343b27c4b4a
   branch: master
   specs:
-    chef (14.0.210)
+    chef (14.0.215)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.0.210)
+      chef-config (= 14.0.215)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
+      ffi (< 1.9.22)
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
@@ -33,7 +34,7 @@ GIT
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef-config (14.0.210)
+    chef-config (14.0.215)
       addressable
       fuzzyurl
       mixlib-config (~> 2.0)
@@ -43,7 +44,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (7.0.0)
+    berkshelf (7.0.1)
       chef (>= 13.6.52)
       chef-config
       cleanroom (~> 1.0)
@@ -120,7 +121,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday-http-cache (2.0.0)
       faraday (~> 0.8)
-    ffi (1.9.23)
+    ffi (1.9.21)
     ffi-yajl (2.3.1)
       libyajl2 (~> 1.2)
     fuubar (2.3.1)
@@ -156,7 +157,7 @@ GEM
     libyajl2 (1.2.0)
     minitar (0.6.1)
     minitest (5.11.3)
-    mixlib-archive (0.4.1)
+    mixlib-archive (0.4.2)
       mixlib-log
     mixlib-authentication (2.0.0)
     mixlib-cli (1.7.0)
