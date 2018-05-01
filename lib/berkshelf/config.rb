@@ -40,23 +40,12 @@ module Berkshelf
         @instance = nil
       end
 
-      # @return [String, nil]
-      #   the contents of the file
-      def file
-        File.read(path) if File.exist?(path)
-      end
-
       # Instantiate and return or just return the currently instantiated Berkshelf
       # configuration
       #
       # @return [Config]
       def instance
-        @instance ||=
-          if file
-            from_json file
-          else
-            new
-          end
+        @instance ||= new(path)
         coerce_ssl
       end
 
@@ -81,14 +70,6 @@ module Berkshelf
 
       def from_file(path)
         new(path)
-      end
-
-      def from_json(json)
-        new.from_json(json)
-      end
-
-      def from_hash(hash)
-        new.from_hash(hash)
       end
     end
 

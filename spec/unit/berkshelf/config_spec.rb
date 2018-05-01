@@ -1,16 +1,6 @@
 require "spec_helper"
 
 describe Berkshelf::Config do
-  describe "::file" do
-    context "when the file does not exist" do
-      before { allow(File).to receive(:exist?).and_return(false) }
-
-      it "is nil" do
-        expect(Berkshelf::Config.file).to be_nil
-      end
-    end
-  end
-
   describe "::instance" do
     it "should be a Berkshelf::Config" do
       expect(Berkshelf::Config.instance).to be_an_instance_of(Berkshelf::Config)
@@ -74,10 +64,6 @@ describe Berkshelf::Config do
       expect(Berkshelf::Config.path).to be_a(String)
     end
 
-    before do
-      allow(File).to receive(:exist?).and_return(false)
-    end
-
     after do
       Berkshelf::Config.instance_variable_set(:@path, nil)
     end
@@ -90,6 +76,16 @@ describe Berkshelf::Config do
 
       it "points to a location within it" do
         expect(Berkshelf::Config.path).to match(%r{/tmp/config.json})
+      end
+    end
+
+    it "reads json from a path" do
+      Tempfile.open(["berkstest", ".json"]) do |t|
+        t.write JSON.generate({ "ssl" => { "verify" => false } })
+        t.close
+        expect(Berkshelf::Config).to receive(:local_location).at_least(:once).and_return(t.path)
+        Berkshelf::Config.reload
+        expect( Berkshelf::Config.instance[:ssl][:verify] ).to be false
       end
     end
   end
