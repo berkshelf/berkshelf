@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_dependency "minitar",              ">= 0.6"
   s.add_dependency "retryable",            "~> 2.0"
   s.add_dependency "solve",                "~> 4.0"
-  s.add_dependency "thor",                 "~> 0.19", "< 0.19.2"
+  s.add_dependency "thor",                 ">= 0.20"
   s.add_dependency "octokit",              "~> 4.0"
   s.add_dependency "mixlib-archive",       "~> 0.4"
   s.add_dependency "concurrent-ruby",      "~> 1.0"
