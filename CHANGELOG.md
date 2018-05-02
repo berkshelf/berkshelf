@@ -1,7 +1,25 @@
 # Change Log
 
-## [7.0.0](https://github.com/berkshelf/berkshelf/tree/7.0.0) (2018-04-24)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.2...7.0.0)
+## [v7.0.2](https://github.com/berkshelf/berkshelf/tree/v7.0.2) (2018-05-02)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.1...v7.0.2)
+
+**Merged pull requests:**
+
+- bump gems and update thor pin [\#1773](https://github.com/berkshelf/berkshelf/pull/1773) ([lamont-granquist](https://github.com/lamont-granquist))
+- add support for lock bot [\#1772](https://github.com/berkshelf/berkshelf/pull/1772) ([lamont-granquist](https://github.com/lamont-granquist))
+- remove dot dir from berks package [\#1771](https://github.com/berkshelf/berkshelf/pull/1771) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v7.0.1](https://github.com/berkshelf/berkshelf/tree/v7.0.1) (2018-05-01)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.0...v7.0.1)
+
+**Merged pull requests:**
+
+- fix reading the json config file [\#1770](https://github.com/berkshelf/berkshelf/pull/1770) ([lamont-granquist](https://github.com/lamont-granquist))
+- CI fix:  remove '::' from module statements [\#1769](https://github.com/berkshelf/berkshelf/pull/1769) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix to generate metadata.json only in the vendored cookbook [\#1768](https://github.com/berkshelf/berkshelf/pull/1768) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v7.0.0](https://github.com/berkshelf/berkshelf/tree/v7.0.0) (2018-04-24)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.2...v7.0.0)
 
 **Merged pull requests:**
 
@@ -10,6 +28,12 @@
 - Fix chefignores being ignored in berkshelf 7.0.0 [\#1758](https://github.com/berkshelf/berkshelf/pull/1758) ([lamont-granquist](https://github.com/lamont-granquist))
 - pin cucumber-expressions to working version [\#1757](https://github.com/berkshelf/berkshelf/pull/1757) ([lamont-granquist](https://github.com/lamont-granquist))
 - changelog update and bonus bump to Gemfile.lock [\#1756](https://github.com/berkshelf/berkshelf/pull/1756) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v6.3.2](https://github.com/berkshelf/berkshelf/tree/v6.3.2) (2018-04-04)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.1...v6.3.2)
+
+**Merged pull requests:**
+
 - remove buff-extensions [\#1747](https://github.com/berkshelf/berkshelf/pull/1747) ([lamont-granquist](https://github.com/lamont-granquist))
 - remove buff-config / varia\_model [\#1746](https://github.com/berkshelf/berkshelf/pull/1746) ([lamont-granquist](https://github.com/lamont-granquist))
 - ignore .svn recursively [\#1742](https://github.com/berkshelf/berkshelf/pull/1742) ([lamont-granquist](https://github.com/lamont-granquist))
