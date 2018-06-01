@@ -63,7 +63,7 @@ module Berkshelf
             compiled_metadata = cookbook.compile_metadata
             cookbook.reload if compiled_metadata
             cookbook_version = cookbook.cookbook_version
-            Berkshelf.log.debug "  Uploading #{cookbook}"
+            Berkshelf.log.debug "  Uploading #{cookbook.cookbook_name}"
             cookbook_version.freeze_version if options[:freeze]
 
             # another two lines that are necessary for chef < 13.2 support (affects 11.x/12.x as well)
