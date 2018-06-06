@@ -165,7 +165,7 @@ module Berkshelf
         raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.node_name"
       end
 
-      if !ridley_options[:client_key] || ridley_options[:client_key] =~ /^\s*$/
+      if !ridley_options[:client_key] || ridley_options[:client_key].to_s =~ /^\s*$/
         raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 
