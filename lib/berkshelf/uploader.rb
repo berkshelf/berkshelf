@@ -141,7 +141,7 @@ module Berkshelf
       checked = {}
       cookbook_order = dependencies.map do |dependency|
         # for each dep add all its deps first, then the dep itself
-        lookup_dependencies(dependency, checked) << dependency
+        lookup_dependencies(dependency, checked) + [ dependency ]
       end.flatten
 
       cookbook_order.uniq.map { |dependency| lockfile.retrieve(dependency) }
