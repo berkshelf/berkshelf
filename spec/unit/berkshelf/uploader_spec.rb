@@ -242,6 +242,7 @@ module Berkshelf
           expect(upload_order.index("yum")).to be < upload_order.index("runit")
           expect(upload_order.index("yum-epel")).to be < upload_order.index("runit")
           expect(upload_order.index("yum")).to be < upload_order.index("yum-epel")
+          expect(upload_order.uniq.length).to eql(upload_order.length)
         end
       end
     end
