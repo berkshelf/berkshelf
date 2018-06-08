@@ -109,8 +109,13 @@ module Berkshelf
       lockfile.graph.find(cookbook).dependencies.each do |name, _|
         next if checked[name]
 
+        # Note carefully how batshit crazy this code is:  this dependencies array is the same one
+        # that we've been passed from filtered_cookbooks(), as we're in the process of iterating
+        # over it, this means we mutate it in the iterator and the `each` call in filtered_cookbooks()
+        # will magically pick up the items we're appending to the state here.  The checked hash similarly
+        # needs to be threaded through all these calls from filtered_cookbooks in order to prevent
+        # infinite loops.
         dependencies << name
-
         checked[name] = true
 
         lookup_dependencies(name, dependencies, checked) unless lockfile.graph.find(name).dependencies.empty?
@@ -134,8 +139,9 @@ module Berkshelf
       # that would be a bad idea...
       dependencies = berksfile.dependencies.map(&:name)
 
+      checked = {}
       cookbook_order = dependencies.each do |dependency|
-        lookup_dependencies(dependency, dependencies)
+        lookup_dependencies(dependency, dependencies, checked)
       end
 
       cookbook_order.reverse.map { |dependency| lockfile.retrieve(dependency) }.uniq
