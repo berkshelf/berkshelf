@@ -1,5 +1,20 @@
 # Change Log
 
+## [v7.0.4](https://github.com/berkshelf/berkshelf/tree/v7.0.4) (2018-06-08)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.3...v7.0.4)
+
+**Merged pull requests:**
+
+- Fix infinite loops in resolving cookbooks in the uploader [\#1781](https://github.com/berkshelf/berkshelf/pull/1781) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v7.0.3](https://github.com/berkshelf/berkshelf/tree/v7.0.3) (2018-06-06)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.2...v7.0.3)
+
+**Merged pull requests:**
+
+- stringify client\_key option before trying to match on it [\#1779](https://github.com/berkshelf/berkshelf/pull/1779) ([dbresson](https://github.com/dbresson))
+- Provide the name during debug [\#1777](https://github.com/berkshelf/berkshelf/pull/1777) ([martinisoft](https://github.com/martinisoft))
+
 ## [v7.0.2](https://github.com/berkshelf/berkshelf/tree/v7.0.2) (2018-05-02)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.1...v7.0.2)
 
