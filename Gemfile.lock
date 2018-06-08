@@ -44,7 +44,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (7.0.3)
+    berkshelf (7.0.4)
       chef (>= 13.6.52)
       chef-config
       cleanroom (~> 1.0)
