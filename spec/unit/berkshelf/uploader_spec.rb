@@ -231,7 +231,18 @@ module Berkshelf
         subject { described_class.new(berksfile).send(:filtered_cookbooks) }
 
         it "returns filtered list in correct order" do
-          expect(subject.map(&:name)).to eq ["yum", "yum-epel", "build-essential", "runit", "apt", "jenkins", "jenkins-config"]
+          upload_order = subject.map(&:name)
+          # assert that dependent cookbooks are uploaded before the cookbooks that depend on them
+          expect(upload_order.index("apt")).to be < upload_order.index("jenkins")
+          expect(upload_order.index("runit")).to be < upload_order.index("jenkins")
+          expect(upload_order.index("yum")).to be < upload_order.index("jenkins")
+          expect(upload_order.index("jenkins")).to be < upload_order.index("jenkins-config")
+          expect(upload_order.index("yum")).to be < upload_order.index("jenkins-config")
+          expect(upload_order.index("build-essential")).to be < upload_order.index("runit")
+          expect(upload_order.index("yum")).to be < upload_order.index("runit")
+          expect(upload_order.index("yum-epel")).to be < upload_order.index("runit")
+          expect(upload_order.index("yum")).to be < upload_order.index("yum-epel")
+          expect(upload_order.uniq.length).to eql(upload_order.length)
         end
       end
     end
