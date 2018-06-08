@@ -104,23 +104,22 @@ module Berkshelf
     #
     # @return [Array<CachedCookbook>]
     #
-    def lookup_dependencies(cookbook, dependencies = [], checked = {})
+    def lookup_dependencies(cookbook, checked = {})
       Berkshelf.log.debug "  Looking up dependencies for #{cookbook}"
+
+      dependencies = []
+
       lockfile.graph.find(cookbook).dependencies.each do |name, _|
         next if checked[name]
 
-        # Note carefully how batshit crazy this code is:  this dependencies array is the same one
-        # that we've been passed from filtered_cookbooks(), as we're in the process of iterating
-        # over it, this means we mutate it in the iterator and the `each` call in filtered_cookbooks()
-        # will magically pick up the items we're appending to the state here.  The checked hash similarly
-        # needs to be threaded through all these calls from filtered_cookbooks in order to prevent
-        # infinite loops.
-        dependencies << name
+        # break cyclic graphs
         checked[name] = true
 
-        lookup_dependencies(name, dependencies, checked) unless lockfile.graph.find(name).dependencies.empty?
+        # this is your standard depth-first tree traversal with the deps first...
+        dependencies += lookup_dependencies(name, checked)
+        # ..then the node itself
+        dependencies << name
       end
-
       dependencies
     end
 
@@ -140,11 +139,12 @@ module Berkshelf
       dependencies = berksfile.dependencies.map(&:name)
 
       checked = {}
-      cookbook_order = dependencies.each do |dependency|
-        lookup_dependencies(dependency, dependencies, checked)
-      end
+      cookbook_order = dependencies.map do |dependency|
+        # for each dep add all its deps first, then the dep itself
+        lookup_dependencies(dependency, checked) << dependency
+      end.flatten
 
-      cookbook_order.reverse.map { |dependency| lockfile.retrieve(dependency) }.uniq
+      cookbook_order.uniq.map { |dependency| lockfile.retrieve(dependency) }
     end
   end
 end
