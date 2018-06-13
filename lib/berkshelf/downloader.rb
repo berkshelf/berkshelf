@@ -109,9 +109,11 @@ module Berkshelf
           raise ConfigurationError.new "Missing github endpoint configuration for #{cookbook_uri.scheme}://#{cookbook_uri.host}" if options.nil?
         end
 
-        github_client = Octokit::Client.new(access_token: options[:access_token],
-                                            api_endpoint: options[:api_endpoint], web_endpoint: options[:web_endpoint],
-                                            connection_options: { ssl: { verify: options[:ssl_verify].nil? ? true : options[:ssl_verify] } })
+        github_client = Octokit::Client.new(
+          access_token: options["access_token"],
+          api_endpoint: options["api_endpoint"], web_endpoint: options["web_endpoint"],
+          connection_options: { ssl: { verify: options["ssl_verify"].nil? ? true : options["ssl_verify"] } }
+        )
 
         begin
           url = URI(github_client.archive_link(cookbook_uri.path.gsub(/^\//, ""), ref: "v#{version}"))
@@ -122,7 +124,7 @@ module Berkshelf
         # We use Net::HTTP.new and then get here, because Net::HTTP.get does not support proxy settings.
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = url.scheme == "https"
-        http.verify_mode = (options[:ssl_verify].nil? || options[:ssl_verify]) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+        http.verify_mode = (options["ssl_verify"].nil? || options["ssl_verify"]) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
         resp = http.get(url.request_uri)
         return nil unless resp.is_a?(Net::HTTPSuccess)
         open(archive_path, "wb") { |file| file.write(resp.body) }
@@ -169,13 +171,13 @@ module Berkshelf
           raise ConfigurationError.new "Missing github endpoint configuration for #{cookbook_uri.scheme}://#{cookbook_uri.host}" if options.nil?
         end
 
-        connection ||= Faraday.new(url: options[:web_endpoint]) do |faraday|
+        connection ||= Faraday.new(url: options["web_endpoint"]) do |faraday|
           faraday.headers[:accept] = "application/x-tar"
           faraday.response :logger, @logger unless @logger.nil?
           faraday.adapter  Faraday.default_adapter # make requests with Net::HTTP
         end
 
-        resp = connection.get(cookbook_uri.request_uri + "&private_token=" + options[:private_token])
+        resp = connection.get(cookbook_uri.request_uri + "&private_token=" + options["private_token"])
         return nil unless resp.status == 200
         open(archive_path, "wb") { |file| file.write(resp.body) }
 
