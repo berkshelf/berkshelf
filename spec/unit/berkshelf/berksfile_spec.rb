@@ -370,7 +370,7 @@ describe Berkshelf::Berksfile do
     let(:raw_metadata_files) { [File.join(cached_cookbook.cookbook_name, "metadata.rb")] }
 
     let(:destination) { "/a/destination/path" }
-    let(:options) { { exclude: Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: nil } }
+    let(:options) { { :exclude => Berkshelf::Berksfile::EXCLUDED_VCS_FILES_WHEN_VENDORING, delete: nil } }
 
     before do
       allow(Berkshelf::Installer).to receive(:new).and_return(installer)

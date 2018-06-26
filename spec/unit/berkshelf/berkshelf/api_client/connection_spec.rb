@@ -122,7 +122,7 @@ describe Berkshelf::APIClient::Connection do
     subject { instance.universe }
 
     it "follows 301 redirects correctly" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: 301, headers: { "Location" => "http://arglebargle.com/universe" })
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => 301, :headers => { "Location" => "http://arglebargle.com/universe" })
       body_response = %q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
       stub_request(:get, "http://arglebargle.com/universe")
         .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
@@ -130,17 +130,17 @@ describe Berkshelf::APIClient::Connection do
     end
 
     it "raises Berkshelf::APIClient::ServiceUnavailable for 500s" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: [500, "Internal Server Error"])
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => [500, "Internal Server Error"])
       expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavailable)
     end
 
     it "raises Berkshelf::APIClient::ServiceNotFound for 404s" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: [404, "Not Found"])
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => [404, "Not Found"])
       expect { subject }.to raise_error(Berkshelf::APIClient::ServiceNotFound)
     end
 
     it "raises Net::HTTPBadRequest for 400s" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: [400, "Bad Request"])
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => [400, "Bad Request"])
       expect { subject }.to raise_error(Berkshelf::APIClient::BadResponse)
     end
 

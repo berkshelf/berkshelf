@@ -6,5 +6,5 @@ validation_client_name   "validator"
 validation_key           File.expand_path("spec/config/validator.pem")
 chef_server_url          "http://localhost:26310"
 cache_type               "BasicFile"
-cache_options( path: "#{ENV['HOME']}/.chef/checksums" )
+cache_options( :path => "#{ENV['HOME']}/.chef/checksums" )
 cookbook_path []
