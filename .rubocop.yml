@@ -8,3 +8,5 @@ Lint/AmbiguousRegexpLiteral:
   Enabled: false
 Lint/AmbiguousBlockAssociation:
   Enabled: false
+Style/HashSyntax:
+  Enabled: true
