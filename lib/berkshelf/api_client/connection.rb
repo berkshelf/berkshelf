@@ -31,7 +31,7 @@ module Berkshelf
         # API it stopped doing that.  this may or may not be a breaking change (it broke some fairly
         # brittle berkshelf tests).  if it causes too much berkshelf chaos we could revert by uncommenting
         # the next line.  as it is removing this behavior feels more like fixing a bug.
-        #@url = url.normalize! if url.is_a?(Addressable::URI)
+        # @url = url.normalize! if url.is_a?(Addressable::URI)
         options = { retries: 3, retry_interval: 0.5, open_timeout: 30, timeout: 30 }.merge(options)
         options[:server_url] = url
 

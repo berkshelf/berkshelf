@@ -16,7 +16,7 @@ module FileUtils
     def mv(src, dest, options = {})
       old_mv(src, dest, options)
     rescue Errno::EACCES, Errno::ENOENT
-      options.delete(:force) if options.has_key?(:force)
+      options.delete(:force) if options.key?(:force)
       FileUtils.cp_r(src, dest, options)
       FileUtils.rm_rf(src)
     end

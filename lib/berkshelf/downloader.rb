@@ -34,7 +34,7 @@ module Berkshelf
     # @return [String]
     def download(*args, &block)
       # options are ignored
-      #options = args.last.is_a?(Hash) ? args.pop : Hash.new
+      # options = args.last.is_a?(Hash) ? args.pop : Hash.new
       dependency, version = args
 
       sources.each do |source|

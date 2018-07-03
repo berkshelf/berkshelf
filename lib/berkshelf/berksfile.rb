@@ -288,9 +288,9 @@ module Berkshelf
       end
 
       # this appears to be dead code
-      #if options[:path]
+      # if options[:path]
       #  metadata_file = File.join(options[:path], "metadata.rb")
-      #end
+      # end
 
       options[:constraint] = constraint
 

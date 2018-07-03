@@ -26,7 +26,7 @@ group :development do
   gem "webmock",       ">= 1.11"
   gem "yard",          ">= 0.8"
   gem "http",          ">= 0.9.8"
-  gem "chefstyle"
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
