@@ -267,7 +267,7 @@ module Berkshelf
         end
 
         it "copies relative and absolute symlinks when destination is a relative path" do
-          described_class.sync(source, "#{destination.gsub(Dir.pwd, '.')}")
+          described_class.sync(source, (destination.gsub(Dir.pwd, ".")).to_s)
 
           expect("#{destination}/links/index.html").to be_a_symlink_to("./home.html")
           expect("#{destination}/links/default.html").to be_a_symlink_to("./home.html")

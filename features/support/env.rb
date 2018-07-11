@@ -43,7 +43,7 @@ Before do
   Berkshelf::CachedCookbook.instance_variable_set(:@loaded_cookbooks, nil)
 
   # This appears to be dead code
-  #endpoints = [
+  # endpoints = [
   #  {
   #    type: "chef_server",
   #    options: {
@@ -52,7 +52,7 @@ Before do
   #      client_key: File.expand_path("spec/config/berkshelf.pem"),
   #    },
   #  },
-  #]
+  # ]
 
   Berkshelf::RSpec::ChefServer.start(port: CHEF_SERVER_PORT)
 
