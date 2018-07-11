@@ -86,7 +86,7 @@ module Berkshelf
 
       @path = File.expand_path(path)
       if File.exist?(@path)
-        puts STDERR "WARN: use of berkshelf's config.json is deprecated, the standard knife.rb/config.rb of chef should be used instead"
+        STDERR.puts "WARN: use of berkshelf's config.json is deprecated, the standard knife.rb/config.rb of chef should be used instead"
         @klass.from_file(@path)
       end
       # yeah, if !File.exist?() you just get back an empty config object
