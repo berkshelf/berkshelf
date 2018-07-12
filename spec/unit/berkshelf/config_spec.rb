@@ -22,10 +22,7 @@ describe Berkshelf::Config do
           client_key: "client-key",
           node_name: "fake-client",
           trusted_certs_dir: "/tmp/fakecerts",
-          artifactory_api_key: "secret",
-          cookbook_copyright: "user",
-          cookbook_email: "user@example.com",
-          cookbook_license: "apachev2"
+          artifactory_api_key: "secret"
         )
       end
 
@@ -44,16 +41,6 @@ describe Berkshelf::Config do
       }.each do |attr, default|
         it "should have a default chef.#{attr}" do
           expect(Berkshelf::Config.instance.chef.send(attr)).to eq(default)
-        end
-      end
-
-      {
-        copyright: "user",
-        email: "user@example.com",
-        license: "apachev2",
-      }.each do |attr, default|
-        it "should have a default cookbook.#{attr}" do
-          expect(Berkshelf::Config.instance.cookbook.send(attr)).to eq(default)
         end
       end
     end

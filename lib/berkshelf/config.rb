@@ -87,6 +87,14 @@ module Berkshelf
       @path = File.expand_path(path)
       @klass.from_file(@path) if File.exist?(@path)
       # yeah, if !File.exist?() you just get back an empty config object
+
+      Berkshelf.ui.warn "The `cookbook.copyright' config is deprecated and will be removed in a future release." unless cookbook.copyright.nil?
+      Berkshelf.ui.warn "The `cookbook.email' config is deprecated and will be removed in a future release." unless cookbook.email.nil?
+      Berkshelf.ui.warn "The `cookbook.license' config is deprecated and will be removed in a future release." unless cookbook.license.nil?
+      Berkshelf.ui.warn "The `vagrant.vm.box' config is deprecated and will be removed in a future release." unless vagrant.vm.box.nil?
+      Berkshelf.ui.warn "The `vagrant.vm.forward_port' config is deprecated and will be removed in a future release." unless vagrant.vm.forward_port.nil?
+      Berkshelf.ui.warn "The `vagrant.vm.provision' config is deprecated and will be removed in a future release." unless vagrant.vm.provision.nil?
+      Berkshelf.ui.warn "The `vagrant.vm.omnibus.version' config is deprecated and will be removed in a future release." unless vagrant.vm.omnibus.version.nil?
     end
 
     def method_missing(method, *args, &block)
@@ -110,19 +118,19 @@ module Berkshelf
             default :artifactory_api_key, Berkshelf.chef_config.artifactory_api_key
           end
           config_context :cookbook do
-            default :copyright, Berkshelf.chef_config.cookbook_copyright
-            default :email, Berkshelf.chef_config.cookbook_email
-            default :license, Berkshelf.chef_config.cookbook_license
+            default :copyright, nil
+            default :email, nil
+            default :license, nil
           end
           default :allowed_licenses, Array.new
           default :raise_license_exception, false
           config_context :vagrant do
             config_context :vm do
-              default :box, "bento/ubuntu-14.04"
-              default :forward_port, Hash.new
-              default :provision, "chef_solo"
+              default :box, nil
+              default :forward_port, nil
+              default :provision, nil
               config_context :omnibus do
-                default :version, "latest"
+                default :version, nil
               end
             end
           end
