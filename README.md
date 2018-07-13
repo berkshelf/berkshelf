@@ -69,14 +69,12 @@ A partial list of common berkshelf settings and their Chef Config settings for c
 - [Bash](https://github.com/berkshelf/berkshelf-bash-plugin)
 - [ZSH](https://github.com/berkshelf/berkshelf-zsh-plugin)
 
-## Plugins
-
-Please see [Plugins page](https://github.com/berkshelf/berkshelf/blob/master/PLUGINS.md) for more information.
-
 ## Getting Help
 
-* If you have an issue: report it on the [issue tracker](https://github.com/berkshelf/berkshelf/issues)
-* If you have a question: visit the #chef or #berkshelf channel on irc.freenode.net
+Documentation: https://docs.chef.io
+Tickets/Issues: https://github.com/berkshelf/berkshelf/issues
+Slack: [Chef Community Slack](https://community-slack.chef.io/)
+Mailing list: https://discourse.chef.io
 
 ## Authors
 
