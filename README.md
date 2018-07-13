@@ -71,10 +71,10 @@ A partial list of common berkshelf settings and their Chef Config settings for c
 
 ## Getting Help
 
-Documentation: https://docs.chef.io
-Tickets/Issues: https://github.com/berkshelf/berkshelf/issues
-Slack: [Chef Community Slack](https://community-slack.chef.io/)
-Mailing list: https://discourse.chef.io
+- Documentation: https://docs.chef.io
+- Tickets/Issues: https://github.com/berkshelf/berkshelf/issues
+- Slack: [Chef Community Slack](https://community-slack.chef.io/)
+- Mailing list: https://discourse.chef.io
 
 ## Authors
 
