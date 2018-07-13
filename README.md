@@ -49,16 +49,20 @@ The old config.json berkshelf file has been deprecated.
 
 A partial list of common berkshelf settings and their Chef Config settings for conversion:
 
-| Berkshelf Config | Chef Config                       |
-|:---------------- |:--------------------------------- |
-| timeout          | rest_timeout                      |
-| headers          | headers                           |
-| client_name      | client_name                       |
-| client_key       | signing_key_filename              |
-| ssl.verify       | verify_api_cert / ssl_verify_mode |
-| ssl.ca_path      | ssl_ca_path                       |
-| ssl.client_cert  | ssl_client_cert                   |
-| ssl.client_key   | ssl_client_key                    |
+| Berkshelf Config            | Chef Config                       |
+|:--------------------------- |:--------------------------------- |
+| timeout                     | rest_timeout                      |
+| chef.chef_server_url        | chef_server_url                   |
+| chef.validation_client_name | validation_client_name            |
+| chef.validation_key_path    | validation_key                    |
+| chef.client_key             | client_key                        |
+| chef.node_name              | node_name                         |
+| chef.trusted_certs_dir      | trusted_certs_dir                 |
+| chef.artifactory_api_key    | artifactory_api_key               |
+| ssl.verify                  | verify_api_cert / ssl_verify_mode |
+| ssl.ca_path                 | ssl_ca_path                       |
+| ssl.client_cert             | ssl_client_cert                   |
+| ssl.client_key              | ssl_client_key                    |
 
 ## Shell Completion
 
