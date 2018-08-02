@@ -8,6 +8,7 @@ require "rspec"
 require "cleanroom/rspec"
 require "webmock/rspec"
 require "rspec/its"
+require "berkshelf"
 
 Dir["spec/support/**/*.rb"].each { |f| require File.expand_path(f) }
 
@@ -62,8 +63,6 @@ def capture(stream)
 
   result
 end
-
-require "berkshelf"
 
 module Berkshelf
   class GitLocation
