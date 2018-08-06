@@ -1,5 +1,22 @@
 # Change Log
 
+## [v7.0.5](https://github.com/berkshelf/berkshelf/tree/v7.0.5) (2018-08-06)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.3...v7.0.5)
+
+**Merged pull requests:**
+
+- Add a Chef::CookbookManifestVersions to RidleyCompat [\#1789](https://github.com/berkshelf/berkshelf/pull/1789) ([ryancragun](https://github.com/ryancragun))
+
+## [v6.3.3](https://github.com/berkshelf/berkshelf/tree/v6.3.3) (2018-08-03)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.4...v6.3.3)
+
+**Merged pull requests:**
+
+- \[SHACK-295\] Missing require for ChefDK 2.x patch release [\#1788](https://github.com/berkshelf/berkshelf/pull/1788) ([tyler-ball](https://github.com/tyler-ball))
+- Additional generator removal cleanup [\#1786](https://github.com/berkshelf/berkshelf/pull/1786) ([lamont-granquist](https://github.com/lamont-granquist))
+- fixes for latest chefstyle updates [\#1784](https://github.com/berkshelf/berkshelf/pull/1784) ([lamont-granquist](https://github.com/lamont-granquist))
+- remove hashrockets syntax [\#1783](https://github.com/berkshelf/berkshelf/pull/1783) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v7.0.4](https://github.com/berkshelf/berkshelf/tree/v7.0.4) (2018-06-08)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.3...v7.0.4)
 
@@ -70,7 +87,6 @@
 
 **Merged pull requests:**
 
-- Prepare 6.3.0 Release [\#1725](https://github.com/berkshelf/berkshelf/pull/1725) ([jaym](https://github.com/jaym))
 - Remove stale comment [\#1724](https://github.com/berkshelf/berkshelf/pull/1724) ([jaym](https://github.com/jaym))
 - Fix up Dir.glob for windows [\#1722](https://github.com/berkshelf/berkshelf/pull/1722) ([jaym](https://github.com/jaym))
 - bump the gemfile.lock [\#1721](https://github.com/berkshelf/berkshelf/pull/1721) ([lamont-granquist](https://github.com/lamont-granquist))
