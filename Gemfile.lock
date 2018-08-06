@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/chef/chef
-  revision: 975395a2812c20d326a9f83d5510b848dabc79ef
+  revision: 111bb019fed2eea16f43acd52635607f3a33373e
   branch: master
   specs:
-    chef (14.4.22)
+    chef (14.4.23)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.4.22)
+      chef-config (= 14.4.23)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -34,7 +34,7 @@ GIT
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef-config (14.4.22)
+    chef-config (14.4.23)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -43,7 +43,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 121db02686d148ad2c60ac68d2fb7a5ab8e95edb
+  revision: 4a885da4a201b55f2a5568bc0ea054860ccbf3c3
   branch: master
   specs:
     chefstyle (0.10.0)
@@ -52,7 +52,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (7.0.5)
+    berkshelf (7.0.6)
       chef (>= 13.6.52)
       chef-config
       cleanroom (~> 1.0)
@@ -130,7 +130,7 @@ GEM
     ffi (1.9.25)
     ffi-yajl (2.3.1)
       libyajl2 (~> 1.2)
-    fuubar (2.3.1)
+    fuubar (2.3.2)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
     fuzzyurl (0.9.0)
@@ -201,7 +201,7 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     parallel (1.12.1)
-    parser (2.5.1.0)
+    parser (2.5.1.2)
       ast (~> 2.4.0)
     plist (3.4.0)
     powerpack (0.1.2)
@@ -275,7 +275,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff
     wmi-lite (1.0.0)
-    yard (0.9.14)
+    yard (0.9.15)
 
 PLATFORMS
   ruby
