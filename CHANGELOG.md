@@ -1,5 +1,12 @@
 # Change Log
 
+## [v7.0.6](https://github.com/berkshelf/berkshelf/tree/v7.0.6) (2018-08-06)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.5...v7.0.6)
+
+**Merged pull requests:**
+
+- Use Strings to access options in try\_download. Fixes \#1764. [\#1782](https://github.com/berkshelf/berkshelf/pull/1782) ([xeron](https://github.com/xeron))
+
 ## [v7.0.5](https://github.com/berkshelf/berkshelf/tree/v7.0.5) (2018-08-06)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.3...v7.0.5)
 
