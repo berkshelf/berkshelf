@@ -3,6 +3,7 @@ require "chef/http/simple_json"
 require "chef/http/simple"
 require "berkshelf/api_client/errors"
 require "chef/config"
+require "chef/cookbook_manifest"
 
 module Berkshelf
   module RidleyCompatAPI
@@ -20,6 +21,7 @@ module Berkshelf
       chef_opts[:ssl_ca_file]          = opts[:ssl][:ca_file] if opts[:ssl][:ca_file]
       chef_opts[:ssl_client_cert]      = opts[:ssl][:client_cert] if opts[:ssl][:client_cert]
       chef_opts[:ssl_client_key]       = opts[:ssl][:client_key] if opts[:ssl][:client_key]
+      chef_opts[:version_class]        = opts[:version_class] if opts[:version_class]
       # chef/http/ssl_policies.rb reads only from Chef::Config and not from the opts in the constructor
       Chef::Config[:verify_api_cert] = chef_opts[:verify_api_cert]
       Chef::Config[:ssl_verify_mode] = chef_opts[:ssl_verify_mode]
@@ -97,5 +99,11 @@ module Berkshelf
     use Chef::HTTP::ValidateContentLength
 
     include RidleyCompatAPI
+
+    def initialize(**opts)
+      opts[:version_class] = Chef::CookbookManifestVersions
+      super(**opts)
+    end
+
   end
 end
