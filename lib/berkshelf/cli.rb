@@ -235,10 +235,15 @@ module Berkshelf
       type: :array,
       desc: "Only cookbooks that are in these groups.",
       aliases: "-o"
+    method_option :all,
+      type: :boolean,
+      desc: "Include cookbooks that don't satisfy the version constraints.",
+      aliases: "-a",
+      default: false
     desc "outdated [COOKBOOKS]", "List dependencies that have new versions available that satisfy their constraints"
     def outdated(*names)
       berksfile = Berksfile.from_options(options)
-      outdated  = berksfile.outdated(*names)
+      outdated  = berksfile.outdated(*names, include_non_satisfying: options[:all])
       Berkshelf.formatter.outdated(outdated)
     end
 
