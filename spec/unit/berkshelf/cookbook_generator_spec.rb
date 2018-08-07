@@ -11,6 +11,9 @@ describe Berkshelf::CookbookGenerator do
 
   context "with default options" do
     before do
+      if defined?(Kitchen::Generator::Init)
+        expect(Kitchen::Generator::Init).to receive(:new).with(any_args()).and_return(kitchen_generator)
+      end
       capture(:stdout) do
         Berkshelf::CookbookGenerator.new([target, name],
           license:          license,
@@ -76,6 +79,9 @@ describe Berkshelf::CookbookGenerator do
   context "given a 'maintainer_email' option" do
     before do
       capture(:stdout) do
+        if defined?(Kitchen::Generator::Init)
+          expect(Kitchen::Generator::Init).to receive(:new).with(any_args()).and_return(kitchen_generator)
+        end
         Berkshelf::CookbookGenerator.new([target, name], maintainer_email: "jamie@vialstudios.com").invoke_all
       end
     end
