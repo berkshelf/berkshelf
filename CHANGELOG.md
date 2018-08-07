@@ -1,5 +1,12 @@
 # Change Log
 
+## [6.3.4](https://github.com/berkshelf/berkshelf/tree/6.3.4) (2018-08-07)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.3...v6.3.4)
+
+**Merged pull requests:**
+
+- \[SHACK-295\] Kitchen generator conflicts on 'chefignore' [\#1791](https://github.com/berkshelf/berkshelf/pull/1791) ([tyler-ball](https://github.com/tyler-ball))
+
 ## [6.3.3](https://github.com/berkshelf/berkshelf/tree/6.3.3) (2018-08-03)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.4...6.3.3)
 
