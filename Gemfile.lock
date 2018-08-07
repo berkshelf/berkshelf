@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    berkshelf (6.3.3)
+    berkshelf (6.3.4)
       buff-config (~> 2.0)
       buff-extensions (~> 2.0)
       chef (>= 12.7.2, < 14.0)
