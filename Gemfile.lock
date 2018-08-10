@@ -1,47 +1,4 @@
 GIT
-  remote: https://github.com/chef/chef
-  revision: 111bb019fed2eea16f43acd52635607f3a33373e
-  branch: master
-  specs:
-    chef (14.4.23)
-      addressable
-      bundler (>= 1.10)
-      chef-config (= 14.4.23)
-      chef-zero (>= 13.0)
-      diff-lcs (~> 1.2, >= 1.2.4)
-      erubis (~> 2.7)
-      ffi (~> 1.9, >= 1.9.25)
-      ffi-yajl (~> 2.2)
-      highline (~> 1.6, >= 1.6.9)
-      iniparse (~> 1.4)
-      iso8601 (~> 0.11.0)
-      mixlib-archive (~> 0.4)
-      mixlib-authentication (~> 2.1)
-      mixlib-cli (~> 1.7)
-      mixlib-log (~> 2.0, >= 2.0.3)
-      mixlib-shellout (~> 2.0)
-      net-sftp (~> 2.1, >= 2.1.2)
-      net-ssh (~> 4.2)
-      net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 14.0)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      rspec-core (~> 3.5)
-      rspec-expectations (~> 3.5)
-      rspec-mocks (~> 3.5)
-      rspec_junit_formatter (~> 0.2.0)
-      serverspec (~> 2.7)
-      specinfra (~> 2.10)
-      syslog-logger (~> 1.6)
-      uuidtools (~> 2.1.5)
-    chef-config (14.4.23)
-      addressable
-      fuzzyurl
-      mixlib-config (>= 2.2.12, < 3.0)
-      mixlib-shellout (~> 2.0)
-      tomlrb (~> 1.2)
-
-GIT
   remote: https://github.com/chef/chefstyle.git
   revision: 4a885da4a201b55f2a5568bc0ea054860ccbf3c3
   branch: master
@@ -69,7 +26,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.2.0)
+    activesupport (5.2.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -86,6 +43,43 @@ GEM
     ast (2.4.0)
     backports (3.11.3)
     builder (3.2.3)
+    chef (14.3.37)
+      addressable
+      bundler (>= 1.10)
+      chef-config (= 14.3.37)
+      chef-zero (>= 13.0)
+      diff-lcs (~> 1.2, >= 1.2.4)
+      erubis (~> 2.7)
+      ffi (~> 1.9, >= 1.9.25)
+      ffi-yajl (~> 2.2)
+      highline (~> 1.6, >= 1.6.9)
+      iniparse (~> 1.4)
+      iso8601 (~> 0.9.1)
+      mixlib-archive (~> 0.4)
+      mixlib-authentication (~> 2.1)
+      mixlib-cli (~> 1.7)
+      mixlib-log (~> 2.0, >= 2.0.3)
+      mixlib-shellout (~> 2.0)
+      net-sftp (~> 2.1, >= 2.1.2)
+      net-ssh (~> 4.2)
+      net-ssh-multi (~> 1.2, >= 1.2.1)
+      ohai (~> 14.0)
+      plist (~> 3.2)
+      proxifier (~> 1.0)
+      rspec-core (~> 3.5)
+      rspec-expectations (~> 3.5)
+      rspec-mocks (~> 3.5)
+      rspec_junit_formatter (~> 0.2.0)
+      serverspec (~> 2.7)
+      specinfra (~> 2.10)
+      syslog-logger (~> 1.6)
+      uuidtools (~> 2.1.5)
+    chef-config (14.3.37)
+      addressable
+      fuzzyurl
+      mixlib-config (>= 2.2.12, < 3.0)
+      mixlib-shellout (~> 2.0)
+      tomlrb (~> 1.2)
     chef-zero (14.0.6)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
@@ -155,11 +149,11 @@ GEM
       domain_name (~> 0.5)
     http-form_data (2.1.1)
     http_parser.rb (0.6.0)
-    i18n (1.0.1)
+    i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     iniparse (1.4.4)
     ipaddress (0.8.3)
-    iso8601 (0.11.0)
+    iso8601 (0.9.1)
     libyajl2 (1.2.0)
     minitar (0.6.1)
     minitest (5.11.3)
@@ -171,7 +165,7 @@ GEM
       tomlrb
     mixlib-log (2.0.4)
     mixlib-shellout (2.4.0)
-    molinillo (0.6.5)
+    molinillo (0.6.6)
     multi_json (1.13.1)
     multi_test (0.1.2)
     multipart-post (2.0.0)
@@ -186,14 +180,14 @@ GEM
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.2.0)
-    octokit (4.9.0)
+    octokit (4.10.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.3.0)
+    ohai (14.4.0)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
-      mixlib-cli
+      mixlib-cli (>= 1.7.0)
       mixlib-config (~> 2.0)
       mixlib-log (~> 2.0, >= 2.0.1)
       mixlib-shellout (~> 2.0)
@@ -218,7 +212,7 @@ GEM
       rspec-mocks (~> 3.8.0)
     rspec-core (3.8.0)
       rspec-support (~> 3.8.0)
-    rspec-expectations (3.8.0)
+    rspec-expectations (3.8.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-its (1.2.0)
@@ -238,7 +232,7 @@ GEM
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
-    ruby-progressbar (1.9.0)
+    ruby-progressbar (1.10.0)
     safe_yaml (1.0.4)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
@@ -283,7 +277,6 @@ PLATFORMS
 DEPENDENCIES
   aruba (>= 0.10.0)
   berkshelf!
-  chef!
   chef-zero (>= 4.0)
   chefstyle!
   cucumber-expressions (= 5.0.13)
@@ -298,4 +291,4 @@ DEPENDENCIES
   yard (>= 0.8)
 
 BUNDLED WITH
-   1.16.1
+   1.16.3

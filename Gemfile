@@ -10,9 +10,6 @@ group :build do
   gem "rake",          ">= 10.1"
 end
 
-# temporarily until 13.7.x is released
-gem "chef", git: "https://github.com/chef/chef", branch: "master"
-
 group :development do
   # these all deliberately float because berkshelf has a Gemfile.lock that
   # equality pins them.  temporarily pin as necessary for API breaks.
@@ -24,9 +21,12 @@ group :development do
   gem "rspec",         ">= 3.0"
   gem "rspec-its",     ">= 1.2"
   gem "webmock",       ">= 1.11"
-  gem "yard",          ">= 0.8"
   gem "http",          ">= 0.9.8"
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
+end
+
+group :docs do
+  gem "yard", ">= 0.8"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
