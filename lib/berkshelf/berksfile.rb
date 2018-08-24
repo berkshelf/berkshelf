@@ -468,6 +468,10 @@ module Berkshelf
     # List of all the cookbooks which have a newer version found at a source
     # that satisfies the constraints of your dependencies.
     #
+    # @param [Boolean] include_non_satisfying
+    #   include cookbooks that would not satisfy the given constraints in the
+    #   +Berksfile+. Defaults to false.
+    #
     # @return [Hash]
     #   a hash of cached cookbooks and their latest version grouped by their
     #   remote API source. The hash will be empty if there are no newer
@@ -483,7 +487,7 @@ module Berkshelf
     #       }
     #     }
     #   }
-    def outdated(*names)
+    def outdated(*names, include_non_satisfying: false)
       validate_lockfile_present!
       validate_lockfile_trusted!
       validate_dependencies_installed!
@@ -494,7 +498,7 @@ module Berkshelf
           cookbooks = source.versions(name)
 
           latest = cookbooks.select do |cookbook|
-            dependency.version_constraint.satisfies?(cookbook.version) &&
+            (include_non_satisfying || dependency.version_constraint.satisfies?(cookbook.version)) &&
               Semverse::Version.coerce(cookbook.version) > dependency.locked_version
           end.sort_by { |cookbook| cookbook.version }.last
 

@@ -75,6 +75,55 @@ Feature: berks outdated
         * bacon (1.0.0 => 1.5.8)
       """
 
+  Scenario: the dependency has a version constraint and there are new items that don't satisfy it
+    Given the Chef Server has cookbooks:
+      | bacon | 1.1.0 |
+      | bacon | 1.5.8 |
+    And the cookbook store has the cookbooks:
+      | bacon | 1.1.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'bacon', '~> 1.1.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        bacon (~> 1.1.0)
+
+      GRAPH
+        bacon (1.1.0)
+      """
+    When I successfully run `berks outdated`
+    Then the output should contain:
+      """
+      All cookbooks up to date!
+      """
+
+  Scenario: the dependency has a version constraint and there are new items that satisfy it and --all is given
+    Given the Chef Server has cookbooks:
+      | bacon | 1.1.0 |
+      | bacon | 1.5.8 |
+    And the cookbook store has the cookbooks:
+      | bacon | 1.1.0 |
+    And I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook 'bacon', '~> 1.1.0'
+      """
+    And I write to "Berksfile.lock" with:
+      """
+      DEPENDENCIES
+        bacon (~> 1.1.0)
+
+      GRAPH
+        bacon (1.1.0)
+      """
+    When I successfully run `berks outdated --all`
+    Then the output should contain:
+      """
+      The following cookbooks have newer versions:
+        * bacon (1.1.0 => 1.5.8)
+      """
+
   Scenario: When the lockfile is not present
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
