@@ -68,7 +68,11 @@ module Berkshelf
         if source.type == :artifactory
           options[:headers] = { "X-Jfrog-Art-Api" => source.options[:api_key] }
         end
-        CommunityREST.new(remote_cookbook.location_path, options).download(name, version)
+
+        # Allow Berkshelf install to function if a relative url exists in location_path
+        path = URI.parse(remote_cookbook.location_path).absolute? ? remote_cookbook.location_path : "#{source.uri_string}#{remote_cookbook.location_path}"
+
+        CommunityREST.new(path, options).download(name, version)
       when :chef_server
         tmp_dir      = Dir.mktmpdir
         unpack_dir   = Pathname.new(tmp_dir) + "#{name}-#{version}"
