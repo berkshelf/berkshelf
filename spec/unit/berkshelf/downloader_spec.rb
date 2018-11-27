@@ -59,6 +59,31 @@ module Berkshelf
         subject.try_download(source, name, version)
       end
 
+      context "supports location paths" do
+        before(:each) do
+          allow(source).to receive(:type) { :supermarket }
+          allow(source).to receive(:options) { { ssl: {} } }
+          allow(source).to receive(:uri_string).and_return("http://localhost:8081/repository/chef-proxy")
+          allow(remote_cookbook).to receive(:location_type) { :opscode }
+        end
+
+        let(:rest) { double("community-rest") }
+
+        it "that are relative and prepends the source URI for the download" do
+          allow(remote_cookbook).to receive(:location_path) { "/api/v1" }
+          expect(CommunityREST).to receive(:new).with("http://localhost:8081/repository/chef-proxy/api/v1", { ssl: {} }) { rest }
+          expect(rest).to receive(:download).with(name, version)
+          subject.try_download(source, name, version)
+        end
+
+        it "that are absolute and uses the given absolute URI" do
+          allow(remote_cookbook).to receive(:location_path) { "http://localhost:8081/repository/chef-proxy/api/v1" }
+          expect(CommunityREST).to receive(:new).with("http://localhost:8081/repository/chef-proxy/api/v1", { ssl: {} }) { rest }
+          expect(rest).to receive(:download).with(name, version)
+          subject.try_download(source, name, version)
+        end
+      end
+
       context "with an artifactory source" do
         it "supports the 'opscode' location type" do
           allow(source).to receive(:type) { :artifactory }
