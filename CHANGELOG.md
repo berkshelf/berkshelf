@@ -1,5 +1,21 @@
 # Change Log
 
+## [v7.0.7](https://github.com/berkshelf/berkshelf/tree/v7.0.7) (2018-11-27)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.4...v7.0.7)
+
+**Merged pull requests:**
+
+- Allow relative urls in location\_path for downloader [\#1799](https://github.com/berkshelf/berkshelf/pull/1799) ([DarthHater](https://github.com/DarthHater))
+- Adds the possibility to show all outdated dependencies with berks outdated [\#1793](https://github.com/berkshelf/berkshelf/pull/1793) ([jeroenj](https://github.com/jeroenj))
+- Remove chef from gemfile and add docs group [\#1792](https://github.com/berkshelf/berkshelf/pull/1792) ([tas50](https://github.com/tas50))
+
+## [v6.3.4](https://github.com/berkshelf/berkshelf/tree/v6.3.4) (2018-08-07)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.6...v6.3.4)
+
+**Merged pull requests:**
+
+- \[SHACK-295\] Kitchen generator conflicts on 'chefignore' [\#1791](https://github.com/berkshelf/berkshelf/pull/1791) ([tyler-ball](https://github.com/tyler-ball))
+
 ## [v7.0.6](https://github.com/berkshelf/berkshelf/tree/v7.0.6) (2018-08-06)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.5...v7.0.6)
 
@@ -708,7 +724,7 @@
 - Greatly improve `berks package` command [\#942](https://github.com/berkshelf/berkshelf/pull/942) ([reset](https://github.com/reset))
 - properly identify a cookbook on disk by it's metadata [\#941](https://github.com/berkshelf/berkshelf/pull/941) ([reset](https://github.com/reset))
 - Make 'package' command to filter hidden files from chefignore [\#940](https://github.com/berkshelf/berkshelf/pull/940) ([noorul](https://github.com/noorul))
-- berksfile.lock not honored for transitive dependencies [\#939](https://github.com/berkshelf/berkshelf/pull/939) ([keiths-osc](https://github.com/keiths-osc))
+- berksfile.lock not honored for transitive dependencies [\#939](https://github.com/berkshelf/berkshelf/pull/939) ([kashook](https://github.com/kashook))
 - Looking for wrong version [\#907](https://github.com/berkshelf/berkshelf/pull/907) ([scalp42](https://github.com/scalp42))
 - exception info swallowed when git protocol doesn't work [\#879](https://github.com/berkshelf/berkshelf/pull/879) ([cjerdonek](https://github.com/cjerdonek))
 - `berks install --quiet` mutes error output [\#827](https://github.com/berkshelf/berkshelf/pull/827) ([torandu](https://github.com/torandu))
@@ -763,8 +779,8 @@
 - Avoid reloading each cached cookbook on every resolve [\#829](https://github.com/berkshelf/berkshelf/pull/829) ([kainosnoema](https://github.com/kainosnoema))
 - Accept an environment variable to debug solve [\#824](https://github.com/berkshelf/berkshelf/pull/824) ([sethvargo](https://github.com/sethvargo))
 - `berks init` should raise a friendly error if the current directory does not contain a cookbook [\#821](https://github.com/berkshelf/berkshelf/pull/821) ([reset](https://github.com/reset))
-- Allow chef client name and key to be overridden for cookbook uploads [\#818](https://github.com/berkshelf/berkshelf/pull/818) ([keiths-osc](https://github.com/keiths-osc))
-- Allow chef client name and key to be overridden for cookbook uploads [\#817](https://github.com/berkshelf/berkshelf/pull/817) ([keiths-osc](https://github.com/keiths-osc))
+- Allow chef client name and key to be overridden for cookbook uploads [\#818](https://github.com/berkshelf/berkshelf/pull/818) ([kashook](https://github.com/kashook))
+- Allow chef client name and key to be overridden for cookbook uploads [\#817](https://github.com/berkshelf/berkshelf/pull/817) ([kashook](https://github.com/kashook))
 - generate new Vagrantfile's with 1.9 style hashes [\#813](https://github.com/berkshelf/berkshelf/pull/813) ([reset](https://github.com/reset))
 
 ## [v2.0.9](https://github.com/berkshelf/berkshelf/tree/v2.0.9) (2013-08-22)
@@ -788,7 +804,7 @@
 
 - relax constraint on ridley to ~\> 1.5 [\#786](https://github.com/berkshelf/berkshelf/pull/786) ([reset](https://github.com/reset))
 - bump required solve version \>= 0.8.0 [\#783](https://github.com/berkshelf/berkshelf/pull/783) ([reset](https://github.com/reset))
-- Missing backtick on incompatible version error [\#782](https://github.com/berkshelf/berkshelf/pull/782) ([fromonesrc](https://github.com/fromonesrc))
+- Missing backtick on incompatible version error [\#782](https://github.com/berkshelf/berkshelf/pull/782) ([ocxo](https://github.com/ocxo))
 - From bug https://github.com/RiotGames/berkshelf/issues/758 [\#778](https://github.com/berkshelf/berkshelf/pull/778) ([riotcku](https://github.com/riotcku))
 - clean hard tabs [\#771](https://github.com/berkshelf/berkshelf/pull/771) ([j4y](https://github.com/j4y))
 - When Cucumber can’t find a matching Step Definition [\#768](https://github.com/berkshelf/berkshelf/pull/768) ([sethvargo](https://github.com/sethvargo))
