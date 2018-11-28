@@ -184,8 +184,8 @@ module Berkshelf
 
     def relative_to_absolute_url(target)
       if !URI.parse(target).absolute?
-        target = "#{api_uri.chomp("/api/v1")}#{target}"  
-      else 
+        "#{api_uri.chomp("/api/v1")}#{target}"
+      else
         target
       end
     end
