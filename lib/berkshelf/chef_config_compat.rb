@@ -13,6 +13,7 @@ module Berkshelf
       ChefConfig::WorkstationConfigLoader.new(path).load
       ChefConfig::Config.merge!(options)
       ChefConfig::Config.export_proxies # Set proxy settings as environment variables
+      ChefConfig::Config.init_openssl # setup openssl + fips mode
     end
 
     # Keep defaults that aren't in ChefConfig::Config
