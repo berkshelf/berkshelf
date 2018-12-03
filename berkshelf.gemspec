@@ -17,13 +17,12 @@ Gem::Specification.new do |s|
     "sethvargo@gmail.com",
   ]
 
-  s.description               = %q{Manages a Cookbook's, or an Application's, Cookbook dependencies}
+  s.description               = %q{Manages a Chef cookbook's dependencies}
   s.summary                   = s.description
-  s.homepage                  = "http://berkshelf.com"
-  s.license                   = "Apache 2.0"
-  s.files                     = `git ls-files`.split($\)
-  s.executables               = s.files.grep(%r{^bin/}).map { |f| File.basename(f) }
-  s.test_files                = s.files.grep(%r{^(test|spec|features)/})
+  s.homepage                  = "https://docs.chef.io/berkshelf.html"
+  s.license                   = "Apache-2.0"
+  s.files                     = %w{LICENSE Gemfile Rakefile} + Dir.glob("*.gemspec") + Dir.glob("{lib,spec, features}/**/*")
+  s.executables               = Dir.glob("bin/**/*").map { |f| File.basename(f) }
   s.name                      = "berkshelf"
   s.require_paths             = ["lib"]
   s.version                   = Berkshelf::VERSION
