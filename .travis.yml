@@ -11,7 +11,7 @@ addons:
 cache:
   - apt
   - bundler
-dist: trusty
+dist: xenial
 #env:
 #  global: USE_SYSTEM_GECODE=1
 language: ruby
