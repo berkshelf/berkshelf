@@ -515,9 +515,9 @@ module Berkshelf
       # useful data structure.
     class LockfileParser
       NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'.freeze
-      DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/
-      DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/
-      OPTION_PATTERN       = /^ {4}(.+)\: (.+)/
+      DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/.freeze
+      DEPENDENCIES_PATTERN = /^ {4}#{NAME_VERSION}$/.freeze
+      OPTION_PATTERN       = /^ {4}(.+)\: (.+)/.freeze
 
       # Create a new lockfile parser.
       #

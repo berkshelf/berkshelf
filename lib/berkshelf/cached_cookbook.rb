@@ -94,7 +94,7 @@ module Berkshelf
       [cookbook_name, version] <=> [other.cookbook_name, other.version]
     end
 
-    DIRNAME_REGEXP = /^(.+)-(.+)$/
+    DIRNAME_REGEXP = /^(.+)-(.+)$/.freeze
 
     extend Forwardable
 
