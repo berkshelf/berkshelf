@@ -19,8 +19,8 @@ module Berkshelf
         next unless File.directory?(entry_path) # Skip non-dirs.
         cookbook = begin
           Berkshelf::CachedCookbook.from_path(entry_path)
-        rescue IOError
-          next # It wasn't a cookbook.
+                   rescue IOError
+                     next # It wasn't a cookbook.
         end
         cookbooks << Berkshelf::APIClient::RemoteCookbook.new(
           cookbook.cookbook_name,

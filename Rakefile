@@ -8,7 +8,7 @@ rescue LoadError
   task :spec
 end
 
-WINDOWS_PLATFORM = /mswin|win32|mingw/ unless defined? WINDOWS_PLATFORM
+WINDOWS_PLATFORM = /mswin|win32|mingw/.freeze unless defined? WINDOWS_PLATFORM
 
 begin
   require "cucumber"

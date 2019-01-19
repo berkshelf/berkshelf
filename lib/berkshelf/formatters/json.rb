@@ -8,9 +8,9 @@ module Berkshelf
     def initialize
       @output = {
         cookbooks: [],
-        errors:    [],
-        messages:  [],
-        warnings:  [],
+        errors: [],
+        messages: [],
+        warnings: [],
       }
       @cookbooks = Hash.new
 

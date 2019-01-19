@@ -28,3 +28,4 @@ vendor/ruby
 bin
 !bin/berks
 Gemfile.local
+gem_graph.png

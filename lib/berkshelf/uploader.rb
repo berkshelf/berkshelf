@@ -16,10 +16,10 @@ module Berkshelf
       opts       = args.last.respond_to?(:to_hash) ? args.pop.to_hash.each_with_object({}) { |(k, v), m| m[k.to_sym] = v } : {}
 
       @options = {
-        force:          false,
-        freeze:         true,
+        force: false,
+        freeze: true,
         halt_on_frozen: false,
-        validate:       true,
+        validate: true,
       }.merge(opts)
 
       @names = Array(args).flatten
