@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    berkshelf (7.0.7)
+    berkshelf (7.0.8)
       chef (>= 13.6.52)
       chef-config
       cleanroom (~> 1.0)
@@ -43,10 +43,10 @@ GEM
     ast (2.4.0)
     backports (3.11.4)
     builder (3.2.3)
-    chef (14.8.12)
+    chef (14.11.21)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.8.12)
+      chef-config (= 14.11.21)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -54,7 +54,7 @@ GEM
       ffi-yajl (~> 2.2)
       highline (~> 1.6, >= 1.6.9)
       iniparse (~> 1.4)
-      mixlib-archive (~> 0.4)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (~> 2.1)
       mixlib-cli (~> 1.7)
       mixlib-log (~> 2.0, >= 2.0.3)
@@ -73,7 +73,7 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef-config (14.8.12)
+    chef-config (14.11.21)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -156,7 +156,7 @@ GEM
     libyajl2 (1.2.0)
     minitar (0.8)
     minitest (5.11.3)
-    mixlib-archive (0.4.19)
+    mixlib-archive (1.0.1)
       mixlib-log
     mixlib-authentication (2.1.1)
     mixlib-cli (1.7.0)
@@ -204,7 +204,7 @@ GEM
     rainbow (3.0.0)
     rake (12.3.2)
     retriable (2.1.0)
-    retryable (3.0.3)
+    retryable (3.0.4)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
