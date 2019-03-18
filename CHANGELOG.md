@@ -1,5 +1,16 @@
 # Change Log
 
+## [7.0.8](https://github.com/berkshelf/berkshelf/tree/7.0.8) (2019-03-18)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.7...7.0.8)
+
+**Merged pull requests:**
+
+- Allow for retryable 3.x [\#1810](https://github.com/berkshelf/berkshelf/pull/1810) ([tas50](https://github.com/tas50))
+- Allow for the latest mixlib-shellout and mixlib-archive [\#1809](https://github.com/berkshelf/berkshelf/pull/1809) ([tas50](https://github.com/tas50))
+- Add Github PR template [\#1805](https://github.com/berkshelf/berkshelf/pull/1805) ([tas50](https://github.com/tas50))
+- Slim the files we ship in the gem [\#1804](https://github.com/berkshelf/berkshelf/pull/1804) ([tas50](https://github.com/tas50))
+- call init\_openssl to setup fips mode [\#1803](https://github.com/berkshelf/berkshelf/pull/1803) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v7.0.7](https://github.com/berkshelf/berkshelf/tree/v7.0.7) (2018-11-27)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v6.3.4...v7.0.7)
 
