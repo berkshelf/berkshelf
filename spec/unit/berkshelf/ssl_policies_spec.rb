@@ -16,19 +16,17 @@ describe Berkshelf::SSLPolicy do
       cookbook_copyright: "user",
       cookbook_email: "user@example.com",
       cookbook_license: "apachev2",
-      trusted_certs_dir: self_signed_crt_path
-    )
+      trusted_certs_dir: self_signed_crt_path)
   end
 
   let(:berkshelf_config) do
     double(Berkshelf::Config,
       ssl:  double(verify: true),
-      chef: chef_config
-    )
+      chef: chef_config)
   end
 
   subject do
-    Berkshelf::SSLPolicy.new()
+    Berkshelf::SSLPolicy.new
   end
 
   before do

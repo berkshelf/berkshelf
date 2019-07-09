@@ -8,8 +8,7 @@ module Berkshelf
       double("dependency",
         name: "nginx",
         version_constraint: constraint,
-        berksfile: berksfile
-      )
+        berksfile: berksfile)
     end
     let(:path) { fixtures_path.join("cookbooks", "example_cookbook") }
     let(:relative_path) { Pathname.new("../../../fixtures/cookbooks/example_cookbook") }

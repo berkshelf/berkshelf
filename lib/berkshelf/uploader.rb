@@ -32,7 +32,7 @@ module Berkshelf
                     Berkshelf.log.debug "  No names given, using all cookbooks"
                     filtered_cookbooks
                   else
-                    Berkshelf.log.debug "  Names given (#{names.join(', ')})"
+                    Berkshelf.log.debug "  Names given (#{names.join(", ")})"
                     names.map { |name| lockfile.retrieve(name) }
                   end
 
@@ -82,6 +82,7 @@ module Berkshelf
               if options[:halt_on_frozen]
                 raise FrozenCookbook.new(cookbook)
               end
+
               Berkshelf.formatter.skipping(cookbook, connection)
             end
           ensure

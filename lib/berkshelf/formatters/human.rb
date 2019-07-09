@@ -68,7 +68,7 @@ module Berkshelf
 
         hash.each do |name, info|
           info["remote"].each do |remote_source, remote_version|
-            out = "  * #{name} (#{info['local']} => #{remote_version})"
+            out = "  * #{name} (#{info["local"]} => #{remote_version})"
 
             unless remote_source.default?
               out << " [#{remote_source.uri}]"

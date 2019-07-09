@@ -10,11 +10,11 @@ module Berkshelf
         attr_reader :server
 
         def clear_request_log
-          @request_log = Array.new
+          @request_log = []
         end
 
         def request_log
-          @request_log ||= Array.new
+          @request_log ||= []
         end
 
         def server_url

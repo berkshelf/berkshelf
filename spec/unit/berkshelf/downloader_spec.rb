@@ -5,14 +5,12 @@ module Berkshelf
     let(:berksfile) do
       double(Berksfile,
         lockfile: lockfile,
-        dependencies: []
-      )
+        dependencies: [])
     end
 
     let(:lockfile) do
       double(Lockfile,
-        graph: graph
-      )
+        graph: graph)
     end
 
     let(:graph) { double(Lockfile::Graph, locks: {}) }
@@ -124,15 +122,13 @@ module Berkshelf
             cookbook_copyright: "user",
             cookbook_email: "user@example.com",
             cookbook_license: "apachev2",
-            trusted_certs_dir: self_signed_crt_path
-          )
+            trusted_certs_dir: self_signed_crt_path)
         end
 
         let(:berkshelf_config) do
           double(Config,
             ssl:  double(verify: true),
-            chef: chef_config
-          )
+            chef: chef_config)
         end
 
         before do

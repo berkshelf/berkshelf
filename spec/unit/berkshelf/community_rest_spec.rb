@@ -68,7 +68,7 @@ describe Berkshelf::CommunityREST do
     let(:archive) { double("archive", path: "/foo/bar", unlink: true) }
 
     before do
-      allow(subject).to receive(:stream).with(any_args()).and_return(archive)
+      allow(subject).to receive(:stream).with(any_args).and_return(archive)
       allow(Berkshelf::CommunityREST).to receive(:unpack)
         .and_return("/some/path")
     end

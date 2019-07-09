@@ -228,7 +228,7 @@ module Berkshelf
 
     # @return [Array<CachedCookbook>]
     def cached
-      graph.locks.values.collect { |dependency| dependency.cached_cookbook }
+      graph.locks.values.collect(&:cached_cookbook)
     end
 
     # The list of dependencies constrained in this lockfile.
@@ -570,7 +570,7 @@ module Berkshelf
               end
             end
 
-            graph << "  #{name} (#{info['locked_version']})\n"
+            graph << "  #{name} (#{info["locked_version"]})\n"
           end
 
           contents = "#{dependencies}\n#{graph}"

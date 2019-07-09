@@ -122,7 +122,7 @@ module Berkshelf
             default :email, nil
             default :license, nil
           end
-          default :allowed_licenses, Array.new
+          default :allowed_licenses, []
           default :raise_license_exception, false
           config_context :vagrant do
             config_context :vm do

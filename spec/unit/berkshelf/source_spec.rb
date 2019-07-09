@@ -110,12 +110,12 @@ module Berkshelf
         # Check all baseline values.
         its([:timeout]) { is_expected.to eq 30 }
         its([:open_timeout]) { is_expected.to eq 3 }
-        its([:ssl, :verify]) { is_expected.to be true }
-        its([:ssl, :ca_file]) { is_expected.to be_nil }
-        its([:ssl, :ca_path]) { is_expected.to be_nil }
-        its([:ssl, :client_cert]) { is_expected.to be_nil }
-        its([:ssl, :client_key]) { is_expected.to be_nil }
-        its([:ssl, :cert_store]) { is_expected.to be_a(OpenSSL::X509::Store) }
+        its(%i{ssl verify}) { is_expected.to be true }
+        its(%i{ssl ca_file}) { is_expected.to be_nil }
+        its(%i{ssl ca_path}) { is_expected.to be_nil }
+        its(%i{ssl client_cert}) { is_expected.to be_nil }
+        its(%i{ssl client_key}) { is_expected.to be_nil }
+        its(%i{ssl cert_store}) { is_expected.to be_a(OpenSSL::X509::Store) }
       end
 
       context "with a string argument and options" do
@@ -198,7 +198,8 @@ module Berkshelf
         [
         APIClient::RemoteCookbook.new("cb1", "1.0.8"),
         APIClient::RemoteCookbook.new("cb1", "1.0.22"),
-      ] end
+      ]
+      end
 
       before do
         allow_any_instance_of(APIClient::Connection).to receive(:universe).and_return(cookbooks)

@@ -171,7 +171,7 @@ module Berkshelf
         "#{name} (#{version_constraint})",
         "locked_version: #{locked_version.inspect}",
         "groups: #{groups}",
-        "location: #{location || 'default'}>",
+        "location: #{location || "default"}>",
       ].join(", ")
     end
 

@@ -43,7 +43,7 @@ Given /I have a Berksfile pointing at an( authenticated)? Artifactory server wit
     steps %Q{
       Given a file named "Berksfile" with:
         """
-        source artifactory: '#{ENV['TEST_BERKSHELF_ARTIFACTORY']}'#{authenticated ? ", api_key: '#{ENV['TEST_BERKSHELF_ARTIFACTORY_API_KEY']}'" : ''}
+        source artifactory: '#{ENV["TEST_BERKSHELF_ARTIFACTORY"]}'#{authenticated ? ", api_key: '#{ENV["TEST_BERKSHELF_ARTIFACTORY_API_KEY"]}'" : ""}
 
         #{content}
         """

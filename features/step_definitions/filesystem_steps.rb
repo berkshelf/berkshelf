@@ -39,7 +39,7 @@ end
 Given(/^the cookbook store cookbook "(.*?)" "(.*?)" is vendored without a metadata.rb$/) do |name, version|
   cookbook_path = File.join(cookbook_store.storage_path, "#{name}-#{version}")
   cookbook = Berkshelf::CachedCookbook.from_path(cookbook_path)
-  cookbook.compile_metadata()
+  cookbook.compile_metadata
   metadata_file = File.join(cookbook_path, "metadata.rb")
   File.unlink(metadata_file) if File.file?(metadata_file)
 end
@@ -47,7 +47,7 @@ end
 Given(/^the cookbook store cookbook "(.*?)" "(.*?)" is vendored with a metadata.rb$/) do |name, version|
   cookbook_path = File.join(cookbook_store.storage_path, "#{name}-#{version}")
   cookbook = Berkshelf::CachedCookbook.from_path(cookbook_path)
-  cookbook.compile_metadata()
+  cookbook.compile_metadata
   metadata_file = File.join(cookbook_path, "metadata.rb")
   raise "internal error, fixture cookbook should have a metadata.rb" unless File.file?(metadata_file)
 end

@@ -17,7 +17,7 @@ end
 # Pending Ridley allowing newer Faraday and Celluloid.
 def clean_json_output(output)
   output.gsub(/^.+warning: constant ::Fixnum is deprecated$/, "") \
-        .gsub(/^.*forwarding to private method Celluloid::PoolManager#url_prefix$/, "")
+    .gsub(/^.*forwarding to private method Celluloid::PoolManager#url_prefix$/, "")
 end
 
 Then /^the output should contain JSON:$/ do |data|

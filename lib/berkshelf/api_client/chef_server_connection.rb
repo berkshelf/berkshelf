@@ -19,7 +19,8 @@ module Berkshelf
           response.each do |name, versions|
             versions.each do |version, attributes|
               attributes[:location_path] = @url
-              cookbooks << RemoteCookbook.new(name, version, attributes) end
+              cookbooks << RemoteCookbook.new(name, version, attributes)
+            end
           end
         end
       rescue Ridley::Errors::HTTPNotFound

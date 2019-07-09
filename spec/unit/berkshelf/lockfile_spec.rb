@@ -8,8 +8,7 @@ describe Berkshelf::Lockfile do
     let(:lock_path) { File.absolute_path("/path/to/Bacon") }
     let(:berksfile) do
       double("Berksfile",
-        filepath: lock_path
-      )
+        filepath: lock_path)
     end
 
     subject { described_class.from_berksfile(berksfile) }
@@ -77,8 +76,7 @@ describe Berkshelf::Lockfile do
         version: "1.0.0",
         location: "api",
         dependencies: {},
-        cached_cookbook: cookbook
-      )
+        cached_cookbook: cookbook)
       berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
@@ -95,8 +93,7 @@ describe Berkshelf::Lockfile do
         version: "1.0.0",
         location: "api",
         dependencies: { "bacon" => "1.0.0" },
-        cached_cookbook: cookbook
-      )
+        cached_cookbook: cookbook)
       bacon = double(name: "bacon", version: "1.0.0", dependencies: {})
       berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
@@ -115,15 +112,13 @@ describe Berkshelf::Lockfile do
         version: "1.0.0",
         location: "api",
         dependencies: { "bacon" => "1.0.0" },
-        cached_cookbook: cookbook
-      )
+        cached_cookbook: cookbook)
       bacon = double("bacon",
         name: "bacon",
         version_constraint: Semverse::Constraint.new(">= 0.0.0"),
         version: "1.0.0",
         location: "api",
-        dependencies: { "apt" => "1.0.0" }
-      )
+        dependencies: { "apt" => "1.0.0" })
       berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
@@ -141,8 +136,7 @@ describe Berkshelf::Lockfile do
         version: "1.0.0",
         location: "api",
         dependencies: { "bacon" => "1.0.0" },
-        cached_cookbook: cookbook
-      )
+        cached_cookbook: cookbook)
       berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
@@ -177,8 +171,7 @@ describe Berkshelf::Lockfile do
         version: "1.0.0",
         location: "api",
         dependencies: {},
-        cached_cookbook: cookbook
-      )
+        cached_cookbook: cookbook)
       berksfile = double("berksfile", dependencies: [apt])
       subject.instance_variable_set(:@berksfile, berksfile)
       allow(subject).to receive(:find).with(apt).and_return(apt)
@@ -195,8 +188,7 @@ describe Berkshelf::Lockfile do
         version: "1.0.0",
         location: "api",
         dependencies: {},
-        cached_cookbook: cookbook
-      )
+        cached_cookbook: cookbook)
       apt_master = apt.dup
       allow(apt_master).to receive_messages(location: "github")
       allow(apt_master).to receive_messages(cached_cookbook: cookbook)
@@ -393,8 +385,7 @@ describe Berkshelf::Lockfile::Graph do
         name: "test-0.0.1",
         version: "0.0.1",
         cookbook_name: "test",
-        dependencies: {}
-      )
+        dependencies: {})
       subject.update([cookbook])
 
       expect(subject.locks.keys).to include(cookbook.cookbook_name)

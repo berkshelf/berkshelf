@@ -35,7 +35,7 @@ begin
 rescue LoadError
 end
 
-task default: [:spec, :features]
+task default: %i{spec features}
 task :ci do
   ENV["CI"] = "true"
   Rake::Task[:spec].invoke

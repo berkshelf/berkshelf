@@ -166,6 +166,7 @@ module Berkshelf
       json_file = "#{path}/metadata.json"
       rb_file = "#{path}/metadata.rb"
       return nil if File.exist?(json_file)
+
       md = Chef::Cookbook::Metadata.new
       md.from_file(rb_file)
       f = File.open(json_file, "w")

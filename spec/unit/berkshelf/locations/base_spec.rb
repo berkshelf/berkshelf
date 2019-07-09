@@ -46,8 +46,7 @@ module Berkshelf
         let(:cookbook) do
           double("cookbook",
             cookbook_name: "cookbook",
-            version: "0.1.0"
-          )
+            version: "0.1.0")
         end
 
         before do

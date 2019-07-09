@@ -83,7 +83,7 @@ module Berkshelf
 
     def to_s
       @original_exception.to_s +
-        "Unable to find a solution for demands: #{demands.join(', ')}"
+        "Unable to find a solution for demands: #{demands.join(", ")}"
     end
 
     alias_method :message, :to_s
@@ -372,7 +372,7 @@ module Berkshelf
 
     def to_s
       "Unknown license: '#{license}'\n" +
-        "Available licenses: #{CookbookGenerator::LICENSES.join(', ')}"
+        "Available licenses: #{CookbookGenerator::LICENSES.join(", ")}"
     end
 
     alias_method :message, :to_s

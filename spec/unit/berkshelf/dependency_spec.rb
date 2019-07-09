@@ -71,7 +71,7 @@ describe Berkshelf::Dependency do
         end
 
         context "given a group option containing an array of groups" do
-          let(:groups) { [ :development, :test ] }
+          let(:groups) { %i{development test} }
           let(:source) { described_class.new(berksfile, cookbook_name, group: groups) }
 
           it "assigns all the groups to the group attribute" do
@@ -95,24 +95,24 @@ describe Berkshelf::Dependency do
   describe "#add_group" do
     it "stores strings as symbols" do
       subject.add_group "foo"
-      expect(subject.groups).to eq([:default, :foo])
+      expect(subject.groups).to eq(%i{default foo})
     end
 
     it "does not store duplicate groups" do
       subject.add_group "bar"
       subject.add_group "bar"
       subject.add_group :bar
-      expect(subject.groups).to eq([:default, :bar])
+      expect(subject.groups).to eq(%i{default bar})
     end
 
     it "adds multiple groups" do
       subject.add_group "baz", "quux"
-      expect(subject.groups).to eq([:default, :baz, :quux])
+      expect(subject.groups).to eq(%i{default baz quux})
     end
 
     it "handles multiple groups as an array" do
       subject.add_group %w{baz quux}
-      expect(subject.groups).to eq([:default, :baz, :quux])
+      expect(subject.groups).to eq(%i{default baz quux})
     end
   end
 

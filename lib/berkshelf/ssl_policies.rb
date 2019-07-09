@@ -8,9 +8,7 @@ module Berkshelf
     attr_reader :store
 
     def initialize
-      @store = OpenSSL::X509::Store.new.tap do |store|
-        store.set_default_paths
-      end
+      @store = OpenSSL::X509::Store.new.tap(&:set_default_paths)
 
       set_custom_certs if ::File.exist?(trusted_certs_dir)
     end
