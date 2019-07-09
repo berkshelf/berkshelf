@@ -52,7 +52,7 @@ matrix:
     - rvm: 2.6.2
       before_install:
         # Failures in the berkshelf-api gemspec were happening with bundler 1.8
-        - gem install bundler --version=1.10.6
+        # - gem install bundler --version=1.10.6
         # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
         - sudo apt-get update
         - sudo apt-get -y install squid3 apache2-utils
