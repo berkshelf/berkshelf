@@ -74,6 +74,8 @@ GEM
       train-core (~> 2.0, >= 2.0.12)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
+    chef-bin (15.1.36)
+      chef (= 15.1.36)
     chef-config (15.1.36)
       addressable
       fuzzyurl
@@ -330,6 +332,7 @@ PLATFORMS
 DEPENDENCIES
   aruba (>= 0.10.0)
   berkshelf!
+  chef-bin
   chef-zero (>= 4.0)
   chefstyle!
   cucumber-expressions (= 5.0.13)

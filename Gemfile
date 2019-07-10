@@ -13,6 +13,7 @@ end
 group :development do
   # these all deliberately float because berkshelf has a Gemfile.lock that
   # equality pins them.  temporarily pin as necessary for API breaks.
+  gem "chef-bin" # for the proxy tests
   gem "aruba",         ">= 0.10.0"
   gem "cucumber-expressions", "= 5.0.13"
   gem "chef-zero",     ">= 4.0"
