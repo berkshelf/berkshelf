@@ -21,7 +21,6 @@ install:
   - SET CI=true
   - SET BUNDLE_WITHOUT=changelog:docs
   - echo %PATH%
-  - gem install bundler --no-document
   - bundle install --jobs 3 --retry 3
   - ruby --version
   - gem --version
