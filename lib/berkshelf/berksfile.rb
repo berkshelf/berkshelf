@@ -13,7 +13,7 @@ module Berkshelf
       def from_options(options = {})
         options[:berksfile] ||= File.join(Dir.pwd, Berkshelf::DEFAULT_FILENAME)
         symbolized = Hash[options.map { |k, v| [k.to_sym, v] }]
-        from_file(options[:berksfile], symbolized.select { |k,| [:except, :only, :delete].include? k })
+        from_file(options[:berksfile], symbolized.select { |k,| %i{except only delete}.include? k })
       end
 
       # @param [#to_s] file
@@ -66,8 +66,8 @@ module Berkshelf
     #   group to be installed and all others to be ignored
     def initialize(path, options = {})
       @filepath         = File.expand_path(path)
-      @dependencies     = Hash.new
-      @sources          = Hash.new
+      @dependencies     = {}
+      @sources          = {}
       @delete           = options[:delete]
 
       # defaults for what solvers to use
@@ -146,7 +146,7 @@ module Berkshelf
     #   @see PathLocation
     #   @see GitLocation
     def cookbook(*args)
-      options = args.last.is_a?(Hash) ? args.pop : Hash.new
+      options = args.last.is_a?(Hash) ? args.pop : {}
       name, constraint = args
 
       options[:path] &&= File.expand_path(options[:path], File.dirname(filepath))
@@ -282,7 +282,7 @@ module Berkshelf
       if @dependencies[name]
         # Only raise an exception if the dependency is a true duplicate
         groups = (options[:group].nil? || options[:group].empty?) ? [:default] : options[:group]
-        if !(@dependencies[name].groups & groups).empty?
+        unless (@dependencies[name].groups & groups).empty?
           raise DuplicateDependencyDefined.new(name)
         end
       end
@@ -500,7 +500,7 @@ module Berkshelf
           latest = cookbooks.select do |cookbook|
             (include_non_satisfying || dependency.version_constraint.satisfies?(cookbook.version)) &&
               Semverse::Version.coerce(cookbook.version) > dependency.locked_version
-          end.sort_by { |cookbook| cookbook.version }.last
+          end.sort_by(&:version).last
 
           unless latest.nil?
             hash[name] ||= {
@@ -659,7 +659,7 @@ module Berkshelf
           files.reject! { |file_path| chefignore.ignored?(file_path) }
 
           # convert Pathname objects back to strings
-          files.map! { |f| f.to_s }
+          files.map!(&:to_s)
 
           # copy each file to destination
           files.each do |rpath|
@@ -748,6 +748,7 @@ module Berkshelf
       # @return [true]
     def validate_lockfile_present!
       raise LockfileNotFound unless lockfile.present?
+
       true
     end
 
@@ -761,6 +762,7 @@ module Berkshelf
       # @return [true]
     def validate_lockfile_trusted!
       raise LockfileOutOfSync unless lockfile.trusted?
+
       true
     end
 

@@ -84,7 +84,7 @@ module Berkshelf
     def build_universe
       @universe = api_client.universe
     rescue => ex
-      @universe = Array.new
+      @universe = []
       raise ex
     end
 
@@ -154,7 +154,7 @@ module Berkshelf
     end
 
     def inspect
-      "#<#{self.class.name} #{type}: #{uri.to_s.inspect}, #{options.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
+      "#<#{self.class.name} #{type}: #{uri.to_s.inspect}, #{options.map { |k, v| "#{k}: #{v.inspect}" }.join(", ")}>"
     end
 
     def hash
@@ -163,6 +163,7 @@ module Berkshelf
 
     def ==(other)
       return false unless other.is_a?(self.class)
+
       type == other.type && uri == other.uri
     end
 

@@ -120,7 +120,7 @@ module Berkshelf
         )
 
         begin
-          url = URI(github_client.archive_link(cookbook_uri.path.gsub(/^\//, ""), ref: "v#{version}"))
+          url = URI(github_client.archive_link(cookbook_uri.path.gsub(%r{^/}, ""), ref: "v#{version}"))
         rescue Octokit::Unauthorized
           return nil
         end
@@ -131,6 +131,7 @@ module Berkshelf
         http.verify_mode = (options["ssl_verify"].nil? || options["ssl_verify"]) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
         resp = http.get(url.request_uri)
         return nil unless resp.is_a?(Net::HTTPSuccess)
+
         open(archive_path, "wb") { |file| file.write(resp.body) }
 
         Mixlib::Archive.new(archive_path).extract(unpack_dir)
@@ -183,6 +184,7 @@ module Berkshelf
 
         resp = connection.get(cookbook_uri.request_uri + "&private_token=" + options["private_token"])
         return nil unless resp.status == 200
+
         open(archive_path, "wb") { |file| file.write(resp.body) }
 
         Mixlib::Archive.new(archive_path).extract(unpack_dir)

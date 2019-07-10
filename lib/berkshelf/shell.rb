@@ -15,6 +15,7 @@ module Berkshelf
 
     def say(*args)
       return if quiet?
+
       super(*args)
     end
     alias_method :info, :say

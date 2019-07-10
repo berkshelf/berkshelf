@@ -200,10 +200,10 @@ describe Berkshelf::Berksfile do
 
   describe "#dependencies" do
     let(:groups) do
-      [
-        :nautilus,
-        :skarner,
-      ]
+      %i{
+        nautilus
+        skarner
+      }
     end
 
     it "returns all Berkshelf::Dependencys added to the instance of Berksfile" do
@@ -235,8 +235,8 @@ describe Berkshelf::Berksfile do
   describe "#groups" do
     before do
       allow(subject).to receive(:dependencies) { [dependency_one, dependency_two] }
-      allow(dependency_one).to receive(:groups) { [:nautilus, :skarner] }
-      allow(dependency_two).to receive(:groups) { [:nautilus, :riven] }
+      allow(dependency_one).to receive(:groups) { %i{nautilus skarner} }
+      allow(dependency_two).to receive(:groups) { %i{nautilus riven} }
     end
 
     it "returns a hash containing keys for every group a dependency is a member of" do
@@ -255,7 +255,7 @@ describe Berkshelf::Berksfile do
   describe "#add_dependency" do
     let(:name) { "cookbook_one" }
     let(:constraint) { "= 1.2.0" }
-    let(:options) { Hash.new }
+    let(:options) { {} }
 
     before(:each) do
       subject.add_dependency(name, constraint, options)

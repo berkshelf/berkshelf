@@ -3,7 +3,7 @@ module Berkshelf
     def initialize(device = STDOUT)
       super
       self.level = Logger::WARN
-      @filter_params = Array.new
+      @filter_params = []
     end
 
     # Reimplements Logger#add adding message filtering. The info,
@@ -28,6 +28,7 @@ module Berkshelf
       if @logdev.nil? || severity < (@level)
         return true
       end
+
       progname ||= @progname
       if message.nil?
         if block_given?
@@ -38,7 +39,8 @@ module Berkshelf
         end
       end
       @logdev.write(
-        format_message(format_severity(severity), Time.now, progname, filter(message)))
+        format_message(format_severity(severity), Time.now, progname, filter(message))
+      )
       true
     end
 

@@ -13,7 +13,7 @@ module Berkshelf
       else
         Berkshelf.formatter.msg "Cookbooks in the Berkshelf shelf:"
         cookbooks.sort.each do |cookbook, versions|
-          Berkshelf.formatter.msg("  * #{cookbook} (#{versions.sort.join(', ')})")
+          Berkshelf.formatter.msg("  * #{cookbook} (#{versions.sort.join(", ")})")
         end
       end
     end

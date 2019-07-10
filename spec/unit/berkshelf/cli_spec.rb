@@ -13,8 +13,7 @@ module Berkshelf
     describe "#upload" do
       it "calls to upload with params if passed in cli" do
         expect(berksfile).to receive(:upload).with(cookbooks,
-          include(skip_syntax_check: true, freeze: false)
-        )
+          include(skip_syntax_check: true, freeze: false))
 
         subject.options[:skip_syntax_check] = true
         subject.options[:no_freeze]         = true

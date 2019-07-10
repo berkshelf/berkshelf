@@ -5,31 +5,18 @@ addons:
       - git
       - graphviz
       - libarchive-dev
-#      - libgecode-dev
     sources:
       - chef-stable-trusty
 cache:
   - apt
   - bundler
 dist: trusty
-#env:
-#  global: USE_SYSTEM_GECODE=1
 language: ruby
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#berkshelf"
-    skip_join: true
-    use_notice: true
-  webhooks:
-    urls:
-      - "https://webhooks.gitter.im/e/cdd41ff6c4d1f062c2f1"
 branches:
   only:
     - master
 before_install:
   - gem update --system
-  - gem install bundler
 install:  travis_wait bundle install --without changelog --jobs 7 --retry=3
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
@@ -37,23 +24,19 @@ before_script:
   - git config --global user.name "Berkshelf"
 matrix:
   include:
-    - rvm: 2.4.5
     - rvm: 2.5.5
     - rvm: 2.6.2
     - rvm: ruby-head
-    - rvm: 2.5.5
+    - rvm: 2.6.2
       before_install:
         - gem update --system
-        - gem install bundler
         - rm Gemfile.lock
     - rvm: 2.6.2
       env:
         CHEFSTYLE: 1
       script: bundle exec rake style
-    - rvm: 2.5.5
+    - rvm: 2.6.2
       before_install:
-        # Failures in the berkshelf-api gemspec were happening with bundler 1.8
-        - gem install bundler --version=1.10.6
         # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
         - sudo apt-get update
         - sudo apt-get -y install squid3 apache2-utils
@@ -62,6 +45,7 @@ matrix:
       env:
         - PROXY_TESTS_DIR=/tmp/proxy_tests
         - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
+        - CHEF_LICENSE="accept-no-persist"
         - rvmsudo_secure_path=1
       script:
         - git clone https://github.com/chef/proxy_tests.git

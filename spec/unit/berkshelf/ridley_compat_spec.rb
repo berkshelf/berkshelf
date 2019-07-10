@@ -2,7 +2,7 @@ require "spec_helper"
 require "chef/cookbook_manifest"
 
 describe Berkshelf::RidleyCompat do
-  let(:opts) { Hash.new }
+  let(:opts) { {} }
 
   subject { described_class.new(opts) }
 

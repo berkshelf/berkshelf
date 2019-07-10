@@ -12,7 +12,7 @@ module Berkshelf
         messages: [],
         warnings: [],
       }
-      @cookbooks = Hash.new
+      @cookbooks = {}
 
       Berkshelf.ui.mute { super }
     end

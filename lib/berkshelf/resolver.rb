@@ -21,7 +21,7 @@ module Berkshelf
     def initialize(berksfile, demands = [])
       @berksfile = berksfile
       @graph     = Graph.new
-      @demands   = Array.new
+      @demands   = []
 
       Array(demands).each { |demand| add_demand(demand) }
       compute_solver_engine(berksfile)
