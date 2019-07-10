@@ -45,6 +45,7 @@ matrix:
       env:
         - PROXY_TESTS_DIR=/tmp/proxy_tests
         - PROXY_TESTS_REPO=$PROXY_TESTS_DIR/repo
+        - CHEF_LICENSE="accept-no-persist"
         - rvmsudo_secure_path=1
       script:
         - git clone https://github.com/chef/proxy_tests.git
