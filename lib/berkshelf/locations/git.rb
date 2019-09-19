@@ -49,7 +49,7 @@ module Berkshelf
       end
 
       # Clone into a scratch directory for validations
-      git %{clone --no-checkout "#{cache_path}" "#{scratch_path}"}
+      git %{clone --no-checkout --reference="#{cache_path}" #{uri} "#{scratch_path}"}
 
       # Make sure the scratch directory is up-to-date and account for rel paths
       Dir.chdir(scratch_path) do
