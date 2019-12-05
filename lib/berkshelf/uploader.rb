@@ -84,6 +84,8 @@ module Berkshelf
               end
 
               Berkshelf.formatter.skipping(cookbook, connection)
+            rescue Net::HTTPClientException => e
+              puts e.response.body
             end
           ensure
             if compiled_metadata
