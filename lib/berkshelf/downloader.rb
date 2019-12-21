@@ -1,6 +1,7 @@
 require "net/http"
 require "mixlib/archive"
 require "berkshelf/ssl_policies"
+require "faraday"
 
 module Berkshelf
   class Downloader
