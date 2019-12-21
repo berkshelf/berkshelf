@@ -1,6 +1,6 @@
 require "chef/cookbook/cookbook_version_loader"
 require "chef/cookbook/syntax_check"
-require "berkshelf/errors"
+require_relative "errors"
 require "chef/json_compat"
 
 module Berkshelf

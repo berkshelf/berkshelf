@@ -1,6 +1,6 @@
-require "berkshelf/api-client"
-require "berkshelf/chef_repo_universe"
-require "berkshelf/ssl_policies"
+require_relative "api-client"
+require_relative "chef_repo_universe"
+require_relative "ssl_policies"
 require "openssl"
 
 module Berkshelf

@@ -1,1 +1,1 @@
-require "berkshelf/cli"
+require_relative "cli"

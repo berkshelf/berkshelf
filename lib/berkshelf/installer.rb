@@ -1,4 +1,4 @@
-require "berkshelf/api-client"
+require_relative "api-client"
 require "concurrent/executors"
 require "concurrent/future"
 

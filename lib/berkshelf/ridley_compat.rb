@@ -1,7 +1,7 @@
 require "chef/server_api"
 require "chef/http/simple_json"
 require "chef/http/simple"
-require "berkshelf/api_client/errors"
+require_relative "api_client/errors"
 require "chef/config"
 require "chef/cookbook_manifest"
 
