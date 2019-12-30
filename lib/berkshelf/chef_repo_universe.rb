@@ -1,5 +1,5 @@
-require "berkshelf/api_client/remote_cookbook"
-require "berkshelf/cached_cookbook"
+require_relative "api_client/remote_cookbook"
+require_relative "cached_cookbook"
 
 module Berkshelf
   # Shim to look like a Berkshelf::APIClient but for a chef repo folder.

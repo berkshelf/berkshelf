@@ -23,7 +23,7 @@ JSON.create_id = nil
 
 require_relative "berkshelf/core_ext"
 require_relative "berkshelf/thor_ext"
-require "berkshelf/chef_config_compat"
+require_relative "berkshelf/chef_config_compat"
 
 module Berkshelf
   Encoding.default_external = Encoding::UTF_8

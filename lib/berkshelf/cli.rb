@@ -1,4 +1,4 @@
-require "berkshelf"
+require_relative "../berkshelf"
 require_relative "config"
 require_relative "commands/shelf"
 

@@ -1,6 +1,6 @@
 require "set"
 require "tempfile"
-require "berkshelf/shell_out"
+require_relative "shell_out"
 
 module Berkshelf
   class Visualizer

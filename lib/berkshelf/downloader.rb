@@ -1,6 +1,6 @@
 require "net/http"
 require "mixlib/archive"
-require "berkshelf/ssl_policies"
+require_relative "ssl_policies"
 require "faraday"
 
 module Berkshelf

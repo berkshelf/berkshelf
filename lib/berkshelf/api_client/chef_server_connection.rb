@@ -1,4 +1,4 @@
-require "berkshelf/ridley_compat"
+require_relative "../ridley_compat"
 
 module Berkshelf
   module APIClient
