@@ -66,7 +66,7 @@ module Berkshelf
       @loader ||=
         begin
           loader = Chef::Cookbook::CookbookVersionLoader.new(@path)
-          loader.load_cookbooks
+          loader.load!
           loader
         end
     end
