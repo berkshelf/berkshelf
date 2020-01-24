@@ -176,7 +176,7 @@ module Berkshelf
     # @option options [String] :path
     #   path to the metadata file
     def metadata(options = {})
-      path          = options[:path] || File.dirname(filepath)
+      path = options[:path] || File.dirname(filepath)
 
       loader = Chef::Cookbook::CookbookVersionLoader.new(path)
       loader.load!

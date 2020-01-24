@@ -69,10 +69,10 @@ module Berkshelf
     #   how often we should pause between retries
     def initialize(uri = V1_API, options = {})
       options = options.dup
-      options         = { retries: 5, retry_interval: 0.5, ssl: Berkshelf::Config.instance.ssl }.merge(options)
-      @api_uri        = uri
+      options = { retries: 5, retry_interval: 0.5, ssl: Berkshelf::Config.instance.ssl }.merge(options)
+      @api_uri = uri
       options[:server_url] = uri
-      @retries        = options.delete(:retries)
+      @retries = options.delete(:retries)
       @retry_interval = options.delete(:retry_interval)
 
       @connection = Berkshelf::RidleyCompatJSON.new(options)
