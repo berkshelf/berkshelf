@@ -15,8 +15,6 @@ language: ruby
 branches:
   only:
     - master
-before_install:
-  - gem update --system
 install:  travis_wait bundle install --without changelog --jobs 7 --retry=3
 before_script:
   - echo "StrictHostKeyChecking no" > ~/.ssh/config
@@ -24,18 +22,18 @@ before_script:
   - git config --global user.name "Berkshelf"
 matrix:
   include:
-    - rvm: 2.5.5
-    - rvm: 2.6.2
+    - rvm: 2.5.7
+    - rvm: 2.6.5
     - rvm: ruby-head
-    - rvm: 2.6.2
+    - rvm: 2.6.5
       before_install:
         - gem update --system
         - rm Gemfile.lock
-    - rvm: 2.6.2
+    - rvm: 2.6.5
       env:
         CHEFSTYLE: 1
       script: bundle exec rake style
-    - rvm: 2.6.2
+    - rvm: 2.6.5
       before_install:
         # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
         - sudo apt-get update
