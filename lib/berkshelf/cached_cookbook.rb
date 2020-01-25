@@ -151,7 +151,8 @@ module Berkshelf
     def validate
       raise IOError, "No Cookbook found at: #{path}" unless path.exist?
 
-      syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook_name, path)
+      syntax_checker = Chef::Cookbook::SyntaxCheck.new(path.to_path)
+
       unless syntax_checker.validate_ruby_files
         raise Berkshelf::Errors::CookbookSyntaxError, "Invalid ruby files in cookbook: #{cookbook_name} (#{version})."
       end
