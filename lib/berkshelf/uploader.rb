@@ -75,7 +75,8 @@ module Berkshelf
                 [ cookbook_version ],
                 force: options[:force],
                 concurrency: 1, # sadly
-                rest: connection
+                rest: connection,
+                skip_syntax_check: options[:skip_syntax_check]
               ).upload_cookbooks
               Berkshelf.formatter.uploaded(cookbook, connection)
             rescue Chef::Exceptions::CookbookFrozen
