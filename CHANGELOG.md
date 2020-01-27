@@ -1,5 +1,17 @@
 # Change Log
 
+## [7.0.9](https://github.com/berkshelf/berkshelf/tree/7.0.9) (2020-01-27)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.8...7.0.9)
+
+**Merged pull requests:**
+
+- berks upload skip syntax check fixes [\#1836](https://github.com/berkshelf/berkshelf/pull/1810) ([vsingh-msys ](https://github.com/vsingh-msys ))
+- Update travis config [\#1832](https://github.com/berkshelf/berkshelf/pull/1832) ([tas50](https://github.com/tas50))
+- Fixes berks verify path is broken [\#1833](https://github.com/berkshelf/berkshelf/pull/1833) ([vsingh-msys](https://github.com/vsingh-msys))
+- Swap usage of .load_cookbooks with .load! to avoid deprecation - Update travis config [\#1831](https://github.com/berkshelf/berkshelf/pull/1831) ([tas50](https://github.com/tas50))
+- Substitute require for require_relative [\#1828](https://github.com/berkshelf/berkshelf/pull/1828) ([tas50](https://github.com/tas50))
+- Fix gitlab using faraday [\#1816](https://github.com/berkshelf/berkshelf/pull/1816) ([kubihie](https://github.com/kubihie))
+
 ## [7.0.8](https://github.com/berkshelf/berkshelf/tree/7.0.8) (2019-03-18)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.7...7.0.8)
 
