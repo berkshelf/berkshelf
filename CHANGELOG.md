@@ -1,5 +1,10 @@
 # Change Log
 
+## [7.0.10](https://github.com/berkshelf/berkshelf/tree/7.0.10) (2020-04-27)
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.9...7.0.10)
+
+- Use double-splat to expand optional args to avoid Ruby 2.7 warning [\#1840](https://github.com/berkshelf/berkshelf/pull/1840) ([marcparadise](https://github.com/tas50))
+
 ## [7.0.9](https://github.com/berkshelf/berkshelf/tree/7.0.9) (2020-01-27)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.8...7.0.9)
 
