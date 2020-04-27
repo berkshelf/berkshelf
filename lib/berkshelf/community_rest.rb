@@ -75,7 +75,7 @@ module Berkshelf
       @retries = options.delete(:retries)
       @retry_interval = options.delete(:retry_interval)
 
-      @connection = Berkshelf::RidleyCompatJSON.new(options)
+      @connection = Berkshelf::RidleyCompatJSON.new(**options)
     end
 
     # Download and extract target cookbook archive to the local file system,
