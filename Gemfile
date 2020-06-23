@@ -15,6 +15,7 @@ group :development do
   # equality pins them.  temporarily pin as necessary for API breaks.
   gem "chef-bin" # for the proxy tests
   gem "aruba",         ">= 0.10.0"
+  gem "cucumber",      "< 4.0" # until we identify what is generating the ~@no_run tag in CI
   gem "cucumber-expressions", "= 5.0.13"
   gem "chef-zero",     ">= 4.0"
   gem "dep_selector",  ">= 1.0"
