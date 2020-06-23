@@ -22,7 +22,6 @@ before_script:
   - git config --global user.name "Berkshelf"
 matrix:
   include:
-    - rvm: 2.5.7
     - rvm: 2.6.5
     - rvm: ruby-head
     - rvm: 2.6.5
