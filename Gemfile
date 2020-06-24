@@ -11,8 +11,6 @@ group :build do
 end
 
 group :development do
-  # these all deliberately float because berkshelf has a Gemfile.lock that
-  # equality pins them.  temporarily pin as necessary for API breaks.
   gem "chef-bin" # for the proxy tests
   gem "aruba",         "~> 0.10" # Stay below 1 until aruba/in_process monkeypatching stops
   gem "cucumber",      "< 4.0" # until we identify what is generating the ~@no_run tag in CI
