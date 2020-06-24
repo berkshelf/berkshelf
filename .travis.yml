@@ -25,13 +25,8 @@ matrix:
     - rvm: 2.7.1
     - rvm: 2.6.5
       before_install:
-        - gem install bundler:2.1.4 -N
+        - gem install chef --version "~> 15.8" -N
     - rvm: ruby-head
-    - rvm: 2.7.1
-      before_install:
-        - gem install bundler:2.1.4 -N
-        - gem update --system
-        - rm Gemfile.lock
     - rvm: 2.7.1
       env:
         CHEFSTYLE: 1
@@ -42,7 +37,6 @@ matrix:
         - sudo apt-get update
         - sudo apt-get -y install squid3 apache2-utils
         - sudo htpasswd -b -c /etc/squid3/passwords proxy proxy
-        - gem install bundler:2.1.4 -N
       sudo: required
       env:
         - PROXY_TESTS_DIR=/tmp/proxy_tests
