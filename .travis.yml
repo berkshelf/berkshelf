@@ -27,18 +27,16 @@ matrix:
       before_install:
         - gem install bundler:2.1.4 -N
     - rvm: ruby-head
-    - rvm: 2.6.5
+    - rvm: 2.7.1
       before_install:
         - gem install bundler:2.1.4 -N
         - gem update --system
         - rm Gemfile.lock
-    - rvm: 2.6.5
-      before_install:
-        - gem install bundler:2.1.4 -N
+    - rvm: 2.7.1
       env:
         CHEFSTYLE: 1
       script: bundle exec rake style
-    - rvm: 2.6.5
+    - rvm: 2.7.1
       before_install:
         # Needed until https://github.com/travis-ci/apt-package-whitelist/pull/1820 is merged
         - sudo apt-get update
