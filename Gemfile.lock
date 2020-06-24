@@ -348,7 +348,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aruba (>= 0.10.0)
+  aruba (~> 0.10)
   berkshelf!
   chef-bin
   chef-zero (>= 4.0)
@@ -366,4 +366,4 @@ DEPENDENCIES
   yard (>= 0.8)
 
 BUNDLED WITH
-   1.17.3
+   2.1.4
