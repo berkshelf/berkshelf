@@ -64,10 +64,10 @@ module Berkshelf
 
     private
 
-      # @return [String]
+    # @return [String]
     attr_reader :out_dir
 
-      # @return [String]
+    # @return [String]
     attr_reader :filename
   end
 end

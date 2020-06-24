@@ -419,11 +419,11 @@ module Berkshelf
 
     private
 
-      # Print a list of the given cookbooks. This is used by various
-      # methods like {list} and {contingent}.
-      #
-      # @param [Array<CachedCookbook>] cookbooks
-      #
+    # Print a list of the given cookbooks. This is used by various
+    # methods like {list} and {contingent}.
+    #
+    # @param [Array<CachedCookbook>] cookbooks
+    #
     def print_list(cookbooks)
       Array(cookbooks).sort.each do |cookbook|
         Berkshelf.formatter.msg "  * #{cookbook.cookbook_name} (#{cookbook.version})"

@@ -28,9 +28,9 @@ module Berkshelf
 
       private
 
-        # Load the correct location from the given options.
-        #
-        # @return [Class, nil]
+      # Load the correct location from the given options.
+      #
+      # @return [Class, nil]
       def klass_from_options(options)
         options.each do |key, _|
           id = key.to_s.capitalize

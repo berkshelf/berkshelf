@@ -511,8 +511,8 @@ module Berkshelf
       "#<Berkshelf::Lockfile #{Pathname.new(filepath).basename}, dependencies: #{dependencies.inspect}>"
     end
 
-      # The class responsible for parsing the lockfile and turning it into a
-      # useful data structure.
+    # The class responsible for parsing the lockfile and turning it into a
+    # useful data structure.
     class LockfileParser
       NAME_VERSION         = '(?! )(.*?)(?: \(([^-]*)(?:-(.*))?\))?'.freeze
       DEPENDENCY_PATTERN   = /^ {2}#{NAME_VERSION}$/.freeze
@@ -599,9 +599,9 @@ module Berkshelf
 
       private
 
-        # Parse a dependency line.
-        #
-        # @param [String] line
+      # Parse a dependency line.
+      #
+      # @param [String] line
       def parse_dependency(line)
         if line =~ DEPENDENCY_PATTERN
           name, version = $1, $2
@@ -615,9 +615,9 @@ module Berkshelf
         end
       end
 
-        # Parse a graph line.
-        #
-        # @param [String] line
+      # Parse a graph line.
+      #
+      # @param [String] line
       def parse_graph(line)
         if line =~ DEPENDENCY_PATTERN
           name, version = $1, $2
@@ -631,7 +631,7 @@ module Berkshelf
       end
     end
 
-      # The class representing an internal graph.
+    # The class representing an internal graph.
     class Graph
       include Enumerable
 

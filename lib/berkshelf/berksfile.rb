@@ -740,41 +740,41 @@ module Berkshelf
 
     private
 
-      # Ensure the lockfile is present on disk.
-      #
-      # @raise [LockfileNotFound]
-      #   if the lockfile does not exist on disk
-      #
-      # @return [true]
+    # Ensure the lockfile is present on disk.
+    #
+    # @raise [LockfileNotFound]
+    #   if the lockfile does not exist on disk
+    #
+    # @return [true]
     def validate_lockfile_present!
       raise LockfileNotFound unless lockfile.present?
 
       true
     end
 
-      # Ensure that all dependencies defined in the Berksfile exist in this
-      # lockfile.
-      #
-      # @raise [LockfileOutOfSync]
-      #   if there are dependencies specified in the Berksfile which do not
-      #   exist (or are not satisifed by) the lockfile
-      #
-      # @return [true]
+    # Ensure that all dependencies defined in the Berksfile exist in this
+    # lockfile.
+    #
+    # @raise [LockfileOutOfSync]
+    #   if there are dependencies specified in the Berksfile which do not
+    #   exist (or are not satisifed by) the lockfile
+    #
+    # @return [true]
     def validate_lockfile_trusted!
       raise LockfileOutOfSync unless lockfile.trusted?
 
       true
     end
 
-      # Ensure that all dependencies in the lockfile are installed on this
-      # system. You should validate that the lockfile can be trusted before
-      # using this method.
-      #
-      # @raise [DependencyNotInstalled]
-      #   if the dependency in the lockfile is not in the Berkshelf shelf on
-      #   this system
-      #
-      # @return [true]
+    # Ensure that all dependencies in the lockfile are installed on this
+    # system. You should validate that the lockfile can be trusted before
+    # using this method.
+    #
+    # @raise [DependencyNotInstalled]
+    #   if the dependency in the lockfile is not in the Berkshelf shelf on
+    #   this system
+    #
+    # @return [true]
     def validate_dependencies_installed!
       lockfile.graph.locks.each do |_, dependency|
         unless dependency.installed?
@@ -785,13 +785,13 @@ module Berkshelf
       true
     end
 
-      # Determine if any cookbooks were specified that aren't in our shelf.
-      #
-      # @param [Array<String>] names
-      #   a list of cookbook names
-      #
-      # @raise [DependencyNotFound]
-      #   if a cookbook name is given that does not exist
+    # Determine if any cookbooks were specified that aren't in our shelf.
+    #
+    # @param [Array<String>] names
+    #   a list of cookbook names
+    #
+    # @raise [DependencyNotFound]
+    #   if a cookbook name is given that does not exist
     def validate_cookbook_names!(names)
       missing = names - lockfile.graph.locks.keys
 
