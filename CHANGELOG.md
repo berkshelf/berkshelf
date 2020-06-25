@@ -1,9 +1,21 @@
 # Change Log
 
-## [7.0.10](https://github.com/berkshelf/berkshelf/tree/7.0.10) (2020-04-27)
-[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.9...7.0.10)
+## [7.1.0](https://github.com/berkshelf/berkshelf/tree/7.1.0) (2020-06-25)
 
-- Use double-splat to expand optional args to avoid Ruby 2.7 warning [\#1840](https://github.com/berkshelf/berkshelf/pull/1840) ([marcparadise](https://github.com/tas50))
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.10...7.1.0)
+
+**Merged pull requests:**
+
+- Add splat to Ridley create options to silence warning on upload [\#1844](https://github.com/berkshelf/berkshelf/pull/1844) ([clintoncwolfe](https://github.com/clintoncwolfe))
+
+## [v7.0.10](https://github.com/berkshelf/berkshelf/tree/v7.0.10) (2020-04-27)
+
+[Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.9...v7.0.10)
+
+**Merged pull requests:**
+
+- Ruby 2.7: double-splat to expand optional args [\#1840](https://github.com/berkshelf/berkshelf/pull/1840) ([marcparadise](https://github.com/marcparadise))
+- Add ISSUE\_TEMPLATE & Update PULL\_REQUEST [\#1834](https://github.com/berkshelf/berkshelf/pull/1834) ([vsingh-msys](https://github.com/vsingh-msys))
 
 ## [7.0.9](https://github.com/berkshelf/berkshelf/tree/7.0.9) (2020-01-27)
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.8...7.0.9)
