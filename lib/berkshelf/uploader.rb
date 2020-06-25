@@ -45,10 +45,10 @@ module Berkshelf
 
     private
 
-      # Upload the list of cookbooks to the Chef Server, with some exception
-      # wrapping.
-      #
-      # @param [Array<String>] cookbooks
+    # Upload the list of cookbooks to the Chef Server, with some exception
+    # wrapping.
+    #
+    # @param [Array<String>] cookbooks
     def upload(cookbooks)
       Berkshelf.log.info "Starting upload"
 

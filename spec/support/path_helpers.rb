@@ -50,10 +50,10 @@ module Berkshelf
 
       private
 
-        # This is the magical "reset" function that gives us a clean working
-        # directory on each run.
-        #
-        # @return [nil]
+      # This is the magical "reset" function that gives us a clean working
+      # directory on each run.
+      #
+      # @return [nil]
       def reload_configs
         Berkshelf.chef_config = chef_config
 

@@ -169,7 +169,7 @@ module Berkshelf
         raise ChefConnectionError, "Missing required attribute in your Berkshelf configuration: chef.client_key"
       end
 
-      RidleyCompat.new_client(ridley_options, &block)
+      RidleyCompat.new_client(**ridley_options, &block)
     rescue ChefConnectionError, BerkshelfError
       raise
     rescue => ex
