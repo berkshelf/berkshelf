@@ -3,7 +3,7 @@
 Berkshelf is a tool to help manage cookbook dependencies.  If your cookbook depends on other cookbooks, Berkshelf lets you do the following:
 
 * download all cookbooks you depend on to your local machine for development and testing using `berks install`
-* upload your cookbook and all dependencies to your Chef server using `berks upload`
+* upload your cookbook and all dependencies to your Chef Infra Server using `berks upload`
 * update your dependencies using `berks update`
 
 The above are the main Berkshelf commands that will comprise the bulk of your workflow.
@@ -34,7 +34,7 @@ Using example_cookbook (0.1.0) from source at .
 Using apt (2.9.2)
 ```
 
-When done your work, you need to push both your cookbook and the apt cookbook up to your Chef server.  With Berkshelf:
+When done your work, you need to push both your cookbook and the apt cookbook up to your Chef Infra Server.  With Berkshelf:
 
 ```
 $ berks upload

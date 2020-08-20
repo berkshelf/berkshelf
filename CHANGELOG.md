@@ -380,7 +380,7 @@
 
 - update ridley in Gemfile.lock [\#1530](https://github.com/berkshelf/berkshelf/pull/1530) ([mwrock](https://github.com/mwrock))
 - fix busted tests [\#1529](https://github.com/berkshelf/berkshelf/pull/1529) ([thommay](https://github.com/thommay))
-- Support downloading universe from chef servers [\#1527](https://github.com/berkshelf/berkshelf/pull/1527) ([thommay](https://github.com/thommay))
+- Support downloading universe from Chef Infra Servers [\#1527](https://github.com/berkshelf/berkshelf/pull/1527) ([thommay](https://github.com/thommay))
 - Unpin changelog generator to get rid of version conflicts [\#1525](https://github.com/berkshelf/berkshelf/pull/1525) ([jkeiser](https://github.com/jkeiser))
 
 ## [v4.2.3](https://github.com/berkshelf/berkshelf/tree/v4.2.3) (2016-02-26)
@@ -460,7 +460,7 @@
 
 - Fix defunct link. [\#1417](https://github.com/berkshelf/berkshelf/pull/1417) ([lorefnon](https://github.com/lorefnon))
 - Fix link to chef repository article [\#1414](https://github.com/berkshelf/berkshelf/pull/1414) ([Maks3w](https://github.com/Maks3w))
-- Chef-DK link has changed [\#1410](https://github.com/berkshelf/berkshelf/pull/1410) ([mreeves1](https://github.com/mreeves1))
+- ChefDK link has changed [\#1410](https://github.com/berkshelf/berkshelf/pull/1410) ([mreeves1](https://github.com/mreeves1))
 - prevent race conditions [\#1398](https://github.com/berkshelf/berkshelf/pull/1398) ([shyouhei](https://github.com/shyouhei))
 - SSL verify unrecognized by community\_rest.rb [\#1395](https://github.com/berkshelf/berkshelf/pull/1395) ([oldirty](https://github.com/oldirty))
 - Use git: locations over github: in the Gemfile [\#1394](https://github.com/berkshelf/berkshelf/pull/1394) ([jf647](https://github.com/jf647))

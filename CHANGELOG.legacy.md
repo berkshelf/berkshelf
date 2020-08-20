@@ -287,7 +287,7 @@
 - `berks outdated` command (beta): show any cookbooks which have newer versions that are installed by resolving your Berksfile
 - `berks open` command [alpha]: like `berks show` except used to open the cookbook in your configured editor
 alpha: use at your own risk
-- improved `berks upload` command: now takes an optional cookbook name, or names, which will upload the target cookbook(s) to the Chef Server
+- improved `berks upload` command: now takes an optional cookbook name, or names, which will upload the target cookbook(s) to the Chef Infra Server
 - improved `berks update` command: now takes an optional cookbook name, or names, which will update the target cookbook(s) in the Berksfile.lock
 
 ## bug fixes
