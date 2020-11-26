@@ -19,8 +19,11 @@ module Berkshelf
       @revision = options[:revision]
       @rel      = options[:rel]
 
+      config = Berkshelf.config.git.default_branch
+      puts "default_branch: #{config.inspect}"
+
       # The revision to parse
-      @rev_parse = options[:ref] || options[:branch] || options[:tag] || "master"
+      @rev_parse = options[:ref] || options[:branch] || options[:tag] || Berkshelf.config.git.default_branch
     end
 
     # @see BaseLoation#installed?

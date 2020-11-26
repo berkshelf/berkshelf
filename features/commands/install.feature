@@ -200,6 +200,29 @@ Feature: berks install
       Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       """
 
+  Scenario: installing a demand from a Git location with git default_branch set in config.json
+    Given I have a Berksfile pointing at the local Berkshelf API with:
+      """
+      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
+      """
+    And I have a Berkshelf config file containing:
+      """
+      {
+        "git": {
+          "default_branch": "branch1"
+        }
+      }
+      """
+    When I successfully run `berks install`
+    Then the cookbook store should have the git cookbooks:
+      | berkshelf-cookbook-fixture | 1.0.0 | 919afa0c402089df23ebdf36637f12271b8a96b4 |
+    And the output should contain:
+      """
+      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at branch1)
+      Fetching cookbook index from http://127.0.0.1:26310...
+      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at branch1)
+      """
+
   Scenario: installing a demand from a Git location that has already been installed
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
