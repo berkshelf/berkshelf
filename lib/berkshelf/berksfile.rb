@@ -493,17 +493,40 @@ module Berkshelf
       validate_dependencies_installed!
       validate_cookbook_names!(names)
 
-      lockfile.graph.locks.inject({}) do |hash, (name, dependency)|
+      latest_cookbooks = {}
+
+      # Loop over each cookbook from the lockfile to see if they could be updated
+      lockfile.graph.locks.each do |name, dependency|
+        Berkshelf.log.debug "locked_name: #{dependency.name} locked_version: #{dependency.locked_version}"
+
+        # Save the constraint from the lock file as the first constraint to consider later
+        constraints = [ dependency.version_constraint.to_s ]
+
+        # Search the graph for cookbooks that depend on the locked cookbook and collect their constraints
+        lockfile.graph.each do |lc|
+          lc.dependencies.each do |d|
+            # [ "name", "dependency" ]
+            constraints << d[1] if d[0] == dependency.name
+          end
+        end
+
+        # Remove any duplicate constraints
+        constraints.uniq!
+        Berkshelf.log.debug "  contraints collected: #{constraints.join(", ")}"
+
         sources.each do |source|
+          Berkshelf.log.debug "  getting cookbook versions from source: #{source}"
           cookbooks = source.versions(name)
+          Berkshelf.log.debug "    found '#{cookbooks.length}' cookbooks versions"
 
           latest = cookbooks.select do |cookbook|
-            (include_non_satisfying || dependency.version_constraint.satisfies?(cookbook.version)) &&
-              Semverse::Version.coerce(cookbook.version) > dependency.locked_version
+            (include_non_satisfying || satisfies_all_constraints?(cookbook.version, constraints) ) &&
+              Semverse::Version.coerce(cookbook.version) > Semverse::Version.coerce(dependency.locked_version)
           end.sort_by(&:version).last
 
           unless latest.nil?
-            hash[name] ||= {
+            Berkshelf.log.debug "  Found newer version of #{latest.name}: #{latest.version}"
+            latest_cookbooks[dependency.name] ||= {
               "local" => dependency.locked_version,
               "remote" => {
                 source => Semverse::Version.coerce(latest.version),
@@ -511,9 +534,21 @@ module Berkshelf
             }
           end
         end
-
-        hash
       end
+      latest_cookbooks
+    end
+
+    # Determine if a version satisfies *all* of the constraints provided
+    #
+    # @return [true, false]
+    #   true, if all constraints are satisfied
+    #   false, if any constraint is not satisfied
+    #
+    def satisfies_all_constraints?(version, constraints)
+      constraints.each do |constraint|
+        return false unless Semverse::Constraint.coerce(constraint).satisfies?(version)
+      end
+      true
     end
 
     # Upload the cookbooks installed by this Berksfile

@@ -77,6 +77,7 @@ module Berkshelf
             Berkshelf.ui.info(out)
           end
         end
+        Berkshelf.ui.info("Depending on constraints and the number of possible solutions, newer cookbooks may not be selected by 'berks install'.")
       end
     end
 
