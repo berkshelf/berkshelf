@@ -1,5 +1,5 @@
-require "set"
-require "tempfile"
+require "set" unless defined?(Set)
+require "tempfile" unless defined?(Tempfile)
 require_relative "shell_out"
 
 module Berkshelf

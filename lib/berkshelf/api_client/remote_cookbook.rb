@@ -1,4 +1,4 @@
-require "json"
+require "json" unless defined?(JSON)
 require "chef/mash"
 
 module Berkshelf

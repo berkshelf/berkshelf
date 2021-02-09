@@ -91,6 +91,7 @@ module Berkshelf
 
   class CookbookSyntaxError < BerkshelfError; set_status_code(107); end
   class ConstraintNotSatisfied < BerkshelfError; set_status_code(111); end
+
   class BerksfileReadError < BerkshelfError
     set_status_code(113)
 
@@ -254,6 +255,7 @@ module Berkshelf
   end
 
   class UploadFailure < BerkshelfError; end
+
   class FrozenCookbook < UploadFailure
     set_status_code(126)
 
@@ -436,6 +438,7 @@ module Berkshelf
   end
 
   class DuplicateDemand < BerkshelfError; set_status_code(138); end
+
   class LockfileNotFound < BerkshelfError
     set_status_code(140)
 

@@ -500,7 +500,7 @@ module Berkshelf
           latest = cookbooks.select do |cookbook|
             (include_non_satisfying || dependency.version_constraint.satisfies?(cookbook.version)) &&
               Semverse::Version.coerce(cookbook.version) > dependency.locked_version
-          end.sort_by(&:version).last
+          end.max_by(&:version)
 
           unless latest.nil?
             hash[name] ||= {

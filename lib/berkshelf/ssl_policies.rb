@@ -1,4 +1,4 @@
-require "openssl"
+require "openssl" unless defined?(OpenSSL)
 
 module Berkshelf
   class SSLPolicy

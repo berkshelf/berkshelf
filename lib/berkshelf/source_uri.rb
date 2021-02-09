@@ -1,4 +1,4 @@
-require "addressable/uri"
+require "addressable/uri" unless defined?(Addressable::URI)
 
 module Berkshelf
   class SourceURI < Addressable::URI

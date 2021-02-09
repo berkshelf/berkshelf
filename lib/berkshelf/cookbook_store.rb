@@ -1,4 +1,4 @@
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 require "chef/exceptions"
 
 module Berkshelf

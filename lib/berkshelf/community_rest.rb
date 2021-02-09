@@ -1,5 +1,5 @@
-require "retryable"
-require "mixlib/archive"
+require "retryable" unless defined?(Retryable)
+require "mixlib/archive" unless defined?(Mixlib::Archive)
 
 module Berkshelf
   class CommunityREST

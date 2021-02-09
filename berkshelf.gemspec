@@ -1,5 +1,4 @@
-# -*- encoding: utf-8; mode: ruby -*-
-require File.expand_path("../lib/berkshelf/version", __FILE__)
+require File.expand_path("lib/berkshelf/version", __dir__)
 
 Gem::Specification.new do |s|
   s.authors = [

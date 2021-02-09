@@ -1,6 +1,6 @@
 require "chef-config/config"
 require "chef-config/workstation_config_loader"
-require "socket" # FIXME: why?
+require "socket" unless defined?(Socket) # FIXME: why?
 
 module Berkshelf
   class ChefConfigCompat
