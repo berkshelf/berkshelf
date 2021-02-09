@@ -32,6 +32,7 @@ jobs:
            echo "$RUNNER_OS not supported"
            exit 1
          fi
+      shell: bash
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
