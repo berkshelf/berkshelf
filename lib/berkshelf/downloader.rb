@@ -1,7 +1,7 @@
-require "net/http"
-require "mixlib/archive"
+require "net/http" unless defined?(Net::HTTP)
+require "mixlib/archive" unless defined?(Mixlib::Archive)
 require_relative "ssl_policies"
-require "faraday"
+require "faraday" unless defined?(Faraday)
 
 module Berkshelf
   class Downloader
@@ -145,7 +145,7 @@ module Berkshelf
 
         File.join(unpack_dir, cookbook_directory)
       when :uri
-        require "open-uri"
+        require "open-uri" unless defined?(OpenURI)
 
         tmp_dir      = Dir.mktmpdir
         archive_path = Pathname.new(tmp_dir) + "#{name}-#{version}.tar.gz"

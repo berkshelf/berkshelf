@@ -37,7 +37,7 @@ module Berkshelf
       end
 
       context "with a hash argument" do
-        let(:arguments) {[{ artifactory: "https://example.com/api/chef/chef-virtual" }]}
+        let(:arguments) { [{ artifactory: "https://example.com/api/chef/chef-virtual" }] }
         it { is_expected.to eq :artifactory }
       end
 
@@ -47,8 +47,8 @@ module Berkshelf
       end
 
       context "with a hash argument and disconnected options" do
-        let(:arguments) { [{ artifactory: "https://example.com/api/chef/chef-virtual" }]}
-        let(:kwargs) { { key: "value" }}
+        let(:arguments) { [{ artifactory: "https://example.com/api/chef/chef-virtual" }] }
+        let(:kwargs) { { key: "value" } }
         it { is_expected.to eq :artifactory }
       end
     end
@@ -62,8 +62,8 @@ module Berkshelf
       end
 
       context "with a string argument and options" do
-        let(:arguments) { ["https://example.com" ]}
-        let(:kwargs) {{ key: "value" }}
+        let(:arguments) { ["https://example.com" ] }
+        let(:kwargs) { { key: "value" } }
         it { is_expected.to eq "https://example.com" }
       end
 
@@ -75,7 +75,7 @@ module Berkshelf
 
       context "with a symbol argument and options" do
         let(:arguments) { [:chef_server] }
-        let(:kwargs) {{ key: "value" }}
+        let(:kwargs) { { key: "value" } }
         before { config.chef.chef_server_url = "https://chefserver/" }
         it { is_expected.to eq "https://chefserver/" }
       end
@@ -92,7 +92,7 @@ module Berkshelf
 
       context "with a hash argument and disconnected options" do
         let(:arguments) { [{ artifactory: "https://example.com/api/chef/chef-virtual" } ] }
-        let(:kwargs) {{ key: "value" }}
+        let(:kwargs) { { key: "value" } }
         it { is_expected.to eq "https://example.com/api/chef/chef-virtual" }
       end
 
@@ -103,7 +103,7 @@ module Berkshelf
 
       context "with a chef_repo source" do
         let(:arguments) { [{ chef_repo: "." }] }
-        it { is_expected.to eq(windows? ? "file://C/test" : "file:///test") }
+        it { is_expected.to eq(windows? ? "file://D/test" : "file:///test") }
       end
     end
 
@@ -127,7 +127,7 @@ module Berkshelf
 
       context "with a string argument and options" do
         let(:arguments) { ["https://example.com"] }
-        let(:kwargs) {{ key: "value" }}
+        let(:kwargs) { { key: "value" } }
         its([:key]) { is_expected.to eq "value" }
       end
 
@@ -154,7 +154,7 @@ module Berkshelf
 
       context "with a hash argument and disconnected options" do
         let(:arguments) { [{ artifactory: "https://example.com/api/chef/chef-virtual" } ] }
-        let(:kwargs) {{ key: "value" }}
+        let(:kwargs) { { key: "value" } }
         its([:key]) { is_expected.to eq "value" }
       end
 
@@ -166,7 +166,7 @@ module Berkshelf
 
       context "with a chef_repo source" do
         let(:arguments) { [{ chef_repo: "." }] }
-        its([:path]) { is_expected.to eq(windows? ? "C:/test" : "/test") }
+        its([:path]) { is_expected.to eq(windows? ? "D:/test" : "/test") }
       end
     end
 

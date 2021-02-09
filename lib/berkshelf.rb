@@ -10,14 +10,14 @@ rescue LoadError
 end
 
 require "cleanroom"
-require "digest/md5"
-require "forwardable"
-require "json"
-require "pathname"
+require "digest/md5" unless defined?(Digest::MD5)
+require "forwardable" unless defined?(Forwardable)
+require "json" unless defined?(JSON)
+require "pathname" unless defined?(Pathname)
 require "semverse"
 require "solve"
-require "thor"
-require "uri"
+require "thor" unless defined?(Thor)
+require "uri" unless defined?(URI)
 
 JSON.create_id = nil
 
@@ -222,7 +222,6 @@ require_relative "berkshelf/lockfile"
 require_relative "berkshelf/berksfile"
 require_relative "berkshelf/cached_cookbook"
 require_relative "berkshelf/cli"
-require_relative "berkshelf/chef_config_compat"
 require_relative "berkshelf/community_rest"
 require_relative "berkshelf/cookbook_store"
 require_relative "berkshelf/config"

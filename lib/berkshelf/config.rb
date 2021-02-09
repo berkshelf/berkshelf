@@ -1,5 +1,5 @@
-require "mixlib/config"
-require "openssl"
+require "mixlib/config" unless defined?(Mixlib::Config)
+require "openssl" unless defined?(OpenSSL)
 
 # we need this method, but have to inject it into mixlib-config directly
 # to have it available from config contexts

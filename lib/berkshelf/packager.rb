@@ -1,5 +1,5 @@
 require "archive/tar/minitar"
-require "zlib"
+require "zlib" unless defined?(Zlib)
 
 module Berkshelf
   # A class for archiving and compressing directory containing one or more cookbooks.

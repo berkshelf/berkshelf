@@ -1,4 +1,4 @@
-require "mixlib/shellout"
+require "mixlib/shellout" unless defined?(Mixlib::ShellOut)
 
 module Berkshelf
   module ShellOut
