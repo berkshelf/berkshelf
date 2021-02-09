@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, macos]
+        os: [ubuntu, macos, windows]
         ruby: [2.6, 2.7, 3.0, head ]
     continue-on-error: ${{ endsWith(matrix.ruby, 'head') }}
     steps:
@@ -25,8 +25,7 @@ jobs:
          if [ "$RUNNER_OS" == "Linux" ]; then
            sudo apt-get install graphviz libarchive-dev
          elif [ "$RUNNER_OS" == "Windows" ]; then
-           echo "$RUNNER_OS not supported"
-           exit 1
+           choco install graphviz
          elif [ "$RUNNER_OS" == "macOS" ]; then
            brew install graphviz libarchive
          else
