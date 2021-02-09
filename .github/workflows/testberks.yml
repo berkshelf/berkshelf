@@ -24,7 +24,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
     - run: |
-        echo "StrictHostKeyChecking no" > ~/.ssh/config
+#        echo "StrictHostKeyChecking no" > ~/.ssh/config
         git config --global user.email "ci@berkshelf.com"
         git config --global user.name "Berkshelf"
         bundle install --without changelog --jobs 7 --retry=3
