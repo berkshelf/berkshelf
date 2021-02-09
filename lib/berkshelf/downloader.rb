@@ -84,7 +84,7 @@ module Berkshelf
           client_key: source.options[:client_key] || Berkshelf::Config.instance.chef.client_key,
           ssl: source.options[:ssl],
         }
-        RidleyCompat.new_client(credentials) do |conn|
+        RidleyCompat.new_client(**credentials) do |conn|
           cookbook = Chef::CookbookVersion.load(name, version)
           manifest = cookbook.cookbook_manifest
           manifest.by_parent_directory.each do |segment, files|
