@@ -4,7 +4,7 @@ require "chef/cookbook_manifest"
 describe Berkshelf::RidleyCompat do
   let(:opts) { {} }
 
-  subject { described_class.new(opts) }
+  subject { described_class.new(**opts) }
 
   context "default" do
     it "has a cookbook version_class" do
