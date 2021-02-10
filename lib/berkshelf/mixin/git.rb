@@ -13,12 +13,12 @@ module Berkshelf
       #
       # @raise [String]
       #   the +$stdout+ from the command
-      def git(command, error = true)
+      def git(command, error = true, **kwargs)
         unless Berkshelf.which("git") || Berkshelf.which("git.exe") || Berkshelf.which("git.bat")
           raise GitNotInstalled.new
         end
 
-        response = shell_out(%{git #{command}})
+        response = shell_out(%{git #{command}}, **kwargs)
 
         if response.error?
           raise GitCommandError.new(command, cache_path, response.stderr)

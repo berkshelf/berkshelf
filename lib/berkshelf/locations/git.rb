@@ -37,28 +37,22 @@ module Berkshelf
       scratch_path = Pathname.new(Dir.mktmpdir)
 
       if cached?
-        Dir.chdir(cache_path) do
-          git %{fetch --force --tags #{uri} "refs/heads/*:refs/heads/*"}
-        end
+        git(%{fetch --force --tags #{uri} "refs/heads/*:refs/heads/*"}, cwd: cache_path.to_s)
       else
         git %{clone #{uri} "#{cache_path}" --bare --no-hardlinks}
       end
 
-      Dir.chdir(cache_path) do
-        @revision ||= git %{rev-parse #{@rev_parse}}
-      end
+      @revision ||= git(%{rev-parse #{@rev_parse}}, cwd: cache_path.to_s)
 
       # Clone into a scratch directory for validations
       git %{clone --no-checkout "#{cache_path}" "#{scratch_path}"}
 
       # Make sure the scratch directory is up-to-date and account for rel paths
-      Dir.chdir(scratch_path) do
-        git %{fetch --force --tags "#{cache_path}"}
-        git %{reset --hard #{@revision}}
+      git(%{fetch --force --tags "#{cache_path}"}, cwd: scratch_path.to_s)
+      git(%{reset --hard #{@revision}}, cwd: scratch_path.to_s)
 
-        if rel
-          git %{filter-branch --subdirectory-filter "#{rel}" --force}
-        end
+      if rel
+        git(%{filter-branch --subdirectory-filter "#{rel}" --force}, cwd: scratch_path.to_s)
       end
 
       # Validate the scratched path is a valid cookbook

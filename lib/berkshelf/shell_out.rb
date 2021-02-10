@@ -8,8 +8,9 @@ module Berkshelf
       cmd
     end
 
-    def shell_out!(*args)
-      cmd = shell_out(*args)
+    def shell_out!(*args, **options)
+      cmd = Mixlib::ShellOut.new(*args, **options)
+      cmd.run_command
       cmd.error!
       cmd
     end

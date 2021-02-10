@@ -24,8 +24,8 @@ module Berkshelf
     #   versions of windows points at 'C:\users'. Some users have their
     #   temp directory still referring to 'C:\Documents and Settings'.
     #
-    def glob(pattern)
-      Dir.glob(pattern, File::FNM_DOTMATCH).sort.reject do |file|
+    def glob(pattern, **kwargs)
+      Dir.glob(pattern, File::FNM_DOTMATCH, **kwargs).sort.reject do |file|
         basename = File.basename(file)
         IGNORED_FILES.include?(basename)
       end
@@ -65,11 +65,10 @@ module Berkshelf
         [exclude, "#{exclude}/*"]
       end.flatten
 
-      source_files = Dir.chdir(source) do
-        glob("**/*").reject do |source_file|
+      source_files =
+        glob("**/*", base: source).reject do |source_file|
           excludes.any? { |exclude| File.fnmatch?(exclude, source_file, File::FNM_DOTMATCH) }
         end
-      end
 
       # Ensure the destination directory exists
       FileUtils.mkdir_p(destination) unless File.directory?(destination)
@@ -88,9 +87,7 @@ module Berkshelf
           target = File.readlink(source_file)
 
           destination = File.expand_path(destination)
-          Dir.chdir(destination) do
-            FileUtils.ln_sf(target, "#{destination}/#{relative_path}")
-          end
+          FileUtils.ln_sf(target, "#{destination}/#{relative_path}")
         when :file
           FileUtils.cp(source_file, "#{destination}/#{relative_path}")
         else
@@ -103,9 +100,7 @@ module Berkshelf
 
       if options[:delete]
         # Remove any files in the destination that are not in the source files
-        destination_files = Dir.chdir(destination) do
-          glob("**/*")
-        end
+        destination_files = glob("**/*", base: destination)
 
         # Remove any extra files that are present in the destination, but are
         # not in the source list

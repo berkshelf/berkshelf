@@ -22,15 +22,9 @@ module Berkshelf
       #  the Cookbook(s) to validate
       def validate_files(cookbooks)
         Array(cookbooks).each do |cookbook|
-          path = cookbook.path.to_s
+          base, name = Pathname.new(cookbook.path.to_s).split
 
-          files = Dir.chdir(path) do
-            Dir.glob(File.join("**", "*.rb")).select do |f|
-              f = File.join(path, f)
-              parent = Pathname.new(path).dirname.to_s
-              f.gsub(parent, "") =~ /[[:space:]]/
-            end
-          end
+          files = Dir.glob("#{name}/**/*.rb", base: base.to_s).select { |f| f =~ /[[:space:]]/ }
 
           raise InvalidCookbookFiles.new(cookbook, files) unless files.empty?
         end
