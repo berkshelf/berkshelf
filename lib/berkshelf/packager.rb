@@ -40,10 +40,8 @@ module Berkshelf
     # @return [String]
     #   path to the generated archive
     def run(source)
-      Dir.chdir(source.to_s) do |dir|
-        tgz = Zlib::GzipWriter.new(File.open(out_file, "wb"))
-        Archive::Tar::Minitar.pack(Dir.glob("*"), tgz)
-      end
+      tgz = Zlib::GzipWriter.new(File.open(out_file, "wb"))
+      Archive::Tar::Minitar.pack(Dir.glob("#{source}/*"), tgz)
 
       out_file
     rescue SystemCallError => ex

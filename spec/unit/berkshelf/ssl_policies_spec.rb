@@ -73,7 +73,6 @@ describe Berkshelf::SSLPolicy do
         before do
           allow(chef_config).to receive_messages(trusted_certs_dir: self_signed_crt_path_windows_backslashes)
           allow(File).to receive(:exist?).with(self_signed_crt_path_windows_forwardslashes).and_return(true)
-          allow(Dir).to receive(:chdir).with(self_signed_crt_path_windows_forwardslashes)
         end
 
         it "replaces the backslashes in trusted_certs_dir from Berkshelf config with forwardslashes" do

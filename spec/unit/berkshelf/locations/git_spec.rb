@@ -104,11 +104,10 @@ module Berkshelf
 
       context "when the repository is cached" do
         it "pulls a new version" do
-          allow(Dir).to receive(:chdir) { |args, &b| b.call } # Force eval the chdir block
-
+          cache_path = subject.send(:cache_path)
           allow(subject).to receive(:cached?).and_return(true)
           expect(subject).to receive(:git).with(
-            'fetch --force --tags https://repo.com "refs/heads/*:refs/heads/*"'
+            'fetch --force --tags https://repo.com "refs/heads/*:refs/heads/*"', cwd: cache_path.to_s
           )
           subject.install
         end
@@ -116,8 +115,6 @@ module Berkshelf
 
       context "when the revision is not cached" do
         it "clones the repository" do
-          allow(Dir).to receive(:chdir) { |args, &b| b.call } # Force eval the chdir block
-
           cache_path = subject.send(:cache_path)
           allow(subject).to receive(:cached?).and_return(false)
           expect(subject).to receive(:git).with(
