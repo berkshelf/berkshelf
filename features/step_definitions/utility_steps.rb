@@ -12,6 +12,6 @@ end
 
 When(/^I run `(.*?)`(?: for up to ([\d.]+) seconds)? printing output$/) do |cmd, secs|
   cmd = sanitize_text(cmd)
-  cmd = run_command(cmd, :fail_on_error => true, :exit_timeout => secs && secs.to_f)
+  cmd = run_command(cmd, fail_on_error: true, exit_timeout: secs && secs.to_f)
   puts cmd.output
 end
