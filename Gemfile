@@ -2,10 +2,6 @@ source "https://rubygems.org"
 
 gemspec
 
-group :changelog do
-  gem "github_changelog_generator"
-end
-
 group :build do
   gem "rake",          ">= 10.1"
 end
@@ -22,11 +18,7 @@ group :development do
   gem "rspec-its",     ">= 1.2"
   gem "webmock",       ">= 1.11"
   gem "http",          ">= 0.9.8"
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
-end
-
-group :docs do
-  gem "yard", ">= 0.8"
+  gem "chefstyle"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
