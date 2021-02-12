@@ -20,7 +20,7 @@ jobs:
         os: [ubuntu, macos, windows]
         ruby: [2.6, 2.7, 3.0, head ]
         what: [spec, features]
-    continue-on-error: ${{ endsWith(matrix.ruby, 'head') }}
+    continue-on-error: ${{ matrix.ruby == 'head' }}
     steps:
     - run: git config --global user.email "ci@berkshelf.com"
     - run: git config --global user.name "Berkshelf"
