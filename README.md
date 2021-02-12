@@ -4,7 +4,7 @@
 
 [gem]: https://rubygems.org/gems/berkshelf
 
-Manage a Cookbook or an Application's Cookbook dependencies
+Manage Chef Infra cookbooks and cookbook dependencies
 
 ## Installation
 
