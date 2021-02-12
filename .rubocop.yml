@@ -11,3 +11,5 @@ Lint/AmbiguousBlockAssociation:
   Enabled: false
 Style/HashSyntax:
   Enabled: true
+Layout/EndOfLine:
+  EnforcedStyle: lf
