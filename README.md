@@ -30,7 +30,7 @@ $ gem install berkshelf
 
 ## Usage
 
-See [docs.chef.io](https://docs.chef.io/berkshelf.html) for up-to-date usage instructions.
+See [docs.chef.io](https://docs.chef.io/workstation/berkshelf/) for up-to-date usage instructions.
 
 ## CLI Usage
 
@@ -38,7 +38,7 @@ Berkshelf is intended to be used as a CLI tool.  It is not intended to be used a
 
 ## Supported Platforms
 
-Berkshelf is tested and supported on Ruby 2.3 and 2.4.
+Berkshelf is tested and supported on Ruby 2.4 and later.
 
 ## Configuration
 
