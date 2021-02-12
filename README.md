@@ -1,9 +1,8 @@
 # Berkshelf
 [![Gem Version](https://img.shields.io/gem/v/berkshelf.svg)][gem]
-[![Build Status](https://img.shields.io/travis/berkshelf/berkshelf.svg)][travis]
+![Matrix Testing](https://github.com/berkshelf/berkshelf/workflows/Matrix%20Testing/badge.svg?branch=master)
 
 [gem]: https://rubygems.org/gems/berkshelf
-[travis]: https://travis-ci.org/berkshelf/berkshelf
 
 Manage a Cookbook or an Application's Cookbook dependencies
 
