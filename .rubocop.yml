@@ -12,4 +12,4 @@ Lint/AmbiguousBlockAssociation:
 Style/HashSyntax:
   Enabled: true
 Layout/EndOfLine:
-  EnforcedStyle: lf
+  EnforcedStyle: native
