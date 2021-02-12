@@ -1,5 +1,14 @@
 # Change Log
 
+## [7.2.0](https://github.com/berkshelf/berkshelf/tree/7.2.0) (2021-02-11)
+
+- Require mixlib-archive 1.1.4 or later for Ruby 3.0 compatibility
+- Resolve failures on Ruby 3
+- Modernize code that could result in race conditions, especially in Test Kitchen with high concurrency
+- Move CI from AppVeyor / Travis CI to GitHub Actions for all platforms
+- Add macOS testing
+- Fix all CI failures for a nice green build
+
 ## [7.1.0](https://github.com/berkshelf/berkshelf/tree/7.1.0) (2020-06-25)
 
 [Full Changelog](https://github.com/berkshelf/berkshelf/compare/v7.0.10...7.1.0)
