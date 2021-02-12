@@ -44,5 +44,5 @@ jobs:
       if: always()
     - run: bundle exec rake features
       if: always()
-    - fun: bundle exec rake style
+    - run: bundle exec rake style
       if: always()
