@@ -14,8 +14,8 @@ begin
   require "cucumber"
   require "cucumber/rake/task"
   Cucumber::Rake::Task.new(:features) do |t|
-    if RUBY_PLATFORM =~ WINDOWS_PLATFORM
-      t.cucumber_opts = "--tags ~@not-windows"
+    if RUBY_PLATFORM =~ WINDOWS_PLATFORM || RUBY_PLATFORM =~ /darwin/
+      t.cucumber_opts = "--tags 'not @windows'"
     end
   end
 rescue LoadError
