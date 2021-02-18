@@ -1,5 +1,5 @@
 # testing
-name: Matrix Testing
+name: CI Matrix Testing
 
 on:
   push:
