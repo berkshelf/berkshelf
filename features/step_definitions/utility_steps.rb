@@ -2,6 +2,13 @@ Given /^skip\s+"([^\"]+)"$/ do |msg|
   skip
 end
 
+Then("the archive {string} should contain:") do |path, expected_contents|
+  actual_contents = Zlib::GzipReader.open(expand_path(path)) do |gz|
+    Archive::Tar::Minitar::Input.each_entry(gz).map(&:full_name).join("\n")
+  end
+  expect(actual_contents).to eql(expected_contents)
+end
+
 Then /the output from \`(.+)\` should be the same as \`(.+)\`/ do |actual, expected|
   run(actual)
   actual_output = last_command_started.stdout
