@@ -89,6 +89,9 @@ module Berkshelf
           destination = File.expand_path(destination)
           FileUtils.ln_sf(target, "#{destination}/#{relative_path}")
         when :file
+          # TODO: Workaround issue related to [1] which impacts running ChefSpec on Github Actions
+          # [1] https://github.com/docker/for-linux/issues/1015
+          FileUtils.touch(source_file)
           FileUtils.cp(source_file, "#{destination}/#{relative_path}")
         else
           type = File.ftype(source_file)
