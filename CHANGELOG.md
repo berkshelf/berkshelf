@@ -1,5 +1,11 @@
 # Change Log
 
+## [7.2.1](https://github.com/berkshelf/berkshelf/tree/7.2.1) (2021-06-14)
+
+- Workaround issue which impacts running ChefSpec on Github Actions due to a bug in Docker
+- Migrate testing of the project to GitHub Actions
+- Remove extra development dependencies from the Gemfile
+
 ## [7.2.0](https://github.com/berkshelf/berkshelf/tree/7.2.0) (2021-02-11)
 
 - Require mixlib-archive 1.1.4 or later for Ruby 3.0 compatibility
