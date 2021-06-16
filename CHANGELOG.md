@@ -1,5 +1,9 @@
 # Change Log
 
+## [7.2.2](https://github.com/berkshelf/berkshelf/tree/7.2.2) (2021-06-16)
+
+- Fix Ruby 3.0 support with Berkshelf::APIClient::ChefServerConnection
+
 ## [7.2.1](https://github.com/berkshelf/berkshelf/tree/7.2.1) (2021-06-14)
 
 - Workaround issue which impacts running ChefSpec on Github Actions due to a bug in Docker
