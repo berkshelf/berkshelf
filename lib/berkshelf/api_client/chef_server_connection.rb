@@ -5,15 +5,13 @@ module Berkshelf
     require_relative "errors"
 
     class ChefServerConnection
-      attr_reader :client
-
-      def initialize(*args)
-        @client = Berkshelf::RidleyCompat.new(*args)
-        @url = args[0][:server_url]
+      def initialize(**args)
+        @client = Berkshelf::RidleyCompat.new(**args)
+        @url = args[:server_url]
       end
 
       def universe
-        response = client.get("universe")
+        response = @client.get("universe")
 
         [].tap do |cookbooks|
           response.each do |name, versions|

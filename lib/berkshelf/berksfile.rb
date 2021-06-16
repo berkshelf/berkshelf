@@ -644,7 +644,7 @@ module Berkshelf
           FileUtils.mkdir_p(cookbook_destination)
 
           # Dir.glob does not support backslash as a File separator
-          src   = cookbook.path.to_s.tr('\\', "/")
+          src   = cookbook.path.to_s.tr("\\", "/")
           files = FileSyncer.glob(File.join(src, "**/*"))
 
           # strip directories

@@ -16,8 +16,8 @@ module Berkshelf
         Connection.new(*args)
       end
 
-      def chef_server(*args)
-        ChefServerConnection.new(*args)
+      def chef_server(**args)
+        ChefServerConnection.new(**args)
       end
     end
   end
