@@ -6,6 +6,13 @@
 
 Manage Chef Infra cookbooks and cookbook dependencies
 
+## Warning
+
+Berkshelf is effectively deprecated. There is no ongoing maintenance and triage of issues. No active work is being done on bugfixes. The only
+work being done is to maintain it so that it continues to ship and run in its existing state.
+
+Existing users should strongly consider migrating to [Policyfiles](https://docs.chef.io/policyfile/) and new users should avoid using Berkshelf.
+
 ## Installation
 
 Berkshelf is now included as part of the [Chef Workstation](https://downloads.chef.io/tools/workstation). This is fastest, easiest, and the recommended installation method for getting up and running with Berkshelf.
