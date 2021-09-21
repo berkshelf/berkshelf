@@ -7,7 +7,6 @@ group :build do
 end
 
 group :development do
-  gem "chef-bin" # for the proxy tests
   gem "aruba",         "~> 0.10" # Stay below 1 until aruba/in_process monkeypatching stops
   gem "cucumber",      "< 4.0" # until we identify what is generating the ~@no_run tag in CI
   gem "cucumber-expressions", "= 5.0.13"
