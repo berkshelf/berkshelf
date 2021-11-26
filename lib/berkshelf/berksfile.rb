@@ -595,10 +595,10 @@ module Berkshelf
       packager = Packager.new(path)
       packager.validate!
 
-      outdir = Dir.mktmpdir do |temp_dir|
-        Berkshelf.ui.mute { vendor(File.join(temp_dir, "cookbooks")) }
-        packager.run(temp_dir)
-      end
+      temp_dir = path.split('/')[-1][0...-7]
+      Berkshelf.ui.mute { vendor(File.join(temp_dir, "cookbooks")) }
+      outdir = packager.run(temp_dir)
+      FileUtils.rm_rf( temp_dir ) if File.exist?(temp_dir)
 
       Berkshelf.formatter.package(outdir)
       outdir
