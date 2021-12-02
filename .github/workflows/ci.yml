@@ -4,10 +4,10 @@ name: CI Matrix Testing
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   schedule:
     - cron:  '21 3 * * *'
 
