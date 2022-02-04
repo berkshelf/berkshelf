@@ -156,7 +156,7 @@ module Berkshelf
         options[:group] += @active_group
       end
 
-      add_dependency(name, constraint, options)
+      add_dependency(name, constraint, **options)
     end
     expose :cookbook
 
