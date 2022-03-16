@@ -11,7 +11,7 @@ module Berkshelf
       end
 
       it "finds a :git location by key" do
-        instance = described_class.init(dependency, git: "git://foo.com/meats/bacon.git")
+        instance = described_class.init(dependency, git: "https://foo.com/meats/bacon.git")
         expect(instance).to be_a(GitLocation)
       end
 

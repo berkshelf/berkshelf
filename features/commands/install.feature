@@ -188,29 +188,29 @@ Feature: berks install
   Scenario: installing a demand from a Git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
+      cookbook "berkshelf-cookbook-fixture", git: "https://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       Fetching cookbook index from http://127.0.0.1:26310...
-      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
+      Using berkshelf-cookbook-fixture (1.0.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       """
 
   Scenario: installing a demand from a Git location that has already been installed
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git"
+      cookbook "berkshelf-cookbook-fixture", git: "https://github.com/RiotGames/berkshelf-cookbook-fixture.git"
       """
     And the cookbook store has the git cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 | a97b9447cbd41a5fe58eee2026e48ccb503bd3bc |
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
+      Using berkshelf-cookbook-fixture (1.0.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at master)
       """
 
   Scenario: installing a Berksfile that contains a Git location with a rel
@@ -235,7 +235,7 @@ Feature: berks install
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'berkshelf-cookbook-fixture',
-        git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture.git',
+        git: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git',
         tag: 'v0.2.0'
       """
     When I successfully run `berks install`
@@ -247,46 +247,46 @@ Feature: berks install
   Scenario: installing a Berksfile that contains a Git location with a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
+      cookbook "berkshelf-cookbook-fixture", git: "https://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       Fetching cookbook index from http://127.0.0.1:26310...
-      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       """
 
   Scenario: installing a Berksfile that contains a Git location with a ref
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", ref: "70a527e17d91f01f031204562460ad1c17f972ee"
+      cookbook "berkshelf-cookbook-fixture", git: "https://github.com/RiotGames/berkshelf-cookbook-fixture.git", ref: "70a527e17d91f01f031204562460ad1c17f972ee"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       Fetching cookbook index from http://127.0.0.1:26310...
-      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
+      Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
   Scenario: installing a Berksfile that contains a Git location with an abbreviated ref
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", ref: "70a527e"
+      cookbook "berkshelf-cookbook-fixture", git: "https://github.com/RiotGames/berkshelf-cookbook-fixture.git", ref: "70a527e"
       """
     When I successfully run `berks install`
     Then the cookbook store should have the git cookbooks:
       | berkshelf-cookbook-fixture | 0.2.0 | 70a527e17d91f01f031204562460ad1c17f972ee |
     And the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       Fetching cookbook index from http://127.0.0.1:26310...
-      Using berkshelf-cookbook-fixture (0.2.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
+      Using berkshelf-cookbook-fixture (0.2.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at 70a527e)
       """
 
   Scenario: installing a Berksfile that contains a GitHub location
@@ -445,12 +445,12 @@ Feature: berks install
   Scenario: when a Git demand points to a branch that does not satisfy the version constraint
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", "1.0.0", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
+      cookbook "berkshelf-cookbook-fixture", "1.0.0", git: "https://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v0.2.0"
       """
     When I run `berks install`
     Then the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v0.2.0)
       The cookbook downloaded for berkshelf-cookbook-fixture (= 1.0.0) did not satisfy the constraint.
       """
     And the exit status should be "CookbookValidationFailure"
@@ -458,23 +458,23 @@ Feature: berks install
   Scenario: when a Git demand is defined and a cookbook of the same name and version is already in the cookbook store
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook "berkshelf-cookbook-fixture", git: "git://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v1.0.0"
+      cookbook "berkshelf-cookbook-fixture", git: "https://github.com/RiotGames/berkshelf-cookbook-fixture.git", tag: "v1.0.0"
       """
     And the cookbook store has the cookbooks:
       | berkshelf-cookbook-fixture | 1.0.0 |
     When I successfully run `berks install`
     Then the output should contain:
       """
-      Fetching 'berkshelf-cookbook-fixture' from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
+      Fetching 'berkshelf-cookbook-fixture' from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
       Fetching cookbook index from http://127.0.0.1:26310...
-      Using berkshelf-cookbook-fixture (1.0.0) from git://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
+      Using berkshelf-cookbook-fixture (1.0.0) from https://github.com/RiotGames/berkshelf-cookbook-fixture.git (at v1.0.0)
       """
 
   Scenario: with a git error during download
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
       cookbook 'berkshelf-cookbook-fixture', '1.0.0'
-      cookbook "doesntexist", git: "git://github.com/asdjhfkljashflkjashfakljsf"
+      cookbook "doesntexist", git: "https://github.com/asdjhfkljashflkjashfakljsf"
       """
     When I run `berks install`
     Then the exit status should be "GitError"

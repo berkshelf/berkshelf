@@ -96,13 +96,13 @@ Feature: berks update
   Scenario: With a git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', git: 'git://github.com/RiotGames/berkshelf-cookbook-fixture'
+      cookbook 'berkshelf-cookbook-fixture', git: 'https://github.com/RiotGames/berkshelf-cookbook-fixture'
       """
     And I write to "Berksfile.lock" with:
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: git://github.com/RiotGames/berkshelf-cookbook-fixture
+          git: https://github.com/RiotGames/berkshelf-cookbook-fixture
           revision: 70a527e17d91f01f031204562460ad1c17f972ee
 
       GRAPH
@@ -114,7 +114,7 @@ Feature: berks update
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: git://github.com/RiotGames/berkshelf-cookbook-fixture
+          git: https://github.com/RiotGames/berkshelf-cookbook-fixture
           revision: a97b9447cbd41a5fe58eee2026e48ccb503bd3bc
 
       GRAPH

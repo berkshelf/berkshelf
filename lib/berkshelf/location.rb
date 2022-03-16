@@ -9,7 +9,7 @@ module Berkshelf
       # is returned.
       #
       # @example Create a git location
-      #   Location.init(dependency, git: 'git://github.com/berkshelf/berkshelf.git')
+      #   Location.init(dependency, git: 'https://github.com/berkshelf/berkshelf.git')
       #
       # @example Create a GitHub location
       #   Location.init(dependency, github: 'berkshelf/berkshelf')
