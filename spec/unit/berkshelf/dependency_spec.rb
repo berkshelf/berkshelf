@@ -35,7 +35,7 @@ describe Berkshelf::Dependency do
       end
 
       context "given a location key :git" do
-        let(:url) { "git://url_to_git" }
+        let(:url) { "https://url_to_git" }
         let(:source) { described_class.new(berksfile, cookbook_name, git: url) }
 
         it "initializes a GitLocation for location" do
