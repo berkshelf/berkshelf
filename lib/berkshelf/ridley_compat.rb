@@ -15,6 +15,7 @@ module Berkshelf
       chef_opts[:headers]              = opts[:headers] if opts[:headers]
       chef_opts[:client_name]          = opts[:client_name] if opts[:client_name]
       chef_opts[:signing_key_filename] = opts[:client_key] if opts[:client_key]
+      chef_opts[:ssh_agent_signing]    = Chef::Config[:ssh_agent_signing] if Chef::Config[:ssh_agent_signing]
       chef_opts[:verify_api_cert]      = opts[:ssl][:verify] || opts[:ssl][:verify].nil?
       chef_opts[:ssl_verify_mode]      = chef_opts[:verify_api_cert] ? :verify_peer : :verify_none
       chef_opts[:ssl_ca_path]          = opts[:ssl][:ca_path] if opts[:ssl][:ca_path]
