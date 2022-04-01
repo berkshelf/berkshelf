@@ -171,6 +171,8 @@ module Berkshelf
     #
     # @return [Tempfile]
     def stream(target)
+      target = relative_to_absolute_url(target)
+
       local = Tempfile.new("community-rest-stream")
       local.binmode
       Retryable.retryable(tries: retries, on: Berkshelf::APIClientError, sleep: retry_interval) do
@@ -178,6 +180,14 @@ module Berkshelf
       end
     ensure
       local.close(false) unless local.nil?
+    end
+
+    def relative_to_absolute_url(target)
+      if !URI.parse(target).absolute?
+        "#{api_uri.chomp("/api/v1")}#{target}"
+      else
+        target
+      end
     end
   end
 end
