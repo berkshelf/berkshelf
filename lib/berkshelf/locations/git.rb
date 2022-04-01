@@ -45,7 +45,7 @@ module Berkshelf
       @revision ||= git(%{rev-parse #{@rev_parse}}, cwd: cache_path.to_s)
 
       # Clone into a scratch directory for validations
-      git %{clone --no-checkout "#{cache_path}" "#{scratch_path}"}
+      git %{clone --no-checkout --reference="#{cache_path}" #{uri} "#{scratch_path}"}
 
       # Make sure the scratch directory is up-to-date and account for rel paths
       git(%{fetch --force --tags "#{cache_path}"}, cwd: scratch_path.to_s)
