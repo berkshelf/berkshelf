@@ -147,6 +147,9 @@ module Berkshelf
           default :gitlab, []
           # :git, :ssh, or :https
           default :github_protocol, :https
+          config_context :git do
+            default :default_branch, 'master' # for backwards compatibility
+          end
         end
       end
     end
