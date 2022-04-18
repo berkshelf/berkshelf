@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, macos, windows]
-        ruby: [2.6, 2.7, 3.0 ]
+        ruby: [2.7, 3.0, 3.1]
     steps:
     - run: git config --global user.email "ci@berkshelf.com"
     - run: git config --global user.name "Berkshelf"
