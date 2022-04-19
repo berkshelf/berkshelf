@@ -24,7 +24,7 @@ jobs:
     - run: git config --global user.name "Berkshelf"
     - run: |
          if [ "$RUNNER_OS" == "Linux" ]; then
-           sudo apt-get install graphviz libarchive-dev
+           sudo apt-get update && sudo apt-get install graphviz libarchive-dev
          elif [ "$RUNNER_OS" == "Windows" ]; then
            choco install graphviz
          elif [ "$RUNNER_OS" == "macOS" ]; then
