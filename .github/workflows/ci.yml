@@ -20,8 +20,6 @@ jobs:
         os: [ubuntu, macos, windows]
         ruby: [2.7, 3.0, 3.1]
     steps:
-    - run: git config --global user.email "ci@berkshelf.com"
-    - run: git config --global user.name "Berkshelf"
     - run: |
          if [ "$RUNNER_OS" == "Linux" ]; then
            sudo apt-get update && sudo apt-get install graphviz libarchive-dev
