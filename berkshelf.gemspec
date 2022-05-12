@@ -25,8 +25,13 @@ Gem::Specification.new do |s|
   s.name                      = "berkshelf"
   s.require_paths             = ["lib"]
   s.version                   = Berkshelf::VERSION
-  s.required_ruby_version     = ">= 2.4.0"
+  s.required_ruby_version     = ">= 2.7.0"
   s.required_rubygems_version = ">= 2.0.0"
+  s.metadata                  = {
+    "bug_tracker_uri" => "https://github.com/chef/berkshelf/issues",
+    "source_code_uri" => "https://github.com/chef/berkshelf",
+    "changelog_uri"   => "https://github.com/chef/berkshelf/blob/main/CHANGELOG.md"
+  }
 
   s.add_dependency "mixlib-shellout",      ">= 2.0", "< 4.0"
   s.add_dependency "cleanroom",            "~> 1.0"
