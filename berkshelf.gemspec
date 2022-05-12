@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.metadata                  = {
     "bug_tracker_uri" => "https://github.com/chef/berkshelf/issues",
     "source_code_uri" => "https://github.com/chef/berkshelf",
-    "changelog_uri"   => "https://github.com/chef/berkshelf/blob/main/CHANGELOG.md"
+    "changelog_uri"   => "https://github.com/chef/berkshelf/blob/main/CHANGELOG.md",
   }
 
   s.add_dependency "mixlib-shellout",      ">= 2.0", "< 4.0"
