@@ -1,6 +1,8 @@
 # Change Log
+## [8.0.1](https://github.com/chef/berkshelf/releases/tag/v8.0.1) (2022-05-19)
+- Updated the gem specifications to point to the forked repo.
 
-## [8.0.0](https://github.com/berkshelf/berkshelf/tree/8.0.0) (2022-05-29)
+## [8.0.0](https://github.com/chef/berkshelf/releases/tag/v8.0.0) (2022-04-29)
 - Added support for Ruby 3.1 and ended support for Ruby 2.6
 - Refer fork in Chef instead of repo in RiotGames
 
