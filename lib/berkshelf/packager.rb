@@ -81,7 +81,7 @@ module Berkshelf
 
     # A private decorator for Archive::Tar::Minitar::Writer that
     # turns absolute paths into relative ones.
-    class RelativeTarWriter < SimpleDelegator #:nodoc:
+    class RelativeTarWriter < SimpleDelegator # :nodoc:
       def initialize(io, base_path)
         @base_path = Pathname.new(base_path)
         super(Archive::Tar::Minitar::Writer.new(io))
