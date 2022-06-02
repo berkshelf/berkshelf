@@ -1,4 +1,7 @@
 # Change Log
+## [8.0.2](https://github.com/chef/berkshelf/releases/tag/v8.0.2) (2022-06-02)
+- Fix directory structure of berkshelf package
+
 ## [8.0.1](https://github.com/chef/berkshelf/releases/tag/v8.0.1) (2022-05-19)
 - Updated the gem specifications to point to the forked repo.
 
