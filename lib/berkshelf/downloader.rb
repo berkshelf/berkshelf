@@ -152,7 +152,7 @@ module Berkshelf
         unpack_dir   = Pathname.new(tmp_dir) + "#{name}-#{version}"
 
         url = remote_cookbook.location_path
-        open(url, "rb") do |remote_file|
+        URI.open(url, "rb") do |remote_file|
           archive_path.open("wb") { |local_file| local_file.write remote_file.read }
         end
 
