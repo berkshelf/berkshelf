@@ -1,7 +1,15 @@
-<!-- latest_release -->
+<!-- latest_release 8.0.3 -->
+## [v8.0.3](https://github.com/chef/berkshelf/tree/v8.0.3) (2022-06-13)
+
+#### Merged Pull Requests
+- Dummy [#9](https://github.com/chef/berkshelf/pull/9) ([mimaslanka](https://github.com/mimaslanka))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=8.0.2 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Dummy [#9](https://github.com/chef/berkshelf/pull/9) ([mimaslanka](https://github.com/mimaslanka)) <!-- 8.0.3 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
