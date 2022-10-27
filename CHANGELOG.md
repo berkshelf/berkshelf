@@ -1,23 +1,20 @@
-<!-- latest_release 8.0.5 -->
-## [v8.0.5](https://github.com/chef/berkshelf/tree/v8.0.5) (2022-10-27)
-
-#### Merged Pull Requests
-- Specify explicit hash [#14](https://github.com/chef/berkshelf/pull/14) ([vkarve-chef](https://github.com/vkarve-chef))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=8.0.2 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Specify explicit hash [#14](https://github.com/chef/berkshelf/pull/14) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 8.0.5 -->
-- Copyedit README and contributing guides [#12](https://github.com/chef/berkshelf/pull/12) ([tnir](https://github.com/tnir)) <!-- 8.0.4 -->
-- Dummy [#9](https://github.com/chef/berkshelf/pull/9) ([mimaslanka](https://github.com/mimaslanka)) <!-- 8.0.3 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v8.0.5](https://github.com/chef/berkshelf/tree/v8.0.5) (2022-10-27)
+
+#### Merged Pull Requests
+- Dummy [#9](https://github.com/chef/berkshelf/pull/9) ([mimaslanka](https://github.com/mimaslanka))
+- Copyedit README and contributing guides [#12](https://github.com/chef/berkshelf/pull/12) ([tnir](https://github.com/tnir))
+- Specify explicit hash [#14](https://github.com/chef/berkshelf/pull/14) ([vkarve-chef](https://github.com/vkarve-chef))
+<!-- latest_stable_release -->
+
 ## [8.0.2](https://github.com/chef/berkshelf/releases/tag/v8.0.2) (2022-06-02)
 - Fix directory structure of berkshelf package
-<!-- latest_stable_release -->
 
 ## [8.0.1](https://github.com/chef/berkshelf/releases/tag/v8.0.1) (2022-05-19)
 - Updated the gem specifications to point to the forked repo.
