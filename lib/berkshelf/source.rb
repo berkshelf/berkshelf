@@ -38,6 +38,7 @@ module Berkshelf
         @options[:client_key] ||= Berkshelf::Config.instance.chef.client_key
       when :artifactory
         @options[:api_key] ||= Berkshelf::Config.instance.chef.artifactory_api_key || ENV["ARTIFACTORY_API_KEY"]
+        @options[:token] ||= Berkshelf::Config.instance.chef.artifactory_token || ENV["ARTIFACTORY_TOKEN"]
       when :chef_repo
         @options[:path] = uri_string
         # If given a relative path, expand it against the Berksfile's folder.
@@ -64,8 +65,10 @@ module Berkshelf
                       when :artifactory
                         # Don't accidentally mutate the options.
                         client_options = options.dup
-                        api_key = client_options.delete(:api_key)
-                        APIClient.new(uri, headers: { "X-Jfrog-Art-Api" => api_key }, **client_options)
+                        headers = {}
+                        headers['X-Jfrog-Art-Api'] = client_options.delete(:api_key) if client_options[:api_key]
+                        headers['Authorization'] = "Bearer #{client_options.delete(:token)}" if client_options[:token]
+                        APIClient.new(uri, headers: headers, **client_options)
                       when :chef_repo
                         ChefRepoUniverse.new(uri_string, **options)
                       else

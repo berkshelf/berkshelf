@@ -67,7 +67,14 @@ module Berkshelf
       when :opscode, :supermarket
         options = { ssl: source.options[:ssl] }
         if source.type == :artifactory
-          options[:headers] = { "X-Jfrog-Art-Api" => source.options[:api_key] }
+          puts "Using Artifactory source with options #{source.options}"
+          if source.options[:api_key]
+            options[:headers] = { "X-Jfrog-Art-Api" => source.options[:api_key] }
+          elsif source.options[:token]
+            options[:headers] = { "Authorization" => "Bearer #{source.options[:token]}" }
+          else
+            raise ConfigurationError, "Missing Artifactory api_key or token credential option."
+          end
         end
 
         # Allow Berkshelf install to function if a relative url exists in location_path

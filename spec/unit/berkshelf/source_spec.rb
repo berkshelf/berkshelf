@@ -161,7 +161,9 @@ module Berkshelf
       context "with an artifactory source and the API key in the Chef config" do
         let(:arguments) { [{ artifactory: "https://example.com/api/chef/chef-virtual" }] }
         before { config.chef.artifactory_api_key = "secret" }
+        before { config.chef.artifactory_token = "secret" }
         its([:api_key]) { is_expected.to eq "secret" }
+        its([:token]) { is_expected.to eq "secret" }
       end
 
       context "with a chef_repo source" do

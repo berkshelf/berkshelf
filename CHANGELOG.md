@@ -1,5 +1,9 @@
 # Change Log
 
+## [7.2.3](https://github.com/berkshelf/berkshelf/tree/7.2.3) (2023-02-15)
+
+- Add support for Artifactory Tokens
+
 ## [7.2.2](https://github.com/berkshelf/berkshelf/tree/7.2.2) (2021-06-16)
 
 - Fix Ruby 3.0 support with Berkshelf::APIClient::ChefServerConnection
