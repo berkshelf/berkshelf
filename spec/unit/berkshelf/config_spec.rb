@@ -22,7 +22,8 @@ describe Berkshelf::Config do
           client_key: "client-key",
           node_name: "fake-client",
           trusted_certs_dir: "/tmp/fakecerts",
-          artifactory_api_key: "secret"
+          artifactory_api_key: "secret",
+          artifactory_token: "secret"
         )
       end
 
@@ -38,6 +39,7 @@ describe Berkshelf::Config do
         node_name: "fake-client",
         trusted_certs_dir: "/tmp/fakecerts",
         artifactory_api_key: "secret",
+        artifactory_token: "secret",
       }.each do |attr, default|
         it "should have a default chef.#{attr}" do
           expect(Berkshelf::Config.instance.chef.send(attr)).to eq(default)

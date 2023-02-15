@@ -116,6 +116,7 @@ module Berkshelf
             default :node_name, Berkshelf.chef_config.node_name
             default :trusted_certs_dir, Berkshelf.chef_config.trusted_certs_dir
             default :artifactory_api_key, Berkshelf.chef_config.artifactory_api_key
+            default :artifactory_token, Berkshelf.chef_config.artifactory_token
           end
           config_context :cookbook do
             default :copyright, nil
