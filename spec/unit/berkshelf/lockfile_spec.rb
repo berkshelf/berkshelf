@@ -231,8 +231,8 @@ describe Berkshelf::Lockfile do
         expect(Chef::Environment).to receive(:from_hash).with(env_hash).and_return(environment)
 
         expect(environment).to receive(:cookbook_versions).with(
-          "apt" => "= 1.0.0",
-          "jenkins" => "= 1.4.5"
+          {"apt" => "= 1.0.0",
+          "jenkins" => "= 1.4.5"}
         )
 
         expect(environment).to receive(:save)

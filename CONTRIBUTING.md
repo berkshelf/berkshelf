@@ -19,13 +19,13 @@ If you'd like to submit a patch:
 
 Install git on your test system.
 
-Install the latest version of [Bundler](http://gembundler.com)
+Install the latest version of [Bundler](https://bundler.io/)
 
     $ gem install bundler
 
 Clone the project
 
-    $ git clone https://github.com/berkshelf/berkshelf.git
+    $ git clone https://github.com/chef/berkshelf.git
 
 and run:
 
@@ -61,8 +61,8 @@ Specify the `BERKSHELF_DEBUG` flag when running your command to see a full stack
 Once you are ready to release Berkshelf, perform the following:
 
 1. Update `CHANGELOG.md` with a new header indicating the version to be released
-1. Examine the diff ([example](https://github.com/berkshelf/berkshelf/compare/v4.0.1...master)) between master and the previous version.  Add all merged Pull Requests to the `CHANGELOG.md`
+1. Examine the diff ([example](https://github.com/chef/berkshelf/compare/v8.0.2...main)) between main and the previous version.  Add all merged Pull Requests to the `CHANGELOG.md`
 1. Update `version.rb` to the desired release version
 1. Run `bundle update berkshelf`
 1. Create a PR and review the `version.rb` changes and `CHANGELOG.md` changes
-1. Once the PR is merged to master, run `rake release` on the master branch
+1. Once the PR is merged to main, run `rake release` on the main branch
