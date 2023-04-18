@@ -1,14 +1,15 @@
 <!-- latest_release 8.0.6 -->
-## [v8.0.6](https://github.com/chef/berkshelf/tree/v8.0.6) (2023-03-31)
+## [v8.0.6](https://github.com/chef/berkshelf/tree/v8.0.6) (2023-04-18)
 
 #### Merged Pull Requests
-- Added the SonarQube configuration [#16](https://github.com/chef/berkshelf/pull/16) ([nikhil2611](https://github.com/nikhil2611))
+- Refactoring the gemspec for chef-17 support [#17](https://github.com/chef/berkshelf/pull/17) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=8.0.5 -->
 ### Changes not yet released to rubygems.org
 
 #### Merged Pull Requests
+- Refactoring the gemspec for chef-17 support [#17](https://github.com/chef/berkshelf/pull/17) ([johnmccrae](https://github.com/johnmccrae)) <!-- 8.0.6 -->
 - Added the SonarQube configuration [#16](https://github.com/chef/berkshelf/pull/16) ([nikhil2611](https://github.com/nikhil2611)) <!-- 8.0.6 -->
 <!-- release_rollup -->
 
