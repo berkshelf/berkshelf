@@ -1,27 +1,24 @@
-<!-- latest_release 8.0.7 -->
-## [v8.0.7](https://github.com/chef/berkshelf/tree/v8.0.7) (2023-06-12)
-
-#### Merged Pull Requests
-- Fix cookbook dependency version validation against chef&#39;s required format to berks upload [#18](https://github.com/chef/berkshelf/pull/18) ([nikhil2611](https://github.com/nikhil2611))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=8.0.5 -->
-### Changes not yet released to rubygems.org
-
-#### Merged Pull Requests
-- Fix cookbook dependency version validation against chef&#39;s required format to berks upload [#18](https://github.com/chef/berkshelf/pull/18) ([nikhil2611](https://github.com/nikhil2611)) <!-- 8.0.7 -->
-- Refactoring the gemspec for chef-17 support [#17](https://github.com/chef/berkshelf/pull/17) ([johnmccrae](https://github.com/johnmccrae)) <!-- 8.0.6 -->
-- Added the SonarQube configuration [#16](https://github.com/chef/berkshelf/pull/16) ([nikhil2611](https://github.com/nikhil2611)) <!-- 8.0.6 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v8.0.7](https://github.com/chef/berkshelf/tree/v8.0.7) (2023-06-12)
+
+#### Merged Pull Requests
+- Added the SonarQube configuration [#16](https://github.com/chef/berkshelf/pull/16) ([nikhil2611](https://github.com/nikhil2611))
+- Refactoring the gemspec for chef-17 support [#17](https://github.com/chef/berkshelf/pull/17) ([johnmccrae](https://github.com/johnmccrae))
+- Fix cookbook dependency version validation against chef&#39;s required format to berks upload [#18](https://github.com/chef/berkshelf/pull/18) ([nikhil2611](https://github.com/nikhil2611))
+<!-- latest_stable_release -->
+
 ## [v8.0.5](https://github.com/chef/berkshelf/tree/v8.0.5) (2022-10-27)
 
 #### Merged Pull Requests
 - Dummy [#9](https://github.com/chef/berkshelf/pull/9) ([mimaslanka](https://github.com/mimaslanka))
 - Copyedit README and contributing guides [#12](https://github.com/chef/berkshelf/pull/12) ([tnir](https://github.com/tnir))
 - Specify explicit hash [#14](https://github.com/chef/berkshelf/pull/14) ([vkarve-chef](https://github.com/vkarve-chef))
-<!-- latest_stable_release -->
 
 ## [8.0.2](https://github.com/chef/berkshelf/releases/tag/v8.0.2) (2022-06-02)
 - Fix directory structure of berkshelf package
