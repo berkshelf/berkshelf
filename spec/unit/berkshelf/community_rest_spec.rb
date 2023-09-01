@@ -107,7 +107,7 @@ describe Berkshelf::CommunityREST do
     it "raises a CookbookNotFound error on a 404 response for a non-existent cookbook" do
       stub_request(:get, "#{api_uri}/cookbooks/not_real/versions/1_0_0").to_return(
         status: 404,
-        body: "Not Found"
+        body: nil
       )
 
       expect do
@@ -142,7 +142,7 @@ describe Berkshelf::CommunityREST do
     it "raises a CookbookNotFound error on a 404 response" do
       stub_request(:get, "#{api_uri}/cookbooks/not_real").to_return(
         status: 404,
-        body: "Not Found"
+        body: nil
       )
 
       expect do
@@ -177,7 +177,7 @@ describe Berkshelf::CommunityREST do
     it "raises a CookbookNotFound error on a 404 response" do
       stub_request(:get, "#{api_uri}/cookbooks/not_real").to_return(
         status: 404,
-        body: "Not Found"
+        body: nil
       )
 
       expect do
