@@ -130,17 +130,17 @@ describe Berkshelf::APIClient::Connection do
     end
 
     it "raises Berkshelf::APIClient::ServiceUnavailable for 500s" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: [500, "Internal Server Error"])
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: 500, body: "Internal Server Error")
       expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavailable)
     end
 
     it "raises Berkshelf::APIClient::ServiceNotFound for 404s" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: [404, "Not Found"])
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: 404, body: "Not Found")
       expect { subject }.to raise_error(Berkshelf::APIClient::ServiceNotFound)
     end
 
     it "raises Net::HTTPBadRequest for 400s" do
-      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: [400, "Bad Request"])
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(status: 400, body: "Bad Request")
       expect { subject }.to raise_error(Berkshelf::APIClient::BadResponse)
     end
 
