@@ -1,0 +1,24 @@
+---
+expeditor:
+  defaults:
+    buildkite:
+      retry:
+        automatic:
+          limit: 1
+      timeout_in_minutes: 30
+
+steps:
+- label: "Integration Ubuntu 22.04 :ruby: 3.1"
+  commands:
+    - cd /workdir
+    - rm -f .bundle/config
+    - apt-get update -y
+    - apt-get install -y graphviz
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
+    - bundle exec rake
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-22.04:3.1
+        privileged: true

@@ -1,4 +1,69 @@
-# Change Log
+<!-- latest_release 8.0.17 -->
+## [v8.0.17](https://github.com/chef/berkshelf/tree/v8.0.17) (2025-02-03)
+
+#### Merged Pull Requests
+- Updating configuration for a symantec version promote and publish [#55](https://github.com/chef/berkshelf/pull/55) ([nikhil2611](https://github.com/nikhil2611))
+<!-- latest_release -->
+
+<!-- release_rollup since=8.0.12 -->
+### Changes not yet released to rubygems.org
+
+#### Merged Pull Requests
+- Updating configuration for a symantec version promote and publish [#55](https://github.com/chef/berkshelf/pull/55) ([nikhil2611](https://github.com/nikhil2611)) <!-- 8.0.17 -->
+- Chef-18535 Removed the release branch changes and fixed pipeline [#53](https://github.com/chef/berkshelf/pull/53) ([nikhil2611](https://github.com/nikhil2611)) <!-- 8.0.16 -->
+- empty commit [#52](https://github.com/chef/berkshelf/pull/52) ([sanghinitin](https://github.com/sanghinitin)) <!-- 0.1.12 -->
+- Updating config to fix promote to dev channel [#51](https://github.com/chef/berkshelf/pull/51) ([nikhil2611](https://github.com/nikhil2611)) <!-- 0.1.11 -->
+- Removed hab test pipeline duplicate [#50](https://github.com/chef/berkshelf/pull/50) ([sanghinitin](https://github.com/sanghinitin)) <!-- 0.1.10 -->
+- Test pipeline working with empty PR [#49](https://github.com/chef/berkshelf/pull/49) ([nikhil2611](https://github.com/nikhil2611)) <!-- 0.1.9 -->
+- Testing pipelines and added agents promote workload [#48](https://github.com/chef/berkshelf/pull/48) ([nikhil2611](https://github.com/nikhil2611)) <!-- 0.1.8 -->
+- Test pipeline with empty commit [#47](https://github.com/chef/berkshelf/pull/47) ([nikhil2611](https://github.com/nikhil2611)) <!-- 0.1.7 -->
+- Adding back the pipeline back [#46](https://github.com/chef/berkshelf/pull/46) ([nikhil2611](https://github.com/nikhil2611)) <!-- 0.1.5 -->
+- commenting the pipelines [#45](https://github.com/chef/berkshelf/pull/45) ([nikhil2611](https://github.com/nikhil2611)) <!-- 0.1.3 -->
+- Adding back the pipelines [#44](https://github.com/chef/berkshelf/pull/44) ([nikhil2611](https://github.com/nikhil2611)) <!-- 0.1.1 -->
+- Added the release branch [#42](https://github.com/chef/berkshelf/pull/42) ([nikhil2611](https://github.com/nikhil2611)) <!-- 8.0.16 -->
+- PR #11 rebase Allow users to user octokit 5.x [#35](https://github.com/chef/berkshelf/pull/35) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 8.0.15 -->
+- Add running of tests on verify pipeline [#33](https://github.com/chef/berkshelf/pull/33) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 8.0.14 -->
+- Fix version string comparison for Minitar and uncomment install feature [#32](https://github.com/chef/berkshelf/pull/32) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 8.0.13 -->
+<!-- release_rollup -->
+
+<!-- latest_stable_release -->
+## [v8.0.12](https://github.com/chef/berkshelf/tree/v8.0.12) (2024-08-13)
+
+#### Merged Pull Requests
+- move to chef maintained cleanroom [#29](https://github.com/chef/berkshelf/pull/29) ([tpowell-progress](https://github.com/tpowell-progress))
+- Constrain minitar gem version and fix require [#30](https://github.com/chef/berkshelf/pull/30) ([tpowell-progress](https://github.com/tpowell-progress))
+- Minitar fix [#31](https://github.com/chef/berkshelf/pull/31) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
+## [v8.0.9](https://github.com/chef/berkshelf/tree/v8.0.9) (2023-09-28)
+
+#### Merged Pull Requests
+- refactoring networking issues [#21](https://github.com/chef/berkshelf/pull/21) ([johnmccrae](https://github.com/johnmccrae))
+- This resolves an issue where &quot;berks install&quot; fails due to a cert is already being in the hash table. [#23](https://github.com/chef/berkshelf/pull/23) ([nikhil2611](https://github.com/nikhil2611))
+
+## [v8.0.7](https://github.com/chef/berkshelf/tree/v8.0.7) (2023-06-12)
+
+#### Merged Pull Requests
+- Added the SonarQube configuration [#16](https://github.com/chef/berkshelf/pull/16) ([nikhil2611](https://github.com/nikhil2611))
+- Refactoring the gemspec for chef-17 support [#17](https://github.com/chef/berkshelf/pull/17) ([johnmccrae](https://github.com/johnmccrae))
+- Fix cookbook dependency version validation against chef&#39;s required format to berks upload [#18](https://github.com/chef/berkshelf/pull/18) ([nikhil2611](https://github.com/nikhil2611))
+
+## [v8.0.5](https://github.com/chef/berkshelf/tree/v8.0.5) (2022-10-27)
+
+#### Merged Pull Requests
+- Dummy [#9](https://github.com/chef/berkshelf/pull/9) ([mimaslanka](https://github.com/mimaslanka))
+- Copyedit README and contributing guides [#12](https://github.com/chef/berkshelf/pull/12) ([tnir](https://github.com/tnir))
+- Specify explicit hash [#14](https://github.com/chef/berkshelf/pull/14) ([vkarve-chef](https://github.com/vkarve-chef))
+
+## [8.0.2](https://github.com/chef/berkshelf/releases/tag/v8.0.2) (2022-06-02)
+- Fix directory structure of berkshelf package
+
+## [8.0.1](https://github.com/chef/berkshelf/releases/tag/v8.0.1) (2022-05-19)
+- Updated the gem specifications to point to the forked repo.
+
+## [8.0.0](https://github.com/chef/berkshelf/releases/tag/v8.0.0) (2022-04-29)
+- Added support for Ruby 3.1 and ended support for Ruby 2.6
+- Refer fork in Chef instead of repo in RiotGames
 
 ## [7.2.2](https://github.com/berkshelf/berkshelf/tree/7.2.2) (2021-06-16)
 
@@ -1658,7 +1723,3 @@
 - Rdoc readme [\#3](https://github.com/berkshelf/berkshelf/pull/3) ([erikh](https://github.com/erikh))
 - Rake checks [\#2](https://github.com/berkshelf/berkshelf/pull/2) ([erikh](https://github.com/erikh))
 - gemfile and building gem properly. Version is in lib/remy/version.rb [\#1](https://github.com/berkshelf/berkshelf/pull/1) ([erikh](https://github.com/erikh))
-
-
-
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

@@ -56,6 +56,7 @@ module Berkshelf
           validation_client_name: "validator",
           validation_key: "validator.pem",
           artifactory_api_key: "secret",
+          artifactory_token: "secret",
           cookbook_copyright: "user",
           cookbook_email: "user@example.com",
           cookbook_license: "apachev2",

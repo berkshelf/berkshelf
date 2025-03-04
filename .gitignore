@@ -30,3 +30,4 @@ bin
 Gemfile.local
 gem_graph.png
 Gemfile.lock
+.idea/

@@ -1,6 +1,6 @@
 # Berkshelf
 [![Gem Version](https://img.shields.io/gem/v/berkshelf.svg)][gem]
-![Matrix Testing](https://github.com/berkshelf/berkshelf/workflows/Matrix%20Testing/badge.svg?branch=master)
+[![CI Matrix Testing](https://github.com/chef/berkshelf/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/chef/berkshelf/actions/workflows/ci.yml?query=branch%3Amain)
 
 [gem]: https://rubygems.org/gems/berkshelf
 
@@ -45,7 +45,7 @@ Berkshelf is intended to be used as a CLI tool.  It is not intended to be used a
 
 ## Supported Platforms
 
-Berkshelf is tested and supported on Ruby 2.4 and later.
+Berkshelf is tested and supported on Ruby 2.7 and later.
 
 ## Configuration
 
@@ -63,16 +63,16 @@ You are encouraged to keep project-specific configuration in the `$PWD/.berkshel
 
 ## Plugins
 
-Please see [Plugins page](https://github.com/berkshelf/berkshelf/blob/master/PLUGINS.md) for more information.
+Please see [Plugins page](https://github.com/chef/berkshelf/blob/main/PLUGINS.md) for more information.
 
 ## Getting Help
 
-* If you have an issue: report it on the [issue tracker](https://github.com/berkshelf/berkshelf/issues)
+* If you have an issue: report it on the [issue tracker](https://github.com/chef/berkshelf/issues)
 * If you have a question: visit the #chef or #berkshelf channel on irc.freenode.net
 
 ## Authors
 
-Thank you to all of our [Contributors](https://github.com/berkshelf/berkshelf/graphs/contributors), testers, and users.
+Thank you to all of our [Contributors](https://github.com/chef/berkshelf/graphs/contributors), testers, and users.
 
-If you'd like to contribute, please see our [contribution guidelines](https://github.com/berkshelf/berkshelf/blob/master/CONTRIBUTING.md) first.
+If you'd like to contribute, please see our [contribution guidelines](https://github.com/chef/berkshelf/blob/main/CONTRIBUTING.md) first.
 

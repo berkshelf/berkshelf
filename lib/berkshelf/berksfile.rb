@@ -118,7 +118,7 @@ module Berkshelf
     #   cookbook 'artifact', path: '/Users/reset/code/artifact'
     #
     # @example a cookbook dependency that will be retrieved from a Git server
-    #   cookbook 'artifact', git: 'https://github.com/RiotGames/artifact-cookbook.git'
+    #   cookbook 'artifact', git: 'https://github.com/chef/artifact-cookbook.git'
     #
     # @overload cookbook(name, version_constraint, options = {})
     #   @param [#to_s] name

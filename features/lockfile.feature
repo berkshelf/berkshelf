@@ -169,14 +169,14 @@ Feature: Creating and reading the Berkshelf lockfile
   Scenario: Updating a Berksfile.lock with a git location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', git: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git', ref: '919afa0c4'
+      cookbook 'berkshelf-cookbook-fixture', git: 'https://github.com/chef/berkshelf-cookbook-fixture.git', ref: '919afa0c4'
       """
     When I successfully run `berks install`
     Then the file "Berksfile.lock" should contain:
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: https://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          git: https://github.com/chef/berkshelf-cookbook-fixture.git
           revision: 919afa0c402089df23ebdf36637f12271b8a96b4
           ref: 919afa0
 
@@ -187,14 +187,14 @@ Feature: Creating and reading the Berkshelf lockfile
   Scenario: Updating a Berksfile.lock with a git location and a branch
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', git: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git', branch: 'master'
+      cookbook 'berkshelf-cookbook-fixture', git: 'https://github.com/chef/berkshelf-cookbook-fixture.git', branch: 'master'
       """
     When I successfully run `berks install`
     Then the file "Berksfile.lock" should contain:
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: https://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          git: https://github.com/chef/berkshelf-cookbook-fixture.git
           revision: a97b9447cbd41a5fe58eee2026e48ccb503bd3bc
           branch: master
 
@@ -205,14 +205,14 @@ Feature: Creating and reading the Berkshelf lockfile
   Scenario: Updating a Berksfile.lock with a git location and a tag
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', git: 'https://github.com/RiotGames/berkshelf-cookbook-fixture.git', tag: 'v0.2.0'
+      cookbook 'berkshelf-cookbook-fixture', git: 'https://github.com/chef/berkshelf-cookbook-fixture.git', tag: 'v0.2.0'
       """
     When I successfully run `berks install`
     Then the file "Berksfile.lock" should contain:
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: https://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          git: https://github.com/chef/berkshelf-cookbook-fixture.git
           revision: 70a527e17d91f01f031204562460ad1c17f972ee
           tag: v0.2.0
 
@@ -223,14 +223,14 @@ Feature: Creating and reading the Berkshelf lockfile
   Scenario: Updating a Berksfile.lock with a GitHub location
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', ref: '919afa0c4'
+      cookbook 'berkshelf-cookbook-fixture', github: 'chef/berkshelf-cookbook-fixture', ref: '919afa0c4'
       """
     When I successfully run `berks install`
     Then the file "Berksfile.lock" should contain:
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: https://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          git: https://github.com/chef/berkshelf-cookbook-fixture.git
           revision: 919afa0c402089df23ebdf36637f12271b8a96b4
           ref: 919afa0
 
@@ -241,14 +241,14 @@ Feature: Creating and reading the Berkshelf lockfile
   Scenario: Updating a Berksfile.lock when a git location with :rel
     Given I have a Berksfile pointing at the local Berkshelf API with:
       """
-      cookbook 'berkshelf-cookbook-fixture', github: 'RiotGames/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
+      cookbook 'berkshelf-cookbook-fixture', github: 'chef/berkshelf-cookbook-fixture', branch: 'rel', rel: 'cookbooks/berkshelf-cookbook-fixture'
       """
     When I successfully run `berks install`
     Then the file "Berksfile.lock" should contain:
       """
       DEPENDENCIES
         berkshelf-cookbook-fixture
-          git: https://github.com/RiotGames/berkshelf-cookbook-fixture.git
+          git: https://github.com/chef/berkshelf-cookbook-fixture.git
           revision: 93f5768b7d14df45e10d16c8bf6fe98ba3ff809a
           branch: rel
           rel: cookbooks/berkshelf-cookbook-fixture

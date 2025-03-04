@@ -16,7 +16,7 @@ module Berkshelf
     def add_trusted_cert(cert)
       @store.add_cert(cert)
     rescue OpenSSL::X509::StoreError => e
-      raise e unless e.message == "cert already in hash table"
+      raise e unless e.message.match(/cert already in hash table/)
     end
 
     def trusted_certs_dir

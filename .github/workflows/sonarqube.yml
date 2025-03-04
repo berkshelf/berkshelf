@@ -1,0 +1,34 @@
+name: SonarQube scan
+on:
+  # Trigger analysis when pushing to your main branches, and when creating a pull request.
+  push:
+    branches:
+      - main # or the name of your main branch
+      - develop
+      - 'release/**'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarqube:
+    runs-on: ip-range-controlled
+#   runs-on: ubuntu-latest
+#    needs: [build]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+        fetch-depth: 0
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      # We do not recommend to use this in a pull request. Prefer using pull request
+      # decoration instead.
+      # - uses: sonarsource/sonarqube-quality-gate-action@master
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

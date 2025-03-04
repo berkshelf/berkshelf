@@ -238,7 +238,9 @@ Then /^the cookbook "(.*?)" should not have the following files:$/ do |name, fil
 end
 
 Then /^the git cookbook "(.*?)" should not have the following directories:$/ do |name, directories|
-  check_directory_presence(directories.raw.map { |directory_row| ::File.join(cookbook_store.storage_path.to_path, name, directory_row[0]) }, false)
+  ! directories.raw.map do |directory_row|
+    ::File.join(cookbook_store.storage_path.to_path, name, directory_row[0])
+  end.any? { |a_dir| Dir.exists?(a_dir) }
 end
 
 Then /^the file "(.*?)" in the cookbook "(.*?)" should contain:$/ do |file_name, cookbook_name, content|

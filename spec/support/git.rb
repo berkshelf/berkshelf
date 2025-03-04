@@ -5,7 +5,7 @@ module Berkshelf
       include Berkshelf::RSpec::PathHelpers
 
       def git_origin_for(repo, options = {})
-        "file://#{generate_fake_git_remote("git@github.com/RiotGames/#{repo}.git", options)}/.git"
+        "file://#{generate_fake_git_remote("git@github.com/chef/#{repo}.git", options)}/.git"
       end
 
       def generate_fake_git_remote(uri, options = {})

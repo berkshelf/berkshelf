@@ -67,7 +67,14 @@ module Berkshelf
       when :opscode, :supermarket
         options = { ssl: source.options[:ssl] }
         if source.type == :artifactory
-          options[:headers] = { "X-Jfrog-Art-Api" => source.options[:api_key] }
+          puts "Using Artifactory source with options #{source.options}"
+          if source.options[:api_key]
+            options[:headers] = { "X-Jfrog-Art-Api" => source.options[:api_key] }
+          elsif source.options[:token]
+            options[:headers] = { "Authorization" => "Bearer #{source.options[:token]}" }
+          else
+            raise ConfigurationError, "Missing Artifactory api_key or token credential option."
+          end
         end
 
         # Allow Berkshelf install to function if a relative url exists in location_path
@@ -152,7 +159,7 @@ module Berkshelf
         unpack_dir   = Pathname.new(tmp_dir) + "#{name}-#{version}"
 
         url = remote_cookbook.location_path
-        open(url, "rb") do |remote_file|
+        URI.open(url, "rb") do |remote_file|
           archive_path.open("wb") { |local_file| local_file.write remote_file.read }
         end
 
